@@ -26,14 +26,17 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8 min-h-screen">
       {/* Header */}
       <header className="text-center mb-12 fade-in">
-        <div className="flex items-center justify-center mb-6">
+        <div className="flex items-center justify-center mb-2">
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mr-4">
-            <span className="text-2xl font-bold text-primary-foreground japanese-text">道</span>
+            <span className="text-2xl font-bold text-primary-foreground japanese-text">動</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground app-name">
             {strings.appName}
           </h1>
         </div>
+        <p className="text-lg text-muted-foreground japanese-text mb-6">
+          動詞 先生
+        </p>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           {strings.home.subtitle}
         </p>

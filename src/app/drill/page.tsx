@@ -128,26 +128,28 @@ export default function DrillPage() {
     const conjugations = ConjugationEngine.conjugate(word);
     const allForms = Object.values(conjugations).filter(form => form && form !== correctAnswer);
 
-    // Get 5 distractors
+    // Get distractors from actual conjugations first
     const distractors: string[] = [];
     const availableForms = allForms.filter(form => form);
 
     // Add some actual conjugations as distractors
-    for (let i = 0; i < Math.min(3, availableForms.length); i++) {
+    for (let i = 0; i < Math.min(4, availableForms.length); i++) {
       if (!distractors.includes(availableForms[i])) {
         distractors.push(availableForms[i]);
       }
     }
 
-    // Add some common incorrect patterns
-    const stem = word.kana.slice(0, -1);
-    const commonEndings = ['る', 'た', 'ない', 'ます', 'て', 'れば'];
+    // Add one more distractor using kanji stem if needed
+    if (distractors.length < 5) {
+      const kanjiStem = word.kanji.slice(0, -1); // Use kanji stem, not kana stem
+      const commonEndings = ['る', 'た', 'ない', 'ます', 'て'];
 
-    while (distractors.length < 5) {
-      const randomEnding = commonEndings[Math.floor(Math.random() * commonEndings.length)];
-      const distractor = stem + randomEnding;
-      if (!distractors.includes(distractor) && distractor !== correctAnswer) {
-        distractors.push(distractor);
+      for (let ending of commonEndings) {
+        const distractor = kanjiStem + ending;
+        if (!distractors.includes(distractor) && distractor !== correctAnswer && !availableForms.includes(distractor)) {
+          distractors.push(distractor);
+          break;
+        }
       }
     }
 

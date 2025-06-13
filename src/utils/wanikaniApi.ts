@@ -77,25 +77,44 @@ function determineJLPTLevel(level: number): JLPTLevel {
 // Function to determine word type based on parts of speech
 function determineWordType(partsOfSpeech: string[] | undefined): WordType {
   if (!partsOfSpeech || partsOfSpeech.length === 0) {
-    return 'Godan'; // Default
+    return 'other'; // Default to other instead of verb
   }
 
   const pos = partsOfSpeech.join(' ').toLowerCase();
 
+  // Check for verbs first
   if (pos.includes('ichidan') || pos.includes('ru verb')) {
     return 'Ichidan';
   } else if (pos.includes('godan') || pos.includes('u verb')) {
     return 'Godan';
   } else if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb')) {
     return 'Irregular';
-  } else if (pos.includes('i-adjective') || pos.includes('い-adjective')) {
+  }
+
+  // Check for adjectives
+  else if (pos.includes('i-adjective') || pos.includes('い-adjective')) {
     return 'i-adjective';
   } else if (pos.includes('na-adjective') || pos.includes('な-adjective')) {
     return 'na-adjective';
   }
 
-  // Default classification
-  return 'Godan';
+  // Check for nouns
+  else if (pos.includes('noun') || pos.includes('counter') || pos.includes('suffix') || pos.includes('prefix')) {
+    return 'noun';
+  }
+
+  // Check for adverbs
+  else if (pos.includes('adverb')) {
+    return 'adverb';
+  }
+
+  // Check for particles
+  else if (pos.includes('particle')) {
+    return 'particle';
+  }
+
+  // Default to other for unknown types
+  return 'other';
 }
 
 // Function to generate romaji from kana

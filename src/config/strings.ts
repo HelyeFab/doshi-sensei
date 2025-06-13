@@ -113,13 +113,17 @@ export const strings = {
     of: "of"
   },
 
-  // Verb Types
+  // Word Types
   verbTypes: {
     ichidan: "Ichidan (る-verb)",
     godan: "Godan (う-verb)",
     irregular: "Irregular",
-    iAdjective: "い-adjective",
-    naAdjective: "な-adjective"
+    "i-adjective": "い-adjective",
+    "na-adjective": "な-adjective",
+    noun: "Noun",
+    adverb: "Adverb",
+    particle: "Particle",
+    other: "Other"
   },
 
   // JLPT Levels

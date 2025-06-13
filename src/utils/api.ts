@@ -85,20 +85,39 @@ function convertJishoWord(jishoWord: JishoWord, index: number): JapaneseWord {
 function determineWordType(partsOfSpeech: string[]): WordType {
   const pos = partsOfSpeech.join(' ').toLowerCase();
 
+  // Check for verbs first
   if (pos.includes('ichidan') || pos.includes('ru verb')) {
     return 'Ichidan';
   } else if (pos.includes('godan') || pos.includes('u verb')) {
     return 'Godan';
   } else if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb')) {
     return 'Irregular';
-  } else if (pos.includes('i-adjective')) {
+  }
+
+  // Check for adjectives
+  else if (pos.includes('i-adjective')) {
     return 'i-adjective';
   } else if (pos.includes('na-adjective') || pos.includes('no-adjective')) {
     return 'na-adjective';
   }
 
-  // Default classification based on word ending
-  return 'Godan'; // Most common type
+  // Check for nouns
+  else if (pos.includes('noun') || pos.includes('counter') || pos.includes('suffix') || pos.includes('prefix')) {
+    return 'noun';
+  }
+
+  // Check for adverbs
+  else if (pos.includes('adverb')) {
+    return 'adverb';
+  }
+
+  // Check for particles
+  else if (pos.includes('particle')) {
+    return 'particle';
+  }
+
+  // Default to other for unknown types
+  return 'other';
 }
 
 function determineJLPTLevel(jlptArray: string[]): JLPTLevel {
@@ -205,113 +224,21 @@ function processJishoResponse(data: JishoAPIResponse, limit: number): JapaneseWo
   return data.data
     .slice(0, limit)
     .map((word, index) => convertJishoWord(word, index))
-    .filter(word => word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' ||
-                    word.type === 'i-adjective' || word.type === 'na-adjective');
+    .filter(word =>
+      word.type === 'Ichidan' ||
+      word.type === 'Godan' ||
+      word.type === 'Irregular' ||
+      word.type === 'i-adjective' ||
+      word.type === 'na-adjective' ||
+      word.type === 'noun' ||
+      word.type === 'adverb' ||
+      word.type === 'particle' ||
+      word.type === 'other'
+    );
 }
 
-// Mock data for when API calls fail
-const mockWords: JapaneseWord[] = [
-  {
-    id: 'suru-1',
-    kanji: 'する',
-    kana: 'する',
-    romaji: 'suru',
-    meaning: 'to do',
-    type: 'Irregular',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'taberu-2',
-    kanji: '食べる',
-    kana: 'たべる',
-    romaji: 'taberu',
-    meaning: 'to eat',
-    type: 'Ichidan',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'nomu-3',
-    kanji: '飲む',
-    kana: 'のむ',
-    romaji: 'nomu',
-    meaning: 'to drink',
-    type: 'Godan',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'iku-4',
-    kanji: '行く',
-    kana: 'いく',
-    romaji: 'iku',
-    meaning: 'to go',
-    type: 'Godan',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'kuru-5',
-    kanji: '来る',
-    kana: 'くる',
-    romaji: 'kuru',
-    meaning: 'to come',
-    type: 'Irregular',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'miru-6',
-    kanji: '見る',
-    kana: 'みる',
-    romaji: 'miru',
-    meaning: 'to see, to look',
-    type: 'Ichidan',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'kiku-7',
-    kanji: '聞く',
-    kana: 'きく',
-    romaji: 'kiku',
-    meaning: 'to hear, to listen',
-    type: 'Godan',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'yomu-8',
-    kanji: '読む',
-    kana: 'よむ',
-    romaji: 'yomu',
-    meaning: 'to read',
-    type: 'Godan',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'kaku-9',
-    kanji: '書く',
-    kana: 'かく',
-    romaji: 'kaku',
-    meaning: 'to write',
-    type: 'Godan',
-    jlpt: 'N5',
-    tags: []
-  },
-  {
-    id: 'hanasu-10',
-    kanji: '話す',
-    kana: 'はなす',
-    romaji: 'hanasu',
-    meaning: 'to speak, to talk',
-    type: 'Godan',
-    jlpt: 'N5',
-    tags: []
-  }
-];
+// Mock data for when API calls fail - minimal fallback
+const mockWords: JapaneseWord[] = [];
 
 // Get common verbs for practice using WaniKani API
 export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]> {

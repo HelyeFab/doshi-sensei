@@ -39,7 +39,6 @@ const SETTINGS_KEY = 'doshi_sensei_settings';
  */
 export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -52,8 +51,6 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         }
       } catch (error) {
         console.error('Error loading settings:', error);
-      } finally {
-        setIsLoaded(true);
       }
     };
 
@@ -84,12 +81,6 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       console.error('Error saving settings:', error);
     }
   };
-
-  // Only render children after settings have been loaded from localStorage
-  // This prevents hydration issues with server/client rendering
-  if (!isLoaded && typeof window !== 'undefined') {
-    return null;
-  }
 
   return (
     <SettingsContext.Provider value={{ settings, updateSetting, resetSettings }}>

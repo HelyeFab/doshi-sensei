@@ -15,6 +15,7 @@ export default function PracticePage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showRules, setShowRules] = useState(false);
+  const [showFurigana, setShowFurigana] = useState(false);
 
   useEffect(() => {
     // Check if there's a selected word in sessionStorage (from vocabulary page)
@@ -249,6 +250,7 @@ function ConjugationView({
   onToggleRules,
   onBack
 }: ConjugationViewProps) {
+  const [showFurigana, setShowFurigana] = useState(false);
   if (!conjugations) {
     return (
       <div className="text-center py-12">
@@ -258,35 +260,123 @@ function ConjugationView({
     );
   }
 
-  // Group conjugations by category
-  const basicForms = {
+  // Group conjugations by category for comprehensive display
+  const basicPlainForms = {
     present: conjugations.present,
     past: conjugations.past,
     negative: conjugations.negative,
-    pastNegative: conjugations.pastNegative
+    pastNegative: conjugations.pastNegative,
+    volitional: conjugations.volitional
   };
 
   const politeForms = {
     polite: conjugations.polite,
     politePast: conjugations.politePast,
     politeNegative: conjugations.politeNegative,
-    politePastNegative: conjugations.politePastNegative
+    politePastNegative: conjugations.politePastNegative,
+    politeVolitional: conjugations.politeVolitional
   };
 
-  const teDerivatives = {
-    teForm: conjugations.teForm
+  const stemsAndTeForms = {
+    masuStem: conjugations.masuStem,
+    negativeStem: conjugations.negativeStem,
+    teForm: conjugations.teForm,
+    negativeTeForm: conjugations.negativeTeForm,
+    adverbialNegative: conjugations.adverbialNegative
+  };
+
+  const imperativeForms = {
+    imperativePlain: conjugations.imperativePlain,
+    imperativePolite: conjugations.imperativePolite
+  };
+
+  const conditionalForms = {
+    provisional: conjugations.provisional,
+    provisionalNegative: conjugations.provisionalNegative,
+    conditional: conjugations.conditional,
+    conditionalNegative: conjugations.conditionalNegative,
+    alternativeForm: conjugations.alternativeForm
   };
 
   const potentialForms = {
     potential: conjugations.potential,
-    passive: conjugations.passive,
-    causative: conjugations.causative
+    potentialNegative: conjugations.potentialNegative,
+    potentialPast: conjugations.potentialPast,
+    potentialPastNegative: conjugations.potentialPastNegative
   };
 
-  const otherForms = {
-    conditional: conjugations.conditional,
-    volitional: conjugations.volitional,
-    imperative: conjugations.imperative
+  const potentialPoliteForms = {
+    potentialPolite: conjugations.potentialPolite,
+    potentialPoliteNegative: conjugations.potentialPoliteNegative,
+    potentialPolitePast: conjugations.potentialPolitePast,
+    potentialPolitePastNegative: conjugations.potentialPolitePastNegative
+  };
+
+  const passiveForms = {
+    passive: conjugations.passive,
+    passiveNegative: conjugations.passiveNegative,
+    passivePast: conjugations.passivePast,
+    passivePastNegative: conjugations.passivePastNegative
+  };
+
+  const passivePoliteForms = {
+    passivePolite: conjugations.passivePolite,
+    passivePoliteNegative: conjugations.passivePoliteNegative,
+    passivePolitePast: conjugations.passivePolitePast,
+    passivePolitePastNegative: conjugations.passivePolitePastNegative
+  };
+
+  const causativeForms = {
+    causative: conjugations.causative,
+    causativeNegative: conjugations.causativeNegative,
+    causativePast: conjugations.causativePast,
+    causativePastNegative: conjugations.causativePastNegative
+  };
+
+  const causativePoliteForms = {
+    causativePolite: conjugations.causativePolite,
+    causativePoliteNegative: conjugations.causativePoliteNegative,
+    causativePolitePast: conjugations.causativePolitePast,
+    causativePolitePastNegative: conjugations.causativePolitePastNegative
+  };
+
+  const causativePassiveForms = {
+    causativePassive: conjugations.causativePassive,
+    causativePassiveNegative: conjugations.causativePassiveNegative,
+    causativePassivePast: conjugations.causativePassivePast,
+    causativePassivePastNegative: conjugations.causativePassivePastNegative
+  };
+
+  const causativePassivePoliteForms = {
+    causativePassivePolite: conjugations.causativePassivePolite,
+    causativePassivePoliteNegative: conjugations.causativePassivePoliteNegative,
+    causativePassivePolitePast: conjugations.causativePassivePolitePast,
+    causativePassivePolitePastNegative: conjugations.causativePassivePolitePastNegative
+  };
+
+  const taiForms = {
+    taiForm: conjugations.taiForm,
+    taiFormNegative: conjugations.taiFormNegative,
+    taiFormPast: conjugations.taiFormPast,
+    taiFormPastNegative: conjugations.taiFormPastNegative
+  };
+
+  const progressiveForms = {
+    progressive: conjugations.progressive,
+    progressivePolite: conjugations.progressivePolite,
+    progressiveNegative: conjugations.progressiveNegative,
+    progressivePoliteNegative: conjugations.progressivePoliteNegative
+  };
+
+  const requestForms = {
+    request: conjugations.request,
+    requestNegative: conjugations.requestNegative
+  };
+
+  const colloquialAndClassicalForms = {
+    colloquialNegative: conjugations.colloquialNegative,
+    formalNegative: conjugations.formalNegative,
+    classicalNegative: conjugations.classicalNegative
   };
 
   return (
@@ -327,23 +417,30 @@ function ConjugationView({
         </div>
       </div>
 
-      {/* Rules Toggle */}
-      <div className="mb-6">
+      {/* Controls */}
+      <div className="mb-6 flex flex-wrap gap-4">
         <button
           onClick={onToggleRules}
           className="text-primary hover:text-primary/80 transition-colors text-sm font-medium"
         >
           {showRules ? strings.drill.hideRules : strings.drill.showRules}
         </button>
+        <button
+          onClick={() => setShowFurigana(!showFurigana)}
+          className="text-primary hover:text-primary/80 transition-colors text-sm font-medium"
+        >
+          {showFurigana ? 'Show Kanji' : 'Show Furigana'}
+        </button>
       </div>
 
       {/* Conjugation Tables */}
       <div className="space-y-6">
         <ConjugationTable
-          title="Basic Forms"
-          forms={basicForms}
+          title="Basic Plain Forms"
+          forms={basicPlainForms}
           word={word}
           showRules={showRules}
+          showFurigana={showFurigana}
         />
 
         <ConjugationTable
@@ -351,29 +448,129 @@ function ConjugationView({
           forms={politeForms}
           word={word}
           showRules={showRules}
+          showFurigana={showFurigana}
         />
 
         {word.type !== 'i-adjective' && word.type !== 'na-adjective' && (
           <>
             <ConjugationTable
-              title="Te-Form and Derivatives"
-              forms={teDerivatives}
+              title="Stems and Te-Forms"
+              forms={stemsAndTeForms}
               word={word}
               showRules={showRules}
+              showFurigana={showFurigana}
             />
 
             <ConjugationTable
-              title="Potential, Passive, and Causative"
+              title="Imperative Forms"
+              forms={imperativeForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Progressive Forms"
+              forms={progressiveForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Request Forms"
+              forms={requestForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Conditional Forms"
+              forms={conditionalForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Potential Plain Forms"
               forms={potentialForms}
               word={word}
               showRules={showRules}
+              showFurigana={showFurigana}
             />
 
             <ConjugationTable
-              title="Other Forms"
-              forms={otherForms}
+              title="Potential Polite Forms"
+              forms={potentialPoliteForms}
               word={word}
               showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Passive Plain Forms"
+              forms={passiveForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Passive Polite Forms"
+              forms={passivePoliteForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Causative Plain Forms"
+              forms={causativeForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Causative Polite Forms"
+              forms={causativePoliteForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Causative Passive Plain Forms"
+              forms={causativePassiveForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Causative Passive Polite Forms"
+              forms={causativePassivePoliteForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Tai Forms (Want to do)"
+              forms={taiForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
+            />
+
+            <ConjugationTable
+              title="Colloquial and Classical Forms"
+              forms={colloquialAndClassicalForms}
+              word={word}
+              showRules={showRules}
+              showFurigana={showFurigana}
             />
           </>
         )}
@@ -387,14 +584,54 @@ interface ConjugationTableProps {
   forms: Record<string, string | undefined>;
   word: JapaneseWord;
   showRules: boolean;
+  showFurigana: boolean;
 }
 
-function ConjugationTable({ title, forms, word, showRules }: ConjugationTableProps) {
+function ConjugationTable({ title, forms, word, showRules, showFurigana }: ConjugationTableProps) {
   const hasValidForms = Object.values(forms).some(form => form);
 
   if (!hasValidForms) {
     return null;
   }
+
+  // Function to convert kanji conjugation to kana equivalent
+  const convertToKana = (kanjiForm: string): string => {
+    if (!kanjiForm) return kanjiForm;
+
+    // If the word is already in kana only, return as is
+    if (word.kanji === word.kana) return kanjiForm;
+
+    // For verbs, replace the kanji stem with the kana stem
+    if (word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular') {
+      const kanjiStem = word.kanji.slice(0, -1);
+      const kanaStem = word.kana.slice(0, -1);
+
+      // Replace the kanji stem with kana stem
+      if (kanjiForm.startsWith(kanjiStem)) {
+        return kanjiForm.replace(kanjiStem, kanaStem);
+      }
+
+      // Handle special cases for irregular verbs
+      if (word.type === 'Irregular') {
+        if (word.kanji.includes('来') && kanjiForm.includes('来')) {
+          return kanjiForm.replace(/来/g, 'く');
+        }
+        if (word.kanji.endsWith('する') && kanjiForm.includes(word.kanji.slice(0, -2))) {
+          const kanjiPrefix = word.kanji.slice(0, -2);
+          const kanaPrefix = word.kana.slice(0, -2);
+          return kanjiForm.replace(kanjiPrefix, kanaPrefix);
+        }
+      }
+    }
+
+    // For adjectives and other types, simple replacement
+    if (kanjiForm.includes(word.kanji)) {
+      return kanjiForm.replace(word.kanji, word.kana);
+    }
+
+    // Fallback: return original if no conversion possible
+    return kanjiForm;
+  };
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
@@ -416,7 +653,7 @@ function ConjugationTable({ title, forms, word, showRules }: ConjugationTablePro
                     {strings.conjugation.forms[formKey as keyof typeof strings.conjugation.forms] || key}
                   </div>
                   <div className="text-xl japanese-text font-medium text-foreground">
-                    {value}
+                    {showFurigana ? convertToKana(value) : value}
                   </div>
                 </div>
                 {showRules && rule && (

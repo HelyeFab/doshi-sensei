@@ -2,7 +2,7 @@
 export type JLPTLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 
 // Word Types
-export type WordType = 'Ichidan' | 'Godan' | 'Irregular' | 'i-adjective' | 'na-adjective';
+export type WordType = 'Ichidan' | 'Godan' | 'Irregular' | 'i-adjective' | 'na-adjective' | 'noun' | 'adverb' | 'particle' | 'other';
 
 // Base Japanese Word Interface
 export interface JapaneseWord {
@@ -18,21 +18,105 @@ export interface JapaneseWord {
 
 // Conjugation Forms
 export interface ConjugationForms {
+  // Basic Plain Forms
   present: string;
   past: string;
   negative: string;
   pastNegative: string;
+  volitional: string;
+
+  // Polite Forms
   polite: string;
   politePast: string;
   politeNegative: string;
   politePastNegative: string;
-  teForm?: string;
-  potential?: string;
-  passive?: string;
-  causative?: string;
-  conditional?: string;
-  volitional?: string;
-  imperative?: string;
+  politeVolitional: string;
+
+  // Te-Forms
+  teForm: string;
+  negativeTeForm: string;
+
+  // Stems
+  masuStem: string;
+  negativeStem: string;
+
+  // Imperative Forms
+  imperativePlain: string;
+  imperativePolite: string;
+
+  // Conditional Forms
+  provisional: string;
+  provisionalNegative: string;
+  conditional: string;
+  conditionalNegative: string;
+
+  // Potential Forms
+  potential: string;
+  potentialNegative: string;
+  potentialPast: string;
+  potentialPastNegative: string;
+  potentialPolite: string;
+  potentialPoliteNegative: string;
+  potentialPolitePast: string;
+  potentialPolitePastNegative: string;
+
+  // Passive Forms
+  passive: string;
+  passiveNegative: string;
+  passivePast: string;
+  passivePastNegative: string;
+  passivePolite: string;
+  passivePoliteNegative: string;
+  passivePolitePast: string;
+  passivePolitePastNegative: string;
+
+  // Causative Forms
+  causative: string;
+  causativeNegative: string;
+  causativePast: string;
+  causativePastNegative: string;
+  causativePolite: string;
+  causativePoliteNegative: string;
+  causativePolitePast: string;
+  causativePolitePastNegative: string;
+
+  // Causative Passive Forms
+  causativePassive: string;
+  causativePassiveNegative: string;
+  causativePassivePast: string;
+  causativePassivePastNegative: string;
+  causativePassivePolite: string;
+  causativePassivePoliteNegative: string;
+  causativePassivePolitePast: string;
+  causativePassivePolitePastNegative: string;
+
+  // Tai Forms (want to do)
+  taiForm: string;
+  taiFormNegative: string;
+  taiFormPast: string;
+  taiFormPastNegative: string;
+
+  // Alternative and other forms
+  alternativeForm: string;
+  adverbialNegative: string;
+
+  // Progressive forms
+  progressive?: string;
+  progressivePolite?: string;
+  progressiveNegative?: string;
+  progressivePoliteNegative?: string;
+
+  // Request forms
+  request?: string;
+  requestNegative?: string;
+
+  // Negative volitional
+  volitionalNegative?: string;
+
+  // Colloquial and Classical Forms
+  colloquialNegative?: string;
+  formalNegative?: string;
+  classicalNegative?: string;
 }
 
 // Drill Question Interface

@@ -231,6 +231,13 @@ function WordModal({ word, onClose }: WordModalProps) {
     onClose();
   };
 
+  // Check if the word can be conjugated (verbs and adjectives only)
+  const canBeConjugated = word.type === 'Ichidan' ||
+                         word.type === 'Godan' ||
+                         word.type === 'Irregular' ||
+                         word.type === 'i-adjective' ||
+                         word.type === 'na-adjective';
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -279,20 +286,28 @@ function WordModal({ word, onClose }: WordModalProps) {
             </div>
           </div>
 
-          <div className="flex gap-2 pt-4">
-            <button
-              onClick={handlePracticeClick}
-              className="flex-1 bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              {strings.practice.showConjugations}
-            </button>
-            <button
-              onClick={handleDrillClick}
-              className="flex-1 bg-secondary text-secondary-foreground py-2 px-4 rounded-lg hover:bg-secondary/80 transition-colors"
-            >
-              {strings.drill.title}
-            </button>
-          </div>
+          {canBeConjugated ? (
+            <div className="flex gap-2 pt-4">
+              <button
+                onClick={handlePracticeClick}
+                className="flex-1 bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                {strings.practice.showConjugations}
+              </button>
+              <button
+                onClick={handleDrillClick}
+                className="flex-1 bg-secondary text-secondary-foreground py-2 px-4 rounded-lg hover:bg-secondary/80 transition-colors"
+              >
+                {strings.drill.title}
+              </button>
+            </div>
+          ) : (
+            <div className="pt-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                This word type does not have conjugations.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

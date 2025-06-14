@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Home from '../page';
 
@@ -20,7 +20,7 @@ jest.mock('next/navigation', () => ({
 
 // Mock Link component
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => {
+  return function MockLink({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) {
     return <a href={href} {...props}>{children}</a>
   }
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DrillPage from '../page';
 import { getCommonVerbs } from '@/utils/api';
@@ -22,9 +22,11 @@ jest.mock('@/utils/conjugation', () => ({
 
 // Mock PageHeader component
 jest.mock('@/components/PageHeader', () => {
-  return function MockPageHeader({ title }: { title: string }) {
+  const MockPageHeader = ({ title }: { title: string }) => {
     return <h1>{title}</h1>;
   };
+  MockPageHeader.displayName = 'MockPageHeader';
+  return MockPageHeader;
 });
 
 const mockGetCommonVerbs = getCommonVerbs as jest.MockedFunction<typeof getCommonVerbs>;

@@ -1,27 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { strings } from '@/config/strings';
 import MobileHome from '@/components/MobileHome';
 
 export default function Home() {
-  const router = useRouter();
-  // Use a ref to track if the component is mounted
-  const isMounted = useRef(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    // Mark as mounted
-    isMounted.current = true;
-    setIsClient(true);
-
-    // Cleanup
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   return (
     <>

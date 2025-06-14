@@ -179,3 +179,79 @@ export interface DrillSession {
   startTime: Date;
   endTime?: Date;
 }
+
+// Progress Data Types
+export interface UserProgress {
+  id: string;
+  wordId: string;
+  correctAnswers: number;
+  totalAttempts: number;
+  lastReviewed: Date;
+  difficulty: 'easy' | 'medium' | 'hard';
+  nextReviewDate: Date;
+  masteryLevel: number; // 0-100
+}
+
+export interface StudySession {
+  id: string;
+  userId: string;
+  startTime: Date;
+  endTime: Date;
+  wordsStudied: string[];
+  accuracy: number;
+  sessionType: 'drill' | 'practice' | 'review';
+}
+
+export interface RecentlyViewedWord {
+  id: string;
+  wordId: string;
+  viewedAt: Date;
+  context?: string; // Where it was viewed (drill, vocabulary, etc.)
+}
+
+// Cached Data Types
+export interface CachedVocabularyData {
+  id: string;
+  jlptLevel: JLPTLevel;
+  words: JapaneseWord[];
+  cacheDate: Date;
+  expiryDate: Date;
+}
+
+export interface CachedAPIResponse {
+  id: string;
+  endpoint: string;
+  params: Record<string, any>;
+  response: any;
+  cacheDate: Date;
+  expiryDate: Date;
+}
+
+// Database Schema
+export interface DatabaseSchema {
+  settings: AppSettings & { id: string; updatedAt: Date };
+  progress: UserProgress;
+  studySessions: StudySession;
+  recentlyViewed: RecentlyViewedWord;
+  vocabularyCache: CachedVocabularyData;
+  apiCache: CachedAPIResponse;
+  words: JapaneseWord;
+  drillSessions: DrillSession;
+}
+
+// IndexedDB Configuration
+export interface DatabaseConfig {
+  name: string;
+  version: number;
+  stores: {
+    [K in keyof DatabaseSchema]: {
+      keyPath: string;
+      autoIncrement?: boolean;
+      indexes?: Array<{
+        name: string;
+        keyPath: string | string[];
+        unique?: boolean;
+      }>;
+    };
+  };
+}

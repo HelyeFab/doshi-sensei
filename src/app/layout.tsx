@@ -5,6 +5,7 @@ import { strings } from "@/config/strings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { EnvProvider } from "@/components/EnvProvider";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,6 +57,7 @@ export default function RootLayout({
             <ClientThemeWrapper>
               <div className="min-h-screen bg-background text-foreground">
                 {children}
+                <BottomNavigation />
               </div>
             </ClientThemeWrapper>
           </SettingsProvider>

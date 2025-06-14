@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { strings } from '@/config/strings';
+import MobileHome from '@/components/MobileHome';
 
 export default function Home() {
   const router = useRouter();
@@ -23,86 +24,94 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      {/* Header */}
-      <header className="text-center mb-12 fade-in">
-        <div className="flex items-center justify-center mb-2">
-          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mr-4">
-            <span className="text-2xl font-bold text-primary-foreground japanese-text">動</span>
+    <>
+      {/* Mobile Layout */}
+      <div className="md:hidden">
+        <MobileHome />
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:block container mx-auto px-4 py-8 min-h-screen">
+        {/* Header */}
+        <header className="text-center mb-12 fade-in">
+          <div className="flex items-center justify-center mb-2">
+            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mr-4">
+              <span className="text-2xl font-bold text-primary-foreground japanese-text">動</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground app-name">
+              {strings.appName}
+            </h1>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground app-name">
-            {strings.appName}
-          </h1>
-        </div>
-        <p className="text-lg text-muted-foreground japanese-text mb-6">
-          動詞 先生
-        </p>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          {strings.home.subtitle}
-        </p>
-      </header>
+          <p className="text-lg text-muted-foreground japanese-text mb-6">
+            動詞 先生
+          </p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            {strings.home.subtitle}
+          </p>
+        </header>
 
-      {/* Main Navigation Cards */}
-      <main className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Practice Card */}
-          <NavigationCard
-            title={strings.home.practiceButton}
-            description="Practice conjugations with detailed explanations"
-            icon="📚"
-            href="/practice"
-            gradient="from-blue-600 to-blue-800"
-          />
+        {/* Main Navigation Cards */}
+        <main className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Practice Card */}
+            <NavigationCard
+              title={strings.home.practiceButton}
+              description="Practice conjugations with detailed explanations"
+              icon="📚"
+              href="/practice"
+              gradient="from-blue-600 to-blue-800"
+            />
 
-          {/* Drill Card */}
-          <NavigationCard
-            title={strings.home.drillButton}
-            description="Test your knowledge with multiple choice questions"
-            icon="⚡"
-            href="/drill"
-            gradient="from-purple-600 to-purple-800"
-          />
+            {/* Drill Card */}
+            <NavigationCard
+              title={strings.home.drillButton}
+              description="Test your knowledge with multiple choice questions"
+              icon="⚡"
+              href="/drill"
+              gradient="from-purple-600 to-purple-800"
+            />
 
-          {/* Vocabulary Card */}
-          <NavigationCard
-            title={strings.home.vocabButton}
-            description="Browse and search Japanese vocabulary by JLPT level"
-            icon="📖"
-            href="/vocabulary"
-            gradient="from-green-600 to-green-800"
-          />
+            {/* Vocabulary Card */}
+            <NavigationCard
+              title={strings.home.vocabButton}
+              description="Browse and search Japanese vocabulary by JLPT level"
+              icon="📖"
+              href="/vocabulary"
+              gradient="from-green-600 to-green-800"
+            />
 
-          {/* Settings Card */}
-          <NavigationCard
-            title={strings.home.settingsButton}
-            description="Customize your learning experience"
-            icon="⚙️"
-            href="/settings"
-            gradient="from-gray-600 to-gray-800"
-          />
-        </div>
-
-        {/* Quick Stats */}
-        <div className="bg-card rounded-lg p-6 border border-border slide-up">
-          <h2 className="text-xl font-semibold mb-4 text-card-foreground">
-            {strings.common.loading}
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label="Words Learned" value="0" />
-            <StatCard label="Drills Completed" value="0" />
-            <StatCard label="Accuracy" value="0%" />
-            <StatCard label="Streak" value="0 days" />
+            {/* Settings Card */}
+            <NavigationCard
+              title={strings.home.settingsButton}
+              description="Customize your learning experience"
+              icon="⚙️"
+              href="/settings"
+              gradient="from-gray-600 to-gray-800"
+            />
           </div>
-        </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="text-center mt-12 pt-8 border-t border-border">
-        <p className="text-muted-foreground text-sm">
-          Master Japanese conjugations one verb at a time
-        </p>
-      </footer>
-    </div>
+          {/* Quick Stats */}
+          <div className="bg-card rounded-lg p-6 border border-border slide-up">
+            <h2 className="text-xl font-semibold mb-4 text-card-foreground">
+              {strings.common.loading}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <StatCard label="Words Learned" value="0" />
+              <StatCard label="Drills Completed" value="0" />
+              <StatCard label="Accuracy" value="0%" />
+              <StatCard label="Streak" value="0 days" />
+            </div>
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="text-center mt-12 pt-8 border-t border-border">
+          <p className="text-muted-foreground text-sm">
+            Master Japanese conjugations one verb at a time
+          </p>
+        </footer>
+      </div>
+    </>
   );
 }
 

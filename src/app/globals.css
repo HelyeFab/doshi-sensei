@@ -190,3 +190,29 @@ body {
     max-width: 1280px;
   }
 }
+
+/* Mobile-specific styles */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Prevent horizontal scrolling on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 767px) {
+  button, .button, a {
+    min-height: 44px;
+  }
+}
+
+/* Bottom navigation spacing */
+@media (max-width: 767px) {
+  .pb-nav {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}

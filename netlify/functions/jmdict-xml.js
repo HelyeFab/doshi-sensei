@@ -227,7 +227,7 @@ async function loadJMdictEntries(chunkSize = 200000) {
     console.log('Loading JMdict entries from file...');
 
     // In Netlify, the file path is relative to the project root
-    const filePath = path.join(process.cwd(), 'src', 'dict', 'JMdict_e_examp');
+    const filePath = path.join(process.cwd(), 'public', 'dict', 'JMdict_e_examp');
 
     // Read the file
     const content = await fs.readFile(filePath, 'utf-8');

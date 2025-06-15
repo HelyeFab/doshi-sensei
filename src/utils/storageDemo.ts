@@ -164,7 +164,8 @@ export class StorageDemo {
         romaji: 'arigatou',
         meaning: 'thank you',
         type: 'other',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       },
       {
         id: 'word_konnichiwa',
@@ -173,7 +174,8 @@ export class StorageDemo {
         romaji: 'konnichiwa',
         meaning: 'hello (afternoon)',
         type: 'other',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       },
       {
         id: 'word_ganbatte',
@@ -182,7 +184,8 @@ export class StorageDemo {
         romaji: 'ganbatte',
         meaning: 'good luck / do your best',
         type: 'other',
-        jlpt: 'N4'
+        jlpt: 'N4',
+        tags: []
       }
     ];
 
@@ -277,7 +280,8 @@ export class StorageDemo {
           romaji: 'gakushuu',
           meaning: 'learning, study',
           type: 'noun',
-          jlpt: 'N4'
+          jlpt: 'N4',
+          tags: []
         },
         {
           id: 'word_database_2',
@@ -286,7 +290,8 @@ export class StorageDemo {
           romaji: 'renshuu',
           meaning: 'practice, exercise',
           type: 'noun',
-          jlpt: 'N4'
+          jlpt: 'N4',
+          tags: []
         }
       ];
 

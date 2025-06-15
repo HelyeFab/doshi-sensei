@@ -2,55 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { JapaneseWord, ConjugationForms } from '@/types';
-import { getCommonVerbs, searchWords } from '@/utils/api';
+import { searchWords, getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 
 export default function PracticePage() {
   const [words, setWords] = useState<JapaneseWord[]>([]);
-  const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
-  const [conjugations, setConjugations] = useState<ConjugationForms | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showRules, setShowRules] = useState(false);
   const [showFurigana, setShowFurigana] = useState(false);
+  const [wordTypeFilter, setWordTypeFilter] = useState<'all' | 'verbs' | 'adjectives'>('all');
 
   useEffect(() => {
-    // Check if there's a selected word in sessionStorage (from vocabulary page)
-    if (typeof window !== 'undefined') {
-      const storedWord = sessionStorage.getItem('selectedWord');
-      if (storedWord) {
-        try {
-          const word = JSON.parse(storedWord);
-          setSelectedWord(word);
-          // Clear the stored word to prevent it from being loaded again on refresh
-          sessionStorage.removeItem('selectedWord');
-        } catch (err) {
-          console.error('Error parsing stored word:', err);
-        }
-      }
-    }
-
     loadInitialWords();
   }, []);
-
-  useEffect(() => {
-    if (selectedWord) {
-      const wordConjugations = ConjugationEngine.conjugate(selectedWord);
-      setConjugations(wordConjugations);
-    } else {
-      setConjugations(null);
-    }
-  }, [selectedWord]);
 
   const loadInitialWords = async () => {
     try {
       setLoading(true);
       setError(null);
-      const commonWords = await getCommonVerbs();
-      setWords(commonWords);
+      const words = await getCommonWordsForPractice();
+      setWords(words);
     } catch (err) {
       setError(strings.errors.loadError);
       console.error('Error loading words:', err);
@@ -59,8 +35,8 @@ export default function PracticePage() {
     }
   };
 
-  const handleSearch = async (term: string) => {
-    if (!term.trim()) {
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) {
       loadInitialWords();
       return;
     }
@@ -68,10 +44,10 @@ export default function PracticePage() {
     try {
       setLoading(true);
       setError(null);
-      const searchResults = await searchWords(term, 30);
+      const searchResults = await searchWords(searchTerm, 50);
       setWords(searchResults);
     } catch (err) {
-      setError(strings.errors.loadError);
+      setError(strings.errors.networkError);
       console.error('Error searching words:', err);
     } finally {
       setLoading(false);
@@ -86,45 +62,56 @@ export default function PracticePage() {
     setSelectedWord(null);
   };
 
+  // Filter words based on type
+  const filteredWords = words.filter(word => {
+    if (wordTypeFilter === 'verbs') {
+      return word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular';
+    } else if (wordTypeFilter === 'adjectives') {
+      return word.type === 'i-adjective' || word.type === 'na-adjective';
+    }
+    return true; // 'all' shows everything
+  });
+
+  if (selectedWord) {
+    return <WordPractice word={selectedWord} onBack={handleBackToList} />;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
-      {/* Header */}
       <PageHeader title={strings.practice.title} />
 
-      {/* Main Content */}
-      <main>
-        {selectedWord ? (
-          <ConjugationView
-            word={selectedWord}
-            conjugations={conjugations}
-            showRules={showRules}
-            onToggleRules={() => setShowRules(!showRules)}
-            onBack={handleBackToList}
-          />
-        ) : (
-          <WordSelector
-            words={words}
-            loading={loading}
-            error={error}
-            searchTerm={searchTerm}
-            onSearchTermChange={setSearchTerm}
-            onSearch={handleSearch}
-            onSelectWord={handleWordSelect}
-            onRetry={loadInitialWords}
-          />
-        )}
+      <main className="max-w-4xl mx-auto">
+        <p className="text-muted-foreground mb-8 text-center">
+          {strings.practice.selectWord}
+        </p>
+
+        <WordSelector
+          words={filteredWords}
+          loading={loading}
+          error={error}
+          searchTerm={searchTerm}
+          wordTypeFilter={wordTypeFilter}
+          onSearchTermChange={setSearchTerm}
+          onWordTypeFilterChange={setWordTypeFilter}
+          onSearch={handleSearch}
+          onSelectWord={handleWordSelect}
+          onRetry={loadInitialWords}
+        />
       </main>
     </div>
   );
 }
 
+// Word Selector Component
 interface WordSelectorProps {
   words: JapaneseWord[];
   loading: boolean;
   error: string | null;
   searchTerm: string;
+  wordTypeFilter: 'all' | 'verbs' | 'adjectives';
   onSearchTermChange: (term: string) => void;
-  onSearch: (term: string) => void;
+  onWordTypeFilterChange: (filter: 'all' | 'verbs' | 'adjectives') => void;
+  onSearch: () => void;
   onSelectWord: (word: JapaneseWord) => void;
   onRetry: () => void;
 }
@@ -134,47 +121,76 @@ function WordSelector({
   loading,
   error,
   searchTerm,
+  wordTypeFilter,
   onSearchTermChange,
+  onWordTypeFilterChange,
   onSearch,
   onSelectWord,
   onRetry
 }: WordSelectorProps) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch();
+  };
+
   return (
     <div>
-      <div className="mb-6">
-        <p className="text-lg text-muted-foreground mb-4">
-          {strings.practice.selectWord}
-        </p>
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder={strings.vocab.searchPlaceholder}
-              value={searchTerm}
-              onChange={(e) => onSearchTermChange(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && onSearch(searchTerm)}
-              className="w-full px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
+      {/* Search */}
+      <form onSubmit={handleSubmit} className="mb-6">
+        <div className="flex gap-3">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => onSearchTermChange(e.target.value)}
+            placeholder={strings.vocab.searchPlaceholder}
+            className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
           <button
-            onClick={() => onSearch(searchTerm)}
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+            type="submit"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center justify-center"
           >
-            Search
+            <svg className="w-5 h-5 md:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <span className="hidden md:inline">Search</span>
           </button>
+        </div>
+      </form>
+
+      {/* Word Type Filter */}
+      <div className="mb-6">
+        <div className="text-sm text-muted-foreground mb-3">Filter by Word Type:</div>
+        <div className="flex gap-2 flex-wrap">
+          {(['all', 'verbs', 'adjectives'] as const).map((filter) => (
+            <button
+              key={filter}
+              onClick={() => onWordTypeFilterChange(filter)}
+              className={`px-4 py-2 rounded-lg border transition-colors ${
+                wordTypeFilter === filter
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background text-foreground border-input hover:bg-muted'
+              }`}
+            >
+              {filter === 'all' ? 'All Types' :
+               filter === 'verbs' ? 'Verbs Only' : 'Adjectives Only'}
+            </button>
+          ))}
         </div>
       </div>
 
+      {/* Loading */}
       {loading && (
         <div className="text-center py-12">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{strings.vocab.loading}</p>
+          <p className="text-muted-foreground">{strings.common.loading}</p>
         </div>
       )}
 
-      {error && (
+      {/* Error */}
+      {error && !loading && (
         <div className="text-center py-12">
-          <p className="text-destructive mb-4">{error}</p>
+          <p className="text-red-400 mb-4">{error}</p>
           <button
             onClick={onRetry}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
@@ -184,217 +200,140 @@ function WordSelector({
         </div>
       )}
 
-      {!loading && !error && words.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">{strings.vocab.noResults}</p>
-        </div>
-      )}
+      {/* Results */}
+      {!loading && !error && (
+        <div>
+          <div className="text-sm text-muted-foreground mb-4">
+            Found {words.length} {wordTypeFilter === 'all' ? 'words' : wordTypeFilter}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {words.map((word) => (
+              <WordCard key={word.id} word={word} onSelect={onSelectWord} />
+            ))}
+          </div>
 
-      {!loading && !error && words.length > 0 && (
-        <div className="grid gap-4">
-          {words.map((word) => (
-            <div
-              key={word.id}
-              onClick={() => onSelectWord(word)}
-              className="bg-card border border-border rounded-lg p-4 hover:bg-card/80 transition-colors cursor-pointer group"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-2xl japanese-text font-medium text-card-foreground">
-                      {word.kanji}
-                    </span>
-                    <span className="text-lg japanese-text text-muted-foreground">
-                      {word.kana}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {word.romaji}
-                    </span>
-                  </div>
-                  <p className="text-foreground mb-2">{word.meaning}</p>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="px-2 py-1 bg-primary/10 text-primary rounded">
-                      {strings.verbTypes[word.type.toLowerCase().replace('-', '') as keyof typeof strings.verbTypes] || word.type}
-                    </span>
-                    <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded">
-                      {word.jlpt}
-                    </span>
-                  </div>
-                </div>
-                <div className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
+          {words.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">{strings.vocab.noResults}</p>
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
   );
 }
 
-interface ConjugationViewProps {
+// Word Card Component
+interface WordCardProps {
   word: JapaneseWord;
-  conjugations: ConjugationForms | null;
-  showRules: boolean;
-  onToggleRules: () => void;
-  onBack: () => void;
+  onSelect: (word: JapaneseWord) => void;
 }
 
-function ConjugationView({
-  word,
-  conjugations,
-  showRules,
-  onToggleRules,
-  onBack
-}: ConjugationViewProps) {
-  const [showFurigana, setShowFurigana] = useState(false);
-  if (!conjugations) {
-    return (
-      <div className="text-center py-12">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-muted-foreground">{strings.common.loading}</p>
-      </div>
-    );
-  }
-
-  // Group conjugations by category for comprehensive display
-  const basicPlainForms = {
-    present: conjugations.present,
-    past: conjugations.past,
-    negative: conjugations.negative,
-    pastNegative: conjugations.pastNegative,
-    volitional: conjugations.volitional
-  };
-
-  const politeForms = {
-    polite: conjugations.polite,
-    politePast: conjugations.politePast,
-    politeNegative: conjugations.politeNegative,
-    politePastNegative: conjugations.politePastNegative,
-    politeVolitional: conjugations.politeVolitional
-  };
-
-  const stemsAndTeForms = {
-    masuStem: conjugations.masuStem,
-    negativeStem: conjugations.negativeStem,
-    teForm: conjugations.teForm,
-    negativeTeForm: conjugations.negativeTeForm,
-    adverbialNegative: conjugations.adverbialNegative
-  };
-
-  const imperativeForms = {
-    imperativePlain: conjugations.imperativePlain,
-    imperativePolite: conjugations.imperativePolite
-  };
-
-  const conditionalForms = {
-    provisional: conjugations.provisional,
-    provisionalNegative: conjugations.provisionalNegative,
-    conditional: conjugations.conditional,
-    conditionalNegative: conjugations.conditionalNegative,
-    alternativeForm: conjugations.alternativeForm
-  };
-
-  const potentialForms = {
-    potential: conjugations.potential,
-    potentialNegative: conjugations.potentialNegative,
-    potentialPast: conjugations.potentialPast,
-    potentialPastNegative: conjugations.potentialPastNegative
-  };
-
-  const potentialPoliteForms = {
-    potentialPolite: conjugations.potentialPolite,
-    potentialPoliteNegative: conjugations.potentialPoliteNegative,
-    potentialPolitePast: conjugations.potentialPolitePast,
-    potentialPolitePastNegative: conjugations.potentialPolitePastNegative
-  };
-
-  const passiveForms = {
-    passive: conjugations.passive,
-    passiveNegative: conjugations.passiveNegative,
-    passivePast: conjugations.passivePast,
-    passivePastNegative: conjugations.passivePastNegative
-  };
-
-  const passivePoliteForms = {
-    passivePolite: conjugations.passivePolite,
-    passivePoliteNegative: conjugations.passivePoliteNegative,
-    passivePolitePast: conjugations.passivePolitePast,
-    passivePolitePastNegative: conjugations.passivePolitePastNegative
-  };
-
-  const causativeForms = {
-    causative: conjugations.causative,
-    causativeNegative: conjugations.causativeNegative,
-    causativePast: conjugations.causativePast,
-    causativePastNegative: conjugations.causativePastNegative
-  };
-
-  const causativePoliteForms = {
-    causativePolite: conjugations.causativePolite,
-    causativePoliteNegative: conjugations.causativePoliteNegative,
-    causativePolitePast: conjugations.causativePolitePast,
-    causativePolitePastNegative: conjugations.causativePolitePastNegative
-  };
-
-  const causativePassiveForms = {
-    causativePassive: conjugations.causativePassive,
-    causativePassiveNegative: conjugations.causativePassiveNegative,
-    causativePassivePast: conjugations.causativePassivePast,
-    causativePassivePastNegative: conjugations.causativePassivePastNegative
-  };
-
-  const causativePassivePoliteForms = {
-    causativePassivePolite: conjugations.causativePassivePolite,
-    causativePassivePoliteNegative: conjugations.causativePassivePoliteNegative,
-    causativePassivePolitePast: conjugations.causativePassivePolitePast,
-    causativePassivePolitePastNegative: conjugations.causativePassivePolitePastNegative
-  };
-
-  const taiForms = {
-    taiForm: conjugations.taiForm,
-    taiFormNegative: conjugations.taiFormNegative,
-    taiFormPast: conjugations.taiFormPast,
-    taiFormPastNegative: conjugations.taiFormPastNegative
-  };
-
-  const progressiveForms = {
-    progressive: conjugations.progressive,
-    progressivePolite: conjugations.progressivePolite,
-    progressiveNegative: conjugations.progressiveNegative,
-    progressivePoliteNegative: conjugations.progressivePoliteNegative
-  };
-
-  const requestForms = {
-    request: conjugations.request,
-    requestNegative: conjugations.requestNegative
-  };
-
-  const colloquialAndClassicalForms = {
-    colloquialNegative: conjugations.colloquialNegative,
-    formalNegative: conjugations.formalNegative,
-    classicalNegative: conjugations.classicalNegative
+function WordCard({ word, onSelect }: WordCardProps) {
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'Ichidan':
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      case 'Godan':
+        return 'bg-green-500/10 text-green-400 border-green-500/20';
+      case 'Irregular':
+        return 'bg-red-500/10 text-red-400 border-red-500/20';
+      case 'i-adjective':
+        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+      case 'na-adjective':
+        return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
+      default:
+        return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    }
   };
 
   return (
-    <div>
-      <button
-        onClick={onBack}
-        className="mb-6 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors flex items-center"
-      >
-        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        {strings.practice.backToList}
-      </button>
+    <div
+      onClick={() => onSelect(word)}
+      className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors cursor-pointer group"
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
+            {word.kanji}
+          </div>
+          <div className="text-lg japanese-text text-muted-foreground">
+            {word.kana}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {word.romaji}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className={`inline-block px-2 py-1 text-xs rounded border ${getTypeColor(word.type)}`}>
+            {word.type}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            {word.jlpt}
+          </div>
+        </div>
+      </div>
 
-      {/* Word Header */}
-      <div className="bg-card border border-border rounded-lg p-6 mb-6">
-        <div className="text-center mb-6">
-          <div className="text-4xl japanese-text font-medium text-card-foreground mb-2">
+      <div className="text-sm text-muted-foreground">
+        {word.meaning}
+      </div>
+    </div>
+  );
+}
+
+// Word Practice Component
+interface WordPracticeProps {
+  word: JapaneseWord;
+  onBack: () => void;
+}
+
+function WordPractice({ word, onBack }: WordPracticeProps) {
+  const [showRules, setShowRules] = useState(false);
+  const [showFurigana, setShowFurigana] = useState(false);
+
+  const conjugations = ConjugationEngine.conjugate(word);
+
+  const getFormDisplayName = (form: keyof ConjugationForms): string => {
+    return strings.conjugation.forms[form] || form;
+  };
+
+  const handleDrill = () => {
+    // Store the word in sessionStorage to be picked up by the drill page
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('drillWord', JSON.stringify(word));
+      window.location.href = '/drill';
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15,18 9,12 15,6"></polyline>
+          </svg>
+          {strings.common.back}
+        </button>
+
+        <button
+          onClick={handleDrill}
+          className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="5,3 19,12 5,21 5,3"></polygon>
+          </svg>
+          {strings.drill.title}
+        </button>
+      </div>
+
+      {/* Word Info */}
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <div className="text-6xl japanese-text font-medium text-foreground mb-4">
             {word.kanji}
           </div>
           <div className="text-2xl japanese-text text-muted-foreground mb-2">
@@ -403,268 +342,87 @@ function ConjugationView({
           <div className="text-lg text-muted-foreground mb-4">
             {word.romaji}
           </div>
-          <div className="text-xl text-foreground mb-4">
+          <div className="text-xl text-foreground mb-6">
             {word.meaning}
           </div>
-          <div className="flex items-center justify-center gap-3">
-            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full">
-              {strings.verbTypes[word.type.toLowerCase().replace('-', '') as keyof typeof strings.verbTypes] || word.type}
+          <div className="flex items-center justify-center gap-4">
+            <span className={`px-3 py-1 rounded-lg border text-sm ${
+              word.type === 'Ichidan' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+              word.type === 'Godan' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+              word.type === 'Irregular' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+              word.type === 'i-adjective' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+              word.type === 'na-adjective' ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' :
+              'bg-gray-500/10 text-gray-400 border-gray-500/20'
+            }`}>
+              {word.type}
             </span>
-            <span className="px-3 py-1 bg-secondary text-secondary-foreground rounded-full">
+            <span className="px-3 py-1 rounded-lg border bg-secondary/10 text-secondary border-secondary/20 text-sm">
               {word.jlpt}
             </span>
           </div>
         </div>
-      </div>
 
-      {/* Controls */}
-      <div className="mb-6 flex flex-wrap gap-4">
-        <button
-          onClick={onToggleRules}
-          className="text-primary hover:text-primary/80 transition-colors text-sm font-medium"
-        >
-          {showRules ? strings.drill.hideRules : strings.drill.showRules}
-        </button>
-        <button
-          onClick={() => setShowFurigana(!showFurigana)}
-          className="text-primary hover:text-primary/80 transition-colors text-sm font-medium"
-        >
-          {showFurigana ? 'Show Kanji' : 'Show Furigana'}
-        </button>
-      </div>
+        {/* Controls */}
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            onClick={() => setShowRules(!showRules)}
+            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+          >
+            {showRules ? strings.drill.hideRules : strings.drill.showRules}
+          </button>
+          <button
+            onClick={() => setShowFurigana(!showFurigana)}
+            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+          >
+            {showFurigana ? "Hide Furigana" : "Show Furigana"}
+          </button>
+        </div>
 
-      {/* Conjugation Tables */}
-      <div className="space-y-6">
-        <ConjugationTable
-          title="Basic Plain Forms"
-          forms={basicPlainForms}
-          word={word}
-          showRules={showRules}
-          showFurigana={showFurigana}
-        />
-
-        <ConjugationTable
-          title="Polite Forms"
-          forms={politeForms}
-          word={word}
-          showRules={showRules}
-          showFurigana={showFurigana}
-        />
-
-        {word.type !== 'i-adjective' && word.type !== 'na-adjective' && (
-          <>
-            <ConjugationTable
-              title="Stems and Te-Forms"
-              forms={stemsAndTeForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Imperative Forms"
-              forms={imperativeForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Progressive Forms"
-              forms={progressiveForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Request Forms"
-              forms={requestForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Conditional Forms"
-              forms={conditionalForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Potential Plain Forms"
-              forms={potentialForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Potential Polite Forms"
-              forms={potentialPoliteForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Passive Plain Forms"
-              forms={passiveForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Passive Polite Forms"
-              forms={passivePoliteForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Causative Plain Forms"
-              forms={causativeForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Causative Polite Forms"
-              forms={causativePoliteForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Causative Passive Plain Forms"
-              forms={causativePassiveForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Causative Passive Polite Forms"
-              forms={causativePassivePoliteForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Tai Forms (Want to do)"
-              forms={taiForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-
-            <ConjugationTable
-              title="Colloquial and Classical Forms"
-              forms={colloquialAndClassicalForms}
-              word={word}
-              showRules={showRules}
-              showFurigana={showFurigana}
-            />
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-interface ConjugationTableProps {
-  title: string;
-  forms: Record<string, string | undefined>;
-  word: JapaneseWord;
-  showRules: boolean;
-  showFurigana: boolean;
-}
-
-function ConjugationTable({ title, forms, word, showRules, showFurigana }: ConjugationTableProps) {
-  const hasValidForms = Object.values(forms).some(form => form);
-
-  if (!hasValidForms) {
-    return null;
-  }
-
-  // Function to convert kanji conjugation to kana equivalent
-  const convertToKana = (kanjiForm: string): string => {
-    if (!kanjiForm) return kanjiForm;
-
-    // If the word is already in kana only, return as is
-    if (word.kanji === word.kana) return kanjiForm;
-
-    // For verbs, replace the kanji stem with the kana stem
-    if (word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular') {
-      const kanjiStem = word.kanji.slice(0, -1);
-      const kanaStem = word.kana.slice(0, -1);
-
-      // Replace the kanji stem with kana stem
-      if (kanjiForm.startsWith(kanjiStem)) {
-        return kanjiForm.replace(kanjiStem, kanaStem);
-      }
-
-      // Handle special cases for irregular verbs
-      if (word.type === 'Irregular') {
-        if (word.kanji.includes('来') && kanjiForm.includes('来')) {
-          return kanjiForm.replace(/来/g, 'く');
-        }
-        if (word.kanji.endsWith('する') && kanjiForm.includes(word.kanji.slice(0, -2))) {
-          const kanjiPrefix = word.kanji.slice(0, -2);
-          const kanaPrefix = word.kana.slice(0, -2);
-          return kanjiForm.replace(kanjiPrefix, kanaPrefix);
-        }
-      }
-    }
-
-    // For adjectives and other types, simple replacement
-    if (kanjiForm.includes(word.kanji)) {
-      return kanjiForm.replace(word.kanji, word.kana);
-    }
-
-    // Fallback: return original if no conversion possible
-    return kanjiForm;
-  };
-
-  return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
-      <div className="bg-muted p-3 border-b border-border">
-        <h3 className="font-medium text-foreground">{title}</h3>
-      </div>
-      <div className="divide-y divide-border">
-        {Object.entries(forms).map(([key, value]) => {
-          if (!value) return null;
-
-          const formKey = key as keyof ConjugationForms;
-          const rule = showRules ? ConjugationEngine.getConjugationRule(word.type, formKey) : null;
-
-          return (
-            <div key={key} className="p-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between">
-                <div className="mb-2 md:mb-0">
-                  <div className="text-sm text-muted-foreground mb-1">
-                    {strings.conjugation.forms[formKey as keyof typeof strings.conjugation.forms] || key}
-                  </div>
-                  <div className="text-xl japanese-text font-medium text-foreground">
-                    {showFurigana ? convertToKana(value) : value}
-                  </div>
-                </div>
-                {showRules && rule && (
-                  <div className="bg-muted p-2 rounded text-sm text-muted-foreground max-w-md">
-                    {rule}
-                  </div>
-                )}
-              </div>
+        {/* Rules */}
+        {showRules && (
+          <div className="bg-card border border-border rounded-lg p-6 mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-card-foreground">
+              {strings.verbTypes[word.type.toLowerCase().replace('-', '') as keyof typeof strings.verbTypes]} Rules
+            </h3>
+            <div className="text-muted-foreground">
+              {/* Add conjugation rules here based on word type */}
+              <p>Conjugation rules for {word.type} will be displayed here.</p>
             </div>
-          );
-        })}
+          </div>
+        )}
+
+        {/* Conjugations */}
+        <div className="bg-card border border-border rounded-lg p-6 mb-20">
+          <h3 className="text-xl font-semibold mb-6 text-card-foreground">
+            Conjugation Forms
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Object.entries(conjugations).map(([form, conjugation], index) => {
+              if (!conjugation) return null;
+
+              return (
+                <div
+                  key={form}
+                  className="p-4 bg-background/50 border border-border/50 rounded-lg hover:bg-background/80 transition-colors"
+                >
+                  <div className="text-sm font-medium text-muted-foreground mb-2">
+                    {getFormDisplayName(form as keyof ConjugationForms)}
+                  </div>
+                  <div className="text-2xl japanese-text font-medium text-primary mb-1">
+                    {conjugation}
+                  </div>
+                  {showFurigana && (
+                    <div className="text-sm japanese-text text-muted-foreground">
+                      {/* Add furigana here if needed */}
+                      {conjugation}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

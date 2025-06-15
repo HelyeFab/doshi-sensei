@@ -25,7 +25,7 @@ export const strings = {
   // Practice Screen
   practice: {
     title: "Practice Mode",
-    selectWord: "Select a word to practice",
+    selectWord: "Select a verb or adjective to practice",
     showConjugations: "Show All Conjugations",
     backToList: "Back to List"
   },

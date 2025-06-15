@@ -13,7 +13,19 @@ export interface JapaneseWord {
   meaning: string;
   type: WordType;
   jlpt: JLPTLevel;
-  tags?: string[];
+  tags: string[];
+  // Enhanced fields for JMdict
+  allKanji?: string[];
+  allReadings?: string[];
+  katakanaReadings?: string[];
+  detailedMeaning?: {
+    partOfSpeech: string[];
+    glosses: string[];
+    examples: string[];
+  }[];
+  priority?: string;
+  examples?: string[];
+  frequency?: number;
 }
 
 // Conjugation Forms

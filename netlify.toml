@@ -1,8 +1,8 @@
 [build]
   command = "CI=false npm run build"
-  publish = ".next"
+  publish = "out"
 
 [[redirects]]
   from = "/*"
-  to = "/"
+  to = "/index.html"
   status = 200

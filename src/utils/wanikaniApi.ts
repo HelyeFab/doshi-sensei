@@ -80,25 +80,35 @@ function determineWordType(partsOfSpeech: string[] | undefined): WordType {
     return 'other'; // Default to other instead of verb
   }
 
-  const pos = partsOfSpeech.join(' ').toLowerCase();
+  const posArray = partsOfSpeech.map(p => p.toLowerCase());
+  const pos = posArray.join(' ');
 
-  // Check for verbs first
-  if (pos.includes('ichidan') || pos.includes('ru verb')) {
+  // Check for verbs first (highest priority for conjugation)
+  if (pos.includes('ichidan') || pos.includes('ru verb') || pos.includes('る verb')) {
     return 'Ichidan';
-  } else if (pos.includes('godan') || pos.includes('u verb')) {
+  } else if (pos.includes('godan') || pos.includes('u verb') || pos.includes('う verb')) {
     return 'Godan';
-  } else if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb')) {
+  } else if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb') || pos.includes('する verb') || pos.includes('来る verb')) {
     return 'Irregular';
   }
 
-  // Check for adjectives
-  else if (pos.includes('i-adjective') || pos.includes('い-adjective')) {
+  // Check for TRUE i-adjectives only (standalone, conjugatable adjectives)
+  else if (
+    (posArray.includes('i adjective') || posArray.includes('う adjective') || posArray.includes('i-adjective') || posArray.includes('い adjective') || posArray.includes('い-adjective')) &&
+    !pos.includes('noun') // Exclude "noun, い adjective" combinations
+  ) {
     return 'i-adjective';
-  } else if (pos.includes('na-adjective') || pos.includes('な-adjective')) {
+  }
+
+  // Check for TRUE na-adjectives only (standalone, conjugatable adjectives)
+  else if (
+    (posArray.includes('な adjective') || posArray.includes('na adjective') || posArray.includes('na-adjective') || posArray.includes('な-adjective')) &&
+    !pos.includes('noun') // Exclude "noun, な adjective" combinations like 大人
+  ) {
     return 'na-adjective';
   }
 
-  // Check for nouns
+  // Check for nouns (including "noun, adjective" combinations)
   else if (pos.includes('noun') || pos.includes('counter') || pos.includes('suffix') || pos.includes('prefix')) {
     return 'noun';
   }
@@ -222,6 +232,34 @@ export async function fetchWanikaniVocabulary(limit: number = 20): Promise<Japan
   }
 }
 
+// Fetch all vocabulary with pagination
+async function fetchAllWanikaniVocabulary(): Promise<WanikaniSubject[]> {
+  const allVocabulary: WanikaniSubject[] = [];
+  let nextUrl: string | null = '/subjects?types=vocabulary&hidden=false';
+
+  while (nextUrl) {
+    try {
+      const response: { data: WanikaniApiResponse<WanikaniSubject> } = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>(nextUrl);
+      allVocabulary.push(...response.data.data);
+      nextUrl = response.data.pages.next_url;
+
+      // Log progress
+      console.log(`Fetched ${allVocabulary.length} vocabulary items so far...`);
+
+      // Remove the base URL from next_url if present
+      if (nextUrl && nextUrl.startsWith('https://api.wanikani.com/v2')) {
+        nextUrl = nextUrl.replace('https://api.wanikani.com/v2', '');
+      }
+    } catch (error) {
+      console.error('Error fetching vocabulary page:', error);
+      break;
+    }
+  }
+
+  console.log(`Total vocabulary items fetched: ${allVocabulary.length}`);
+  return allVocabulary;
+}
+
 // Search vocabulary in WaniKani API
 export async function searchWanikaniVocabulary(query: string, limit: number = 20): Promise<JapaneseWord[]> {
   try {
@@ -231,12 +269,72 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 20
       return [];
     }
 
-    // Fetch all vocabulary (WaniKani API doesn't support direct search)
+    // Fetch all vocabulary with pagination
+    console.log('Fetching all vocabulary from WaniKani (this may take a moment)...');
+    const allVocabularySubjects = await fetchAllWanikaniVocabulary();
+
+    // Convert WaniKani subjects to JapaneseWord format
+    const allWords = allVocabularySubjects
+      .map(convertWanikaniSubject)
+      .filter((word): word is JapaneseWord => word !== null);
+
+    const queryLower = query.toLowerCase().trim();
+
+    // First, look for exact matches
+    const exactMatches = allWords.filter(word => {
+      // Exact match on kanji
+      if (word.kanji.toLowerCase() === queryLower) return true;
+
+      // Exact match on kana
+      if (word.kana.toLowerCase() === queryLower) return true;
+
+      // Exact match on romaji
+      if (word.romaji.toLowerCase() === queryLower) return true;
+
+      // Exact match as complete word in meanings (comma or space separated)
+      const meanings = word.meaning.toLowerCase().split(/[,\s]+/).map(m => m.trim());
+      if (meanings.includes(queryLower)) return true;
+
+      return false;
+    });
+
+    // If we found exact matches, return them
+    if (exactMatches.length > 0) {
+      console.log(`Found ${exactMatches.length} exact matches for "${query}"`);
+      return exactMatches.slice(0, limit);
+    }
+
+    // Otherwise, fall back to partial matches but be more selective
+    const partialMatches = allWords.filter(word =>
+      word.kanji.includes(query) ||
+      word.kana.includes(query) ||
+      word.meaning.toLowerCase().includes(queryLower)
+    );
+
+    console.log(`Found ${partialMatches.length} partial matches for "${query}"`);
+    return partialMatches.slice(0, limit);
+  } catch (error) {
+    console.error('Error searching vocabulary in WaniKani:', error);
+    return [];
+  }
+}
+
+// Get common verbs and adjectives from WaniKani
+export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
+  try {
+    // Check if API token is set
+    if (!wanikaniAxios.defaults.headers.common['Authorization']) {
+      console.warn('WaniKani API token not set');
+      return [];
+    }
+
+    // Fetch all vocabulary
     const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
       params: {
         types: 'vocabulary',
         hidden: false,
-        limit: 100 // Fetch more to allow for filtering
+        levels: '1,2,3,4,5,6,7,8,9,10', // Expanded range for better variety
+        limit: 200 // Increased limit for more diversity
       }
     });
 
@@ -245,21 +343,51 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 20
       .map(convertWanikaniSubject)
       .filter((word): word is JapaneseWord => word !== null);
 
-    // Filter words based on query
-    const filteredWords = allWords.filter(word =>
-      word.kanji.includes(query) ||
-      word.kana.includes(query) ||
-      word.meaning.toLowerCase().includes(query.toLowerCase())
+    // Debug: Log all parts of speech we're getting from WaniKani
+    const allPartsOfSpeech = new Set<string>();
+    response.data.data.forEach(subject => {
+      if (subject.data.parts_of_speech) {
+        subject.data.parts_of_speech.forEach(pos => allPartsOfSpeech.add(pos));
+      }
+    });
+    console.log('All parts of speech from WaniKani:', Array.from(allPartsOfSpeech).sort());
+
+    // Debug: Log some examples with their parts of speech
+    console.log('Sample words with parts of speech:');
+    allWords.slice(0, 10).forEach(word => {
+      const originalSubject = response.data.data.find(s => s.id === parseInt(word.id.replace('wanikani-', '')));
+      console.log(`${word.kanji} (${word.kana}) - ${word.type} - Parts: [${originalSubject?.data.parts_of_speech?.join(', ') || 'none'}]`);
+    });
+
+    // Filter for verbs and adjectives only
+    const practiceWords = allWords.filter(word =>
+      word.type === 'Ichidan' ||
+      word.type === 'Godan' ||
+      word.type === 'Irregular' ||
+      word.type === 'i-adjective' ||
+      word.type === 'na-adjective'
     );
 
-    return filteredWords.slice(0, limit);
+    console.log(`Found ${practiceWords.length} verbs and adjectives from WaniKani`);
+
+    // Log breakdown by type for debugging
+    const breakdown = {
+      ichidan: practiceWords.filter(w => w.type === 'Ichidan').length,
+      godan: practiceWords.filter(w => w.type === 'Godan').length,
+      irregular: practiceWords.filter(w => w.type === 'Irregular').length,
+      iAdjective: practiceWords.filter(w => w.type === 'i-adjective').length,
+      naAdjective: practiceWords.filter(w => w.type === 'na-adjective').length
+    };
+    console.log('WaniKani word type breakdown:', breakdown);
+
+    return practiceWords.slice(0, 50); // Return top 50 words (mixed verbs and adjectives)
   } catch (error) {
-    console.error('Error searching vocabulary in WaniKani:', error);
+    console.error('Error fetching common verbs and adjectives from WaniKani:', error);
     return [];
   }
 }
 
-// Get common verbs from WaniKani
+// Get common verbs from WaniKani (kept for backward compatibility)
 export async function getCommonVerbsFromWanikani(): Promise<JapaneseWord[]> {
   try {
     // Check if API token is set

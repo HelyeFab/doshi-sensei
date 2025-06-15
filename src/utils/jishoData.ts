@@ -279,27 +279,242 @@ export const commonVerbsData = {
   ]
 };
 
-// Function to get fallback data based on query
+// Common vocabulary with exact English matches
+export const commonVocabData = {
+  "meta": {
+    "status": 200
+  },
+  "data": [
+    {
+      "slug": "猫",
+      "is_common": true,
+      "tags": [],
+      "jlpt": [
+        "jlpt-n5"
+      ],
+      "japanese": [
+        {
+          "word": "猫",
+          "reading": "ねこ"
+        }
+      ],
+      "senses": [
+        {
+          "english_definitions": [
+            "cat"
+          ],
+          "parts_of_speech": [
+            "Noun"
+          ],
+          "links": [],
+          "tags": [],
+          "restrictions": [],
+          "see_also": [],
+          "antonyms": [],
+          "source": [],
+          "info": []
+        }
+      ],
+      "attribution": {
+        "jmdict": true,
+        "jmnedict": false,
+        "dbpedia": false
+      }
+    },
+    {
+      "slug": "台所",
+      "is_common": true,
+      "tags": [],
+      "jlpt": [
+        "jlpt-n5"
+      ],
+      "japanese": [
+        {
+          "word": "台所",
+          "reading": "だいどころ"
+        }
+      ],
+      "senses": [
+        {
+          "english_definitions": [
+            "kitchen"
+          ],
+          "parts_of_speech": [
+            "Noun"
+          ],
+          "links": [],
+          "tags": [],
+          "restrictions": [],
+          "see_also": [],
+          "antonyms": [],
+          "source": [],
+          "info": []
+        }
+      ],
+      "attribution": {
+        "jmdict": true,
+        "jmnedict": false,
+        "dbpedia": false
+      }
+    },
+    {
+      "slug": "犬",
+      "is_common": true,
+      "tags": [],
+      "jlpt": [
+        "jlpt-n5"
+      ],
+      "japanese": [
+        {
+          "word": "犬",
+          "reading": "いぬ"
+        }
+      ],
+      "senses": [
+        {
+          "english_definitions": [
+            "dog"
+          ],
+          "parts_of_speech": [
+            "Noun"
+          ],
+          "links": [],
+          "tags": [],
+          "restrictions": [],
+          "see_also": [],
+          "antonyms": [],
+          "source": [],
+          "info": []
+        }
+      ],
+      "attribution": {
+        "jmdict": true,
+        "jmnedict": false,
+        "dbpedia": false
+      }
+    },
+    {
+      "slug": "本",
+      "is_common": true,
+      "tags": [],
+      "jlpt": [
+        "jlpt-n5"
+      ],
+      "japanese": [
+        {
+          "word": "本",
+          "reading": "ほん"
+        }
+      ],
+      "senses": [
+        {
+          "english_definitions": [
+            "book"
+          ],
+          "parts_of_speech": [
+            "Noun"
+          ],
+          "links": [],
+          "tags": [],
+          "restrictions": [],
+          "see_also": [],
+          "antonyms": [],
+          "source": [],
+          "info": []
+        }
+      ],
+      "attribution": {
+        "jmdict": true,
+        "jmnedict": false,
+        "dbpedia": false
+      }
+    },
+    {
+      "slug": "水",
+      "is_common": true,
+      "tags": [],
+      "jlpt": [
+        "jlpt-n5"
+      ],
+      "japanese": [
+        {
+          "word": "水",
+          "reading": "みず"
+        }
+      ],
+      "senses": [
+        {
+          "english_definitions": [
+            "water"
+          ],
+          "parts_of_speech": [
+            "Noun"
+          ],
+          "links": [],
+          "tags": [],
+          "restrictions": [],
+          "see_also": [],
+          "antonyms": [],
+          "source": [],
+          "info": []
+        }
+      ],
+      "attribution": {
+        "jmdict": true,
+        "jmnedict": false,
+        "dbpedia": false
+      }
+    }
+  ]
+};
+
+// Function to get fallback data based on exact query matches only
 export function getFallbackData(query: string) {
   // Convert query to lowercase for case-insensitive matching
-  const lowerQuery = query.toLowerCase();
+  const lowerQuery = query.toLowerCase().trim();
 
-  // Check if query contains "house" or related terms
-  if (lowerQuery.includes('house') || lowerQuery.includes('home') ||
-      lowerQuery.includes('いえ') || lowerQuery.includes('家') ||
-      lowerQuery.includes('うち')) {
-    return jishoHouseData;
-  }
+  // Only return results for exact matches - no partial matches or unrelated words
+  const exactMatches: { [key: string]: any } = {
+    // House related
+    'house': jishoHouseData,
+    'home': jishoHouseData,
+    'いえ': jishoHouseData,
+    '家': jishoHouseData,
+    'うち': jishoHouseData,
 
-  // For common verbs or general queries
-  if (lowerQuery.includes('verb') || lowerQuery.includes('common') ||
-      lowerQuery === 'する' || lowerQuery === 'たべる' || lowerQuery === 'のむ' ||
-      lowerQuery === '食べる' || lowerQuery === '飲む') {
-    return commonVerbsData;
-  }
+    // Animals
+    'cat': { meta: { status: 200 }, data: [commonVocabData.data[0]] }, // Just the cat entry
+    'dog': { meta: { status: 200 }, data: [commonVocabData.data[2]] }, // Just the dog entry
+    'ねこ': { meta: { status: 200 }, data: [commonVocabData.data[0]] },
+    'いぬ': { meta: { status: 200 }, data: [commonVocabData.data[2]] },
+    '猫': { meta: { status: 200 }, data: [commonVocabData.data[0]] },
+    '犬': { meta: { status: 200 }, data: [commonVocabData.data[2]] },
 
-  // Default to empty results if no match
-  return {
+    // Kitchen
+    'kitchen': { meta: { status: 200 }, data: [commonVocabData.data[1]] }, // Just the kitchen entry
+    'だいどころ': { meta: { status: 200 }, data: [commonVocabData.data[1]] },
+    '台所': { meta: { status: 200 }, data: [commonVocabData.data[1]] },
+
+    // Book
+    'book': { meta: { status: 200 }, data: [commonVocabData.data[3]] }, // Just the book entry
+    'ほん': { meta: { status: 200 }, data: [commonVocabData.data[3]] },
+    '本': { meta: { status: 200 }, data: [commonVocabData.data[3]] },
+
+    // Water
+    'water': { meta: { status: 200 }, data: [commonVocabData.data[4]] }, // Just the water entry
+    'みず': { meta: { status: 200 }, data: [commonVocabData.data[4]] },
+    '水': { meta: { status: 200 }, data: [commonVocabData.data[4]] },
+
+    // Verbs
+    'する': commonVerbsData,
+    'たべる': commonVerbsData,
+    'のむ': commonVerbsData,
+    '食べる': commonVerbsData,
+    '飲む': commonVerbsData
+  };
+
+  // Return exact match if found, otherwise empty results
+  return exactMatches[lowerQuery] || {
     meta: { status: 200 },
     data: []
   };

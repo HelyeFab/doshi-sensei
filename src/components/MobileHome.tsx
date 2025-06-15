@@ -8,19 +8,19 @@ export default function MobileHome() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 pb-24">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mr-4">
-            <span className="text-3xl font-bold text-primary-foreground japanese-text">動</span>
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center mb-3">
+          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mr-3">
+            <span className="text-xl font-bold text-primary-foreground japanese-text">動</span>
           </div>
-          <h1 className="text-4xl font-bold text-foreground app-name">
+          <h1 className="text-2xl font-bold text-foreground app-name">
             {strings.appName}
           </h1>
         </div>
-        <p className="text-lg text-muted-foreground japanese-text mb-6">
+        <p className="text-sm text-muted-foreground japanese-text mb-4">
           動詞 先生
         </p>
-        <p className="text-base text-muted-foreground max-w-sm mx-auto">
+        <p className="text-sm text-muted-foreground max-w-xs mx-auto">
           {strings.home.subtitle}
         </p>
       </div>

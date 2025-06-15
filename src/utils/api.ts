@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { JishoAPIResponse, JishoWord, JapaneseWord, WordType, JLPTLevel } from '@/types';
+// WaniKani imports - primary dictionary source
 import {
   setWanikaniApiToken,
   searchWanikaniVocabulary,
   getCommonVerbsFromWanikani,
+  getCommonWordsFromWanikani,
   getWordsByJLPTLevelFromWanikani
 } from './wanikaniApi';
-import { getFallbackData } from './jishoData';
 
-// Initialize WaniKani API with token from environment variables
+// WaniKani API initialization - uncommented for primary use
 const initWanikaniApi = () => {
   // Check for server-side environment variables
   if (typeof process !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
@@ -47,12 +48,14 @@ initWanikaniApi();
 // Jisho API base URL (used as fallback)
 const JISHO_API_BASE = 'https://jisho.org/api/v1/search/words';
 
-// Create a custom axios instance with CORS proxy for Jisho API (used as fallback)
+// Netlify function proxy endpoint for Jisho API (used as fallback)
+const JISHO_PROXY_BASE = '/.netlify/functions/jisho-proxy';
+
+// Create a custom axios instance for Jisho proxy (used as fallback)
 const jishoAxios = axios.create({
-  baseURL: 'https://cors-anywhere.herokuapp.com/https://jisho.org/api/v1/search/words',
+  baseURL: JISHO_PROXY_BASE,
   headers: {
-    'X-Requested-With': 'XMLHttpRequest',
-    'Origin': typeof window !== 'undefined' ? window.location.origin : ''
+    'Content-Type': 'application/json'
   }
 });
 
@@ -164,58 +167,217 @@ function generateRomaji(kana: string): string {
   return result;
 }
 
-// Search words using WaniKani API (with fallback to Jisho API)
-export async function searchWords(query: string, limit: number = 20): Promise<JapaneseWord[]> {
-  try {
-    // First try with WaniKani API
-    console.log(`Searching for "${query}" using WaniKani API`);
-    const wanikaniResults = await searchWanikaniVocabulary(query, limit);
+// Find exact match in search results
+function findExactMatch(words: JapaneseWord[], query: string): JapaneseWord | null {
+  const queryLower = query.toLowerCase().trim();
 
-    if (wanikaniResults.length > 0) {
-      console.log(`Found ${wanikaniResults.length} results from WaniKani API`);
-      return wanikaniResults;
+  // Check for exact matches in order of priority
+  for (const word of words) {
+    // Exact match on kanji
+    if (word.kanji.toLowerCase() === queryLower) {
+      return word;
     }
 
-    console.log('No results from WaniKani API, trying Jisho API');
+    // Exact match on kana
+    if (word.kana.toLowerCase() === queryLower) {
+      return word;
+    }
 
-    // If WaniKani API returns no results, try Jisho API
-    try {
-      const response = await axios.get<JishoAPIResponse>(`${JISHO_API_BASE}?keyword=${encodeURIComponent(query)}`);
+    // Exact match on romaji
+    if (word.romaji.toLowerCase() === queryLower) {
+      return word;
+    }
 
-      if (response.data.meta.status !== 200) {
-        throw new Error('API request failed');
-      }
+    // Exact match as the primary meaning (first in comma-separated list)
+    const meanings = word.meaning.toLowerCase().split(',').map(m => m.trim());
+    if (meanings[0] === queryLower) {
+      return word;
+    }
 
-      return processJishoResponse(response.data, limit);
-    } catch (directError) {
-      console.warn('Direct Jisho API call failed, trying with CORS proxy:', directError);
+    // Exact match as any complete meaning in comma-separated list
+    if (meanings.includes(queryLower)) {
+      return word;
+    }
+  }
 
-      // If direct call fails, try with CORS proxy
+  return null;
+}
+
+// Prioritize exact matches in search results
+function prioritizeExactMatches(words: JapaneseWord[], query: string): JapaneseWord[] {
+  const queryLower = query.toLowerCase();
+
+  return words.sort((a, b) => {
+    // Exact match on kanji gets highest priority
+    const aKanjiExact = a.kanji.toLowerCase() === queryLower;
+    const bKanjiExact = b.kanji.toLowerCase() === queryLower;
+    if (aKanjiExact && !bKanjiExact) return -1;
+    if (!aKanjiExact && bKanjiExact) return 1;
+
+    // Exact match on kana gets second priority
+    const aKanaExact = a.kana.toLowerCase() === queryLower;
+    const bKanaExact = b.kana.toLowerCase() === queryLower;
+    if (aKanaExact && !bKanaExact) return -1;
+    if (!aKanaExact && bKanaExact) return 1;
+
+    // Exact match on romaji gets third priority
+    const aRomajiExact = a.romaji.toLowerCase() === queryLower;
+    const bRomajiExact = b.romaji.toLowerCase() === queryLower;
+    if (aRomajiExact && !bRomajiExact) return -1;
+    if (!aRomajiExact && bRomajiExact) return 1;
+
+    // For English searches, prioritize words where the query is a complete word in meaning
+    const aMeaningWords = a.meaning.toLowerCase().split(/[,\s]+/).map(w => w.trim());
+    const bMeaningWords = b.meaning.toLowerCase().split(/[,\s]+/).map(w => w.trim());
+    const aExactMeaningWord = aMeaningWords.includes(queryLower);
+    const bExactMeaningWord = bMeaningWords.includes(queryLower);
+    if (aExactMeaningWord && !bExactMeaningWord) return -1;
+    if (!aExactMeaningWord && bExactMeaningWord) return 1;
+
+    // Exact match in meaning gets fourth priority (for comma-separated meanings)
+    const aMeaningExact = a.meaning.toLowerCase().split(', ').includes(queryLower);
+    const bMeaningExact = b.meaning.toLowerCase().split(', ').includes(queryLower);
+    if (aMeaningExact && !bMeaningExact) return -1;
+    if (!aMeaningExact && bMeaningExact) return 1;
+
+    // Prioritize meanings that start with the query
+    const aMeaningStarts = a.meaning.toLowerCase().startsWith(queryLower);
+    const bMeaningStarts = b.meaning.toLowerCase().startsWith(queryLower);
+    if (aMeaningStarts && !bMeaningStarts) return -1;
+    if (!aMeaningStarts && bMeaningStarts) return 1;
+
+    // Prioritize shorter meanings (more likely to be the primary meaning)
+    if (a.meaning.length !== b.meaning.length) {
+      return a.meaning.length - b.meaning.length;
+    }
+
+    // Words that start with the query get higher priority than those that just contain it
+    const aKanjiStarts = a.kanji.toLowerCase().startsWith(queryLower);
+    const bKanjiStarts = b.kanji.toLowerCase().startsWith(queryLower);
+    if (aKanjiStarts && !bKanjiStarts) return -1;
+    if (!aKanjiStarts && bKanjiStarts) return 1;
+
+    const aKanaStarts = a.kana.toLowerCase().startsWith(queryLower);
+    const bKanaStarts = b.kana.toLowerCase().startsWith(queryLower);
+    if (aKanaStarts && !bKanaStarts) return -1;
+    if (!aKanaStarts && bKanaStarts) return 1;
+
+    const aRomajiStarts = a.romaji.toLowerCase().startsWith(queryLower);
+    const bRomajiStarts = b.romaji.toLowerCase().startsWith(queryLower);
+    if (aRomajiStarts && !bRomajiStarts) return -1;
+    if (!aRomajiStarts && bRomajiStarts) return 1;
+
+    // Shorter words get priority (more likely to be the exact word they're looking for)
+    if (a.kanji.length !== b.kanji.length) {
+      return a.kanji.length - b.kanji.length;
+    }
+
+    // Keep original order for same priority
+    return 0;
+  });
+}
+
+// Search words using preferred source with fallback
+export async function searchWords(query: string, limit: number = 20, preferredSource: 'wanikani' | 'jisho' = 'wanikani'): Promise<JapaneseWord[]> {
+  try {
+    if (preferredSource === 'jisho') {
+      // Primary search with Jisho API when preferred
       try {
-        const proxyResponse = await jishoAxios.get<JishoAPIResponse>(`?keyword=${encodeURIComponent(query)}`);
+        console.log(`Searching for "${query}" using Jisho API (preferred)`);
+        const jishoResponse = await searchJisho(query);
+        const jishoResults = processJishoResponse(jishoResponse, limit);
 
-        if (proxyResponse.data.meta.status !== 200) {
-          throw new Error('API request with proxy failed');
+        if (jishoResults.length > 0) {
+          console.log(`Found ${jishoResults.length} results from Jisho API`);
+
+          // Check for exact matches first
+          const exactMatch = findExactMatch(jishoResults, query);
+          if (exactMatch) {
+            console.log(`Found exact match from Jisho: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
+            return [exactMatch];
+          }
+
+          return prioritizeExactMatches(jishoResults, query);
         }
 
-        return processJishoResponse(proxyResponse.data, limit);
-      } catch (proxyError) {
-        console.warn('CORS proxy call failed, using local fallback data:', proxyError);
+        console.log('No results from Jisho API, trying WaniKani fallback');
+      } catch (error) {
+        console.error('Jisho search failed, trying WaniKani fallback:', error);
+      }
 
-        // If both direct and proxy calls fail, use local fallback data
-        const fallbackData = getFallbackData(query);
-        console.log('Using fallback data for query:', query);
-        return processJishoResponse(fallbackData, limit);
+      // Fallback to WaniKani when Jisho is preferred but fails
+      try {
+        console.log(`Fallback: Searching for "${query}" using WaniKani API`);
+        const wanikaniResults = await searchWanikaniVocabulary(query, limit);
+
+        if (wanikaniResults.length > 0) {
+          console.log(`Found ${wanikaniResults.length} results from WaniKani fallback`);
+
+          // Check for exact matches first
+          const exactMatch = findExactMatch(wanikaniResults, query);
+          if (exactMatch) {
+            console.log(`Found exact match from WaniKani: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
+            return [exactMatch];
+          }
+
+          return prioritizeExactMatches(wanikaniResults, query);
+        }
+      } catch (wanikaniError) {
+        console.error('WaniKani fallback also failed:', wanikaniError);
+      }
+    } else {
+      // Primary search with WaniKani API when preferred (default behavior)
+      try {
+        console.log(`Searching for "${query}" using WaniKani API (preferred)`);
+        const wanikaniResults = await searchWanikaniVocabulary(query, limit);
+
+        if (wanikaniResults.length > 0) {
+          console.log(`Found ${wanikaniResults.length} results from WaniKani API`);
+
+          // Check for exact matches first
+          const exactMatch = findExactMatch(wanikaniResults, query);
+          if (exactMatch) {
+            console.log(`Found exact match: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
+            return [exactMatch];
+          }
+
+          return prioritizeExactMatches(wanikaniResults, query);
+        }
+
+        console.log('No results from WaniKani API, trying Jisho fallback');
+      } catch (error) {
+        console.error('WaniKani search failed, trying Jisho fallback:', error);
+      }
+
+      // Fallback search with Jisho API when WaniKani is preferred but fails
+      try {
+        console.log(`Fallback: Searching for "${query}" using Jisho API`);
+        const jishoResponse = await searchJisho(query);
+        const jishoResults = processJishoResponse(jishoResponse, limit);
+
+        if (jishoResults.length > 0) {
+          console.log(`Found ${jishoResults.length} results from Jisho fallback`);
+
+          // Check for exact matches first
+          const exactMatch = findExactMatch(jishoResults, query);
+          if (exactMatch) {
+            console.log(`Found exact match from Jisho: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
+            return [exactMatch];
+          }
+
+          return prioritizeExactMatches(jishoResults, query);
+        }
+      } catch (jishoError) {
+        console.error('Jisho search also failed:', jishoError);
       }
     }
+
+    console.log('No results from any search method');
+    return [];
+
   } catch (error) {
-    console.error('All methods to fetch data failed:', error);
-    // Return filtered mock data based on query as last resort
-    return mockWords.filter(word =>
-      word.kanji.includes(query) ||
-      word.kana.includes(query) ||
-      word.meaning.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, limit);
+    console.error('All search methods failed:', error);
+    return [];
   }
 }
 
@@ -240,19 +402,136 @@ function processJishoResponse(data: JishoAPIResponse, limit: number): JapaneseWo
 // Mock data for when API calls fail - minimal fallback
 const mockWords: JapaneseWord[] = [];
 
-// Get common verbs for practice using WaniKani API
-export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]> {
+// Get common words (verbs and adjectives) for practice - WaniKani primary, Jisho fallback
+export async function getCommonWordsForPractice(limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    // First try with WaniKani API
-    console.log('Fetching common verbs from WaniKani API');
-    const wanikaniResults = await getCommonVerbsFromWanikani();
+    // WaniKani approach - primary
+    try {
+      console.log('Fetching common verbs and adjectives from WaniKani API');
+      const wanikaniResults = await getCommonWordsFromWanikani();
 
-    if (wanikaniResults.length > 0) {
-      console.log(`Found ${wanikaniResults.length} common verbs from WaniKani API`);
-      return wanikaniResults;
+      if (wanikaniResults.length > 0) {
+        console.log(`Found ${wanikaniResults.length} common words from WaniKani API`);
+        return wanikaniResults;
+      }
+
+      console.log('No results from WaniKani API, trying Jisho API with common tag');
+    } catch (error) {
+      console.error('WaniKani API failed, trying Jisho fallback:', error);
     }
 
-    console.log('No results from WaniKani API, trying Jisho API with common tag');
+    console.log('Fetching common words using Jisho fallback');
+
+    // Try using Jisho API with common tag
+    try {
+      const jishoResults = await searchJishoCommon(limit);
+
+      if (jishoResults.length > 0) {
+        console.log(`Found ${jishoResults.length} common words from Jisho API`);
+
+        // Filter for verbs and adjectives only
+        const practiceWords = jishoResults.filter(word =>
+          word.type === 'Ichidan' ||
+          word.type === 'Godan' ||
+          word.type === 'Irregular' ||
+          word.type === 'i-adjective' ||
+          word.type === 'na-adjective'
+        );
+
+        if (practiceWords.length > 0) {
+          console.log(`Found ${practiceWords.length} common verbs and adjectives from Jisho API`);
+          return practiceWords;
+        }
+      }
+
+      console.log('No results from Jisho API with common tag, using fallback method');
+
+      // If Jisho API with common tag returns no results, use fallback method
+      const commonWordQueries = [
+        'common verbs',
+        'common adjectives',
+        'する',
+        'いる',
+        'ある',
+        '行く',
+        '来る',
+        '食べる',
+        '飲む',
+        '見る',
+        '聞く',
+        '話す',
+        '読む',
+        '書く',
+        '買う',
+        '売る',
+        '作る',
+        '大きい',
+        '小さい',
+        '高い',
+        '安い',
+        '新しい',
+        '古い',
+        '美しい',
+        '綺麗',
+        '便利',
+        '簡単'
+      ];
+
+      const allWords: JapaneseWord[] = [];
+      const queriesPromises = commonWordQueries.slice(0, 8).map(query =>
+        searchWords(query, 8).catch(err => {
+          console.warn(`Error fetching words for query "${query}":`, err);
+          return [];
+        })
+      );
+
+      const results = await Promise.all(queriesPromises);
+      results.forEach(words => allWords.push(...words));
+
+      // Remove duplicates based on kanji
+      const uniqueWords = allWords.filter((word, index, self) =>
+        index === self.findIndex(w => w.kanji === word.kanji)
+      );
+
+      // Filter for practice-relevant words (verbs and adjectives)
+      const practiceWords = uniqueWords.filter(word =>
+        word.type === 'Ichidan' ||
+        word.type === 'Godan' ||
+        word.type === 'Irregular' ||
+        word.type === 'i-adjective' ||
+        word.type === 'na-adjective'
+      );
+
+      return practiceWords.slice(0, 50); // Return top 50 unique words
+    } catch (jishoError) {
+      console.error('Error fetching common words from Jisho API:', jishoError);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching common words for practice:', error);
+    return [];
+  }
+}
+
+// Get common verbs for practice - WaniKani primary, Jisho fallback
+export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]> {
+  try {
+    // WaniKani approach - primary
+    try {
+      console.log('Fetching common verbs from WaniKani API');
+      const wanikaniResults = await getCommonVerbsFromWanikani();
+
+      if (wanikaniResults.length > 0) {
+        console.log(`Found ${wanikaniResults.length} common verbs from WaniKani API`);
+        return wanikaniResults;
+      }
+
+      console.log('No results from WaniKani API, trying Jisho API with common tag');
+    } catch (error) {
+      console.error('WaniKani API failed, trying Jisho fallback:', error);
+    }
+
+    console.log('Fetching common verbs using Jisho fallback');
 
     // Try using Jisho API with common tag
     try {
@@ -315,65 +594,33 @@ export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]
       return uniqueWords.slice(0, 50); // Return top 50 unique words
     } catch (jishoError) {
       console.error('Error fetching common words from Jisho API:', jishoError);
-
-      // If Jisho API fails, use fallback method
-      const commonVerbQueries = [
-        'common verbs',
-        'する',
-        'いる',
-        'ある',
-        '行く',
-        '来る',
-        '食べる',
-        '飲む',
-        '見る',
-        '聞く',
-        '話す',
-        '読む',
-        '書く',
-        '買う',
-        '売る',
-        '作る'
-      ];
-
-      const allWords: JapaneseWord[] = [];
-      const queriesPromises = commonVerbQueries.slice(0, 5).map(query =>
-        searchWords(query, 10).catch(err => {
-          console.warn(`Error fetching words for query "${query}":`, err);
-          return [];
-        })
-      );
-
-      const results = await Promise.all(queriesPromises);
-      results.forEach(words => allWords.push(...words));
-
-      // Remove duplicates based on kanji
-      const uniqueWords = allWords.filter((word, index, self) =>
-        index === self.findIndex(w => w.kanji === word.kanji)
-      );
-
-      return uniqueWords.slice(0, 50); // Return top 50 unique words
+      return [];
     }
   } catch (error) {
     console.error('Error fetching common verbs:', error);
-    // Return mock data when API call fails
-    return mockWords;
+    return [];
   }
 }
 
-// Get sample words for each JLPT level using WaniKani API
+// Get sample words for each JLPT level - WaniKani primary, Jisho fallback
 export async function getWordsByJLPTLevel(level: JLPTLevel, limit: number = 30): Promise<JapaneseWord[]> {
   try {
-    // First try with WaniKani API
-    console.log(`Fetching ${level} words from WaniKani API`);
-    const wanikaniResults = await getWordsByJLPTLevelFromWanikani(level);
+    // WaniKani approach - primary
+    try {
+      console.log(`Fetching ${level} words from WaniKani API`);
+      const wanikaniResults = await getWordsByJLPTLevelFromWanikani(level);
 
-    if (wanikaniResults.length > 0) {
-      console.log(`Found ${wanikaniResults.length} ${level} words from WaniKani API`);
-      return wanikaniResults;
+      if (wanikaniResults.length > 0) {
+        console.log(`Found ${wanikaniResults.length} ${level} words from WaniKani API`);
+        return wanikaniResults;
+      }
+
+      console.log('No results from WaniKani API, trying Jisho API with JLPT tag');
+    } catch (error) {
+      console.error('WaniKani API failed, trying Jisho fallback:', error);
     }
 
-    console.log('No results from WaniKani API, trying Jisho API with JLPT tag');
+    console.log(`Fetching ${level} words using Jisho fallback`);
 
     // Try using Jisho API with JLPT tag
     try {
@@ -410,34 +657,11 @@ export async function getWordsByJLPTLevel(level: JLPTLevel, limit: number = 30):
       return allWords.filter(word => word.jlpt === level).slice(0, 30);
     } catch (jishoError) {
       console.error(`Error fetching ${level} words from Jisho API:`, jishoError);
-
-      // If Jisho API fails, use fallback method
-      const levelQueries = {
-        'N5': ['JLPT N5 verbs', 'basic verbs'],
-        'N4': ['JLPT N4 verbs', 'intermediate verbs'],
-        'N3': ['JLPT N3 verbs'],
-        'N2': ['JLPT N2 verbs'],
-        'N1': ['JLPT N1 verbs', 'advanced verbs']
-      };
-
-      const queries = levelQueries[level];
-      const queriesPromises = queries.map(query =>
-        searchWords(query, 15).catch(err => {
-          console.warn(`Error fetching words for JLPT ${level} query "${query}":`, err);
-          return [];
-        })
-      );
-
-      const results = await Promise.all(queriesPromises);
-      const allWords: JapaneseWord[] = [];
-      results.forEach(words => allWords.push(...words));
-
-      return allWords.filter(word => word.jlpt === level).slice(0, 30);
+      return [];
     }
   } catch (error) {
     console.error(`Error fetching ${level} words:`, error);
-    // Return filtered mock data based on JLPT level
-    return mockWords.filter(word => word.jlpt === level);
+    return [];
   }
 }
 
@@ -448,23 +672,25 @@ export async function searchJisho(
   tags?: string[]
 ): Promise<JishoAPIResponse> {
   try {
-    // Build query parameters
-    let params = `keyword=${encodeURIComponent(query)}&page=${page}`;
+    // Build query parameters for Netlify function
+    const params = new URLSearchParams();
+    params.append('keyword', query);
+    params.append('page', page.toString());
 
     // Add tags if provided
     if (tags && tags.length > 0) {
-      params += `&tags=${tags.map(tag => encodeURIComponent(tag)).join(',')}`;
+      params.append('tags', tags.join(','));
     }
 
     // First try direct API call
     try {
-      const response = await axios.get<JishoAPIResponse>(`${JISHO_API_BASE}?${params}`);
+      const response = await axios.get<JishoAPIResponse>(`${JISHO_API_BASE}?${params.toString()}`);
       return response.data;
     } catch (directError) {
-      console.warn('Direct Jisho API call failed, trying with CORS proxy:', directError);
+      console.warn('Direct Jisho API call failed, trying with Netlify proxy:', directError);
 
-      // If direct call fails, try with CORS proxy
-      const proxyResponse = await jishoAxios.get<JishoAPIResponse>(`?${params}`);
+      // If direct call fails, try with Netlify function proxy
+      const proxyResponse = await jishoAxios.get<JishoAPIResponse>(`?${params.toString()}`);
       return proxyResponse.data;
     }
   } catch (error) {
@@ -486,7 +712,7 @@ export async function searchJishoByJLPT(level: JLPTLevel, limit: number = 20): P
     return processJishoResponse(response, limit);
   } catch (error) {
     console.error(`Error fetching ${level} words from Jisho:`, error);
-    return mockWords.filter(word => word.jlpt === level).slice(0, limit);
+    return [];
   }
 }
 
@@ -500,7 +726,7 @@ export async function searchJishoCommon(limit: number = 20): Promise<JapaneseWor
     return processJishoResponse(response, limit);
   } catch (error) {
     console.error('Error fetching common words from Jisho:', error);
-    return mockWords.slice(0, limit);
+    return [];
   }
 }
 
@@ -517,6 +743,6 @@ export async function searchJishoByPartOfSpeech(
     return processJishoResponse(response, limit);
   } catch (error) {
     console.error(`Error fetching ${partOfSpeech} words from Jisho:`, error);
-    return mockWords.slice(0, limit);
+    return [];
   }
 }

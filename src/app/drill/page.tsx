@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { JapaneseWord, DrillQuestion, ConjugationForms } from '@/types';
-import { getCommonVerbs } from '@/utils/api';
+import { getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
@@ -16,6 +16,7 @@ export default function DrillPage() {
   const [showRules, setShowRules] = useState(false);
   const [loading, setLoading] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
+  const [wordTypeFilter, setWordTypeFilter] = useState<'all' | 'verbs' | 'adjectives'>('all');
 
   useEffect(() => {
     // Check if there's a specific word to drill from sessionStorage (from vocabulary page)
@@ -79,8 +80,19 @@ export default function DrillPage() {
   const loadQuestions = async () => {
     try {
       setLoading(true);
-      const words = await getCommonVerbs();
-      const drillQuestions = generateDrillQuestions(words.slice(0, 10)); // 10 questions
+      const words = await getCommonWordsForPractice();
+
+      // Filter words based on type
+      const filteredWords = words.filter(word => {
+        if (wordTypeFilter === 'verbs') {
+          return word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular';
+        } else if (wordTypeFilter === 'adjectives') {
+          return word.type === 'i-adjective' || word.type === 'na-adjective';
+        }
+        return true; // 'all' shows everything
+      });
+
+      const drillQuestions = generateDrillQuestions(filteredWords.slice(0, 10)); // 10 questions
       setQuestions(drillQuestions);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -259,6 +271,31 @@ export default function DrillPage() {
               <p className="text-muted-foreground mb-6">
                 Test your knowledge with {questions.length} conjugation questions
               </p>
+
+              {/* Word Type Filter */}
+              <div className="mb-6">
+                <div className="text-sm text-muted-foreground mb-3">Practice with:</div>
+                <div className="flex gap-2 justify-center flex-wrap">
+                  {(['all', 'verbs', 'adjectives'] as const).map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => {
+                        setWordTypeFilter(filter);
+                        loadQuestions();
+                      }}
+                      className={`px-4 py-2 rounded-lg border transition-colors ${
+                        wordTypeFilter === filter
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-background text-foreground border-input hover:bg-muted'
+                      }`}
+                    >
+                      {filter === 'all' ? 'All Types' :
+                       filter === 'verbs' ? 'Verbs Only' : 'Adjectives Only'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <button
                 onClick={startGame}
                 className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg"

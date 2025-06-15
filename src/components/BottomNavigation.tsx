@@ -47,25 +47,27 @@ export default function BottomNavigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border md:hidden z-50">
-      <div className="flex items-center justify-around py-2 px-4 safe-area-bottom">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={`flex flex-col items-center justify-center min-w-0 flex-1 py-2 px-1 rounded-lg transition-colors ${
-                isActive
-                  ? 'text-primary bg-primary/10'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span className="text-lg mb-1">{item.icon}</span>
-              <span className="text-xs font-medium truncate">{item.label}</span>
-            </Link>
-          );
-        })}
+    <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50 p-4 pb-6">
+      <div className="bg-card/95 backdrop-blur-md border border-border rounded-full shadow-lg mx-4 mb-2">
+        <div className="flex items-center justify-around py-3 px-4 safe-area-bottom">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                className={`flex flex-col items-center justify-center min-w-0 flex-1 py-1.5 px-1 rounded-lg transition-colors ${
+                  isActive
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span className="text-lg mb-1">{item.icon}</span>
+                <span className="text-xs font-medium truncate">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

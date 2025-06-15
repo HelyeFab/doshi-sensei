@@ -226,8 +226,32 @@ async function loadJMdictEntries(chunkSize = 200000) {
 
     console.log('Loading JMdict entries from file...');
 
-    // In Netlify, the file path is relative to the project root
-    const filePath = path.join(process.cwd(), 'public', 'dict', 'JMdict_e_examp');
+    // In Netlify Functions, files are in the deploy directory
+    // Try multiple potential paths
+    const possiblePaths = [
+      path.join(process.cwd(), 'public', 'dict', 'JMdict_e_examp'),
+      path.join(__dirname, '..', '..', 'public', 'dict', 'JMdict_e_examp'),
+      path.join('/var/task', 'public', 'dict', 'JMdict_e_examp'),
+      '/tmp/JMdict_e_examp'
+    ];
+
+    let filePath = null;
+    for (const testPath of possiblePaths) {
+      try {
+        await fs.access(testPath);
+        filePath = testPath;
+        console.log(`Found JMdict file at: ${filePath}`);
+        break;
+      } catch (error) {
+        console.log(`JMdict file not found at: ${testPath}`);
+        continue;
+      }
+    }
+
+    if (!filePath) {
+      console.error('JMdict file not found in any expected location');
+      return [];
+    }
 
     // Read the file
     const content = await fs.readFile(filePath, 'utf-8');

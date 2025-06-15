@@ -34,7 +34,7 @@ export default function Home() {
         </header>
 
         {/* Main Navigation Cards */}
-        <main className="max-w-4xl mx-auto">
+        <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Practice Card */}
             <NavigationCard

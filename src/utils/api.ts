@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { JishoAPIResponse, JishoWord, JapaneseWord, WordType, JLPTLevel } from '@/types';
-// WaniKani imports - primary dictionary source
+// JMdict imports - primary dictionary source
+import {
+  searchJMdictVocabulary,
+  getCommonVerbsFromJMdict,
+  getCommonWordsFromJMdict,
+  getWordsByJLPTLevelFromJMdict
+} from './jmdictApi';
+// WaniKani imports - fallback dictionary source
 import {
   setWanikaniApiToken,
   searchWanikaniVocabulary,
@@ -9,40 +16,40 @@ import {
   getWordsByJLPTLevelFromWanikani
 } from './wanikaniApi';
 
-// WaniKani API initialization - uncommented for primary use
+// WaniKani API initialization - fallback use only
 const initWanikaniApi = () => {
   // Check for server-side environment variables
   if (typeof process !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
     setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from server-side environment variables');
+    console.log('WaniKani API token set from server-side environment variables (fallback only)');
     return;
   }
 
   // Check for client-side environment variables
   if (typeof window !== 'undefined' && (window as any).__NEXT_DATA__?.props?.pageProps?.env?.WANIKANI_API_TOKEN) {
     setWanikaniApiToken((window as any).__NEXT_DATA__.props.pageProps.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from client-side environment variables');
+    console.log('WaniKani API token set from client-side environment variables (fallback only)');
     return;
   }
 
   // Check for Next.js exposed environment variables
   if (typeof window !== 'undefined' && (window as any).ENV?.WANIKANI_API_TOKEN) {
     setWanikaniApiToken((window as any).ENV.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from Next.js exposed environment variables');
+    console.log('WaniKani API token set from Next.js exposed environment variables (fallback only)');
     return;
   }
 
   // Check for Next.js config environment variables
   if (typeof window !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
     setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from Next.js config environment variables');
+    console.log('WaniKani API token set from Next.js config environment variables (fallback only)');
     return;
   }
 
-  console.warn('WaniKani API token not found in environment variables');
+  console.warn('WaniKani API token not found in environment variables (fallback source will be unavailable)');
 };
 
-// Initialize WaniKani API
+// Initialize WaniKani API for fallback
 initWanikaniApi();
 
 // Jisho API base URL (used as fallback)
@@ -277,13 +284,37 @@ function prioritizeExactMatches(words: JapaneseWord[], query: string): JapaneseW
   });
 }
 
-// Search words using preferred source with fallback
-export async function searchWords(query: string, limit: number = 20, preferredSource: 'wanikani' | 'jisho' = 'wanikani'): Promise<JapaneseWord[]> {
+// Search words using preferred source with fallback - JMdict primary, WaniKani/Jisho fallback
+export async function searchWords(query: string, limit: number = 20, preferredSource: 'wanikani' | 'jisho' = 'jisho'): Promise<JapaneseWord[]> {
   try {
+    // Primary search with JMdict (our custom parser - always first)
+    try {
+      console.log(`Searching for "${query}" using JMdict (primary source)`);
+      const jmdictResults = await searchJMdictVocabulary(query, limit);
+
+      if (jmdictResults.length > 0) {
+        console.log(`Found ${jmdictResults.length} results from JMdict`);
+
+        // Check for exact matches first
+        const exactMatch = findExactMatch(jmdictResults, query);
+        if (exactMatch) {
+          console.log(`Found exact match from JMdict: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
+          return [exactMatch];
+        }
+
+        return prioritizeExactMatches(jmdictResults, query);
+      }
+
+      console.log('No results from JMdict, trying fallback sources');
+    } catch (error) {
+      console.error('JMdict search failed, trying fallback sources:', error);
+    }
+
+    // Fallback based on preferred source
     if (preferredSource === 'jisho') {
-      // Primary search with Jisho API when preferred
+      // Try Jisho API first as fallback
       try {
-        console.log(`Searching for "${query}" using Jisho API (preferred)`);
+        console.log(`Fallback 1: Searching for "${query}" using Jisho API`);
         const jishoResponse = await searchJisho(query);
         const jishoResults = processJishoResponse(jishoResponse, limit);
 
@@ -305,9 +336,9 @@ export async function searchWords(query: string, limit: number = 20, preferredSo
         console.error('Jisho search failed, trying WaniKani fallback:', error);
       }
 
-      // Fallback to WaniKani when Jisho is preferred but fails
+      // Final fallback to WaniKani
       try {
-        console.log(`Fallback: Searching for "${query}" using WaniKani API`);
+        console.log(`Fallback 2: Searching for "${query}" using WaniKani API`);
         const wanikaniResults = await searchWanikaniVocabulary(query, limit);
 
         if (wanikaniResults.length > 0) {
@@ -326,9 +357,9 @@ export async function searchWords(query: string, limit: number = 20, preferredSo
         console.error('WaniKani fallback also failed:', wanikaniError);
       }
     } else {
-      // Primary search with WaniKani API when preferred (default behavior)
+      // Try WaniKani API first as fallback
       try {
-        console.log(`Searching for "${query}" using WaniKani API (preferred)`);
+        console.log(`Fallback 1: Searching for "${query}" using WaniKani API`);
         const wanikaniResults = await searchWanikaniVocabulary(query, limit);
 
         if (wanikaniResults.length > 0) {
@@ -337,7 +368,7 @@ export async function searchWords(query: string, limit: number = 20, preferredSo
           // Check for exact matches first
           const exactMatch = findExactMatch(wanikaniResults, query);
           if (exactMatch) {
-            console.log(`Found exact match: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
+            console.log(`Found exact match from WaniKani: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
             return [exactMatch];
           }
 
@@ -349,9 +380,9 @@ export async function searchWords(query: string, limit: number = 20, preferredSo
         console.error('WaniKani search failed, trying Jisho fallback:', error);
       }
 
-      // Fallback search with Jisho API when WaniKani is preferred but fails
+      // Final fallback to Jisho
       try {
-        console.log(`Fallback: Searching for "${query}" using Jisho API`);
+        console.log(`Fallback 2: Searching for "${query}" using Jisho API`);
         const jishoResponse = await searchJisho(query);
         const jishoResults = processJishoResponse(jishoResponse, limit);
 
@@ -402,12 +433,27 @@ function processJishoResponse(data: JishoAPIResponse, limit: number): JapaneseWo
 // Mock data for when API calls fail - minimal fallback
 const mockWords: JapaneseWord[] = [];
 
-// Get common words (verbs and adjectives) for practice - WaniKani primary, Jisho fallback
+// Get common words (verbs and adjectives) for practice - JMdict primary, WaniKani/Jisho fallback
 export async function getCommonWordsForPractice(limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    // WaniKani approach - primary
+    // JMdict approach - primary
     try {
-      console.log('Fetching common verbs and adjectives from WaniKani API');
+      console.log('Fetching common verbs and adjectives from JMdict (primary source)');
+      const jmdictResults = await getCommonWordsFromJMdict();
+
+      if (jmdictResults.length > 0) {
+        console.log(`Found ${jmdictResults.length} common words from JMdict`);
+        return jmdictResults;
+      }
+
+      console.log('No results from JMdict, trying WaniKani fallback');
+    } catch (error) {
+      console.error('JMdict failed, trying WaniKani fallback:', error);
+    }
+
+    // WaniKani fallback
+    try {
+      console.log('Fallback: Fetching common verbs and adjectives from WaniKani API');
       const wanikaniResults = await getCommonWordsFromWanikani();
 
       if (wanikaniResults.length > 0) {
@@ -513,12 +559,27 @@ export async function getCommonWordsForPractice(limit: number = 50): Promise<Jap
   }
 }
 
-// Get common verbs for practice - WaniKani primary, Jisho fallback
+// Get common verbs for practice - JMdict primary, WaniKani/Jisho fallback
 export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    // WaniKani approach - primary
+    // JMdict approach - primary
     try {
-      console.log('Fetching common verbs from WaniKani API');
+      console.log('Fetching common verbs from JMdict (primary source)');
+      const jmdictResults = await getCommonVerbsFromJMdict();
+
+      if (jmdictResults.length > 0) {
+        console.log(`Found ${jmdictResults.length} common verbs from JMdict`);
+        return jmdictResults;
+      }
+
+      console.log('No results from JMdict, trying WaniKani fallback');
+    } catch (error) {
+      console.error('JMdict failed, trying WaniKani fallback:', error);
+    }
+
+    // WaniKani fallback
+    try {
+      console.log('Fallback: Fetching common verbs from WaniKani API');
       const wanikaniResults = await getCommonVerbsFromWanikani();
 
       if (wanikaniResults.length > 0) {
@@ -602,12 +663,27 @@ export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]
   }
 }
 
-// Get sample words for each JLPT level - WaniKani primary, Jisho fallback
+// Get sample words for each JLPT level - JMdict primary, WaniKani/Jisho fallback
 export async function getWordsByJLPTLevel(level: JLPTLevel, limit: number = 30): Promise<JapaneseWord[]> {
   try {
-    // WaniKani approach - primary
+    // JMdict approach - primary
     try {
-      console.log(`Fetching ${level} words from WaniKani API`);
+      console.log(`Fetching ${level} words from JMdict (primary source)`);
+      const jmdictResults = await getWordsByJLPTLevelFromJMdict(level);
+
+      if (jmdictResults.length > 0) {
+        console.log(`Found ${jmdictResults.length} ${level} words from JMdict`);
+        return jmdictResults;
+      }
+
+      console.log('No results from JMdict, trying WaniKani fallback');
+    } catch (error) {
+      console.error('JMdict failed, trying WaniKani fallback:', error);
+    }
+
+    // WaniKani fallback
+    try {
+      console.log(`Fallback: Fetching ${level} words from WaniKani API`);
       const wanikaniResults = await getWordsByJLPTLevelFromWanikani(level);
 
       if (wanikaniResults.length > 0) {
@@ -672,7 +748,7 @@ export async function searchJisho(
   tags?: string[]
 ): Promise<JishoAPIResponse> {
   try {
-    // Build query parameters for Netlify function
+    // Build query parameters
     const params = new URLSearchParams();
     params.append('keyword', query);
     params.append('page', page.toString());
@@ -682,20 +758,38 @@ export async function searchJisho(
       params.append('tags', tags.join(','));
     }
 
-    // First try direct API call
+    // First try direct API call (this will work in most cases due to CORS being allowed by Jisho)
     try {
       const response = await axios.get<JishoAPIResponse>(`${JISHO_API_BASE}?${params.toString()}`);
       return response.data;
     } catch (directError) {
-      console.warn('Direct Jisho API call failed, trying with Netlify proxy:', directError);
+      console.warn('Direct Jisho API call failed:', directError);
 
-      // If direct call fails, try with Netlify function proxy
-      const proxyResponse = await jishoAxios.get<JishoAPIResponse>(`?${params.toString()}`);
-      return proxyResponse.data;
+      // If direct call fails and we're in a deployed environment, try Netlify proxy
+      if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+        try {
+          console.log('Trying Netlify proxy fallback');
+          const proxyResponse = await jishoAxios.get<JishoAPIResponse>(`?${params.toString()}`);
+          return proxyResponse.data;
+        } catch (proxyError) {
+          console.warn('Netlify proxy also failed:', proxyError);
+        }
+      }
+
+      // If all else fails, return empty response instead of throwing
+      console.warn('All Jisho API methods failed, returning empty response');
+      return {
+        meta: { status: 200 },
+        data: []
+      };
     }
   } catch (error) {
     console.error('Error with Jisho API:', error);
-    throw new Error('Failed to fetch data from Jisho API');
+    // Return empty response instead of throwing to prevent app crashes
+    return {
+      meta: { status: 200 },
+      data: []
+    };
   }
 }
 

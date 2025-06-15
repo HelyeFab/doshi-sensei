@@ -260,7 +260,7 @@ async function fetchAllWanikaniVocabulary(): Promise<WanikaniSubject[]> {
   return allVocabulary;
 }
 
-// Search vocabulary in WaniKani API
+// Search vocabulary in WaniKani API (more efficient approach)
 export async function searchWanikaniVocabulary(query: string, limit: number = 20): Promise<JapaneseWord[]> {
   try {
     // Check if API token is set
@@ -269,14 +269,37 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 20
       return [];
     }
 
-    // Fetch all vocabulary with pagination
-    console.log('Fetching all vocabulary from WaniKani (this may take a moment)...');
-    const allVocabularySubjects = await fetchAllWanikaniVocabulary();
+    // Instead of fetching ALL vocabulary, fetch a reasonable subset from multiple levels
+    console.log(`Searching WaniKani vocabulary for "${query}"...`);
+    const allWords: JapaneseWord[] = [];
 
-    // Convert WaniKani subjects to JapaneseWord format
-    const allWords = allVocabularySubjects
-      .map(convertWanikaniSubject)
-      .filter((word): word is JapaneseWord => word !== null);
+    // Fetch vocabulary from levels 1-20 (covers N5-N3, most common words)
+    const levelRanges = ['1,2,3,4,5', '6,7,8,9,10', '11,12,13,14,15', '16,17,18,19,20'];
+
+    for (const levels of levelRanges) {
+      try {
+        const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
+          params: {
+            types: 'vocabulary',
+            hidden: false,
+            levels: levels,
+            limit: 500 // Fetch 500 per level range
+          }
+        });
+
+        // Convert WaniKani subjects to JapaneseWord format
+        const words = response.data.data
+          .map(convertWanikaniSubject)
+          .filter((word): word is JapaneseWord => word !== null);
+
+        allWords.push(...words);
+      } catch (error) {
+        console.warn(`Error fetching vocabulary for levels ${levels}:`, error);
+        continue; // Continue with other level ranges
+      }
+    }
+
+    console.log(`Fetched ${allWords.length} words from WaniKani to search`);
 
     const queryLower = query.toLowerCase().trim();
 
@@ -300,18 +323,18 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 20
 
     // If we found exact matches, return them
     if (exactMatches.length > 0) {
-      console.log(`Found ${exactMatches.length} exact matches for "${query}"`);
+      console.log(`Found ${exactMatches.length} exact matches for "${query}" in WaniKani`);
       return exactMatches.slice(0, limit);
     }
 
-    // Otherwise, fall back to partial matches but be more selective
+    // Otherwise, fall back to partial matches
     const partialMatches = allWords.filter(word =>
       word.kanji.includes(query) ||
       word.kana.includes(query) ||
       word.meaning.toLowerCase().includes(queryLower)
     );
 
-    console.log(`Found ${partialMatches.length} partial matches for "${query}"`);
+    console.log(`Found ${partialMatches.length} partial matches for "${query}" in WaniKani`);
     return partialMatches.slice(0, limit);
   } catch (error) {
     console.error('Error searching vocabulary in WaniKani:', error);

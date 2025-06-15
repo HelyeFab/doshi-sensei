@@ -7,6 +7,7 @@ import { searchWords } from '@/utils/api';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
+import { testMoonSearch } from '@/utils/apiTest';
 
 export default function VocabularyPage() {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
@@ -18,7 +19,7 @@ export default function VocabularyPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
-  const [preferredSource, setPreferredSource] = useState<'wanikani' | 'jisho'>('wanikani');
+  const [preferredSource, setPreferredSource] = useState<'wanikani' | 'jisho'>('jisho');
 
   useEffect(() => {
     loadSearchHistory();
@@ -116,38 +117,27 @@ export default function VocabularyPage() {
 
         {/* Dictionary Source Toggle */}
         <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center gap-4 bg-card border border-border rounded-lg p-4">
-            <span className="text-sm font-medium text-muted-foreground">Dictionary Source:</span>
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="dictionary-source"
-                  value="wanikani"
-                  checked={preferredSource === 'wanikani'}
-                  onChange={(e) => setPreferredSource(e.target.value as 'wanikani')}
-                  className="w-4 h-4 text-primary bg-background border-border focus:ring-primary focus:ring-2"
-                />
-                <span className="text-sm text-foreground">WaniKani</span>
-                <span className="text-xs text-muted-foreground bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
-                  Curated
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="dictionary-source"
-                  value="jisho"
-                  checked={preferredSource === 'jisho'}
-                  onChange={(e) => setPreferredSource(e.target.value as 'jisho')}
-                  className="w-4 h-4 text-primary bg-background border-border focus:ring-primary focus:ring-2"
-                />
-                <span className="text-sm text-foreground">Jisho</span>
-                <span className="text-xs text-muted-foreground bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
-                  Comprehensive
-                </span>
-              </label>
-            </div>
+          <div className="flex bg-muted/50 p-1 rounded-full">
+            <button
+              onClick={() => setPreferredSource('wanikani')}
+              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                preferredSource === 'wanikani'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              WaniKani
+            </button>
+            <button
+              onClick={() => setPreferredSource('jisho')}
+              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                preferredSource === 'jisho'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Jisho
+            </button>
           </div>
         </div>
 
@@ -244,7 +234,7 @@ export default function VocabularyPage() {
             )}
 
             {!loading && !error && (
-              <div className="mb-32">
+              <div className="mb-32 md:mb-8 pb-safe">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-foreground">Search History</h2>
                   {searchHistory.length > 0 && (
@@ -287,6 +277,29 @@ export default function VocabularyPage() {
           word={selectedWord}
           onClose={handleCloseModal}
         />
+      )}
+
+      {/* Search Loading Overlay */}
+      {searching && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-lg p-8 flex flex-col items-center gap-4 shadow-lg">
+            <div className="relative">
+              <div className="animate-spin w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-6 h-6 bg-primary/10 rounded-full animate-pulse"></div>
+              </div>
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-foreground mb-1">Searching...</h3>
+              <p className="text-sm text-muted-foreground">
+                Looking up "{currentSearchTerm || searchTerm}" with{' '}
+                <span className="font-medium text-foreground">
+                  {preferredSource === 'wanikani' ? 'WaniKani' : 'Jisho'}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

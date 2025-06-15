@@ -22,7 +22,7 @@ export default function SettingsPage() {
       <PageHeader title={strings.settings.title} />
 
       {/* Main Content */}
-      <main className="max-w-2xl mx-auto">
+      <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
         <div className="space-y-8">
           {/* Theme Settings */}
           <SettingsSection title="Theme">
@@ -48,36 +48,6 @@ export default function SettingsPage() {
             </div>
           </SettingsSection>
 
-          {/* Display Settings */}
-          <SettingsSection title="Display">
-            <div className="space-y-4">
-              <ToggleSetting
-                label="Show Romaji"
-                description="Display romaji transliteration for Japanese words"
-                checked={settings.showRomaji}
-                onChange={(checked) => updateSetting('showRomaji', checked)}
-              />
-
-              {/* Language selector - not in settings context yet */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Language
-                </label>
-                <select
-                  value="en"
-                  onChange={() => {}}
-                  className="w-full px-3 py-2 bg-input border border-border rounded-md text-foreground"
-                  disabled
-                >
-                  <option value="en">English</option>
-                  <option value="ja">日本語</option>
-                </select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Language selection will be available in a future update
-                </p>
-              </div>
-            </div>
-          </SettingsSection>
 
           {/* Goals & Progress */}
           <SettingsSection title="Goals & Progress">
@@ -109,7 +79,7 @@ export default function SettingsPage() {
                 onChange={(checked) => updateSetting('practiceReminders', checked)}
               />
 
-              <div className="pt-2 space-y-4">
+              <div className="pt-2">
                 <div>
                   <button
                     onClick={handleResetProgress}
@@ -119,22 +89,6 @@ export default function SettingsPage() {
                   </button>
                   <p className="text-xs text-muted-foreground mt-2">
                     This will reset all your progress, statistics, and learning history.
-                  </p>
-                </div>
-
-                <div>
-                  <button
-                    onClick={() => {
-                      if (window.confirm('Are you sure you want to reset all settings to defaults?')) {
-                        resetSettings();
-                      }
-                    }}
-                    className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors"
-                  >
-                    Reset Settings
-                  </button>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    This will reset all settings to their default values.
                   </p>
                 </div>
               </div>

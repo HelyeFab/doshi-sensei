@@ -51,7 +51,7 @@ export default function BottomNavigation() {
       <div className="bg-card/95 backdrop-blur-md border border-border rounded-full shadow-lg mx-4 mb-2">
         <div className="flex items-center justify-around py-3 px-4 safe-area-bottom">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href && item.href !== '/';
             return (
               <Link
                 key={item.id}

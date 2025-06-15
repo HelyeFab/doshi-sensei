@@ -9,8 +9,8 @@ export default function MobileHome() {
     <div className="flex flex-col items-center justify-center min-h-screen px-4 pb-24">
       {/* Header */}
       <div className="text-center mb-6">
-        <div className="flex items-center justify-center mb-3">
-          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mr-3">
+        <div className="flex flex-col items-center justify-center mb-3">
+          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-3">
             <span className="text-xl font-bold text-primary-foreground japanese-text">動</span>
           </div>
           <h1 className="text-2xl font-bold text-foreground app-name">

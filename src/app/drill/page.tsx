@@ -6,8 +6,10 @@ import { getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
+import { useSettings } from '@/contexts/SettingsContext';
 
 export default function DrillPage() {
+  const { settings } = useSettings();
   const [questions, setQuestions] = useState<DrillQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -38,7 +40,7 @@ export default function DrillPage() {
     } else {
       loadQuestions();
     }
-  }, []);
+  }, [settings.dailyGoal]); // Reload when daily goal changes
 
   // Load questions for a specific word
   const loadQuestionsForWord = (word: JapaneseWord) => {
@@ -92,7 +94,7 @@ export default function DrillPage() {
         return true; // 'all' shows everything
       });
 
-      const drillQuestions = generateDrillQuestions(filteredWords.slice(0, 10)); // 10 questions
+      const drillQuestions = generateDrillQuestions(filteredWords.slice(0, settings.dailyGoal)); // Use daily goal setting
       setQuestions(drillQuestions);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -260,7 +262,7 @@ export default function DrillPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-2xl mx-auto">
+      <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
         {!gameStarted ? (
           // Start Screen
           <div className="text-center py-12">

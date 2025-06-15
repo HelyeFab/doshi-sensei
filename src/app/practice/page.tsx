@@ -80,7 +80,7 @@ export default function PracticePage() {
     <div className="container mx-auto px-4 py-8 min-h-screen">
       <PageHeader title={strings.practice.title} />
 
-      <main className="max-w-4xl mx-auto">
+      <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
         <p className="text-muted-foreground mb-8 text-center">
           {strings.practice.selectWord}
         </p>

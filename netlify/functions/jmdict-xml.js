@@ -227,12 +227,14 @@ async function loadJMdictEntries(chunkSize = 200000) {
     console.log('Loading JMdict entries from file...');
 
     // In Netlify Functions, files are in the deploy directory
-    // Try multiple potential paths
+    // Try multiple potential paths based on actual deployment structure
     const possiblePaths = [
+      path.join(process.cwd(), '.next', 'dict', 'jmdict_e_examp'),
+      path.join(__dirname, '..', '..', '.next', 'dict', 'jmdict_e_examp'),
+      path.join('/var/task', '.next', 'dict', 'jmdict_e_examp'),
       path.join(process.cwd(), 'public', 'dict', 'JMdict_e_examp'),
       path.join(__dirname, '..', '..', 'public', 'dict', 'JMdict_e_examp'),
-      path.join('/var/task', 'public', 'dict', 'JMdict_e_examp'),
-      '/tmp/JMdict_e_examp'
+      path.join('/var/task', 'public', 'dict', 'JMdict_e_examp')
     ];
 
     let filePath = null;

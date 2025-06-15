@@ -357,20 +357,22 @@ export async function searchJMdictVocabulary(query: string, limit: number = 20):
                          window.location.hostname !== 'localhost' &&
                          window.location.hostname !== '127.0.0.1';
 
-    if (isProduction) {
-      // Try to use Netlify function in production
-      try {
-        const response = await fetch(`/.netlify/functions/jmdict-xml?action=search&query=${encodeURIComponent(query)}&limit=${limit}`);
-        const result = await response.json();
+      if (isProduction) {
+        // Try to use Netlify function in production
+        try {
+          const response = await fetch(`/.netlify/functions/jmdict-xml?action=search&query=${encodeURIComponent(query)}&limit=${limit}`);
+          const result = await response.json();
 
-        if (!result.error && result.results) {
-          console.log(`Found ${result.results.length} results from JMdict Netlify function`);
-          return result.results;
+          if (!result.error && result.results && result.results.length > 0) {
+            console.log(`Found ${result.results.length} results from JMdict Netlify function`);
+            return result.results;
+          } else {
+            console.log('JMdict Netlify function returned 0 results (large file not deployed to serverless environment)');
+          }
+        } catch (netlifyError) {
+          console.warn('Netlify function search failed:', netlifyError);
         }
-      } catch (netlifyError) {
-        console.warn('Netlify function search failed, using local search:', netlifyError);
       }
-    }
 
     // Fallback to local search with sample data
     console.log('Using local JMdict search with sample data');

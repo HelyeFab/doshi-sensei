@@ -276,3 +276,14 @@ export function clearProgress(): void {
 - Phase 6: 1 day
 
 Total: 6-10 days depending on complexity and polish requirements
+
+
+
+## JMDict
+## 🔧 __Alternative Solution (If Large File Issue Persists):__
+
+If the 66MB file approach doesn't work in Netlify's serverless environment, we have backup options:
+
+1. __Use External JMdict API__ - Point to a hosted JMdict service
+2. __Chunked File Approach__ - Split the 66MB file into smaller chunks
+3. __Database Solution__ - Convert JMdict to a lightweight database format

@@ -5,6 +5,11 @@ import {
   searchJMdictEntries,
   type JMdictEntry
 } from './jmdictParser';
+import {
+  searchJMdictChunkedVocabulary,
+  getCommonWordsFromJMdictChunked,
+  getCommonVerbsFromJMdictChunked
+} from './jmdictChunkedApi';
 
 // Cache for parsed JMdict entries (memory cache)
 let cachedEntries: JMdictEntry[] | null = null;
@@ -347,10 +352,23 @@ async function loadJMdictEntries(): Promise<JMdictEntry[]> {
   }
 }
 
-// Search JMdict vocabulary with fallback to sample data
+// Search JMdict vocabulary with chunked approach first, then fallback
 export async function searchJMdictVocabulary(query: string, limit: number = 20): Promise<JapaneseWord[]> {
   try {
     console.log(`Searching JMdict for: "${query}"`);
+
+    // Try chunked approach first (new optimized system)
+    try {
+      console.log('Trying chunked JMdict search first...');
+      const chunkedResults = await searchJMdictChunkedVocabulary(query, limit);
+      if (chunkedResults.length > 0) {
+        console.log(`Found ${chunkedResults.length} results from chunked JMdict`);
+        return chunkedResults;
+      }
+      console.log('Chunked JMdict returned no results, falling back to original method');
+    } catch (chunkedError) {
+      console.warn('Chunked JMdict search failed, falling back to original method:', chunkedError);
+    }
 
     // Check if we're in production (has Netlify functions)
     const isProduction = typeof window !== 'undefined' &&
@@ -358,7 +376,7 @@ export async function searchJMdictVocabulary(query: string, limit: number = 20):
                          window.location.hostname !== '127.0.0.1';
 
       if (isProduction) {
-        // Try to use Netlify function in production
+        // Try to use original Netlify function in production
         try {
           const response = await fetch(`/.netlify/functions/jmdict-xml?action=search&query=${encodeURIComponent(query)}&limit=${limit}`);
           const result = await response.json();
@@ -394,6 +412,20 @@ export async function getCommonWordsFromJMdict(): Promise<JapaneseWord[]> {
   try {
     console.log('Fetching common words from JMdict');
 
+    // Try chunked approach first
+    try {
+      console.log('Trying chunked JMdict for common words...');
+      const chunkedResults = await getCommonWordsFromJMdictChunked();
+      if (chunkedResults.length > 0) {
+        console.log(`Found ${chunkedResults.length} common words from chunked JMdict`);
+        return chunkedResults;
+      }
+      console.log('Chunked JMdict returned no common words, falling back to original method');
+    } catch (chunkedError) {
+      console.warn('Chunked JMdict common words failed, falling back to original method:', chunkedError);
+    }
+
+    // Fallback to original method
     const allEntries = await loadJMdictEntries();
 
     // Filter for verbs and adjectives only
@@ -425,6 +457,20 @@ export async function getCommonVerbsFromJMdict(): Promise<JapaneseWord[]> {
   try {
     console.log('Fetching common verbs from JMdict');
 
+    // Try chunked approach first
+    try {
+      console.log('Trying chunked JMdict for common verbs...');
+      const chunkedResults = await getCommonVerbsFromJMdictChunked();
+      if (chunkedResults.length > 0) {
+        console.log(`Found ${chunkedResults.length} common verbs from chunked JMdict`);
+        return chunkedResults;
+      }
+      console.log('Chunked JMdict returned no common verbs, falling back to original method');
+    } catch (chunkedError) {
+      console.warn('Chunked JMdict common verbs failed, falling back to original method:', chunkedError);
+    }
+
+    // Fallback to original method
     const allEntries = await loadJMdictEntries();
 
     // Filter for verbs only

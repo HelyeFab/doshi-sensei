@@ -232,6 +232,11 @@ async function loadJMdictEntries(chunkSize = 200000) {
       path.join(process.cwd(), '.next', 'dict', 'jmdict_e_examp'),
       path.join(__dirname, '..', '..', '.next', 'dict', 'jmdict_e_examp'),
       path.join('/var/task', '.next', 'dict', 'jmdict_e_examp'),
+      // Also try with original capitalization
+      path.join(process.cwd(), '.next', 'dict', 'JMdict_e_examp'),
+      path.join(__dirname, '..', '..', '.next', 'dict', 'JMdict_e_examp'),
+      path.join('/var/task', '.next', 'dict', 'JMdict_e_examp'),
+      // Legacy paths for backwards compatibility
       path.join(process.cwd(), 'public', 'dict', 'JMdict_e_examp'),
       path.join(__dirname, '..', '..', 'public', 'dict', 'JMdict_e_examp'),
       path.join('/var/task', 'public', 'dict', 'JMdict_e_examp')

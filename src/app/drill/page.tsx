@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList } from '@/types';
 import { getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
@@ -25,46 +25,78 @@ export default function DrillPage() {
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [drillMode, setDrillMode] = useState<'random' | 'lists'>('random');
 
-  useEffect(() => {
-    loadWordLists();
-  }, []);
-
-  useEffect(() => {
-    // Don't load questions until settings are loaded
-    if (settingsLoading) return;
-
-    // Check if there's a specific word to drill from sessionStorage (from vocabulary page)
-    if (typeof window !== 'undefined') {
-      const storedWord = sessionStorage.getItem('drillWord');
-      if (storedWord) {
-        try {
-          const word = JSON.parse(storedWord);
-          loadQuestionsForWord(word);
-          // Clear the stored word to prevent it from being loaded again on refresh
-          sessionStorage.removeItem('drillWord');
-        } catch (err) {
-          console.error('Error parsing stored word:', err);
-          loadQuestions(); // Fallback to regular questions
-        }
-      } else {
-        loadQuestions();
-      }
-    } else {
-      loadQuestions();
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-  }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists]); // Reload when daily goal changes or settings finish loading
+    return shuffled;
+  };
 
-  const loadWordLists = async () => {
+  const generateDrillQuestion = (
+    word: JapaneseWord,
+    targetForm: keyof ConjugationForms,
+    correctAnswer: string
+  ): DrillQuestion => {
+    const stem = generateQuestionStem(word, targetForm);
+    const distractors = generateDistractors(word, targetForm, correctAnswer);
+    const options = shuffleArray([correctAnswer, ...distractors]);
+
+    return {
+      id: `${word.id}-${targetForm}`,
+      word,
+      targetForm,
+      stem,
+      correctAnswer,
+      options,
+      rule: ConjugationEngine.getConjugationRule(word.type, targetForm)
+    };
+  };
+
+  const generateDistractors = (word: JapaneseWord, targetForm: keyof ConjugationForms, correctAnswer: string): string[] => {
+    const conjugations = ConjugationEngine.conjugate(word);
+    const allForms = Object.values(conjugations).filter(form => form && form !== correctAnswer);
+
+    // Get distractors from actual conjugations first
+    const distractors: string[] = [];
+    const availableForms = allForms.filter(form => form);
+
+    // Add some actual conjugations as distractors
+    for (let i = 0; i < Math.min(4, availableForms.length); i++) {
+      if (!distractors.includes(availableForms[i])) {
+        distractors.push(availableForms[i]);
+      }
+    }
+
+    // Add one more distractor using kanji stem if needed
+    if (distractors.length < 5) {
+      const kanjiStem = word.kanji.slice(0, -1); // Use kanji stem, not kana stem
+      const commonEndings = ['る', 'た', 'ない', 'ます', 'て'];
+
+      for (let ending of commonEndings) {
+        const distractor = kanjiStem + ending;
+        if (!distractors.includes(distractor) && distractor !== correctAnswer && !availableForms.includes(distractor)) {
+          distractors.push(distractor);
+          break;
+        }
+      }
+    }
+
+    return distractors.slice(0, 5);
+  };
+
+  const loadWordLists = useCallback(async () => {
     try {
       const lists = await WordListManager.getAllWordLists();
       setWordLists(lists);
     } catch (err) {
       console.error('Error loading word lists:', err);
     }
-  };
+  }, []);
 
   // Load questions for a specific word
-  const loadQuestionsForWord = (word: JapaneseWord) => {
+  const loadQuestionsForWord = useCallback((word: JapaneseWord) => {
     try {
       setLoading(true);
       // Generate multiple questions for different conjugation forms of the same word
@@ -98,9 +130,9 @@ export default function DrillPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadQuestions = async () => {
+  const loadQuestions = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -176,7 +208,7 @@ export default function DrillPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [drillMode, selectedLists, settings.dailyGoal, wordTypeFilter]);
 
   const generateDrillQuestions = (words: JapaneseWord[]): DrillQuestion[] => {
     return words.map((word, index) => {
@@ -193,66 +225,34 @@ export default function DrillPage() {
     });
   };
 
-  const generateDrillQuestion = (
-    word: JapaneseWord,
-    targetForm: keyof ConjugationForms,
-    correctAnswer: string
-  ): DrillQuestion => {
-    const stem = generateQuestionStem(word, targetForm);
-    const distractors = generateDistractors(word, targetForm, correctAnswer);
-    const options = shuffleArray([correctAnswer, ...distractors]);
+  useEffect(() => {
+    loadWordLists();
+  }, [loadWordLists]);
 
-    return {
-      id: `${word.id}-${targetForm}`,
-      word,
-      targetForm,
-      stem,
-      correctAnswer,
-      options,
-      rule: ConjugationEngine.getConjugationRule(word.type, targetForm)
-    };
-  };
+  useEffect(() => {
+    // Don't load questions until settings are loaded
+    if (settingsLoading) return;
 
-  const generateDistractors = (word: JapaneseWord, targetForm: keyof ConjugationForms, correctAnswer: string): string[] => {
-    const conjugations = ConjugationEngine.conjugate(word);
-    const allForms = Object.values(conjugations).filter(form => form && form !== correctAnswer);
-
-    // Get distractors from actual conjugations first
-    const distractors: string[] = [];
-    const availableForms = allForms.filter(form => form);
-
-    // Add some actual conjugations as distractors
-    for (let i = 0; i < Math.min(4, availableForms.length); i++) {
-      if (!distractors.includes(availableForms[i])) {
-        distractors.push(availableForms[i]);
-      }
-    }
-
-    // Add one more distractor using kanji stem if needed
-    if (distractors.length < 5) {
-      const kanjiStem = word.kanji.slice(0, -1); // Use kanji stem, not kana stem
-      const commonEndings = ['る', 'た', 'ない', 'ます', 'て'];
-
-      for (let ending of commonEndings) {
-        const distractor = kanjiStem + ending;
-        if (!distractors.includes(distractor) && distractor !== correctAnswer && !availableForms.includes(distractor)) {
-          distractors.push(distractor);
-          break;
+    // Check if there's a specific word to drill from sessionStorage (from vocabulary page)
+    if (typeof window !== 'undefined') {
+      const storedWord = sessionStorage.getItem('drillWord');
+      if (storedWord) {
+        try {
+          const word = JSON.parse(storedWord);
+          loadQuestionsForWord(word);
+          // Clear the stored word to prevent it from being loaded again on refresh
+          sessionStorage.removeItem('drillWord');
+        } catch (err) {
+          console.error('Error parsing stored word:', err);
+          loadQuestions(); // Fallback to regular questions
         }
+      } else {
+        loadQuestions();
       }
+    } else {
+      loadQuestions();
     }
-
-    return distractors.slice(0, 5);
-  };
-
-  const shuffleArray = <T,>(array: T[]): T[] => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
+  }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists, loadQuestions, loadQuestionsForWord]);
 
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return;

@@ -6,6 +6,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { EnvProvider } from "@/components/EnvProvider";
 import BottomNavigation from "@/components/BottomNavigation";
+import PWAInstaller from "@/components/PWAInstaller";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,6 +49,30 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* PWA Manifest and Meta Tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="application-name" content="Doshi Sensei" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Doshi Sensei" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="msapplication-TileColor" content="#6366f1" />
+        <meta name="msapplication-tap-highlight" content="no" />
+
+        {/* Apple Touch Icons */}
+        <link rel="apple-touch-icon" href="/doshi.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/doshi.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/doshi.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/doshi.png" />
+
+        {/* Favicons */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/doshi.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/doshi.png" />
+        <link rel="mask-icon" href="/doshi.png" color="#6366f1" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -89,6 +114,7 @@ export default function RootLayout({
               <div className="min-h-screen bg-background text-foreground">
                 {children}
                 <BottomNavigation />
+                <PWAInstaller />
               </div>
             </ClientThemeWrapper>
           </SettingsProvider>

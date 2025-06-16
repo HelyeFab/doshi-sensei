@@ -7,6 +7,7 @@ import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { EnvProvider } from "@/components/EnvProvider";
 import BottomNavigation from "@/components/BottomNavigation";
 import PWAInstaller from "@/components/PWAInstaller";
+import FloatingDonateButton from "@/components/FloatingDonateButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -115,6 +116,7 @@ export default function RootLayout({
                 {children}
                 <BottomNavigation />
                 <PWAInstaller />
+                <FloatingDonateButton />
               </div>
             </ClientThemeWrapper>
           </SettingsProvider>

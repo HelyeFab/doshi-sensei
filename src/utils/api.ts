@@ -430,6 +430,16 @@ function processJishoResponse(data: JishoAPIResponse, limit: number): JapaneseWo
     );
 }
 
+// Utility function to shuffle an array
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 // Mock data for when API calls fail - minimal fallback
 const mockWords: JapaneseWord[] = [];
 
@@ -443,7 +453,9 @@ export async function getCommonWordsForPractice(limit: number = 50): Promise<Jap
 
       if (jmdictResults.length > 0) {
         console.log(`Found ${jmdictResults.length} common words from JMdict`);
-        return jmdictResults;
+        // Shuffle to provide variety on each reload
+        const shuffledResults = shuffleArray(jmdictResults);
+        return shuffledResults.slice(0, limit);
       }
 
       console.log('No results from JMdict, trying WaniKani fallback');

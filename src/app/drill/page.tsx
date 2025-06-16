@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { JapaneseWord, DrillQuestion, ConjugationForms } from '@/types';
+import { JapaneseWord, DrillQuestion, ConjugationForms, WordList } from '@/types';
 import { getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
+import WordListManager from '@/utils/wordLists';
+import StatsManager from '@/utils/stats';
 
 export default function DrillPage() {
-  const { settings } = useSettings();
+  const { settings, isLoading: settingsLoading } = useSettings();
   const [questions, setQuestions] = useState<DrillQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -19,8 +21,18 @@ export default function DrillPage() {
   const [loading, setLoading] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
   const [wordTypeFilter, setWordTypeFilter] = useState<'all' | 'verbs' | 'adjectives'>('all');
+  const [wordLists, setWordLists] = useState<WordList[]>([]);
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [drillMode, setDrillMode] = useState<'random' | 'lists'>('random');
 
   useEffect(() => {
+    loadWordLists();
+  }, []);
+
+  useEffect(() => {
+    // Don't load questions until settings are loaded
+    if (settingsLoading) return;
+
     // Check if there's a specific word to drill from sessionStorage (from vocabulary page)
     if (typeof window !== 'undefined') {
       const storedWord = sessionStorage.getItem('drillWord');
@@ -40,7 +52,16 @@ export default function DrillPage() {
     } else {
       loadQuestions();
     }
-  }, [settings.dailyGoal]); // Reload when daily goal changes
+  }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists]); // Reload when daily goal changes or settings finish loading
+
+  const loadWordLists = async () => {
+    try {
+      const lists = await WordListManager.getAllWordLists();
+      setWordLists(lists);
+    } catch (err) {
+      console.error('Error loading word lists:', err);
+    }
+  };
 
   // Load questions for a specific word
   const loadQuestionsForWord = (word: JapaneseWord) => {
@@ -82,7 +103,45 @@ export default function DrillPage() {
   const loadQuestions = async () => {
     try {
       setLoading(true);
-      const words = await getCommonWordsForPractice();
+
+      let words: JapaneseWord[] = [];
+
+      if (drillMode === 'lists' && selectedLists.length > 0) {
+        console.log('Loading words from selected lists:', selectedLists);
+        // Load words from selected lists
+        words = await WordListManager.getWordsFromLists(selectedLists);
+        console.log('Words loaded from lists:', words.length, words);
+
+        if (words.length === 0) {
+          console.warn('No words found in selected lists');
+          setQuestions([]);
+          return;
+        }
+
+        // Filter out words that can't be conjugated if needed
+        words = words.filter(word =>
+          word.type === 'Ichidan' ||
+          word.type === 'Godan' ||
+          word.type === 'Irregular' ||
+          word.type === 'i-adjective' ||
+          word.type === 'na-adjective'
+        );
+
+        console.log('Words after conjugation filter:', words.length);
+
+        if (words.length === 0) {
+          console.warn('No conjugable words found in selected lists');
+          // Check what types of words are in the lists
+          const allWords = await WordListManager.getWordsFromLists(selectedLists);
+          const wordTypes = allWords.map(w => w.type);
+          console.log('Word types in selected lists:', wordTypes);
+          setQuestions([]);
+          return;
+        }
+      } else {
+        // Load random words (original behavior)
+        words = await getCommonWordsForPractice();
+      }
 
       // Filter words based on type
       const filteredWords = words.filter(word => {
@@ -94,10 +153,26 @@ export default function DrillPage() {
         return true; // 'all' shows everything
       });
 
-      const drillQuestions = generateDrillQuestions(filteredWords.slice(0, settings.dailyGoal)); // Use daily goal setting
+      console.log('Words after type filter:', filteredWords.length);
+
+      if (filteredWords.length === 0) {
+        console.warn('No words found after filtering');
+        setQuestions([]);
+        return;
+      }
+
+      // Shuffle and limit to daily goal
+      const shuffledWords = shuffleArray(filteredWords);
+      const limitedWords = shuffledWords.slice(0, settings.dailyGoal);
+
+      console.log('Final words for questions:', limitedWords.length);
+
+      const drillQuestions = generateDrillQuestions(limitedWords);
+      console.log('Generated questions:', drillQuestions.length);
       setQuestions(drillQuestions);
     } catch (error) {
       console.error('Error loading questions:', error);
+      setQuestions([]);
     } finally {
       setLoading(false);
     }
@@ -213,6 +288,14 @@ export default function DrillPage() {
     setGameStarted(true);
   };
 
+  const handleListToggle = (listId: string) => {
+    setSelectedLists(prev =>
+      prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId]
+    );
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
@@ -227,8 +310,27 @@ export default function DrillPage() {
   if (questions.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">{strings.errors.loadError}</p>
+        <div className="text-center max-w-md mx-auto">
+          <div className="text-6xl mb-4">📚</div>
+          <h3 className="text-lg font-medium text-foreground mb-2">
+            {drillMode === 'lists' && selectedLists.length === 0
+              ? 'Select Lists to Drill'
+              : drillMode === 'lists'
+              ? 'No Conjugable Words Found'
+              : 'Failed to Load Data'}
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            {drillMode === 'lists' && selectedLists.length === 0
+              ? 'Please select at least one list to drill from your saved word lists.'
+              : drillMode === 'lists'
+              ? 'The selected lists contain only nouns or non-conjugable words. Please save verbs and adjectives to your lists for conjugation practice.'
+              : 'Unable to load practice questions. Please try again.'}
+          </p>
+          {drillMode === 'lists' && selectedLists.length > 0 && (
+            <div className="text-sm text-muted-foreground mb-4 p-3 bg-muted/50 rounded-lg">
+              <strong>Tip:</strong> Only verbs (Ichidan, Godan, Irregular) and adjectives (i-adjective, na-adjective) can be used for conjugation drills.
+            </div>
+          )}
           <button
             onClick={loadQuestions}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
@@ -242,6 +344,23 @@ export default function DrillPage() {
 
   const currentQuestion = questions[currentQuestionIndex];
   const isFinished = currentQuestionIndex >= questions.length - 1 && showResult;
+
+  // Record drill session when finished
+  useEffect(() => {
+    if (isFinished && gameStarted && questions.length > 0) {
+      recordDrillSession();
+    }
+  }, [isFinished, gameStarted, questions.length, score]);
+
+  const recordDrillSession = async () => {
+    try {
+      const wordsStudied = questions.map(q => q.word.id);
+      await StatsManager.recordDrillSession(questions.length, score, wordsStudied);
+      console.log(`Drill session recorded: ${score}/${questions.length} correct`);
+    } catch (err) {
+      console.error('Error recording drill session:', err);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
@@ -274,6 +393,75 @@ export default function DrillPage() {
                 Test your knowledge with {questions.length} conjugation questions
               </p>
 
+              {/* Drill Mode Selection */}
+              <div className="mb-6">
+                <div className="text-sm text-muted-foreground mb-3">Drill Mode:</div>
+                <div className="flex gap-2 justify-center flex-wrap mb-4">
+                  <button
+                    onClick={() => setDrillMode('random')}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      drillMode === 'random'
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background text-foreground border-input hover:bg-muted'
+                    }`}
+                  >
+                    Random Words
+                  </button>
+                  <button
+                    onClick={() => setDrillMode('lists')}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      drillMode === 'lists'
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background text-foreground border-input hover:bg-muted'
+                    }`}
+                  >
+                    My Lists ({wordLists.length})
+                  </button>
+                </div>
+
+                {/* List Selection */}
+                {drillMode === 'lists' && (
+                  <div className="mb-4">
+                    {wordLists.length > 0 ? (
+                      <div className="space-y-3">
+                        <div className="text-sm text-muted-foreground">Select lists to drill:</div>
+                        <div className="max-h-48 overflow-y-auto space-y-2">
+                          {wordLists.map((list) => (
+                            <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
+                              <input
+                                type="checkbox"
+                                checked={selectedLists.includes(list.id)}
+                                onChange={() => handleListToggle(list.id)}
+                                className="rounded border-border"
+                              />
+                              <div className="flex items-center gap-2 flex-1">
+                                <div
+                                  className="w-3 h-3 rounded-full"
+                                  style={{ backgroundColor: list.color }}
+                                ></div>
+                                <span className="text-sm text-foreground">{list.name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  ({list.wordIds.length} words)
+                                </span>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                        {selectedLists.length > 0 && (
+                          <div className="text-xs text-muted-foreground">
+                            {selectedLists.length} list{selectedLists.length !== 1 ? 's' : ''} selected
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
+                        No word lists found. Create lists in the Vocabulary section to drill specific words.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* Word Type Filter */}
               <div className="mb-6">
                 <div className="text-sm text-muted-foreground mb-3">Practice with:</div>
@@ -283,7 +471,6 @@ export default function DrillPage() {
                       key={filter}
                       onClick={() => {
                         setWordTypeFilter(filter);
-                        loadQuestions();
                       }}
                       className={`px-4 py-2 rounded-lg border transition-colors ${
                         wordTypeFilter === filter
@@ -300,7 +487,8 @@ export default function DrillPage() {
 
               <button
                 onClick={startGame}
-                className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg"
+                disabled={drillMode === 'lists' && selectedLists.length === 0}
+                className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {strings.drill.title}
               </button>

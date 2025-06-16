@@ -47,6 +47,37 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('doshi_sensei_settings');
+                  var theme = 'system';
+                  if (stored) {
+                    var settings = JSON.parse(stored);
+                    theme = settings.theme || 'system';
+                  }
+
+                  var root = document.documentElement;
+                  var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  var effectiveTheme = theme === 'system' ? systemTheme : theme;
+
+                  root.classList.remove('dark', 'light');
+                  root.classList.add(effectiveTheme);
+                } catch (e) {
+                  // Fallback to system theme if anything fails
+                  var root = document.documentElement;
+                  var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  root.classList.remove('dark', 'light');
+                  root.classList.add(systemTheme);
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${lato.variable} ${savoyeFont.variable} antialiased min-h-screen`}
         suppressHydrationWarning

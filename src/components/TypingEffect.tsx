@@ -38,43 +38,23 @@ const welcomeMessages: WelcomeMessage[] = [
 
 export default function TypingEffect() {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [displayedKanji, setDisplayedKanji] = useState('');
-  const [displayedFurigana, setDisplayedFurigana] = useState('');
-  const [showFurigana, setShowFurigana] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
     const currentMessage = welcomeMessages[currentMessageIndex];
-    let kanjiIndex = 0;
-    let furiganaIndex = 0;
+    let textIndex = 0;
 
     // Reset states
-    setDisplayedKanji('');
-    setDisplayedFurigana('');
-    setShowFurigana(false);
+    setDisplayedText('');
     setIsTyping(true);
 
-    // Type kanji first
-    const typeKanji = () => {
-      if (kanjiIndex < currentMessage.kanji.length) {
-        setDisplayedKanji(currentMessage.kanji.slice(0, kanjiIndex + 1));
-        kanjiIndex++;
-        setTimeout(typeKanji, 200);
-      } else {
-        // After kanji is complete, show furigana typing
-        setTimeout(() => {
-          setShowFurigana(true);
-          typeFurigana();
-        }, 600);
-      }
-    };
-
-    // Type furigana
-    const typeFurigana = () => {
-      if (furiganaIndex < currentMessage.furigana.length) {
-        setDisplayedFurigana(currentMessage.furigana.slice(0, furiganaIndex + 1));
-        furiganaIndex++;
-        setTimeout(typeFurigana, 150);
+    // Type the Japanese text
+    const typeText = () => {
+      if (textIndex < currentMessage.kanji.length) {
+        setDisplayedText(currentMessage.kanji.slice(0, textIndex + 1));
+        textIndex++;
+        setTimeout(typeText, 200);
       } else {
         setIsTyping(false);
         // Wait before starting next message
@@ -84,31 +64,18 @@ export default function TypingEffect() {
       }
     };
 
-    typeKanji();
+    typeText();
   }, [currentMessageIndex]);
 
   return (
     <div className="text-center py-6">
       <div className="min-h-[80px] flex flex-col justify-center">
-        <div className="text-2xl japanese-text font-medium text-foreground mb-2">
-          {displayedKanji}
-          {isTyping && !showFurigana && (
+        <div className="text-2xl japanese-text font-medium text-foreground">
+          {displayedText}
+          {isTyping && (
             <span className="animate-pulse text-primary">|</span>
           )}
         </div>
-        {showFurigana && (
-          <div className="text-sm japanese-text text-muted-foreground">
-            {displayedFurigana}
-            {isTyping && (
-              <span className="animate-pulse text-primary">|</span>
-            )}
-          </div>
-        )}
-        {!isTyping && (
-          <div className="text-xs text-muted-foreground mt-1 italic">
-            ({welcomeMessages[currentMessageIndex].romaji})
-          </div>
-        )}
       </div>
     </div>
   );

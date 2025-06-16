@@ -239,6 +239,24 @@ export interface CachedAPIResponse {
   expiryDate: Date;
 }
 
+// Word List Types
+export interface WordList {
+  id: string;
+  name: string;
+  description?: string;
+  wordIds: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  color: string; // Pastel color for the pill
+}
+
+export interface SavedWord {
+  id: string;
+  word: JapaneseWord;
+  savedAt: Date;
+  listIds: string[]; // Which lists this word belongs to
+}
+
 // Database Schema
 export interface DatabaseSchema {
   settings: AppSettings & { id: string; updatedAt: Date };
@@ -249,6 +267,8 @@ export interface DatabaseSchema {
   apiCache: CachedAPIResponse;
   words: JapaneseWord;
   drillSessions: DrillSession;
+  wordLists: WordList;
+  savedWords: SavedWord;
 }
 
 // IndexedDB Configuration

@@ -1,10 +1,46 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { strings } from '@/config/strings';
 import MobileHome from '@/components/MobileHome';
+import StatsManager from '@/utils/stats';
+
+interface UserStats {
+  drillsCompleted: number;
+  accuracy: number;
+  streak: number;
+  totalDaysUsed: number;
+}
 
 export default function Home() {
+  const [stats, setStats] = useState<UserStats>({
+    drillsCompleted: 0,
+    accuracy: 0,
+    streak: 0,
+    totalDaysUsed: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const userStats = await StatsManager.getUserStats();
+      setStats({
+        drillsCompleted: userStats.drillsCompleted,
+        accuracy: Math.round(userStats.accuracy),
+        streak: userStats.currentStreak,
+        totalDaysUsed: userStats.totalDaysUsed
+      });
+    } catch (err) {
+      console.error('Error loading stats:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -76,13 +112,13 @@ export default function Home() {
           {/* Quick Stats */}
           <div className="bg-card rounded-lg p-6 border border-border slide-up">
             <h2 className="text-xl font-semibold mb-4 text-card-foreground">
-              {strings.common.loading}
+              {loading ? 'Loading...' : 'Your Progress'}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard label="Words Learned" value="0" />
-              <StatCard label="Drills Completed" value="0" />
-              <StatCard label="Accuracy" value="0%" />
-              <StatCard label="Streak" value="0 days" />
+              <StatCard label="Days Used" value={loading ? '...' : stats.totalDaysUsed.toString()} />
+              <StatCard label="Drills Completed" value={loading ? '...' : stats.drillsCompleted.toString()} />
+              <StatCard label="Accuracy" value={loading ? '...' : `${stats.accuracy}%`} />
+              <StatCard label="Streak" value={loading ? '...' : `${stats.streak} days`} />
             </div>
           </div>
         </main>

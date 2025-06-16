@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { JapaneseWord, ConjugationForms } from '@/types';
+import { JapaneseWord, ConjugationForms, WordList } from '@/types';
 import { searchWords, getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
+import WordListManager from '@/utils/wordLists';
+import StatsManager from '@/utils/stats';
 
 export default function PracticePage() {
   const [words, setWords] = useState<JapaneseWord[]>([]);
@@ -230,6 +232,25 @@ interface WordCardProps {
 }
 
 function WordCard({ word, onSelect }: WordCardProps) {
+  const [wordLists, setWordLists] = useState<WordList[]>([]);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    loadWordLists();
+  }, []);
+
+  const loadWordLists = async () => {
+    try {
+      const lists = await WordListManager.getAllWordLists();
+      setWordLists(lists);
+    } catch (err) {
+      console.error('Error loading word lists:', err);
+    }
+  };
+
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'Ichidan':
@@ -247,37 +268,191 @@ function WordCard({ word, onSelect }: WordCardProps) {
     }
   };
 
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    setShowSaveModal(true);
+  };
+
+  const handleListToggle = (listId: string) => {
+    setSelectedLists(prev =>
+      prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId]
+    );
+  };
+
+  const handleCreateNewList = async () => {
+    if (!newListName.trim()) return;
+
+    try {
+      await WordListManager.createWordList(newListName.trim());
+      setNewListName('');
+      await loadWordLists(); // Reload lists
+    } catch (err) {
+      console.error('Error creating list:', err);
+    }
+  };
+
+  const handleSaveToLists = async () => {
+    if (selectedLists.length === 0) return;
+
+    try {
+      setIsSaving(true);
+
+      // Add word to selected lists
+      await WordListManager.saveWordToLists(word, selectedLists);
+
+      setShowSaveModal(false);
+      setSelectedLists([]);
+
+      // Show success message briefly
+      console.log(`Word "${word.kanji}" saved to ${selectedLists.length} list(s)`);
+    } catch (err) {
+      console.error('Error saving word to lists:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div
-      onClick={() => onSelect(word)}
-      className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors cursor-pointer group"
-    >
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
-            {word.kanji}
+    <>
+      <div className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors cursor-pointer group relative">
+        {/* Save Button */}
+        <button
+          onClick={handleSaveClick}
+          className="absolute top-3 right-3 p-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          title="Save to List"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+          </svg>
+        </button>
+
+        <div onClick={() => onSelect(word)}>
+          <div className="flex items-start justify-between mb-3 pr-12">
+            <div>
+              <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
+                {word.kanji}
+              </div>
+              <div className="text-lg japanese-text text-muted-foreground">
+                {word.kana}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {word.romaji}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className={`inline-block px-2 py-1 text-xs rounded border ${getTypeColor(word.type)}`}>
+                {word.type}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {word.jlpt}
+              </div>
+            </div>
           </div>
-          <div className="text-lg japanese-text text-muted-foreground">
-            {word.kana}
-          </div>
+
           <div className="text-sm text-muted-foreground">
-            {word.romaji}
-          </div>
-        </div>
-        <div className="text-right">
-          <div className={`inline-block px-2 py-1 text-xs rounded border ${getTypeColor(word.type)}`}>
-            {word.type}
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {word.jlpt}
+            {word.meaning}
           </div>
         </div>
       </div>
 
-      <div className="text-sm text-muted-foreground">
-        {word.meaning}
-      </div>
-    </div>
+      {/* Save to List Modal */}
+      {showSaveModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-card-foreground">Save to List</h3>
+              <button
+                onClick={() => setShowSaveModal(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+              <div className="text-lg japanese-text font-medium text-foreground">{word.kanji}</div>
+              <div className="text-sm text-muted-foreground">{word.meaning}</div>
+            </div>
+
+            {/* Create New List */}
+            <div className="mb-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  placeholder="Create new list..."
+                  className="flex-1 px-3 py-2 text-sm rounded border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  onKeyPress={(e) => e.key === 'Enter' && handleCreateNewList()}
+                />
+                <button
+                  onClick={handleCreateNewList}
+                  disabled={!newListName.trim()}
+                  className="px-3 py-2 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Create
+                </button>
+              </div>
+            </div>
+
+            {/* Existing Lists */}
+            <div className="mb-6">
+              <div className="text-sm text-muted-foreground mb-2">Select lists:</div>
+              {wordLists.length > 0 ? (
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {wordLists.map((list) => (
+                    <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
+                      <input
+                        type="checkbox"
+                        checked={selectedLists.includes(list.id)}
+                        onChange={() => handleListToggle(list.id)}
+                        className="rounded border-border"
+                      />
+                      <div className="flex items-center gap-2 flex-1">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: list.color }}
+                        ></div>
+                        <span className="text-sm text-foreground">{list.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          ({list.wordIds.length} words)
+                        </span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg text-center">
+                  No lists found. Create your first list above.
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowSaveModal(false)}
+                className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveToLists}
+                disabled={selectedLists.length === 0 || isSaving}
+                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSaving ? 'Saving...' : `Save to ${selectedLists.length} list${selectedLists.length !== 1 ? 's' : ''}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -292,6 +467,20 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
   const [showFurigana, setShowFurigana] = useState(false);
 
   const conjugations = ConjugationEngine.conjugate(word);
+
+  // Track word study when component mounts
+  useEffect(() => {
+    const recordWordStudy = async () => {
+      try {
+        await StatsManager.recordWordStudied(word.id);
+        console.log(`Word study recorded: ${word.kanji}`);
+      } catch (err) {
+        console.error('Error recording word study:', err);
+      }
+    };
+
+    recordWordStudy();
+  }, [word.id]);
 
   const getFormDisplayName = (form: keyof ConjugationForms): string => {
     return strings.conjugation.forms[form] || form;

@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { JapaneseWord } from '@/types';
+import { JapaneseWord, WordList } from '@/types';
 import { searchWords } from '@/utils/api';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
-import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
+import WordListManager from '@/utils/wordLists';
 
 export default function VocabularyPage() {
-  const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
+  const [wordLists, setWordLists] = useState<WordList[]>([]);
+  const [selectedList, setSelectedList] = useState<WordList | null>(null);
+  const [listWords, setListWords] = useState<JapaneseWord[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<JapaneseWord[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,20 +20,23 @@ export default function VocabularyPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showCreateListModal, setShowCreateListModal] = useState(false);
+  const [showSaveWordModal, setShowSaveWordModal] = useState(false);
+  const [wordToSave, setWordToSave] = useState<JapaneseWord | null>(null);
 
   useEffect(() => {
-    loadSearchHistory();
+    loadWordLists();
   }, []);
 
-  const loadSearchHistory = async () => {
+  const loadWordLists = async () => {
     try {
       setLoading(true);
       setError(null);
-      const history = await SearchHistoryManager.getSearchHistory();
-      setSearchHistory(history);
+      const lists = await WordListManager.getAllWordLists();
+      setWordLists(lists);
     } catch (err) {
-      setError('Failed to load search history');
-      console.error('Error loading search history:', err);
+      setError('Failed to load word lists');
+      console.error('Error loading word lists:', err);
     } finally {
       setLoading(false);
     }
@@ -50,16 +55,9 @@ export default function VocabularyPage() {
       setError(null);
       const searchResults = await searchWords(term, 30);
 
-      // Show search results
       setCurrentSearchResults(searchResults);
       setCurrentSearchTerm(term);
       setShowSearchResults(true);
-
-      // Add to search history
-      await SearchHistoryManager.addSearchEntry(term, searchResults);
-
-      // Refresh search history
-      await loadSearchHistory();
     } catch (err) {
       setError('Search failed. Please try again.');
       console.error('Error searching words:', err);
@@ -68,25 +66,24 @@ export default function VocabularyPage() {
     }
   };
 
-  const handleDeleteHistoryEntry = async (entryId: string) => {
+  const handleListClick = async (list: WordList) => {
     try {
-      await SearchHistoryManager.deleteSearchEntry(entryId);
-      await loadSearchHistory();
+      setSelectedList(list);
+      const words = await WordListManager.getWordsInList(list.id);
+      setListWords(words);
+      setShowSearchResults(false);
     } catch (err) {
-      console.error('Error deleting search entry:', err);
+      console.error('Error loading list words:', err);
     }
   };
 
-  const handleClearAllHistory = async () => {
-    try {
-      await SearchHistoryManager.clearSearchHistory();
-      await loadSearchHistory();
-      setShowSearchResults(false);
-      setCurrentSearchResults([]);
-      setCurrentSearchTerm('');
-    } catch (err) {
-      console.error('Error clearing search history:', err);
-    }
+  const handleBackToLists = () => {
+    setSelectedList(null);
+    setListWords([]);
+    setShowSearchResults(false);
+    setCurrentSearchResults([]);
+    setCurrentSearchTerm('');
+    setSearchTerm('');
   };
 
   const handleWordClick = (word: JapaneseWord) => {
@@ -97,11 +94,40 @@ export default function VocabularyPage() {
     setSelectedWord(null);
   };
 
-  const handleBackToHistory = () => {
-    setShowSearchResults(false);
-    setCurrentSearchResults([]);
-    setCurrentSearchTerm('');
-    setSearchTerm('');
+  const handleSaveWordClick = (word: JapaneseWord) => {
+    setWordToSave(word);
+    setShowSaveWordModal(true);
+  };
+
+  const handleRemoveWordFromList = async (wordId: string) => {
+    if (!selectedList) return;
+
+    try {
+      await WordListManager.removeWordFromList(wordId, selectedList.id);
+      // Refresh list words
+      const words = await WordListManager.getWordsInList(selectedList.id);
+      setListWords(words);
+    } catch (err) {
+      console.error('Error removing word from list:', err);
+    }
+  };
+
+  const handleDeleteList = async (listId: string) => {
+    if (!confirm('Are you sure you want to delete this list? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await WordListManager.deleteWordList(listId);
+      await loadWordLists();
+
+      // If we're currently viewing the deleted list, go back to lists view
+      if (selectedList?.id === listId) {
+        handleBackToLists();
+      }
+    } catch (err) {
+      console.error('Error deleting list:', err);
+    }
   };
 
   return (
@@ -110,7 +136,7 @@ export default function VocabularyPage() {
 
       <main className="max-w-4xl mx-auto">
         <p className="text-muted-foreground mb-6 text-center">
-          Search and build your Japanese vocabulary history
+          Search and save words to your custom lists
         </p>
 
         {/* Search */}
@@ -151,10 +177,10 @@ export default function VocabularyPage() {
                 Search Results for "{currentSearchTerm}"
               </h3>
               <button
-                onClick={handleBackToHistory}
+                onClick={handleBackToLists}
                 className="text-primary hover:text-primary/80 transition-colors text-sm"
               >
-                ← Back to History
+                ← Back to Lists
               </button>
             </div>
             {currentSearchResults.length > 0 ? (
@@ -163,7 +189,9 @@ export default function VocabularyPage() {
                   <WordCard
                     key={word.id}
                     word={word}
-                    onClick={() => handleWordClick(word)}
+                    onWordClick={() => handleWordClick(word)}
+                    onSaveClick={() => handleSaveWordClick(word)}
+                    showSaveButton={true}
                   />
                 ))}
               </div>
@@ -175,13 +203,64 @@ export default function VocabularyPage() {
           </div>
         )}
 
-        {/* Search History */}
-        {!showSearchResults && (
+        {/* Show Selected List Words */}
+        {selectedList && !showSearchResults && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: selectedList.color }}
+                ></div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {selectedList.name}
+                </h3>
+                <span className="text-sm text-muted-foreground">
+                  ({listWords.length} words)
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleDeleteList(selectedList.id)}
+                  className="text-red-400 hover:text-red-300 transition-colors text-sm"
+                >
+                  Delete List
+                </button>
+                <button
+                  onClick={handleBackToLists}
+                  className="text-primary hover:text-primary/80 transition-colors text-sm"
+                >
+                  ← Back to Lists
+                </button>
+              </div>
+            </div>
+            {listWords.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {listWords.map((word) => (
+                  <WordCard
+                    key={word.id}
+                    word={word}
+                    onWordClick={() => handleWordClick(word)}
+                    onRemoveClick={() => handleRemoveWordFromList(word.id)}
+                    showRemoveButton={true}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No words in this list yet</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Word Lists */}
+        {!showSearchResults && !selectedList && (
           <>
             {loading && (
               <div className="text-center py-12">
                 <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading search history...</p>
+                <p className="text-muted-foreground">Loading word lists...</p>
               </div>
             )}
 
@@ -189,7 +268,7 @@ export default function VocabularyPage() {
               <div className="text-center py-12">
                 <p className="text-red-400 mb-4">{error}</p>
                 <button
-                  onClick={loadSearchHistory}
+                  onClick={loadWordLists}
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   {strings.common.retry}
@@ -200,31 +279,34 @@ export default function VocabularyPage() {
             {!loading && !error && (
               <div className="mb-32 md:mb-8 pb-safe">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-foreground">Search History</h2>
-                  {searchHistory.length > 0 && (
-                    <button
-                      onClick={handleClearAllHistory}
-                      className="text-red-400 hover:text-red-300 transition-colors text-sm"
-                    >
-                      Clear All History
-                    </button>
-                  )}
+                  <h2 className="text-xl font-semibold text-foreground">My Word Lists</h2>
+                  <button
+                    onClick={() => setShowCreateListModal(true)}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+                  >
+                    + Create List
+                  </button>
                 </div>
 
-                {searchHistory.length === 0 ? (
+                {wordLists.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="text-6xl mb-4">🔍</div>
-                    <h3 className="text-lg font-medium text-foreground mb-2">No Search History Yet</h3>
-                    <p className="text-muted-foreground">Start searching for Japanese words to build your vocabulary history!</p>
+                    <div className="text-6xl mb-4">📚</div>
+                    <h3 className="text-lg font-medium text-foreground mb-2">No Word Lists Yet</h3>
+                    <p className="text-muted-foreground mb-4">Create your first list to start saving Japanese words!</p>
+                    <button
+                      onClick={() => setShowCreateListModal(true)}
+                      className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    >
+                      Create Your First List
+                    </button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {searchHistory.map((entry) => (
-                      <SearchHistoryItem
-                        key={entry.id}
-                        entry={entry}
-                        onDelete={handleDeleteHistoryEntry}
-                        onWordClick={handleWordClick}
+                  <div className="flex flex-wrap gap-3">
+                    {wordLists.map((list) => (
+                      <ListPill
+                        key={list.id}
+                        list={list}
+                        onClick={() => handleListClick(list)}
                       />
                     ))}
                   </div>
@@ -240,6 +322,28 @@ export default function VocabularyPage() {
         <WordModal
           word={selectedWord}
           onClose={handleCloseModal}
+          onSave={() => handleSaveWordClick(selectedWord)}
+        />
+      )}
+
+      {/* Create List Modal */}
+      {showCreateListModal && (
+        <CreateListModal
+          onClose={() => setShowCreateListModal(false)}
+          onCreated={loadWordLists}
+        />
+      )}
+
+      {/* Save Word Modal */}
+      {showSaveWordModal && wordToSave && (
+        <SaveWordModal
+          word={wordToSave}
+          wordLists={wordLists}
+          onClose={() => {
+            setShowSaveWordModal(false);
+            setWordToSave(null);
+          }}
+          onSaved={loadWordLists}
         />
       )}
 
@@ -266,86 +370,42 @@ export default function VocabularyPage() {
   );
 }
 
-interface SearchHistoryItemProps {
-  entry: SearchHistoryEntry;
-  onDelete: (entryId: string) => void;
-  onWordClick: (word: JapaneseWord) => void;
+interface ListPillProps {
+  list: WordList;
+  onClick: () => void;
 }
 
-function SearchHistoryItem({ entry, onDelete, onWordClick }: SearchHistoryItemProps) {
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
+function ListPill({ list, onClick }: ListPillProps) {
   return (
-    <div className="bg-card border border-border rounded-lg p-4">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="font-medium text-foreground">"{entry.searchTerm}"</h3>
-            <span className="text-xs text-muted-foreground">
-              {formatDate(entry.timestamp)}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {entry.results.length} result{entry.results.length !== 1 ? 's' : ''} found
-          </p>
-        </div>
-        <button
-          onClick={() => onDelete(entry.id)}
-          className="p-1 text-muted-foreground hover:text-red-400 transition-colors"
-          title="Delete this search"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Show first few results */}
-      {entry.results.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {entry.results.slice(0, 6).map((word) => (
-            <div
-              key={word.id}
-              onClick={() => onWordClick(word)}
-              className="bg-background/50 border border-border/50 rounded-lg p-3 hover:bg-background/80 transition-colors cursor-pointer"
-            >
-              <div className="text-lg japanese-text font-medium text-foreground mb-1">
-                {word.kanji}
-              </div>
-              <div className="text-sm japanese-text text-muted-foreground mb-1">
-                {word.kana}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {word.meaning.split(',')[0]}...
-              </div>
-            </div>
-          ))}
-          {entry.results.length > 6 && (
-            <div className="bg-background/30 border border-border/30 rounded-lg p-3 flex items-center justify-center">
-              <span className="text-sm text-muted-foreground">
-                +{entry.results.length - 6} more
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    <button
+      onClick={onClick}
+      className="group flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-primary/50 transition-all hover:scale-105 active:scale-95"
+      style={{ backgroundColor: `${list.color}20`, borderColor: `${list.color}60` }}
+    >
+      <div
+        className="w-3 h-3 rounded-full"
+        style={{ backgroundColor: list.color }}
+      ></div>
+      <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+        {list.name}
+      </span>
+      <span className="text-xs text-muted-foreground">
+        ({list.wordIds.length})
+      </span>
+    </button>
   );
 }
 
 interface WordCardProps {
   word: JapaneseWord;
-  onClick: () => void;
+  onWordClick: () => void;
+  onSaveClick?: () => void;
+  onRemoveClick?: () => void;
+  showSaveButton?: boolean;
+  showRemoveButton?: boolean;
 }
 
-function WordCard({ word, onClick }: WordCardProps) {
+function WordCard({ word, onWordClick, onSaveClick, onRemoveClick, showSaveButton, showRemoveButton }: WordCardProps) {
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'Ichidan':
@@ -371,53 +431,273 @@ function WordCard({ word, onClick }: WordCardProps) {
   };
 
   return (
-    <div
-      onClick={onClick}
-      className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors cursor-pointer group"
-    >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
-            {word.kanji}
-          </div>
-          <div className="text-lg japanese-text text-muted-foreground mb-1">
-            {word.kana}
-          </div>
-          {/* Show all readings if available */}
-          {word.allReadings && word.allReadings.length > 1 && (
-            <div className="text-sm japanese-text text-muted-foreground/70 mb-1">
-              {word.allReadings.filter(r => r !== word.kana).slice(0, 2).join(', ')}
+    <div className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors group relative">
+      <div
+        onClick={onWordClick}
+        className="cursor-pointer"
+      >
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
+              {word.kanji}
             </div>
-          )}
-          <div className="text-sm text-muted-foreground">
-            {word.romaji}
+            <div className="text-lg japanese-text text-muted-foreground mb-1">
+              {word.kana}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {word.romaji}
+            </div>
+          </div>
+          <div className="text-right">
+            <div className={`inline-block px-2 py-1 text-xs rounded border ${getTypeColor(word.type)}`}>
+              {word.type}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {word.jlpt}
+            </div>
+            {word.frequency && (
+              <div className={`text-xs mt-1 ${getFrequencyColor(word.frequency)}`}>
+                ★ {word.frequency >= 80 ? 'High' : word.frequency >= 50 ? 'Med' : 'Low'}
+              </div>
+            )}
           </div>
         </div>
-        <div className="text-right">
-          <div className={`inline-block px-2 py-1 text-xs rounded border ${getTypeColor(word.type)}`}>
-            {word.type}
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {word.jlpt}
-          </div>
-          {word.frequency && (
-            <div className={`text-xs mt-1 ${getFrequencyColor(word.frequency)}`}>
-              ★ {word.frequency >= 80 ? 'High' : word.frequency >= 50 ? 'Med' : 'Low'}
-            </div>
-          )}
+
+        <div className="text-sm text-muted-foreground mb-2">
+          {word.meaning.length > 60 ? `${word.meaning.substring(0, 60)}...` : word.meaning}
         </div>
       </div>
 
-      <div className="text-sm text-muted-foreground mb-2">
-        {word.meaning}
+      {/* Action buttons */}
+      <div className="flex gap-2 mt-3 pt-3 border-t border-border/50">
+        {showSaveButton && onSaveClick && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSaveClick();
+            }}
+            className="flex-1 px-3 py-1.5 text-xs bg-primary/10 text-primary border border-primary/20 rounded-md hover:bg-primary/20 transition-colors"
+          >
+            Save to List
+          </button>
+        )}
+        {showRemoveButton && onRemoveClick && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveClick();
+            }}
+            className="flex-1 px-3 py-1.5 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-md hover:bg-red-500/20 transition-colors"
+          >
+            Remove
+          </button>
+        )}
       </div>
+    </div>
+  );
+}
 
-      {/* Priority indicator */}
-      {word.priority && word.priority !== 'Standard frequency' && (
-        <div className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20 inline-block">
-          {word.priority.split(',')[0]}
+interface CreateListModalProps {
+  onClose: () => void;
+  onCreated: () => void;
+}
+
+function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
+  const [listName, setListName] = useState('');
+  const [description, setDescription] = useState('');
+  const [creating, setCreating] = useState(false);
+
+  const handleCreate = async () => {
+    if (!listName.trim()) return;
+
+    try {
+      setCreating(true);
+      await WordListManager.createWordList(listName, description);
+      onCreated();
+      onClose();
+    } catch (err) {
+      console.error('Error creating list:', err);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
+        <h3 className="text-lg font-semibold text-card-foreground mb-4">Create New List</h3>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              List Name *
+            </label>
+            <input
+              type="text"
+              value={listName}
+              onChange={(e) => setListName(e.target.value)}
+              placeholder="e.g., JLPT N5 Verbs, Cooking Terms"
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              maxLength={50}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Description (optional)
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief description of this list..."
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              rows={3}
+              maxLength={200}
+            />
+          </div>
         </div>
-      )}
+
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleCreate}
+            disabled={!listName.trim() || creating}
+            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {creating ? 'Creating...' : 'Create List'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface SaveWordModalProps {
+  word: JapaneseWord;
+  wordLists: WordList[];
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+function SaveWordModal({ word, wordLists, onClose, onSaved }: SaveWordModalProps) {
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [showCreateNew, setShowCreateNew] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const handleToggleList = (listId: string) => {
+    setSelectedLists(prev =>
+      prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId]
+    );
+  };
+
+  const handleSave = async () => {
+    if (selectedLists.length === 0 && !newListName.trim()) return;
+
+    try {
+      setSaving(true);
+
+      let listsToSaveTo = [...selectedLists];
+
+      // Create new list if specified
+      if (newListName.trim()) {
+        const newList = await WordListManager.createWordList(newListName);
+        listsToSaveTo.push(newList.id);
+      }
+
+      // Save word to selected lists
+      await WordListManager.saveWordToLists(word, listsToSaveTo);
+
+      onSaved();
+      onClose();
+    } catch (err) {
+      console.error('Error saving word:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <h3 className="text-lg font-semibold text-card-foreground mb-4">
+          Save "{word.kanji}" to Lists
+        </h3>
+
+        {wordLists.length > 0 && (
+          <div className="space-y-3 mb-4">
+            <h4 className="text-sm font-medium text-muted-foreground">Select existing lists:</h4>
+            {wordLists.map((list) => (
+              <label key={list.id} className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedLists.includes(list.id)}
+                  onChange={() => handleToggleList(list.id)}
+                  className="rounded border-border"
+                />
+                <div className="flex items-center gap-2 flex-1">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: list.color }}
+                  ></div>
+                  <span className="text-sm text-foreground">{list.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({list.wordIds.length} words)
+                  </span>
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
+
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center gap-2 mb-3">
+            <input
+              type="checkbox"
+              checked={showCreateNew}
+              onChange={(e) => setShowCreateNew(e.target.checked)}
+              className="rounded border-border"
+            />
+            <label className="text-sm font-medium text-muted-foreground cursor-pointer">
+              Create new list
+            </label>
+          </div>
+
+          {showCreateNew && (
+            <input
+              type="text"
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+              placeholder="New list name..."
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              maxLength={50}
+            />
+          )}
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={(selectedLists.length === 0 && !newListName.trim()) || saving}
+            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? 'Saving...' : 'Save Word'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -425,27 +705,25 @@ function WordCard({ word, onClick }: WordCardProps) {
 interface WordModalProps {
   word: JapaneseWord;
   onClose: () => void;
+  onSave: () => void;
 }
 
-function WordModal({ word, onClose }: WordModalProps) {
+function WordModal({ word, onClose, onSave }: WordModalProps) {
   const router = useRouter();
   const [showExamples, setShowExamples] = useState(false);
 
   const handlePracticeClick = () => {
-    // Store the selected word in sessionStorage to pass it to the practice page
     sessionStorage.setItem('selectedWord', JSON.stringify(word));
     router.push('/practice');
     onClose();
   };
 
   const handleDrillClick = () => {
-    // Store the selected word in sessionStorage to pass it to the drill page
     sessionStorage.setItem('drillWord', JSON.stringify(word));
     router.push('/drill');
     onClose();
   };
 
-  // Check if the word can be conjugated (verbs and adjectives only)
   const canBeConjugated = word.type === 'Ichidan' ||
                          word.type === 'Godan' ||
                          word.type === 'Irregular' ||
@@ -459,52 +737,42 @@ function WordModal({ word, onClose }: WordModalProps) {
           <h2 className="text-xl font-semibold text-card-foreground">
             Japanese Dictionary
           </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-secondary rounded-lg transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={onSave}
+              className="px-3 py-1.5 text-sm bg-primary/10 text-primary border border-primary/20 rounded-md hover:bg-primary/20 transition-colors"
+            >
+              Save to List
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="space-y-6">
           {/* Main Word Information */}
           <div className="bg-background/50 border border-border rounded-lg p-4">
             <div className="space-y-3">
-              {/* Kanji */}
               <div>
                 <span className="text-sm font-medium text-muted-foreground">Kanji:</span>
                 <div className="text-3xl japanese-text font-medium text-card-foreground mt-1">
                   {word.kanji}
-                  {word.allKanji && word.allKanji.length > 1 && (
-                    <span className="text-lg text-muted-foreground ml-3">
-                      ({word.allKanji.filter(k => k !== word.kanji).join(', ')})
-                    </span>
-                  )}
                 </div>
               </div>
 
-              {/* Reading */}
               <div>
                 <span className="text-sm font-medium text-muted-foreground">Reading:</span>
                 <div className="text-xl japanese-text text-card-foreground mt-1">
                   {word.kana} ({word.romaji})
-                  {word.katakanaReadings && word.katakanaReadings.length > 0 && (
-                    <span className="block text-lg text-muted-foreground mt-1">
-                      /{word.katakanaReadings.join(', ')}
-                    </span>
-                  )}
-                  {word.allReadings && word.allReadings.length > 1 && (
-                    <span className="block text-sm text-muted-foreground mt-1">
-                      Alt: {word.allReadings.filter(r => r !== word.kana).join(', ')}
-                    </span>
-                  )}
                 </div>
               </div>
 
-              {/* English */}
               <div>
                 <span className="text-sm font-medium text-muted-foreground">English:</span>
                 <div className="text-base text-card-foreground mt-1">
@@ -512,35 +780,13 @@ function WordModal({ word, onClose }: WordModalProps) {
                 </div>
               </div>
 
-              {/* Priority */}
-              {word.priority && (
-                <div>
-                  <span className="text-sm font-medium text-muted-foreground">Priority:</span>
-                  <div className="text-sm text-card-foreground mt-1">
-                    {word.priority}
-                    {word.frequency && (
-                      <span className="ml-2 text-xs px-2 py-1 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20">
-                        Score: {word.frequency}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Part of Speech */}
               <div>
                 <span className="text-sm font-medium text-muted-foreground">Part of Speech:</span>
                 <div className="text-sm text-card-foreground mt-1">
                   {word.type}
-                  {word.tags && word.tags.length > 0 && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      ({word.tags.slice(0, 3).join(', ')})
-                    </span>
-                  )}
                 </div>
               </div>
 
-              {/* JLPT Level */}
               <div>
                 <span className="text-sm font-medium text-muted-foreground">JLPT Level:</span>
                 <div className="text-sm text-card-foreground mt-1">
@@ -549,69 +795,6 @@ function WordModal({ word, onClose }: WordModalProps) {
               </div>
             </div>
           </div>
-
-          {/* Detailed Meanings */}
-          {word.detailedMeaning && word.detailedMeaning.length > 0 && (
-            <div className="bg-background/50 border border-border rounded-lg p-4">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Detailed Meanings:</h3>
-              <div className="space-y-3">
-                {word.detailedMeaning.slice(0, 3).map((meaning, index) => (
-                  <div key={index} className="text-sm">
-                    <div className="text-xs text-muted-foreground mb-1">
-                      {meaning.partOfSpeech.join(', ')}
-                    </div>
-                    <div className="text-card-foreground">
-                      {meaning.glosses.join('; ')}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Examples Section - Collapsible */}
-          {word.examples && word.examples.length > 0 && (
-            <div className="bg-background/50 border border-border rounded-lg">
-              <button
-                onClick={() => setShowExamples(!showExamples)}
-                className="w-full p-4 text-left flex items-center justify-between hover:bg-background/70 transition-colors rounded-lg"
-              >
-                <span className="text-sm font-medium text-muted-foreground">
-                  Examples ({word.examples.length} sentences)
-                </span>
-                <svg
-                  className={`w-4 h-4 text-muted-foreground transition-transform ${showExamples ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {showExamples && (
-                <div className="px-4 pb-4 border-t border-border/50 pt-4">
-                  <div className="space-y-3">
-                    {word.examples.slice(0, 5).map((example, index) => (
-                      <div key={index} className="bg-background/30 rounded p-3">
-                        <div className="text-sm japanese-text text-card-foreground mb-1">
-                          {example}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Example {index + 1}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {word.examples.length > 5 && (
-                    <div className="text-xs text-muted-foreground mt-3 text-center">
-                      ... and {word.examples.length - 5} more examples
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Action Buttons */}
           {canBeConjugated ? (

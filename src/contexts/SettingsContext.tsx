@@ -14,6 +14,7 @@ const defaultSettings: AppSettings = {
 // Settings context type
 type SettingsContextType = {
   settings: AppSettings;
+  isLoading: boolean;
   updateSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
   resetSettings: () => void;
 };
@@ -21,6 +22,7 @@ type SettingsContextType = {
 // Create context with default values
 const SettingsContext = createContext<SettingsContextType>({
   settings: defaultSettings,
+  isLoading: true,
   updateSetting: () => {},
   resetSettings: () => {}
 });
@@ -39,6 +41,7 @@ const SETTINGS_KEY = 'doshi_sensei_settings';
  */
 export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -51,6 +54,8 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         }
       } catch (error) {
         console.error('Error loading settings:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -83,7 +88,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   };
 
   return (
-    <SettingsContext.Provider value={{ settings, updateSetting, resetSettings }}>
+    <SettingsContext.Provider value={{ settings, isLoading, updateSetting, resetSettings }}>
       {children}
     </SettingsContext.Provider>
   );

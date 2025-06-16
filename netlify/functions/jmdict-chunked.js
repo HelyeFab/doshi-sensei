@@ -201,16 +201,16 @@ async function loadSearchIndex() {
     console.log('__dirname:', __dirname);
     console.log('process.cwd():', process.cwd());
 
-    // For Netlify static export, files are in the build output directory
+    // For Netlify serverless functions, files are copied to the functions directory
     const possiblePaths = [
+      path.join(__dirname, 'dict', 'index.json'),  // Primary path: /var/task/dict/index.json
+      path.join(process.cwd(), 'dict', 'index.json'),
+      path.join('/var/task', 'dict', 'index.json'),
       path.join(__dirname, '..', '..', '..', 'dict', 'index.json'),
       path.join(__dirname, '..', '..', 'dict', 'index.json'),
-      path.join(process.cwd(), 'dict', 'index.json'),
       path.join('/opt/build/repo/out/dict/index.json'),
-      path.join('/var/task', 'dict', 'index.json'),
       path.join(__dirname, '..', '..', '.next', 'dict', 'index.json'),
-      path.join('/var/task', '.next', 'dict', 'index.json'),
-      path.join(process.cwd(), '.next', 'dict', 'index.json')
+      path.join('/var/task', '.next', 'dict', 'index.json')
     ];
 
     console.log('Checking paths for index file:');
@@ -275,16 +275,16 @@ async function loadChunk(chunkIndex) {
     const chunk = index.chunks[chunkIndex];
     const chunkFilename = chunk.filename;
 
-    // For Netlify static export, chunk files are in the build output directory
+    // For Netlify serverless functions, chunk files are copied to the functions directory
     const possiblePaths = [
+      path.join(__dirname, 'dict', 'chunks', chunkFilename),  // Primary path: /var/task/dict/chunks/
+      path.join(process.cwd(), 'dict', 'chunks', chunkFilename),
+      path.join('/var/task', 'dict', 'chunks', chunkFilename),
       path.join(__dirname, '..', '..', '..', 'dict', 'chunks', chunkFilename),
       path.join(__dirname, '..', '..', 'dict', 'chunks', chunkFilename),
-      path.join(process.cwd(), 'dict', 'chunks', chunkFilename),
       path.join('/opt/build/repo/out/dict/chunks', chunkFilename),
-      path.join('/var/task', 'dict', 'chunks', chunkFilename),
       path.join(__dirname, '..', '..', '.next', 'dict', 'chunks', chunkFilename),
-      path.join('/var/task', '.next', 'dict', 'chunks', chunkFilename),
-      path.join(process.cwd(), '.next', 'dict', 'chunks', chunkFilename)
+      path.join('/var/task', '.next', 'dict', 'chunks', chunkFilename)
     ];
 
     let chunkPath = null;

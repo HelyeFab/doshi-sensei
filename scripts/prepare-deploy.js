@@ -32,8 +32,13 @@ async function prepareForDeploy() {
     // Copy dictionary files to .next/dict for function access
     await copyDirectory('public/dict', '.next/dict');
 
+    // Also copy to netlify functions directory so serverless functions can access them
+    await fs.mkdir('netlify/functions/dict', { recursive: true });
+    await copyDirectory('public/dict', 'netlify/functions/dict');
+
     console.log('✅ Dictionary files prepared for deployment');
-    console.log('Files copied to .next/dict/ for Netlify function access');
+    console.log('Files copied to .next/dict/ for static site');
+    console.log('Files copied to netlify/functions/dict/ for serverless function access');
 
   } catch (error) {
     console.error('❌ Error preparing for deployment:', error);

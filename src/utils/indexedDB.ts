@@ -80,6 +80,22 @@ const DB_CONFIG: DatabaseConfig = {
         { name: 'completed', keyPath: 'completed' },
         { name: 'startTime', keyPath: 'startTime' }
       ]
+    },
+    wordLists: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'name', keyPath: 'name' },
+        { name: 'createdAt', keyPath: 'createdAt' },
+        { name: 'updatedAt', keyPath: 'updatedAt' }
+      ]
+    },
+    savedWords: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'wordId', keyPath: 'wordId' },
+        { name: 'listId', keyPath: 'listId' },
+        { name: 'savedAt', keyPath: 'savedAt' }
+      ]
     }
   }
 };

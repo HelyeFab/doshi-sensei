@@ -265,12 +265,17 @@ export default function DrillPage() {
     }
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
       setShowResult(false);
       setShowRules(false);
+    } else {
+      // Game is finished, record the session
+      if (gameStarted && questions.length > 0) {
+        await recordDrillSession();
+      }
     }
   };
 
@@ -344,13 +349,6 @@ export default function DrillPage() {
 
   const currentQuestion = questions[currentQuestionIndex];
   const isFinished = currentQuestionIndex >= questions.length - 1 && showResult;
-
-  // Record drill session when finished
-  useEffect(() => {
-    if (isFinished && gameStarted && questions.length > 0) {
-      recordDrillSession();
-    }
-  }, [isFinished, gameStarted, questions.length, score]);
 
   const recordDrillSession = async () => {
     try {

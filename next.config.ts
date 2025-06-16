@@ -23,6 +23,6 @@ const config = withPWA({
   buildExcludes: [/middleware-manifest\.json$/],
   cacheOnFrontEndNav: true,
   reloadOnOnline: true,
-})(nextConfig);
+})(nextConfig as any);
 
 export default config;

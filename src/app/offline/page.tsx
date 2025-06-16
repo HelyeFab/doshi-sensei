@@ -1,10 +1,6 @@
-import { Metadata } from 'next';
-import { PageHeader } from '@/components/PageHeader';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Offline - Doshi Sensei',
-  description: 'You are currently offline',
-};
+import { PageHeader } from '@/components/PageHeader';
 
 export default function OfflinePage() {
   return (

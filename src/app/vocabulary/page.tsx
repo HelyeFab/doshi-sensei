@@ -7,7 +7,6 @@ import { searchWords } from '@/utils/api';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
-import { testMoonSearch } from '@/utils/apiTest';
 
 export default function VocabularyPage() {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
@@ -19,7 +18,6 @@ export default function VocabularyPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
-  const [preferredSource, setPreferredSource] = useState<'wanikani' | 'jisho'>('jisho');
 
   useEffect(() => {
     loadSearchHistory();
@@ -50,7 +48,7 @@ export default function VocabularyPage() {
     try {
       setSearching(true);
       setError(null);
-      const searchResults = await searchWords(term, 30, preferredSource);
+      const searchResults = await searchWords(term, 30);
 
       // Show search results
       setCurrentSearchResults(searchResults);
@@ -115,32 +113,6 @@ export default function VocabularyPage() {
           Search and build your Japanese vocabulary history
         </p>
 
-        {/* Dictionary Source Toggle */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="flex bg-muted/50 p-1 rounded-full">
-            <button
-              onClick={() => setPreferredSource('wanikani')}
-              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                preferredSource === 'wanikani'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              WaniKani
-            </button>
-            <button
-              onClick={() => setPreferredSource('jisho')}
-              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                preferredSource === 'jisho'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Jisho
-            </button>
-          </div>
-        </div>
-
         {/* Search */}
         <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchTerm); }} className="mb-6">
           <div className="flex gap-3">
@@ -168,14 +140,6 @@ export default function VocabularyPage() {
                 </>
               )}
             </button>
-          </div>
-          {/* Source indicator */}
-          <div className="mt-2 text-center">
-            <span className="text-xs text-muted-foreground">
-              Searching with <span className="font-medium text-foreground">{preferredSource === 'wanikani' ? 'WaniKani' : 'Jisho'}</span>
-              {preferredSource === 'wanikani' && ' (fallback to Jisho if needed)'}
-              {preferredSource === 'jisho' && ' (fallback to WaniKani if needed)'}
-            </span>
           </div>
         </form>
 
@@ -292,10 +256,7 @@ export default function VocabularyPage() {
             <div className="text-center">
               <h3 className="text-lg font-medium text-foreground mb-1">Searching...</h3>
               <p className="text-sm text-muted-foreground">
-                Looking up "{currentSearchTerm || searchTerm}" with{' '}
-                <span className="font-medium text-foreground">
-                  {preferredSource === 'wanikani' ? 'WaniKani' : 'Jisho'}
-                </span>
+                Looking up "{currentSearchTerm || searchTerm}"
               </p>
             </div>
           </div>

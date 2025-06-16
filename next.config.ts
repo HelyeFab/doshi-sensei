@@ -5,13 +5,12 @@ const nextConfig: NextConfig = {
   env: {
     WANIKANI_API_TOKEN: process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN,
   },
-  // Configure for Netlify deployment with functions
+  // Configure for static export (Netlify compatibility)
+  output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true,
   },
-  // Ensure static files are accessible
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
 };
 
 export default nextConfig;

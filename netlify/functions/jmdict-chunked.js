@@ -198,25 +198,33 @@ async function loadSearchIndex() {
     }
 
     console.log('Loading search index...');
+    console.log('__dirname:', __dirname);
+    console.log('process.cwd():', process.cwd());
 
-    // Try multiple possible paths for the index file
+    // For Netlify static export, files are in the build output directory
     const possiblePaths = [
-      path.join('/var/task', '.next', 'dict', 'index.json'),
+      path.join(__dirname, '..', '..', '..', 'dict', 'index.json'),
+      path.join(__dirname, '..', '..', 'dict', 'index.json'),
+      path.join(process.cwd(), 'dict', 'index.json'),
+      path.join('/opt/build/repo/out/dict/index.json'),
+      path.join('/var/task', 'dict', 'index.json'),
       path.join(__dirname, '..', '..', '.next', 'dict', 'index.json'),
-      path.join(process.cwd(), '.next', 'dict', 'index.json'),
-      path.join('/var/task', 'public', 'dict', 'index.json'),
-      path.join(__dirname, '..', '..', 'public', 'dict', 'index.json'),
-      path.join(process.cwd(), 'public', 'dict', 'index.json')
+      path.join('/var/task', '.next', 'dict', 'index.json'),
+      path.join(process.cwd(), '.next', 'dict', 'index.json')
     ];
+
+    console.log('Checking paths for index file:');
+    possiblePaths.forEach((p, i) => console.log(`  ${i + 1}. ${p}`));
 
     let indexPath = null;
     for (const testPath of possiblePaths) {
       try {
         await fs.access(testPath);
         indexPath = testPath;
-        console.log(`Found index file at: ${indexPath}`);
+        console.log(`✅ Found index file at: ${indexPath}`);
         break;
       } catch (error) {
+        console.log(`❌ Not found: ${testPath}`);
         continue;
       }
     }
@@ -267,14 +275,16 @@ async function loadChunk(chunkIndex) {
     const chunk = index.chunks[chunkIndex];
     const chunkFilename = chunk.filename;
 
-    // Try multiple possible paths for chunk files
+    // For Netlify static export, chunk files are in the build output directory
     const possiblePaths = [
-      path.join('/var/task', '.next', 'dict', 'chunks', chunkFilename),
+      path.join(__dirname, '..', '..', '..', 'dict', 'chunks', chunkFilename),
+      path.join(__dirname, '..', '..', 'dict', 'chunks', chunkFilename),
+      path.join(process.cwd(), 'dict', 'chunks', chunkFilename),
+      path.join('/opt/build/repo/out/dict/chunks', chunkFilename),
+      path.join('/var/task', 'dict', 'chunks', chunkFilename),
       path.join(__dirname, '..', '..', '.next', 'dict', 'chunks', chunkFilename),
-      path.join(process.cwd(), '.next', 'dict', 'chunks', chunkFilename),
-      path.join('/var/task', 'public', 'dict', 'chunks', chunkFilename),
-      path.join(__dirname, '..', '..', 'public', 'dict', 'chunks', chunkFilename),
-      path.join(process.cwd(), 'public', 'dict', 'chunks', chunkFilename)
+      path.join('/var/task', '.next', 'dict', 'chunks', chunkFilename),
+      path.join(process.cwd(), '.next', 'dict', 'chunks', chunkFilename)
     ];
 
     let chunkPath = null;

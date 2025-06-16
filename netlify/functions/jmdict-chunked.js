@@ -201,12 +201,12 @@ async function loadSearchIndex() {
 
     // Try multiple possible paths for the index file
     const possiblePaths = [
-      path.join(process.cwd(), 'public', 'dict', 'index.json'),
-      path.join(__dirname, '..', '..', 'public', 'dict', 'index.json'),
-      path.join('/var/task', 'public', 'dict', 'index.json'),
-      path.join(process.cwd(), '.next', 'dict', 'index.json'),
+      path.join('/var/task', '.next', 'dict', 'index.json'),
       path.join(__dirname, '..', '..', '.next', 'dict', 'index.json'),
-      path.join('/var/task', '.next', 'dict', 'index.json')
+      path.join(process.cwd(), '.next', 'dict', 'index.json'),
+      path.join('/var/task', 'public', 'dict', 'index.json'),
+      path.join(__dirname, '..', '..', 'public', 'dict', 'index.json'),
+      path.join(process.cwd(), 'public', 'dict', 'index.json')
     ];
 
     let indexPath = null;
@@ -269,12 +269,12 @@ async function loadChunk(chunkIndex) {
 
     // Try multiple possible paths for chunk files
     const possiblePaths = [
-      path.join(process.cwd(), 'public', 'dict', 'chunks', chunkFilename),
-      path.join(__dirname, '..', '..', 'public', 'dict', 'chunks', chunkFilename),
-      path.join('/var/task', 'public', 'dict', 'chunks', chunkFilename),
-      path.join(process.cwd(), '.next', 'dict', 'chunks', chunkFilename),
+      path.join('/var/task', '.next', 'dict', 'chunks', chunkFilename),
       path.join(__dirname, '..', '..', '.next', 'dict', 'chunks', chunkFilename),
-      path.join('/var/task', '.next', 'dict', 'chunks', chunkFilename)
+      path.join(process.cwd(), '.next', 'dict', 'chunks', chunkFilename),
+      path.join('/var/task', 'public', 'dict', 'chunks', chunkFilename),
+      path.join(__dirname, '..', '..', 'public', 'dict', 'chunks', chunkFilename),
+      path.join(process.cwd(), 'public', 'dict', 'chunks', chunkFilename)
     ];
 
     let chunkPath = null;

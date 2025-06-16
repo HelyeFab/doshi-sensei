@@ -197,54 +197,30 @@ async function loadSearchIndex() {
       return searchIndex;
     }
 
-    console.log('Loading search index...');
-    console.log('__dirname:', __dirname);
-    console.log('process.cwd():', process.cwd());
+    console.log('Loading search index via HTTP...');
 
-    // For Netlify serverless functions, files are copied to the functions directory
-    const possiblePaths = [
-      path.join(__dirname, 'dict', 'index.json'),  // Primary path: /var/task/dict/index.json
-      path.join(process.cwd(), 'dict', 'index.json'),
-      path.join('/var/task', 'dict', 'index.json'),
-      path.join(__dirname, '..', '..', '..', 'dict', 'index.json'),
-      path.join(__dirname, '..', '..', 'dict', 'index.json'),
-      path.join('/opt/build/repo/out/dict/index.json'),
-      path.join(__dirname, '..', '..', '.next', 'dict', 'index.json'),
-      path.join('/var/task', '.next', 'dict', 'index.json')
-    ];
+    // Try to load index from the deployed static files via HTTP
+    const baseUrl = 'https://doshi-sensei.netlify.app';
+    const indexUrl = `${baseUrl}/dict/index.json`;
 
-    console.log('Checking paths for index file:');
-    possiblePaths.forEach((p, i) => console.log(`  ${i + 1}. ${p}`));
+    console.log(`Fetching index from: ${indexUrl}`);
 
-    let indexPath = null;
-    for (const testPath of possiblePaths) {
-      try {
-        await fs.access(testPath);
-        indexPath = testPath;
-        console.log(`✅ Found index file at: ${indexPath}`);
-        break;
-      } catch (error) {
-        console.log(`❌ Not found: ${testPath}`);
-        continue;
-      }
-    }
-
-    if (!indexPath) {
-      console.error('Search index file not found in any expected location');
+    const response = await fetch(indexUrl);
+    if (!response.ok) {
+      console.error(`Failed to fetch index: ${response.status} ${response.statusText}`);
       return null;
     }
 
-    const indexContent = await fs.readFile(indexPath, 'utf-8');
-    const indexData = JSON.parse(indexContent);
+    const indexData = await response.json();
 
     searchIndex = indexData;
     indexLoadTime = now;
 
-    console.log(`Loaded search index: ${indexData.totalEntries} entries, ${indexData.totalChunks} chunks`);
+    console.log(`Loaded search index via HTTP: ${indexData.totalEntries} entries, ${indexData.totalChunks} chunks`);
     return searchIndex;
 
   } catch (error) {
-    console.error('Error loading search index:', error);
+    console.error('Error loading search index via HTTP:', error);
     return null;
   }
 }
@@ -264,7 +240,7 @@ async function loadChunk(chunkIndex) {
       }
     }
 
-    console.log(`Loading chunk ${chunkIndex}...`);
+    console.log(`Loading chunk ${chunkIndex} via HTTP...`);
 
     const index = await loadSearchIndex();
     if (!index || !index.chunks[chunkIndex]) {
@@ -275,35 +251,19 @@ async function loadChunk(chunkIndex) {
     const chunk = index.chunks[chunkIndex];
     const chunkFilename = chunk.filename;
 
-    // For Netlify serverless functions, chunk files are copied to the functions directory
-    const possiblePaths = [
-      path.join(__dirname, 'dict', 'chunks', chunkFilename),  // Primary path: /var/task/dict/chunks/
-      path.join(process.cwd(), 'dict', 'chunks', chunkFilename),
-      path.join('/var/task', 'dict', 'chunks', chunkFilename),
-      path.join(__dirname, '..', '..', '..', 'dict', 'chunks', chunkFilename),
-      path.join(__dirname, '..', '..', 'dict', 'chunks', chunkFilename),
-      path.join('/opt/build/repo/out/dict/chunks', chunkFilename),
-      path.join(__dirname, '..', '..', '.next', 'dict', 'chunks', chunkFilename),
-      path.join('/var/task', '.next', 'dict', 'chunks', chunkFilename)
-    ];
+    // Load chunk from deployed static files via HTTP
+    const baseUrl = 'https://doshi-sensei.netlify.app';
+    const chunkUrl = `${baseUrl}/dict/chunks/${chunkFilename}`;
 
-    let chunkPath = null;
-    for (const testPath of possiblePaths) {
-      try {
-        await fs.access(testPath);
-        chunkPath = testPath;
-        break;
-      } catch (error) {
-        continue;
-      }
-    }
+    console.log(`Fetching chunk from: ${chunkUrl}`);
 
-    if (!chunkPath) {
-      console.error(`Chunk file ${chunkFilename} not found in any expected location`);
+    const response = await fetch(chunkUrl);
+    if (!response.ok) {
+      console.error(`Failed to fetch chunk ${chunkFilename}: ${response.status} ${response.statusText}`);
       return [];
     }
 
-    const chunkContent = await fs.readFile(chunkPath, 'utf-8');
+    const chunkContent = await response.text();
     const entries = parseJMdictXML(chunkContent, 10000);
 
     // Cache the chunk
@@ -318,11 +278,11 @@ async function loadChunk(chunkIndex) {
       chunkCache.delete(oldestKey);
     }
 
-    console.log(`Loaded chunk ${chunkIndex}: ${entries.length} entries`);
+    console.log(`Loaded chunk ${chunkIndex} via HTTP: ${entries.length} entries`);
     return entries;
 
   } catch (error) {
-    console.error(`Error loading chunk ${chunkIndex}:`, error);
+    console.error(`Error loading chunk ${chunkIndex} via HTTP:`, error);
     return [];
   }
 }

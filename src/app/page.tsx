@@ -24,6 +24,27 @@ export default function Home() {
 
   useEffect(() => {
     loadStats();
+
+    // Reload stats when page becomes visible/focused
+    const handleFocus = () => {
+      loadStats();
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadStats();
+      }
+    };
+
+    // Listen for when user returns to this tab/page
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup event listeners
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const loadStats = async () => {

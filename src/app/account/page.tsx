@@ -27,6 +27,31 @@ export default function AccountPage() {
     }
   }, [user]);
 
+  // Reload stats when page becomes visible/focused
+  useEffect(() => {
+    if (!user) return;
+
+    const handleFocus = () => {
+      loadUserStats();
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadUserStats();
+      }
+    };
+
+    // Listen for when user returns to this tab/page
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup event listeners
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user]);
+
   const loadUserStats = async () => {
     try {
       setStatsLoading(true);

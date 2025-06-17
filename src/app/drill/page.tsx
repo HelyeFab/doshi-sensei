@@ -313,7 +313,7 @@ export default function DrillPage() {
             Daily Drill Limit Reached
           </h3>
           <p className="text-muted-foreground mb-6">
-            You've completed {userSubscription?.currentUsage.drillsToday || 0} out of {userSubscription?.limits.maxDrillsPerDay} drills today.
+            You've completed {userSubscription?.currentUsage.drillsToday || 0} out of {userSubscription?.limits.maxDrillsPerDay || 3} drills today.
           </p>
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
             <div className="flex items-start space-x-3">
@@ -321,7 +321,7 @@ export default function DrillPage() {
               <div>
                 <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Free Plan Limitations</h4>
                 <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                  <li>• Maximum {userSubscription?.limits.maxDrillsPerDay} drills per day</li>
+                  <li>• Maximum {userSubscription?.limits.maxDrillsPerDay || 3} drills per day</li>
                   <li>• Resets daily at midnight</li>
                 </ul>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-2">

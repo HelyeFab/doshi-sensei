@@ -11,6 +11,49 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
 
+// Structured Data for Drill Page
+const drillStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Japanese Conjugation Quiz & Drills",
+  "description": "Interactive Japanese verb and adjective conjugation quizzes. Test your knowledge with multiple choice questions and improve your Japanese grammar skills.",
+  "url": "https://doshisensei.com/drill",
+  "educationalLevel": ["Beginner", "Intermediate", "Advanced"],
+  "learningResourceType": "Quiz",
+  "about": {
+    "@type": "Thing",
+    "name": "Japanese Language",
+    "description": "Japanese grammar, verb conjugations, and vocabulary testing"
+  },
+  "teaches": [
+    "Japanese verb conjugation",
+    "Grammar pattern recognition",
+    "Conjugation form identification",
+    "Japanese language testing",
+    "JLPT preparation",
+    "Interactive Japanese practice"
+  ],
+  "educationalRole": "Student",
+  "typicalAgeRange": "13-65",
+  "interactivityType": "Active",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "keywords": [
+    "Japanese quiz",
+    "verb conjugation test",
+    "Japanese grammar drill",
+    "JLPT practice",
+    "Japanese learning quiz",
+    "conjugation practice",
+    "Japanese assessment"
+  ],
+  "isPartOf": {
+    "@type": "WebApplication",
+    "name": "Doshi Sensei",
+    "url": "https://doshisensei.com"
+  }
+};
+
 export default function DrillPage() {
   const { settings, isLoading: settingsLoading } = useSettings();
   const { userSubscription, canDoDrill, incrementDrillCount } = useSubscription();
@@ -425,6 +468,14 @@ export default function DrillPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(drillStructuredData),
+        }}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <PageHeader title={strings.drill.title} />

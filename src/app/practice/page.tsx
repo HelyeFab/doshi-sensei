@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import { JapaneseWord, ConjugationForms, WordList } from '@/types';
 import { searchWords, getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
@@ -9,6 +10,45 @@ import { PageHeader } from '@/components/PageHeader';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
+
+// Structured Data for Practice Page
+const practiceStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Japanese Verb Conjugation Practice",
+  "description": "Interactive Japanese verb and adjective conjugation practice with detailed explanations. Study ichidan, godan, and irregular verbs.",
+  "url": "https://doshisensei.com/practice",
+  "educationalLevel": ["Beginner", "Intermediate", "Advanced"],
+  "learningResourceType": "Interactive Practice",
+  "about": {
+    "@type": "Thing",
+    "name": "Japanese Language",
+    "description": "Japanese verb conjugations, grammar, and vocabulary"
+  },
+  "teaches": [
+    "Japanese verb conjugation",
+    "Ichidan verb forms",
+    "Godan verb forms",
+    "Irregular verb forms",
+    "I-adjective conjugation",
+    "Na-adjective conjugation",
+    "JLPT grammar patterns"
+  ],
+  "educationalRole": "Student",
+  "typicalAgeRange": "13-65",
+  "interactivityType": "Active",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "keywords": [
+    "Japanese practice",
+    "verb conjugation",
+    "Japanese grammar",
+    "JLPT preparation",
+    "Japanese learning",
+    "ichidan verbs",
+    "godan verbs"
+  ]
+};
 
 export default function PracticePage() {
   const [words, setWords] = useState<JapaneseWord[]>([]);
@@ -81,6 +121,14 @@ export default function PracticePage() {
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(practiceStructuredData),
+        }}
+      />
+
       <PageHeader title={strings.practice.title} />
 
       <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">

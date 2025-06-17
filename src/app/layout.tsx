@@ -35,8 +35,79 @@ const savoyeFont = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  title: strings.appName,
-  description: strings.appDescription,
+  title: {
+    default: 'Doshi Sensei - Master Japanese Verb Conjugations',
+    template: '%s | Doshi Sensei'
+  },
+  description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs with professional guidance.',
+  keywords: [
+    'Japanese learning',
+    'Japanese verbs',
+    'verb conjugation',
+    'Japanese grammar',
+    'ichidan verbs',
+    'godan verbs',
+    'Japanese practice',
+    'JLPT preparation',
+    'Japanese study',
+    'learn Japanese online',
+    'Japanese app',
+    'conjugation practice',
+    'Japanese vocabulary',
+    'Japanese education',
+    'language learning'
+  ],
+  authors: [{ name: 'Doshi Sensei Team' }],
+  creator: 'Doshi Sensei',
+  publisher: 'Doshi Sensei',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://doshisensei.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Doshi Sensei - Master Japanese Verb Conjugations',
+    description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs.',
+    url: 'https://doshisensei.com',
+    siteName: 'Doshi Sensei',
+    images: [
+      {
+        url: '/doshi.png',
+        width: 1200,
+        height: 630,
+        alt: 'Doshi Sensei - Japanese Learning App',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Doshi Sensei - Master Japanese Verb Conjugations',
+    description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary.',
+    images: ['/doshi.png'],
+    creator: '@doshisensei',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    // yandex: 'your-yandex-verification-code',
+    // yahoo: 'your-yahoo-verification-code',
+  },
 };
 
 export const viewport = {

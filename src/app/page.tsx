@@ -6,6 +6,37 @@ import { strings } from '@/config/strings';
 import MobileHome from '@/components/MobileHome';
 import StatsManager from '@/utils/stats';
 
+// Structured Data for SEO
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Doshi Sensei",
+  "description": "Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs.",
+  "url": "https://doshisensei.com",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "Doshi Sensei Team"
+  },
+  "applicationSubCategory": "Language Learning",
+  "featureList": [
+    "Japanese verb conjugation practice",
+    "Interactive drills and quizzes",
+    "JLPT vocabulary support",
+    "Grammar explanations",
+    "Progress tracking",
+    "Offline support"
+  ],
+  "screenshot": "https://doshisensei.com/doshi.png",
+  "softwareVersion": "1.0"
+};
+
 interface UserStats {
   drillsCompleted: number;
   accuracy: number;
@@ -65,6 +96,14 @@ export default function Home() {
 
   return (
     <>
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
       {/* Mobile Layout */}
       <div className="md:hidden">
         <MobileHome />

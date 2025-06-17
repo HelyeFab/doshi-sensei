@@ -55,7 +55,7 @@ export class StatsManager {
       stats.drillsCompleted += 1;
       stats.totalQuestions += questionsAnswered;
       stats.correctAnswers += correctAnswers;
-      stats.accuracy = stats.totalQuestions > 0 ? (stats.correctAnswers / stats.totalQuestions) * 100 : 0;
+      stats.accuracy = stats.totalQuestions > 0 ? Math.round((stats.correctAnswers / stats.totalQuestions) * 100) : 0;
 
       // Update usage tracking
       if (stats.lastActiveDate !== today) {

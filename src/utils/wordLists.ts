@@ -1,5 +1,7 @@
 import { WordList, SavedWord, JapaneseWord } from '@/types';
 import EnhancedStorageManager from './storage';
+import CloudSync, { SyncResult } from './cloudSync';
+import { User } from 'firebase/auth';
 
 // Pastel colors for list pills (mobile-friendly high contrast)
 const PASTEL_COLORS = [
@@ -45,7 +47,12 @@ export class WordListManager {
   /**
    * Create a new word list
    */
-  static async createWordList(name: string, description?: string): Promise<WordList> {
+  static async createWordList(
+    name: string,
+    description?: string,
+    user: User | null = null,
+    subscriptionStatus?: string
+  ): Promise<WordList> {
     const lists = await this.getAllWordLists();
 
     // Generate a random pastel color
@@ -63,6 +70,10 @@ export class WordListManager {
 
     lists.push(newList);
     await this.saveWordLists(lists);
+
+    // Auto-sync for paid users
+    await this.autoSync(user, subscriptionStatus);
+
     return newList;
   }
 
@@ -342,6 +353,198 @@ export class WordListManager {
         error: error instanceof Error ? error.message : 'Unknown error occurred'
       };
     }
+  }
+
+  // ===== CLOUD SYNC METHODS =====
+
+  /**
+   * Sync all word lists to cloud (paid users only)
+   */
+  static async syncToCloud(user: User, subscriptionStatus?: string): Promise<SyncResult> {
+    if (!CloudSync.canSync(user, subscriptionStatus)) {
+      return { success: false, error: 'Sync not available - requires active subscription' };
+    }
+
+    try {
+      const lists = await this.getAllWordLists();
+      const savedWords = await this.getAllSavedWords();
+
+      // Upload lists collection
+      const listsResult = await CloudSync.uploadData(user, 'wordLists', 'data', {
+        lists,
+        updatedAt: new Date()
+      });
+
+      if (!listsResult.success) {
+        return listsResult;
+      }
+
+      // Upload saved words collection
+      const wordsResult = await CloudSync.uploadData(user, 'savedWords', 'data', {
+        savedWords,
+        updatedAt: new Date()
+      });
+
+      return wordsResult;
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Sync to cloud failed'
+      };
+    }
+  }
+
+  /**
+   * Download word lists from cloud (paid users only)
+   */
+  static async syncFromCloud(user: User, subscriptionStatus?: string): Promise<SyncResult> {
+    if (!CloudSync.canSync(user, subscriptionStatus)) {
+      return { success: false, error: 'Sync not available - requires active subscription' };
+    }
+
+    try {
+      // Download lists
+      const listsDownload = await CloudSync.downloadData<{
+        lists: WordList[];
+        updatedAt: any;
+      }>(user, 'wordLists', 'data');
+
+      // Download saved words
+      const wordsDownload = await CloudSync.downloadData<{
+        savedWords: SavedWord[];
+        updatedAt: any;
+      }>(user, 'savedWords', 'data');
+
+      if (!listsDownload.result.success || !wordsDownload.result.success) {
+        return {
+          success: false,
+          error: 'Failed to download from cloud'
+        };
+      }
+
+      // If cloud data exists, merge with local data
+      if (listsDownload.data && wordsDownload.data) {
+        const localLists = await this.getAllWordLists();
+        const localWords = await this.getAllSavedWords();
+
+        // Simple conflict resolution: cloud wins if it has newer timestamp
+        const shouldUseCloud = this.shouldUseCloudData(
+          localLists,
+          localWords,
+          listsDownload.data,
+          wordsDownload.data
+        );
+
+        if (shouldUseCloud) {
+          console.log('Using cloud data (newer)');
+
+          // Convert Firestore timestamps back to Date objects
+          const cloudLists = listsDownload.data.lists.map(list => ({
+            ...list,
+            createdAt: new Date(list.createdAt),
+            updatedAt: new Date(list.updatedAt)
+          }));
+
+          const cloudWords = wordsDownload.data.savedWords.map(word => ({
+            ...word,
+            savedAt: new Date(word.savedAt)
+          }));
+
+          await this.saveWordLists(cloudLists);
+          await this.saveSavedWords(cloudWords);
+        } else {
+          console.log('Using local data (newer or equal)');
+          // Upload local data to cloud since it's newer
+          return await this.syncToCloud(user, subscriptionStatus);
+        }
+      }
+
+      return { success: true, synced: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Sync from cloud failed'
+      };
+    }
+  }
+
+  /**
+   * Perform bidirectional sync (download then upload if needed)
+   */
+  static async performFullSync(user: User, subscriptionStatus?: string): Promise<SyncResult> {
+    if (!CloudSync.canSync(user, subscriptionStatus)) {
+      return { success: false, error: 'Sync not available - requires active subscription' };
+    }
+
+    console.log('🔄 Starting full sync...');
+
+    // First, try to download from cloud
+    const downloadResult = await this.syncFromCloud(user, subscriptionStatus);
+
+    if (!downloadResult.success) {
+      // If download fails, try to upload local data
+      console.log('📤 Download failed, trying upload...');
+      return await this.syncToCloud(user, subscriptionStatus);
+    }
+
+    console.log('✅ Full sync completed');
+    return downloadResult;
+  }
+
+  /**
+   * Auto-sync after local changes (for paid users)
+   */
+  static async autoSync(user: User | null, subscriptionStatus?: string): Promise<void> {
+    if (!user || !CloudSync.canSync(user, subscriptionStatus)) {
+      return; // Silent fail for free users
+    }
+
+    try {
+      await this.syncToCloud(user, subscriptionStatus);
+      console.log('🔄 Auto-sync completed');
+    } catch (error) {
+      console.error('Auto-sync failed:', error);
+      // Don't throw - auto-sync should be silent
+    }
+  }
+
+  /**
+   * Check if cloud data is newer than local data
+   */
+  private static shouldUseCloudData(
+    localLists: WordList[],
+    localWords: SavedWord[],
+    cloudListsData: { lists: WordList[]; updatedAt: any },
+    cloudWordsData: { savedWords: SavedWord[]; updatedAt: any }
+  ): boolean {
+    // If no local data, use cloud
+    if (localLists.length === 0 && localWords.length === 0) {
+      return true;
+    }
+
+    // If no cloud data, use local
+    if (!cloudListsData.updatedAt || !cloudWordsData.updatedAt) {
+      return false;
+    }
+
+    // Find the most recent local update
+    const latestLocalUpdate = Math.max(
+      ...localLists.map(list => list.updatedAt.getTime()),
+      ...localWords.map(word => word.savedAt.getTime()),
+      0
+    );
+
+    // Convert Firestore timestamp to Date
+    const cloudListsTime = cloudListsData.updatedAt.toDate?.() || new Date(cloudListsData.updatedAt);
+    const cloudWordsTime = cloudWordsData.updatedAt.toDate?.() || new Date(cloudWordsData.updatedAt);
+
+    const latestCloudUpdate = Math.max(
+      cloudListsTime.getTime(),
+      cloudWordsTime.getTime()
+    );
+
+    // Use cloud data if it's newer
+    return latestCloudUpdate > latestLocalUpdate;
   }
 
   /**

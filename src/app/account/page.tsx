@@ -215,7 +215,7 @@ export default function AccountPage() {
 
                   <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                     <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                      {userStats.accuracy.toFixed(1)}%
+                      {Math.round(userStats.accuracy)}%
                     </div>
                     <div className="text-sm text-purple-600 dark:text-purple-400">
                       Accuracy

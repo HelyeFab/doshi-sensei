@@ -171,7 +171,7 @@ function MobileProgressStat({ value, label, allStats, loading, isPercentage = fa
   };
 
   const colors = getColors();
-  const displayValue = isPercentage ? `${value}%` : value.toString();
+  const displayValue = isPercentage ? `${Math.round(value)}%` : value.toString();
 
   return (
     <div className="w-full">

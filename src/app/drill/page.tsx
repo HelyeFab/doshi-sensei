@@ -256,14 +256,25 @@ export default function DrillPage() {
     }
   }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists, loadQuestions, loadQuestionsForWord]);
 
-  const handleAnswerSelect = (answer: string) => {
+  const handleAnswerSelect = async (answer: string) => {
     if (showResult) return;
 
     setSelectedAnswer(answer);
     setShowResult(true);
 
+    const newScore = answer === currentQuestion.correctAnswer ? score + 1 : score;
     if (answer === currentQuestion.correctAnswer) {
-      setScore(score + 1);
+      setScore(newScore);
+    }
+
+    // Check if this is the last question
+    const isLastQuestion = currentQuestionIndex >= questions.length - 1;
+    if (isLastQuestion && gameStarted && questions.length > 0) {
+      console.log('🚨 Last question answered! Recording session...');
+      // Use setTimeout to ensure state updates are complete
+      setTimeout(async () => {
+        await recordDrillSession(newScore);
+      }, 100);
     }
   };
 
@@ -390,17 +401,25 @@ export default function DrillPage() {
   const currentQuestion = questions[currentQuestionIndex];
   const isFinished = currentQuestionIndex >= questions.length - 1 && showResult;
 
-  const recordDrillSession = async () => {
+  const recordDrillSession = async (finalScore?: number) => {
+    const actualScore = finalScore !== undefined ? finalScore : score;
+    console.log('🎯 recordDrillSession called!', { gameStarted, questionsLength: questions.length, score: actualScore });
+
     try {
       const wordsStudied = questions.map(q => q.word.id);
-      await StatsManager.recordDrillSession(questions.length, score, wordsStudied);
+      console.log('📊 Recording stats...', { questionsLength: questions.length, score: actualScore, wordsStudied });
+
+      await StatsManager.recordDrillSession(questions.length, actualScore, wordsStudied);
+      console.log('✅ Stats recorded successfully');
 
       // Increment drill count for subscription tracking
+      console.log('🔢 Incrementing drill count...');
       await incrementDrillCount();
+      console.log('✅ Drill count incremented successfully');
 
-      console.log(`Drill session recorded: ${score}/${questions.length} correct`);
+      console.log(`🎉 Drill session recorded: ${actualScore}/${questions.length} correct`);
     } catch (err) {
-      console.error('Error recording drill session:', err);
+      console.error('❌ Error recording drill session:', err);
     }
   };
 
@@ -543,8 +562,11 @@ export default function DrillPage() {
               <h2 className="text-3xl font-semibold mb-4 text-card-foreground">
                 {strings.common.success}
               </h2>
-              <div className="text-6xl font-bold text-primary mb-4">
+              <div className="text-6xl font-bold text-primary mb-2">
                 {score}/{questions.length}
+              </div>
+              <div className="text-lg text-muted-foreground mb-4">
+                {Math.round((score / questions.length) * 100)}% accuracy this drill
               </div>
               <p className="text-muted-foreground mb-6">
                 {score === questions.length

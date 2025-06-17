@@ -173,7 +173,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
           {/* Payment Methods */}
           <div className="space-y-3 pt-2 border-t border-border">
             <p className="text-center text-muted-foreground text-sm">
-              Choose payment method:
+              Secure payment via Stripe:
             </p>
 
             {/* Stripe Button */}
@@ -202,22 +202,24 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
               )}
             </button>
 
-            {/* PayPal Button */}
-            <button
-              onClick={handlePayPalClick}
-              disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
-            >
-              <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-sm">P</span>
-              </div>
-              <span className="font-medium">
-                Donate ${(finalAmount / 100).toFixed(2)} via PayPal
-              </span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
-              </svg>
-            </button>
+            {/* PayPal Button - Temporarily Hidden */}
+            {false && (
+              <button
+                onClick={handlePayPalClick}
+                disabled={isLoading}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
+              >
+                <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
+                  <span className="text-blue-600 font-bold text-sm">P</span>
+                </div>
+                <span className="font-medium">
+                  Donate ${(finalAmount / 100).toFixed(2)} via PayPal
+                </span>
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
+                </svg>
+              </button>
+            )}
 
             {/* Close Button */}
             <button

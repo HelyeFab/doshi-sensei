@@ -43,4 +43,5 @@ next-env.d.ts
 # Local Netlify folder
 .netlify
 
-
+# Firebase service account key (DO NOT COMMIT)
+firebase-service-account.json

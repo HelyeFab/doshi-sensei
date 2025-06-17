@@ -104,15 +104,15 @@ export default function SettingsPage() {
   };
 
   const handleContactUs = () => {
-    window.open('mailto:support@doshi-sensei.app?subject=Support Request', '_blank');
+    router.push('/contact');
   };
 
   const handleReportBug = () => {
-    window.open('mailto:support@doshi-sensei.app?subject=Bug Report&body=Please describe the bug you encountered:', '_blank');
+    router.push('/contact?category=bug');
   };
 
   const handleSendFeedback = () => {
-    window.open('mailto:feedback@doshi-sensei.app?subject=App Feedback&body=We\'d love to hear your thoughts:', '_blank');
+    router.push('/contact?category=feedback');
   };
 
   const handleHelpFAQ = () => {

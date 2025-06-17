@@ -6,8 +6,7 @@ const nextConfig: NextConfig = {
   env: {
     WANIKANI_API_TOKEN: process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN,
   },
-  // Configure for static export (Netlify compatibility)
-  output: 'export',
+  // Enable server-side functionality for API routes
   trailingSlash: true,
   images: {
     unoptimized: true,

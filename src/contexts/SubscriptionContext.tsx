@@ -82,16 +82,40 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         }
       } catch (error) {
         console.error('Error loading subscription:', error);
-        // Fallback to default subscription
-        const defaultSub = await initializeDefaultSubscription(user.uid);
+        // Fallback to default subscription without trying to save to Firebase
+        const defaultSub = createOfflineDefaultSubscription();
         setUserSubscription(defaultSub);
       } finally {
         setLoading(false);
       }
+    }, (error) => {
+      // Handle Firebase connection errors
+      console.error('Firebase connection error:', error);
+      // Use offline default subscription
+      const defaultSub = createOfflineDefaultSubscription();
+      setUserSubscription(defaultSub);
+      setLoading(false);
     });
 
     return unsubscribe;
   }, [user]);
+
+  // Create offline default subscription (doesn't require Firebase)
+  const createOfflineDefaultSubscription = (): UserSubscription => {
+    const today = new Date().toISOString().split('T')[0];
+    return {
+      subscription: {
+        status: 'active',
+        plan: 'free',
+      },
+      limits: SUBSCRIPTION_PLANS.free.limits,
+      currentUsage: {
+        listsCount: 0,
+        drillsToday: 0,
+        lastDrillDate: today,
+      },
+    };
+  };
 
   const createCheckoutSession = async (priceId: string) => {
     if (!user) throw new Error('User must be logged in');

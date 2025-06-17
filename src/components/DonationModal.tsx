@@ -62,10 +62,40 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
     }
   };
 
-  const handlePayPalClick = () => {
-    // TODO: Replace with your actual PayPal donation link
-    window.open('https://paypal.me/YOUR_PAYPAL_LINK_HERE', '_blank');
-    onClose();
+  const handlePayPalClick = async () => {
+    if (finalAmount < 100) {
+      alert('Minimum donation amount is $1.00');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/create-paypal-donation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: finalAmount,
+          userEmail: user?.email,
+          userName: user?.displayName,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.approvalUrl) {
+        window.location.href = data.approvalUrl;
+      } else {
+        console.error('PayPal order creation failed:', data.error);
+        alert('Failed to create PayPal order. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error creating PayPal order:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAmountSelect = (amount: number) => {

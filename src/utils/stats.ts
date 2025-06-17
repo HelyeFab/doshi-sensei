@@ -38,6 +38,12 @@ export class StatsManager {
    * Initialize with user context for cloud sync
    */
   static setUser(user: User | null, canSync: boolean = false): void {
+    console.log('🔧 StatsManager.setUser called:', {
+      userEmail: user?.email,
+      userUID: user?.uid,
+      canSync: canSync,
+      timestamp: new Date().toISOString()
+    });
     this.currentUser = user;
     this.hasCloudSync = canSync;
   }
@@ -46,29 +52,54 @@ export class StatsManager {
    * Get current user statistics with cloud sync
    */
   static async getUserStats(): Promise<UserStats> {
+    console.log('🔍 getUserStats called:', {
+      hasUser: !!this.currentUser,
+      userEmail: this.currentUser?.email,
+      userUID: this.currentUser?.uid,
+      hasCloudSync: this.hasCloudSync,
+      timestamp: new Date().toISOString()
+    });
+
     try {
       // If user is logged in and has cloud sync, try to load from cloud first
       if (this.currentUser && this.hasCloudSync) {
+        console.log('☁️ Attempting cloud sync for user:', this.currentUser.email);
         const cloudStats = await this.loadStatsFromCloud();
         if (cloudStats) {
+          console.log('📥 Found cloud stats:', cloudStats);
           // Merge with local data if needed and save locally
           await this.saveStatsLocally(cloudStats);
           await this.updateStreak(cloudStats);
           return cloudStats;
+        } else {
+          console.log('☁️ No cloud stats found, checking local data to upload...');
+          // If no cloud data but user has sync, try to upload local data
+          const localStats = this.getLocalStats();
+          if (localStats) {
+            console.log('📤 Uploading local stats to cloud:', localStats);
+            await this.saveStatsToCloud(localStats);
+            return localStats;
+          }
         }
+      } else if (this.currentUser && !this.hasCloudSync) {
+        console.log('⚠️ User logged in but no cloud sync available');
       }
 
       // Fallback to localStorage
+      console.log('💾 Falling back to localStorage');
       const statsData = localStorage.getItem(STATS_KEY);
       if (!statsData) {
-        return this.createInitialStats();
+        const initialStats = this.createInitialStats();
+        console.log('🆕 Created initial stats:', initialStats);
+        return initialStats;
       }
 
       const stats = JSON.parse(statsData) as UserStats;
+      console.log('📊 Loaded local stats:', stats);
       await this.updateStreak(stats);
       return stats;
     } catch (error) {
-      console.error('Error loading user stats:', error);
+      console.error('❌ Error loading user stats:', error);
       return this.createInitialStats();
     }
   }

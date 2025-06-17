@@ -4,15 +4,22 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { strings } from '@/config/strings';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { clearProgress } from '@/utils/storage';
 import { PageHeader } from '@/components/PageHeader';
 import EnhancedStorageManager from '@/utils/storage';
 import WordListManager from '@/utils/wordLists';
+import useCloudSync from '@/hooks/useCloudSync';
 
 export default function SettingsPage() {
   const { settings, updateSetting, resetSettings } = useSettings();
+  const { user } = useAuth();
+  const { userSubscription } = useSubscription();
+  const { syncStatus, canSync, triggerSync } = useCloudSync();
   const [showResetModal, setShowResetModal] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const router = useRouter();
 
   // Handler functions for new settings
@@ -118,6 +125,30 @@ export default function SettingsPage() {
 
   const handleAcknowledgments = () => {
     router.push('/settings/acknowledgments');
+  };
+
+  // Cloud Sync handlers
+  const handleManualSync = async () => {
+    if (!canSync || isSyncing) return;
+
+    setIsSyncing(true);
+    try {
+      const result = await triggerSync();
+      if (result.success) {
+        alert('Sync completed successfully! Your data has been updated.');
+      } else {
+        alert(`Sync failed: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Manual sync failed:', error);
+      alert('Sync failed. Please try again.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleUpgradeForSync = () => {
+    router.push('/account');
   };
 
   // Handle reset all data
@@ -267,6 +298,99 @@ export default function SettingsPage() {
                   Keep your data safe by regularly exporting your progress and word lists.
                 </p>
               </div>
+            </div>
+          </SettingsSection>
+
+          {/* Cloud Sync */}
+          <SettingsSection title="Cloud Sync">
+            <div className="space-y-4">
+              {canSync ? (
+                <>
+                  {/* Sync Status */}
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        syncStatus.isSyncing
+                          ? 'bg-yellow-500 animate-pulse'
+                          : syncStatus.isOnline
+                          ? 'bg-green-500'
+                          : 'bg-red-500'
+                      }`}></div>
+                      <div>
+                        <div className="text-sm font-medium text-foreground">
+                          {syncStatus.isSyncing
+                            ? 'Syncing...'
+                            : syncStatus.isOnline
+                            ? 'Connected'
+                            : 'Offline'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {syncStatus.lastSyncTime
+                            ? `Last synced: ${syncStatus.lastSyncTime.toLocaleTimeString()}`
+                            : 'Never synced'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Auto-sync enabled
+                    </div>
+                  </div>
+
+                  {/* Manual Sync Button */}
+                  <button
+                    onClick={handleManualSync}
+                    disabled={!syncStatus.isOnline || isSyncing || syncStatus.isSyncing}
+                    className="w-full flex items-center justify-center space-x-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {(isSyncing || syncStatus.isSyncing) ? (
+                      <>
+                        <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
+                        <span>Syncing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Sync Now</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Sync Info */}
+                  <div className="pt-2 border-t border-border">
+                    <p className="text-xs text-muted-foreground">
+                      Your vocabulary lists and progress are automatically synced across all your devices.
+                      Click "Sync Now" to manually trigger a sync.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Premium Required */}
+                  <div className="text-center p-6 border border-border rounded-lg">
+                    <div className="text-3xl mb-3">☁️</div>
+                    <h3 className="text-lg font-medium text-foreground mb-2">
+                      Cloud Sync Available
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Sync your vocabulary lists and progress across all your devices with a premium subscription.
+                    </p>
+                    <button
+                      onClick={handleUpgradeForSync}
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    >
+                      Upgrade to Premium
+                    </button>
+                  </div>
+
+                  <div className="pt-2">
+                    <p className="text-xs text-muted-foreground">
+                      Premium users get unlimited cloud sync, vocabulary lists, and daily drills.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </SettingsSection>
 

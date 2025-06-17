@@ -64,15 +64,72 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 ## 🧪 Testing the System
 
-### Test Mode Setup
-1. **Toggle Test Mode** in Stripe Dashboard (top right)
-2. **Get Test Keys**:
-   ```env
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-   STRIPE_SECRET_KEY=sk_test_...
+### Test Mode vs Live Mode
+
+**IMPORTANT**: You're currently in **LIVE MODE** which means:
+- ❌ Test cards like `4242 4242 4242 4242` will be **DECLINED**
+- ⚠️ Real cards will charge **real money**
+- 💳 Only use for actual customers
+
+### Switching to Test Mode (Recommended for Development)
+
+#### Step 1: Enable Test Mode in Stripe
+1. **Go to Stripe Dashboard**
+2. **Toggle "Test mode"** (top right corner)
+3. **Confirm you see "Test mode" indicator**
+
+#### Step 2: Get Test API Keys
+1. **In Test Mode** → **Developers** → **API keys**
+2. **Copy these test keys**:
    ```
-3. **Create Test Webhook** with test endpoint
-4. **Update .env** with test keys temporarily
+   Publishable key: pk_test_... (starts with pk_test_)
+   Secret key: sk_test_... (starts with sk_test_)
+   ```
+
+#### Step 3: Create Test Webhook
+1. **Webhooks** → **Add endpoint**
+2. **URL**: `https://doshi-sensei.netlify.app/api/stripe-webhook`
+3. **Same 6 events** as before
+4. **Copy test webhook secret**: `whsec_test_...`
+
+#### Step 4: Update Netlify Environment Variables
+1. **Netlify Dashboard** → Your site → **Site settings** → **Environment variables**
+2. **Update these variables** with test values:
+   ```
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_test_key_here
+   STRIPE_SECRET_KEY=sk_test_your_test_secret_key_here
+   STRIPE_WEBHOOK_SECRET=whsec_test_your_test_webhook_secret_here
+   ```
+3. **Keep price IDs the same** (they work in both modes)
+4. **Redeploy site** (triggers automatic deployment)
+
+#### Step 5: Test with Test Cards
+After redeployment completes (2-3 minutes):
+- **Use test card**: `4242 4242 4242 4242` ✅
+- **Expiry**: Any future date
+- **CVC**: Any 3 digits
+- **ZIP**: Any 5 digits
+
+### Switching Back to Live Mode
+
+When ready for real customers:
+1. **Stripe Dashboard** → Toggle **"Live mode"**
+2. **Update Netlify** with live keys:
+   ```
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+   STRIPE_SECRET_KEY=sk_live_...
+   STRIPE_WEBHOOK_SECRET=whsec_your_live_webhook_secret
+   ```
+3. **Create live webhook** if not already done
+4. **Test with small real payment**
+
+### Current Setup Status
+Your app is currently configured for:
+- ✅ **Live Mode** (real payments)
+- 🔑 **Live API Keys** (pk_live_... / sk_live_...)
+- 🔗 **Live Webhook** (configured)
+
+**To test safely, switch to test mode using steps above.**
 
 ### Test Card Numbers
 

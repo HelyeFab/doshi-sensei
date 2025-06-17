@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
+import StatsManager, { UserStats } from '@/utils/stats';
 
 export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
@@ -16,6 +17,27 @@ export default function AccountPage() {
   const [displayName, setDisplayName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  // Load user stats when logged in
+  useEffect(() => {
+    if (user) {
+      loadUserStats();
+    }
+  }, [user]);
+
+  const loadUserStats = async () => {
+    try {
+      setStatsLoading(true);
+      const stats = await StatsManager.getUserStats();
+      setUserStats(stats);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,6 +155,84 @@ export default function AccountPage() {
                   </span>
                 </div>
               </div>
+            </div>
+
+            {/* Stats Dashboard */}
+            <div className="bg-card border border-border rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+                <span className="text-2xl mr-2">📊</span>
+                Your Progress
+              </h3>
+
+              {statsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full"></div>
+                </div>
+              ) : userStats ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                      {userStats.drillsCompleted}
+                    </div>
+                    <div className="text-sm text-blue-600 dark:text-blue-400">
+                      Drills Completed
+                    </div>
+                  </div>
+
+                  <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      {userStats.totalQuestions}
+                    </div>
+                    <div className="text-sm text-green-600 dark:text-green-400">
+                      Questions Answered
+                    </div>
+                  </div>
+
+                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                      {userStats.accuracy.toFixed(1)}%
+                    </div>
+                    <div className="text-sm text-purple-600 dark:text-purple-400">
+                      Accuracy
+                    </div>
+                  </div>
+
+                  <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                      {userStats.currentStreak}
+                    </div>
+                    <div className="text-sm text-orange-600 dark:text-orange-400">
+                      Current Streak
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-4xl mb-2">🎯</div>
+                  <p>Complete your first drill to see stats!</p>
+                </div>
+              )}
+
+              {userStats && userStats.drillsCompleted > 0 && (
+                <div className="mt-6 pt-4 border-t border-border">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Days Active:</span>
+                      <span className="font-medium text-foreground">{userStats.totalDaysUsed}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Best Streak:</span>
+                      <span className="font-medium text-foreground">{userStats.longestStreak} days</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Last Active:</span>
+                      <span className="font-medium text-foreground">
+                        {new Date(userStats.lastActiveDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Subscription Management */}

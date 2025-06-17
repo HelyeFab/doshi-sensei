@@ -395,6 +395,44 @@ export class StatsManager {
   }
 
   /**
+   * Clear service worker cache to fix sync issues
+   */
+  static async clearServiceWorkerCache(): Promise<void> {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+
+        for (const registration of registrations) {
+          if (registration.active) {
+            // Send message to service worker to clear cache
+            const messageChannel = new MessageChannel();
+            registration.active.postMessage(
+              { type: 'CLEAR_CACHE' },
+              [messageChannel.port2]
+            );
+
+            await new Promise((resolve) => {
+              messageChannel.port1.onmessage = resolve;
+            });
+          }
+        }
+
+        // Also clear browser caches
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames.map(name => caches.delete(name))
+          );
+        }
+
+        console.log('🧹 Service worker and browser caches cleared');
+      }
+    } catch (error) {
+      console.error('Error clearing service worker cache:', error);
+    }
+  }
+
+  /**
    * Private: Create initial statistics object
    */
   private static createInitialStats(): UserStats {

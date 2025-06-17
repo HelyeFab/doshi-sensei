@@ -20,6 +20,17 @@ export default function SettingsPage() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [syncModal, setSyncModal] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   const router = useRouter();
 
   // Handler functions for new settings
@@ -48,7 +59,12 @@ export default function SettingsPage() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Export failed:', error);
-      alert('Failed to export data. Please try again.');
+      setSyncModal({
+        show: true,
+        type: 'error',
+        title: 'Export Failed',
+        message: 'Failed to export data. Please try again.'
+      });
     }
   };
 
@@ -68,10 +84,20 @@ export default function SettingsPage() {
           await WordListManager.importWordLists(JSON.stringify(data.wordLists));
         }
 
-        alert('Data imported successfully! Please refresh the page.');
+        setSyncModal({
+          show: true,
+          type: 'success',
+          title: 'Import Successful',
+          message: 'Data imported successfully! Please refresh the page to see your imported data.'
+        });
       } catch (error) {
         console.error('Import failed:', error);
-        alert('Failed to import data. Please check the file format.');
+        setSyncModal({
+          show: true,
+          type: 'error',
+          title: 'Import Failed',
+          message: 'Failed to import data. Please check the file format and try again.'
+        });
       }
     };
     input.click();
@@ -90,7 +116,12 @@ export default function SettingsPage() {
   };
 
   const handleHelpFAQ = () => {
-    alert('Help & FAQ section coming soon!');
+    setSyncModal({
+      show: true,
+      type: 'success',
+      title: 'Help & FAQ',
+      message: 'Help & FAQ section coming soon! In the meantime, feel free to contact our support team.'
+    });
   };
 
   const handlePrivacyPolicy = () => {
@@ -106,7 +137,12 @@ export default function SettingsPage() {
   };
 
   const handleRateApp = () => {
-    alert('Thank you for wanting to rate the app! This feature will be available when the app is published to app stores.');
+    setSyncModal({
+      show: true,
+      type: 'success',
+      title: 'Rate the App',
+      message: 'Thank you for wanting to rate the app! This feature will be available when the app is published to app stores.'
+    });
   };
 
   const handleShareApp = () => {
@@ -119,7 +155,12 @@ export default function SettingsPage() {
     } else {
       const shareText = `Check out Doshi Sensei - an amazing app for learning Japanese conjugations! ${window.location.origin}`;
       navigator.clipboard.writeText(shareText);
-      alert('Share link copied to clipboard!');
+      setSyncModal({
+        show: true,
+        type: 'success',
+        title: 'Share Link Copied',
+        message: 'Share link has been copied to your clipboard!'
+      });
     }
   };
 
@@ -135,13 +176,28 @@ export default function SettingsPage() {
     try {
       const result = await triggerSync();
       if (result.success) {
-        alert('Sync completed successfully! Your data has been updated.');
+        setSyncModal({
+          show: true,
+          type: 'success',
+          title: 'Sync Completed',
+          message: 'Your data has been successfully synced across all devices!'
+        });
       } else {
-        alert(`Sync failed: ${result.error || 'Unknown error'}`);
+        setSyncModal({
+          show: true,
+          type: 'error',
+          title: 'Sync Failed',
+          message: result.error || 'Sync failed due to an unknown error. Please try again.'
+        });
       }
     } catch (error) {
       console.error('Manual sync failed:', error);
-      alert('Sync failed. Please try again.');
+      setSyncModal({
+        show: true,
+        type: 'error',
+        title: 'Sync Failed',
+        message: 'Unable to sync your data. Please check your internet connection and try again.'
+      });
     } finally {
       setIsSyncing(false);
     }
@@ -149,6 +205,15 @@ export default function SettingsPage() {
 
   const handleUpgradeForSync = () => {
     router.push('/account');
+  };
+
+  const closeSyncModal = () => {
+    setSyncModal({
+      show: false,
+      type: 'success',
+      title: '',
+      message: ''
+    });
   };
 
   // Handle reset all data
@@ -195,7 +260,12 @@ export default function SettingsPage() {
 
     } catch (error) {
       console.error('Error during data reset:', error);
-      alert('An error occurred while resetting data. Please try again.');
+      setSyncModal({
+        show: true,
+        type: 'error',
+        title: 'Reset Failed',
+        message: 'An error occurred while resetting data. Please try again.'
+      });
     } finally {
       setIsResetting(false);
       setShowResetModal(false);
@@ -479,6 +549,34 @@ export default function SettingsPage() {
           </SettingsSection>
         </div>
       </main>
+
+      {/* Sync Modal */}
+      {syncModal.show && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
+            <div className="text-center mb-6">
+              <div className="text-6xl mb-4">
+                {syncModal.type === 'success' ? '✅' : '❌'}
+              </div>
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                {syncModal.title}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {syncModal.message}
+              </p>
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                onClick={closeSyncModal}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Reset Confirmation Modal */}
       {showResetModal && (

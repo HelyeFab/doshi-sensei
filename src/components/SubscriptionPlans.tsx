@@ -179,19 +179,19 @@ export default function SubscriptionPlans() {
 
       {/* Free Plan Limitations */}
       {currentPlan === 'free' && userSubscription && (
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-600 rounded-lg p-4">
           <div className="flex items-start space-x-3">
-            <span className="text-yellow-500 text-lg">⚠️</span>
+            <span className="text-yellow-600 dark:text-yellow-400 text-lg">⚠️</span>
             <div>
-              <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Free Plan Limitations</h4>
-              <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+              <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Free Plan Limitations</h4>
+              <ul className="text-sm text-yellow-900 dark:text-yellow-100 space-y-1 font-medium">
                 <li>• Limited to {userSubscription.limits.maxLists} word lists</li>
                 <li>• Maximum {userSubscription.limits.maxDrillsPerDay} drills per day</li>
                 <li>• No cloud sync across devices</li>
                 <li>• Local storage only</li>
               </ul>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-2">
-                Upgrade to unlock unlimited features and cloud sync!
+              <p className="text-sm text-yellow-900 dark:text-yellow-100 mt-3 font-medium">
+                ⬆️ Upgrade to unlock unlimited features and cloud sync!
               </p>
             </div>
           </div>

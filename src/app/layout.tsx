@@ -3,9 +3,12 @@ import { Geist, Geist_Mono, Lato, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { strings } from "@/config/strings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { EnvProvider } from "@/components/EnvProvider";
 import BottomNavigation from "@/components/BottomNavigation";
+import DesktopNavMenu from "@/components/DesktopNavMenu";
 import PWAInstaller from "@/components/PWAInstaller";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 
@@ -110,15 +113,20 @@ export default function RootLayout({
       >
         <EnvProvider>
           <SettingsProvider>
-            {/* Use a client component to connect settings to theme */}
-            <ClientThemeWrapper>
-              <div className="min-h-screen bg-background text-foreground">
-                {children}
-                <BottomNavigation />
-                <PWAInstaller />
-                <FloatingDonateButton />
-              </div>
-            </ClientThemeWrapper>
+            <AuthProvider>
+              <SubscriptionProvider>
+                {/* Use a client component to connect settings to theme */}
+                <ClientThemeWrapper>
+                  <div className="min-h-screen bg-background text-foreground">
+                    {children}
+                    <BottomNavigation />
+                    <DesktopNavMenu />
+                    <PWAInstaller />
+                    <FloatingDonateButton />
+                  </div>
+                </ClientThemeWrapper>
+              </SubscriptionProvider>
+            </AuthProvider>
           </SettingsProvider>
         </EnvProvider>
       </body>

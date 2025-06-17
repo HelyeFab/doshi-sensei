@@ -6,6 +6,7 @@ import { searchWords, getCommonWordsForPractice } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
 
@@ -232,6 +233,7 @@ interface WordCardProps {
 }
 
 function WordCard({ word, onSelect }: WordCardProps) {
+  const { userSubscription, canCreateList, incrementListCount } = useSubscription();
   const [wordLists, setWordLists] = useState<WordList[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [newListName, setNewListName] = useState('');
@@ -284,8 +286,16 @@ function WordCard({ word, onSelect }: WordCardProps) {
   const handleCreateNewList = async () => {
     if (!newListName.trim()) return;
 
+    // Check if user can create more lists
+    if (!canCreateList()) {
+      alert(`You've reached the maximum of ${userSubscription?.limits.maxLists} lists on the free plan. Upgrade to create unlimited lists!`);
+      return;
+    }
+
     try {
       await WordListManager.createWordList(newListName.trim());
+      // Increment list count for subscription tracking
+      await incrementListCount();
       setNewListName('');
       await loadWordLists(); // Reload lists
     } catch (err) {

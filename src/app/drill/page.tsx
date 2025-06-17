@@ -7,11 +7,13 @@ import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } fro
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
 
 export default function DrillPage() {
   const { settings, isLoading: settingsLoading } = useSettings();
+  const { userSubscription, canDoDrill, incrementDrillCount } = useSubscription();
   const [questions, setQuestions] = useState<DrillQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -301,6 +303,44 @@ export default function DrillPage() {
     );
   };
 
+  // Check drill limits
+  if (!canDoDrill()) {
+    return (
+      <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="text-6xl mb-4">⚡</div>
+          <h3 className="text-xl font-semibold text-foreground mb-4">
+            Daily Drill Limit Reached
+          </h3>
+          <p className="text-muted-foreground mb-6">
+            You've completed {userSubscription?.currentUsage.drillsToday || 0} out of {userSubscription?.limits.maxDrillsPerDay} drills today.
+          </p>
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+            <div className="flex items-start space-x-3">
+              <span className="text-yellow-500 text-lg">⚠️</span>
+              <div>
+                <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Free Plan Limitations</h4>
+                <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                  <li>• Maximum {userSubscription?.limits.maxDrillsPerDay} drills per day</li>
+                  <li>• Resets daily at midnight</li>
+                </ul>
+                <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-2">
+                  Upgrade to unlock unlimited drills!
+                </p>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => window.location.href = '/account'}
+            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+          >
+            Upgrade Plan
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
@@ -354,6 +394,10 @@ export default function DrillPage() {
     try {
       const wordsStudied = questions.map(q => q.word.id);
       await StatsManager.recordDrillSession(questions.length, score, wordsStudied);
+
+      // Increment drill count for subscription tracking
+      await incrementDrillCount();
+
       console.log(`Drill session recorded: ${score}/${questions.length} correct`);
     } catch (err) {
       console.error('Error recording drill session:', err);

@@ -23,9 +23,16 @@ export default function AccountPage() {
   // Load user stats when logged in
   useEffect(() => {
     if (user) {
+      // Initialize StatsManager with user context and cloud sync capability
+      const canSync = userSubscription?.subscription?.status === 'active';
+      StatsManager.setUser(user, canSync);
+
       loadUserStats();
+    } else {
+      // Clear user context when logged out
+      StatsManager.setUser(null, false);
     }
-  }, [user]);
+  }, [user, userSubscription]);
 
   // Reload stats when page becomes visible/focused
   useEffect(() => {

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { strings } from '@/config/strings';
 import MobileHome from '@/components/MobileHome';
 import StatsManager from '@/utils/stats';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 // Structured Data for SEO
 const structuredData = {
@@ -45,6 +47,8 @@ interface UserStats {
 }
 
 export default function Home() {
+  const { user } = useAuth();
+  const { userSubscription } = useSubscription();
   const [stats, setStats] = useState<UserStats>({
     drillsCompleted: 0,
     accuracy: 0,
@@ -52,6 +56,16 @@ export default function Home() {
     totalDaysUsed: 0
   });
   const [loading, setLoading] = useState(true);
+
+  // Initialize StatsManager with user context
+  useEffect(() => {
+    if (user) {
+      const canSync = userSubscription?.subscription?.status === 'active';
+      StatsManager.setUser(user, canSync);
+    } else {
+      StatsManager.setUser(null, false);
+    }
+  }, [user, userSubscription]);
 
   useEffect(() => {
     loadStats();

@@ -1,25 +1,82 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DonationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const DONATION_AMOUNTS = [
+  { label: '$3', value: 300, popular: false },
+  { label: '$5', value: 500, popular: true },
+  { label: '$10', value: 1000, popular: false },
+  { label: '$25', value: 2500, popular: false },
+];
+
 export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
+  const { user } = useAuth();
+  const [selectedAmount, setSelectedAmount] = useState(500); // Default $5
+  const [customAmount, setCustomAmount] = useState('');
+  const [isCustom, setIsCustom] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!isOpen) return null;
 
-  const handleStripeClick = () => {
-    // TODO: Replace with your actual Stripe payment link
-    window.open('https://buy.stripe.com/YOUR_STRIPE_LINK_HERE', '_blank');
-    onClose();
+  const finalAmount = isCustom ? Math.round(parseFloat(customAmount || '0') * 100) : selectedAmount;
+
+  const handleStripeClick = async () => {
+    if (finalAmount < 100) {
+      alert('Minimum donation amount is $1.00');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/create-donation-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: finalAmount,
+          userEmail: user?.email,
+          userName: user?.displayName,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.sessionUrl) {
+        window.location.href = data.sessionUrl;
+      } else {
+        console.error('Donation session creation failed:', data.error);
+        alert('Failed to create donation session. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error creating donation session:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePayPalClick = () => {
     // TODO: Replace with your actual PayPal donation link
     window.open('https://paypal.me/YOUR_PAYPAL_LINK_HERE', '_blank');
     onClose();
+  };
+
+  const handleAmountSelect = (amount: number) => {
+    setSelectedAmount(amount);
+    setIsCustom(false);
+    setCustomAmount('');
+  };
+
+  const handleCustomAmountChange = (value: string) => {
+    setCustomAmount(value);
+    setIsCustom(true);
   };
 
   return (
@@ -36,45 +93,111 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
         {/* Content */}
         <div className="p-6 space-y-4">
-          <p className="text-center text-muted-foreground text-sm">
-            Choose your preferred donation method:
-          </p>
+          {/* Amount Selection */}
+          <div className="space-y-3">
+            <p className="text-center text-muted-foreground text-sm">
+              Choose donation amount:
+            </p>
 
-          {/* Stripe Button */}
-          <button
-            onClick={handleStripeClick}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
-          >
-            <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
-              <span className="text-indigo-600 font-bold text-sm">S</span>
+            {/* Preset Amounts */}
+            <div className="grid grid-cols-2 gap-2">
+              {DONATION_AMOUNTS.map((amount) => (
+                <button
+                  key={amount.value}
+                  onClick={() => handleAmountSelect(amount.value)}
+                  className={`relative p-3 rounded-lg border transition-all ${
+                    selectedAmount === amount.value && !isCustom
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border hover:border-primary/50 text-foreground'
+                  }`}
+                >
+                  {amount.popular && (
+                    <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
+                      Popular
+                    </div>
+                  )}
+                  <div className="font-medium">{amount.label}</div>
+                </button>
+              ))}
             </div>
-            <span className="font-medium">Donate via Stripe</span>
-            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
-            </svg>
-          </button>
 
-          {/* PayPal Button */}
-          <button
-            onClick={handlePayPalClick}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
-          >
-            <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
-              <span className="text-blue-600 font-bold text-sm">P</span>
+            {/* Custom Amount */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="number"
+                  placeholder="Custom amount"
+                  value={customAmount}
+                  onChange={(e) => handleCustomAmountChange(e.target.value)}
+                  min="1"
+                  step="0.01"
+                  className={`flex-1 px-3 py-2 border rounded-lg bg-background text-foreground ${
+                    isCustom ? 'border-primary' : 'border-border'
+                  } focus:outline-none focus:border-primary`}
+                />
+                <span className="text-muted-foreground text-sm">USD</span>
+              </div>
             </div>
-            <span className="font-medium">Donate via PayPal</span>
-            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
-            </svg>
-          </button>
+          </div>
 
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="w-full text-muted-foreground hover:text-foreground border border-border hover:border-primary/30 rounded-xl p-3 transition-colors"
-          >
-            Maybe later
-          </button>
+          {/* Payment Methods */}
+          <div className="space-y-3 pt-2 border-t border-border">
+            <p className="text-center text-muted-foreground text-sm">
+              Choose payment method:
+            </p>
+
+            {/* Stripe Button */}
+            <button
+              onClick={handleStripeClick}
+              disabled={isLoading || finalAmount < 100}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
+            >
+              {isLoading ? (
+                <>
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                  <span className="font-medium">Processing...</span>
+                </>
+              ) : (
+                <>
+                  <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
+                    <span className="text-indigo-600 font-bold text-sm">S</span>
+                  </div>
+                  <span className="font-medium">
+                    Donate ${(finalAmount / 100).toFixed(2)} via Stripe
+                  </span>
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
+                  </svg>
+                </>
+              )}
+            </button>
+
+            {/* PayPal Button */}
+            <button
+              onClick={handlePayPalClick}
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
+            >
+              <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
+                <span className="text-blue-600 font-bold text-sm">P</span>
+              </div>
+              <span className="font-medium">
+                Donate ${(finalAmount / 100).toFixed(2)} via PayPal
+              </span>
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
+              </svg>
+            </button>
+
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              disabled={isLoading}
+              className="w-full text-muted-foreground hover:text-foreground border border-border hover:border-primary/30 rounded-xl p-3 transition-colors disabled:opacity-50"
+            >
+              Maybe later
+            </button>
+          </div>
         </div>
 
         {/* Footer */}

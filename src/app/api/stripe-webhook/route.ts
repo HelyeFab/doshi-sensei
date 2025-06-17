@@ -59,14 +59,31 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const firebaseUID = session.metadata?.firebaseUID;
+  console.log(`Checkout completed - Mode: ${session.mode}, Type: ${session.metadata?.type}`);
 
-  if (!firebaseUID) {
-    console.error('No Firebase UID found in checkout session metadata');
+  // Handle donations (one-time payments)
+  if (session.mode === 'payment' && session.metadata?.type === 'donation') {
+    console.log(`Donation received: $${(session.amount_total || 0) / 100} from ${session.customer_details?.email}`);
+
+    // Log the donation
+    try {
+      // You could store donation records in Firestore here if needed
+      console.log('Donation processed successfully');
+    } catch (error) {
+      console.error('Error logging donation:', error);
+    }
     return;
   }
 
-  console.log(`Checkout completed for user: ${firebaseUID}`);
+  // Handle subscriptions
+  const firebaseUID = session.metadata?.firebaseUID;
+
+  if (!firebaseUID) {
+    console.log('No Firebase UID found in checkout session metadata (possibly a guest donation)');
+    return;
+  }
+
+  console.log(`Subscription checkout completed for user: ${firebaseUID}`);
 
   // The subscription will be handled by the subscription.created event
   // This is mainly for logging and any additional setup needed

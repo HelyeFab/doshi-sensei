@@ -19,13 +19,38 @@ export async function searchJMdictChunkedVocabulary(query: string, limit: number
   try {
     console.log(`Searching chunked JMdict for: "${query}"`);
 
-    // Check if we're in production (has Netlify functions)
+    // Try our new Next.js API route first
+    try {
+      const response = await fetch(`/api/jmdict?action=search&query=${encodeURIComponent(query)}&limit=${limit}`);
+      const result = await response.json();
+
+      if (!result.error && result.results && result.results.length > 0) {
+        console.log(`Found ${result.results.length} results from Next.js JMdict API`);
+        // Convert the basic API results to JapaneseWord format
+        const convertedResults = result.results.map((item: any, index: number) => ({
+          id: item.id || `jmdict_${index}`,
+          word: item.kanji || item.reading,
+          reading: item.reading,
+          meanings: item.meanings || [],
+          type: 'Unknown' as const,
+          jlpt: undefined,
+          wanikaniLevel: undefined,
+        }));
+        return convertedResults;
+      } else {
+        console.log('Next.js JMdict API returned no results or error:', result.error);
+      }
+    } catch (apiError) {
+      console.warn('Next.js JMdict API failed:', apiError);
+    }
+
+    // Check if we're in production (has Netlify functions) - fallback
     const isProduction = typeof window !== 'undefined' &&
                          window.location.hostname !== 'localhost' &&
                          window.location.hostname !== '127.0.0.1';
 
     if (isProduction) {
-      // Try to use chunked Netlify function in production
+      // Try to use chunked Netlify function in production as fallback
       try {
         const response = await fetch(`/.netlify/functions/jmdict-chunked?action=search&query=${encodeURIComponent(query)}&limit=${limit}`);
         const result: ChunkedJMdictResponse = await response.json();
@@ -40,9 +65,6 @@ export async function searchJMdictChunkedVocabulary(query: string, limit: number
         console.warn('Chunked JMdict function failed:', netlifyError);
       }
     }
-
-    // Fallback to local search with sample data (development)
-    console.log('Using fallback JMdict search (chunked system not available)');
 
     // Return empty array since chunked system is the primary approach
     // The main API will fall back to other sources

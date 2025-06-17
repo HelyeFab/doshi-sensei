@@ -1,0 +1,29 @@
+# Robots.txt for Doshi Sensei - Japanese Learning App
+# https://doshisensei.com
+
+User-agent: *
+Allow: /
+
+# Priority pages for crawling
+Allow: /practice
+Allow: /drill
+Allow: /vocabulary
+Allow: /settings
+
+# Disallow admin/private areas
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /account/
+
+# Allow important static files
+Allow: /manifest.json
+Allow: /doshi.png
+Allow: /*.css
+Allow: /*.js
+
+# Sitemap location
+Sitemap: https://doshisensei.com/sitemap.xml
+
+# Crawl delay (optional - be respectful)
+Crawl-delay: 1

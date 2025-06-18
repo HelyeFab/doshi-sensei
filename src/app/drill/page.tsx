@@ -654,7 +654,7 @@ export default function DrillPage() {
                 </span>
               </div>
               <div className="text-xl text-foreground mb-2">
-                {strings.conjugation.forms[currentQuestion.targetForm]} form:
+                {(strings.conjugation.forms as Record<string, string>)[currentQuestion.targetForm]} form:
               </div>
               <div className="text-3xl japanese-text font-bold text-primary">
                 {currentQuestion.stem}

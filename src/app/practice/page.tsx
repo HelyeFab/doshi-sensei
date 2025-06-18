@@ -688,7 +688,7 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
   }, [word.id]);
 
   const getFormDisplayName = (form: keyof ConjugationForms): string => {
-    return (strings.conjugation?.forms as any)?.[form] || form;
+    return (strings.conjugation?.forms as Record<string, string>)?.[form] || form;
   };
 
   // Generate furigana for conjugated forms

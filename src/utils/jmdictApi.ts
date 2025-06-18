@@ -2,6 +2,7 @@ import { JapaneseWord, WordType, JLPTLevel } from '@/types';
 import {
   parseJMdictXML,
   convertToJapaneseWord,
+  convertToJapaneseWordWithJLPT,
   searchJMdictEntries,
   type JMdictEntry
 } from './jmdictParser';
@@ -396,9 +397,14 @@ export async function searchJMdictVocabulary(query: string, limit: number = 20):
     console.log('Using local JMdict search with sample data');
     const allEntries = await loadJMdictEntries();
     const matchingEntries = searchJMdictEntries(allEntries, query, limit);
-    const results = matchingEntries.map((entry, index) => convertToJapaneseWord(entry, index));
 
-    console.log(`Found ${results.length} results from local JMdict search`);
+    // Use cross-reference to get accurate JLPT levels
+    console.log('Cross-referencing with Jisho for accurate JLPT levels...');
+    const results = await Promise.all(
+      matchingEntries.map((entry, index) => convertToJapaneseWordWithJLPT(entry, index))
+    );
+
+    console.log(`Found ${results.length} results from local JMdict search with JLPT cross-reference`);
     return results;
 
   } catch (error) {
@@ -428,23 +434,26 @@ export async function getCommonWordsFromJMdict(): Promise<JapaneseWord[]> {
     // Fallback to original method
     const allEntries = await loadJMdictEntries();
 
-    // Filter for verbs and adjectives only
-    const practiceWords = allEntries
-      .map((entry, index) => convertToJapaneseWord(entry, index))
-      .filter(word =>
-        word.type === 'Ichidan' ||
-        word.type === 'Godan' ||
-        word.type === 'Irregular' ||
-        word.type === 'i-adjective' ||
-        word.type === 'na-adjective'
-      );
+    // Filter entries for verbs and adjectives only
+    const practiceEntries = allEntries.filter(entry => {
+      const allPOS = entry.senses.flatMap(s => s.partOfSpeech);
+      const pos = allPOS.join(' ').toLowerCase();
+      return pos.includes('v1') || pos.includes('v5') || pos.includes('vs-') ||
+             pos.includes('vk') || pos.includes('adj-i') || pos.includes('adj-na');
+    });
 
-    // Shuffle and limit to 50
-    const shuffled = practiceWords.sort(() => Math.random() - 0.5);
+    // Shuffle and limit entries
+    const shuffled = practiceEntries.sort(() => Math.random() - 0.5);
     const limited = shuffled.slice(0, 50);
 
-    console.log(`Found ${limited.length} common verbs and adjectives from JMdict`);
-    return limited;
+    // Convert with JLPT cross-reference
+    console.log('Cross-referencing common words with Jisho for accurate JLPT levels...');
+    const practiceWords = await Promise.all(
+      limited.map((entry, index) => convertToJapaneseWordWithJLPT(entry, index))
+    );
+
+    console.log(`Found ${practiceWords.length} common verbs and adjectives from JMdict with JLPT cross-reference`);
+    return practiceWords;
 
   } catch (error) {
     console.error('Error getting common words from JMdict:', error);

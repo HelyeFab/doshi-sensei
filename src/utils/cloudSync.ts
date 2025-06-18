@@ -42,13 +42,14 @@ export class CloudSync {
   }
 
   /**
-   * Upload data to Firestore
+   * Upload data to Firestore with timeout
    */
   static async uploadData<T>(
     user: User,
     collection: string,
     documentId: string,
-    data: T
+    data: T,
+    timeoutMs: number = 15000
   ): Promise<SyncResult> {
     try {
       this.setSyncStatus({ isSyncing: true });
@@ -61,7 +62,16 @@ export class CloudSync {
         syncedAt: serverTimestamp()
       };
 
-      await setDoc(docRef, syncData, { merge: true });
+      // Create timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error(`Upload timeout after ${timeoutMs}ms`)), timeoutMs);
+      });
+
+      // Race between upload and timeout
+      await Promise.race([
+        setDoc(docRef, syncData, { merge: true }),
+        timeoutPromise
+      ]);
 
       this.setSyncStatus({
         isSyncing: false,

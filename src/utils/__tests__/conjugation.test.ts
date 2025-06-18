@@ -10,7 +10,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'taberu',
     meaning: 'to eat',
     type: 'Ichidan',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['verb', 'food']
   },
   Godan: {
     id: 'nomu-1',
@@ -19,7 +20,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'nomu',
     meaning: 'to drink',
     type: 'Godan',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['verb', 'drink']
   },
   Irregular: {
     id: 'suru-1',
@@ -28,7 +30,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'suru',
     meaning: 'to do',
     type: 'Irregular',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['verb', 'action']
   },
   'i-adjective': {
     id: 'takai-1',
@@ -37,7 +40,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'takai',
     meaning: 'expensive, high',
     type: 'i-adjective',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['adjective', 'price']
   },
   'na-adjective': {
     id: 'kirei-1',
@@ -46,7 +50,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'kirei',
     meaning: 'beautiful, clean',
     type: 'na-adjective',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['adjective', 'appearance']
   },
   noun: {
     id: 'hon-1',
@@ -55,7 +60,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'hon',
     meaning: 'book',
     type: 'noun',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['noun', 'object']
   },
   adverb: {
     id: 'totemo-1',
@@ -64,7 +70,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'totemo',
     meaning: 'very',
     type: 'adverb',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['adverb', 'degree']
   },
   particle: {
     id: 'wa-1',
@@ -73,7 +80,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'wa',
     meaning: 'topic particle',
     type: 'particle',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['particle', 'grammar']
   },
   other: {
     id: 'other-1',
@@ -82,7 +90,8 @@ const testWords: Record<WordType, JapaneseWord> = {
     romaji: 'sonota',
     meaning: 'other',
     type: 'other',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: ['other']
   }
 };
 
@@ -206,7 +215,8 @@ describe('ConjugationEngine', () => {
         romaji: 'kau',
         meaning: 'to buy',
         type: 'Godan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: ['verb', 'shopping']
       };
       const conjugations = ConjugationEngine.conjugate(kauWord);
 
@@ -225,7 +235,8 @@ describe('ConjugationEngine', () => {
         romaji: 'kaku',
         meaning: 'to write',
         type: 'Godan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: ['verb', 'writing']
       };
       const conjugations = ConjugationEngine.conjugate(kakuWord);
 
@@ -244,7 +255,8 @@ describe('ConjugationEngine', () => {
         romaji: 'oyogu',
         meaning: 'to swim',
         type: 'Godan',
-        jlpt: 'N4'
+        jlpt: 'N4',
+        tags: ['verb', 'sports']
       };
       const conjugations = ConjugationEngine.conjugate(oyoguWord);
 
@@ -263,7 +275,8 @@ describe('ConjugationEngine', () => {
         romaji: 'hanasu',
         meaning: 'to speak',
         type: 'Godan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: ['verb', 'communication']
       };
       const conjugations = ConjugationEngine.conjugate(hanasruWord);
 
@@ -272,6 +285,30 @@ describe('ConjugationEngine', () => {
       expect(conjugations.polite).toBe('話します');
       expect(conjugations.teForm).toBe('話して');
       expect(conjugations.potential).toBe('話せる');
+    });
+
+    test('should conjugate 行く (irregular く-verb) correctly according to LingoDeer', () => {
+      const ikuWord: JapaneseWord = {
+        id: 'iku-1',
+        kanji: '行く',
+        kana: 'いく',
+        romaji: 'iku',
+        meaning: 'to go',
+        type: 'Godan',
+        jlpt: 'N5',
+        tags: ['verb', 'movement']
+      };
+      const conjugations = ConjugationEngine.conjugate(ikuWord);
+
+      // Special irregular forms according to LingoDeer
+      expect(conjugations.past).toBe('行った'); // Irregular: いた → った
+      expect(conjugations.teForm).toBe('行って'); // Irregular: いて → って
+
+      // Regular forms should follow normal く-verb pattern
+      expect(conjugations.negative).toBe('行かない');
+      expect(conjugations.polite).toBe('行きます');
+      expect(conjugations.potential).toBe('行ける');
+      expect(conjugations.volitional).toBe('行こう');
     });
   });
 
@@ -297,7 +334,8 @@ describe('ConjugationEngine', () => {
         romaji: 'benkyou suru',
         meaning: 'to study',
         type: 'Irregular',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: ['verb', 'education']
       };
       const conjugations = ConjugationEngine.conjugate(benkyouWord);
 
@@ -317,7 +355,8 @@ describe('ConjugationEngine', () => {
         romaji: 'kuru',
         meaning: 'to come',
         type: 'Irregular',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: ['verb', 'movement']
       };
       const conjugations = ConjugationEngine.conjugate(kuruWord);
 
@@ -519,7 +558,8 @@ describe('Edge Cases and Error Handling', () => {
       romaji: 'taberu',
       meaning: 'to eat',
       type: 'Ichidan',
-      jlpt: 'N5'
+      jlpt: 'N5',
+      tags: ['verb', 'test']
     };
 
     expect(() => ConjugationEngine.conjugate(word)).not.toThrow();
@@ -533,7 +573,8 @@ describe('Edge Cases and Error Handling', () => {
       romaji: 'michiru',
       meaning: 'unknown verb',
       type: 'Irregular',
-      jlpt: 'N1'
+      jlpt: 'N1',
+      tags: ['verb', 'test']
     };
 
     const conjugations = ConjugationEngine.conjugate(word);
@@ -549,7 +590,8 @@ describe('Edge Cases and Error Handling', () => {
       romaji: '',
       meaning: '',
       type: 'Ichidan',
-      jlpt: 'N5'
+      jlpt: 'N5',
+      tags: ['test']
     };
 
     expect(() => ConjugationEngine.conjugate(word)).not.toThrow();

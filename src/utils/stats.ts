@@ -61,43 +61,30 @@ export class StatsManager {
     });
 
     try {
-      // If user is logged in and has cloud sync, try to load from cloud first
+      // Always load local stats first for immediate response
+      const localStats = this.getLocalStats();
+
+      // If user is logged in and has cloud sync, try to sync in background
       if (this.currentUser && this.hasCloudSync) {
-        console.log('☁️ Attempting cloud sync for user:', this.currentUser.email);
-        const cloudStats = await this.loadStatsFromCloud();
-        if (cloudStats) {
-          console.log('📥 Found cloud stats:', cloudStats);
-          // Merge with local data if needed and save locally
-          await this.saveStatsLocally(cloudStats);
-          await this.updateStreak(cloudStats);
-          return cloudStats;
-        } else {
-          console.log('☁️ No cloud stats found, checking local data to upload...');
-          // If no cloud data but user has sync, try to upload local data
-          const localStats = this.getLocalStats();
-          if (localStats) {
-            console.log('📤 Uploading local stats to cloud:', localStats);
-            await this.saveStatsToCloud(localStats);
-            return localStats;
-          }
-        }
+        console.log('☁️ Starting background cloud sync for user:', this.currentUser.email);
+
+        // Don't wait for cloud sync - do it in background
+        this.backgroundCloudSync(localStats).catch((error: Error) => {
+          console.error('❌ Background cloud sync failed:', error);
+        });
       } else if (this.currentUser && !this.hasCloudSync) {
         console.log('⚠️ User logged in but no cloud sync available');
       }
 
-      // Fallback to localStorage
-      console.log('💾 Falling back to localStorage');
-      const statsData = localStorage.getItem(STATS_KEY);
-      if (!statsData) {
+      // Return local stats immediately or create initial stats
+      if (localStats) {
+        console.log('📊 Loaded local stats:', localStats);
+        return localStats;
+      } else {
         const initialStats = this.createInitialStats();
         console.log('🆕 Created initial stats:', initialStats);
         return initialStats;
       }
-
-      const stats = JSON.parse(statsData) as UserStats;
-      console.log('📊 Loaded local stats:', stats);
-      await this.updateStreak(stats);
-      return stats;
     } catch (error) {
       console.error('❌ Error loading user stats:', error);
       return this.createInitialStats();
@@ -250,6 +237,112 @@ export class StatsManager {
   }
 
   /**
+   * Background cloud sync with timeout and error handling
+   * Does not block app loading
+   */
+  private static async backgroundCloudSync(localStats: UserStats | null): Promise<void> {
+    if (!this.currentUser || !this.hasCloudSync) {
+      return;
+    }
+
+    const SYNC_TIMEOUT = 10000; // 10 seconds timeout
+
+    try {
+      console.log('🔄 Starting background cloud sync...');
+
+      // Create a timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Cloud sync timeout')), SYNC_TIMEOUT);
+      });
+
+      // Race between cloud sync and timeout
+      const cloudStats = await Promise.race([
+        this.loadStatsFromCloudWithRetry(),
+        timeoutPromise
+      ]);
+
+      if (cloudStats && localStats) {
+        // Compare and merge if needed
+        const resolution = CloudSync.resolveConflict(localStats, cloudStats);
+
+        if (resolution === 'cloud') {
+          // Cloud data is newer, update local
+          await this.saveStatsLocally(cloudStats);
+          console.log('📥 Updated local stats from cloud (background sync)');
+        } else if (resolution === 'local') {
+          // Local data is newer, upload to cloud
+          await this.saveStatsToCloudWithRetry(localStats);
+          console.log('📤 Uploaded local stats to cloud (background sync)');
+        }
+      } else if (cloudStats && !localStats) {
+        // No local data, save cloud data locally
+        await this.saveStatsLocally(cloudStats);
+        console.log('📥 Saved cloud stats locally (background sync)');
+      } else if (localStats && !cloudStats) {
+        // No cloud data, upload local data
+        await this.saveStatsToCloudWithRetry(localStats);
+        console.log('📤 Uploaded local stats to cloud (background sync)');
+      }
+
+      console.log('✅ Background cloud sync completed successfully');
+    } catch (error) {
+      console.error('❌ Background cloud sync failed:', error);
+      // Don't throw - this is background sync, app should continue normally
+    }
+  }
+
+  /**
+   * Load stats from cloud with retry mechanism
+   */
+  private static async loadStatsFromCloudWithRetry(maxRetries: number = 2): Promise<UserStats | null> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 Cloud sync attempt ${attempt}/${maxRetries}`);
+        return await this.loadStatsFromCloud();
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`⚠️ Cloud sync attempt ${attempt} failed:`, error);
+
+        if (attempt < maxRetries) {
+          // Wait before retrying (exponential backoff)
+          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    throw lastError || new Error('All cloud sync attempts failed');
+  }
+
+  /**
+   * Save stats to cloud with retry mechanism
+   */
+  private static async saveStatsToCloudWithRetry(stats: UserStats, maxRetries: number = 2): Promise<void> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 Cloud upload attempt ${attempt}/${maxRetries}`);
+        await this.saveStatsToCloud(stats);
+        return; // Success
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`⚠️ Cloud upload attempt ${attempt} failed:`, error);
+
+        if (attempt < maxRetries) {
+          // Wait before retrying (exponential backoff)
+          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    throw lastError || new Error('All cloud upload attempts failed');
+  }
+
+  /**
    * Get local stats without cloud sync
    */
   private static getLocalStats(): UserStats | null {
@@ -277,11 +370,8 @@ export class StatsManager {
       stats.correctAnswers += correctAnswers;
       stats.accuracy = stats.totalQuestions > 0 ? Math.round((stats.correctAnswers / stats.totalQuestions) * 100) : 0;
 
-      // Update usage tracking
-      if (stats.lastActiveDate !== today) {
-        stats.totalDaysUsed += 1;
-        stats.lastActiveDate = today;
-      }
+      // Update usage tracking and streak
+      await this.updateDailyUsageAndStreak(stats, today);
 
       await this.saveStats(stats);
 
@@ -306,11 +396,8 @@ export class StatsManager {
       const stats = await this.getUserStats();
       const today = new Date().toDateString();
 
-      // Update usage tracking
-      if (stats.lastActiveDate !== today) {
-        stats.totalDaysUsed += 1;
-        stats.lastActiveDate = today;
-      }
+      // Update usage tracking and streak
+      await this.updateDailyUsageAndStreak(stats, today);
 
       await this.saveStats(stats);
     } catch (error) {
@@ -452,31 +539,71 @@ export class StatsManager {
   }
 
   /**
-   * Private: Update streak calculation
+   * Private: Update daily usage and streak calculation
+   * Only called when user actually performs an activity (drill, study word)
    */
-  private static async updateStreak(stats: UserStats): Promise<void> {
-    const today = new Date();
-    const lastActive = new Date(stats.lastActiveDate);
-    const diffTime = today.getTime() - lastActive.getTime();
+  private static async updateDailyUsageAndStreak(stats: UserStats, today: string): Promise<void> {
+    const lastActiveDate = stats.lastActiveDate;
+
+    // If it's the same day, no changes needed
+    if (lastActiveDate === today) {
+      return;
+    }
+
+    // Use more reliable date comparison (normalize to YYYY-MM-DD format)
+    const normalizeDate = (dateStr: string): string => {
+      const date = new Date(dateStr);
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    };
+
+    const normalizedLastActive = normalizeDate(lastActiveDate);
+    const normalizedToday = normalizeDate(today);
+
+    // Calculate days difference using normalized dates
+    const lastActiveDate_obj = new Date(normalizedLastActive + 'T00:00:00.000Z');
+    const todayDate_obj = new Date(normalizedToday + 'T00:00:00.000Z');
+    const diffTime = todayDate_obj.getTime() - lastActiveDate_obj.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) {
-      // Same day, no change
-      return;
-    } else if (diffDays === 1) {
-      // Consecutive day, increment streak
-      stats.currentStreak += 1;
-      stats.longestStreak = Math.max(stats.longestStreak, stats.currentStreak);
-    } else if (diffDays > 1) {
-      // Streak broken
-      stats.currentStreak = 1; // Today counts as new streak start
-      stats.lastActiveDate = today.toDateString();
+    console.log('📅 Updating daily usage and streak:', {
+      lastActiveDate: normalizedLastActive,
+      today: normalizedToday,
+      diffDays,
+      currentStreak: stats.currentStreak
+    });
+
+    // Update last active date
+    stats.lastActiveDate = today;
+
+    // Only increment totalDaysUsed for actual new days (not same day activities)
+    if (diffDays > 0) {
       stats.totalDaysUsed += 1;
     }
 
-    await this.saveStats(stats);
-  }
+    // Handle streak logic with improved date handling
+    if (diffDays === 1) {
+      // Consecutive day - increment streak
+      stats.currentStreak += 1;
+      stats.longestStreak = Math.max(stats.longestStreak, stats.currentStreak);
+      console.log('🔥 Consecutive day! Streak incremented to:', stats.currentStreak);
+    } else if (diffDays > 1) {
+      // Streak broken - reset to 1 (today counts as new streak start)
+      stats.currentStreak = 1;
+      console.log('💔 Streak broken after', diffDays, 'days. Reset to 1');
+    } else if (diffDays === 0) {
+      // Same day - maintain current streak
+      console.log('📅 Same day activity - no streak change');
+    } else {
+      // Negative difference (clock moved backwards) - maintain streak but don't increment
+      console.log('⚠️ Date moved backwards:', diffDays, '. Maintaining current streak');
+    }
 
+    console.log('📊 Final streak values:', {
+      currentStreak: stats.currentStreak,
+      longestStreak: stats.longestStreak,
+      totalDaysUsed: stats.totalDaysUsed
+    });
+  }
 
   /**
    * Private: Record a drill session

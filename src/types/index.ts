@@ -47,6 +47,7 @@ export interface ConjugationForms {
   // Te-Forms
   teForm: string;
   negativeTeForm: string;
+  naiDeForm: string; // ないで form
 
   // Stems
   masuStem: string;

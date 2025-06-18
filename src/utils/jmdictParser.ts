@@ -139,7 +139,7 @@ export function convertToJapaneseWord(entry: JMdictEntry, index: number): Japane
   const allPOS = entry.senses.flatMap(s => s.partOfSpeech);
   const wordType = determineWordType(allPOS);
 
-  // Default JLPT level (JMdict doesn't include this)
+  // Default JLPT level (will be updated by cross-reference)
   const jlptLevel: JLPTLevel = 'N5';
 
   return {
@@ -152,6 +152,82 @@ export function convertToJapaneseWord(entry: JMdictEntry, index: number): Japane
     jlpt: jlptLevel,
     tags: allPOS
   };
+}
+
+/**
+ * Convert JMdict entry to JapaneseWord format with JLPT cross-reference
+ */
+export async function convertToJapaneseWordWithJLPT(entry: JMdictEntry, index: number): Promise<JapaneseWord> {
+  // First get the base word with accurate verb type from JMdict
+  const baseWord = convertToJapaneseWord(entry, index);
+
+  // Then cross-reference with Jisho to get accurate JLPT level
+  try {
+    const jlptLevel = await getJLPTLevelFromJisho(baseWord.kanji, baseWord.kana);
+    return {
+      ...baseWord,
+      jlpt: jlptLevel
+    };
+  } catch (error) {
+    console.warn(`Failed to get JLPT level for ${baseWord.kanji}:`, error);
+    return baseWord; // Return with default N5 if cross-reference fails
+  }
+}
+
+/**
+ * Get JLPT level from Jisho API for a specific word using Netlify proxy
+ */
+async function getJLPTLevelFromJisho(kanji: string, kana: string): Promise<JLPTLevel> {
+  try {
+    // Use Netlify proxy to avoid CORS issues
+    const response = await fetch(`/.netlify/functions/jisho-proxy?keyword=${encodeURIComponent(kanji)}`);
+    const data = await response.json();
+
+    // Look for exact matches in Jisho response
+    if (data.data && Array.isArray(data.data)) {
+      for (const result of data.data) {
+        const japanese = result.japanese?.[0];
+        if (!japanese) continue;
+
+        // Check if this is the same word (exact match on kanji or kana)
+        if (japanese.word === kanji || japanese.reading === kana) {
+          // Check for JLPT tags
+          if (result.jlpt?.includes('jlpt-n5')) return 'N5';
+          if (result.jlpt?.includes('jlpt-n4')) return 'N4';
+          if (result.jlpt?.includes('jlpt-n3')) return 'N3';
+          if (result.jlpt?.includes('jlpt-n2')) return 'N2';
+          if (result.jlpt?.includes('jlpt-n1')) return 'N1';
+        }
+      }
+
+      // If no exact match found, try searching by kana
+      if (kanji !== kana) {
+        const kanaResponse = await fetch(`/.netlify/functions/jisho-proxy?keyword=${encodeURIComponent(kana)}`);
+        const kanaData = await kanaResponse.json();
+
+        if (kanaData.data && Array.isArray(kanaData.data)) {
+          for (const result of kanaData.data) {
+            const japanese = result.japanese?.[0];
+            if (!japanese) continue;
+
+            if (japanese.reading === kana) {
+              if (result.jlpt?.includes('jlpt-n5')) return 'N5';
+              if (result.jlpt?.includes('jlpt-n4')) return 'N4';
+              if (result.jlpt?.includes('jlpt-n3')) return 'N3';
+              if (result.jlpt?.includes('jlpt-n2')) return 'N2';
+              if (result.jlpt?.includes('jlpt-n1')) return 'N1';
+            }
+          }
+        }
+      }
+    }
+
+    // Default to N5 if no JLPT info found
+    return 'N5';
+  } catch (error) {
+    console.warn('Error fetching JLPT level from Jisho proxy:', error);
+    return 'N5';
+  }
 }
 
 /**

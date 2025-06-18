@@ -5,8 +5,12 @@ import { strings } from '@/config/strings';
 import Image from 'next/image';
 import TypingEffect from './TypingEffect';
 import StatsManager, { UserStats } from '../utils/stats';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 export default function MobileHome() {
+  const { user } = useAuth();
+  const { userSubscription } = useSubscription();
   const [stats, setStats] = useState<UserStats>({
     drillsCompleted: 0,
     accuracy: 0,
@@ -20,9 +24,23 @@ export default function MobileHome() {
   });
   const [loading, setLoading] = useState(true);
 
+  // Initialize StatsManager with user context AND load stats
   useEffect(() => {
+    if (user) {
+      const canSync = userSubscription?.subscription?.status === 'active';
+      console.log('📱 MobileHome - setting up StatsManager:', {
+        userEmail: user.email,
+        canSync: canSync,
+        subscriptionStatus: userSubscription?.subscription?.status
+      });
+      StatsManager.setUser(user, canSync);
+    } else {
+      StatsManager.setUser(null, false);
+    }
+
+    // Load stats after setting up user context
     loadStats();
-  }, []);
+  }, [user, userSubscription]);
 
   const loadStats = async () => {
     try {

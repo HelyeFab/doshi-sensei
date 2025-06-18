@@ -212,19 +212,19 @@ export default function AccountPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {userStats.drillsCompleted}
+                      {userStats.totalDaysUsed}
                     </div>
                     <div className="text-sm text-blue-600 dark:text-blue-400">
-                      Drills Completed
+                      Days Used
                     </div>
                   </div>
 
                   <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {userStats.totalQuestions}
+                      {userStats.drillsCompleted}
                     </div>
                     <div className="text-sm text-green-600 dark:text-green-400">
-                      Questions Answered
+                      Drills Completed
                     </div>
                   </div>
 
@@ -242,7 +242,7 @@ export default function AccountPage() {
                       {userStats.currentStreak}
                     </div>
                     <div className="text-sm text-orange-600 dark:text-orange-400">
-                      Current Streak
+                      Streak
                     </div>
                   </div>
                 </div>

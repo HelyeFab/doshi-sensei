@@ -57,19 +57,25 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(true);
 
-  // Initialize StatsManager with user context
+  // Initialize StatsManager with user context AND load stats
   useEffect(() => {
     if (user) {
       const canSync = userSubscription?.subscription?.status === 'active';
+      console.log('🏠 Homepage - setting up StatsManager:', {
+        userEmail: user.email,
+        canSync: canSync,
+        subscriptionStatus: userSubscription?.subscription?.status
+      });
       StatsManager.setUser(user, canSync);
     } else {
       StatsManager.setUser(null, false);
     }
+
+    // Load stats after setting up user context
+    loadStats();
   }, [user, userSubscription]);
 
   useEffect(() => {
-    loadStats();
-
     // Reload stats when page becomes visible/focused
     const handleFocus = () => {
       loadStats();

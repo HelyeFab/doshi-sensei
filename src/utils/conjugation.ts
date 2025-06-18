@@ -44,6 +44,7 @@ export class ConjugationEngine {
       // Te-Forms
       teForm: kanjiStem + 'て',
       negativeTeForm: kanjiStem + 'なくて',
+      naiDeForm: kanjiStem + 'ないで', // Added ないで form
 
       // Stems
       masuStem: kanjiStem,
@@ -138,7 +139,7 @@ export class ConjugationEngine {
     const kanjiStem = kanji.slice(0, -1);
 
     // Get the conjugation mappings for the last character
-    const mappings = this.getGodanMappings(lastChar);
+    const mappings = this.getGodanMappings(lastChar, word);
 
     if (!mappings) {
       return this.getEmptyConjugations();
@@ -162,6 +163,7 @@ export class ConjugationEngine {
       // Te-Forms
       teForm: kanjiStem + mappings.teForm,
       negativeTeForm: kanjiStem + mappings.negative + 'なくて',
+      naiDeForm: kanjiStem + mappings.negative + 'ないで', // Added ないで form
 
       // Stems
       masuStem: kanjiStem + mappings.polite,
@@ -248,7 +250,23 @@ export class ConjugationEngine {
   }
 
   // Get Godan conjugation mappings based on ending
-  private static getGodanMappings(ending: string) {
+  private static getGodanMappings(ending: string, word?: JapaneseWord) {
+    // Special case for 行く (irregular く-verb according to LingoDeer)
+    if (word && (word.kanji === '行く' || word.kana === 'いく')) {
+      return {
+        past: 'った',  // 行く → 行った (irregular)
+        negative: 'か', // 行く → 行かない
+        polite: 'き',   // 行く → 行きます
+        teForm: 'って', // 行く → 行って (irregular)
+        potential: 'け', // 行く → 行ける
+        passive: 'か',   // 行く → 行かれる
+        causative: 'か', // 行く → 行かせる
+        conditional: 'け', // 行く → 行けば
+        volitional: 'こう', // 行く → 行こう
+        imperative: 'け'    // 行く → 行け
+      };
+    }
+
     const mappings: { [key: string]: any } = {
       'う': {
         past: 'った',
@@ -263,10 +281,10 @@ export class ConjugationEngine {
         imperative: 'え'
       },
       'く': {
-        past: 'いた',
+        past: 'いた',  // Standard く-verbs: 書く → 書いた
         negative: 'か',
         polite: 'き',
-        teForm: 'いて',
+        teForm: 'いて', // Standard く-verbs: 書く → 書いて
         potential: 'け',
         passive: 'か',
         causative: 'か',
@@ -275,10 +293,10 @@ export class ConjugationEngine {
         imperative: 'け'
       },
       'ぐ': {
-        past: 'いだ',
+        past: 'いだ',  // ぐ-verbs: 泳ぐ → 泳いだ
         negative: 'が',
         polite: 'ぎ',
-        teForm: 'いで',
+        teForm: 'いで', // ぐ-verbs: 泳ぐ → 泳いで
         potential: 'げ',
         passive: 'が',
         causative: 'が',
@@ -287,10 +305,10 @@ export class ConjugationEngine {
         imperative: 'げ'
       },
       'す': {
-        past: 'した',
+        past: 'した',  // す-verbs: 話す → 話した
         negative: 'さ',
         polite: 'し',
-        teForm: 'して',
+        teForm: 'して', // す-verbs: 話す → 話して
         potential: 'せ',
         passive: 'さ',
         causative: 'さ',
@@ -299,10 +317,10 @@ export class ConjugationEngine {
         imperative: 'せ'
       },
       'つ': {
-        past: 'った',
+        past: 'った',  // つ-verbs: 待つ → 待った
         negative: 'た',
         polite: 'ち',
-        teForm: 'って',
+        teForm: 'って', // つ-verbs: 待つ → 待って
         potential: 'て',
         passive: 'た',
         causative: 'た',
@@ -311,10 +329,10 @@ export class ConjugationEngine {
         imperative: 'て'
       },
       'ぬ': {
-        past: 'んだ',
+        past: 'んだ',  // ぬ-verbs: 死ぬ → 死んだ
         negative: 'な',
         polite: 'に',
-        teForm: 'んで',
+        teForm: 'んで', // ぬ-verbs: 死ぬ → 死んで
         potential: 'ね',
         passive: 'な',
         causative: 'な',
@@ -323,10 +341,10 @@ export class ConjugationEngine {
         imperative: 'ね'
       },
       'ぶ': {
-        past: 'んだ',
+        past: 'んだ',  // ぶ-verbs: 呼ぶ → 呼んだ
         negative: 'ば',
         polite: 'び',
-        teForm: 'んで',
+        teForm: 'んで', // ぶ-verbs: 呼ぶ → 呼んで
         potential: 'べ',
         passive: 'ば',
         causative: 'ば',
@@ -335,10 +353,10 @@ export class ConjugationEngine {
         imperative: 'べ'
       },
       'む': {
-        past: 'んだ',
+        past: 'んだ',  // む-verbs: 飲む → 飲んだ
         negative: 'ま',
         polite: 'み',
-        teForm: 'んで',
+        teForm: 'んで', // む-verbs: 飲む → 飲んで
         potential: 'め',
         passive: 'ま',
         causative: 'ま',
@@ -347,10 +365,10 @@ export class ConjugationEngine {
         imperative: 'め'
       },
       'る': {
-        past: 'った',
+        past: 'った',  // る-verbs (Godan): 帰る → 帰った
         negative: 'ら',
         polite: 'り',
-        teForm: 'って',
+        teForm: 'って', // る-verbs (Godan): 帰る → 帰って
         potential: 'れ',
         passive: 'ら',
         causative: 'ら',
@@ -391,6 +409,7 @@ export class ConjugationEngine {
         // Te-Forms
         teForm: kanjiPrefix + 'して',
         negativeTeForm: kanjiPrefix + 'しなくて',
+        naiDeForm: kanjiPrefix + 'しないで', // Added ないで form
 
         // Stems
         masuStem: kanjiPrefix + 'し',
@@ -498,6 +517,7 @@ export class ConjugationEngine {
         // Te-Forms
         teForm: useKanji ? '来て' : 'きて',
         negativeTeForm: useKanji ? '来なくて' : 'こなくて',
+        naiDeForm: useKanji ? '来ないで' : 'こないで', // Added ないで form
 
         // Stems
         masuStem: useKanji ? '来' : 'き',
@@ -609,6 +629,7 @@ export class ConjugationEngine {
       // Te-Forms
       teForm: stem + 'くて',
       negativeTeForm: stem + 'くなくて',
+      naiDeForm: '', // Not applicable for i-adjectives
 
       // Stems
       masuStem: stem,
@@ -663,6 +684,7 @@ export class ConjugationEngine {
       // Te-Forms
       teForm: stem + 'で',
       negativeTeForm: stem + 'じゃなくて',
+      naiDeForm: '', // Not applicable for na-adjectives
 
       // Stems
       masuStem: stem,
@@ -700,7 +722,8 @@ export class ConjugationEngine {
     return {
       present: '', past: '', negative: '', pastNegative: '', volitional: '',
       polite: '', politePast: '', politeNegative: '', politePastNegative: '', politeVolitional: '',
-      teForm: '', negativeTeForm: '', masuStem: '', negativeStem: '',
+      teForm: '', negativeTeForm: '', naiDeForm: '',
+      masuStem: '', negativeStem: '',
       imperativePlain: '', imperativePolite: '',
       provisional: '', provisionalNegative: '', conditional: '', conditionalNegative: '',
       potential: '', potentialNegative: '', potentialPast: '', potentialPastNegative: '',
@@ -805,9 +828,8 @@ export function generateQuestionStem(word: JapaneseWord, targetForm: keyof Conju
     case 'Ichidan':
       return word.kana.slice(0, -1) + '？';
     case 'Godan':
-      const lastChar = word.kana.slice(-1);
-      const stem = word.kana.slice(0, -1);
-      return stem + '？';
+      // For Godan verbs, show the full word since conjugation changes the ending vowel
+      return word.kana + '？';
     case 'i-adjective':
       return word.kana.slice(0, -1) + '？';
     case 'na-adjective':

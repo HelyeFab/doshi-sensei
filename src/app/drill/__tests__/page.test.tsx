@@ -33,26 +33,28 @@ const mockGetCommonVerbs = getCommonVerbs as jest.MockedFunction<typeof getCommo
 const mockConjugationEngine = ConjugationEngine as jest.Mocked<typeof ConjugationEngine>;
 
 describe('DrillPage', () => {
-  const mockWords = [
-    {
-      id: 'word1',
-      kanji: '食べる',
-      kana: 'たべる',
-      romaji: 'taberu',
-      meaning: 'to eat',
-      type: 'Ichidan' as const,
-      jlpt: 'N5' as const,
-    },
-    {
-      id: 'word2',
-      kanji: '飲む',
-      kana: 'のむ',
-      romaji: 'nomu',
-      meaning: 'to drink',
-      type: 'Godan' as const,
-      jlpt: 'N5' as const,
-    },
-  ];
+    const mockWords = [
+      {
+        id: 'word1',
+        kanji: '食べる',
+        kana: 'たべる',
+        romaji: 'taberu',
+        meaning: 'to eat',
+        type: 'Ichidan' as const,
+        jlpt: 'N5' as const,
+        tags: []
+      },
+      {
+        id: 'word2',
+        kanji: '飲む',
+        kana: 'のむ',
+        romaji: 'nomu',
+        meaning: 'to drink',
+        type: 'Godan' as const,
+        jlpt: 'N5' as const,
+        tags: []
+      }
+    ];
 
   const mockConjugations = {
     present: '食べる',
@@ -506,6 +508,7 @@ describe('DrillPage Edge Cases', () => {
         meaning: 'to eat',
         type: 'Ichidan' as const,
         jlpt: 'N5' as const,
+        tags: []
       }
     ]);
 

@@ -15,7 +15,7 @@ import {
 // Database configuration
 const DB_CONFIG: DatabaseConfig = {
   name: 'DoshiSenseiDB',
-  version: 1,
+  version: 2, // Updated for flashcard stores
   stores: {
     settings: {
       keyPath: 'id',
@@ -95,6 +95,34 @@ const DB_CONFIG: DatabaseConfig = {
         { name: 'wordId', keyPath: 'wordId' },
         { name: 'listId', keyPath: 'listId' },
         { name: 'savedAt', keyPath: 'savedAt' }
+      ]
+    },
+    flashcardProgress: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'userId', keyPath: 'userId' },
+        { name: 'wordId', keyPath: 'wordId' },
+        { name: 'nextReviewDate', keyPath: 'nextReviewDate' },
+        { name: 'difficulty', keyPath: 'difficulty' },
+        { name: 'lastReviewDate', keyPath: 'lastReviewDate' }
+      ]
+    },
+    flashcardSessions: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'userId', keyPath: 'userId' },
+        { name: 'startTime', keyPath: 'startTime' },
+        { name: 'sessionType', keyPath: 'sessionType' }
+      ]
+    },
+    flashcardReviews: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'userId', keyPath: 'userId' },
+        { name: 'wordId', keyPath: 'wordId' },
+        { name: 'sessionId', keyPath: 'sessionId' },
+        { name: 'reviewDate', keyPath: 'reviewDate' },
+        { name: 'cardType', keyPath: 'cardType' }
       ]
     }
   }
@@ -687,6 +715,70 @@ export async function getStorageUsage(): Promise<{
   }
 
   return result;
+}
+
+// Generic Database Manager for flashcard operations
+export class DatabaseManager {
+  async add<K extends keyof DatabaseSchema>(
+    storeName: K,
+    data: DatabaseSchema[K]
+  ): Promise<void> {
+    await performDBOperation(storeName, 'readwrite', (store) =>
+      store.add(data)
+    );
+  }
+
+  async put<K extends keyof DatabaseSchema>(
+    storeName: K,
+    data: DatabaseSchema[K]
+  ): Promise<void> {
+    await performDBOperation(storeName, 'readwrite', (store) =>
+      store.put(data)
+    );
+  }
+
+  async get<K extends keyof DatabaseSchema>(
+    storeName: K,
+    key: string
+  ): Promise<DatabaseSchema[K] | null> {
+    const result = await performDBOperation(storeName, 'readonly', (store) =>
+      store.get(key)
+    );
+    return result || null;
+  }
+
+  async getAll<K extends keyof DatabaseSchema>(
+    storeName: K
+  ): Promise<DatabaseSchema[K][]> {
+    return await performDBOperation(storeName, 'readonly', (store) =>
+      store.getAll()
+    );
+  }
+
+  async delete<K extends keyof DatabaseSchema>(
+    storeName: K,
+    key: string
+  ): Promise<void> {
+    await performDBOperation(storeName, 'readwrite', (store) =>
+      store.delete(key)
+    );
+  }
+
+  async clear<K extends keyof DatabaseSchema>(
+    storeName: K
+  ): Promise<void> {
+    await performDBOperation(storeName, 'readwrite', (store) =>
+      store.clear()
+    );
+  }
+
+  async count<K extends keyof DatabaseSchema>(
+    storeName: K
+  ): Promise<number> {
+    return await performDBOperation(storeName, 'readonly', (store) =>
+      store.count()
+    );
+  }
 }
 
 // Export all managers

@@ -92,7 +92,8 @@ describe('API Utils', () => {
         romaji: 'taberu',
         meaning: 'to eat',
         type: 'Ichidan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       }
     ];
 
@@ -219,7 +220,8 @@ describe('API Utils', () => {
         romaji: 'taberu',
         meaning: 'to eat',
         type: 'Ichidan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       },
       {
         id: 'common-2',
@@ -228,7 +230,8 @@ describe('API Utils', () => {
         romaji: 'nomu',
         meaning: 'to drink',
         type: 'Godan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       }
     ];
 
@@ -287,7 +290,8 @@ describe('API Utils', () => {
         romaji: 'taberu',
         meaning: 'to eat',
         type: 'Ichidan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       }
     ];
 

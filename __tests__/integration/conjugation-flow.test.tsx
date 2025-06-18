@@ -6,13 +6,14 @@ import { JapaneseWord } from '@/types';
 
 describe('Conjugation Flow Integration Tests', () => {
   const testWord: JapaneseWord = {
-    id: 'test-1',
+    id: 'test-word',
     kanji: '食べる',
     kana: 'たべる',
     romaji: 'taberu',
     meaning: 'to eat',
     type: 'Ichidan',
-    jlpt: 'N5'
+    jlpt: 'N5',
+    tags: []
   };
 
   describe('Ichidan Verb Conjugation Flow', () => {
@@ -63,7 +64,8 @@ describe('Conjugation Flow Integration Tests', () => {
       romaji: 'nomu',
       meaning: 'to drink',
       type: 'Godan',
-      jlpt: 'N5'
+      jlpt: 'N5',
+      tags: []
     };
 
     test('should correctly conjugate む-ending Godan verbs', () => {
@@ -93,7 +95,8 @@ describe('Conjugation Flow Integration Tests', () => {
           romaji: word,
           meaning: 'test',
           type: 'Godan',
-          jlpt: 'N5'
+          jlpt: 'N5',
+          tags: []
         };
 
         const conjugations = ConjugationEngine.conjugate(testWord);
@@ -112,7 +115,8 @@ describe('Conjugation Flow Integration Tests', () => {
         romaji: 'suru',
         meaning: 'to do',
         type: 'Irregular',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       };
 
       const conjugations = ConjugationEngine.conjugate(suruWord);
@@ -133,7 +137,8 @@ describe('Conjugation Flow Integration Tests', () => {
         romaji: 'benkyou suru',
         meaning: 'to study',
         type: 'Irregular',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       };
 
       const conjugations = ConjugationEngine.conjugate(benkyouWord);
@@ -153,7 +158,8 @@ describe('Conjugation Flow Integration Tests', () => {
         romaji: 'kuru',
         meaning: 'to come',
         type: 'Irregular',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       };
 
       const conjugations = ConjugationEngine.conjugate(kuruWord);
@@ -176,7 +182,8 @@ describe('Conjugation Flow Integration Tests', () => {
         romaji: 'takai',
         meaning: 'expensive',
         type: 'i-adjective',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       };
 
       const conjugations = ConjugationEngine.conjugate(iAdjectiveWord);
@@ -202,7 +209,8 @@ describe('Conjugation Flow Integration Tests', () => {
         romaji: 'kirei',
         meaning: 'beautiful',
         type: 'na-adjective',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       };
 
       const conjugations = ConjugationEngine.conjugate(naAdjectiveWord);
@@ -237,7 +245,8 @@ describe('Conjugation Flow Integration Tests', () => {
           romaji: kanji,
           meaning: 'test',
           type,
-          jlpt: 'N5'
+          jlpt: 'N5',
+          tags: []
         };
 
         const conjugations = ConjugationEngine.conjugate(word);
@@ -262,7 +271,8 @@ describe('Conjugation Flow Integration Tests', () => {
         romaji: '',
         meaning: '',
         type: 'Ichidan',
-        jlpt: 'N5'
+        jlpt: 'N5',
+        tags: []
       };
 
       expect(() => ConjugationEngine.conjugate(emptyWord)).not.toThrow();
@@ -284,7 +294,8 @@ describe('Conjugation Flow Integration Tests', () => {
           romaji: i % 2 === 0 ? 'taberu' : 'nomu',
           meaning: 'test',
           type: i % 2 === 0 ? 'Ichidan' : 'Godan',
-          jlpt: 'N5'
+          jlpt: 'N5',
+          tags: []
         });
       }
 
@@ -309,7 +320,8 @@ describe('Conjugation Flow Integration Tests', () => {
           romaji: 'taberu',
           meaning: 'to eat',
           type: 'Ichidan',
-          jlpt: 'N5'
+          jlpt: 'N5',
+          tags: []
         };
         ConjugationEngine.conjugate(word);
       }

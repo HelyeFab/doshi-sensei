@@ -258,6 +258,53 @@ export interface SavedWord {
   listIds: string[]; // Which lists this word belongs to
 }
 
+// Flashcard System Types
+export interface FlashcardSession {
+  id: string;
+  userId: string;
+  wordListIds: string[];
+  startTime: Date;
+  endTime?: Date;
+  cardsReviewed: number;
+  cardsCorrect: number;
+  sessionType: 'review' | 'learn' | 'practice';
+  avgResponseTime: number;
+}
+
+export interface FlashcardProgress {
+  id: string;
+  userId: string;
+  wordId: string;
+  easeFactor: number; // 1.3 - 2.5 (SuperMemo algorithm)
+  interval: number; // Days until next review
+  repetitions: number; // Number of successful reviews
+  nextReviewDate: Date;
+  lastReviewDate: Date;
+  difficulty: 'learning' | 'reviewing' | 'mastered';
+  totalReviews: number;
+  correctReviews: number;
+  averageResponseTime: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface FlashcardReview {
+  id: string;
+  userId: string;
+  wordId: string;
+  sessionId: string;
+  reviewDate: Date;
+  responseTime: number; // milliseconds
+  quality: 0 | 1 | 2 | 3 | 4 | 5; // SuperMemo quality rating
+  wasCorrect: boolean;
+  cardType: 'kanji-to-meaning' | 'meaning-to-kanji' | 'reading-recognition';
+  previousInterval: number;
+  newInterval: number;
+}
+
+export type FlashcardType = 'kanji-to-meaning' | 'meaning-to-kanji' | 'reading-recognition';
+export type FlashcardQuality = 0 | 1 | 2 | 3 | 4 | 5;
+
 // Database Schema
 export interface DatabaseSchema {
   settings: AppSettings & { id: string; updatedAt: Date };
@@ -270,6 +317,9 @@ export interface DatabaseSchema {
   drillSessions: DrillSession;
   wordLists: WordList;
   savedWords: SavedWord;
+  flashcardProgress: FlashcardProgress;
+  flashcardSessions: FlashcardSession;
+  flashcardReviews: FlashcardReview;
 }
 
 // IndexedDB Configuration

@@ -24,7 +24,7 @@ const SAVED_WORDS_KEY = 'doshi_sensei_saved_words';
 
 export class WordListManager {
   /**
-   * Get all word lists
+   * Get all word lists with conjugability computed
    */
   static async getAllWordLists(): Promise<WordList[]> {
     try {
@@ -32,16 +32,50 @@ export class WordListManager {
       if (!listsData) return [];
 
       const lists = JSON.parse(listsData) as WordList[];
-      // Convert date strings back to Date objects
-      return lists.map(list => ({
-        ...list,
-        createdAt: new Date(list.createdAt),
-        updatedAt: new Date(list.updatedAt)
-      }));
+
+      // Convert date strings back to Date objects and compute conjugability
+      const listsWithMeta = await Promise.all(
+        lists.map(async list => ({
+          ...list,
+          createdAt: new Date(list.createdAt),
+          updatedAt: new Date(list.updatedAt),
+          isConjugable: await this.isListConjugable(list.id)
+        }))
+      );
+
+      return listsWithMeta;
     } catch (error) {
       console.error('Error loading word lists:', error);
       return [];
     }
+  }
+
+  /**
+   * Check if a word list contains conjugable words (verbs/adjectives)
+   */
+  static async isListConjugable(listId: string): Promise<boolean> {
+    try {
+      const wordsInList = await this.getWordsInList(listId);
+
+      return wordsInList.some(word =>
+        word.type === 'Ichidan' ||
+        word.type === 'Godan' ||
+        word.type === 'Irregular' ||
+        word.type === 'i-adjective' ||
+        word.type === 'na-adjective'
+      );
+    } catch (error) {
+      console.error('Error checking list conjugability:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get only conjugable word lists (for conjugation drills)
+   */
+  static async getConjugableWordLists(): Promise<WordList[]> {
+    const allLists = await this.getAllWordLists();
+    return allLists.filter(list => list.isConjugable);
   }
 
   /**

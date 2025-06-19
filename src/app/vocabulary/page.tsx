@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { JapaneseWord, WordList } from '@/types';
+import { JapaneseWord, WordList, StudyList, StudyListType } from '@/types';
 import { searchWords } from '@/utils/api';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
+import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { TTSManager } from '@/utils/tts';
 
 export default function VocabularyPage() {
   const [wordLists, setWordLists] = useState<WordList[]>([]);
@@ -32,8 +36,19 @@ export default function VocabularyPage() {
     try {
       setLoading(true);
       setError(null);
-      const lists = await WordListManager.getAllWordLists();
-      setWordLists(lists);
+      // Load unified study lists and convert them to legacy format for compatibility
+      const studyLists = await StudyListManager.getAllStudyLists();
+      const legacyWordLists: WordList[] = studyLists.map(studyList => ({
+        id: studyList.id,
+        name: studyList.name,
+        description: studyList.description,
+        wordIds: studyList.itemIds,
+        createdAt: studyList.createdAt,
+        updatedAt: studyList.updatedAt,
+        color: studyList.color,
+        isConjugable: studyList.type === 'drillable'
+      }));
+      setWordLists(legacyWordLists);
     } catch (err) {
       setError('Failed to load word lists');
       console.error('Error loading word lists:', err);
@@ -503,6 +518,8 @@ interface CreateListModalProps {
 }
 
 function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
+  const { user } = useAuth();
+  const { userSubscription } = useSubscription();
   const [listName, setListName] = useState('');
   const [description, setDescription] = useState('');
   const [creating, setCreating] = useState(false);
@@ -512,7 +529,18 @@ function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
 
     try {
       setCreating(true);
-      await WordListManager.createWordList(listName, description);
+      console.log('🔄 Creating word list with cloud sync...', {
+        userUID: user?.uid,
+        subscriptionStatus: userSubscription?.subscription?.status,
+        canSync: userSubscription?.limits?.canSync
+      });
+
+      await WordListManager.createWordList(
+        listName,
+        description,
+        user,
+        userSubscription?.subscription?.status
+      );
       onCreated();
       onClose();
     } catch (err) {
@@ -585,10 +613,28 @@ interface SaveWordModalProps {
 }
 
 function SaveWordModal({ word, wordLists, onClose, onSaved }: SaveWordModalProps) {
+  const { user } = useAuth();
+  const { userSubscription } = useSubscription();
+  const [studyLists, setStudyLists] = useState<StudyList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [showCreateNew, setShowCreateNew] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [newListType, setNewListType] = useState<StudyListType>('flashcard');
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  // Load unified study lists
+  useEffect(() => {
+    const loadStudyLists = async () => {
+      try {
+        const lists = await StudyListManager.getAllStudyLists();
+        setStudyLists(lists);
+      } catch (error) {
+        console.error('Error loading study lists:', error);
+      }
+    };
+    loadStudyLists();
+  }, []);
 
   const handleToggleList = (listId: string) => {
     setSelectedLists(prev =>
@@ -598,27 +644,57 @@ function SaveWordModal({ word, wordLists, onClose, onSaved }: SaveWordModalProps
     );
   };
 
+  const canAddToList = (listType: StudyListType): boolean => {
+    return StudyListManager.canAddToList('word', word, listType);
+  };
+
+  const getValidationMessage = (listType: StudyListType): string => {
+    if (listType === 'drillable') {
+      const canAdd = StudyListManager.canAddToList('word', word, listType);
+      return canAdd ? 'Compatible: Can be used for conjugation drills' : 'Not compatible: Only verbs and adjectives can be conjugated';
+    }
+    return 'Compatible: Can be used for flashcard review';
+  };
+
   const handleSave = async () => {
     if (selectedLists.length === 0 && !newListName.trim()) return;
 
     try {
       setSaving(true);
+      setErrors([]);
 
       let listsToSaveTo = [...selectedLists];
 
       // Create new list if specified
       if (newListName.trim()) {
-        const newList = await WordListManager.createWordList(newListName);
+        const newList = await StudyListManager.createStudyList(
+          newListName,
+          newListType,
+          `Created for saving ${word.kanji}`,
+          user,
+          userSubscription?.subscription?.status
+        );
         listsToSaveTo.push(newList.id);
       }
 
-      // Save word to selected lists
-      await WordListManager.saveWordToLists(word, listsToSaveTo);
+      // Save word to selected lists using new unified system
+      const result = await StudyListManager.addItemToLists(
+        word,
+        'word',
+        listsToSaveTo,
+        user,
+        userSubscription?.subscription?.status
+      );
 
-      onSaved();
-      onClose();
+      if (result.success) {
+        onSaved();
+        onClose();
+      } else {
+        setErrors(result.errors);
+      }
     } catch (err) {
       console.error('Error saving word:', err);
+      setErrors(['Failed to save word to lists']);
     } finally {
       setSaving(false);
     }
@@ -631,29 +707,56 @@ function SaveWordModal({ word, wordLists, onClose, onSaved }: SaveWordModalProps
           Save "{word.kanji}" to Lists
         </h3>
 
-        {wordLists.length > 0 && (
+        {/* Error messages */}
+        {errors.length > 0 && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+            <div className="text-sm text-red-400">
+              {errors.map((error, index) => (
+                <div key={index}>• {error}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {studyLists.length > 0 && (
           <div className="space-y-3 mb-4">
             <h4 className="text-sm font-medium text-muted-foreground">Select existing lists:</h4>
-            {wordLists.map((list) => (
-              <label key={list.id} className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedLists.includes(list.id)}
-                  onChange={() => handleToggleList(list.id)}
-                  className="rounded border-border"
-                />
-                <div className="flex items-center gap-2 flex-1">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: list.color }}
-                  ></div>
-                  <span className="text-sm text-foreground">{list.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({list.wordIds.length} words)
-                  </span>
-                </div>
-              </label>
-            ))}
+            {studyLists.map((list) => {
+              const canAdd = canAddToList(list.type);
+              return (
+                <label key={list.id} className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg transition-colors ${
+                  canAdd ? 'hover:bg-muted/50' : 'opacity-60'
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={selectedLists.includes(list.id)}
+                    onChange={() => canAdd && handleToggleList(list.id)}
+                    disabled={!canAdd}
+                    className="rounded border-border mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: list.color }}
+                      ></div>
+                      <span className="text-sm text-foreground">{list.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({list.itemIds.length} items)
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
+                      }`}>
+                        {list.type}
+                      </span>
+                    </div>
+                    <div className={`text-xs ${canAdd ? 'text-green-400' : 'text-red-400'}`}>
+                      {getValidationMessage(list.type)}
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
           </div>
         )}
 
@@ -671,14 +774,57 @@ function SaveWordModal({ word, wordLists, onClose, onSaved }: SaveWordModalProps
           </div>
 
           {showCreateNew && (
-            <input
-              type="text"
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              placeholder="New list name..."
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              maxLength={50}
-            />
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                placeholder="New list name..."
+                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                maxLength={50}
+              />
+
+              <div>
+                <label className="block text-xs text-muted-foreground mb-2">List Type:</label>
+                <div className="space-y-2">
+                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
+                    <input
+                      type="radio"
+                      name="listType"
+                      value="flashcard"
+                      checked={newListType === 'flashcard'}
+                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                      className="mt-0.5"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-foreground">Flashcard List</div>
+                      <div className="text-xs text-muted-foreground">For memorization and review (accepts any content)</div>
+                    </div>
+                  </label>
+
+                  <label className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg border transition-colors ${
+                    canAddToList('drillable') ? 'border-input' : 'border-input opacity-60'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="listType"
+                      value="drillable"
+                      checked={newListType === 'drillable'}
+                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                      disabled={!canAddToList('drillable')}
+                      className="mt-0.5"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-foreground">Drillable List</div>
+                      <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
+                      {!canAddToList('drillable') && (
+                        <div className="text-xs text-red-400 mt-1">⚠️ This word cannot be conjugated</div>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
@@ -722,6 +868,15 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
     sessionStorage.setItem('drillWord', JSON.stringify(word));
     router.push('/drill');
     onClose();
+  };
+
+  // TTS function
+  const handlePlayTTS = async (text: string) => {
+    try {
+      await TTSManager.speak(text);
+    } catch (error) {
+      console.error('TTS error:', error);
+    }
   };
 
   const canBeConjugated = word.type === 'Ichidan' ||
@@ -768,8 +923,19 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
 
               <div>
                 <span className="text-sm font-medium text-muted-foreground">Reading:</span>
-                <div className="text-xl japanese-text text-card-foreground mt-1">
-                  {word.kana} ({word.romaji})
+                <div className="flex items-center gap-3 mt-1">
+                  <div className="text-xl japanese-text text-card-foreground">
+                    {word.kana} ({word.romaji})
+                  </div>
+                  <button
+                    onClick={() => handlePlayTTS(word.kana)}
+                    className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-600"
+                    title={`Play pronunciation: ${word.kana}`}
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
 

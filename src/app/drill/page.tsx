@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, FlashcardQuality } from '@/types';
-import { getCommonWordsForPractice } from '@/utils/api';
+import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, FlashcardQuality, WordType } from '@/types';
+import { getCommonWordsForPractice, searchWords } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
+import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
+import KanjiListManager from '@/utils/kanjiListManager';
 import StatsManager from '@/utils/stats';
 import flashcardManager, { FlashcardQuestion, FlashcardSessionConfig } from '@/utils/flashcards';
 import FlashcardCard from '@/components/flashcards/FlashcardCard';
@@ -72,6 +74,9 @@ export default function DrillPage() {
   const [gameStarted, setGameStarted] = useState(false);
   const [wordTypeFilter, setWordTypeFilter] = useState<'all' | 'verbs' | 'adjectives'>('all');
   const [wordLists, setWordLists] = useState<WordList[]>([]);
+  const [kanjiLists, setKanjiLists] = useState<KanjiList[]>([]);
+  const [allLists, setAllLists] = useState<(WordList | KanjiList)[]>([]);
+  const [conjugableLists, setConjugableLists] = useState<WordList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [drillMode, setDrillMode] = useState<'random' | 'lists'>('random');
 
@@ -83,6 +88,7 @@ export default function DrillPage() {
   const [flashcardScore, setFlashcardScore] = useState(0);
   const [flashcardSession, setFlashcardSession] = useState<any>(null);
   const [flashcardStats, setFlashcardStats] = useState<any>(null);
+  const [showHints, setShowHints] = useState(false);
 
   // Initialize flashcard manager with user
   useEffect(() => {
@@ -107,17 +113,62 @@ export default function DrillPage() {
 
     try {
       setFlashcardLoading(true);
-      const config: FlashcardSessionConfig = {
-        wordListIds: selectedLists,
-        maxCards: 20,
-        cardTypes: ['kanji-to-meaning', 'meaning-to-kanji'],
-        reviewDueOnly: false
-      };
 
-      const questions = await flashcardManager.generateFlashcardQuestions(config);
+      // Get all words and kanji from unified study lists
+      let allWords: JapaneseWord[] = [];
+
+      for (const listId of selectedLists) {
+        const { words: listWords, kanji: listKanji } = await StudyListManager.getItemsInList(listId);
+
+        // Add words directly
+        allWords = [...allWords, ...listWords];
+
+        // Convert kanji to JapaneseWord format for flashcards
+        const kanjiAsWords: JapaneseWord[] = listKanji.map(kanji => ({
+          id: `kanji_${kanji.kanji}`,
+          kanji: kanji.kanji,
+          kana: kanji.onyomi.length > 0 ? kanji.onyomi[0] : kanji.kunyomi[0],
+          romaji: '', // Not needed for flashcards
+          meaning: kanji.meaning,
+          type: 'noun', // Default type for kanji
+          jlpt: kanji.jlpt || 'N5',
+          frequency: 0,
+          tags: ['kanji'] // Required property
+        }));
+        allWords = [...allWords, ...kanjiAsWords];
+      }
+
+      console.log('🎴 Loaded items from unified system for flashcards:', allWords);
+
+      if (allWords.length === 0) {
+        setFlashcardQuestions([]);
+        return;
+      }
+
+      // Create flashcard questions manually since we have mixed content
+      const shuffledWords = allWords.sort(() => Math.random() - 0.5);
+      const limitedWords = shuffledWords.slice(0, 20);
+
+      const questions: FlashcardQuestion[] = limitedWords.map(word => {
+        const cardType = Math.random() < 0.5 ? 'kanji-to-meaning' : 'meaning-to-kanji';
+        return {
+          word,
+          cardType,
+          question: cardType === 'kanji-to-meaning' ? word.kanji : word.meaning,
+          answer: cardType === 'kanji-to-meaning' ? word.meaning : word.kanji,
+          hint: word.kana
+        };
+      });
+
       setFlashcardQuestions(questions);
 
       if (questions.length > 0) {
+        const config: FlashcardSessionConfig = {
+          wordListIds: selectedLists,
+          maxCards: 20,
+          cardTypes: ['kanji-to-meaning', 'meaning-to-kanji'],
+          reviewDueOnly: false
+        };
         const session = await flashcardManager.createSession(config);
         setFlashcardSession(session);
       }
@@ -220,42 +271,97 @@ export default function DrillPage() {
   };
 
   const generateDistractors = (word: JapaneseWord, targetForm: keyof ConjugationForms, correctAnswer: string): string[] => {
+    console.log(`🔧 DEBUG: Word: ${word.kanji} (${word.kana}), Target: ${targetForm}, Correct: ${correctAnswer}`);
+
     const conjugations = ConjugationEngine.conjugate(word);
+    console.log(`🔧 DEBUG: All conjugations:`, conjugations);
+
     const allForms = Object.values(conjugations).filter(form => form && form !== correctAnswer);
+    console.log(`🔧 DEBUG: Available forms (excluding correct):`, allForms);
 
     const distractors: string[] = [];
-    const availableForms = allForms.filter(form => form);
 
-    for (let i = 0; i < Math.min(4, availableForms.length); i++) {
-      if (!distractors.includes(availableForms[i])) {
-        distractors.push(availableForms[i]);
+    // Add conjugation forms as distractors
+    for (let i = 0; i < Math.min(4, allForms.length); i++) {
+      if (!distractors.includes(allForms[i])) {
+        distractors.push(allForms[i]);
+        console.log(`🔧 DEBUG: Added conjugation distractor: ${allForms[i]}`);
       }
     }
+    console.log(`🔧 DEBUG: Distractors from conjugations: ${distractors.length}`, distractors);
 
-    if (distractors.length < 5) {
+    // Generate artificial distractors if needed
+    while (distractors.length < 4) {
       const kanjiStem = word.kanji.slice(0, -1);
-      const commonEndings = ['る', 'た', 'ない', 'ます', 'て'];
+      const endings = ['る', 'た', 'ない', 'ます', 'て', 'ぬ', 'ば', 'れる', 'せる'];
 
-      for (let ending of commonEndings) {
+      for (let ending of endings) {
+        if (distractors.length >= 4) break;
+
         const distractor = kanjiStem + ending;
-        if (!distractors.includes(distractor) && distractor !== correctAnswer && !availableForms.includes(distractor)) {
+        if (!distractors.includes(distractor) &&
+            distractor !== correctAnswer &&
+            !allForms.includes(distractor) &&
+            distractor !== word.kanji) {
           distractors.push(distractor);
-          break;
+          console.log(`🔧 DEBUG: Added artificial distractor: ${distractor}`);
         }
       }
+
+      // Emergency fallback
+      if (distractors.length < 4) {
+        const emergency = [`${kanjiStem}XX`, `${kanjiStem}YY`, `${kanjiStem}ZZ`];
+        for (let emerg of emergency) {
+          if (distractors.length >= 4) break;
+          if (!distractors.includes(emerg)) {
+            distractors.push(emerg);
+            console.log(`🔧 DEBUG: Added emergency distractor: ${emerg}`);
+          }
+        }
+      }
+
+      break; // Prevent infinite loop
     }
 
-    return distractors.slice(0, 5);
+    console.log(`🔧 DEBUG: Final distractors (${distractors.length}):`, distractors);
+    return distractors.slice(0, 4); // Return exactly 4 distractors
   };
 
   const loadWordLists = useCallback(async () => {
     try {
-      const lists = await WordListManager.getAllWordLists();
-      setWordLists(lists);
+      // Load unified study lists and convert them to legacy format for compatibility
+      const studyLists = await StudyListManager.getAllStudyLists();
+      const legacyWordLists: WordList[] = studyLists.map(studyList => ({
+        id: studyList.id,
+        name: studyList.name,
+        description: studyList.description,
+        wordIds: studyList.itemIds,
+        createdAt: studyList.createdAt,
+        updatedAt: studyList.updatedAt,
+        color: studyList.color,
+        isConjugable: studyList.type === 'drillable'
+      }));
+      console.log('📚 Loaded unified study lists as word lists:', legacyWordLists);
+      setWordLists(legacyWordLists);
     } catch (err) {
       console.error('Error loading word lists:', err);
     }
   }, []);
+
+  const loadKanjiLists = useCallback(async () => {
+    try {
+      // For now, load legacy kanji lists until we fully migrate
+      const lists = await KanjiListManager.getAllKanjiLists();
+      console.log('漢字 Loaded kanji lists:', lists);
+      setKanjiLists(lists);
+    } catch (err) {
+      console.error('Error loading kanji lists:', err);
+    }
+  }, []);
+
+  const loadAllLists = useCallback(async () => {
+    await Promise.all([loadWordLists(), loadKanjiLists()]);
+  }, [loadWordLists, loadKanjiLists]);
 
   const loadQuestionsForWord = useCallback((word: JapaneseWord) => {
     try {
@@ -295,19 +401,66 @@ export default function DrillPage() {
       let words: JapaneseWord[] = [];
 
       if (drillMode === 'lists' && selectedLists.length > 0) {
-        words = await WordListManager.getWordsFromLists(selectedLists);
+        // Use the new unified system to get words from lists
+        for (const listId of selectedLists) {
+          const { words: listWords } = await StudyListManager.getItemsInList(listId);
+          words = [...words, ...listWords];
+        }
+
+        console.log('📚 Loaded words from unified system:', words);
+
         if (words.length === 0) {
           setQuestions([]);
           return;
         }
 
-        words = words.filter(word =>
-          word.type === 'Ichidan' ||
-          word.type === 'Godan' ||
-          word.type === 'Irregular' ||
-          word.type === 'i-adjective' ||
-          word.type === 'na-adjective'
-        );
+        // Debug: log word types before filtering
+        words.forEach((word, index) => {
+          console.log(`📚 Word ${index + 1}: "${word.kanji}" (${word.kana}) - Type: "${word.type}"`);
+        });
+
+        // Filter for conjugable words using enhanced validation (same as StudyListManager)
+        words = words.filter(word => {
+          // Check for explicit conjugable types
+          const conjugableTypes: WordType[] = ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'];
+          if (conjugableTypes.includes(word.type)) {
+            return true;
+          }
+
+          // For words that might be classified as 'other' or 'noun' but are actually verbs/adjectives
+          // Check if the word has detailed part of speech information
+          if (word.detailedMeaning && word.detailedMeaning.length > 0) {
+            const hasConjugablePOS = word.detailedMeaning.some(meaning =>
+              meaning.partOfSpeech.some(pos => {
+                const lowerPos = pos.toLowerCase();
+                return lowerPos.includes('verb') ||
+                       lowerPos.includes('adjective') ||
+                       lowerPos.includes('ichidan') ||
+                       lowerPos.includes('godan') ||
+                       lowerPos.includes('i-adjective') ||
+                       lowerPos.includes('na-adjective');
+              })
+            );
+            if (hasConjugablePOS) {
+              return true;
+            }
+          }
+
+          // Enhanced fallback: check verb ending patterns for misclassified words
+          const kana = word.kana;
+          // Common verb endings that suggest conjugability
+          const verbEndings = ['る', 'す', 'く', 'ぐ', 'む', 'ぬ', 'ぶ', 'つ', 'う'];
+          const endsWithVerbPattern = verbEndings.some(ending => kana.endsWith(ending));
+
+          if (endsWithVerbPattern) {
+            console.log(`✅ Including misclassified word '${word.kanji}' (${word.kana}) - detected verb pattern ending with: ${kana.slice(-1)}`);
+            return true;
+          }
+
+          return false;
+        });
+
+        console.log('📚 Conjugable words after filtering:', words);
 
         if (words.length === 0) {
           setQuestions([]);
@@ -332,8 +485,7 @@ export default function DrillPage() {
       }
 
       const shuffledWords = shuffleArray(filteredWords);
-      const limitedWords = shuffledWords.slice(0, settings.dailyGoal);
-      const drillQuestions = generateDrillQuestions(limitedWords);
+      const drillQuestions = await generateDrillQuestions(shuffledWords, settings.dailyGoal);
       setQuestions(drillQuestions);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -343,23 +495,122 @@ export default function DrillPage() {
     }
   }, [drillMode, selectedLists, settings.dailyGoal, wordTypeFilter]);
 
-  const generateDrillQuestions = (words: JapaneseWord[]): DrillQuestion[] => {
-    return words.map((word) => {
+  // API-based word type lookup using existing searchWords infrastructure
+  const fixWordTypeWithAPI = async (word: JapaneseWord): Promise<JapaneseWord> => {
+    if (word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' || word.type === 'i-adjective' || word.type === 'na-adjective') {
+      return word; // Already correctly classified
+    }
+
+    console.log(`🔧 API Lookup: Checking word type for ${word.kanji} (${word.kana}) - currently classified as "${word.type}"`);
+
+    try {
+      // Use existing searchWords API to get authoritative word type
+      const apiResults = await searchWords(word.kanji, 1);
+
+      if (apiResults.length > 0) {
+        const apiWord = apiResults[0];
+        console.log(`🔧 API Result: ${apiWord.kanji} (${apiWord.kana}) - Type: "${apiWord.type}"`);
+
+        // If API gives us a conjugable type, use it
+        if (['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'].includes(apiWord.type)) {
+          console.log(`🔧 Fixed word type: ${word.kanji} (${word.kana}) from "${word.type}" to "${apiWord.type}" (API lookup)`);
+          return { ...word, type: apiWord.type };
+        }
+      }
+
+      // If kanji lookup fails, try kana lookup
+      if (word.kanji !== word.kana) {
+        const kanaResults = await searchWords(word.kana, 1);
+        if (kanaResults.length > 0) {
+          const kanaWord = kanaResults[0];
+          console.log(`🔧 API Result (kana): ${kanaWord.kanji} (${kanaWord.kana}) - Type: "${kanaWord.type}"`);
+
+          if (['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'].includes(kanaWord.type)) {
+            console.log(`🔧 Fixed word type: ${word.kanji} (${word.kana}) from "${word.type}" to "${kanaWord.type}" (API kana lookup)`);
+            return { ...word, type: kanaWord.type };
+          }
+        }
+      }
+
+      console.log(`🔧 API lookup found no conjugable classification for ${word.kanji} (${word.kana})`);
+    } catch (error) {
+      console.error(`🔧 API lookup failed for ${word.kanji} (${word.kana}):`, error);
+    }
+
+    return word; // No change needed or API failed
+  };
+
+  // Cache for API lookups to avoid repeated calls
+  const wordTypeCache = new Map<string, JapaneseWord>();
+
+  // Wrapper that uses cache for performance
+  const fixWordType = async (word: JapaneseWord): Promise<JapaneseWord> => {
+    const cacheKey = `${word.kanji}-${word.kana}`;
+
+    if (wordTypeCache.has(cacheKey)) {
+      return wordTypeCache.get(cacheKey)!;
+    }
+
+    const fixedWord = await fixWordTypeWithAPI(word);
+    wordTypeCache.set(cacheKey, fixedWord);
+    return fixedWord;
+  };
+
+  const generateDrillQuestions = async (words: JapaneseWord[], targetCount: number): Promise<DrillQuestion[]> => {
+    const questions: DrillQuestion[] = [];
+
+    for (let i = 0; i < targetCount; i++) {
+      // Cycle through words if we need more questions than words available
+      const originalWord = words[i % words.length];
+      const word = await fixWordType(originalWord); // Fix word type before conjugation
+
       const targetForm = getRandomConjugationForm(word.type);
       const conjugations = ConjugationEngine.conjugate(word);
       const correctAnswer = conjugations[targetForm];
 
-      if (!correctAnswer) {
-        return generateDrillQuestion(word, 'present', conjugations.present);
-      }
+      console.log(`🔧 Question generation - Word: ${word.kanji} (type: ${originalWord.type} → ${word.type}), Target: ${targetForm}, Correct: "${correctAnswer}"`);
 
-      return generateDrillQuestion(word, targetForm, correctAnswer);
-    });
+      // Skip words that have empty/invalid conjugations
+      if (!correctAnswer || correctAnswer.trim() === '') {
+        console.log(`🔧 Skipping word ${word.kanji} - no valid conjugation for ${targetForm}`);
+
+        // Try present form as fallback
+        if (conjugations.present && conjugations.present.trim() !== '') {
+          questions.push(generateDrillQuestion(word, 'present', conjugations.present));
+          console.log(`🔧 Using present form fallback: ${conjugations.present}`);
+        } else {
+          // Skip this word entirely if no valid conjugations exist
+          console.log(`🔧 Skipping word ${word.kanji} entirely - no valid conjugations`);
+          continue;
+        }
+      } else {
+        questions.push(generateDrillQuestion(word, targetForm, correctAnswer));
+      }
+    }
+
+    return questions;
   };
 
   useEffect(() => {
-    loadWordLists();
-  }, [loadWordLists]);
+    const initializeSystem = async () => {
+      // Initialize the new unified study list system and clear legacy data
+      await StudyListManager.initializeNewSystem();
+      loadAllLists();
+    };
+
+    initializeSystem();
+  }, [loadAllLists]);
+
+  // Update computed states after lists are loaded
+  useEffect(() => {
+    // Create unified list for flashcards (all lists)
+    const unified = [...wordLists, ...kanjiLists];
+    setAllLists(unified);
+
+    // Filter only conjugable word lists for conjugation drills
+    const conjugableOnly = wordLists.filter(list => list.isConjugable);
+    setConjugableLists(conjugableOnly);
+  }, [wordLists, kanjiLists]);
 
   useEffect(() => {
     if (settingsLoading) return;
@@ -437,11 +688,16 @@ export default function DrillPage() {
   };
 
   const handleListToggle = (listId: string) => {
-    setSelectedLists(prev =>
-      prev.includes(listId)
+    console.log('🔧 handleListToggle called with listId:', listId);
+    console.log('🔧 Current selectedLists:', selectedLists);
+
+    setSelectedLists(prev => {
+      const newSelection = prev.includes(listId)
         ? prev.filter(id => id !== listId)
-        : [...prev, listId]
-    );
+        : [...prev, listId];
+      console.log('🔧 New selectedLists:', newSelection);
+      return newSelection;
+    });
   };
 
   const recordDrillSession = async (finalScore?: number) => {
@@ -585,9 +841,15 @@ export default function DrillPage() {
                   <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
                     Ready to practice?
                   </h2>
-                  <p className="text-muted-foreground mb-6">
+                  <p className="text-muted-foreground mb-4">
                     Test your knowledge with {questions.length} conjugation questions
                   </p>
+                  <div className="bg-muted/50 rounded-lg p-3 mb-6">
+                    <div className="text-sm text-muted-foreground">
+                      <span className="text-primary font-medium">Daily Goal:</span> {settings.dailyGoal} questions
+                      <span className="ml-2 text-xs">(Change in Settings)</span>
+                    </div>
+                  </div>
 
                   {/* Drill Mode Selection */}
                   <div className="mb-6">
@@ -611,18 +873,18 @@ export default function DrillPage() {
                             : 'bg-background text-foreground border-input hover:bg-muted'
                         }`}
                       >
-                        My Lists ({wordLists.length})
+                        My Lists ({conjugableLists.length})
                       </button>
                     </div>
 
-                    {/* List Selection */}
+                    {/* List Selection - Only Conjugable Lists */}
                     {drillMode === 'lists' && (
                       <div className="mb-4">
-                        {wordLists.length > 0 ? (
+                        {conjugableLists.length > 0 ? (
                           <div className="space-y-3">
-                            <div className="text-sm text-muted-foreground">Select lists to drill:</div>
+                            <div className="text-sm text-muted-foreground">Select conjugable lists to drill:</div>
                             <div className="max-h-48 overflow-y-auto space-y-2">
-                              {wordLists.map((list) => (
+                              {conjugableLists.map((list) => (
                                 <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
                                   <input
                                     type="checkbox"
@@ -639,6 +901,9 @@ export default function DrillPage() {
                                     <span className="text-xs text-muted-foreground">
                                       ({list.wordIds.length} words)
                                     </span>
+                                    {list.isConjugable && (
+                                      <span className="text-xs text-green-400">✓ conjugable</span>
+                                    )}
                                   </div>
                                 </label>
                               ))}
@@ -646,7 +911,7 @@ export default function DrillPage() {
                           </div>
                         ) : (
                           <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
-                            No word lists found. Create lists in the Vocabulary section.
+                            No conjugable lists found. Create vocabulary lists with verbs and adjectives to use conjugation drills.
                           </div>
                         )}
                       </div>
@@ -798,24 +1063,24 @@ export default function DrillPage() {
                       <div className="text-sm text-muted-foreground">
                         <strong>{strings.verbTypes[currentQuestion.word.type.toLowerCase().replace('-', '') as keyof typeof strings.verbTypes]}:</strong>
                       </div>
-                      <div className="text-sm text-foreground mt-1">
+                      <div className="text-sm text-muted-foreground mt-1">
                         {currentQuestion.rule}
                       </div>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
 
-            {/* Navigation */}
-            {gameStarted && !isFinished && showResult && (
-              <div className="text-center">
-                <button
-                  onClick={handleNextQuestion}
-                  className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                >
-                  {currentQuestionIndex < questions.length - 1 ? strings.drill.nextQuestion : strings.common.success}
-                </button>
+                {/* Next Button */}
+                {showResult && (
+                  <div className="text-center mt-6">
+                    <button
+                      onClick={handleNextQuestion}
+                      className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    >
+                      {currentQuestionIndex < questions.length - 1 ? strings.drill.nextQuestion : 'Finish'}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </>
@@ -827,111 +1092,22 @@ export default function DrillPage() {
                 <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
                 <p className="text-muted-foreground">Loading flashcards...</p>
               </div>
-            ) : !user ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🔐</div>
-                <h3 className="text-lg font-medium text-foreground mb-2">Sign In Required</h3>
-                <p className="text-muted-foreground mb-4">
-                  Please sign in to use flashcard review with spaced repetition.
-                </p>
-                <button
-                  onClick={() => window.location.href = '/account'}
-                  className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                >
-                  Sign In
-                </button>
-              </div>
-            ) : selectedLists.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="bg-card border border-border rounded-lg p-8">
-                  <div className="text-6xl mb-4">🎴</div>
-                  <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
-                    Flashcard Review
-                  </h2>
-                  <p className="text-muted-foreground mb-6">
-                    Review any words from your saved lists using spaced repetition for optimal learning.
-                  </p>
-
-                  {/* Stats Display */}
-                  {flashcardStats && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                      <div className="bg-muted/50 rounded-lg p-3">
-                        <div className="text-2xl font-bold text-primary">{flashcardStats.total}</div>
-                        <div className="text-xs text-muted-foreground">Total Cards</div>
-                      </div>
-                      <div className="bg-muted/50 rounded-lg p-3">
-                        <div className="text-2xl font-bold text-yellow-400">{flashcardStats.dueToday}</div>
-                        <div className="text-xs text-muted-foreground">Due Today</div>
-                      </div>
-                      <div className="bg-muted/50 rounded-lg p-3">
-                        <div className="text-2xl font-bold text-green-400">{flashcardStats.mastered}</div>
-                        <div className="text-xs text-muted-foreground">Mastered</div>
-                      </div>
-                      <div className="bg-muted/50 rounded-lg p-3">
-                        <div className="text-2xl font-bold text-blue-400">{flashcardStats.overallAccuracy}%</div>
-                        <div className="text-xs text-muted-foreground">Accuracy</div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* List Selection for Flashcards */}
-                  <div className="mb-6">
-                    <div className="text-sm text-muted-foreground mb-3">Select lists to review:</div>
-                    {wordLists.length > 0 ? (
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {wordLists.map((list) => (
-                          <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
-                            <input
-                              type="checkbox"
-                              checked={selectedLists.includes(list.id)}
-                              onChange={() => handleListToggle(list.id)}
-                              className="rounded border-border"
-                            />
-                            <div className="flex items-center gap-2 flex-1">
-                              <div
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: list.color }}
-                              ></div>
-                              <span className="text-sm text-foreground">{list.name}</span>
-                              <span className="text-xs text-muted-foreground">
-                                ({list.wordIds.length} words)
-                              </span>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
-                        No word lists found. Create lists in the Vocabulary section to start reviewing with flashcards.
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      if (selectedLists.length > 0) {
-                        loadFlashcardQuestions();
-                      }
-                    }}
-                    disabled={selectedLists.length === 0}
-                    className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Start Flashcard Review
-                  </button>
-                </div>
-              </div>
             ) : flashcardQuestions.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">📭</div>
-                <h3 className="text-lg font-medium text-foreground mb-2">No Cards Available</h3>
+              <div className="text-center max-w-md mx-auto">
+                <div className="text-6xl mb-4">🎴</div>
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  {selectedLists.length === 0 ? 'Select Lists for Review' : 'No Flashcards Available'}
+                </h3>
                 <p className="text-muted-foreground mb-4">
-                  The selected lists don't contain any words for flashcard review.
+                  {selectedLists.length === 0
+                    ? 'Please select at least one word list to create flashcards for review.'
+                    : 'The selected lists don\'t have any words suitable for flashcard review. Add words to your lists first.'}
                 </p>
                 <button
-                  onClick={() => setSelectedLists([])}
+                  onClick={() => setActiveTab('conjugation')}
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
-                  Select Different Lists
+                  Try Conjugation Drills
                 </button>
               </div>
             ) : !flashcardGameStarted ? (
@@ -940,12 +1116,75 @@ export default function DrillPage() {
                   <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
                     Ready for flashcard review?
                   </h2>
-                  <p className="text-muted-foreground mb-6">
-                    Review {flashcardQuestions.length} cards from your selected lists
+                  <p className="text-muted-foreground mb-4">
+                    Select lists to create flashcards for review
                   </p>
+
+                  {/* List Selection for Flashcards */}
+                  <div className="mb-6">
+                    {allLists.length > 0 ? (
+                      <div className="space-y-3">
+                        <div className="text-sm text-muted-foreground">Select lists to review:</div>
+                        <div className="max-h-48 overflow-y-auto space-y-2">
+                          {allLists.map((list) => {
+                            const isKanjiList = 'kanjiIds' in list;
+                            return (
+                              <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedLists.includes(list.id)}
+                                  onChange={() => handleListToggle(list.id)}
+                                  className="rounded border-border"
+                                />
+                                <div className="flex items-center gap-2 flex-1">
+                                  <div
+                                    className="w-3 h-3 rounded-full"
+                                    style={{ backgroundColor: list.color }}
+                                  ></div>
+                                  <span className="text-sm text-foreground">{list.name}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    ({isKanjiList ? (list as KanjiList).kanjiIds.length + ' kanji' : (list as WordList).wordIds.length + ' words'})
+                                  </span>
+                                  <span className="text-xs text-blue-400">
+                                    {isKanjiList ? '漢字' : '📚'}
+                                  </span>
+                                </div>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
+                        No lists found. Create lists in the Vocabulary or Kanji sections.
+                      </div>
+                    )}
+                  </div>
+
+                  {selectedLists.length > 0 && flashcardQuestions.length > 0 && (
+                    <p className="text-muted-foreground mb-4">
+                      Ready to review {flashcardQuestions.length} cards from your selected lists
+                    </p>
+                  )}
+
+                  {/* Hint Toggle */}
+                  <div className="mb-6">
+                    <label className="flex items-center justify-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showHints}
+                        onChange={(e) => setShowHints(e.target.checked)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm text-foreground">Show hints on flashcards</span>
+                      <span className="text-xs text-muted-foreground">(reading/pronunciation help)</span>
+                    </label>
+                  </div>
+
                   <button
                     onClick={startFlashcardSession}
-                    className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg"
+                    disabled={selectedLists.length === 0}
+                    className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Start Review Session
                   </button>
@@ -955,7 +1194,7 @@ export default function DrillPage() {
               <div className="text-center py-12">
                 <div className="bg-card border border-border rounded-lg p-8">
                   <h2 className="text-3xl font-semibold mb-4 text-card-foreground">
-                    Review Complete!
+                    Review Complete! 🎉
                   </h2>
                   <div className="text-6xl font-bold text-primary mb-2">
                     {flashcardScore}/{flashcardQuestions.length}
@@ -963,22 +1202,28 @@ export default function DrillPage() {
                   <div className="text-lg text-muted-foreground mb-4">
                     {Math.round((flashcardScore / flashcardQuestions.length) * 100)}% accuracy
                   </div>
-                  <p className="text-muted-foreground mb-6">
-                    Great work! Your progress has been saved and review intervals have been updated.
-                  </p>
-                  <button
-                    onClick={restartFlashcardSession}
-                    className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                  >
-                    Review Again
-                  </button>
+                  <div className="space-y-3">
+                    <button
+                      onClick={restartFlashcardSession}
+                      className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium mr-3"
+                    >
+                      Review Again
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('conjugation')}
+                      className="bg-secondary text-secondary-foreground px-6 py-3 rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+                    >
+                      Try Conjugation Drills
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
+              // Flashcard Session
               <FlashcardCard
                 question={flashcardQuestions[currentFlashcardIndex]}
                 onAnswer={handleFlashcardAnswer}
-                showHint={true}
+                showHint={showHints}
               />
             )}
           </>

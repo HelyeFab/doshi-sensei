@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { JapaneseWord, ConjugationForms, WordList } from '@/types';
-import { searchWords, getCommonWordsForPractice } from '@/utils/api';
+import { searchWords } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
@@ -11,6 +11,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
 import TTSManager from '@/utils/tts';
+import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
 
 // Structured Data for Practice Page
 const practiceStructuredData = {
@@ -63,13 +64,16 @@ export default function PracticePage() {
 
   useEffect(() => {
     loadInitialWords();
+
+    // Preload cache in background for faster future loads
+    PracticeCache.preloadCache();
   }, []);
 
   const loadInitialWords = async () => {
     try {
       setLoading(true);
       setError(null);
-      const words = await getCommonWordsForPractice();
+      const words = await getCachedCommonWordsForPractice();
       setWords(words);
     } catch (err) {
       setError(strings.errors.loadError);
@@ -275,6 +279,15 @@ function WordSelector({
   );
 }
 
+// Helper function to determine if a word can be conjugated
+function isConjugableWord(word: JapaneseWord): boolean {
+  return word.type === 'Ichidan' ||
+         word.type === 'Godan' ||
+         word.type === 'Irregular' ||
+         word.type === 'i-adjective' ||
+         word.type === 'na-adjective';
+}
+
 // Word Card Component
 interface WordCardProps {
   word: JapaneseWord;
@@ -288,6 +301,8 @@ function WordCard({ word, onSelect }: WordCardProps) {
   const [newListName, setNewListName] = useState('');
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+
+  const isConjugable = isConjugableWord(word);
 
   useEffect(() => {
     loadWordLists();
@@ -387,7 +402,10 @@ function WordCard({ word, onSelect }: WordCardProps) {
           </svg>
         </button>
 
-        <div onClick={() => onSelect(word)}>
+        <div
+          onClick={() => isConjugable ? onSelect(word) : null}
+          className={!isConjugable ? 'cursor-not-allowed' : 'cursor-pointer'}
+        >
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
               <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
@@ -410,9 +428,28 @@ function WordCard({ word, onSelect }: WordCardProps) {
             </div>
           </div>
 
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground mb-2">
             {word.meaning}
           </div>
+
+          {/* Conjugation Status */}
+          {!isConjugable && (
+            <div className="flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/20 rounded text-xs text-orange-400">
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+              </svg>
+              <span>Cannot be conjugated - {word.type}s don't have verb forms</span>
+            </div>
+          )}
+
+          {isConjugable && (
+            <div className="flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/20 rounded text-xs text-green-400">
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>Click to view conjugations</span>
+            </div>
+          )}
         </div>
       </div>
 

@@ -52,9 +52,19 @@ export class CloudSync {
     timeoutMs: number = 15000
   ): Promise<SyncResult> {
     try {
+      console.log('🚀 CloudSync.uploadData started:', {
+        userUID: user.uid,
+        userEmail: user.email,
+        collection,
+        documentId,
+        dataKeys: Object.keys(data as any),
+        timeout: timeoutMs
+      });
+
       this.setSyncStatus({ isSyncing: true });
 
       const docRef = doc(db, 'users', user.uid, collection, documentId);
+      console.log('📍 Firestore document path:', docRef.path);
 
       const syncData = {
         ...data,
@@ -62,16 +72,26 @@ export class CloudSync {
         syncedAt: serverTimestamp()
       };
 
+      console.log('📦 Data to upload:', {
+        originalDataSize: JSON.stringify(data).length,
+        syncDataKeys: Object.keys(syncData),
+        hasUpdatedAt: 'updatedAt' in syncData,
+        hasSyncedAt: 'syncedAt' in syncData
+      });
+
       // Create timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error(`Upload timeout after ${timeoutMs}ms`)), timeoutMs);
       });
 
       // Race between upload and timeout
+      console.log('⬆️ Starting Firestore upload...');
       await Promise.race([
         setDoc(docRef, syncData, { merge: true }),
         timeoutPromise
       ]);
+
+      console.log('✅ Firestore upload completed successfully!');
 
       this.setSyncStatus({
         isSyncing: false,
@@ -81,7 +101,15 @@ export class CloudSync {
 
       return { success: true, synced: true };
     } catch (error) {
-      console.error('Upload failed:', error);
+      console.error('❌ CloudSync upload failed:', {
+        error,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        errorStack: error instanceof Error ? error.stack : undefined,
+        userUID: user.uid,
+        collection,
+        documentId
+      });
+
       this.setSyncStatus({ isSyncing: false });
       return {
         success: false,

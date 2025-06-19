@@ -17,8 +17,9 @@ export function ClientThemeWrapper({ children }: { children: React.ReactNode }) 
     setMounted(true);
   }, []);
 
-  // Use system theme as default during server rendering to avoid hydration mismatch
+  // Use system theme and default scheme during server rendering to avoid hydration mismatch
   const theme = mounted ? settings.theme : 'system';
+  const colorScheme = mounted ? settings.colorScheme : 'default';
 
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return <ThemeProvider theme={theme} colorScheme={colorScheme}>{children}</ThemeProvider>;
 }

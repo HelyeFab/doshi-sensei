@@ -1,18 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AppSettings } from '@/types';
+import { AppSettings, ThemeMode, ColorScheme } from '@/types';
+import { applyTheme } from '@/utils/themes';
 
 interface ThemeProviderProps {
   children: React.ReactNode;
   theme: AppSettings['theme'];
+  colorScheme: AppSettings['colorScheme'];
 }
 
 /**
  * ThemeProvider component
- * Applies the selected theme to the document
+ * Applies the selected theme and color scheme to the document
  */
-export function ThemeProvider({ children, theme }: ThemeProviderProps) {
+export function ThemeProvider({ children, theme, colorScheme }: ThemeProviderProps) {
   const [mounted, setMounted] = useState(false);
 
   // Only run once on mount to prevent hydration mismatch
@@ -24,27 +26,20 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
     // Only apply theme after component has mounted to avoid hydration mismatch
     if (!mounted) return;
 
-    // Function to apply theme
-    const applyTheme = (theme: 'dark' | 'light' | 'system') => {
-      const root = document.documentElement;
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      const effectiveTheme = theme === 'system' ? systemTheme : theme;
-
-      // Remove both classes first
-      root.classList.remove('dark', 'light');
-      // Add the appropriate class
-      root.classList.add(effectiveTheme);
+    // Function to apply theme and color scheme
+    const applyThemeAndScheme = (themeMode: ThemeMode, scheme: ColorScheme) => {
+      applyTheme(scheme, themeMode);
     };
 
     // Apply theme on settings change
-    applyTheme(theme);
+    applyThemeAndScheme(theme, colorScheme);
 
     // Listen for system theme changes if using system theme
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
       const handleChange = () => {
-        applyTheme('system');
+        applyThemeAndScheme('system', colorScheme);
       };
 
       mediaQuery.addEventListener('change', handleChange);
@@ -53,7 +48,7 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
         mediaQuery.removeEventListener('change', handleChange);
       };
     }
-  }, [theme, mounted]);
+  }, [theme, colorScheme, mounted]);
 
   // Return children regardless of mounted state to avoid hydration mismatch
   return <>{children}</>;

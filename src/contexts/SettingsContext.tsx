@@ -6,6 +6,7 @@ import { AppSettings } from '@/types';
 // Default settings
 const defaultSettings: AppSettings = {
   theme: 'system',
+  colorScheme: 'default',
   showRomaji: true,
   dailyGoal: 10,
   practiceReminders: false
@@ -64,15 +65,18 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
   // Update a single setting
   const updateSetting = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
-    const newSettings = { ...settings, [key]: value };
-    setSettings(newSettings);
+    setSettings(prevSettings => {
+      const newSettings = { ...prevSettings, [key]: value };
 
-    // Save to localStorage
-    try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
-    } catch (error) {
-      console.error('Error saving settings:', error);
-    }
+      // Save to localStorage
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+      } catch (error) {
+        console.error('Error saving settings:', error);
+      }
+
+      return newSettings;
+    });
   };
 
   // Reset all settings to defaults

@@ -167,9 +167,29 @@ export interface JishoWord {
   }>;
 }
 
+// Theme and Color Scheme Types
+export type ThemeMode = 'dark' | 'light' | 'system';
+export type ColorScheme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'emerald' | 'amber';
+
+export interface ColorPalette {
+  name: string;
+  description: string;
+  colors: {
+    primary: string;
+    primaryForeground: string;
+    secondary: string;
+    secondaryForeground: string;
+    accent: string;
+    accentForeground: string;
+    muted: string;
+    mutedForeground: string;
+  };
+}
+
 // Settings Interface
 export interface AppSettings {
-  theme: 'dark' | 'light' | 'system';
+  theme: ThemeMode;
+  colorScheme: ColorScheme;
   showRomaji: boolean;
   dailyGoal: number;
   practiceReminders: boolean;
@@ -240,7 +260,31 @@ export interface CachedAPIResponse {
   expiryDate: Date;
 }
 
-// Word List Types
+// Unified Study List Types
+export type StudyListType = 'drillable' | 'flashcard';
+export type StudyItemType = 'word' | 'kanji';
+
+export interface StudyList {
+  id: string;
+  name: string;
+  description?: string;
+  type: StudyListType; // 'drillable' for verbs/adjectives, 'flashcard' for all content
+  itemIds: string[]; // IDs of words or kanji in this list
+  createdAt: Date;
+  updatedAt: Date;
+  color: string; // Pastel color for the pill
+}
+
+export interface SavedStudyItem {
+  id: string;
+  itemType: StudyItemType; // 'word' or 'kanji'
+  word?: JapaneseWord; // Present if itemType is 'word'
+  kanji?: Kanji; // Present if itemType is 'kanji'
+  savedAt: Date;
+  listIds: string[]; // Which lists this item belongs to
+}
+
+// Legacy types for backward compatibility (will be removed)
 export interface WordList {
   id: string;
   name: string;
@@ -248,14 +292,15 @@ export interface WordList {
   wordIds: string[];
   createdAt: Date;
   updatedAt: Date;
-  color: string; // Pastel color for the pill
+  color: string;
+  isConjugable?: boolean;
 }
 
 export interface SavedWord {
   id: string;
   word: JapaneseWord;
   savedAt: Date;
-  listIds: string[]; // Which lists this word belongs to
+  listIds: string[];
 }
 
 // Flashcard System Types
@@ -305,6 +350,37 @@ export interface FlashcardReview {
 export type FlashcardType = 'kanji-to-meaning' | 'meaning-to-kanji' | 'reading-recognition';
 export type FlashcardQuality = 0 | 1 | 2 | 3 | 4 | 5;
 
+// Kanji System Types
+export interface Kanji {
+  kanji: string;
+  meaning: string;
+  onyomi: string[];
+  kunyomi: string[];
+  jlpt: JLPTLevel;
+}
+
+export interface SavedKanji {
+  id: string;
+  kanji: Kanji;
+  savedAt: Date;
+  listIds: string[]; // Which lists this kanji belongs to
+}
+
+export interface KanjiByLevel {
+  [key: string]: Kanji[];
+}
+
+// Kanji List Types (similar to WordList)
+export interface KanjiList {
+  id: string;
+  name: string;
+  description?: string;
+  kanjiIds: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  color: string; // Pastel color for the pill
+}
+
 // Database Schema
 export interface DatabaseSchema {
   settings: AppSettings & { id: string; updatedAt: Date };
@@ -315,11 +391,17 @@ export interface DatabaseSchema {
   apiCache: CachedAPIResponse;
   words: JapaneseWord;
   drillSessions: DrillSession;
+  // New unified study list system
+  studyLists: StudyList;
+  savedStudyItems: SavedStudyItem;
+  // Legacy types (for backward compatibility)
   wordLists: WordList;
   savedWords: SavedWord;
   flashcardProgress: FlashcardProgress;
   flashcardSessions: FlashcardSession;
   flashcardReviews: FlashcardReview;
+  savedKanji: SavedKanji;
+  kanjiLists: KanjiList;
 }
 
 // IndexedDB Configuration

@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/PageHeader';
 import EnhancedStorageManager from '@/utils/storage';
 import WordListManager from '@/utils/wordLists';
 import useCloudSync from '@/hooks/useCloudSync';
+import { ThemeSelector } from '@/components/ThemeSelector';
 
 export default function SettingsPage() {
   const { settings, updateSetting, resetSettings } = useSettings();
@@ -281,27 +282,15 @@ export default function SettingsPage() {
       <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
         <div className="space-y-8">
           {/* Theme Settings */}
-          <SettingsSection title="Theme">
-            <div className="grid grid-cols-3 gap-3">
-              <ThemeOption
-                value="light"
-                label={strings.settings.lightMode}
-                selected={settings.theme === 'light'}
-                onClick={() => updateSetting('theme', 'light')}
-              />
-              <ThemeOption
-                value="dark"
-                label={strings.settings.darkMode}
-                selected={settings.theme === 'dark'}
-                onClick={() => updateSetting('theme', 'dark')}
-              />
-              <ThemeOption
-                value="system"
-                label="System"
-                selected={settings.theme === 'system'}
-                onClick={() => updateSetting('theme', 'system')}
-              />
-            </div>
+          <SettingsSection title="Appearance">
+            <ThemeSelector
+              currentTheme={settings.theme}
+              currentColorScheme={settings.colorScheme}
+              onThemeChange={(theme, colorScheme) => {
+                updateSetting('theme', theme);
+                updateSetting('colorScheme', colorScheme);
+              }}
+            />
           </SettingsSection>
 
           {/* Goals & Progress */}
@@ -646,28 +635,6 @@ function SettingsSection({ title, children }: SettingsSectionProps) {
         {children}
       </div>
     </div>
-  );
-}
-
-interface ThemeOptionProps {
-  value: string;
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}
-
-function ThemeOption({ value, label, selected, onClick }: ThemeOptionProps) {
-  return (
-    <button
-      onClick={onClick}
-      className={`p-3 rounded-lg border text-center transition-colors ${
-        selected
-          ? 'bg-primary/10 border-primary text-primary'
-          : 'bg-background border-border text-foreground hover:bg-muted'
-      }`}
-    >
-      {label}
-    </button>
   );
 }
 

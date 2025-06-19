@@ -74,6 +74,18 @@ Welcome to the complete documentation collection for **Doshi Sensei** - a Next.j
 
 *Detailed implementation plan for user settings and customization.*
 
+### [Theme System Guide](./THEME_SYSTEM_GUIDE.md)
+**Comprehensive theme system documentation and developer guide**
+
+- 🎨 **8 Color Schemes**: Terminal-inspired palettes (Default, Ocean, Forest, Sunset, Purple, Rose, Emerald, Amber)
+- 🌓 **Theme Modes**: Light, Dark, and System preference detection
+- 🏗️ **Architecture**: CSS variables, React contexts, and state management
+- ♿ **Accessibility**: WCAG AA compliance with high contrast ratios
+- 🛠️ **Developer Guide**: Implementation details, API reference, and troubleshooting
+- 📱 **User Guide**: Complete instructions for theme customization
+
+*Complete documentation for the theme system implementation and usage.*
+
 ---
 
 ## 🧪 Development & Testing
@@ -133,7 +145,8 @@ Welcome to the complete documentation collection for **Doshi Sensei** - a Next.j
 
 1. **Practice Mode**: [Practice Mode Implementation](./practice_mode_implementation_plan.md)
 2. **Settings**: [Settings Page Implementation](./settings_page_implementation_plan.md)
-3. **Storage**: [Storage System Reference](./README_Storage.md)
+3. **Theme System**: [Theme System Guide](./THEME_SYSTEM_GUIDE.md)
+4. **Storage**: [Storage System Reference](./README_Storage.md)
 
 ### For System Architecture
 
@@ -148,10 +161,10 @@ Welcome to the complete documentation collection for **Doshi Sensei** - a Next.j
 | Category | Documents | Total Size | Key Features |
 |----------|-----------|------------|--------------|
 | **Project Overview** | 2 docs | ~15KB | Requirements, setup |
-| **Implementation** | 3 docs | ~45KB | Roadmap, feature plans |
+| **Implementation** | 4 docs | ~85KB | Roadmap, feature plans, themes |
 | **Development** | 1 doc | ~25KB | Testing, CI/CD |
 | **Storage** | 2 docs | ~85KB | Architecture, API reference |
-| **Total** | **8 docs** | **~170KB** | **Complete project coverage** |
+| **Total** | **9 docs** | **~210KB** | **Complete project coverage** |
 
 ---
 

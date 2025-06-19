@@ -31,10 +31,22 @@ const navItems: NavItem[] = [
     href: '/drill'
   },
   {
+    id: 'kanji',
+    label: 'Kanji Browser',
+    icon: '漢',
+    href: '/kanji-browser'
+  },
+  {
     id: 'vocabulary',
     label: 'Browse Vocabulary',
     icon: '📖',
     href: '/vocabulary'
+  },
+  {
+    id: 'favourites',
+    label: 'Saved Items',
+    icon: '⭐',
+    href: '/favourites'
   },
   {
     id: 'settings',

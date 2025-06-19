@@ -230,10 +230,10 @@ export class ConjugationEngine {
       adverbialNegative: kanjiStem + mappings.negative + 'なく',
 
       // Progressive forms
-      progressive: kanjiStem + mappings.teForm.replace(/て$/, '') + 'ている',
-      progressivePolite: kanjiStem + mappings.teForm.replace(/て$/, '') + 'ています',
-      progressiveNegative: kanjiStem + mappings.teForm.replace(/て$/, '') + 'ていない',
-      progressivePoliteNegative: kanjiStem + mappings.teForm.replace(/て$/, '') + 'ていません',
+      progressive: kanjiStem + mappings.teForm.replace(/[てで]$/, '') + 'ている',
+      progressivePolite: kanjiStem + mappings.teForm.replace(/[てで]$/, '') + 'ています',
+      progressiveNegative: kanjiStem + mappings.teForm.replace(/[てで]$/, '') + 'ていない',
+      progressivePoliteNegative: kanjiStem + mappings.teForm.replace(/[てで]$/, '') + 'ていません',
 
       // Request forms
       request: kanjiStem + mappings.teForm + 'ください',

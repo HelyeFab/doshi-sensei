@@ -15,7 +15,7 @@ import {
 // Database configuration
 const DB_CONFIG: DatabaseConfig = {
   name: 'DoshiSenseiDB',
-  version: 2, // Updated for flashcard stores
+  version: 4, // Updated for unified study list system
   stores: {
     settings: {
       keyPath: 'id',
@@ -123,6 +123,38 @@ const DB_CONFIG: DatabaseConfig = {
         { name: 'sessionId', keyPath: 'sessionId' },
         { name: 'reviewDate', keyPath: 'reviewDate' },
         { name: 'cardType', keyPath: 'cardType' }
+      ]
+    },
+    savedKanji: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'kanji', keyPath: 'kanji.kanji' },
+        { name: 'jlpt', keyPath: 'kanji.jlpt' },
+        { name: 'savedAt', keyPath: 'savedAt' }
+      ]
+    },
+    kanjiLists: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'name', keyPath: 'name' },
+        { name: 'createdAt', keyPath: 'createdAt' },
+        { name: 'updatedAt', keyPath: 'updatedAt' }
+      ]
+    },
+    studyLists: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'name', keyPath: 'name' },
+        { name: 'type', keyPath: 'type' },
+        { name: 'createdAt', keyPath: 'createdAt' },
+        { name: 'updatedAt', keyPath: 'updatedAt' }
+      ]
+    },
+    savedStudyItems: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'itemType', keyPath: 'itemType' },
+        { name: 'savedAt', keyPath: 'savedAt' }
       ]
     }
   }

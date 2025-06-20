@@ -43,6 +43,7 @@ export class StorageDemo {
     // Create sample settings
     const sampleSettings: AppSettings = {
       theme: 'dark',
+      colorScheme: 'default',
       showRomaji: true,
       dailyGoal: 50,
       practiceReminders: true

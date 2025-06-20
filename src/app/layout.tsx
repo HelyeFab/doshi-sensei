@@ -12,6 +12,7 @@ import DesktopNavMenu from "@/components/DesktopNavMenu";
 import PWAInstaller from "@/components/PWAInstaller";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
+import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -190,13 +191,15 @@ export default function RootLayout({
                 {/* Use a client component to connect settings to theme */}
                 <ClientThemeWrapper>
                   <PWAWrapper>
-                    <div className="min-h-screen bg-background text-foreground">
-                      {children}
-                      <BottomNavigation />
-                      <DesktopNavMenu />
-                      <PWAInstaller />
-                      <FloatingDonateButton />
-                    </div>
+                    <OnboardingWrapper>
+                      <div className="min-h-screen bg-background text-foreground">
+                        {children}
+                        <BottomNavigation />
+                        <DesktopNavMenu />
+                        <PWAInstaller />
+                        <FloatingDonateButton />
+                      </div>
+                    </OnboardingWrapper>
                   </PWAWrapper>
                 </ClientThemeWrapper>
               </SubscriptionProvider>

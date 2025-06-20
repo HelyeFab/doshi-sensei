@@ -26,36 +26,20 @@ export default function AcknowledgmentsPage() {
                 <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg">
                   <div className="text-2xl">⚛️</div>
                   <div>
-                    <h3 className="font-medium text-foreground">Next.js</h3>
+                    <h3 className="font-medium text-foreground">WaniKani API</h3>
                     <p className="text-sm text-muted-foreground mb-2">
-                      The React framework for production applications
+                      <a
+                        href="https://www.wanikani.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        wanikani.com
+                      </a>
                     </p>
-                    <a
-                      href="https://nextjs.org"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline text-sm"
-                    >
-                      nextjs.org
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl">🎨</div>
-                  <div>
-                    <h3 className="font-medium text-foreground">Tailwind CSS</h3>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Utility-first CSS framework for rapid UI development
+                    <p className="text-xs text-muted-foreground">
+                      Primary dictionary source providing high-quality Japanese vocabulary with learning context.
                     </p>
-                    <a
-                      href="https://tailwindcss.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline text-sm"
-                    >
-                      tailwindcss.com
-                    </a>
                   </div>
                 </div>
 
@@ -85,26 +69,44 @@ export default function AcknowledgmentsPage() {
                 <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg">
                   <div className="text-2xl">🇯🇵</div>
                   <div>
-                    <h3 className="font-medium text-foreground">JMdict</h3>
+                    <h3 className="font-medium text-foreground">WaniKani</h3>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Japanese-Multilingual Dictionary by the Electronic Dictionary Research and Development Group
+                      Comprehensive Japanese learning platform with high-quality vocabulary and kanji data
                     </p>
                     <a
-                      href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project"
+                      href="https://www.wanikani.com/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline text-sm"
                     >
-                      edrdg.org/jmdict
+                      wanikani.com
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg">
+                  <div className="text-2xl">📚</div>
+                  <div>
+                    <h3 className="font-medium text-foreground">Jisho.org</h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Japanese dictionary API for fallback vocabulary lookup
+                    </p>
+                    <a
+                      href="https://jisho.org/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline text-sm"
+                    >
+                      jisho.org
                     </a>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                   <p className="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>Special Thanks:</strong> This project uses the JMdict dictionary files.
-                    These files are the property of the Electronic Dictionary Research and Development Group,
-                    and are used in conformance with the Group's licence.
+                    <strong>Primary Data Source:</strong> This app uses WaniKani as the primary source for Japanese vocabulary,
+                    providing learner-focused content with structured progression. Jisho.org serves as a fallback dictionary
+                    for comprehensive coverage when needed.
                   </p>
                 </div>
               </div>
@@ -170,8 +172,9 @@ export default function AcknowledgmentsPage() {
               <div className="bg-muted/30 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">
                   This application is built using open source software under various licenses including MIT,
-                  Apache 2.0, and Creative Commons. The JMdict data is used under the EDRDG license.
-                  For detailed license information for each component, please refer to the source code repository.
+                  Apache 2.0, and Creative Commons. WaniKani data is accessed through their official API
+                  under their terms of service. For detailed license information for each component,
+                  please refer to the source code repository.
                 </p>
               </div>
             </section>

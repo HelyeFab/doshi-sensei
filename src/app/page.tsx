@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { strings } from '@/config/strings';
-import MobileHome from '@/components/MobileHome';
 import StatsManager from '@/utils/stats';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -114,6 +112,13 @@ export default function Home() {
     }
   };
 
+  // Get user's display name
+  const getUserDisplayName = () => {
+    if (user?.displayName) return user.displayName;
+    if (user?.email) return user.email.split('@')[0];
+    return 'Friend';
+  };
+
   return (
     <>
       {/* Structured Data for SEO */}
@@ -124,141 +129,374 @@ export default function Home() {
         }}
       />
 
-      {/* Mobile Layout */}
-      <div className="md:hidden">
-        <MobileHome />
-      </div>
+      {/* Unified Responsive Layout */}
+      <div className="container mx-auto px-4 py-6 md:py-8 min-h-screen pb-24 md:pb-8">
+        {/* Welcome Header */}
+        <header className="mb-8 md:mb-12">
+          <div className="text-center mb-6">
+            {/* User Avatar */}
+            {user?.photoURL && (
+              <div className="mb-4">
+                <img
+                  src={user.photoURL}
+                  alt={`${getUserDisplayName()}'s profile`}
+                  className="w-16 h-16 md:w-20 md:h-20 rounded-full mx-auto border-2 border-white shadow-lg"
+                  style={{
+                    boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)'
+                  }}
+                />
+              </div>
+            )}
 
-      {/* Desktop Layout */}
-      <div className="hidden md:block container mx-auto px-4 py-8 min-h-screen">
-        {/* Header */}
-        <header className="text-center mb-12 fade-in">
-          <div className="flex items-center justify-center mb-2">
-            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mr-4">
-              <span className="text-2xl font-bold text-primary-foreground japanese-text">動</span>
+            {/* Welcome Text */}
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                Hello {getUserDisplayName()}! 👋
+              </h1>
+              <p className="text-base md:text-lg text-muted-foreground">
+                Ready to practice some Japanese?
+              </p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground app-name">
-              {strings.appName}
-            </h1>
           </div>
-          <p className="text-lg text-muted-foreground japanese-text mb-6">
-            動詞 先生
-          </p>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {strings.home.subtitle}
-          </p>
         </header>
 
         {/* Main Navigation Cards */}
-        <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {/* Practice Card */}
-            <NavigationCard
-              title={strings.home.practiceButton}
-              description="Practice conjugations with detailed explanations"
-              icon="📚"
-              href="/practice"
-              gradient="from-blue-600 to-blue-800"
-            />
+        <main className="max-w-6xl mx-auto">
+          {/* Vertically Scrollable Cards in 2x2 Grid */}
+          <div className="mb-6 md:mb-8">
+            {/* Mobile: 2x2 Grid with Vertical Scroll */}
+            <div className="md:hidden max-h-80 overflow-y-auto scrollbar-hide">
+              <div className="grid grid-cols-2 gap-3 pb-4">
+                {/* Practice Card */}
+                <FeatureCard
+                  title="Practice"
+                  icon="📚"
+                  href="/practice"
+                  color="blue"
+                  description="Learn conjugations"
+                />
 
-            {/* Drill Card */}
-            <NavigationCard
-              title={strings.home.drillButton}
-              description="Test your knowledge with multiple choice questions"
-              icon="⚡"
-              href="/drill"
-              gradient="from-purple-600 to-purple-800"
-            />
+                {/* Vocabulary Card */}
+                <FeatureCard
+                  title="Vocabulary"
+                  icon="📖"
+                  href="/vocabulary"
+                  color="green"
+                  description="Browse words"
+                />
 
-            {/* Vocabulary Card */}
-            <NavigationCard
-              title={strings.home.vocabButton}
-              description="Browse and search Japanese vocabulary by JLPT level"
-              icon="📖"
-              href="/vocabulary"
-              gradient="from-green-600 to-green-800"
-            />
+                {/* Kanji Card */}
+                <FeatureCard
+                  title="Kanji"
+                  icon="漢"
+                  href="/kanji-browser"
+                  color="purple"
+                  description="Study kanji"
+                />
 
-            {/* Settings Card */}
-            <NavigationCard
-              title={strings.home.settingsButton}
-              description="Customize your learning experience"
-              icon="⚙️"
-              href="/settings"
-              gradient="from-gray-600 to-gray-800"
-            />
+                {/* Settings Card */}
+                <FeatureCard
+                  title="Settings"
+                  icon="⚙️"
+                  href="/settings"
+                  color="gray"
+                  description="Customize app"
+                />
+
+                {/* Future Reading Card */}
+                <FeatureCard
+                  title="Reading"
+                  icon="📰"
+                  href="/reading"
+                  color="orange"
+                  description="Practice reading"
+                />
+              </div>
+            </div>
+
+            {/* Desktop: 4-column Grid (no scroll needed) */}
+            <div className="hidden md:grid md:grid-cols-4 md:gap-6">
+              {/* Practice Card */}
+              <FeatureCard
+                title="Practice"
+                icon="📚"
+                href="/practice"
+                color="blue"
+                description="Learn conjugations"
+              />
+
+              {/* Vocabulary Card */}
+              <FeatureCard
+                title="Vocabulary"
+                icon="📖"
+                href="/vocabulary"
+                color="green"
+                description="Browse words"
+              />
+
+              {/* Kanji Card */}
+              <FeatureCard
+                title="Kanji"
+                icon="漢"
+                href="/kanji-browser"
+                color="purple"
+                description="Study kanji"
+              />
+
+              {/* Settings Card */}
+              <FeatureCard
+                title="Settings"
+                icon="⚙️"
+                href="/settings"
+                color="gray"
+                description="Customize app"
+              />
+            </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="bg-card rounded-lg p-6 border border-border slide-up">
-            <h2 className="text-xl font-semibold mb-4 text-card-foreground">
-              {loading ? 'Loading...' : 'Your Progress'}
+          {/* Circular Progress Stats */}
+          <div
+            className="bg-card rounded-xl p-4 md:p-6 shadow-sm"
+            style={{
+              border: '2px solid white',
+              boxShadow: 'inset 0 0 0 1px var(--primary), 0 4px 12px rgba(0,0,0,0.1)'
+            }}
+          >
+            <h2 className="text-lg md:text-xl font-semibold mb-6 text-card-foreground">
+              Your Progress
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard label="Days Used" value={loading ? '...' : stats.totalDaysUsed.toString()} />
-              <StatCard label="Drills Completed" value={loading ? '...' : stats.drillsCompleted.toString()} />
-              <StatCard label="Accuracy" value={loading ? '...' : `${stats.accuracy}%`} />
-              <StatCard label="Streak" value={loading ? '...' : `${stats.streak} days`} />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+              <StatCircle
+                label="Days Used"
+                value={loading ? 0 : stats.totalDaysUsed}
+                maxValue={365}
+                color="blue"
+                loading={loading}
+              />
+              <StatCircle
+                label="Drills"
+                value={loading ? 0 : stats.drillsCompleted}
+                maxValue={100}
+                color="purple"
+                loading={loading}
+              />
+              <StatCircle
+                label="Accuracy"
+                value={loading ? 0 : stats.accuracy}
+                maxValue={100}
+                color="green"
+                loading={loading}
+                isPercentage={true}
+              />
+              <StatCircle
+                label="Streak"
+                value={loading ? 0 : stats.streak}
+                maxValue={30}
+                color="orange"
+                loading={loading}
+                suffix="days"
+              />
             </div>
           </div>
         </main>
-
-        {/* Footer */}
-        <footer className="text-center mt-12 pt-8 border-t border-border">
-          <p className="text-muted-foreground text-sm">
-            Master Japanese conjugations one verb at a time
-          </p>
-        </footer>
       </div>
     </>
   );
 }
 
-interface NavigationCardProps {
+interface FeatureCardProps {
   title: string;
-  description: string;
   icon: string;
   href: string;
-  gradient: string;
+  color: 'blue' | 'green' | 'purple' | 'gray' | 'orange';
+  description: string;
 }
 
-function NavigationCard({ title, description, icon, href, gradient }: NavigationCardProps) {
+function FeatureCard({ title, icon, href, color, description }: FeatureCardProps) {
+  const colorClasses = {
+    blue: {
+      bg: 'bg-blue-100/60 hover:bg-blue-200/70 dark:bg-blue-900/30 dark:hover:bg-blue-800/40',
+      border: 'border-blue-300/60 dark:border-blue-600/60',
+      text: 'text-blue-900 dark:text-blue-100',
+      shadow: 'hover:shadow-blue-200/25 dark:hover:shadow-blue-900/25'
+    },
+    green: {
+      bg: 'bg-emerald-100/60 hover:bg-emerald-200/70 dark:bg-emerald-900/30 dark:hover:bg-emerald-800/40',
+      border: 'border-emerald-300/60 dark:border-emerald-600/60',
+      text: 'text-emerald-900 dark:text-emerald-100',
+      shadow: 'hover:shadow-emerald-200/25 dark:hover:shadow-emerald-900/25'
+    },
+    purple: {
+      bg: 'bg-violet-100/60 hover:bg-violet-200/70 dark:bg-violet-900/30 dark:hover:bg-violet-800/40',
+      border: 'border-violet-300/60 dark:border-violet-600/60',
+      text: 'text-violet-900 dark:text-violet-100',
+      shadow: 'hover:shadow-violet-200/25 dark:hover:shadow-violet-900/25'
+    },
+    gray: {
+      bg: 'bg-slate-100/60 hover:bg-slate-200/70 dark:bg-slate-800/30 dark:hover:bg-slate-700/40',
+      border: 'border-slate-300/60 dark:border-slate-600/60',
+      text: 'text-slate-900 dark:text-slate-100',
+      shadow: 'hover:shadow-slate-200/25 dark:hover:shadow-slate-800/25'
+    },
+    orange: {
+      bg: 'bg-orange-100/60 hover:bg-orange-200/70 dark:bg-orange-900/30 dark:hover:bg-orange-800/40',
+      border: 'border-orange-300/60 dark:border-orange-600/60',
+      text: 'text-orange-900 dark:text-orange-100',
+      shadow: 'hover:shadow-orange-200/25 dark:hover:shadow-orange-900/25'
+    }
+  };
+
+  const colors = colorClasses[color];
+
   return (
-    <Link href={href} className="block">
+    <Link href={href}>
       <div
-        className="group relative overflow-hidden rounded-lg border border-border bg-card hover:bg-card/80 transition-all duration-300 cursor-pointer slide-up hover:scale-105"
+        className={`group relative rounded-2xl p-4 md:p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${colors.bg} ${colors.text} ${colors.shadow}`}
+        style={{
+          border: '2px solid white',
+          boxShadow: `inset 0 0 0 1px ${color === 'blue' ? 'rgb(59, 130, 246)' :
+                                         color === 'green' ? 'rgb(16, 185, 129)' :
+                                         color === 'purple' ? 'rgb(139, 92, 246)' :
+                                         color === 'gray' ? 'rgb(100, 116, 139)' :
+                                         'rgb(249, 115, 22)'}, 0 4px 12px rgba(0,0,0,0.1)`
+        }}
       >
-        <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
-        <div className="relative p-6">
-          <div className="flex items-center mb-4">
-            <span className="text-3xl mr-3">{icon}</span>
-            <h3 className="text-xl font-semibold text-card-foreground">{title}</h3>
+        {/* Frosted glass overlay effect */}
+        <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+        <div className="relative flex flex-col items-center text-center space-y-2 md:space-y-3">
+          <div className="text-2xl md:text-3xl drop-shadow-sm">
+            {icon}
           </div>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {description}
-          </p>
-          <div className="mt-4 flex items-center text-primary text-sm font-medium">
-            <span>Get Started</span>
-            <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+          <div>
+            <h3 className="text-sm md:text-base font-bold">
+              {title}
+            </h3>
+            <p className="text-xs md:text-sm opacity-90 mt-1 font-medium">
+              {description}
+            </p>
           </div>
+        </div>
+
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
+          <svg className="w-4 h-4 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </div>
       </div>
     </Link>
   );
 }
 
-interface StatCardProps {
+interface CompactStatProps {
   label: string;
-  value: string;
+  value: number;
+  color: 'blue' | 'green' | 'purple' | 'orange';
+  loading: boolean;
+  isPercentage?: boolean;
+  suffix?: string;
 }
 
-function StatCard({ label, value }: StatCardProps) {
+function CompactStat({ label, value, color, loading, isPercentage = false, suffix = '' }: CompactStatProps) {
+  const colorClasses = {
+    blue: 'text-blue-600 dark:text-blue-400',
+    green: 'text-green-600 dark:text-green-400',
+    purple: 'text-purple-600 dark:text-purple-400',
+    orange: 'text-orange-600 dark:text-orange-400'
+  };
+
+  const displayValue = isPercentage ? `${value}%` : value.toString();
+
   return (
     <div className="text-center">
-      <div className="text-2xl font-bold text-primary mb-1">{value}</div>
-      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className={`text-xl md:text-2xl font-bold mb-1 ${colorClasses[color]}`}>
+        {loading ? '...' : displayValue}
+      </div>
+      <div className="text-xs md:text-sm text-muted-foreground font-medium">
+        {label}
+      </div>
+      {suffix && !isPercentage && (
+        <div className="text-xs text-muted-foreground opacity-75">
+          {suffix}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface StatCircleProps {
+  label: string;
+  value: number;
+  maxValue: number;
+  color: 'blue' | 'green' | 'purple' | 'orange';
+  loading: boolean;
+  isPercentage?: boolean;
+  suffix?: string;
+}
+
+function StatCircle({ label, value, maxValue, color, loading, isPercentage = false, suffix = '' }: StatCircleProps) {
+  const colorClasses = {
+    blue: 'text-blue-600 dark:text-blue-400',
+    green: 'text-green-600 dark:text-green-400',
+    purple: 'text-purple-600 dark:text-purple-400',
+    orange: 'text-orange-600 dark:text-orange-400'
+  };
+
+  const strokeClasses = {
+    blue: 'stroke-blue-600 dark:stroke-blue-400',
+    green: 'stroke-green-600 dark:stroke-green-400',
+    purple: 'stroke-purple-600 dark:stroke-purple-400',
+    orange: 'stroke-orange-600 dark:stroke-orange-400'
+  };
+
+  const percentage = Math.min((value / maxValue) * 100, 100);
+  const circumference = 2 * Math.PI * 45;
+  const strokeDasharray = `${(circumference * percentage) / 100} ${circumference}`;
+
+  const displayValue = isPercentage ? `${value}%` : value.toString();
+  const displaySuffix = suffix && !isPercentage ? ` ${suffix}` : '';
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-24 h-24 md:w-32 md:h-32">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+          {/* Background circle */}
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            stroke="var(--muted)"
+            strokeWidth="6"
+            fill="none"
+            className="opacity-20"
+          />
+          {/* Progress circle */}
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            stroke="currentColor"
+            strokeWidth="6"
+            fill="none"
+            strokeDasharray={loading ? '0 283' : strokeDasharray}
+            strokeLinecap="round"
+            className={`transition-all duration-1000 ease-out ${strokeClasses[color]}`}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className={`text-lg md:text-xl font-bold ${colorClasses[color]}`}>
+            {loading ? '...' : displayValue}
+          </span>
+          {suffix && !isPercentage && (
+            <span className="text-xs text-muted-foreground">
+              {suffix}
+            </span>
+          )}
+        </div>
+      </div>
+      <span className="text-sm md:text-base font-medium text-muted-foreground mt-2 text-center">
+        {label}
+      </span>
     </div>
   );
 }

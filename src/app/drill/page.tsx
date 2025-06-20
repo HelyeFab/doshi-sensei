@@ -329,8 +329,21 @@ export default function DrillPage() {
 
   const loadWordLists = useCallback(async () => {
     try {
+      console.log('🔍 Loading word lists from StudyListManager...');
+
       // Load unified study lists and convert them to legacy format for compatibility
       const studyLists = await StudyListManager.getAllStudyLists();
+      console.log('🔍 Raw study lists from StudyListManager:', studyLists);
+
+      // Also try loading from legacy WordListManager as fallback
+      let legacyLists: WordList[] = [];
+      try {
+        legacyLists = await WordListManager.getAllWordLists();
+        console.log('🔍 Legacy word lists from WordListManager:', legacyLists);
+      } catch (legacyErr) {
+        console.log('🔍 No legacy word lists found (this is normal)');
+      }
+
       const legacyWordLists: WordList[] = studyLists.map(studyList => ({
         id: studyList.id,
         name: studyList.name,
@@ -341,10 +354,26 @@ export default function DrillPage() {
         color: studyList.color,
         isConjugable: studyList.type === 'drillable'
       }));
-      console.log('📚 Loaded unified study lists as word lists:', legacyWordLists);
-      setWordLists(legacyWordLists);
+
+      // Combine unified lists with any legacy lists
+      const combinedLists = [...legacyWordLists, ...legacyLists];
+      console.log('📚 Combined word lists:', combinedLists);
+      console.log('📚 Study list types:', studyLists.map(list => ({ name: list.name, type: list.type, itemCount: list.itemIds.length })));
+      console.log('📚 Total lists for flashcards:', combinedLists.length);
+
+      setWordLists(combinedLists);
     } catch (err) {
       console.error('Error loading word lists:', err);
+      // Try fallback to legacy system only
+      try {
+        console.log('🔍 Trying fallback to legacy WordListManager only...');
+        const legacyLists = await WordListManager.getAllWordLists();
+        console.log('📚 Fallback legacy lists:', legacyLists);
+        setWordLists(legacyLists);
+      } catch (fallbackErr) {
+        console.error('Error loading legacy word lists:', fallbackErr);
+        setWordLists([]);
+      }
     }
   }, []);
 
@@ -419,46 +448,44 @@ export default function DrillPage() {
           console.log(`📚 Word ${index + 1}: "${word.kanji}" (${word.kana}) - Type: "${word.type}"`);
         });
 
-        // Filter for conjugable words using enhanced validation (same as StudyListManager)
+        // Keep track of all words before filtering
+        const allWords = [...words];
+
+        // Filter for conjugable words using strict validation
+        const originalCount = words.length;
         words = words.filter(word => {
           // Check for explicit conjugable types
           const conjugableTypes: WordType[] = ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'];
           if (conjugableTypes.includes(word.type)) {
+            console.log(`✅ Including conjugable word: ${word.kanji} (${word.kana}) - ${word.type}`);
             return true;
           }
 
-          // For words that might be classified as 'other' or 'noun' but are actually verbs/adjectives
-          // Check if the word has detailed part of speech information
-          if (word.detailedMeaning && word.detailedMeaning.length > 0) {
-            const hasConjugablePOS = word.detailedMeaning.some(meaning =>
-              meaning.partOfSpeech.some(pos => {
-                const lowerPos = pos.toLowerCase();
-                return lowerPos.includes('verb') ||
-                       lowerPos.includes('adjective') ||
-                       lowerPos.includes('ichidan') ||
-                       lowerPos.includes('godan') ||
-                       lowerPos.includes('i-adjective') ||
-                       lowerPos.includes('na-adjective');
-              })
-            );
-            if (hasConjugablePOS) {
-              return true;
+          // For words that might be misclassified, try to fix them via API lookup
+          console.log(`❓ Checking misclassified word: ${word.kanji} (${word.kana}) - currently "${word.type}"`);
+          return false; // We'll handle API lookup separately
+        });
+
+        console.log(`📚 After strict filtering: ${words.length}/${originalCount} conjugable words found`);
+
+        // If we have few or no conjugable words, try to fix misclassified ones
+        if (words.length < 5) {
+          console.log('🔧 Attempting to fix word types for remaining words...');
+          const remainingWords = allWords.filter((w: JapaneseWord) => !words.includes(w));
+
+          for (const word of remainingWords.slice(0, 10)) { // Limit API calls
+            try {
+              const fixedWord = await fixWordType(word);
+              const conjugableTypes: WordType[] = ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'];
+              if (conjugableTypes.includes(fixedWord.type)) {
+                console.log(`🔧 Fixed word type: ${fixedWord.kanji} (${fixedWord.kana}) - ${word.type} → ${fixedWord.type}`);
+                words.push(fixedWord);
+              }
+            } catch (error) {
+              console.error(`Failed to fix word type for ${word.kanji}:`, error);
             }
           }
-
-          // Enhanced fallback: check verb ending patterns for misclassified words
-          const kana = word.kana;
-          // Common verb endings that suggest conjugability
-          const verbEndings = ['る', 'す', 'く', 'ぐ', 'む', 'ぬ', 'ぶ', 'つ', 'う'];
-          const endsWithVerbPattern = verbEndings.some(ending => kana.endsWith(ending));
-
-          if (endsWithVerbPattern) {
-            console.log(`✅ Including misclassified word '${word.kanji}' (${word.kana}) - detected verb pattern ending with: ${kana.slice(-1)}`);
-            return true;
-          }
-
-          return false;
-        });
+        }
 
         console.log('📚 Conjugable words after filtering:', words);
 
@@ -495,7 +522,7 @@ export default function DrillPage() {
     }
   }, [drillMode, selectedLists, settings.dailyGoal, wordTypeFilter]);
 
-  // API-based word type lookup using existing searchWords infrastructure
+  // Enhanced word type lookup with pattern matching fallback
   const fixWordTypeWithAPI = async (word: JapaneseWord): Promise<JapaneseWord> => {
     if (word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' || word.type === 'i-adjective' || word.type === 'na-adjective') {
       return word; // Already correctly classified
@@ -503,6 +530,14 @@ export default function DrillPage() {
 
     console.log(`🔧 API Lookup: Checking word type for ${word.kanji} (${word.kana}) - currently classified as "${word.type}"`);
 
+    // First try pattern-based classification (faster and doesn't rely on API)
+    const patternFixedWord = fixWordTypeByPattern(word);
+    if (patternFixedWord.type !== word.type) {
+      console.log(`🔧 Fixed word type by pattern: ${word.kanji} (${word.kana}) from "${word.type}" to "${patternFixedWord.type}"`);
+      return patternFixedWord;
+    }
+
+    // If pattern matching didn't work, try API lookup (with better error handling)
     try {
       // Use existing searchWords API to get authoritative word type
       const apiResults = await searchWords(word.kanji, 1);
@@ -535,9 +570,55 @@ export default function DrillPage() {
       console.log(`🔧 API lookup found no conjugable classification for ${word.kanji} (${word.kana})`);
     } catch (error) {
       console.error(`🔧 API lookup failed for ${word.kanji} (${word.kana}):`, error);
+      console.log(`🔧 API failed, trying pattern matching as fallback...`);
     }
 
     return word; // No change needed or API failed
+  };
+
+  // Pattern-based word type classification (fallback when API fails)
+  const fixWordTypeByPattern = (word: JapaneseWord): JapaneseWord => {
+    const kana = word.kana;
+    const kanji = word.kanji;
+
+    // Common verb patterns
+    if (kana.endsWith('る')) {
+      // Check for ichidan verb patterns
+      const ichidanEndings = ['える', 'いる', 'きる', 'ぎる', 'じる', 'ちる', 'にる', 'びる', 'みる', 'りる'];
+      if (ichidanEndings.some(ending => kana.endsWith(ending))) {
+        return { ...word, type: 'Ichidan' };
+      }
+      // Could be godan る verb
+      return { ...word, type: 'Godan' };
+    }
+
+    // Godan verb endings
+    const godanEndings = ['う', 'く', 'ぐ', 'す', 'つ', 'ぬ', 'ぶ', 'む'];
+    if (godanEndings.some(ending => kana.endsWith(ending))) {
+      return { ...word, type: 'Godan' };
+    }
+
+    // i-adjective pattern
+    if (kana.endsWith('い') && !kana.endsWith('しい') && !kanji.includes('綺麗') && !kanji.includes('嫌い')) {
+      return { ...word, type: 'i-adjective' };
+    }
+
+    // Common irregular verbs
+    const irregularVerbs = ['する', 'くる', '来る', 'いく', '行く'];
+    if (irregularVerbs.includes(kanji) || irregularVerbs.includes(kana)) {
+      return { ...word, type: 'Irregular' };
+    }
+
+    // Common na-adjectives (these are often misclassified as nouns)
+    const commonNaAdjectives = [
+      '元気', '静か', '綺麗', '有名', '便利', '簡単', '複雑', '安全', '危険', '自由',
+      '特別', '大切', '大丈夫', '親切', '丁寧', '正直', '素直', '真面目', '不思議'
+    ];
+    if (commonNaAdjectives.includes(kanji)) {
+      return { ...word, type: 'na-adjective' };
+    }
+
+    return word; // No pattern match found
   };
 
   // Cache for API lookups to avoid repeated calls
@@ -593,8 +674,13 @@ export default function DrillPage() {
 
   useEffect(() => {
     const initializeSystem = async () => {
-      // Initialize the new unified study list system and clear legacy data
-      await StudyListManager.initializeNewSystem();
+      // Only initialize if we haven't already done so
+      const hasInitialized = localStorage.getItem('doshi_sensei_system_initialized');
+      if (!hasInitialized) {
+        console.log('🔄 First-time initialization of unified study system');
+        await StudyListManager.initializeNewSystem();
+        localStorage.setItem('doshi_sensei_system_initialized', 'true');
+      }
       loadAllLists();
     };
 

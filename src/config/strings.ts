@@ -56,7 +56,21 @@ export const strings = {
     romaji: "Romaji",
     meaning: "Meaning",
     type: "Type",
-    level: "JLPT Level"
+    level: "JLPT Level",
+    searching: "Searching...",
+    searchingWanikani: "Consulting the WaniKani sensei...",
+    funnyLoadingMessages: [
+      "Asking the kanji spirits for wisdom...",
+      "Searching through 60 levels of WaniKani magic...",
+      "Teaching AI how to count to 四...",
+      "Bribing the vocabulary gods with digital offerings...",
+      "Translating your request into ancient Japanese...",
+      "Consulting with the ghost of every JLPT exam...",
+      "Fishing for words in the sea of hiragana...",
+      "Politely asking WaniKani for all their secrets...",
+      "Loading faster than you can say 'supercalifragilisticexpialidocious' in Japanese...",
+      "Summoning vocabulary from the digital realm..."
+    ]
   },
 
   // Conjugation Details

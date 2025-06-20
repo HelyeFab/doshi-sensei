@@ -156,6 +156,51 @@ body {
   }
 }
 
+/* Onboarding-specific animations */
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Onboarding modal styles */
+.onboarding-backdrop {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Reduced motion support for onboarding */
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-slow,
+  .animate-slideIn,
+  .animate-bounce,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+
 /* Mobile-first responsive utilities */
 .container {
   width: 100%;

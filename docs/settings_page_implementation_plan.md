@@ -284,6 +284,6 @@ Total: 6-10 days depending on complexity and polish requirements
 
 If the 66MB file approach doesn't work in Netlify's serverless environment, we have backup options:
 
-1. __Use External JMdict API__ - Point to a hosted JMdict service
-2. __Chunked File Approach__ - Split the 66MB file into smaller chunks
-3. __Database Solution__ - Convert JMdict to a lightweight database format
+1. __Use WaniKani API__ - Primary vocabulary source with learning context
+2. __Jisho API Fallback__ - Secondary source for additional coverage
+3. __Optimized Storage__ - Efficient caching and offline support

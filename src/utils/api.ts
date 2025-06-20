@@ -1,13 +1,7 @@
 import axios from 'axios';
 import { JishoAPIResponse, JishoWord, JapaneseWord, WordType, JLPTLevel } from '@/types';
-// JMdict imports - primary dictionary source
-import {
-  searchJMdictVocabulary,
-  getCommonVerbsFromJMdict,
-  getCommonWordsFromJMdict,
-  getWordsByJLPTLevelFromJMdict
-} from './jmdictApi';
-// WaniKani imports - fallback dictionary source
+
+// WaniKani imports - primary dictionary source
 import {
   setWanikaniApiToken,
   searchWanikaniVocabulary,
@@ -16,49 +10,49 @@ import {
   getWordsByJLPTLevelFromWanikani
 } from './wanikaniApi';
 
-// WaniKani API initialization - fallback use only
+// WaniKani API initialization - primary source
 const initWanikaniApi = () => {
   // Check for server-side environment variables
   if (typeof process !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
     setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from server-side environment variables (fallback only)');
+    console.log('WaniKani API token set from server-side environment variables');
     return;
   }
 
   // Check for client-side environment variables
   if (typeof window !== 'undefined' && (window as any).__NEXT_DATA__?.props?.pageProps?.env?.WANIKANI_API_TOKEN) {
     setWanikaniApiToken((window as any).__NEXT_DATA__.props.pageProps.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from client-side environment variables (fallback only)');
+    console.log('WaniKani API token set from client-side environment variables');
     return;
   }
 
   // Check for Next.js exposed environment variables
   if (typeof window !== 'undefined' && (window as any).ENV?.WANIKANI_API_TOKEN) {
     setWanikaniApiToken((window as any).ENV.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from Next.js exposed environment variables (fallback only)');
+    console.log('WaniKani API token set from Next.js exposed environment variables');
     return;
   }
 
   // Check for Next.js config environment variables
   if (typeof window !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
     setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from Next.js config environment variables (fallback only)');
+    console.log('WaniKani API token set from Next.js config environment variables');
     return;
   }
 
-  console.warn('WaniKani API token not found in environment variables (fallback source will be unavailable)');
+  console.warn('WaniKani API token not found in environment variables');
 };
 
-// Initialize WaniKani API for fallback
+// Initialize WaniKani API
 initWanikaniApi();
 
-// Jisho API base URL (used as fallback)
+// Jisho API base URL (used as fallback only)
 const JISHO_API_BASE = 'https://jisho.org/api/v1/search/words';
 
-// Netlify function proxy endpoint for Jisho API (used as fallback)
+// Netlify function proxy endpoint for Jisho API (used as fallback only)
 const JISHO_PROXY_BASE = '/.netlify/functions/jisho-proxy';
 
-// Create a custom axios instance for Jisho proxy (used as fallback)
+// Create a custom axios instance for Jisho proxy (used as fallback only)
 const jishoAxios = axios.create({
   baseURL: JISHO_PROXY_BASE,
   headers: {
@@ -174,168 +168,41 @@ function generateRomaji(kana: string): string {
   return result;
 }
 
-// Find exact match in search results
-function findExactMatch(words: JapaneseWord[], query: string): JapaneseWord | null {
-  const queryLower = query.toLowerCase().trim();
-
-  // Check for exact matches in order of priority
-  for (const word of words) {
-    // Exact match on kanji
-    if (word.kanji.toLowerCase() === queryLower) {
-      return word;
-    }
-
-    // Exact match on kana
-    if (word.kana.toLowerCase() === queryLower) {
-      return word;
-    }
-
-    // Exact match on romaji
-    if (word.romaji.toLowerCase() === queryLower) {
-      return word;
-    }
-
-    // Exact match as the primary meaning (first in comma-separated list)
-    const meanings = word.meaning.toLowerCase().split(',').map(m => m.trim());
-    if (meanings[0] === queryLower) {
-      return word;
-    }
-
-    // Exact match as any complete meaning in comma-separated list
-    if (meanings.includes(queryLower)) {
-      return word;
-    }
-  }
-
-  return null;
-}
-
-// Prioritize exact matches in search results
-function prioritizeExactMatches(words: JapaneseWord[], query: string): JapaneseWord[] {
-  const queryLower = query.toLowerCase();
-
-  return words.sort((a, b) => {
-    // Exact match on kanji gets highest priority
-    const aKanjiExact = a.kanji.toLowerCase() === queryLower;
-    const bKanjiExact = b.kanji.toLowerCase() === queryLower;
-    if (aKanjiExact && !bKanjiExact) return -1;
-    if (!aKanjiExact && bKanjiExact) return 1;
-
-    // Exact match on kana gets second priority
-    const aKanaExact = a.kana.toLowerCase() === queryLower;
-    const bKanaExact = b.kana.toLowerCase() === queryLower;
-    if (aKanaExact && !bKanaExact) return -1;
-    if (!aKanaExact && bKanaExact) return 1;
-
-    // Exact match on romaji gets third priority
-    const aRomajiExact = a.romaji.toLowerCase() === queryLower;
-    const bRomajiExact = b.romaji.toLowerCase() === queryLower;
-    if (aRomajiExact && !bRomajiExact) return -1;
-    if (!aRomajiExact && bRomajiExact) return 1;
-
-    // For English searches, prioritize words where the query is a complete word in meaning
-    const aMeaningWords = a.meaning.toLowerCase().split(/[,\s]+/).map(w => w.trim());
-    const bMeaningWords = b.meaning.toLowerCase().split(/[,\s]+/).map(w => w.trim());
-    const aExactMeaningWord = aMeaningWords.includes(queryLower);
-    const bExactMeaningWord = bMeaningWords.includes(queryLower);
-    if (aExactMeaningWord && !bExactMeaningWord) return -1;
-    if (!aExactMeaningWord && bExactMeaningWord) return 1;
-
-    // Exact match in meaning gets fourth priority (for comma-separated meanings)
-    const aMeaningExact = a.meaning.toLowerCase().split(', ').includes(queryLower);
-    const bMeaningExact = b.meaning.toLowerCase().split(', ').includes(queryLower);
-    if (aMeaningExact && !bMeaningExact) return -1;
-    if (!aMeaningExact && bMeaningExact) return 1;
-
-    // Prioritize meanings that start with the query
-    const aMeaningStarts = a.meaning.toLowerCase().startsWith(queryLower);
-    const bMeaningStarts = b.meaning.toLowerCase().startsWith(queryLower);
-    if (aMeaningStarts && !bMeaningStarts) return -1;
-    if (!aMeaningStarts && bMeaningStarts) return 1;
-
-    // Prioritize shorter meanings (more likely to be the primary meaning)
-    if (a.meaning.length !== b.meaning.length) {
-      return a.meaning.length - b.meaning.length;
-    }
-
-    // Words that start with the query get higher priority than those that just contain it
-    const aKanjiStarts = a.kanji.toLowerCase().startsWith(queryLower);
-    const bKanjiStarts = b.kanji.toLowerCase().startsWith(queryLower);
-    if (aKanjiStarts && !bKanjiStarts) return -1;
-    if (!aKanjiStarts && bKanjiStarts) return 1;
-
-    const aKanaStarts = a.kana.toLowerCase().startsWith(queryLower);
-    const bKanaStarts = b.kana.toLowerCase().startsWith(queryLower);
-    if (aKanaStarts && !bKanaStarts) return -1;
-    if (!aKanaStarts && bKanaStarts) return 1;
-
-    const aRomajiStarts = a.romaji.toLowerCase().startsWith(queryLower);
-    const bRomajiStarts = b.romaji.toLowerCase().startsWith(queryLower);
-    if (aRomajiStarts && !bRomajiStarts) return -1;
-    if (!aRomajiStarts && bRomajiStarts) return 1;
-
-    // Shorter words get priority (more likely to be the exact word they're looking for)
-    if (a.kanji.length !== b.kanji.length) {
-      return a.kanji.length - b.kanji.length;
-    }
-
-    // Keep original order for same priority
-    return 0;
-  });
-}
-
-// Search words using preferred source with fallback - JMdict primary, WaniKani/Jisho fallback
-export async function searchWords(query: string, limit: number = 20, preferredSource: 'wanikani' | 'jisho' = 'jisho'): Promise<JapaneseWord[]> {
+// Simple search with WaniKani as primary source (pure results as requested)
+export async function searchWords(query: string, limit: number = 20): Promise<JapaneseWord[]> {
   try {
-    // Primary search with JMdict (our custom parser - always first)
-    try {
-      console.log(`Searching for "${query}" using JMdict (primary source)`);
-      const jmdictResults = await searchJMdictVocabulary(query, limit);
+    console.log(`Searching for "${query}" using WaniKani (primary source)`);
 
-      if (jmdictResults.length > 0) {
-        console.log(`Found ${jmdictResults.length} results from JMdict`);
+    // Primary search with WaniKani - pure results
+    const wanikaniResults = await searchWanikaniVocabulary(query, limit);
 
-        // Check for exact matches first
-        const exactMatch = findExactMatch(jmdictResults, query);
-        if (exactMatch) {
-          console.log(`Found exact match from JMdict: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
-          return [exactMatch];
-        }
-
-        return prioritizeExactMatches(jmdictResults, query);
-      }
-
-      console.log('No results from JMdict, trying fallback sources');
-    } catch (error) {
-      console.error('JMdict search failed, trying fallback sources:', error);
+    if (wanikaniResults.length > 0) {
+      console.log(`Found ${wanikaniResults.length} results from WaniKani`);
+      const topResult = wanikaniResults[0];
+      console.log(`Top result: ${topResult.kanji} (${topResult.kana}) - ${topResult.meaning}`);
+      return wanikaniResults;
     }
 
-    // Fallback to WaniKani API only (remove external Jisho API to avoid CORS)
+    console.log('No results from WaniKani, trying Jisho fallback');
+
+    // Fallback to Jisho only if WaniKani has no results
     try {
-      console.log(`Fallback: Searching for "${query}" using WaniKani API`);
-      const wanikaniResults = await searchWanikaniVocabulary(query, limit);
+      const jishoResults = await searchJisho(query, 1);
 
-      if (wanikaniResults.length > 0) {
-        console.log(`Found ${wanikaniResults.length} results from WaniKani fallback`);
-
-        // Check for exact matches first
-        const exactMatch = findExactMatch(wanikaniResults, query);
-        if (exactMatch) {
-          console.log(`Found exact match from WaniKani: ${exactMatch.kanji} (${exactMatch.kana}) - ${exactMatch.meaning}`);
-          return [exactMatch];
-        }
-
-        return prioritizeExactMatches(wanikaniResults, query);
+      if (jishoResults.data && jishoResults.data.length > 0) {
+        console.log(`Found ${jishoResults.data.length} results from Jisho fallback`);
+        const convertedResults = processJishoResponse(jishoResults, limit);
+        return convertedResults;
       }
-    } catch (wanikaniError) {
-      console.error('WaniKani fallback also failed:', wanikaniError);
+    } catch (jishoError) {
+      console.warn('Jisho fallback failed:', jishoError);
     }
 
     console.log('No results from any search method');
     return [];
 
   } catch (error) {
-    console.error('All search methods failed:', error);
+    console.error('Search failed:', error);
     return [];
   }
 }
@@ -368,46 +235,20 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-// Mock data for when API calls fail - minimal fallback
-const mockWords: JapaneseWord[] = [];
-
-// Get common words (verbs and adjectives) for practice - JMdict primary, WaniKani/Jisho fallback
+// Get common words (verbs and adjectives) for practice - WaniKani primary
 export async function getCommonWordsForPractice(limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    // JMdict approach - primary
-    try {
-      console.log('Fetching common verbs and adjectives from JMdict (primary source)');
-      const jmdictResults = await getCommonWordsFromJMdict();
+    console.log('Fetching common verbs and adjectives from WaniKani');
+    const wanikaniResults = await getCommonWordsFromWanikani();
 
-      if (jmdictResults.length > 0) {
-        console.log(`Found ${jmdictResults.length} common words from JMdict`);
-        // Shuffle to provide variety on each reload
-        const shuffledResults = shuffleArray(jmdictResults);
-        return shuffledResults.slice(0, limit);
-      }
-
-      console.log('No results from JMdict, trying WaniKani fallback');
-    } catch (error) {
-      console.error('JMdict failed, trying WaniKani fallback:', error);
+    if (wanikaniResults.length > 0) {
+      console.log(`Found ${wanikaniResults.length} common words from WaniKani`);
+      // Shuffle to provide variety on each reload
+      const shuffledResults = shuffleArray(wanikaniResults);
+      return shuffledResults.slice(0, limit);
     }
 
-    // WaniKani fallback
-    try {
-      console.log('Fallback: Fetching common verbs and adjectives from WaniKani API');
-      const wanikaniResults = await getCommonWordsFromWanikani();
-
-      if (wanikaniResults.length > 0) {
-        console.log(`Found ${wanikaniResults.length} common words from WaniKani API`);
-        return wanikaniResults;
-      }
-
-      console.log('No results from WaniKani API, falling back to empty results');
-    } catch (error) {
-      console.error('WaniKani API failed:', error);
-    }
-
-    // Return empty array since external APIs are removed to avoid CORS
-    console.log('No more fallback sources available (external APIs removed to prevent CORS)');
+    console.log('No results from WaniKani');
     return [];
   } catch (error) {
     console.error('Error fetching common words for practice:', error);
@@ -415,41 +256,18 @@ export async function getCommonWordsForPractice(limit: number = 50): Promise<Jap
   }
 }
 
-// Get common verbs for practice - JMdict primary, WaniKani/Jisho fallback
+// Get common verbs for practice - WaniKani primary
 export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    // JMdict approach - primary
-    try {
-      console.log('Fetching common verbs from JMdict (primary source)');
-      const jmdictResults = await getCommonVerbsFromJMdict();
+    console.log('Fetching common verbs from WaniKani');
+    const wanikaniResults = await getCommonVerbsFromWanikani();
 
-      if (jmdictResults.length > 0) {
-        console.log(`Found ${jmdictResults.length} common verbs from JMdict`);
-        return jmdictResults;
-      }
-
-      console.log('No results from JMdict, trying WaniKani fallback');
-    } catch (error) {
-      console.error('JMdict failed, trying WaniKani fallback:', error);
+    if (wanikaniResults.length > 0) {
+      console.log(`Found ${wanikaniResults.length} common verbs from WaniKani`);
+      return wanikaniResults;
     }
 
-    // WaniKani fallback
-    try {
-      console.log('Fallback: Fetching common verbs from WaniKani API');
-      const wanikaniResults = await getCommonVerbsFromWanikani();
-
-      if (wanikaniResults.length > 0) {
-        console.log(`Found ${wanikaniResults.length} common verbs from WaniKani API`);
-        return wanikaniResults;
-      }
-
-      console.log('No results from WaniKani API, falling back to empty results');
-    } catch (error) {
-      console.error('WaniKani API failed:', error);
-    }
-
-    // Return empty array since external APIs are removed to avoid CORS
-    console.log('No more fallback sources available (external APIs removed to prevent CORS)');
+    console.log('No results from WaniKani');
     return [];
   } catch (error) {
     console.error('Error fetching common verbs:', error);
@@ -457,85 +275,38 @@ export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]
   }
 }
 
-// Get sample words for each JLPT level - JMdict primary, WaniKani/Jisho fallback
+// Get sample words for each JLPT level - WaniKani primary
 export async function getWordsByJLPTLevel(level: JLPTLevel, limit: number = 30): Promise<JapaneseWord[]> {
   try {
-    // JMdict approach - primary
-    try {
-      console.log(`Fetching ${level} words from JMdict (primary source)`);
-      const jmdictResults = await getWordsByJLPTLevelFromJMdict(level);
+    console.log(`Fetching ${level} words from WaniKani`);
+    const wanikaniResults = await getWordsByJLPTLevelFromWanikani(level);
 
-      if (jmdictResults.length > 0) {
-        console.log(`Found ${jmdictResults.length} ${level} words from JMdict`);
-        return jmdictResults;
-      }
-
-      console.log('No results from JMdict, trying WaniKani fallback');
-    } catch (error) {
-      console.error('JMdict failed, trying WaniKani fallback:', error);
+    if (wanikaniResults.length > 0) {
+      console.log(`Found ${wanikaniResults.length} ${level} words from WaniKani`);
+      return wanikaniResults;
     }
 
-    // WaniKani fallback
+    // Fallback to Jisho if WaniKani has no results for this level
     try {
-      console.log(`Fallback: Fetching ${level} words from WaniKani API`);
-      const wanikaniResults = await getWordsByJLPTLevelFromWanikani(level);
-
-      if (wanikaniResults.length > 0) {
-        console.log(`Found ${wanikaniResults.length} ${level} words from WaniKani API`);
-        return wanikaniResults;
-      }
-
-      console.log('No results from WaniKani API, trying Jisho API with JLPT tag');
-    } catch (error) {
-      console.error('WaniKani API failed, trying Jisho fallback:', error);
-    }
-
-    console.log(`Fetching ${level} words using Jisho fallback`);
-
-    // Try using Jisho API with JLPT tag
-    try {
+      console.log(`No results from WaniKani, trying Jisho fallback for ${level}`);
       const jishoResults = await searchJishoByJLPT(level, limit);
 
       if (jishoResults.length > 0) {
-        console.log(`Found ${jishoResults.length} ${level} words from Jisho API`);
+        console.log(`Found ${jishoResults.length} ${level} words from Jisho fallback`);
         return jishoResults;
       }
-
-      console.log('No results from Jisho API with JLPT tag, using fallback method');
-
-      // If Jisho API with JLPT tag returns no results, use fallback method
-      const levelQueries = {
-        'N5': ['JLPT N5 verbs', 'basic verbs'],
-        'N4': ['JLPT N4 verbs', 'intermediate verbs'],
-        'N3': ['JLPT N3 verbs'],
-        'N2': ['JLPT N2 verbs'],
-        'N1': ['JLPT N1 verbs', 'advanced verbs']
-      };
-
-      const queries = levelQueries[level];
-      const queriesPromises = queries.map(query =>
-        searchWords(query, 15).catch(err => {
-          console.warn(`Error fetching words for JLPT ${level} query "${query}":`, err);
-          return [];
-        })
-      );
-
-      const results = await Promise.all(queriesPromises);
-      const allWords: JapaneseWord[] = [];
-      results.forEach(words => allWords.push(...words));
-
-      return allWords.filter(word => word.jlpt === level).slice(0, 30);
     } catch (jishoError) {
-      console.error(`Error fetching ${level} words from Jisho API:`, jishoError);
-      return [];
+      console.error(`Jisho fallback failed for ${level}:`, jishoError);
     }
+
+    return [];
   } catch (error) {
     console.error(`Error fetching ${level} words:`, error);
     return [];
   }
 }
 
-// Direct search with Jisho API (for specific word lookup)
+// Direct search with Jisho API (fallback only)
 export async function searchJisho(
   query: string,
   page: number = 1,

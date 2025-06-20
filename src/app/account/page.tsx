@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
 import StatsManager, { UserStats } from '@/utils/stats';
-import WordListManager from '@/utils/wordLists';
 
 export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
@@ -173,11 +172,29 @@ export default function AccountPage() {
         <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="space-y-6">
             {/* User Info Card */}
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div
+              className="bg-card rounded-lg p-6"
+              style={{
+                border: '2px solid white',
+                boxShadow: 'inset 0 0 0 1px var(--primary), 0 4px 12px rgba(0,0,0,0.1)'
+              }}
+            >
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">👤</span>
-                </div>
+                {/* User Avatar */}
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={`${user.displayName || user.email}'s profile`}
+                    className="w-16 h-16 rounded-full"
+                    style={{
+                      boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)'
+                    }}
+                  />
+                ) : (
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">👤</span>
+                  </div>
+                )}
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">{user.displayName}</h2>
                   <p className="text-muted-foreground">{user.email}</p>

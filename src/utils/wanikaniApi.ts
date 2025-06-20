@@ -260,8 +260,13 @@ async function fetchAllWanikaniVocabulary(): Promise<WanikaniSubject[]> {
   return allVocabulary;
 }
 
-// Search vocabulary in WaniKani API (more efficient approach)
-export async function searchWanikaniVocabulary(query: string, limit: number = 20): Promise<JapaneseWord[]> {
+// Cache for WaniKani vocabulary data
+let vocabularyCache: JapaneseWord[] | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
+// Optimized search vocabulary in WaniKani API with caching
+export async function searchWanikaniVocabulary(query: string, limit: number = 50): Promise<JapaneseWord[]> {
   try {
     // Check if API token is set
     if (!wanikaniAxios.defaults.headers.common['Authorization']) {
@@ -269,86 +274,341 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 20
       return [];
     }
 
-    // Instead of fetching ALL vocabulary, fetch a reasonable subset from multiple levels
     console.log(`Searching WaniKani vocabulary for "${query}"...`);
+
+    // Check if we have valid cached data
+    const now = Date.now();
+    if (vocabularyCache && (now - cacheTimestamp) < CACHE_DURATION) {
+      console.log('🚀 Using cached WaniKani data (lightning fast!)');
+      return performSearch(vocabularyCache, query, limit);
+    }
+
+    // If no cache or expired, fetch from API
+    console.log('📡 Fetching fresh WaniKani data (this might take a moment...)');
     const allWords: JapaneseWord[] = [];
 
-    // Fetch vocabulary from levels 1-20 (covers N5-N3, most common words)
-    const levelRanges = ['1,2,3,4,5', '6,7,8,9,10', '11,12,13,14,15', '16,17,18,19,20'];
+    // Optimized parallel requests instead of sequential
+    const levelRanges = [
+      '1,2,3,4,5', '6,7,8,9,10', '11,12,13,14,15', '16,17,18,19,20',
+      '21,22,23,24,25', '26,27,28,29,30', '31,32,33,34,35', '36,37,38,39,40',
+      '41,42,43,44,45', '46,47,48,49,50', '51,52,53,54,55', '56,57,58,59,60'
+    ];
 
-    for (const levels of levelRanges) {
-      try {
-        const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
-          params: {
-            types: 'vocabulary',
-            hidden: false,
-            levels: levels,
-            limit: 500 // Fetch 500 per level range
-          }
-        });
+    // Make all API calls in parallel for speed
+    const promises = levelRanges.map(levels =>
+      wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
+        params: {
+          types: 'vocabulary',
+          hidden: false,
+          levels: levels,
+          limit: 1000
+        }
+      }).catch(error => {
+        console.warn(`Error fetching vocabulary for levels ${levels}:`, error);
+        return null;
+      })
+    );
 
-        // Convert WaniKani subjects to JapaneseWord format
+    const responses = await Promise.all(promises);
+
+    // Process all successful responses
+    for (const response of responses) {
+      if (response?.data?.data) {
         const words = response.data.data
           .map(convertWanikaniSubject)
           .filter((word): word is JapaneseWord => word !== null);
-
         allWords.push(...words);
-      } catch (error) {
-        console.warn(`Error fetching vocabulary for levels ${levels}:`, error);
-        continue; // Continue with other level ranges
       }
     }
 
-    console.log(`Fetched ${allWords.length} words from WaniKani to search`);
+    console.log(`📚 Fetched ${allWords.length} words from WaniKani (cached for 30 minutes)`);
 
-    const queryLower = query.toLowerCase().trim();
+    // Cache the results
+    vocabularyCache = allWords;
+    cacheTimestamp = now;
 
-    // First, look for exact matches
-    const exactMatches = allWords.filter(word => {
-      // Exact match on kanji
-      if (word.kanji.toLowerCase() === queryLower) return true;
-
-      // Exact match on kana
-      if (word.kana.toLowerCase() === queryLower) return true;
-
-      // Exact match on romaji
-      if (word.romaji.toLowerCase() === queryLower) return true;
-
-      // Exact match as complete word in meanings (comma or space separated)
-      const meanings = word.meaning.toLowerCase().split(/[,\s]+/).map(m => m.trim());
-      if (meanings.includes(queryLower)) return true;
-
-      return false;
-    });
-
-    // If we found exact matches, return them
-    if (exactMatches.length > 0) {
-      console.log(`Found ${exactMatches.length} exact matches for "${query}" in WaniKani`);
-      return exactMatches.slice(0, limit);
-    }
-
-    // Otherwise, fall back to partial matches
-    const partialMatches = allWords.filter(word =>
-      word.kanji.includes(query) ||
-      word.kana.includes(query) ||
-      word.meaning.toLowerCase().includes(queryLower)
-    );
-
-    console.log(`Found ${partialMatches.length} partial matches for "${query}" in WaniKani`);
-    return partialMatches.slice(0, limit);
+    // Perform search on fresh data
+    return performSearch(allWords, query, limit);
   } catch (error) {
     console.error('Error searching vocabulary in WaniKani:', error);
     return [];
   }
 }
 
+// Helper function to perform the actual search
+function performSearch(words: JapaneseWord[], query: string, limit: number): JapaneseWord[] {
+  const queryLower = query.toLowerCase().trim();
+
+  // Enhanced search logic to catch more variations
+  const matchingWords = words.filter(word => {
+    // Exact match on kanji
+    if (word.kanji.toLowerCase() === queryLower) return true;
+
+    // Exact match on kana
+    if (word.kana.toLowerCase() === queryLower) return true;
+
+    // Exact match on romaji
+    if (word.romaji.toLowerCase() === queryLower) return true;
+
+    // Check meanings more comprehensively
+    const meaning = word.meaning.toLowerCase();
+
+    // Exact word match in meanings
+    if (meaning.includes(queryLower)) {
+      // Check if it's a word boundary match (more precise)
+      const wordBoundaryRegex = new RegExp(`\\b${queryLower}\\b`);
+      if (wordBoundaryRegex.test(meaning)) return true;
+
+      // Also match "to [verb]" patterns
+      if (meaning.includes(`to ${queryLower}`)) return true;
+
+      // Match if query appears at start of meaning
+      if (meaning.startsWith(queryLower)) return true;
+    }
+
+    return false;
+  });
+
+  // Sort by relevance (exact matches first, then others)
+  const sortedMatches = matchingWords.sort((a, b) => {
+    const aExact = a.kanji.toLowerCase() === queryLower || a.kana.toLowerCase() === queryLower;
+    const bExact = b.kanji.toLowerCase() === queryLower || b.kana.toLowerCase() === queryLower;
+
+    if (aExact && !bExact) return -1;
+    if (!aExact && bExact) return 1;
+
+    // Then sort by meaning relevance
+    const aMeaningStarts = a.meaning.toLowerCase().startsWith(queryLower);
+    const bMeaningStarts = b.meaning.toLowerCase().startsWith(queryLower);
+
+    if (aMeaningStarts && !bMeaningStarts) return -1;
+    if (!aMeaningStarts && bMeaningStarts) return 1;
+
+    return 0;
+  });
+
+  console.log(`Found ${sortedMatches.length} total matches for "${query}" in WaniKani`);
+  return sortedMatches.slice(0, limit);
+}
+
+// Function to clear cache (useful for testing or manual refresh)
+export function clearWanikaniCache(): void {
+  vocabularyCache = null;
+  cacheTimestamp = 0;
+  console.log('🗑️ WaniKani cache cleared');
+}
+
+// Fallback conjugable words when WaniKani API is not available
+const fallbackConjugableWords: JapaneseWord[] = [
+  {
+    id: 'fallback-1',
+    kanji: '食べる',
+    kana: 'たべる',
+    romaji: 'taberu',
+    meaning: 'to eat',
+    type: 'Ichidan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-2',
+    kanji: '飲む',
+    kana: 'のむ',
+    romaji: 'nomu',
+    meaning: 'to drink',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-3',
+    kanji: '読む',
+    kana: 'よむ',
+    romaji: 'yomu',
+    meaning: 'to read',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-4',
+    kanji: '書く',
+    kana: 'かく',
+    romaji: 'kaku',
+    meaning: 'to write',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-5',
+    kanji: '見る',
+    kana: 'みる',
+    romaji: 'miru',
+    meaning: 'to see, to watch',
+    type: 'Ichidan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-6',
+    kanji: '来る',
+    kana: 'くる',
+    romaji: 'kuru',
+    meaning: 'to come',
+    type: 'Irregular',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-7',
+    kanji: 'する',
+    kana: 'する',
+    romaji: 'suru',
+    meaning: 'to do',
+    type: 'Irregular',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-8',
+    kanji: '行く',
+    kana: 'いく',
+    romaji: 'iku',
+    meaning: 'to go',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-9',
+    kanji: '大きい',
+    kana: 'おおきい',
+    romaji: 'ookii',
+    meaning: 'big, large',
+    type: 'i-adjective',
+    jlpt: 'N5',
+    tags: ['adjective']
+  },
+  {
+    id: 'fallback-10',
+    kanji: '小さい',
+    kana: 'ちいさい',
+    romaji: 'chiisai',
+    meaning: 'small',
+    type: 'i-adjective',
+    jlpt: 'N5',
+    tags: ['adjective']
+  },
+  {
+    id: 'fallback-11',
+    kanji: '新しい',
+    kana: 'あたらしい',
+    romaji: 'atarashii',
+    meaning: 'new',
+    type: 'i-adjective',
+    jlpt: 'N5',
+    tags: ['adjective']
+  },
+  {
+    id: 'fallback-12',
+    kanji: '古い',
+    kana: 'ふるい',
+    romaji: 'furui',
+    meaning: 'old',
+    type: 'i-adjective',
+    jlpt: 'N5',
+    tags: ['adjective']
+  },
+  {
+    id: 'fallback-13',
+    kanji: '元気',
+    kana: 'げんき',
+    romaji: 'genki',
+    meaning: 'healthy, energetic',
+    type: 'na-adjective',
+    jlpt: 'N5',
+    tags: ['adjective']
+  },
+  {
+    id: 'fallback-14',
+    kanji: '静か',
+    kana: 'しずか',
+    romaji: 'shizuka',
+    meaning: 'quiet',
+    type: 'na-adjective',
+    jlpt: 'N5',
+    tags: ['adjective']
+  },
+  {
+    id: 'fallback-15',
+    kanji: '走る',
+    kana: 'はしる',
+    romaji: 'hashiru',
+    meaning: 'to run',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-16',
+    kanji: '歩く',
+    kana: 'あるく',
+    romaji: 'aruku',
+    meaning: 'to walk',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-17',
+    kanji: '話す',
+    kana: 'はなす',
+    romaji: 'hanasu',
+    meaning: 'to speak',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-18',
+    kanji: '聞く',
+    kana: 'きく',
+    romaji: 'kiku',
+    meaning: 'to listen, to hear',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-19',
+    kanji: '学ぶ',
+    kana: 'まなぶ',
+    romaji: 'manabu',
+    meaning: 'to learn',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  },
+  {
+    id: 'fallback-20',
+    kanji: '働く',
+    kana: 'はたらく',
+    romaji: 'hataraku',
+    meaning: 'to work',
+    type: 'Godan',
+    jlpt: 'N5',
+    tags: ['verb']
+  }
+];
+
 // Get common verbs and adjectives from WaniKani
 export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
   try {
     // Check if API token is set
     if (!wanikaniAxios.defaults.headers.common['Authorization']) {
-      console.warn('WaniKani API token not set');
-      return [];
+      console.warn('WaniKani API token not set, using fallback conjugable words');
+      return fallbackConjugableWords;
     }
 
     // Fetch all vocabulary

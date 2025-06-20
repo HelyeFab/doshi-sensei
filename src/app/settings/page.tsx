@@ -125,6 +125,30 @@ export default function SettingsPage() {
     });
   };
 
+  const handleReplayTutorial = () => {
+    try {
+      // Clear the onboarding completion status
+      localStorage.removeItem('doshi_onboarding_completed');
+      localStorage.removeItem('doshi_onboarding_date');
+
+      // Show confirmation modal with immediate navigation option
+      setSyncModal({
+        show: true,
+        type: 'success',
+        title: 'Tutorial Reset',
+        message: 'The tutorial has been reset! Click OK to start the tutorial now.'
+      });
+    } catch (error) {
+      console.error('Error resetting tutorial:', error);
+      setSyncModal({
+        show: true,
+        type: 'error',
+        title: 'Reset Failed',
+        message: 'Failed to reset the tutorial. Please try again.'
+      });
+    }
+  };
+
   const handlePrivacyPolicy = () => {
     router.push('/settings/privacy-policy');
   };
@@ -209,12 +233,20 @@ export default function SettingsPage() {
   };
 
   const closeSyncModal = () => {
+    const wasTutorialReset = syncModal.title === 'Tutorial Reset' && syncModal.type === 'success';
+
     setSyncModal({
       show: false,
       type: 'success',
       title: '',
       message: ''
     });
+
+    // Navigate to tutorial if this was a successful tutorial reset
+    if (wasTutorialReset) {
+      // Use window.location to force a full page reload and ensure OnboardingWrapper detects the parameter
+      window.location.href = '/?tutorial=true';
+    }
   };
 
   // Handle reset all data
@@ -291,6 +323,22 @@ export default function SettingsPage() {
                 updateSetting('colorScheme', colorScheme);
               }}
             />
+          </SettingsSection>
+
+          {/* Tutorial & Learning */}
+          <SettingsSection title="Tutorial & Learning">
+            <div className="space-y-4">
+              <LinkButton
+                label="Replay Tutorial"
+                description="Watch the onboarding tutorial again to refresh your knowledge"
+                onClick={handleReplayTutorial}
+              />
+              <div className="pt-2 border-t border-border">
+                <p className="text-xs text-muted-foreground">
+                  The tutorial covers conjugation engine, vocabulary lists, practice modes, and more.
+                </p>
+              </div>
+            </div>
           </SettingsSection>
 
           {/* Goals & Progress */}

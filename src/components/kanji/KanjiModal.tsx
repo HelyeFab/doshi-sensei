@@ -9,6 +9,8 @@ interface KanjiModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
+  isSaved?: boolean;
+  onRemove?: () => Promise<void>;
 }
 
 export default function KanjiModal({

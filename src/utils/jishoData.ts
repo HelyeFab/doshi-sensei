@@ -73,8 +73,8 @@ export const jishoHouseData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     },
@@ -110,8 +110,8 @@ export const jishoHouseData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": "http://dbpedia.org/resource/House"
       }
     },
@@ -150,8 +150,8 @@ export const jishoHouseData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     }
@@ -197,8 +197,8 @@ export const commonVerbsData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     },
@@ -233,8 +233,8 @@ export const commonVerbsData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     },
@@ -271,8 +271,8 @@ export const commonVerbsData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     }
@@ -316,8 +316,8 @@ export const commonVocabData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     },
@@ -352,8 +352,8 @@ export const commonVocabData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     },
@@ -388,8 +388,8 @@ export const commonVocabData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     },
@@ -424,8 +424,8 @@ export const commonVocabData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     },
@@ -460,8 +460,8 @@ export const commonVocabData = {
         }
       ],
       "attribution": {
-        "jmdict": true,
-        "jmnedict": false,
+        "wanikani": true,
+        "jisho": true,
         "dbpedia": false
       }
     }

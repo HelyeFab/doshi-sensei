@@ -364,23 +364,46 @@ export default function VocabularyPage() {
 
       {/* Search Loading Overlay */}
       {searching && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg p-8 flex flex-col items-center gap-4 shadow-lg">
-            <div className="relative">
-              <div className="animate-spin w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-6 h-6 bg-primary/10 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-medium text-foreground mb-1">Searching...</h3>
-              <p className="text-sm text-muted-foreground">
-                Looking up "{currentSearchTerm || searchTerm}"
-              </p>
-            </div>
+        <SearchLoadingOverlay searchTerm={currentSearchTerm || searchTerm} />
+      )}
+    </div>
+  );
+}
+
+interface SearchLoadingOverlayProps {
+  searchTerm: string;
+}
+
+function SearchLoadingOverlay({ searchTerm }: SearchLoadingOverlayProps) {
+  const [currentMessage, setCurrentMessage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMessage(prev => (prev + 1) % strings.vocab.funnyLoadingMessages.length);
+    }, 2000); // Change message every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-card border border-border rounded-lg p-8 flex flex-col items-center gap-4 shadow-lg max-w-md mx-4">
+        <div className="relative">
+          <div className="animate-spin w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-6 h-6 bg-primary/10 rounded-full animate-pulse"></div>
           </div>
         </div>
-      )}
+        <div className="text-center">
+          <h3 className="text-lg font-medium text-foreground mb-1">{strings.vocab.searching}</h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Looking up "{searchTerm}"
+          </p>
+          <div className="text-xs text-primary/80 italic min-h-[2.5rem] flex items-center justify-center">
+            {strings.vocab.funnyLoadingMessages[currentMessage]}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

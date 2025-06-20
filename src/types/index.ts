@@ -14,7 +14,7 @@ export interface JapaneseWord {
   type: WordType;
   jlpt: JLPTLevel;
   tags: string[];
-  // Enhanced fields for JMdict
+  // Enhanced fields for vocabulary data
   allKanji?: string[];
   allReadings?: string[];
   katakanaReadings?: string[];

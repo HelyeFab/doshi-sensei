@@ -48,7 +48,7 @@ export async function testMoonSearch() {
     console.log(JSON.stringify(jishoResponse, null, 2));
 
     // Test processed Jisho results
-    const processedJishoResults = await searchWords('moon', 5, 'jisho');
+    const processedJishoResults = await searchWords('moon', 5);
     console.log(`\n🔄 Processed Jisho Results (${processedJishoResults.length} words):`);
 
     processedJishoResults.forEach((word, index) => {
@@ -75,7 +75,7 @@ export async function testMoonSearch() {
     console.log('\n\n🔄 Unified Search Results (WaniKani preferred):');
     console.log('-'.repeat(50));
 
-    const unifiedResults = await searchWords('moon', 5, 'wanikani');
+    const unifiedResults = await searchWords('moon', 5);
     console.log(`Unified search returned ${unifiedResults.length} results:`);
 
     unifiedResults.forEach((word, index) => {

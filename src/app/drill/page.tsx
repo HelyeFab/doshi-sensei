@@ -89,6 +89,9 @@ export default function DrillPage() {
   const [flashcardSession, setFlashcardSession] = useState<any>(null);
   const [flashcardStats, setFlashcardStats] = useState<any>(null);
   const [showHints, setShowHints] = useState(false);
+  const [cardDirection, setCardDirection] = useState<'kanji-first' | 'english-first' | 'mixed'>('mixed');
+  const [dueCards, setDueCards] = useState<any[]>([]);
+  const [studyRecommendations, setStudyRecommendations] = useState<any>(null);
 
   // Initialize flashcard manager with user
   useEffect(() => {
@@ -103,6 +106,16 @@ export default function DrillPage() {
     try {
       const stats = await flashcardManager.getStudyStats();
       setFlashcardStats(stats);
+
+      // Load due cards for notifications
+      const dueCardsData = await flashcardManager.getDueCards();
+      setDueCards(dueCardsData);
+
+      // Load study recommendations
+      const allProgress = await flashcardManager.getAllFlashcardProgress();
+      const { getStudyRecommendations } = await import('@/utils/spacedRepetition');
+      const recommendations = getStudyRecommendations(allProgress);
+      setStudyRecommendations(recommendations);
     } catch (error) {
       console.error('Error loading flashcard stats:', error);
     }
@@ -150,7 +163,18 @@ export default function DrillPage() {
       const limitedWords = shuffledWords.slice(0, 20);
 
       const questions: FlashcardQuestion[] = limitedWords.map(word => {
-        const cardType = Math.random() < 0.5 ? 'kanji-to-meaning' : 'meaning-to-kanji';
+        let cardType: 'kanji-to-meaning' | 'meaning-to-kanji';
+
+        // Determine card type based on user preference
+        if (cardDirection === 'kanji-first') {
+          cardType = 'kanji-to-meaning';
+        } else if (cardDirection === 'english-first') {
+          cardType = 'meaning-to-kanji';
+        } else {
+          // Mixed mode - random selection
+          cardType = Math.random() < 0.5 ? 'kanji-to-meaning' : 'meaning-to-kanji';
+        }
+
         return {
           word,
           cardType,
@@ -186,6 +210,16 @@ export default function DrillPage() {
     const wasCorrect = quality >= 3;
 
     try {
+      // Determine card type for advanced algorithm
+      const cardType = currentQuestion.word.id.startsWith('kanji_') ? 'kanji' :
+                      currentQuestion.word.tags?.includes('grammar') ? 'grammar' : 'word';
+
+      // Get or create progress with proper card type
+      const currentProgress = await flashcardManager.getOrCreateFlashcardProgress(
+        currentQuestion.word.id,
+        cardType
+      );
+
       // Update flashcard progress
       const updatedProgress = await flashcardManager.updateProgress(
         currentQuestion.word.id,
@@ -720,12 +754,71 @@ export default function DrillPage() {
     }
   }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists, loadQuestions, loadQuestionsForWord]);
 
-  // Load flashcard questions when lists change
+  // Load flashcard questions when lists or card direction change
   useEffect(() => {
     if (activeTab === 'flashcards' && selectedLists.length > 0) {
       loadFlashcardQuestions();
     }
-  }, [activeTab, selectedLists]);
+  }, [activeTab, selectedLists, cardDirection]);
+
+  // Ensure lists are loaded when switching to flashcard tab
+  useEffect(() => {
+    if (activeTab === 'flashcards') {
+      console.log('🎴 Flashcard tab selected, ensuring lists are loaded...');
+      console.log('🎴 Current allLists length:', allLists.length);
+      console.log('🎴 Current wordLists length:', wordLists.length);
+      console.log('🎴 Current kanjiLists length:', kanjiLists.length);
+
+      // Force load all lists immediately when switching to flashcards
+      const forceLoadLists = async () => {
+        console.log('🎴 Force loading lists for flashcards...');
+
+        // Load the lists directly and update state immediately
+        try {
+          const [loadedWordLists, loadedKanjiLists] = await Promise.all([
+            (async () => {
+              console.log('🎴 Loading word lists directly...');
+              const studyLists = await StudyListManager.getAllStudyLists();
+              const legacyWordLists = studyLists.map(studyList => ({
+                id: studyList.id,
+                name: studyList.name,
+                description: studyList.description,
+                wordIds: studyList.itemIds,
+                createdAt: studyList.createdAt,
+                updatedAt: studyList.updatedAt,
+                color: studyList.color,
+                isConjugable: studyList.type === 'drillable'
+              }));
+              console.log('🎴 Loaded word lists directly:', legacyWordLists.length);
+              setWordLists(legacyWordLists);
+              return legacyWordLists;
+            })(),
+            (async () => {
+              console.log('🎴 Loading kanji lists directly...');
+              const lists = await KanjiListManager.getAllKanjiLists();
+              console.log('🎴 Loaded kanji lists directly:', lists.length);
+              setKanjiLists(lists);
+              return lists;
+            })()
+          ]);
+
+          // Immediately update allLists with the combined results
+          const combinedLists = [...loadedWordLists, ...loadedKanjiLists];
+          console.log('🎴 Setting allLists directly to:', combinedLists.length, 'items');
+          setAllLists(combinedLists);
+
+          // Also update conjugableLists
+          const conjugableOnly = loadedWordLists.filter(list => list.isConjugable);
+          setConjugableLists(conjugableOnly);
+
+        } catch (error) {
+          console.error('🎴 Error force loading lists:', error);
+        }
+      };
+
+      forceLoadLists();
+    }
+  }, [activeTab]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (showResult) return;
@@ -865,31 +958,38 @@ export default function DrillPage() {
         )}
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex justify-center mb-8">
-        <div className="bg-muted p-1 rounded-lg inline-flex">
-          <button
-            onClick={() => setActiveTab('conjugation')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'conjugation'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            ⚡ Conjugation Drills
-          </button>
-          <button
-            onClick={() => setActiveTab('flashcards')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'flashcards'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            🎴 Flashcard Review
-          </button>
+      {/* Tab Navigation - Hide when drill game is active */}
+      {!gameStarted && !flashcardGameStarted && (
+        <div className="flex justify-center mb-8">
+          <div className="bg-muted p-1 rounded-lg inline-flex">
+            <button
+              onClick={() => setActiveTab('conjugation')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'conjugation'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              ⚡ Conjugation Drills
+            </button>
+            <button
+              onClick={() => setActiveTab('flashcards')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
+                activeTab === 'flashcards'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              🎴 Flashcard Review
+              {dueCards.length > 0 && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  {dueCards.length > 99 ? '99+' : dueCards.length}
+                </div>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
@@ -1178,16 +1278,14 @@ export default function DrillPage() {
                 <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
                 <p className="text-muted-foreground">Loading flashcards...</p>
               </div>
-            ) : flashcardQuestions.length === 0 ? (
+            ) : allLists.length === 0 ? (
               <div className="text-center max-w-md mx-auto">
                 <div className="text-6xl mb-4">🎴</div>
                 <h3 className="text-lg font-medium text-foreground mb-2">
-                  {selectedLists.length === 0 ? 'Select Lists for Review' : 'No Flashcards Available'}
+                  No Lists Found
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  {selectedLists.length === 0
-                    ? 'Please select at least one word list to create flashcards for review.'
-                    : 'The selected lists don\'t have any words suitable for flashcard review. Add words to your lists first.'}
+                  No lists found. Please create some study lists first.
                 </p>
                 <button
                   onClick={() => setActiveTab('conjugation')}
@@ -1197,7 +1295,67 @@ export default function DrillPage() {
                 </button>
               </div>
             ) : !flashcardGameStarted ? (
-              <div className="text-center py-12">
+              <div className="space-y-6">
+                {/* Study Dashboard */}
+                {flashcardStats && (
+                  <div className="bg-card border border-border rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
+                      📊 Study Dashboard
+                    </h3>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{flashcardStats.total}</div>
+                        <div className="text-xs text-muted-foreground">Total Cards</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-500">{dueCards.length}</div>
+                        <div className="text-xs text-muted-foreground">Due Today</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-500">{flashcardStats.overallAccuracy}%</div>
+                        <div className="text-xs text-muted-foreground">Accuracy</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-500">{flashcardStats.avgStability}d</div>
+                        <div className="text-xs text-muted-foreground">Avg Stability</div>
+                      </div>
+                    </div>
+
+                    {dueCards.length > 0 && (
+                      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                          <span className="text-red-400 font-medium text-sm">
+                            {dueCards.length} cards ready for review!
+                          </span>
+                        </div>
+                        <div className="text-xs text-red-300">
+                          Regular review is key to long-term retention. Don't let your memories fade!
+                        </div>
+                      </div>
+                    )}
+
+                    {studyRecommendations && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div className="bg-muted/50 rounded-lg p-3">
+                          <div className="text-muted-foreground mb-1">Recommended Session</div>
+                          <div className="font-medium">{studyRecommendations.recommendedSessionSize} cards</div>
+                          <div className="text-xs text-muted-foreground">{studyRecommendations.optimalStudyTime}</div>
+                        </div>
+                        <div className="bg-muted/50 rounded-lg p-3">
+                          <div className="text-muted-foreground mb-1">Focus Areas</div>
+                          <div className="font-medium text-xs">
+                            {studyRecommendations.focusAreas.length > 0
+                              ? studyRecommendations.focusAreas.slice(0, 2).join(', ')
+                              : 'Keep up the good work!'}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="bg-card border border-border rounded-lg p-8">
                   <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
                     Ready for flashcard review?
@@ -1210,12 +1368,36 @@ export default function DrillPage() {
                   <div className="mb-6">
                     {allLists.length > 0 ? (
                       <div className="space-y-3">
-                        <div className="text-sm text-muted-foreground">Select lists to review:</div>
+                        <div className="text-sm text-muted-foreground">
+                          Select lists to review:
+                          {dueCards.length > 0 && (
+                            <span className="ml-2 text-red-400 text-xs">
+                              ⚠️ Lists with 🔴 contain cards due for review
+                            </span>
+                          )}
+                        </div>
                         <div className="max-h-48 overflow-y-auto space-y-2">
                           {allLists.map((list) => {
                             const isKanjiList = 'kanjiIds' in list;
+
+                            // Check if this list actually contains due cards
+                            const listItemIds = isKanjiList ? (list as KanjiList).kanjiIds : (list as WordList).wordIds;
+
+
+                            // Count how many due cards this list contains
+                            const listDueCards = dueCards.filter(dueCard => {
+                              const hasDirectMatch = listItemIds.includes(dueCard.wordId);
+                              const hasKanjiMatch = dueCard.wordId.startsWith('kanji_') &&
+                                                   listItemIds.includes(dueCard.wordId.replace('kanji_', ''));
+                              return hasDirectMatch || hasKanjiMatch;
+                            });
+
+                            const listHasDueCards = listDueCards.length > 0;
+
                             return (
-                              <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
+                              <label key={list.id} className={`flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50 ${
+                                listHasDueCards && dueCards.length > 0 ? 'bg-red-500/5 border border-red-500/20' : ''
+                              }`}>
                                 <input
                                   type="checkbox"
                                   checked={selectedLists.includes(list.id)}
@@ -1223,6 +1405,9 @@ export default function DrillPage() {
                                   className="rounded border-border"
                                 />
                                 <div className="flex items-center gap-2 flex-1">
+                                  {dueCards.length > 0 && listHasDueCards && (
+                                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                  )}
                                   <div
                                     className="w-3 h-3 rounded-full"
                                     style={{ backgroundColor: list.color }}
@@ -1234,11 +1419,28 @@ export default function DrillPage() {
                                   <span className="text-xs text-blue-400">
                                     {isKanjiList ? '漢字' : '📚'}
                                   </span>
+                                  {dueCards.length > 0 && listHasDueCards && (
+                                    <span className="text-xs text-red-400 font-medium">
+                                      📅 Has due cards
+                                    </span>
+                                  )}
                                 </div>
                               </label>
                             );
                           })}
                         </div>
+
+                        {dueCards.length > 0 && (
+                          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-sm">
+                            <div className="text-blue-400 font-medium mb-1">💡 How Due Cards Work:</div>
+                            <div className="text-blue-300 text-xs space-y-1">
+                              <div>• Due cards come from your existing lists (words/kanji you've already studied)</div>
+                              <div>• The spaced repetition algorithm schedules when each card needs review</div>
+                              <div>• Select any list containing cards you've studied before to see due cards</div>
+                              <div>• New cards (never studied) won't appear as "due"</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
@@ -1252,6 +1454,50 @@ export default function DrillPage() {
                       Ready to review {flashcardQuestions.length} cards from your selected lists
                     </p>
                   )}
+
+                  {/* Card Direction Selection */}
+                  <div className="mb-6">
+                    <div className="text-sm text-muted-foreground mb-3">Card Direction:</div>
+                    <div className="flex gap-2 justify-center flex-wrap mb-4">
+                      <button
+                        onClick={() => setCardDirection('kanji-first')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          cardDirection === 'kanji-first'
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-background text-foreground border-input hover:bg-muted'
+                        }`}
+                      >
+                        漢字 → English
+                      </button>
+                      <button
+                        onClick={() => setCardDirection('english-first')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          cardDirection === 'english-first'
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-background text-foreground border-input hover:bg-muted'
+                        }`}
+                      >
+                        English → 漢字
+                      </button>
+                      <button
+                        onClick={() => setCardDirection('mixed')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          cardDirection === 'mixed'
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-background text-foreground border-input hover:bg-muted'
+                        }`}
+                      >
+                        Mixed
+                      </button>
+                    </div>
+                    <div className="text-xs text-muted-foreground text-center">
+                      {cardDirection === 'kanji-first'
+                        ? 'Show Japanese characters, guess English meaning'
+                        : cardDirection === 'english-first'
+                        ? 'Show English meaning, guess Japanese characters'
+                        : 'Random mix of both directions'}
+                    </div>
+                  </div>
 
                   {/* Hint Toggle */}
                   <div className="mb-6">

@@ -41,6 +41,17 @@ Welcome to the complete documentation collection for **Doshi Sensei** - a Next.j
 
 ## 🏗️ Implementation & Architecture
 
+### [System Fixes and Improvements](./SYSTEM_FIXES_AND_IMPROVEMENTS.md)
+**Comprehensive documentation of recent fixes, debugging, and system improvements**
+
+- 🔧 **Major Fixes**: Vocabulary page data synchronization and due cards logic clarification
+- 🐛 **Debugging Methodology**: Systematic approach to complex system issues
+- 🔗 **Unified System Integration**: Legacy to modern architecture migration
+- 🎓 **Onboarding Implementation**: 95% complete tutorial system
+- 📊 **Impact Analysis**: Quantified improvements and user experience enhancements
+
+*Complete record of system fixes, investigations, and improvements from December 2024 - January 2025.*
+
 ### [Implementation Roadmap](./doshi_sensei_implementation_roadmap.md)
 **Complete project implementation strategy and timeline**
 
@@ -161,10 +172,10 @@ Welcome to the complete documentation collection for **Doshi Sensei** - a Next.j
 | Category | Documents | Total Size | Key Features |
 |----------|-----------|------------|--------------|
 | **Project Overview** | 2 docs | ~15KB | Requirements, setup |
-| **Implementation** | 4 docs | ~85KB | Roadmap, feature plans, themes |
+| **Implementation** | 5 docs | ~130KB | System fixes, roadmap, feature plans, themes |
 | **Development** | 1 doc | ~25KB | Testing, CI/CD |
 | **Storage** | 2 docs | ~85KB | Architecture, API reference |
-| **Total** | **9 docs** | **~210KB** | **Complete project coverage** |
+| **Total** | **10 docs** | **~255KB** | **Complete project coverage** |
 
 ---
 

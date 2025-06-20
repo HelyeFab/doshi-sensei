@@ -325,12 +325,20 @@ export interface FlashcardProgress {
   repetitions: number; // Number of successful reviews
   nextReviewDate: Date;
   lastReviewDate: Date;
-  difficulty: 'learning' | 'reviewing' | 'mastered';
+  difficulty: 'learning' | 'reviewing' | 'mastered' | 'difficult';
   totalReviews: number;
   correctReviews: number;
   averageResponseTime: number;
   createdAt: Date;
   updatedAt: Date;
+  // Advanced FSRS fields
+  stability?: number; // Memory stability (how long it lasts)
+  memoryDifficulty?: number; // Intrinsic difficulty (0-10)
+  retrievability?: number; // Current recall probability (0-1)
+  lapses?: number; // Number of times forgotten
+  responseHistory?: number[]; // Recent response times
+  qualityHistory?: FlashcardQuality[]; // Recent quality ratings
+  cardType?: 'word' | 'kanji' | 'grammar'; // Type of flashcard
 }
 
 export interface FlashcardReview {

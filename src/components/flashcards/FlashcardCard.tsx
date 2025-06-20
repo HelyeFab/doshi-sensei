@@ -26,7 +26,10 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
   const handleFlip = () => {
     if (!isFlipped) {
       setIsFlipped(true);
-      setShowQualityRating(true);
+      // Show the answer first, then quality rating after a delay
+      setTimeout(() => {
+        setShowQualityRating(true);
+      }, 2000); // 2 second delay to let users see the answer
     }
   };
 
@@ -63,6 +66,34 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
 
   return (
     <div className="max-w-md mx-auto">
+      {/* Custom CSS for 3D flip animation */}
+      <style jsx>{`
+        .flip-container {
+          perspective: 1000px;
+        }
+        .flip-card {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          text-align: center;
+          transition: transform 0.8s;
+          transform-style: preserve-3d;
+        }
+        .flip-card.flipped {
+          transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+        }
+        .flip-card-back {
+          transform: rotateY(180deg);
+        }
+      `}</style>
+
       {/* Card Type Indicator */}
       <div className="flex items-center justify-center mb-4">
         <div className="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-sm font-medium">
@@ -70,16 +101,14 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
         </div>
       </div>
 
-      {/* Main Card */}
+      {/* Main Card with Flip Animation */}
       <div
-        className={`relative w-full h-80 perspective-1000 cursor-pointer transition-transform duration-300 ${
-          isFlipped ? 'transform-style-preserve-3d rotate-y-180' : ''
-        }`}
-        onClick={handleFlip}
+        className="w-full h-80 cursor-pointer flip-container"
+        onClick={!showQualityRating ? handleFlip : undefined}
       >
-        {/* Front of Card */}
-        <div className={`absolute inset-0 backface-hidden ${isFlipped ? 'rotate-y-180' : ''}`}>
-          <div className="w-full h-full bg-card border border-border rounded-xl shadow-lg flex flex-col items-center justify-center p-6">
+        <div className={`flip-card ${isFlipped ? 'flipped' : ''}`}>
+          {/* Front of Card */}
+          <div className="flip-card-front bg-card border border-border rounded-xl shadow-lg flex flex-col items-center justify-center p-6">
             <div className="text-center mb-6">
               <div className="text-4xl japanese-text font-medium text-card-foreground mb-4">
                 {question.question}
@@ -103,25 +132,36 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Back of Card */}
-        <div className={`absolute inset-0 backface-hidden rotate-y-180 ${isFlipped ? 'rotate-y-0' : ''}`}>
-          <div className="w-full h-full bg-card border border-border rounded-xl shadow-lg flex flex-col items-center justify-center p-6">
-            <div className="text-center mb-6">
-              <div className="text-lg japanese-text text-muted-foreground mb-2">
+          {/* Back of Card */}
+          <div className="flip-card-back bg-card border border-border rounded-xl shadow-lg flex flex-col items-center justify-center p-6">
+            <div className="text-center">
+              {/* Show question in smaller text */}
+              <div className="text-lg text-muted-foreground mb-2">
                 {question.question}
               </div>
+
+              {/* Main answer */}
               <div className="text-4xl japanese-text font-medium text-card-foreground mb-4">
                 {question.answer}
               </div>
-              {/* English Meaning */}
-              <div className="text-xl text-card-foreground mb-3 font-medium">
-                {question.word.meaning}
-              </div>
-              {showHint && question.hint && (
+
+              {/* Show additional info only if it's different from what's already shown */}
+              {question.cardType === 'reading-recognition' && (
+                <div className="text-xl text-card-foreground mb-3 font-medium">
+                  {question.word.meaning}
+                </div>
+              )}
+
+              {question.cardType === 'kanji-to-meaning' && question.hint && (
+                <div className="text-lg japanese-text text-muted-foreground mb-3">
+                  {question.hint}
+                </div>
+              )}
+
+              {showHint && question.hint && question.cardType !== 'kanji-to-meaning' && (
                 <div className="text-sm japanese-text text-muted-foreground">
-                  Additional: {question.hint}
+                  Reading: {question.hint}
                 </div>
               )}
             </div>
@@ -177,31 +217,6 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
           </div>
         </div>
       )}
-
-      {/* Word Info */}
-      <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Word:</span>
-            <span className="japanese-text font-medium text-foreground">
-              {question.word.kanji} ({question.word.kana})
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={`px-2 py-1 text-xs rounded border ${
-              question.word.type === 'noun' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-              question.word.type === 'Ichidan' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-              question.word.type === 'Godan' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-              'bg-gray-500/10 text-gray-400 border-gray-500/20'
-            }`}>
-              {question.word.type}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {question.word.jlpt}
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

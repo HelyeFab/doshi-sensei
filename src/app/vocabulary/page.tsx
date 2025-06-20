@@ -84,7 +84,8 @@ export default function VocabularyPage() {
   const handleListClick = async (list: WordList) => {
     try {
       setSelectedList(list);
-      const words = await WordListManager.getWordsInList(list.id);
+      // Use the unified system to get words from the list
+      const { words } = await StudyListManager.getItemsInList(list.id);
       setListWords(words);
       setShowSearchResults(false);
     } catch (err) {
@@ -118,9 +119,10 @@ export default function VocabularyPage() {
     if (!selectedList) return;
 
     try {
-      await WordListManager.removeWordFromList(wordId, selectedList.id);
-      // Refresh list words
-      const words = await WordListManager.getWordsInList(selectedList.id);
+      // Use the unified system to remove word from list
+      await StudyListManager.removeItemFromList(wordId, selectedList.id);
+      // Refresh list words using unified system
+      const { words } = await StudyListManager.getItemsInList(selectedList.id);
       setListWords(words);
     } catch (err) {
       console.error('Error removing word from list:', err);
@@ -133,7 +135,8 @@ export default function VocabularyPage() {
     }
 
     try {
-      await WordListManager.deleteWordList(listId);
+      // Use the unified system to delete list
+      await StudyListManager.deleteStudyList(listId);
       await loadWordLists();
 
       // If we're currently viewing the deleted list, go back to lists view

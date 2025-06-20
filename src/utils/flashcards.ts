@@ -85,7 +85,7 @@ export class FlashcardManager {
   /**
    * Initialize or get flashcard progress for a word
    */
-  async getOrCreateFlashcardProgress(wordId: string): Promise<FlashcardProgress> {
+  async getOrCreateFlashcardProgress(wordId: string, cardType: 'word' | 'kanji' | 'grammar' = 'word'): Promise<FlashcardProgress> {
     if (!this.currentUserId) {
       throw new Error('User not set');
     }
@@ -93,7 +93,7 @@ export class FlashcardManager {
     let progress = await this.getFlashcardProgress(wordId);
 
     if (!progress) {
-      progress = initializeFlashcardProgress(wordId, this.currentUserId);
+      progress = initializeFlashcardProgress(wordId, this.currentUserId, cardType);
       await this.dbManager.add('flashcardProgress', progress);
     }
 

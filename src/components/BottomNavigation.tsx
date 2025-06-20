@@ -26,6 +26,12 @@ const primaryNavItems: NavItem[] = [
     href: '/drill'
   },
   {
+    id: 'reading',
+    label: 'Reading',
+    icon: '📰',
+    href: '/reading'
+  },
+  {
     id: 'kanji',
     label: 'Kanji',
     icon: '🍙',
@@ -46,6 +52,12 @@ const secondaryNavItems: NavItem[] = [
     label: 'Practice',
     icon: '📚',
     href: '/practice'
+  },
+  {
+    id: 'vocabulary',
+    label: 'Vocabulary',
+    icon: '📖',
+    href: '/vocabulary'
   },
   {
     id: 'favourites',

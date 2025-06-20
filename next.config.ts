@@ -4,7 +4,7 @@ import withPWA from 'next-pwa';
 const nextConfig: NextConfig = {
   /* config options here */
   env: {
-    WANIKANI_API_TOKEN: process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN,
+    WANIKANI_API_TOKEN: process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN || process.env.WANIKANI_API_TOKEN,
   },
   // Enable server-side functionality for API routes
   trailingSlash: true,

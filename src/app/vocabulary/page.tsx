@@ -571,14 +571,16 @@ function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
 
     try {
       setCreating(true);
-      console.log('🔄 Creating word list with cloud sync...', {
+      console.log('🔄 Creating word list with unified system...', {
         userUID: user?.uid,
         subscriptionStatus: userSubscription?.subscription?.status,
         canSync: userSubscription?.limits?.canSync
       });
 
-      await WordListManager.createWordList(
+      // Use the unified StudyListManager system instead of the old WordListManager
+      await StudyListManager.createStudyList(
         listName,
+        'flashcard', // Default to flashcard type for simple word lists
         description,
         user,
         userSubscription?.subscription?.status

@@ -187,12 +187,18 @@ export interface ColorPalette {
 }
 
 // Settings Interface
+export interface CompanionHistory {
+  recentCharacters: string[];
+  lastShownDate?: string;
+}
+
 export interface AppSettings {
   theme: ThemeMode;
   colorScheme: ColorScheme;
   showRomaji: boolean;
   dailyGoal: number;
   practiceReminders: boolean;
+  companionHistory: CompanionHistory;
 }
 
 // Filter Options

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import StatsManager from '@/utils/stats';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for SEO
 const structuredData = {
@@ -129,35 +130,43 @@ export default function Home() {
         }}
       />
 
-      {/* Unified Responsive Layout */}
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20"
+        />
+
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
+      </div>
+
+      {/* Main Content */}
       <div className="container mx-auto px-4 py-6 md:py-8 min-h-screen pb-24 md:pb-8">
         {/* Welcome Header */}
-        <header className="mb-8 md:mb-12">
-          <div className="text-center mb-6">
-            {/* User Avatar */}
+        <header className="mb-8 md:mb-12 text-center">
+          {/* Welcome Text with Inline Avatar */}
+          <div className="flex items-center justify-center gap-3 mb-2">
             {user?.photoURL && (
-              <div className="mb-4">
-                <img
-                  src={user.photoURL}
-                  alt={`${getUserDisplayName()}'s profile`}
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full mx-auto border-2 border-white shadow-lg"
-                  style={{
-                    boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)'
-                  }}
-                />
-              </div>
+              <img
+                src={user.photoURL}
+                alt={`${getUserDisplayName()}'s profile`}
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg"
+                style={{
+                  boxShadow: '0 0 0 2px white, 0 0 0 3px var(--primary), 0 2px 8px rgba(0,0,0,0.1)'
+                }}
+              />
             )}
-
-            {/* Welcome Text */}
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                Hello {getUserDisplayName()}! 👋
-              </h1>
-              <p className="text-base md:text-lg text-muted-foreground">
-                Ready to practice some Japanese?
-              </p>
-            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+              Hello {getUserDisplayName()}! 👋
+            </h1>
           </div>
+          <p className="text-base md:text-lg text-muted-foreground">
+            Ready to practice some Japanese?
+          </p>
         </header>
 
         {/* Main Navigation Cards */}

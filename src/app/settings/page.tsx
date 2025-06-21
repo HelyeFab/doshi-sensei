@@ -12,6 +12,7 @@ import EnhancedStorageManager from '@/utils/storage';
 import WordListManager from '@/utils/wordLists';
 import useCloudSync from '@/hooks/useCloudSync';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 export default function SettingsPage() {
   const { settings, updateSetting, resetSettings } = useSettings();
@@ -306,12 +307,26 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      {/* Header */}
-      <PageHeader title={strings.settings.title} />
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
+      </div>
 
       {/* Main Content */}
-      <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        {/* Header */}
+        <PageHeader title={strings.settings.title} />
+
+        {/* Main Content */}
+        <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
         <div className="space-y-8">
           {/* Theme Settings */}
           <SettingsSection title="Appearance">
@@ -665,6 +680,7 @@ export default function SettingsPage() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

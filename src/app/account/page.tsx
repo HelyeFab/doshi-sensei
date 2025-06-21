@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
 import StatsManager, { UserStats } from '@/utils/stats';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
@@ -166,10 +167,24 @@ export default function AccountPage() {
 
   if (user) {
     return (
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        <PageHeader title="Account" />
+      <>
+        {/* Virtual Companion Section - 1/6th of screen height */}
+        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
 
-        <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
+          {/* Gradient to White Fade */}
+          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+          {/* Virtual Companion Button positioned within this section */}
+          <CompanionTrigger />
+        </div>
+
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-8 min-h-screen">
+          <PageHeader title="Account" />
+
+          <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="space-y-6">
             {/* User Info Card */}
             <div
@@ -314,14 +329,29 @@ export default function AccountPage() {
           </div>
         </main>
       </div>
+      </>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <PageHeader title="Account" />
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
 
-      <main className="max-w-md mx-auto mb-32 md:mb-8 pb-safe">
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        <PageHeader title="Account" />
+
+        <main className="max-w-md mx-auto mb-32 md:mb-8 pb-safe">
         <div className="bg-card border border-border rounded-lg p-6">
           {/* Header */}
           <div className="text-center mb-6">
@@ -482,5 +512,6 @@ export default function AccountPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }

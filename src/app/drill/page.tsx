@@ -15,6 +15,7 @@ import KanjiListManager from '@/utils/kanjiListManager';
 import StatsManager from '@/utils/stats';
 import flashcardManager, { FlashcardQuestion, FlashcardSessionConfig } from '@/utils/flashcards';
 import FlashcardCard from '@/components/flashcards/FlashcardCard';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for Drill Page
 const drillStructuredData = {
@@ -930,18 +931,32 @@ export default function DrillPage() {
   const flashcardFinished = currentFlashcardIndex >= flashcardQuestions.length && flashcardGameStarted;
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      {/* Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(drillStructuredData),
-        }}
-      />
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <PageHeader title={strings.drill.title} />
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(drillStructuredData),
+          }}
+        />
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <PageHeader title={strings.drill.title} />
 
         {((activeTab === 'conjugation' && gameStarted) || (activeTab === 'flashcards' && flashcardGameStarted)) && (
           <div className="text-right">
@@ -1562,5 +1577,6 @@ export default function DrillPage() {
         )}
       </main>
     </div>
+    </>
   );
 }

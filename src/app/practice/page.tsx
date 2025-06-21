@@ -12,6 +12,7 @@ import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
 import TTSManager from '@/utils/tts';
 import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for Practice Page
 const practiceStructuredData = {
@@ -125,36 +126,51 @@ export default function PracticePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      {/* Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(practiceStructuredData),
-        }}
-      />
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
 
-      <PageHeader title={strings.practice.title} />
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
-      <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
-        <p className="text-muted-foreground mb-8 text-center">
-          {strings.practice.selectWord}
-        </p>
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
+      </div>
 
-        <WordSelector
-          words={filteredWords}
-          loading={loading}
-          error={error}
-          searchTerm={searchTerm}
-          wordTypeFilter={wordTypeFilter}
-          onSearchTermChange={setSearchTerm}
-          onWordTypeFilterChange={setWordTypeFilter}
-          onSearch={handleSearch}
-          onSelectWord={handleWordSelect}
-          onRetry={loadInitialWords}
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(practiceStructuredData),
+          }}
         />
-      </main>
-    </div>
+
+        <PageHeader title={strings.practice.title} />
+
+        <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
+          <p className="text-muted-foreground mb-8 text-center">
+            {strings.practice.selectWord}
+          </p>
+
+          <WordSelector
+            words={filteredWords}
+            loading={loading}
+            error={error}
+            searchTerm={searchTerm}
+            wordTypeFilter={wordTypeFilter}
+            onSearchTermChange={setSearchTerm}
+            onWordTypeFilterChange={setWordTypeFilter}
+            onSearch={handleSearch}
+            onSelectWord={handleWordSelect}
+            onRetry={loadInitialWords}
+          />
+        </main>
+      </div>
+    </>
   );
 }
 

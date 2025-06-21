@@ -9,7 +9,11 @@ const defaultSettings: AppSettings = {
   colorScheme: 'default',
   showRomaji: true,
   dailyGoal: 10,
-  practiceReminders: false
+  practiceReminders: false,
+  companionHistory: {
+    recentCharacters: [],
+    lastShownDate: undefined
+  }
 };
 
 // Settings context type

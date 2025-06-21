@@ -9,6 +9,7 @@ import KanjiManager from '@/utils/kanjiManager';
 import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
 import KanjiModal from '@/components/kanji/KanjiModal';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -232,22 +233,36 @@ export default function KanjiBrowserPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      {/* Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(kanjiStructuredData),
-        }}
-      />
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
 
-      {/* Header */}
-      <div className="mb-8">
-        <PageHeader title="漢字 Kanji Browser" />
-        <p className="text-muted-foreground text-center mt-2">
-          Browse Japanese kanji organized by JLPT levels. Click any kanji to see details and save favorites.
-        </p>
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
       </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(kanjiStructuredData),
+          }}
+        />
+
+        {/* Header */}
+        <div className="mb-8">
+          <PageHeader title="漢字 Kanji Browser" />
+          <p className="text-muted-foreground text-center mt-2">
+            Browse Japanese kanji organized by JLPT levels. Click any kanji to see details and save favorites.
+          </p>
+        </div>
 
       {/* Search Bar */}
       <div className="max-w-md mx-auto mb-8">
@@ -387,6 +402,7 @@ export default function KanjiBrowserPage() {
         />
       )}
     </div>
+    </>
   );
 }
 

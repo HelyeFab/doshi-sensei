@@ -13,6 +13,7 @@ import PWAInstaller from "@/components/PWAInstaller";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
+import CompanionTrigger from "@/components/CompanionTrigger";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -198,6 +199,7 @@ export default function RootLayout({
                         <DesktopNavMenu />
                         <PWAInstaller />
                         <FloatingDonateButton />
+                        <CompanionTrigger />
                       </div>
                     </OnboardingWrapper>
                   </PWAWrapper>

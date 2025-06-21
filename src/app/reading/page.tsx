@@ -5,6 +5,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { NewsArticle, NewsAPIResponse } from '@/types/news';
 import { JapaneseNewsScraper } from '@/utils/newsScraper';
 import { ArticleReader } from '@/components/reading/ArticleReader';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Loading skeleton component
 function ArticleCardSkeleton() {
@@ -310,87 +311,102 @@ export default function ReadingPage() {
 
   // Main article list view
   return (
-    <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
-      <PageHeader title="Read Japanese News" showBackButton={true} />
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
 
-      <div className="max-w-4xl mx-auto">
-        {/* Description */}
-        <div className="mb-6">
-          <p className="text-muted-foreground">
-            Read the latest news articles from NHK NEWS WEB EASY to improve your Japanese reading comprehension.
-          </p>
-        </div>
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
-        {/* Filter Bar */}
-        <FilterBar
-          onCategoryChange={setSelectedCategory}
-          onDifficultyChange={setSelectedDifficulty}
-          onRefresh={handleRefresh}
-          selectedCategory={selectedCategory}
-          selectedDifficulty={selectedDifficulty}
-          isLoading={loading}
-        />
-
-        {/* Error State */}
-        {error && (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-2 text-destructive">
-              <span>⚠️</span>
-              <span>{error}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {loading && (
-          <div className="space-y-4">
-            {[...Array(5)].map((_, index) => (
-              <ArticleCardSkeleton key={index} />
-            ))}
-          </div>
-        )}
-
-        {/* Articles List */}
-        {!loading && !error && (
-          <>
-            {/* Results count */}
-            <div className="mb-4">
-              <p className="text-sm text-muted-foreground">
-                {filteredArticles.length} articles found
-              </p>
-            </div>
-
-            {/* Articles */}
-            {filteredArticles.length > 0 ? (
-              <div className="space-y-4">
-                {filteredArticles.map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                    onClick={handleArticleClick}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">📰</div>
-                <h3 className="text-lg font-medium text-foreground mb-2">
-                  No articles found
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Try changing the filters or refreshing the articles.
-                </p>
-                <button
-                  onClick={handleRefresh}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-                >
-                  Refresh Articles
-                </button>
-              </div>
-            )}
-          </>
-        )}
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
       </div>
-    </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+        <PageHeader title="Read Japanese News" showBackButton={true} />
+
+        <div className="max-w-4xl mx-auto">
+          {/* Description */}
+          <div className="mb-6">
+            <p className="text-muted-foreground">
+              Read the latest news articles from NHK NEWS WEB EASY to improve your Japanese reading comprehension.
+            </p>
+          </div>
+
+          {/* Filter Bar */}
+          <FilterBar
+            onCategoryChange={setSelectedCategory}
+            onDifficultyChange={setSelectedDifficulty}
+            onRefresh={handleRefresh}
+            selectedCategory={selectedCategory}
+            selectedDifficulty={selectedDifficulty}
+            isLoading={loading}
+          />
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-2 text-destructive">
+                <span>⚠️</span>
+                <span>{error}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading && (
+            <div className="space-y-4">
+              {[...Array(5)].map((_, index) => (
+                <ArticleCardSkeleton key={index} />
+              ))}
+            </div>
+          )}
+
+          {/* Articles List */}
+          {!loading && !error && (
+            <>
+              {/* Results count */}
+              <div className="mb-4">
+                <p className="text-sm text-muted-foreground">
+                  {filteredArticles.length} articles found
+                </p>
+              </div>
+
+              {/* Articles */}
+              {filteredArticles.length > 0 ? (
+                <div className="space-y-4">
+                  {filteredArticles.map((article) => (
+                    <ArticleCard
+                      key={article.id}
+                      article={article}
+                      onClick={handleArticleClick}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">📰</div>
+                  <h3 className="text-lg font-medium text-foreground mb-2">
+                    No articles found
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    Try changing the filters or refreshing the articles.
+                  </p>
+                  <button
+                    onClick={handleRefresh}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+                  >
+                    Refresh Articles
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </>
   );
 }

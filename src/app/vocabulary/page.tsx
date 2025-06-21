@@ -11,6 +11,7 @@ import WordListManager from '@/utils/wordLists';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { TTSManager } from '@/utils/tts';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 export default function VocabularyPage() {
   const [wordLists, setWordLists] = useState<WordList[]>([]);
@@ -149,10 +150,24 @@ export default function VocabularyPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <PageHeader title={strings.vocab.title} />
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
 
-      <main className="max-w-4xl mx-auto">
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        <PageHeader title={strings.vocab.title} />
+
+        <main className="max-w-4xl mx-auto">
         <p className="text-muted-foreground mb-6 text-center">
           Search and save words to your custom lists
         </p>
@@ -333,43 +348,44 @@ export default function VocabularyPage() {
             )}
           </>
         )}
-      </main>
+        </main>
 
-      {/* Word Detail Modal */}
-      {selectedWord && (
-        <WordModal
-          word={selectedWord}
-          onClose={handleCloseModal}
-          onSave={() => handleSaveWordClick(selectedWord)}
-        />
-      )}
+        {/* Word Detail Modal */}
+        {selectedWord && (
+          <WordModal
+            word={selectedWord}
+            onClose={handleCloseModal}
+            onSave={() => handleSaveWordClick(selectedWord)}
+          />
+        )}
 
-      {/* Create List Modal */}
-      {showCreateListModal && (
-        <CreateListModal
-          onClose={() => setShowCreateListModal(false)}
-          onCreated={loadWordLists}
-        />
-      )}
+        {/* Create List Modal */}
+        {showCreateListModal && (
+          <CreateListModal
+            onClose={() => setShowCreateListModal(false)}
+            onCreated={loadWordLists}
+          />
+        )}
 
-      {/* Save Word Modal */}
-      {showSaveWordModal && wordToSave && (
-        <SaveWordModal
-          word={wordToSave}
-          wordLists={wordLists}
-          onClose={() => {
-            setShowSaveWordModal(false);
-            setWordToSave(null);
-          }}
-          onSaved={loadWordLists}
-        />
-      )}
+        {/* Save Word Modal */}
+        {showSaveWordModal && wordToSave && (
+          <SaveWordModal
+            word={wordToSave}
+            wordLists={wordLists}
+            onClose={() => {
+              setShowSaveWordModal(false);
+              setWordToSave(null);
+            }}
+            onSaved={loadWordLists}
+          />
+        )}
 
-      {/* Search Loading Overlay */}
-      {searching && (
-        <SearchLoadingOverlay searchTerm={currentSearchTerm || searchTerm} />
-      )}
-    </div>
+        {/* Search Loading Overlay */}
+        {searching && (
+          <SearchLoadingOverlay searchTerm={currentSearchTerm || searchTerm} />
+        )}
+      </div>
+    </>
   );
 }
 

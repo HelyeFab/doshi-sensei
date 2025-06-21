@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { JapaneseWord, WordList, StudyList, StudyListType } from '@/types';
+import { JapaneseWord, WordList, StudyList, StudyListType, Kanji } from '@/types';
 import { searchWords } from '@/utils/api';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
@@ -17,6 +17,7 @@ export default function VocabularyPage() {
   const [wordLists, setWordLists] = useState<WordList[]>([]);
   const [selectedList, setSelectedList] = useState<WordList | null>(null);
   const [listWords, setListWords] = useState<JapaneseWord[]>([]);
+  const [listKanji, setListKanji] = useState<Kanji[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<JapaneseWord[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,18 +86,20 @@ export default function VocabularyPage() {
   const handleListClick = async (list: WordList) => {
     try {
       setSelectedList(list);
-      // Use the unified system to get words from the list
-      const { words } = await StudyListManager.getItemsInList(list.id);
+      // Use the unified system to get both words and kanji from the list
+      const { words, kanji } = await StudyListManager.getItemsInList(list.id);
       setListWords(words);
+      setListKanji(kanji);
       setShowSearchResults(false);
     } catch (err) {
-      console.error('Error loading list words:', err);
+      console.error('Error loading list items:', err);
     }
   };
 
   const handleBackToLists = () => {
     setSelectedList(null);
     setListWords([]);
+    setListKanji([]);
     setShowSearchResults(false);
     setCurrentSearchResults([]);
     setCurrentSearchTerm('');
@@ -249,7 +252,7 @@ export default function VocabularyPage() {
                   {selectedList.name}
                 </h3>
                 <span className="text-sm text-muted-foreground">
-                  ({listWords.length} words)
+                  ({listWords.length + listKanji.length} items)
                 </span>
               </div>
               <div className="flex gap-2">
@@ -267,8 +270,9 @@ export default function VocabularyPage() {
                 </button>
               </div>
             </div>
-            {listWords.length > 0 ? (
+            {(listWords.length > 0 || listKanji.length > 0) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {/* Display Words */}
                 {listWords.map((word) => (
                   <WordCard
                     key={word.id}
@@ -278,10 +282,19 @@ export default function VocabularyPage() {
                     showRemoveButton={true}
                   />
                 ))}
+                {/* Display Kanji */}
+                {listKanji.map((kanji) => (
+                  <KanjiCard
+                    key={`kanji_${kanji.kanji}`}
+                    kanji={kanji}
+                    onRemoveClick={() => handleRemoveWordFromList(`kanji_${kanji.kanji}`)}
+                    showRemoveButton={true}
+                  />
+                ))}
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">No words in this list yet</p>
+                <p className="text-muted-foreground">No items in this list yet</p>
               </div>
             )}
           </div>
@@ -550,6 +563,61 @@ function WordCard({ word, onWordClick, onSaveClick, onRemoveClick, showSaveButto
           </button>
         )}
       </div>
+    </div>
+  );
+}
+
+interface KanjiCardProps {
+  kanji: Kanji;
+  onRemoveClick?: () => void;
+  showRemoveButton?: boolean;
+}
+
+function KanjiCard({ kanji, onRemoveClick, showRemoveButton }: KanjiCardProps) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors group relative">
+      <div className="cursor-pointer">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
+              {kanji.kanji}
+            </div>
+            <div className="text-lg text-muted-foreground mb-1">
+              {kanji.kunyomi} / {kanji.onyomi}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Readings: {kanji.kunyomi}, {kanji.onyomi}
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="inline-block px-2 py-1 text-xs rounded border bg-orange-500/10 text-orange-400 border-orange-500/20">
+              Kanji
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {kanji.jlpt || 'N/A'}
+            </div>
+          </div>
+        </div>
+
+        <div className="text-sm text-muted-foreground mb-2">
+          {kanji.meaning.length > 60 ? `${kanji.meaning.substring(0, 60)}...` : kanji.meaning}
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      {showRemoveButton && onRemoveClick && (
+        <div className="flex gap-2 mt-3 pt-3 border-t border-border/50">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveClick();
+            }}
+            className="flex-1 px-3 py-1.5 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-md hover:bg-red-500/20 transition-colors"
+          >
+            Remove
+          </button>
+        </div>
+      )}
     </div>
   );
 }

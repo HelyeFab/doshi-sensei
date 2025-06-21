@@ -151,16 +151,16 @@ function FilterBar({
   isLoading
 }: FilterBarProps) {
   const categories = [
-    { id: 'all', name: 'すべて', icon: '📰' },
-    { id: 'weather', name: '天気', icon: '🌤️' },
-    { id: 'society', name: '社会', icon: '🏛️' },
-    { id: 'technology', name: '技術', icon: '💻' },
-    { id: 'sports', name: 'スポーツ', icon: '⚽' },
-    { id: 'general', name: '一般', icon: '📋' }
+    { id: 'all', name: 'All', icon: '📰' },
+    { id: 'weather', name: 'Weather', icon: '🌤️' },
+    { id: 'society', name: 'Society', icon: '🏛️' },
+    { id: 'technology', name: 'Technology', icon: '💻' },
+    { id: 'sports', name: 'Sports', icon: '⚽' },
+    { id: 'general', name: 'General', icon: '📋' }
   ];
 
   const difficulties = [
-    { id: 'all', name: 'すべて' },
+    { id: 'all', name: 'All' },
     { id: 'N5', name: 'N5' },
     { id: 'N4', name: 'N4' },
     { id: 'N3', name: 'N3' }
@@ -172,7 +172,7 @@ function FilterBar({
         {/* Categories */}
         <div className="flex-1">
           <label className="block text-sm font-medium text-foreground mb-2">
-            カテゴリー
+            Category
           </label>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
@@ -195,7 +195,7 @@ function FilterBar({
         {/* Difficulty */}
         <div className="flex-1">
           <label className="block text-sm font-medium text-foreground mb-2">
-            レベル
+            Level
           </label>
           <div className="flex flex-wrap gap-2">
             {difficulties.map((difficulty) => (
@@ -224,11 +224,11 @@ function FilterBar({
             {isLoading ? (
               <span className="flex items-center gap-2">
                 <span className="animate-spin">🔄</span>
-                読み込み中
+                Loading
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                🔄 更新
+                🔄 Refresh
               </span>
             )}
           </button>
@@ -268,7 +268,7 @@ export default function ReadingPage() {
       setArticles(fetchedArticles);
     } catch (err) {
       console.error('Failed to load articles:', err);
-      setError('記事の読み込みに失敗しました。しばらくしてからもう一度お試しください。');
+      setError('Failed to load articles. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -311,13 +311,13 @@ export default function ReadingPage() {
   // Main article list view
   return (
     <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
-      <PageHeader title="ニュースを読む" showBackButton={true} />
+      <PageHeader title="Read Japanese News" showBackButton={true} />
 
       <div className="max-w-4xl mx-auto">
         {/* Description */}
         <div className="mb-6">
           <p className="text-muted-foreground">
-            NHK NEWS WEB EASYから最新のニュース記事を読んで、日本語の読解力を向上させましょう。
+            Read the latest news articles from NHK NEWS WEB EASY to improve your Japanese reading comprehension.
           </p>
         </div>
 
@@ -356,7 +356,7 @@ export default function ReadingPage() {
             {/* Results count */}
             <div className="mb-4">
               <p className="text-sm text-muted-foreground">
-                {filteredArticles.length}件の記事が見つかりました
+                {filteredArticles.length} articles found
               </p>
             </div>
 
@@ -375,16 +375,16 @@ export default function ReadingPage() {
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">📰</div>
                 <h3 className="text-lg font-medium text-foreground mb-2">
-                  記事が見つかりません
+                  No articles found
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  フィルターを変更するか、記事を更新してみてください。
+                  Try changing the filters or refreshing the articles.
                 </p>
                 <button
                   onClick={handleRefresh}
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                 >
-                  記事を更新
+                  Refresh Articles
                 </button>
               </div>
             )}

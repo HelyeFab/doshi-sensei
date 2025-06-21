@@ -121,15 +121,24 @@ export class TTSManager {
         const audioData = `data:audio/mp3;base64,${data.audioContent}`;
         const audio = new Audio(audioData);
 
-        audio.addEventListener('loadstart', () => {
-          console.log('🎵 Playing Google TTS audio...');
-        });
+        // Return a promise that resolves when audio finishes playing
+        return new Promise<void>((resolve, reject) => {
+          audio.addEventListener('loadstart', () => {
+            console.log('🎵 Playing Google TTS audio...');
+          });
 
-        audio.addEventListener('ended', () => {
-          console.log('🎵 Google TTS audio finished playing');
-        });
+          audio.addEventListener('ended', () => {
+            console.log('🎵 Google TTS audio finished playing');
+            resolve();
+          });
 
-        await audio.play();
+          audio.addEventListener('error', (e) => {
+            console.error('❌ Audio playback error:', e);
+            reject(new Error('Audio playback failed'));
+          });
+
+          audio.play().catch(reject);
+        });
       } else {
         // Server indicated we should fallback or there was an error
         const errorMsg = data.error || 'Unknown error';
@@ -137,7 +146,7 @@ export class TTSManager {
 
         if (data.fallback) {
           console.log('🔄 Falling back to browser TTS as requested by server...');
-          this.fallbackToWebSpeech(text);
+          await this.fallbackToWebSpeech(text);
         } else {
           throw new Error(errorMsg);
         }
@@ -146,38 +155,53 @@ export class TTSManager {
       console.error('❌ TTS API call failed:', error);
       console.log('🔄 Falling back to browser TTS...');
       // Fallback to browser TTS
-      this.fallbackToWebSpeech(text);
+      await this.fallbackToWebSpeech(text);
     }
   }
 
   /**
    * Fallback to Web Speech API (browser built-in TTS)
    */
-  private static fallbackToWebSpeech(text: string): void {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      // Cancel any ongoing speech
-      speechSynthesis.cancel();
+  private static fallbackToWebSpeech(text: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        // Cancel any ongoing speech
+        speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.8;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        utterance.rate = 0.8;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
 
-      // Try to find a Japanese voice
-      const voices = speechSynthesis.getVoices();
-      const japaneseVoice = voices.find(voice =>
-        voice.lang.startsWith('ja') || voice.lang.includes('JP')
-      );
+        // Try to find a Japanese voice
+        const voices = speechSynthesis.getVoices();
+        const japaneseVoice = voices.find(voice =>
+          voice.lang.startsWith('ja') || voice.lang.includes('JP')
+        );
 
-      if (japaneseVoice) {
-        utterance.voice = japaneseVoice;
+        if (japaneseVoice) {
+          utterance.voice = japaneseVoice;
+        }
+
+        // Handle speech events
+        utterance.onend = () => {
+          console.log('🎵 Web Speech TTS finished');
+          resolve();
+        };
+
+        utterance.onerror = (event) => {
+          console.error('❌ Web Speech TTS error:', event.error);
+          reject(new Error(`Speech synthesis failed: ${event.error}`));
+        };
+
+        speechSynthesis.speak(utterance);
+        console.log('🎵 Using Web Speech TTS fallback...');
+      } else {
+        console.warn('Speech synthesis not supported in this browser');
+        reject(new Error('Speech synthesis not supported'));
       }
-
-      speechSynthesis.speak(utterance);
-    } else {
-      console.warn('Speech synthesis not supported in this browser');
-    }
+    });
   }
 
   /**

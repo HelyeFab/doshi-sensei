@@ -19,15 +19,23 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
         const isFirstVisit = !hasCompleted;
         const isManualTrigger = window.location.search.includes('tutorial=true');
 
+        // Only show onboarding on specific pages (home page or manually triggered)
+        const currentPath = window.location.pathname;
+        const isHomePage = currentPath === '/' || currentPath === '/home';
+        const shouldShowOnThisPage = isHomePage || isManualTrigger;
+
         console.log('🔍 Onboarding check:', {
           hasCompleted,
           isFirstVisit,
           isManualTrigger,
-          willShow: isFirstVisit || isManualTrigger
+          currentPath,
+          isHomePage,
+          shouldShowOnThisPage,
+          willShow: (isFirstVisit || isManualTrigger) && shouldShowOnThisPage
         });
 
-        // Show onboarding for new users or if manually triggered
-        if (isFirstVisit || isManualTrigger) {
+        // Show onboarding for new users on home page, or if manually triggered anywhere
+        if ((isFirstVisit || isManualTrigger) && shouldShowOnThisPage) {
           console.log('✅ Showing onboarding modal');
           setShowOnboarding(true);
         } else {

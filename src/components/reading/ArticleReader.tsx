@@ -5,6 +5,13 @@ import { NewsArticle, ExtractedVocabulary } from '@/types/news';
 import { JapaneseWord } from '@/types';
 import { searchWords } from '@/utils/api';
 import { StudyListManager } from '@/utils/studyListManager';
+import {
+  ReadingAnalyticsManager,
+  ReadingSession,
+  formatReadingTime,
+  getReadingSpeedCategory
+} from '@/utils/readingAnalytics';
+import ComprehensionQuiz from './ComprehensionQuiz';
 
 interface ReadingSettings {
   fontSize: 'small' | 'medium' | 'large' | 'xlarge';
@@ -242,8 +249,15 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [readingStartTime] = useState(new Date());
   const [readingProgress, setReadingProgress] = useState(0);
+  const [readingSession, setReadingSession] = useState<ReadingSession | null>(null);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [comprehensionScore, setComprehensionScore] = useState<number | null>(null);
+  const [readingTimeDisplay, setReadingTimeDisplay] = useState(0);
+  const [vocabularyEncountered, setVocabularyEncountered] = useState<Set<string>>(new Set());
 
   const articleRef = useRef<HTMLDivElement>(null);
+  const timeUpdateInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Extract vocabulary from article content
   const extractVocabularyFromText = (text: string): string[] => {
@@ -341,6 +355,36 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Initialize reading session
+  useEffect(() => {
+    const session = ReadingAnalyticsManager.startReadingSession(article.id);
+    setReadingSession(session);
+
+    // Update reading time every second
+    timeUpdateInterval.current = setInterval(() => {
+      setReadingTimeDisplay(prev => prev + 1);
+
+      // Update session progress
+      if (session) {
+        ReadingAnalyticsManager.updateReadingSession(session.id, {
+          readingTimeSeconds: Math.floor((Date.now() - session.startTime.getTime()) / 1000),
+          scrollProgress: readingProgress,
+          vocabularyEncountered: Array.from(vocabularyEncountered)
+        });
+      }
+    }, 1000);
+
+    // Track vocabulary encountered
+    const vocabulary = extractVocabularyFromText(article.content);
+    setVocabularyEncountered(new Set(vocabulary));
+
+    return () => {
+      if (timeUpdateInterval.current) {
+        clearInterval(timeUpdateInterval.current);
+      }
+    };
+  }, [article.id, article.content]);
+
   // Load bookmark status
   useEffect(() => {
     // This would check if the article is bookmarked
@@ -353,6 +397,29 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     // Here you would save/remove the bookmark from storage
   };
 
+  // Handle reading completion
+  const handleReadingComplete = () => {
+    if (readingSession && readingProgress >= 80) {
+      setShowQuiz(true);
+    }
+  };
+
+  // Handle comprehension quiz completion
+  const handleQuizComplete = (score: number) => {
+    setComprehensionScore(score);
+    setQuizCompleted(true);
+    setShowQuiz(false);
+  };
+
+  // Show quiz notification when reading is nearly complete (removed auto-opening)
+  const [showQuizNotification, setShowQuizNotification] = useState(false);
+
+  useEffect(() => {
+    if (readingProgress >= 80 && !quizCompleted && !showQuiz && !showQuizNotification) {
+      setShowQuizNotification(true);
+    }
+  }, [readingProgress, quizCompleted, showQuiz, showQuizNotification]);
+
   const getFontSizeClass = () => {
     const sizes = {
       small: 'text-sm',
@@ -361,6 +428,13 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       xlarge: 'text-xl'
     };
     return sizes[settings.fontSize];
+  };
+
+  const getReadingSpeedWPM = () => {
+    if (readingTimeDisplay === 0) return 0;
+    const estimatedWords = article.content.length / 2; // Rough estimate for Japanese
+    const minutes = readingTimeDisplay / 60;
+    return Math.round(estimatedWords / minutes);
   };
 
   return (
@@ -377,6 +451,15 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           </button>
 
           <div className="flex items-center gap-2">
+            {/* Audio Player button */}
+            <button
+              onClick={() => window.location.href = `/reading/audio?id=${article.id}`}
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              title="Open Audio Reader"
+            >
+              🎵
+            </button>
+
             {/* Bookmark button */}
             <button
               onClick={handleBookmarkToggle}
@@ -503,6 +586,126 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             onClose={() => setSelectedWord(null)}
             onSaveToList={handleSaveWordToList}
           />
+        )}
+
+        {/* Reading Statistics Panel */}
+        {readingProgress > 20 && (
+          <div className="fixed bottom-4 right-4 bg-card border border-border rounded-lg p-4 shadow-lg max-w-xs">
+            <h4 className="font-medium text-foreground mb-2">📊 Reading Stats</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Progress:</span>
+                <span className="text-foreground">{Math.round(readingProgress)}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Time:</span>
+                <span className="text-foreground">{formatReadingTime(readingTimeDisplay)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Speed:</span>
+                <span className="text-foreground">
+                  {getReadingSpeedWPM() > 0 ? `${getReadingSpeedWPM()} wpm` : 'Calculating...'}
+                </span>
+              </div>
+              {comprehensionScore !== null && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Score:</span>
+                  <span className="text-foreground">{comprehensionScore}%</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Vocabulary:</span>
+                <span className="text-foreground">{vocabularyEncountered.size}</span>
+              </div>
+            </div>
+
+            {readingProgress >= 80 && !quizCompleted && (
+              <button
+                onClick={() => setShowQuiz(true)}
+                className="w-full mt-3 px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-colors"
+              >
+                Take Comprehension Quiz
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Quiz Notification Banner */}
+        {showQuizNotification && !showQuiz && !quizCompleted && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 shadow-lg max-w-md z-50">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">🎯</span>
+              <div className="flex-1">
+                <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-1">
+                  Ready for Comprehension Quiz?
+                </h4>
+                <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                  You've read 80% of the article. Test your understanding!
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setShowQuiz(true);
+                      setShowQuizNotification(false);
+                    }}
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                  >
+                    Take Quiz
+                  </button>
+                  <button
+                    onClick={() => setShowQuizNotification(false)}
+                    className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Later
+                  </button>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowQuizNotification(false)}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Comprehension Quiz */}
+        {showQuiz && readingSession && (
+          <ComprehensionQuiz
+            article={article}
+            sessionId={readingSession.id}
+            onComplete={handleQuizComplete}
+            onClose={() => setShowQuiz(false)}
+          />
+        )}
+
+
+        {/* Reading Completion Celebration */}
+        {quizCompleted && comprehensionScore !== null && (
+          <div className="fixed top-4 right-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 shadow-lg max-w-sm">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">🎉</span>
+              <div>
+                <h4 className="font-medium text-green-800 dark:text-green-200 mb-1">
+                  記事読了完了！
+                </h4>
+                <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                  理解度スコア: {comprehensionScore}点
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-400">
+                  読書時間: {formatReadingTime(readingTimeDisplay)} |
+                  速度: {getReadingSpeedCategory(getReadingSpeedWPM())}
+                </p>
+              </div>
+              <button
+                onClick={() => setQuizCompleted(false)}
+                className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Click outside to close popups */}

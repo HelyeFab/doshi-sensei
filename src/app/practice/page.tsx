@@ -666,7 +666,7 @@ function ConjugationSection({ title, forms, showFurigana, generateFurigana }: Co
       <h4 className="text-lg font-semibold mb-4 text-card-foreground">
         {title}
       </h4>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="space-y-3">
         {forms.map((form, index) => {
           if (!form.value) return null;
 

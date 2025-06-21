@@ -141,13 +141,13 @@ export class JapaneseNewsScraper {
       // Check rate limiting
       await this.rateLimiter.waitForRateLimit(sourceId, source.rateLimit.requestsPerMinute);
 
-      // For Phase 1, we'll use a mock implementation that simulates scraping
-      // In production, this would use Puppeteer via Netlify Functions
-      const mockArticles = await this.mockScrapeNHKEasy(maxArticles);
-      articlesScraped = mockArticles.length;
+      // Phase 2A: Use real scraping via Netlify Functions
+      console.log('🚀 Calling Netlify function for real scraping...');
+      const scrapedArticles = await this.callNetlifyScrapingFunction(maxArticles);
+      articlesScraped = scrapedArticles.length;
 
       // Cache the articles
-      await this.cacheArticles(sourceId, mockArticles);
+      await this.cacheArticles(sourceId, scrapedArticles);
 
       console.log(`✅ Successfully scraped ${articlesScraped} articles from ${source.displayName}`);
 
@@ -171,13 +171,78 @@ export class JapaneseNewsScraper {
 
       console.error(`❌ Failed to scrape ${source.displayName}:`, error);
 
-      return {
-        success: false,
-        articlesScraped,
-        errors,
-        timeElapsed: Date.now() - startTime,
-        source: sourceId
-      };
+      // Fallback to mock data if real scraping fails
+      console.log('🔄 Falling back to mock data...');
+      try {
+        const mockArticles = await this.mockScrapeNHKEasy(maxArticles);
+        await this.cacheArticles(sourceId, mockArticles);
+
+        return {
+          success: true,
+          articlesScraped: mockArticles.length,
+          errors,
+          timeElapsed: Date.now() - startTime,
+          nextScrapingTime: new Date(Date.now() + 10 * 60 * 1000), // Retry in 10 minutes
+          source: sourceId,
+          fallbackUsed: true
+        };
+      } catch (fallbackError) {
+        return {
+          success: false,
+          articlesScraped,
+          errors,
+          timeElapsed: Date.now() - startTime,
+          source: sourceId
+        };
+      }
+    }
+  }
+
+  // Call Netlify Function for real scraping
+  private static async callNetlifyScrapingFunction(maxArticles: number): Promise<NewsArticle[]> {
+    try {
+      const baseUrl = typeof window !== 'undefined'
+        ? window.location.origin
+        : 'https://doshi-sensei.netlify.app'; // Fallback for SSR
+
+      const functionUrl = `${baseUrl}/.netlify/functions/scrape-nhk-news`;
+
+      console.log(`🌐 Calling: ${functionUrl}?limit=${maxArticles}`);
+
+      const response = await fetch(`${functionUrl}?limit=${maxArticles}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Scraping failed');
+      }
+
+      console.log(`📰 Received ${result.data.length} articles from Netlify function`);
+
+      // Transform articles to match our NewsArticle interface
+      const articles: NewsArticle[] = result.data.map((article: any) => ({
+        ...article,
+        publishDate: new Date(article.publishDate),
+        scrapedAt: new Date(article.scrapedAt),
+        source: NEWS_SOURCE_CONFIGS[NEWS_SOURCES.NHK_EASY],
+        vocabulary: this.extractMockVocabulary(article.content),
+        kanji: this.extractMockKanji(article.content)
+      }));
+
+      return articles;
+
+    } catch (error) {
+      console.error('❌ Failed to call Netlify scraping function:', error);
+      throw error;
     }
   }
 

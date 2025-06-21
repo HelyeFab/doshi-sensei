@@ -143,6 +143,7 @@ export interface ScrapingResult {
   timeElapsed: number;
   nextScrapingTime?: Date;
   source: string;
+  fallbackUsed?: boolean; // Indicates if mock data was used as fallback
 }
 
 export interface ScrapingError {

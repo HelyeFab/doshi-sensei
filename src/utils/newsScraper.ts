@@ -229,14 +229,16 @@ export class JapaneseNewsScraper {
       console.log(`📰 Received ${result.data.length} articles from Netlify function`);
 
       // Transform articles to match our NewsArticle interface
-      const articles: NewsArticle[] = result.data.map((article: any) => ({
-        ...article,
-        publishDate: new Date(article.publishDate),
-        scrapedAt: new Date(article.scrapedAt),
-        source: NEWS_SOURCE_CONFIGS[NEWS_SOURCES.NHK_EASY],
-        vocabulary: this.extractMockVocabulary(article.content),
-        kanji: this.extractMockKanji(article.content)
-      }));
+      const articles: NewsArticle[] = await Promise.all(
+        result.data.map(async (article: any) => ({
+          ...article,
+          publishDate: new Date(article.publishDate),
+          scrapedAt: new Date(article.scrapedAt),
+          source: NEWS_SOURCE_CONFIGS[NEWS_SOURCES.NHK_EASY],
+          vocabulary: await this.extractVocabulary(article.content),
+          kanji: await this.extractKanji(article.content)
+        }))
+      );
 
       return articles;
 
@@ -306,7 +308,29 @@ export class JapaneseNewsScraper {
     return mockArticles.slice(0, maxArticles);
   }
 
-  // Mock vocabulary extraction (will be replaced with real analysis)
+  // Enhanced vocabulary extraction using WaniKani API
+  private static async extractVocabulary(text: string): Promise<ExtractedVocabulary[]> {
+    try {
+      const { VocabularyAnalyzer } = await import('./vocabularyAnalyzer');
+      return await VocabularyAnalyzer.analyzeVocabulary(text);
+    } catch (error) {
+      console.warn('Error in vocabulary analysis, using fallback:', error);
+      return this.extractMockVocabulary(text);
+    }
+  }
+
+  // Enhanced kanji extraction using WaniKani API
+  private static async extractKanji(text: string): Promise<ExtractedKanji[]> {
+    try {
+      const { VocabularyAnalyzer } = await import('./vocabularyAnalyzer');
+      return await VocabularyAnalyzer.analyzeKanji(text);
+    } catch (error) {
+      console.warn('Error in kanji analysis, using fallback:', error);
+      return this.extractMockKanji(text);
+    }
+  }
+
+  // Fallback vocabulary extraction (kept for compatibility)
   private static extractMockVocabulary(text: string): ExtractedVocabulary[] {
     const mockVocab: ExtractedVocabulary[] = [
       { word: '今日', reading: 'きょう', position: 0, length: 2, isKnown: true, jlptLevel: 'N5' as JLPTLevel },
@@ -318,7 +342,7 @@ export class JapaneseNewsScraper {
     return mockVocab;
   }
 
-  // Mock kanji extraction (will be replaced with real analysis)
+  // Fallback kanji extraction (kept for compatibility)
   private static extractMockKanji(text: string): ExtractedKanji[] {
     const mockKanji: ExtractedKanji[] = [
       { kanji: '今', position: 0, meaning: 'now', readings: ['こん', 'いま'], jlptLevel: 'N5' as JLPTLevel, isKnown: true },

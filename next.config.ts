@@ -34,6 +34,44 @@ const config = withPWA({
   buildExcludes: [/middleware-manifest\.json$/],
   cacheOnFrontEndNav: true,
   reloadOnOnline: true,
+  // Fix caching issues
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/doshisensei\.com\/.*$/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'doshi-sensei-pages',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+        },
+      },
+    },
+    {
+      urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'doshi-sensei-images',
+        expiration: {
+          maxEntries: 64,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        },
+      },
+    },
+    {
+      urlPattern: /\/api\/.*$/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'doshi-sensei-api',
+        expiration: {
+          maxEntries: 16,
+          maxAgeSeconds: 5 * 60, // 5 minutes
+        },
+      },
+    },
+  ],
+  // Additional exclusions to prevent caching errors
+  publicExcludes: ['!workbox-*.js', '!sw.js'],
 })(nextConfig as any);
 
 export default config;

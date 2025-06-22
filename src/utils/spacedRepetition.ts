@@ -392,11 +392,26 @@ export function updateFlashcardProgress(
 }
 
 /**
- * Check if a card is due for review with fuzzing
+ * Check if a card is due for review with fuzzing and session buffer
  */
-export function isCardDueForReview(progress: FlashcardProgress, fuzzingEnabled: boolean = true): boolean {
+export function isCardDueForReview(
+  progress: FlashcardProgress,
+  fuzzingEnabled: boolean = true,
+  excludeRecentSession: boolean = true
+): boolean {
   const now = new Date();
   let dueDate = progress.nextReviewDate;
+
+  // Add session buffer to prevent immediate due status after study session
+  if (excludeRecentSession) {
+    const sessionBuffer = 2 * 60 * 60 * 1000; // 2 hours minimum buffer
+    const minDueTime = new Date(progress.lastReviewDate.getTime() + sessionBuffer);
+
+    // If the card was reviewed recently and the due date is within the session buffer, don't mark as due
+    if (dueDate < minDueTime) {
+      return false;
+    }
+  }
 
   if (fuzzingEnabled && progress.interval > 2) {
     // Add fuzzing to prevent review bunching (±5% of interval)
@@ -406,6 +421,21 @@ export function isCardDueForReview(progress: FlashcardProgress, fuzzingEnabled: 
   }
 
   return dueDate <= now;
+}
+
+/**
+ * Check if a card needs immediate review (within current session)
+ */
+export function isCardForImmediateReview(progress: FlashcardProgress): boolean {
+  const now = new Date();
+  const dueDate = progress.nextReviewDate;
+  const sessionBuffer = 2 * 60 * 60 * 1000; // 2 hours
+
+  // Card is for immediate review if:
+  // 1. It's due now, AND
+  // 2. It was reviewed recently (within session buffer)
+  return dueDate <= now &&
+         (now.getTime() - progress.lastReviewDate.getTime()) < sessionBuffer;
 }
 
 /**

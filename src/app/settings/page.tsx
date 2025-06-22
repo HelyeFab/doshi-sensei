@@ -379,12 +379,6 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <ToggleSetting
-                label="Practice Reminders"
-                description="Receive daily reminders to practice"
-                checked={settings.practiceReminders}
-                onChange={(checked) => updateSetting('practiceReminders', checked)}
-              />
 
               <div className="pt-2">
                 <div>

@@ -142,8 +142,8 @@ export function ComprehensionQuiz({ article, sessionId, onComplete, onClose }: C
 
   if (questions.length === 0) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-card rounded-lg p-6 w-full max-w-2xl">
+      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl p-6 w-full max-w-2xl">
           <div className="text-center">
             <div className="animate-spin text-2xl mb-4">📚</div>
             <p className="text-foreground">理解度テストを準備中...</p>
@@ -159,8 +159,8 @@ export function ComprehensionQuiz({ article, sessionId, onComplete, onClose }: C
       : 0;
 
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-card rounded-lg p-6 w-full max-w-2xl">
+      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl p-6 w-full max-w-2xl">
           <div className="text-center mb-6">
             <div className="text-4xl mb-4">
               {quizState.score >= 80 ? '🎉' : quizState.score >= 60 ? '👍' : '📚'}
@@ -264,8 +264,8 @@ export function ComprehensionQuiz({ article, sessionId, onComplete, onClose }: C
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-lg p-6 w-full max-w-2xl">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl p-6 w-full max-w-2xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>

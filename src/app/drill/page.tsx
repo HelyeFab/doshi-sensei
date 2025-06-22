@@ -89,6 +89,7 @@ export default function DrillPage() {
   const [conjugableLists, setConjugableLists] = useState<WordList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [drillMode, setDrillMode] = useState<'random' | 'lists'>('random');
+  const [autoAdvance, setAutoAdvance] = useState(false);
 
   // Flashcard state
   const [flashcardQuestions, setFlashcardQuestions] = useState<FlashcardQuestion[]>([]);
@@ -101,6 +102,7 @@ export default function DrillPage() {
   const [showHints, setShowHints] = useState(false);
   const [cardDirection, setCardDirection] = useState<'kanji-first' | 'english-first' | 'mixed'>('mixed');
   const [dueCards, setDueCards] = useState<any[]>([]);
+  const [immediateCards, setImmediateCards] = useState<any[]>([]);
   const [studyRecommendations, setStudyRecommendations] = useState<any>(null);
 
   // Initialize flashcard manager with user
@@ -117,9 +119,10 @@ export default function DrillPage() {
       const stats = await flashcardManager.getStudyStats();
       setFlashcardStats(stats);
 
-      // Load due cards for notifications
-      const dueCardsData = await flashcardManager.getDueCards();
-      setDueCards(dueCardsData);
+      // Load both due cards and immediate review cards
+      const { dueCards: actualDueCards, immediateCards: immediateReviewCards } = await flashcardManager.getAllReviewCards();
+      setDueCards(actualDueCards);
+      setImmediateCards(immediateReviewCards);
 
       // Load study recommendations
       const allProgress = await flashcardManager.getAllFlashcardProgress();
@@ -847,6 +850,13 @@ export default function DrillPage() {
         await recordDrillSession(newScore);
       }, 100);
     }
+
+    // Auto-advance to next question if enabled
+    if (autoAdvance && !isLastQuestion) {
+      setTimeout(() => {
+        handleNextQuestion();
+      }, 2000); // Wait 2 seconds before advancing
+    }
   };
 
   const handleNextQuestion = async () => {
@@ -1153,6 +1163,20 @@ export default function DrillPage() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Auto-Advance Toggle */}
+                  <div className="mb-6">
+                    <label className="flex items-center justify-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={autoAdvance}
+                        onChange={(e) => setAutoAdvance(e.target.checked)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm text-foreground">Auto-advance to next question</span>
+                      <span className="text-xs text-muted-foreground">(automatically moves to next after 2 seconds)</span>
+                    </label>
                   </div>
 
                   <button

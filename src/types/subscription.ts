@@ -43,12 +43,12 @@ export const SUBSCRIPTION_PLANS = {
     price: 0,
     limits: {
       maxLists: 0,
-      maxDrillsPerDay: 2,
+      maxDrillsPerDay: 3,
       canSync: false,
       canSave: false,
     },
     features: [
-      '2 drills per day',
+      '3 drills per day',
       'View-only access',
       'No progress saving'
     ]

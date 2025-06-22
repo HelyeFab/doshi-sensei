@@ -671,12 +671,14 @@ function ConjugationSection({ title, forms, showFurigana, generateFurigana }: Co
           if (!form.value) return null;
 
           return (
-            <div key={index} className="flex justify-between items-center p-3 bg-background/30 rounded border border-border/30">
-              <div className="text-sm text-muted-foreground">
+            <div key={index} className="p-3 bg-background/30 rounded border border-border/30">
+              {/* Label on first row */}
+              <div className="text-sm text-muted-foreground mb-2">
                 {form.label}
               </div>
-              <div className="text-right flex items-center gap-2">
-                <div>
+              {/* Verb + icon on second row */}
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
                   <div className="text-lg japanese-text font-medium text-foreground">
                     {form.value}
                   </div>
@@ -689,7 +691,7 @@ function ConjugationSection({ title, forms, showFurigana, generateFurigana }: Co
                 <button
                   onClick={() => handleSpeak(form.value!, index)}
                   disabled={playingIndex === index}
-                  className="p-1 rounded-full hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
+                  className="p-1 rounded-full hover:bg-primary/10 text-primary transition-colors disabled:opacity-50 ml-3"
                   title={`Speak: ${form.value}`}
                 >
                   {playingIndex === index ? (

@@ -7,6 +7,9 @@ import { JapaneseNewsScraper } from '@/utils/newsScraper';
 import { ArticleReader } from '@/components/reading/ArticleReader';
 import CompanionTrigger from '@/components/CompanionTrigger';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 // Loading skeleton component
 function ArticleCardSkeleton() {
   return (

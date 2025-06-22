@@ -809,16 +809,69 @@ export class ConjugationEngine {
 
 // Helper function to get random conjugation form for drill
 export function getRandomConjugationForm(wordType: WordType): keyof ConjugationForms {
-  const commonForms: (keyof ConjugationForms)[] = [
+  // Define all available forms by frequency/importance
+  const veryCommonForms: (keyof ConjugationForms)[] = [
     'present', 'past', 'negative', 'pastNegative',
-    'polite', 'politePast', 'teForm'
+    'polite', 'politePast', 'politeNegative', 'politePastNegative',
+    'teForm'
   ];
 
-  if (wordType === 'Ichidan' || wordType === 'Godan' || wordType === 'Irregular') {
-    commonForms.push('potential', 'conditional');
+  const commonForms: (keyof ConjugationForms)[] = [
+    'progressive', 'progressivePolite', 'progressiveNegative', 'progressivePoliteNegative',
+    'conditional', 'provisional', 'conditionalNegative', 'provisionalNegative',
+    'volitional', 'politeVolitional'
+  ];
+
+  const intermediateForms: (keyof ConjugationForms)[] = [
+    'potential', 'potentialNegative', 'potentialPast', 'potentialPastNegative',
+    'potentialPolite', 'potentialPoliteNegative', 'potentialPolitePast', 'potentialPolitePastNegative',
+    'taiForm', 'taiFormNegative', 'taiFormPast', 'taiFormPastNegative',
+    'imperativePlain', 'imperativePolite', 'request', 'requestNegative'
+  ];
+
+  const advancedForms: (keyof ConjugationForms)[] = [
+    'passive', 'passiveNegative', 'passivePast', 'passivePastNegative',
+    'passivePolite', 'passivePoliteNegative', 'passivePolitePast', 'passivePolitePastNegative',
+    'causative', 'causativeNegative', 'causativePast', 'causativePastNegative',
+    'causativePolite', 'causativePoliteNegative', 'causativePolitePast', 'causativePolitePastNegative',
+    'causativePassive', 'causativePassiveNegative', 'causativePassivePast', 'causativePassivePastNegative',
+    'causativePassivePolite', 'causativePassivePoliteNegative', 'causativePassivePolitePast', 'causativePassivePolitePastNegative'
+  ];
+
+  // Filter forms based on word type
+  if (wordType === 'i-adjective' || wordType === 'na-adjective') {
+    // For adjectives, only use basic forms that work with adjectives
+    const adjectiveForms = veryCommonForms.concat([
+      'conditional', 'provisional', 'conditionalNegative', 'provisionalNegative'
+    ]).filter(form => {
+      // Remove forms that don't apply to adjectives
+      const verbOnlyForms = ['teForm', 'volitional', 'politeVolitional', 'imperativePlain', 'imperativePolite'];
+      return !verbOnlyForms.includes(form);
+    });
+    return adjectiveForms[Math.floor(Math.random() * adjectiveForms.length)];
   }
 
-  return commonForms[Math.floor(Math.random() * commonForms.length)];
+  // For verbs (Ichidan, Godan, Irregular), use weighted selection
+  const allForms: (keyof ConjugationForms)[] = [];
+
+  // Weight distribution: 40% very common, 30% common, 20% intermediate, 10% advanced
+  const random = Math.random();
+
+  if (random < 0.4) {
+    // 40% chance for very common forms
+    allForms.push(...veryCommonForms);
+  } else if (random < 0.7) {
+    // 30% chance for common forms
+    allForms.push(...commonForms);
+  } else if (random < 0.9) {
+    // 20% chance for intermediate forms
+    allForms.push(...intermediateForms);
+  } else {
+    // 10% chance for advanced forms
+    allForms.push(...advancedForms);
+  }
+
+  return allForms[Math.floor(Math.random() * allForms.length)];
 }
 
 // Generate drill question stem

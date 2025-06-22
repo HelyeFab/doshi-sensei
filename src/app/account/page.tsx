@@ -7,6 +7,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
 import StatsManager, { UserStats } from '@/utils/stats';
 import CompanionTrigger from '@/components/CompanionTrigger';
+import AuthErrorModal from '@/components/AuthErrorModal';
 
 export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
@@ -18,6 +19,7 @@ export default function AccountPage() {
   const [displayName, setDisplayName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
 
@@ -111,6 +113,7 @@ export default function AccountPage() {
       setDisplayName('');
     } catch (err: any) {
       setError(err.message || 'An error occurred');
+      setShowErrorModal(true);
     } finally {
       setIsLoading(false);
     }
@@ -124,6 +127,7 @@ export default function AccountPage() {
       await signInWithGoogle();
     } catch (err: any) {
       setError(err.message || 'Google sign in failed');
+      setShowErrorModal(true);
     } finally {
       setIsLoading(false);
     }
@@ -329,6 +333,13 @@ export default function AccountPage() {
           </div>
         </main>
       </div>
+
+      {/* Error Modal */}
+      <AuthErrorModal
+        isOpen={showErrorModal}
+        error={error}
+        onClose={() => setShowErrorModal(false)}
+      />
       </>
     );
   }
@@ -367,12 +378,6 @@ export default function AccountPage() {
             </p>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg mb-4">
-              {error}
-            </div>
-          )}
 
           {/* Google Sign In */}
           <button
@@ -512,6 +517,13 @@ export default function AccountPage() {
         </div>
       </main>
     </div>
+
+    {/* Error Modal */}
+    <AuthErrorModal
+      isOpen={showErrorModal}
+      error={error}
+      onClose={() => setShowErrorModal(false)}
+    />
     </>
   );
 }

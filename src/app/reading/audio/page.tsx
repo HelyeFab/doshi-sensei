@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
 import { NewsArticle } from '@/types/news';
 import { JapaneseNewsScraper } from '@/utils/newsScraper';
 import TTSManager from '@/utils/tts';
@@ -48,6 +51,7 @@ export default function AudioPlayerPage() {
   const [translations, setTranslations] = useState<Map<string, string>>(new Map());
   const [translationLoading, setTranslationLoading] = useState(false);
   const [translationAvailable, setTranslationAvailable] = useState(false);
+  const [mobileControlsCollapsed, setMobileControlsCollapsed] = useState(true);
 
   const audioTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const MAX_RETRIES_PER_SENTENCE = 2;
@@ -384,14 +388,14 @@ export default function AudioPlayerPage() {
       {/* Header */}
       <div className="bg-card border-b border-border">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-foreground">🎵 Audio Reader</h1>
             <button
               onClick={() => router.push('/reading')}
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               ← Back
             </button>
-            <h1 className="text-2xl font-bold text-foreground">🎵 Audio Reader</h1>
           </div>
         </div>
       </div>
@@ -410,8 +414,144 @@ export default function AudioPlayerPage() {
             </div>
           </div>
 
+          {/* Audio Controls - Moved to top for better accessibility */}
+          <div className="bg-card rounded-lg border border-border mb-6">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-foreground">🎵 Audio Controls</h3>
+                {/* Mobile collapse toggle */}
+                <button
+                  onClick={() => setMobileControlsCollapsed(!mobileControlsCollapsed)}
+                  className="lg:hidden p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  aria-label={mobileControlsCollapsed ? "Expand controls" : "Collapse controls"}
+                >
+                  {mobileControlsCollapsed ? '▼' : '▲'}
+                </button>
+              </div>
+            </div>
+            <div className={`transition-all duration-300 overflow-hidden ${
+              mobileControlsCollapsed ? 'lg:block hidden' : 'block'
+            }`}>
+              <div className="p-6">
+              {/* Main Controls */}
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <button
+                  onClick={previousSentence}
+                  disabled={controls.currentSentence === 0}
+                  className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  ⏮️
+                </button>
+
+                <button
+                  onClick={() => controls.isPlaying ? togglePause() : playCurrentSentence()}
+                  disabled={isLoading}
+                  className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 text-xl"
+                >
+                  {isLoading ? '⏳' : controls.isPlaying ? '⏸️' : '▶️'}
+                </button>
+
+                <button
+                  onClick={nextSentence}
+                  disabled={controls.currentSentence === sentences.length - 1}
+                  className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  ⏭️
+                </button>
+              </div>
+
+              {/* Secondary Controls */}
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <button
+                    onClick={playEntireArticle}
+                    disabled={isLoading}
+                    className="flex-1 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+                  >
+                    📖 Play All
+                  </button>
+                  <button
+                    onClick={stopPlayback}
+                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                  >
+                    ⏹️ Stop
+                  </button>
+                </div>
+
+                {/* TTS Engine Selector - EXPERIMENTAL */}
+                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
+                      🧪 TTS Engine (Test)
+                    </span>
+                    <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                      {edgeAvailable ? '✅ Edge Available' : '❌ Edge Unavailable'}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setTtsEngine('google')}
+                      className={`flex-1 px-3 py-2 rounded text-sm transition-colors ${
+                        ttsEngine === 'google'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      Google TTS
+                    </button>
+                    <button
+                      onClick={() => setTtsEngine('edge')}
+                      disabled={!edgeAvailable}
+                      className={`flex-1 px-3 py-2 rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                        ttsEngine === 'edge'
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      Edge TTS
+                    </button>
+                  </div>
+                  {ttsEngine === 'edge' && (
+                    <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+                      Using Microsoft Edge TTS (experimental)
+                    </div>
+                  )}
+                </div>
+
+                {/* Auto-advance toggle */}
+                <label className="flex items-center justify-between">
+                  <span className="text-sm text-foreground">Auto-advance</span>
+                  <input
+                    type="checkbox"
+                    checked={controls.autoAdvance}
+                    onChange={(e) => setControls(prev => ({
+                      ...prev,
+                      autoAdvance: e.target.checked
+                    }))}
+                    className="rounded"
+                  />
+                </label>
+
+                {/* Progress Bar */}
+                <div>
+                  <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                    <span>Progress</span>
+                    <span>{controls.currentSentence + 1} / {sentences.length}</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-3">
+                    <div
+                      className="bg-primary h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${((controls.currentSentence + 1) / sentences.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
           {/* Main Audio Player Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left: Sentence List */}
             <div className="lg:col-span-1">
               <div className="bg-card rounded-lg border border-border">
@@ -449,12 +589,19 @@ export default function AudioPlayerPage() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            playCurrentSentence(index);
+                            // If this sentence is currently playing, pause it
+                            if (index === controls.currentSentence && controls.isPlaying) {
+                              togglePause();
+                            } else {
+                              // Otherwise, play this sentence
+                              playCurrentSentence(index);
+                            }
                           }}
                           className="p-2 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
                           disabled={isLoading}
                         >
-                          {isLoading && index === controls.currentSentence ? '⏳' : '▶️'}
+                          {isLoading && index === controls.currentSentence ? '⏳' :
+                           (index === controls.currentSentence && controls.isPlaying) ? '⏸️' : '▶️'}
                         </button>
                       </div>
                     </div>
@@ -510,9 +657,8 @@ export default function AudioPlayerPage() {
               </div>
             </div>
 
-            {/* Right: Vocabulary & Controls */}
-            <div className="lg:col-span-1 space-y-6">
-              {/* Vocabulary Analysis */}
+            {/* Right: Vocabulary Analysis */}
+            <div className="lg:col-span-1">
               <div className="bg-card rounded-lg border border-border">
                 <div className="p-4 border-b border-border">
                   <h3 className="font-medium text-foreground mb-2">📚 Key Vocabulary</h3>
@@ -530,128 +676,6 @@ export default function AudioPlayerPage() {
                           {word}
                         </span>
                       ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Audio Controls */}
-              <div className="bg-card rounded-lg border border-border">
-                <div className="p-4 border-b border-border">
-                  <h3 className="font-medium text-foreground mb-2">🎵 Audio Controls</h3>
-                </div>
-                <div className="p-6">
-                  {/* Main Controls */}
-                  <div className="flex items-center justify-center gap-4 mb-6">
-                    <button
-                      onClick={previousSentence}
-                      disabled={controls.currentSentence === 0}
-                      className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      ⏮️
-                    </button>
-
-                    <button
-                      onClick={() => controls.isPlaying ? togglePause() : playCurrentSentence()}
-                      disabled={isLoading}
-                      className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 text-xl"
-                    >
-                      {isLoading ? '⏳' : controls.isPlaying ? '⏸️' : '▶️'}
-                    </button>
-
-                    <button
-                      onClick={nextSentence}
-                      disabled={controls.currentSentence === sentences.length - 1}
-                      className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      ⏭️
-                    </button>
-                  </div>
-
-                  {/* Secondary Controls */}
-                  <div className="space-y-4">
-                    <div className="flex gap-3">
-                      <button
-                        onClick={playEntireArticle}
-                        disabled={isLoading}
-                        className="flex-1 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
-                      >
-                        📖 Play All
-                      </button>
-                      <button
-                        onClick={stopPlayback}
-                        className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
-                      >
-                        ⏹️ Stop
-                      </button>
-                    </div>
-
-                    {/* TTS Engine Selector - EXPERIMENTAL */}
-                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
-                          🧪 TTS Engine (Test)
-                        </span>
-                        <span className="text-xs text-yellow-600 dark:text-yellow-400">
-                          {edgeAvailable ? '✅ Edge Available' : '❌ Edge Unavailable'}
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setTtsEngine('google')}
-                          className={`flex-1 px-3 py-2 rounded text-sm transition-colors ${
-                            ttsEngine === 'google'
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                          }`}
-                        >
-                          Google TTS
-                        </button>
-                        <button
-                          onClick={() => setTtsEngine('edge')}
-                          disabled={!edgeAvailable}
-                          className={`flex-1 px-3 py-2 rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                            ttsEngine === 'edge'
-                              ? 'bg-purple-600 text-white'
-                              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                          }`}
-                        >
-                          Edge TTS
-                        </button>
-                      </div>
-                      {ttsEngine === 'edge' && (
-                        <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
-                          Using Microsoft Edge TTS (experimental)
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Auto-advance toggle */}
-                    <label className="flex items-center justify-between">
-                      <span className="text-sm text-foreground">Auto-advance</span>
-                      <input
-                        type="checkbox"
-                        checked={controls.autoAdvance}
-                        onChange={(e) => setControls(prev => ({
-                          ...prev,
-                          autoAdvance: e.target.checked
-                        }))}
-                        className="rounded"
-                      />
-                    </label>
-
-                    {/* Progress Bar */}
-                    <div>
-                      <div className="flex justify-between text-xs text-muted-foreground mb-2">
-                        <span>Progress</span>
-                        <span>{controls.currentSentence + 1} / {sentences.length}</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3">
-                        <div
-                          className="bg-primary h-3 rounded-full transition-all duration-300"
-                          style={{ width: `${((controls.currentSentence + 1) / sentences.length) * 100}%` }}
-                        />
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

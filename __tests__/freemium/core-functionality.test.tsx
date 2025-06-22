@@ -5,7 +5,7 @@ describe('Freemium System - Core Functionality', () => {
     it('should have correct guest plan limits', () => {
       const { SUBSCRIPTION_PLANS } = require('@/types/subscription');
 
-      expect(SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay).toBe(2);
+      expect(SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay).toBe(3);
       expect(SUBSCRIPTION_PLANS.guest.limits.maxLists).toBe(0);
       expect(SUBSCRIPTION_PLANS.guest.limits.canSave).toBe(false);
       expect(SUBSCRIPTION_PLANS.guest.limits.canSync).toBe(false);
@@ -49,7 +49,7 @@ describe('Freemium System - Core Functionality', () => {
       const { SUBSCRIPTION_PLANS } = require('@/types/subscription');
 
       // Guest features
-      expect(SUBSCRIPTION_PLANS.guest.features).toContain('2 drills per day');
+      expect(SUBSCRIPTION_PLANS.guest.features).toContain('3 drills per day');
       expect(SUBSCRIPTION_PLANS.guest.features).toContain('No progress saving');
 
       // Free features
@@ -129,7 +129,7 @@ describe('Freemium System - Core Functionality', () => {
       expect(isFeatureAvailable('sync', 'guest', mockUsage)).toBe(false);
 
       // Test drill limit
-      const limitReachedUsage = { drillsToday: 2, lastDrillDate: new Date().toISOString().split('T')[0] };
+      const limitReachedUsage = { drillsToday: 3, lastDrillDate: new Date().toISOString().split('T')[0] };
       expect(isFeatureAvailable('drills', 'guest', limitReachedUsage)).toBe(false);
     });
 

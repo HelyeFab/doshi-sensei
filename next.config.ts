@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  // Disable static optimization to avoid webpack runtime issues
+  output: 'standalone',
   // Configure webpack to handle the runtime issues
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -22,6 +24,11 @@ const nextConfig: NextConfig = {
       };
     }
     return config;
+  },
+  // Experimental features to help with build issues
+  experimental: {
+    // Disable webpack build worker to avoid runtime issues
+    webpackBuildWorker: false,
   },
 };
 

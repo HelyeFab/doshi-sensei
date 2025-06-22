@@ -120,11 +120,37 @@ export class FlashcardManager {
   }
 
   /**
-   * Get cards due for review
+   * Get cards due for review (excludes cards from recent sessions)
    */
   async getDueCards(): Promise<FlashcardProgress[]> {
     const allProgress = await this.getAllFlashcardProgress();
     return getDueCards(allProgress);
+  }
+
+  /**
+   * Get cards for immediate review (from recent sessions)
+   */
+  async getImmediateReviewCards(): Promise<FlashcardProgress[]> {
+    const allProgress = await this.getAllFlashcardProgress();
+    const { isCardForImmediateReview } = await import('./spacedRepetition');
+
+    return allProgress.filter(progress => isCardForImmediateReview(progress))
+      .sort((a, b) => a.nextReviewDate.getTime() - b.nextReviewDate.getTime());
+  }
+
+  /**
+   * Get all cards that need review (both due and immediate)
+   */
+  async getAllReviewCards(): Promise<{
+    dueCards: FlashcardProgress[];
+    immediateCards: FlashcardProgress[];
+  }> {
+    const [dueCards, immediateCards] = await Promise.all([
+      this.getDueCards(),
+      this.getImmediateReviewCards()
+    ]);
+
+    return { dueCards, immediateCards };
   }
 
   /**

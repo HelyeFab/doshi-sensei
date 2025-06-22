@@ -34,11 +34,11 @@ export class CloudSync {
   private static listeners: Array<(status: SyncStatus) => void> = [];
 
   /**
-   * Check if user can sync (authenticated + paid subscription)
+   * Check if user can sync (authenticated + paid subscription only)
    */
-  static canSync(user: User | null, subscriptionStatus?: string): boolean {
+  static canSync(user: User | null, subscriptionStatus?: string, subscriptionPlan?: string): boolean {
     if (!user) return false;
-    return subscriptionStatus === 'active';
+    return subscriptionStatus === 'active' && (subscriptionPlan === 'monthly' || subscriptionPlan === 'yearly');
   }
 
   /**

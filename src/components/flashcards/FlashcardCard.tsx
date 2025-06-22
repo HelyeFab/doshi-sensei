@@ -181,39 +181,25 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            {([0, 1, 2, 3, 4, 5] as FlashcardQuality[]).map((quality) => {
-              const getQualityColors = (q: number) => {
-                switch (q) {
-                  case 0: return 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20';
-                  case 1: return 'bg-orange-500/10 border-orange-500/20 text-orange-400 hover:bg-orange-500/20';
-                  case 2: return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20';
-                  case 3: return 'bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20';
-                  case 4: return 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20';
-                  case 5: return 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20';
-                  default: return 'bg-gray-500/10 border-gray-500/20 text-gray-400 hover:bg-gray-500/20';
-                }
-              };
-
-              return (
-                <button
-                  key={quality}
-                  onClick={() => handleQualitySelect(quality)}
-                  className={`p-3 rounded-lg border text-left transition-all hover:scale-105 ${getQualityColors(quality)}`}
-                >
-                  <div className="font-medium text-sm mb-1">
-                    {quality === 0 ? 'Again' :
-                     quality === 1 ? 'Hard' :
-                     quality === 2 ? 'Good' :
-                     quality === 3 ? 'Easy' :
-                     quality === 4 ? 'Perfect' : 'Instant'}
-                  </div>
-                  <div className="text-xs opacity-80">
-                    {qualityDescriptions[quality].split(' - ')[1] || qualityDescriptions[quality]}
-                  </div>
-                </button>
-              );
-            })}
+          <div className="grid grid-cols-1 gap-3">
+            {[
+              { label: 'Again', quality: 0 as FlashcardQuality, description: 'Could not recall at all', color: 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20' },
+              { label: 'Good', quality: 2 as FlashcardQuality, description: 'But it felt familiar when revealed', color: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20' },
+              { label: 'Perfect', quality: 4 as FlashcardQuality, description: 'After some thought or slight hesitation', color: 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20' }
+            ].map((option) => (
+              <button
+                key={option.quality}
+                onClick={() => handleQualitySelect(option.quality)}
+                className={`p-4 rounded-lg border text-left transition-all hover:scale-105 ${option.color}`}
+              >
+                <div className="font-medium mb-2">
+                  {option.label}
+                </div>
+                <div className="text-sm opacity-80">
+                  {option.description}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       )}

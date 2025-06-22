@@ -394,8 +394,8 @@ export class WordListManager {
   /**
    * Sync all word lists to cloud (paid users only)
    */
-  static async syncToCloud(user: User, subscriptionStatus?: string): Promise<SyncResult> {
-    if (!CloudSync.canSync(user, subscriptionStatus)) {
+  static async syncToCloud(user: User, subscriptionStatus?: string, subscriptionPlan?: string): Promise<SyncResult> {
+    if (!CloudSync.canSync(user, subscriptionStatus, subscriptionPlan)) {
       return { success: false, error: 'Sync not available - requires active subscription' };
     }
 
@@ -431,8 +431,8 @@ export class WordListManager {
   /**
    * Download word lists from cloud (paid users only)
    */
-  static async syncFromCloud(user: User, subscriptionStatus?: string): Promise<SyncResult> {
-    if (!CloudSync.canSync(user, subscriptionStatus)) {
+  static async syncFromCloud(user: User, subscriptionStatus?: string, subscriptionPlan?: string): Promise<SyncResult> {
+    if (!CloudSync.canSync(user, subscriptionStatus, subscriptionPlan)) {
       return { success: false, error: 'Sync not available - requires active subscription' };
     }
 
@@ -505,20 +505,20 @@ export class WordListManager {
   /**
    * Perform bidirectional sync (download then upload if needed)
    */
-  static async performFullSync(user: User, subscriptionStatus?: string): Promise<SyncResult> {
-    if (!CloudSync.canSync(user, subscriptionStatus)) {
+  static async performFullSync(user: User, subscriptionStatus?: string, subscriptionPlan?: string): Promise<SyncResult> {
+    if (!CloudSync.canSync(user, subscriptionStatus, subscriptionPlan)) {
       return { success: false, error: 'Sync not available - requires active subscription' };
     }
 
     console.log('🔄 Starting full sync...');
 
     // First, try to download from cloud
-    const downloadResult = await this.syncFromCloud(user, subscriptionStatus);
+    const downloadResult = await this.syncFromCloud(user, subscriptionStatus, subscriptionPlan);
 
     if (!downloadResult.success) {
       // If download fails, try to upload local data
       console.log('📤 Download failed, trying upload...');
-      return await this.syncToCloud(user, subscriptionStatus);
+      return await this.syncToCloud(user, subscriptionStatus, subscriptionPlan);
     }
 
     console.log('✅ Full sync completed');

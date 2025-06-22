@@ -46,7 +46,11 @@ export class StorageDemo {
       colorScheme: 'default',
       showRomaji: true,
       dailyGoal: 50,
-      practiceReminders: true
+      practiceReminders: true,
+      companionHistory: {
+        recentCharacters: [],
+        lastShownDate: undefined
+      }
     };
 
     // Save settings

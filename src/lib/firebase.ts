@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -13,13 +13,25 @@ const firebaseConfig = {
   measurementId: "G-X6LK9BFMEV"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only on client side
+let app: any = null;
+let auth: any = null;
+let db: any = null;
 
-// Initialize Firebase Authentication and get a reference to the service
-export const auth = getAuth(app);
+if (typeof window !== 'undefined') {
+  // Only initialize on client side
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApps()[0];
+  }
 
-// Initialize Cloud Firestore and get a reference to the service
-export const db = getFirestore(app);
+  // Initialize Firebase Authentication and get a reference to the service
+  auth = getAuth(app);
 
+  // Initialize Cloud Firestore and get a reference to the service
+  db = getFirestore(app);
+}
+
+export { auth, db };
 export default app;

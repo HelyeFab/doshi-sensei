@@ -1,4 +1,5 @@
 export type SubscriptionPlan = 'free' | 'monthly' | 'yearly';
+export type UserType = 'guest' | 'free' | 'premium';
 
 export type SubscriptionStatus = 'active' | 'inactive' | 'canceled' | 'past_due' | 'trialing';
 
@@ -16,6 +17,7 @@ export interface UsageLimits {
   maxLists: number;
   maxDrillsPerDay: number;
   canSync: boolean;
+  canSave: boolean; // New field for guest restrictions
 }
 
 export interface UserSubscription {
@@ -28,8 +30,29 @@ export interface UserSubscription {
   };
 }
 
+// Guest usage tracking (stored in localStorage)
+export interface GuestUsage {
+  drillsToday: number;
+  lastDrillDate: string;
+}
+
 // Plan configurations
 export const SUBSCRIPTION_PLANS = {
+  guest: {
+    name: 'Guest',
+    price: 0,
+    limits: {
+      maxLists: 0,
+      maxDrillsPerDay: 2,
+      canSync: false,
+      canSave: false,
+    },
+    features: [
+      '2 drills per day',
+      'View-only access',
+      'No progress saving'
+    ]
+  },
   free: {
     name: 'Free',
     price: 0,
@@ -37,6 +60,7 @@ export const SUBSCRIPTION_PLANS = {
       maxLists: 3,
       maxDrillsPerDay: 3,
       canSync: false,
+      canSave: true,
     },
     features: [
       'Up to 3 word lists',
@@ -52,6 +76,7 @@ export const SUBSCRIPTION_PLANS = {
       maxLists: -1, // unlimited
       maxDrillsPerDay: -1, // unlimited
       canSync: true,
+      canSave: true,
     },
     features: [
       'Unlimited word lists',
@@ -68,6 +93,7 @@ export const SUBSCRIPTION_PLANS = {
       maxLists: -1, // unlimited
       maxDrillsPerDay: -1, // unlimited
       canSync: true,
+      canSave: true,
     },
     features: [
       'Unlimited word lists',

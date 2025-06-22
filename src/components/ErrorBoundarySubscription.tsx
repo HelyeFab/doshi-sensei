@@ -1,0 +1,126 @@
+'use client';
+
+import React from 'react';
+import { SUBSCRIPTION_PLANS } from '@/types/subscription';
+
+interface Props {
+  children: React.ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error: Error | null;
+}
+
+/**
+ * Error boundary specifically for subscription-related failures
+ * Provides graceful fallback to ensure app remains functional
+ */
+export class ErrorBoundarySubscription extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Subscription system error:', error, errorInfo);
+
+    // Log to analytics service if available
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'exception', {
+        description: `Subscription error: ${error.message}`,
+        fatal: false
+      });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <SubscriptionFallback
+          error={this.state.error}
+          onRetry={() => this.setState({ hasError: false, error: null })}
+        />
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+interface FallbackProps {
+  error: Error | null;
+  onRetry: () => void;
+}
+
+function SubscriptionFallback({ error, onRetry }: FallbackProps) {
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Minimal header */}
+      <div className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <h1 className="text-xl font-semibold text-card-foreground">
+            Doshi Sensei
+          </h1>
+        </div>
+      </div>
+
+      {/* Error message */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto text-center">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            Service Temporarily Unavailable
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            The subscription system is experiencing issues. You can still use the app with guest access.
+          </p>
+
+          {/* Guest access info */}
+          <div className="bg-muted/50 rounded-lg p-4 mb-6">
+            <div className="text-sm text-muted-foreground mb-2">
+              <strong>Guest Access Available:</strong>
+            </div>
+            <ul className="text-sm text-foreground space-y-1">
+              {SUBSCRIPTION_PLANS.guest.features.map((feature, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <span className="text-primary">•</span>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={onRetry}
+              className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Try Again
+            </button>
+
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full border border-border text-foreground px-4 py-2 rounded-lg hover:bg-muted transition-colors"
+            >
+              Refresh Page
+            </button>
+          </div>
+
+          {/* Debug info in development */}
+          {process.env.NODE_ENV === 'development' && error && (
+            <div className="mt-6 p-3 bg-red-50 dark:bg-red-900/20 rounded text-left">
+              <div className="text-xs text-red-600 dark:text-red-400 font-mono">
+                {error.message}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

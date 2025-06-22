@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Publicly visible collections (read-only for guests)
+    match /kanji/{kanjiId} {
+      allow read: if true;
+      allow write: if isPremium();
+    }
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if isPremium();
+    }
+
+    // User data (secured by user ID)
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Lists subcollection
+      match /lists/{listId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId &&
+          (
+            isPremium() ||
+            (get(/databases/$(database)/documents/users/$(userId)).data.tier == 'free' &&
+             listCount(userId) < 3)
+          );
+      }
+
+      // Bookmarks subcollection
+      match /bookmarks/{bookmarkId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId &&
+          (
+            isPremium() ||
+            (get(/databases/$(database)/documents/users/$(userId)).data.tier == 'free' &&
+             bookmarkCount(userId) < 5)
+          );
+      }
+
+      // Sync metadata (only for premium users)
+      match /sync/{syncId} {
+        allow read, write: if isPremium();
+      }
+    }
+
+    function isPremium() {
+      return request.auth != null &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tier == 'premium';
+    }
+
+    function listCount(userId) {
+      // Placeholder function — should be enforced client-side or via Firestore triggers
+      return 3; // Emulate enforcement via front-end or backend logic
+    }
+
+    function bookmarkCount(userId) {
+      return 5; // Emulate enforcement via front-end or backend logic
+    }
+  }
+}

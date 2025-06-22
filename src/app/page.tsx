@@ -113,10 +113,18 @@ export default function Home() {
     }
   };
 
-  // Get user's display name
+  // Get user's first name only
   const getUserDisplayName = () => {
-    if (user?.displayName) return user.displayName;
-    if (user?.email) return user.email.split('@')[0];
+    if (user?.displayName) {
+      // Extract first name from display name (split by space and take first part)
+      return user.displayName.split(' ')[0];
+    }
+    if (user?.email) {
+      // For email-based names, take the part before @ and split by common separators
+      const emailName = user.email.split('@')[0];
+      // Handle cases like "john.doe" or "john_doe" or "john-doe"
+      return emailName.split(/[._-]/)[0];
+    }
     return 'Friend';
   };
 
@@ -160,8 +168,17 @@ export default function Home() {
                 }}
               />
             )}
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Hello {getUserDisplayName()}! 👋
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
+              Hello {getUserDisplayName()}!
+              <span
+                className="inline-block animate-pulse origin-[70%_70%]"
+                style={{
+                  animation: 'wave 2s ease-in-out infinite',
+                  transformOrigin: '70% 70%'
+                }}
+              >
+                👋
+              </span>
             </h1>
           </div>
           <p className="text-base md:text-lg text-muted-foreground">
@@ -185,6 +202,15 @@ export default function Home() {
                   description="Learn conjugations"
                 />
 
+                {/* Drill Card */}
+                <FeatureCard
+                  title="Drill"
+                  icon="⚡"
+                  href="/drill"
+                  color="orange"
+                  description="Quick practice"
+                />
+
                 {/* Vocabulary Card */}
                 <FeatureCard
                   title="Vocabulary"
@@ -203,6 +229,24 @@ export default function Home() {
                   description="Study kanji"
                 />
 
+                {/* Saved Items Card */}
+                <FeatureCard
+                  title="Saved Items"
+                  icon="⭐"
+                  href="/favourites"
+                  color="blue"
+                  description="Your collection"
+                />
+
+                {/* Account Card */}
+                <FeatureCard
+                  title="Account"
+                  icon="👤"
+                  href="/account"
+                  color="gray"
+                  description="Profile & stats"
+                />
+
                 {/* Settings Card */}
                 <FeatureCard
                   title="Settings"
@@ -212,7 +256,7 @@ export default function Home() {
                   description="Customize app"
                 />
 
-                {/* Future Reading Card */}
+                {/* Reading Card */}
                 <FeatureCard
                   title="Reading"
                   icon="📰"
@@ -223,8 +267,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Desktop: 4-column Grid (no scroll needed) */}
+            {/* Desktop: Grid Layout (no scroll needed) */}
             <div className="hidden md:grid md:grid-cols-4 md:gap-6">
+              {/* First Row */}
               {/* Practice Card */}
               <FeatureCard
                 title="Practice"
@@ -232,6 +277,15 @@ export default function Home() {
                 href="/practice"
                 color="blue"
                 description="Learn conjugations"
+              />
+
+              {/* Drill Card */}
+              <FeatureCard
+                title="Drill"
+                icon="⚡"
+                href="/drill"
+                color="orange"
+                description="Quick practice"
               />
 
               {/* Vocabulary Card */}
@@ -252,6 +306,25 @@ export default function Home() {
                 description="Study kanji"
               />
 
+              {/* Second Row */}
+              {/* Saved Items Card */}
+              <FeatureCard
+                title="Saved Items"
+                icon="⭐"
+                href="/favourites"
+                color="blue"
+                description="Your collection"
+              />
+
+              {/* Account Card */}
+              <FeatureCard
+                title="Account"
+                icon="👤"
+                href="/account"
+                color="gray"
+                description="Profile & stats"
+              />
+
               {/* Settings Card */}
               <FeatureCard
                 title="Settings"
@@ -259,6 +332,15 @@ export default function Home() {
                 href="/settings"
                 color="gray"
                 description="Customize app"
+              />
+
+              {/* Reading Card (existing future feature) */}
+              <FeatureCard
+                title="Reading"
+                icon="📰"
+                href="/reading"
+                color="orange"
+                description="Practice reading"
               />
             </div>
           </div>

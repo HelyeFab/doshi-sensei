@@ -252,9 +252,11 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [readingSession, setReadingSession] = useState<ReadingSession | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [quizDismissed, setQuizDismissed] = useState(false);
   const [comprehensionScore, setComprehensionScore] = useState<number | null>(null);
   const [readingTimeDisplay, setReadingTimeDisplay] = useState(0);
   const [vocabularyEncountered, setVocabularyEncountered] = useState<Set<string>>(new Set());
+  const [statsVisible, setStatsVisible] = useState(true);
 
   const articleRef = useRef<HTMLDivElement>(null);
   const timeUpdateInterval = useRef<NodeJS.Timeout | null>(null);
@@ -415,10 +417,10 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [showQuizNotification, setShowQuizNotification] = useState(false);
 
   useEffect(() => {
-    if (readingProgress >= 80 && !quizCompleted && !showQuiz && !showQuizNotification) {
+    if (readingProgress >= 80 && !quizCompleted && !showQuiz && !showQuizNotification && !quizDismissed) {
       setShowQuizNotification(true);
     }
-  }, [readingProgress, quizCompleted, showQuiz, showQuizNotification]);
+  }, [readingProgress, quizCompleted, showQuiz, showQuizNotification, quizDismissed]);
 
   const getFontSizeClass = () => {
     const sizes = {
@@ -589,9 +591,17 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         )}
 
         {/* Reading Statistics Panel */}
-        {readingProgress > 20 && (
+        {readingProgress > 20 && statsVisible && (
           <div className="fixed bottom-4 right-4 bg-card border border-border rounded-lg p-4 shadow-lg max-w-xs">
-            <h4 className="font-medium text-foreground mb-2">📊 Reading Stats</h4>
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-medium text-foreground">📊 Reading Stats</h4>
+              <button
+                onClick={() => setStatsVisible(false)}
+                className="text-muted-foreground hover:text-foreground text-sm"
+              >
+                ✕
+              </button>
+            </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Progress:</span>
@@ -653,10 +663,13 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                     Take Quiz
                   </button>
                   <button
-                    onClick={() => setShowQuizNotification(false)}
+                    onClick={() => {
+                      setShowQuizNotification(false);
+                      setQuizDismissed(true);
+                    }}
                     className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                   >
-                    Later
+                    No Thanks
                   </button>
                 </div>
               </div>

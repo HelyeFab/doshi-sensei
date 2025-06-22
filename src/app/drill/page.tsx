@@ -58,7 +58,16 @@ const drillStructuredData = {
 
 export default function DrillPage() {
   const { settings, isLoading: settingsLoading } = useSettings();
-  const { userSubscription, canDoDrill, incrementDrillCount } = useSubscription();
+  const {
+    userSubscription,
+    canDoDrill,
+    incrementDrillCount,
+    incrementGuestDrillCount,
+    userType,
+    guestUsage,
+    showLoginPrompt,
+    showUpgradePrompt
+  } = useSubscription();
   const { user } = useAuth();
 
   // Tab state
@@ -886,7 +895,13 @@ export default function DrillPage() {
     try {
       const wordsStudied = questions.map(q => q.word.id);
       await StatsManager.recordDrillSession(questions.length, actualScore, wordsStudied);
-      await incrementDrillCount();
+
+      // Increment drill count based on user type
+      if (user) {
+        await incrementDrillCount();
+      } else {
+        incrementGuestDrillCount();
+      }
     } catch (err) {
       console.error('Error recording drill session:', err);
     }

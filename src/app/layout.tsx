@@ -8,7 +8,6 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { EnvProvider } from "@/components/EnvProvider";
 import BottomNavigation from "@/components/BottomNavigation";
-import DesktopNavMenu from "@/components/DesktopNavMenu";
 import PWAInstaller from "@/components/PWAInstaller";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
@@ -196,7 +195,6 @@ export default function RootLayout({
                       <div className="min-h-screen bg-background text-foreground">
                         {children}
                         <BottomNavigation />
-                        <DesktopNavMenu />
                         <PWAInstaller />
                         <FloatingDonateButton />
                         <CompanionTrigger />

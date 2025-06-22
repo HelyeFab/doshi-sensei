@@ -5,7 +5,22 @@ service cloud.firestore {
     // Users can only access their own data
     match /users/{userId} {
       // Allow read/write if the authenticated user ID matches the document ID
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && request.auth.uid == userId
+        // Validate subscription data structure if present
+        && (
+          !('subscription' in resource.data) ||
+          (
+            resource.data.subscription.keys().hasAll(['subscription', 'limits', 'currentUsage']) &&
+            resource.data.subscription.subscription.keys().hasAll(['status', 'plan']) &&
+            resource.data.subscription.subscription.plan in ['free', 'monthly', 'yearly'] &&
+            resource.data.subscription.subscription.status in ['active', 'inactive', 'canceled', 'past_due', 'trialing'] &&
+            resource.data.subscription.limits.keys().hasAll(['maxLists', 'maxDrillsPerDay', 'canSync', 'canSave']) &&
+            resource.data.subscription.currentUsage.keys().hasAll(['listsCount', 'drillsToday', 'lastDrillDate']) &&
+            resource.data.subscription.currentUsage.listsCount >= 0 &&
+            resource.data.subscription.currentUsage.drillsToday >= 0 &&
+            resource.data.subscription.currentUsage.drillsToday <= 1000 // Reasonable limit
+          )
+        );
 
       // Allow access to user's subcollections (wordLists, savedWords, etc.)
       match /{document=**} {

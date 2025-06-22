@@ -8,20 +8,30 @@ import {
   UserSubscription,
   Subscription,
   SubscriptionPlan,
+  UserType,
+  GuestUsage,
   SUBSCRIPTION_PLANS
 } from '@/types/subscription';
+import { LoginPromptModal } from '@/components/LoginPromptModal';
+import { UpgradePromptModal } from '@/components/UpgradePromptModal';
 
 interface SubscriptionContextType {
   userSubscription: UserSubscription | null;
   loading: boolean;
+  userType: UserType;
+  guestUsage: GuestUsage | null;
   createCheckoutSession: (priceId: string) => Promise<void>;
   cancelSubscription: () => Promise<void>;
-  isFeatureAvailable: (feature: 'lists' | 'drills' | 'sync') => boolean;
+  isFeatureAvailable: (feature: 'lists' | 'drills' | 'sync' | 'save') => boolean;
   canCreateList: () => boolean;
   canDoDrill: () => boolean;
+  canSaveProgress: () => boolean;
   incrementListCount: () => Promise<void>;
   incrementDrillCount: () => Promise<void>;
+  incrementGuestDrillCount: () => void;
   refreshSubscription: () => Promise<void>;
+  showLoginPrompt: (reason: string, feature?: string) => void;
+  showUpgradePrompt: (reason: string, feature?: string) => void;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -37,7 +47,14 @@ export function useSubscription() {
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
+  const [guestUsage, setGuestUsage] = useState<GuestUsage | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Modal state
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalFeature, setModalFeature] = useState<string | undefined>();
 
   // Initialize default subscription for new users
   const initializeDefaultSubscription = async (userId: string) => {
@@ -169,10 +186,53 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
   };
 
-  const isFeatureAvailable = (feature: 'lists' | 'drills' | 'sync'): boolean => {
+  // Load guest usage from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('doshi_sensei_guest_usage');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setGuestUsage(parsed);
+        } catch (error) {
+          console.error('Error parsing guest usage:', error);
+        }
+      } else {
+        // Initialize guest usage
+        const today = new Date().toISOString().split('T')[0];
+        const initialUsage: GuestUsage = {
+          drillsToday: 0,
+          lastDrillDate: today,
+        };
+        setGuestUsage(initialUsage);
+        localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify(initialUsage));
+      }
+    }
+  }, []);
+
+  // Determine user type
+  const userType: UserType = !user ? 'guest' :
+    (userSubscription?.subscription.plan === 'monthly' || userSubscription?.subscription.plan === 'yearly') ? 'premium' : 'free';
+
+  const isFeatureAvailable = (feature: 'lists' | 'drills' | 'sync' | 'save'): boolean => {
+    if (!user && feature !== 'drills') {
+      // Guests can only access limited drills
+      return false;
+    }
+
+    if (!user && feature === 'drills') {
+      // Check guest drill limits
+      if (!guestUsage) return false;
+      const today = new Date().toISOString().split('T')[0];
+      const isToday = guestUsage.lastDrillDate === today;
+      return !isToday || guestUsage.drillsToday < SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay;
+    }
+
     if (!userSubscription) return false;
 
     switch (feature) {
+      case 'save':
+        return userSubscription.limits.canSave;
       case 'sync':
         return userSubscription.limits.canSync;
       case 'lists':
@@ -187,6 +247,37 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       default:
         return false;
     }
+  };
+
+  const canSaveProgress = (): boolean => isFeatureAvailable('save');
+
+  const incrementGuestDrillCount = () => {
+    if (!guestUsage) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const isToday = guestUsage.lastDrillDate === today;
+
+    const updatedUsage: GuestUsage = {
+      drillsToday: isToday ? guestUsage.drillsToday + 1 : 1,
+      lastDrillDate: today,
+    };
+
+    setGuestUsage(updatedUsage);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify(updatedUsage));
+    }
+  };
+
+  const showLoginPrompt = (reason: string, feature?: string) => {
+    setModalMessage(reason);
+    setModalFeature(feature);
+    setShowLoginModal(true);
+  };
+
+  const showUpgradePrompt = (reason: string, feature?: string) => {
+    setModalMessage(reason);
+    setModalFeature(feature);
+    setShowUpgradeModal(true);
   };
 
   const canCreateList = (): boolean => isFeatureAvailable('lists');
@@ -241,19 +332,41 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const value: SubscriptionContextType = {
     userSubscription,
     loading,
+    userType,
+    guestUsage,
     createCheckoutSession,
     cancelSubscription,
     isFeatureAvailable,
     canCreateList,
     canDoDrill,
+    canSaveProgress,
     incrementListCount,
     incrementDrillCount,
+    incrementGuestDrillCount,
     refreshSubscription,
+    showLoginPrompt,
+    showUpgradePrompt,
   };
 
   return (
     <SubscriptionContext.Provider value={value}>
       {children}
+
+      {/* Login Prompt Modal */}
+      <LoginPromptModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        message={modalMessage}
+        feature={modalFeature}
+      />
+
+      {/* Upgrade Prompt Modal */}
+      <UpgradePromptModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        message={modalMessage}
+        feature={modalFeature}
+      />
     </SubscriptionContext.Provider>
   );
 }

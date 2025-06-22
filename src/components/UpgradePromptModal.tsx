@@ -1,0 +1,94 @@
+'use client';
+
+import React from 'react';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { SUBSCRIPTION_PLANS } from '@/types/subscription';
+
+interface UpgradePromptModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  message: string;
+  feature?: string;
+}
+
+export function UpgradePromptModal({ isOpen, onClose, message, feature }: UpgradePromptModalProps) {
+  const { createCheckoutSession } = useSubscription();
+
+  if (!isOpen) return null;
+
+  const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
+    try {
+      // These would be your Stripe price IDs
+      const priceIds = {
+        monthly: 'price_monthly_premium', // Replace with actual Stripe price ID
+        yearly: 'price_yearly_premium'   // Replace with actual Stripe price ID
+      };
+
+      await createCheckoutSession(priceIds[plan]);
+    } catch (error) {
+      console.error('Upgrade failed:', error);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
+        <div className="text-center">
+          <div className="text-4xl mb-4">✨</div>
+          <h3 className="text-lg font-semibold text-card-foreground mb-2">
+            Upgrade to Premium
+          </h3>
+          <p className="text-muted-foreground mb-6 text-sm">
+            {message}
+          </p>
+
+          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 mb-6">
+            <div className="text-sm text-muted-foreground mb-2">
+              <strong>Premium Benefits:</strong>
+            </div>
+            <div className="text-sm text-foreground space-y-1">
+              {SUBSCRIPTION_PLANS.monthly.features.map((feature, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3 mb-4">
+            <button
+              onClick={() => handleUpgrade('yearly')}
+              className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium relative"
+            >
+              <div className="absolute top-0 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-b transform translate-y-0">
+                Save 17%
+              </div>
+              <div className="text-lg">${SUBSCRIPTION_PLANS.yearly.price}/year</div>
+              <div className="text-sm opacity-90">Best Value</div>
+            </button>
+
+            <button
+              onClick={() => handleUpgrade('monthly')}
+              className="w-full px-4 py-3 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors font-medium"
+            >
+              <div className="text-lg">${SUBSCRIPTION_PLANS.monthly.price}/month</div>
+              <div className="text-sm opacity-70">Monthly Plan</div>
+            </button>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Maybe Later
+          </button>
+
+          <div className="text-xs text-muted-foreground mt-3">
+            Cancel anytime • Secure payment via Stripe
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -122,6 +122,8 @@ export function ComprehensionQuiz({ article, sessionId, onComplete, onClose }: C
 
   // Skip quiz
   const handleSkip = () => {
+    // Update reading session to indicate quiz was skipped
+    ReadingAnalyticsManager.completeReadingSession(sessionId, undefined);
     onClose();
   };
 

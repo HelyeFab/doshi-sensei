@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import StatsManager from '@/utils/stats';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import CompanionTrigger from '@/components/CompanionTrigger';
@@ -61,20 +60,31 @@ export default function Home() {
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {
-    if (user) {
-      const canSync = userSubscription?.subscription?.status === 'active';
-      console.log('🏠 Homepage - setting up StatsManager:', {
-        userEmail: user.email,
-        canSync: canSync,
-        subscriptionStatus: userSubscription?.subscription?.status
-      });
-      StatsManager.setUser(user, canSync);
-    } else {
-      StatsManager.setUser(null, false);
-    }
+    const loadStatsManager = async () => {
+      try {
+        const { default: StatsManager } = await import('@/utils/stats');
 
-    // Load stats after setting up user context
-    loadStats();
+        if (user) {
+          const canSync = userSubscription?.subscription?.status === 'active';
+          console.log('🏠 Homepage - setting up StatsManager:', {
+            userEmail: user.email,
+            canSync: canSync,
+            subscriptionStatus: userSubscription?.subscription?.status
+          });
+          StatsManager.setUser(user, canSync);
+        } else {
+          StatsManager.setUser(null, false);
+        }
+
+        // Load stats after setting up user context
+        loadStats();
+      } catch (error) {
+        console.error('Error loading StatsManager:', error);
+        setLoading(false);
+      }
+    };
+
+    loadStatsManager();
   }, [user, userSubscription]);
 
   useEffect(() => {
@@ -102,6 +112,7 @@ export default function Home() {
 
   const loadStats = async () => {
     try {
+      const { default: StatsManager } = await import('@/utils/stats');
       const userStats = await StatsManager.getUserStats();
       setStats({
         drillsCompleted: userStats.drillsCompleted,
@@ -232,6 +243,15 @@ export default function Home() {
                   description="Study kanji"
                 />
 
+                {/* Kanji Mood Boards Card */}
+                <FeatureCard
+                  title="Mood Boards"
+                  icon="🗺️"
+                  href="/kanji-moods"
+                  color="green"
+                  description="Learn by theme"
+                />
+
                 {/* Saved Items Card */}
                 <FeatureCard
                   title="Saved Items"
@@ -310,6 +330,15 @@ export default function Home() {
               />
 
               {/* Second Row */}
+              {/* Kanji Mood Boards Card */}
+              <FeatureCard
+                title="Mood Boards"
+                icon="🗺️"
+                href="/kanji-moods"
+                color="green"
+                description="Learn by theme"
+              />
+
               {/* Saved Items Card */}
               <FeatureCard
                 title="Saved Items"

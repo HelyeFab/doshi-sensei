@@ -25,16 +25,16 @@ const primaryNavItems: NavItem[] = [
     href: '/drill'
   },
   {
+    id: 'kanji-moods',
+    label: 'Moods',
+    icon: '🗺️',
+    href: '/kanji-moods'
+  },
+  {
     id: 'reading',
     label: 'Reading',
     icon: '📰',
     href: '/reading'
-  },
-  {
-    id: 'vocabulary',
-    label: 'Browse',
-    icon: '📖',
-    href: '/vocabulary'
   },
   {
     id: 'account',
@@ -53,7 +53,7 @@ export default function BottomNavigation() {
         <div className="flex items-center justify-evenly py-2 px-4 safe-area-bottom">
           {/* All navigation items evenly distributed */}
           {primaryNavItems.map((item) => {
-            const isActive = pathname === item.href && item.href !== '/';
+            const isActive = pathname === item.href || (item.href === '/kanji-moods' && pathname.startsWith('/kanji-moods'));
             return (
               <Link
                 key={item.id}

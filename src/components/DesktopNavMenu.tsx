@@ -31,6 +31,12 @@ const navItems: NavItem[] = [
     href: '/drill'
   },
   {
+    id: 'kanji-moods',
+    label: 'Kanji Mood Boards',
+    icon: '🗺️',
+    href: '/kanji-moods'
+  },
+  {
     id: 'kanji',
     label: 'Kanji Browser',
     icon: '漢',
@@ -94,7 +100,7 @@ export default function DesktopNavMenu() {
           <div className="absolute top-16 right-0 w-64 bg-card/95 backdrop-blur-md border border-border rounded-lg shadow-lg overflow-hidden">
             <div className="py-2">
               {navItems.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = pathname === item.href || (item.href === '/kanji-moods' && pathname.startsWith('/kanji-moods'));
                 return (
                   <Link
                     key={item.id}

@@ -1,0 +1,182 @@
+{
+  "nature_n5": {
+    "id": "nature_n5",
+    "title": "Nature",
+    "emoji": "🌿",
+    "jlpt": "N5",
+    "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    "description": "Learn kanji about natural elements and landscapes",
+    "kanji": [
+      {
+        "char": "木",
+        "meaning": "tree",
+        "readings": {
+          "on": ["モク", "ボク"],
+          "kun": ["き", "こ"]
+        },
+        "examples": ["木曜日", "木の上", "大木"],
+        "difficulty": 1
+      },
+      {
+        "char": "山",
+        "meaning": "mountain",
+        "readings": {
+          "on": ["サン", "セン"],
+          "kun": ["やま"]
+        },
+        "examples": ["富士山", "山川", "登山"],
+        "difficulty": 1
+      },
+      {
+        "char": "川",
+        "meaning": "river",
+        "readings": {
+          "on": ["セン"],
+          "kun": ["かわ", "がわ"]
+        },
+        "examples": ["川魚", "山川", "小川"],
+        "difficulty": 1
+      },
+      {
+        "char": "水",
+        "meaning": "water",
+        "readings": {
+          "on": ["スイ"],
+          "kun": ["みず", "み"]
+        },
+        "examples": ["水曜日", "水道", "冷水"],
+        "difficulty": 1
+      },
+      {
+        "char": "火",
+        "meaning": "fire",
+        "readings": {
+          "on": ["カ"],
+          "kun": ["ひ", "び"]
+        },
+        "examples": ["火曜日", "花火", "火事"],
+        "difficulty": 2
+      }
+    ]
+  },
+  "daily_life_n5": {
+    "id": "daily_life_n5",
+    "title": "Daily Life",
+    "emoji": "🏠",
+    "jlpt": "N5",
+    "background": "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+    "description": "Essential kanji for body parts and daily interactions",
+    "kanji": [
+      {
+        "char": "人",
+        "meaning": "person",
+        "readings": {
+          "on": ["ジン", "ニン"],
+          "kun": ["ひと"]
+        },
+        "examples": ["日本人", "人気", "大人"],
+        "difficulty": 1
+      },
+      {
+        "char": "手",
+        "meaning": "hand",
+        "readings": {
+          "on": ["シュ"],
+          "kun": ["て"]
+        },
+        "examples": ["手紙", "右手", "手帳"],
+        "difficulty": 1
+      },
+      {
+        "char": "口",
+        "meaning": "mouth",
+        "readings": {
+          "on": ["コウ", "ク"],
+          "kun": ["くち", "ぐち"]
+        },
+        "examples": ["人口", "出口", "口紅"],
+        "difficulty": 1
+      },
+      {
+        "char": "目",
+        "meaning": "eye",
+        "readings": {
+          "on": ["モク", "ボク"],
+          "kun": ["め", "ま"]
+        },
+        "examples": ["目標", "一番目", "注目"],
+        "difficulty": 1
+      },
+      {
+        "char": "耳",
+        "meaning": "ear",
+        "readings": {
+          "on": ["ジ"],
+          "kun": ["みみ"]
+        },
+        "examples": ["耳鼻科", "聞き耳", "早耳"],
+        "difficulty": 2
+      }
+    ]
+  },
+  "numbers_n5": {
+    "id": "numbers_n5",
+    "title": "Numbers",
+    "emoji": "🔢",
+    "jlpt": "N5",
+    "background": "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+    "description": "Basic counting numbers from one to five",
+    "kanji": [
+      {
+        "char": "一",
+        "meaning": "one",
+        "readings": {
+          "on": ["イチ", "イツ"],
+          "kun": ["ひと", "ひと・つ"]
+        },
+        "examples": ["一番", "一人", "統一"],
+        "difficulty": 1
+      },
+      {
+        "char": "二",
+        "meaning": "two",
+        "readings": {
+          "on": ["ニ"],
+          "kun": ["ふた", "ふた・つ"]
+        },
+        "examples": ["二人", "二番", "二回"],
+        "difficulty": 1
+      },
+      {
+        "char": "三",
+        "meaning": "three",
+        "readings": {
+          "on": ["サン"],
+          "kun": ["み", "みっ・つ"]
+        },
+        "examples": ["三人", "三番", "三回"],
+        "difficulty": 1
+      },
+      {
+        "char": "四",
+        "meaning": "four",
+        "readings": {
+          "on": ["シ"],
+          "kun": ["よ", "よっ・つ", "よん"]
+        },
+        "examples": ["四人", "四番", "四時"],
+        "difficulty": 1
+      },
+      {
+        "char": "五",
+        "meaning": "five",
+        "readings": {
+          "on": ["ゴ"],
+          "kun": ["いつ", "いつ・つ"]
+        },
+        "examples": ["五人", "五番", "五時"],
+        "difficulty": 1
+      }
+    ]
+  }
+}

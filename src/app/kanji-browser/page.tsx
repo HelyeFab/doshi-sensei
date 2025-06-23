@@ -264,144 +264,144 @@ export default function KanjiBrowserPage() {
           </p>
         </div>
 
-      {/* Search Bar */}
-      <div className="max-w-md mx-auto mb-8">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search kanji by character, meaning, or reading..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-3 pl-10 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-          <svg
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+        {/* Search Bar */}
+        <div className="max-w-md mx-auto mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search kanji by character, meaning, or reading..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-3 pl-10 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+            <svg
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
         </div>
-      </div>
 
-      {/* Search Results */}
-      {searchQuery.trim() && (
-        <div className="mb-8">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">
-              Search Results
+        {/* Search Results */}
+        {searchQuery.trim() && (
+          <div className="mb-8">
+            <div className="bg-card border border-border rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-card-foreground mb-4">
+                Search Results
+                {isSearching ? (
+                  <span className="ml-2 text-sm text-muted-foreground">(searching...)</span>
+                ) : (
+                  <span className="ml-2 text-sm text-muted-foreground">({searchResults.length} found)</span>
+                )}
+              </h3>
               {isSearching ? (
-                <span className="ml-2 text-sm text-muted-foreground">(searching...)</span>
+                <div className="text-center py-8">
+                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+                </div>
+              ) : searchResults.length > 0 ? (
+                renderKanjiGrid(searchResults)
               ) : (
-                <span className="ml-2 text-sm text-muted-foreground">({searchResults.length} found)</span>
+                <p className="text-muted-foreground text-center py-8">
+                  No kanji found matching "{searchQuery}"
+                </p>
               )}
-            </h3>
-            {isSearching ? (
-              <div className="text-center py-8">
-                <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+          {Object.entries(kanjiData).map(([level, kanji]) => (
+            <div key={level} className="bg-card border border-border rounded-lg p-4 text-center">
+              <div className={`w-8 h-8 ${levelInfo[level as JLPTLevel].color} rounded-full mx-auto mb-2 flex items-center justify-center text-white text-sm font-bold`}>
+                {level.replace('N', '')}
               </div>
-            ) : searchResults.length > 0 ? (
-              renderKanjiGrid(searchResults)
-            ) : (
-              <p className="text-muted-foreground text-center py-8">
-                No kanji found matching "{searchQuery}"
-              </p>
-            )}
-          </div>
+              <div className="text-lg font-semibold text-card-foreground">{kanji.length}</div>
+              <div className="text-xs text-muted-foreground">kanji</div>
+            </div>
+          ))}
         </div>
-      )}
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
-        {Object.entries(kanjiData).map(([level, kanji]) => (
-          <div key={level} className="bg-card border border-border rounded-lg p-4 text-center">
-            <div className={`w-8 h-8 ${levelInfo[level as JLPTLevel].color} rounded-full mx-auto mb-2 flex items-center justify-center text-white text-sm font-bold`}>
-              {level.replace('N', '')}
-            </div>
-            <div className="text-lg font-semibold text-card-foreground">{kanji.length}</div>
-            <div className="text-xs text-muted-foreground">kanji</div>
-          </div>
-        ))}
-      </div>
+        {/* Kanji by Level */}
+        <div className="space-y-6 mb-32 md:mb-8 pb-safe">
+          {(['N5', 'N4', 'N3', 'N2', 'N1'] as JLPTLevel[]).map((level) => {
+            const kanji = kanjiData[level] || [];
+            const isExpanded = expandedLevels.has(level);
+            const info = levelInfo[level];
 
-      {/* Kanji by Level */}
-      <div className="space-y-6 mb-32 md:mb-8 pb-safe">
-        {(['N5', 'N4', 'N3', 'N2', 'N1'] as JLPTLevel[]).map((level) => {
-          const kanji = kanjiData[level] || [];
-          const isExpanded = expandedLevels.has(level);
-          const info = levelInfo[level];
-
-          return (
-            <div key={level} className="bg-card border border-border rounded-lg overflow-hidden">
-              <button
-                onClick={() => toggleLevel(level)}
-                className="w-full px-6 py-4 text-left hover:bg-muted transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 ${info.color} rounded-full flex items-center justify-center text-white text-sm font-bold`}>
-                      {level.replace('N', '')}
+            return (
+              <div key={level} className="bg-card border border-border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => toggleLevel(level)}
+                  className="w-full px-6 py-4 text-left hover:bg-muted transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 ${info.color} rounded-full flex items-center justify-center text-white text-sm font-bold`}>
+                        {level.replace('N', '')}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-card-foreground">{info.name}</h3>
+                        <p className="text-sm text-muted-foreground">{info.description} • {kanji.length} kanji</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-card-foreground">{info.name}</h3>
-                      <p className="text-sm text-muted-foreground">{info.description} • {kanji.length} kanji</p>
-                    </div>
+                    <svg
+                      className={`w-5 h-5 text-muted-foreground transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </div>
-                  <svg
-                    className={`w-5 h-5 text-muted-foreground transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </button>
+                </button>
 
-              {isExpanded && (
-                <div className="px-6 pb-6">
-                  {kanji.length > 0 ? (
-                    renderKanjiGrid(kanji)
-                  ) : (
-                    <p className="text-muted-foreground text-center py-8">
-                      No kanji available for {level}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+                {isExpanded && (
+                  <div className="px-6 pb-6">
+                    {kanji.length > 0 ? (
+                      renderKanjiGrid(kanji)
+                    ) : (
+                      <p className="text-muted-foreground text-center py-8">
+                        No kanji available for {level}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Kanji Detail Modal */}
+        {selectedKanji && (
+          <KanjiModal
+            kanji={selectedKanji}
+            isOpen={!!selectedKanji}
+            onClose={() => setSelectedKanji(null)}
+            onSave={() => handleKanjiSave(selectedKanji)}
+          />
+        )}
+
+        {/* Save Kanji Modal */}
+        {showSaveKanjiModal && kanjiToSave && (
+          <SaveKanjiModal
+            kanji={kanjiToSave}
+            kanjiLists={kanjiLists}
+            onClose={() => {
+              setShowSaveKanjiModal(false);
+              setKanjiToSave(null);
+            }}
+            onSaved={() => {
+              setShowSaveKanjiModal(false);
+              setKanjiToSave(null);
+            }}
+            onSaveToLists={handleSaveKanjiToLists}
+          />
+        )}
       </div>
-
-      {/* Kanji Detail Modal */}
-      {selectedKanji && (
-        <KanjiModal
-          kanji={selectedKanji}
-          isOpen={!!selectedKanji}
-          onClose={() => setSelectedKanji(null)}
-          onSave={() => handleKanjiSave(selectedKanji)}
-        />
-      )}
-
-      {/* Save Kanji Modal */}
-      {showSaveKanjiModal && kanjiToSave && (
-        <SaveKanjiModal
-          kanji={kanjiToSave}
-          kanjiLists={kanjiLists}
-          onClose={() => {
-            setShowSaveKanjiModal(false);
-            setKanjiToSave(null);
-          }}
-          onSaved={() => {
-            setShowSaveKanjiModal(false);
-            setKanjiToSave(null);
-          }}
-          onSaveToLists={handleSaveKanjiToLists}
-        />
-      )}
-    </div>
     </>
   );
 }
@@ -525,9 +525,8 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
             {studyLists.map((list) => {
               const canAdd = canAddToList(list.type);
               return (
-                <label key={list.id} className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg transition-colors ${
-                  canAdd ? 'hover:bg-muted/50' : 'opacity-60'
-                }`}>
+                <label key={list.id} className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg transition-colors ${canAdd ? 'hover:bg-muted/50' : 'opacity-60'
+                  }`}>
                   <input
                     type="checkbox"
                     checked={selectedLists.includes(list.id)}
@@ -545,9 +544,8 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
                       <span className="text-xs text-muted-foreground">
                         ({list.itemIds.length} items)
                       </span>
-                      <span className={`text-xs px-2 py-0.5 rounded ${
-                        list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
-                      }`}>
+                      <span className={`text-xs px-2 py-0.5 rounded ${list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
+                        }`}>
                         {list.type}
                       </span>
                     </div>

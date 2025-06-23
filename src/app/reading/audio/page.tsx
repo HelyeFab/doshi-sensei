@@ -6,17 +6,15 @@ import { useSearchParams, useRouter } from 'next/navigation';
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
 import { NewsArticle } from '@/types/news';
+import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import { JapaneseNewsScraper } from '@/utils/newsScraper';
+import { searchWords } from '@/utils/api';
+import { StudyListManager } from '@/utils/studyListManager';
 import TTSManager from '@/utils/tts';
-// Dynamic import to avoid SSR issues - will be loaded on client side
-let EdgeTTSManager: any = null;
-if (typeof window !== 'undefined') {
-  import('@/utils/edgeTTS').then(module => {
-    EdgeTTSManager = module.default;
-  });
-}
 import TranslationManager from '@/utils/translation';
-import { PageHeader } from '@/components/PageHeader';
+import { generateFuriganaWithCache } from '@/utils/furigana';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 interface AudioControls {
   isPlaying: boolean;
@@ -27,6 +25,394 @@ interface AudioControls {
   autoAdvance: boolean;
 }
 
+interface VocabularyPopupProps {
+  word: string;
+  position: { x: number; y: number };
+  onClose: () => void;
+  onSaveToList: (word: JapaneseWord) => void;
+}
+
+function VocabularyPopup({ word, position, onClose, onSaveToList }: VocabularyPopupProps) {
+  const [wordData, setWordData] = useState<JapaneseWord | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  console.log('🎉 VocabularyPopup RENDERED! Word:', word, 'Position:', position);
+
+  useEffect(() => {
+    console.log('🔍 VocabularyPopup useEffect triggered for word:', word);
+    const fetchWordData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('📡 Fetching word data for:', word);
+        const results = await searchWords(word, 1);
+        if (results.length > 0) {
+          console.log('✅ Word data found:', results[0]);
+          setWordData(results[0]);
+        } else {
+          console.log('❌ No word data found');
+          setError('Word not found');
+        }
+      } catch (err) {
+        console.log('❌ Error fetching word data:', err);
+        setError('Failed to search for word');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWordData();
+  }, [word]);
+
+  const handleSaveToList = () => {
+    if (wordData) {
+      onSaveToList(wordData);
+    }
+  };
+
+  const handlePlayPronunciation = async () => {
+    if (!wordData) return;
+
+    try {
+      setIsPlaying(true);
+      // Use the word's kanji for TTS pronunciation
+      await TTSManager.speak(wordData.kanji, 'female');
+    } catch (error) {
+      console.error('TTS Error in vocabulary popup:', error);
+    } finally {
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <>
+      {/* Modal Overlay */}
+      <div
+        className="fixed inset-0 bg-black/50 z-[9998]"
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div className="bg-card border border-border rounded-lg shadow-2xl p-6 w-full max-w-sm mx-auto">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-lg font-bold text-foreground">{word}</h3>
+            <button
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground text-xl"
+            >
+              ✕
+            </button>
+          </div>
+
+          {loading && (
+            <div className="flex items-center gap-2 text-muted-foreground py-4">
+              <span className="animate-spin">⏳</span>
+              <span>Searching...</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="text-destructive text-sm py-4">{error}</div>
+          )}
+
+          {wordData && (
+            <div className="space-y-4">
+              <div>
+                <div className="text-sm text-muted-foreground mb-1">Reading</div>
+                <div className="flex items-center gap-3">
+                  <div className="font-medium text-lg">{wordData.kana}</div>
+                  <button
+                    onClick={handlePlayPronunciation}
+                    disabled={isPlaying}
+                    className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50"
+                    title="Play pronunciation"
+                  >
+                    {isPlaying ? '⏳' : '🔊'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-sm text-muted-foreground mb-1">Meaning</div>
+                <div className="text-base">{wordData.meaning}</div>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-2 py-1 bg-primary/10 text-primary rounded">
+                  {wordData.jlpt}
+                </span>
+                <span className="px-2 py-1 bg-muted text-muted-foreground rounded">
+                  {wordData.type}
+                </span>
+              </div>
+
+              <div className="flex gap-2 pt-2 border-t border-border">
+                <button
+                  onClick={handleSaveToList}
+                  className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90 transition-colors"
+                >
+                  Save to List
+                </button>
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 bg-muted text-muted-foreground rounded text-sm hover:bg-muted/80 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+interface SaveWordModalProps {
+  word: JapaneseWord;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+function SaveWordModal({ word, onClose, onSaved }: SaveWordModalProps) {
+  const { user } = useAuth();
+  const { userSubscription } = useSubscription();
+  const [studyLists, setStudyLists] = useState<StudyList[]>([]);
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [showCreateNew, setShowCreateNew] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [newListType, setNewListType] = useState<StudyListType>('flashcard');
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  // Load unified study lists
+  useEffect(() => {
+    const loadStudyLists = async () => {
+      try {
+        const lists = await StudyListManager.getAllStudyLists();
+        setStudyLists(lists);
+      } catch (error) {
+        console.error('Error loading study lists:', error);
+      }
+    };
+    loadStudyLists();
+  }, []);
+
+  const handleToggleList = (listId: string) => {
+    setSelectedLists(prev =>
+      prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId]
+    );
+  };
+
+  const canAddToList = (listType: StudyListType): boolean => {
+    return StudyListManager.canAddToList('word', word, listType);
+  };
+
+  const getValidationMessage = (listType: StudyListType): string => {
+    if (listType === 'drillable') {
+      const canAdd = StudyListManager.canAddToList('word', word, listType);
+      return canAdd ? 'Compatible: Can be used for conjugation drills' : 'Not compatible: Only verbs and adjectives can be conjugated';
+    }
+    return 'Compatible: Can be used for flashcard review';
+  };
+
+  const handleSave = async () => {
+    if (selectedLists.length === 0 && !newListName.trim()) return;
+
+    try {
+      setSaving(true);
+      setErrors([]);
+
+      let listsToSaveTo = [...selectedLists];
+
+      // Create new list if specified
+      if (newListName.trim()) {
+        const newList = await StudyListManager.createStudyList(
+          newListName,
+          newListType,
+          `Created for saving ${word.kanji}`,
+          user,
+          userSubscription?.subscription?.status
+        );
+        listsToSaveTo.push(newList.id);
+      }
+
+      // Save word to selected lists using new unified system
+      const result = await StudyListManager.addItemToLists(
+        word,
+        'word',
+        listsToSaveTo,
+        user,
+        userSubscription?.subscription?.status
+      );
+
+      if (result.success) {
+        onSaved();
+        onClose();
+      } else {
+        setErrors(result.errors);
+      }
+    } catch (err) {
+      console.error('Error saving word:', err);
+      setErrors(['Failed to save word to lists']);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[10000]">
+      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <h3 className="text-lg font-semibold text-card-foreground mb-4">
+          Save "{word.kanji}" to Lists
+        </h3>
+
+        {/* Error messages */}
+        {errors.length > 0 && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+            <div className="text-sm text-red-400">
+              {errors.map((error, index) => (
+                <div key={index}>• {error}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {studyLists.length > 0 && (
+          <div className="space-y-3 mb-4">
+            <h4 className="text-sm font-medium text-muted-foreground">Select existing lists:</h4>
+            {studyLists.map((list) => {
+              const canAdd = canAddToList(list.type);
+              return (
+                <label key={list.id} className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg transition-colors ${
+                  canAdd ? 'hover:bg-muted/50' : 'opacity-60'
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={selectedLists.includes(list.id)}
+                    onChange={() => canAdd && handleToggleList(list.id)}
+                    disabled={!canAdd}
+                    className="rounded border-border mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: list.color }}
+                      ></div>
+                      <span className="text-sm text-foreground">{list.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({list.itemIds.length} items)
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
+                      }`}>
+                        {list.type}
+                      </span>
+                    </div>
+                    <div className={`text-xs ${canAdd ? 'text-green-400' : 'text-red-400'}`}>
+                      {getValidationMessage(list.type)}
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center gap-2 mb-3">
+            <input
+              type="checkbox"
+              checked={showCreateNew}
+              onChange={(e) => setShowCreateNew(e.target.checked)}
+              className="rounded border-border"
+            />
+            <label className="text-sm font-medium text-muted-foreground cursor-pointer">
+              Create new list
+            </label>
+          </div>
+
+          {showCreateNew && (
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                placeholder="New list name..."
+                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                maxLength={50}
+              />
+
+              <div>
+                <label className="block text-xs text-muted-foreground mb-2">List Type:</label>
+                <div className="space-y-2">
+                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
+                    <input
+                      type="radio"
+                      name="listType"
+                      value="flashcard"
+                      checked={newListType === 'flashcard'}
+                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                      className="mt-0.5"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-foreground">Flashcard List</div>
+                      <div className="text-xs text-muted-foreground">For memorization and review (accepts any content)</div>
+                    </div>
+                  </label>
+
+                  <label className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg border transition-colors ${
+                    canAddToList('drillable') ? 'border-input' : 'border-input opacity-60'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="listType"
+                      value="drillable"
+                      checked={newListType === 'drillable'}
+                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                      disabled={!canAddToList('drillable')}
+                      className="mt-0.5"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-foreground">Drillable List</div>
+                      <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
+                      {!canAddToList('drillable') && (
+                        <div className="text-xs text-red-400 mt-1">⚠️ This word cannot be conjugated</div>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={(selectedLists.length === 0 && !newListName.trim()) || saving}
+            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? 'Saving...' : 'Save Word'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AudioPlayerPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -34,6 +420,7 @@ export default function AudioPlayerPage() {
 
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [sentences, setSentences] = useState<string[]>([]);
+  const [processedSentences, setProcessedSentences] = useState<string[]>([]);
   const [controls, setControls] = useState<AudioControls>({
     isPlaying: false,
     isPaused: false,
@@ -46,20 +433,23 @@ export default function AudioPlayerPage() {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState<Record<number, number>>({});
   const [loadingArticle, setLoadingArticle] = useState(true);
-  const [ttsEngine, setTtsEngine] = useState<'google' | 'edge'>('google');
-  const [edgeAvailable, setEdgeAvailable] = useState(false);
   const [translations, setTranslations] = useState<Map<string, string>>(new Map());
   const [translationLoading, setTranslationLoading] = useState(false);
   const [translationAvailable, setTranslationAvailable] = useState(false);
-  const [mobileControlsCollapsed, setMobileControlsCollapsed] = useState(true);
+  const [selectedWord, setSelectedWord] = useState<{
+    word: string;
+    position: { x: number; y: number };
+  } | null>(null);
+  const [showSaveWordModal, setShowSaveWordModal] = useState(false);
+  const [wordToSave, setWordToSave] = useState<JapaneseWord | null>(null);
+  const [enhancedSentence, setEnhancedSentence] = useState<string>('');
 
   const audioTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const MAX_RETRIES_PER_SENTENCE = 2;
 
-  // Check Edge TTS and Translation availability
+  // Check Translation availability
   useEffect(() => {
     const checkAvailability = async () => {
-      // Check translation availability (safe)
       try {
         const translationAvailable = TranslationManager.isAvailable();
         setTranslationAvailable(translationAvailable);
@@ -67,16 +457,6 @@ export default function AudioPlayerPage() {
       } catch (error) {
         console.log('❌ Translation availability check failed:', error);
         setTranslationAvailable(false);
-      }
-
-      // Check Edge TTS availability (potentially unsafe)
-      try {
-        const edgeAvailable = await EdgeTTSManager.isAvailable();
-        setEdgeAvailable(edgeAvailable);
-        console.log('🔍 Edge TTS available:', edgeAvailable);
-      } catch (error) {
-        console.log('❌ Edge TTS availability check failed, disabling Edge TTS:', error);
-        setEdgeAvailable(false);
       }
     };
 
@@ -111,6 +491,13 @@ export default function AudioPlayerPage() {
           .map(sentence => sentence.trim() + '。');
 
         setSentences(rawSentences);
+
+        // Process sentences with furigana
+        const processedSentencesData = await Promise.all(
+          rawSentences.map(sentence => generateFuriganaWithCache(sentence))
+        );
+        setProcessedSentences(processedSentencesData);
+
       } catch (err) {
         console.error('Failed to load article:', err);
         setError('Failed to load article');
@@ -121,6 +508,108 @@ export default function AudioPlayerPage() {
 
     loadArticle();
   }, [articleId, router]);
+
+  // Handle vocabulary word click
+  const handleWordClick = (event: React.MouseEvent<HTMLElement>) => {
+    console.log('🔍 Click detected on:', event.target);
+    const target = event.target as HTMLElement;
+    const word = target.textContent?.trim();
+    console.log('🔍 Extracted word:', word);
+    console.log('🔍 Target classes:', target.className);
+
+    if (word && word.length >= 1) {
+      console.log('✅ Word is valid, showing popup for:', word);
+      const rect = target.getBoundingClientRect();
+      const newSelectedWord = {
+        word,
+        position: {
+          x: rect.left,
+          y: rect.top + window.scrollY
+        }
+      };
+      console.log('🔍 Setting selectedWord to:', newSelectedWord);
+      setSelectedWord(newSelectedWord);
+      console.log('🔍 selectedWord state after setting:', selectedWord);
+    } else {
+      console.log('❌ Word not valid or too short');
+    }
+  };
+
+  // Save word to study list
+  const handleSaveWordToList = (word: JapaneseWord) => {
+    setWordToSave(word);
+    setShowSaveWordModal(true);
+    setSelectedWord(null); // Close the vocabulary popup
+  };
+
+  // Get styling for part of speech
+  const getPartOfSpeechStyle = (type: string): string => {
+    const styles: Record<string, string> = {
+      'Ichidan': 'border-b-2 border-blue-300 hover:border-blue-400', // Verbs - Blue
+      'Godan': 'border-b-2 border-blue-300 hover:border-blue-400', // Verbs - Blue
+      'Irregular': 'border-b-2 border-purple-300 hover:border-purple-400', // Irregular verbs - Purple
+      'i-adjective': 'border-b-2 border-green-300 hover:border-green-400', // Adjectives - Green
+      'na-adjective': 'border-b-2 border-green-300 hover:border-green-400', // Adjectives - Green
+      'noun': 'border-b-2 border-orange-300 hover:border-orange-400', // Nouns - Orange
+      'adverb': 'border-b-2 border-pink-300 hover:border-pink-400', // Adverbs - Pink
+      'particle': 'border-b-2 border-gray-300 hover:border-gray-400', // Particles - Gray
+      'expression': 'border-b-2 border-teal-300 hover:border-teal-400', // Expressions - Teal
+      'default': 'border-b-2 border-slate-300 hover:border-slate-400' // Default - Slate
+    };
+
+    return styles[type] || styles.default;
+  };
+
+  // Enhanced text rendering with intelligent word highlighting using furigana boundaries
+  const renderTextWithHighlighting = async (text: string): Promise<string> => {
+    console.log('🔍 Processing text for highlighting:', text);
+
+    if (!text || text.trim() === '') {
+      console.log('❌ No text to process');
+      return text;
+    }
+
+    // Create a working copy
+    let processedText = text;
+
+    // Parse ruby tags to find complete words with their readings
+    const rubyRegex = /<ruby>([^<]+)<rp>\(<\/rp><rt>([^<]+)<\/rt><rp>\)<\/rp><\/ruby>/g;
+    const rubyMatches = [...text.matchAll(rubyRegex)];
+
+    console.log('📝 Found ruby words:', rubyMatches.map(match => ({
+      word: match[1],
+      reading: match[2]
+    })));
+
+    // Use inline styles for colors since Tailwind classes won't be included in build
+    const colorRotation = [
+      'border-bottom: 2px solid #60a5fa; cursor: pointer; transition: all 0.2s;', // Blue
+      'border-bottom: 2px solid #4ade80; cursor: pointer; transition: all 0.2s;', // Green
+      'border-bottom: 2px solid #fb923c; cursor: pointer; transition: all 0.2s;', // Orange
+      'border-bottom: 2px solid #a78bfa; cursor: pointer; transition: all 0.2s;', // Purple
+      'border-bottom: 2px solid #f472b6; cursor: pointer; transition: all 0.2s;', // Pink
+      'border-bottom: 2px solid #2dd4bf; cursor: pointer; transition: all 0.2s;', // Teal
+    ];
+
+    // Apply highlighting to complete words found in ruby tags
+    rubyMatches.forEach((match, index) => {
+      const fullMatch = match[0];
+      const word = match[1];
+      const reading = match[2];
+      const colorStyle = colorRotation[index % colorRotation.length];
+
+      // Create enhanced ruby tag with vocabulary highlighting on the word part
+      const enhancedRuby = `<ruby><span class="vocabulary-highlight" style="${colorStyle}" data-word="${word}" title="${word} (${reading})">${word}</span><rp>(</rp><rt>${reading}</rt><rp>)</rp></ruby>`;
+
+      // Replace the original ruby tag with the enhanced version
+      processedText = processedText.replace(fullMatch, enhancedRuby);
+
+      console.log(`✅ Enhanced word: ${word} (${reading}) with color ${index % colorRotation.length}`);
+    });
+
+    console.log('✅ Final processed text with word-based highlighting:', processedText);
+    return processedText;
+  };
 
   // Handle audio completion and auto-advance
   const handleAudioComplete = (currentIndex: number) => {
@@ -183,20 +672,8 @@ export default function AudioPlayerPage() {
         currentSentence: index
       }));
 
-      // Play sentence with selected TTS engine
-      if (ttsEngine === 'edge' && edgeAvailable) {
-        try {
-          await EdgeTTSManager.speak(sentence);
-        } catch (edgeError) {
-          console.log('❌ Edge TTS failed, falling back to Google TTS:', edgeError);
-          // Disable Edge TTS and fallback to Google TTS
-          setEdgeAvailable(false);
-          setTtsEngine('google');
-          await TTSManager.speak(sentence, 'female');
-        }
-      } else {
-        await TTSManager.speak(sentence, 'female');
-      }
+      // Play sentence with Google TTS
+      await TTSManager.speak(sentence, 'female');
 
       // Reset retry count on success
       setRetryCount(prev => ({
@@ -244,16 +721,6 @@ export default function AudioPlayerPage() {
     }
   };
 
-  // Play entire article
-  const playEntireArticle = async () => {
-    setControls(prev => ({
-      ...prev,
-      currentSentence: 0,
-      autoAdvance: true
-    }));
-    await playCurrentSentence(0);
-  };
-
   // Pause/Resume
   const togglePause = () => {
     if (controls.isPlaying) {
@@ -277,8 +744,7 @@ export default function AudioPlayerPage() {
     setControls(prev => ({
       ...prev,
       isPlaying: false,
-      isPaused: false,
-      currentSentence: 0
+      isPaused: false
     }));
   };
 
@@ -327,6 +793,26 @@ export default function AudioPlayerPage() {
     translateCurrentSentence();
   }, [controls.currentSentence, sentences, translationAvailable, translations]);
 
+  // Process current sentence for highlighting when it changes
+  useEffect(() => {
+    const processCurrentSentence = async () => {
+      if (processedSentences.length === 0) return;
+
+      const currentProcessedSentence = processedSentences[controls.currentSentence] || sentences[controls.currentSentence] || '';
+      if (currentProcessedSentence) {
+        try {
+          const enhanced = await renderTextWithHighlighting(currentProcessedSentence);
+          setEnhancedSentence(enhanced);
+        } catch (error) {
+          console.error('Error processing sentence for highlighting:', error);
+          setEnhancedSentence(currentProcessedSentence);
+        }
+      }
+    };
+
+    processCurrentSentence();
+  }, [controls.currentSentence, processedSentences, sentences]);
+
   // Get current sentence translation
   const getCurrentTranslation = (): string => {
     if (!translationAvailable) return 'Translation service not available';
@@ -348,12 +834,10 @@ export default function AudioPlayerPage() {
 
   if (loadingArticle) {
     return (
-      <div className="container mx-auto px-4 py-6 min-h-screen">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin text-4xl mb-4">⏳</div>
-            <p className="text-muted-foreground">Loading article...</p>
-          </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin text-4xl mb-4">⏳</div>
+          <p className="text-muted-foreground">Loading article...</p>
         </div>
       </div>
     );
@@ -361,35 +845,40 @@ export default function AudioPlayerPage() {
 
   if (!article) {
     return (
-      <div className="container mx-auto px-4 py-6 min-h-screen">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="text-6xl mb-4">❌</div>
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              Article not found
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              The requested article could not be loaded.
-            </p>
-            <button
-              onClick={() => router.push('/reading')}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-            >
-              Back to Reading
-            </button>
-          </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">❌</div>
+          <h3 className="text-lg font-medium text-foreground mb-2">
+            Article not found
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            The requested article could not be loaded.
+          </p>
+          <button
+            onClick={() => router.push('/reading')}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+          >
+            Back to Reading
+          </button>
         </div>
       </div>
     );
   }
 
+  const currentSentence = sentences[controls.currentSentence] || '';
+  const currentProcessedSentence = processedSentences[controls.currentSentence] || currentSentence;
+
+  console.log('🔍 Debug - Current sentence:', currentSentence);
+  console.log('🔍 Debug - Processed sentence:', currentProcessedSentence);
+  console.log('🔍 Debug - Enhanced sentence state:', enhancedSentence);
+
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-4 pt-20">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-foreground">🎵 Audio Reader</h1>
+            <h1 className="text-xl font-bold text-foreground">📚 Audio Reader</h1>
             <button
               onClick={() => router.push('/reading')}
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -400,298 +889,199 @@ export default function AudioPlayerPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Article Info */}
-          <div className="bg-card rounded-lg p-6 mb-6 border border-border">
-            <h1 className="text-2xl font-bold text-foreground mb-4">{article.title}</h1>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <span>📅 {new Date(article.publishDate).toLocaleDateString()}</span>
-              <span>📖 {article.estimatedReadingTime} min read</span>
-              <span>📊 {article.difficulty}</span>
-              <span>🏷️ {article.category}</span>
-              <span>📝 {sentences.length} sentences</span>
-            </div>
+      <div className="container mx-auto px-4 py-6 pb-24 max-w-4xl">
+        {/* Article Stats */}
+        <div className="bg-card rounded-lg p-6 mb-6 border border-border">
+          <h1 className="text-2xl font-bold text-foreground mb-4">{article.title}</h1>
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <span>📅 {new Date(article.publishDate).toLocaleDateString()}</span>
+            <span>📖 {article.estimatedReadingTime} min read</span>
+            <span>📊 {article.difficulty}</span>
+            <span>🏷️ {article.category}</span>
+            <span>📝 {sentences.length} sentences</span>
           </div>
-
-          {/* Audio Controls - Moved to top for better accessibility */}
-          <div className="bg-card rounded-lg border border-border mb-6">
-            <div className="p-4 border-b border-border">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-foreground">🎵 Audio Controls</h3>
-                {/* Mobile collapse toggle */}
-                <button
-                  onClick={() => setMobileControlsCollapsed(!mobileControlsCollapsed)}
-                  className="lg:hidden p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-                  aria-label={mobileControlsCollapsed ? "Expand controls" : "Collapse controls"}
-                >
-                  {mobileControlsCollapsed ? '▼' : '▲'}
-                </button>
-              </div>
-            </div>
-            <div className={`transition-all duration-300 overflow-hidden ${
-              mobileControlsCollapsed ? 'lg:block hidden' : 'block'
-            }`}>
-              <div className="p-6">
-              {/* Main Controls */}
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <button
-                  onClick={previousSentence}
-                  disabled={controls.currentSentence === 0}
-                  className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  ⏮️
-                </button>
-
-                <button
-                  onClick={() => controls.isPlaying ? togglePause() : playCurrentSentence()}
-                  disabled={isLoading}
-                  className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 text-xl"
-                >
-                  {isLoading ? '⏳' : controls.isPlaying ? '⏸️' : '▶️'}
-                </button>
-
-                <button
-                  onClick={nextSentence}
-                  disabled={controls.currentSentence === sentences.length - 1}
-                  className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  ⏭️
-                </button>
-              </div>
-
-              {/* Secondary Controls */}
-              <div className="space-y-4">
-                <div className="flex gap-3">
-                  <button
-                    onClick={playEntireArticle}
-                    disabled={isLoading}
-                    className="flex-1 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
-                  >
-                    📖 Play All
-                  </button>
-                  <button
-                    onClick={stopPlayback}
-                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
-                  >
-                    ⏹️ Stop
-                  </button>
-                </div>
-
-                {/* TTS Engine Selector - EXPERIMENTAL */}
-                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
-                      🧪 TTS Engine (Test)
-                    </span>
-                    <span className="text-xs text-yellow-600 dark:text-yellow-400">
-                      {edgeAvailable ? '✅ Edge Available' : '❌ Edge Unavailable'}
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setTtsEngine('google')}
-                      className={`flex-1 px-3 py-2 rounded text-sm transition-colors ${
-                        ttsEngine === 'google'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                      }`}
-                    >
-                      Google TTS
-                    </button>
-                    <button
-                      onClick={() => setTtsEngine('edge')}
-                      disabled={!edgeAvailable}
-                      className={`flex-1 px-3 py-2 rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                        ttsEngine === 'edge'
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                      }`}
-                    >
-                      Edge TTS
-                    </button>
-                  </div>
-                  {ttsEngine === 'edge' && (
-                    <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
-                      Using Microsoft Edge TTS (experimental)
-                    </div>
-                  )}
-                </div>
-
-                {/* Auto-advance toggle */}
-                <label className="flex items-center justify-between">
-                  <span className="text-sm text-foreground">Auto-advance</span>
-                  <input
-                    type="checkbox"
-                    checked={controls.autoAdvance}
-                    onChange={(e) => setControls(prev => ({
-                      ...prev,
-                      autoAdvance: e.target.checked
-                    }))}
-                    className="rounded"
-                  />
-                </label>
-
-                {/* Progress Bar */}
-                <div>
-                  <div className="flex justify-between text-xs text-muted-foreground mb-2">
-                    <span>Progress</span>
-                    <span>{controls.currentSentence + 1} / {sentences.length}</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-3">
-                    <div
-                      className="bg-primary h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${((controls.currentSentence + 1) / sentences.length) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Audio Player Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left: Sentence List */}
-            <div className="lg:col-span-1">
-              <div className="bg-card rounded-lg border border-border">
-                <div className="p-4 border-b border-border">
-                  <h3 className="font-medium text-foreground mb-2">📝 Sentences</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {sentences.length} sentences total
-                  </p>
-                </div>
-
-                <div className="max-h-96 overflow-y-auto p-4 space-y-3">
-                  {sentences.map((sentence, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
-                        index === controls.currentSentence
-                          ? 'bg-primary/10 border-2 border-primary shadow-sm'
-                          : 'bg-muted hover:bg-muted/80 border-2 border-transparent'
-                      }`}
-                      onClick={() => goToSentence(index)}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                          index === controls.currentSentence
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted-foreground text-background'
-                        }`}>
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground leading-relaxed">
-                            {sentence}
-                          </p>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // If this sentence is currently playing, pause it
-                            if (index === controls.currentSentence && controls.isPlaying) {
-                              togglePause();
-                            } else {
-                              // Otherwise, play this sentence
-                              playCurrentSentence(index);
-                            }
-                          }}
-                          className="p-2 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-                          disabled={isLoading}
-                        >
-                          {isLoading && index === controls.currentSentence ? '⏳' :
-                           (index === controls.currentSentence && controls.isPlaying) ? '⏸️' : '▶️'}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Center: Current Sentence Display */}
-            <div className="lg:col-span-1">
-              <div className="bg-card rounded-lg border border-border h-full">
-                <div className="p-4 border-b border-border">
-                  <h3 className="font-medium text-foreground mb-2">🎯 Current Sentence</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {controls.currentSentence + 1} of {sentences.length}
-                  </p>
-                </div>
-
-                <div className="p-6 flex flex-col justify-center min-h-80">
-                  {sentences.length > 0 && (
-                    <div className="space-y-6">
-                      {/* Current Sentence */}
-                      <div className="text-center">
-                        <div className="text-3xl leading-relaxed text-foreground mb-6 p-6 bg-muted rounded-lg">
-                          {sentences[controls.currentSentence]}
-                        </div>
-                      </div>
-
-                      {/* Real-time Translation */}
-                      <div className="text-center p-4 bg-muted rounded-lg border border-border">
-                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-2">
-                          <span>💡 English Translation</span>
-                          {translationLoading && <span className="animate-spin">⏳</span>}
-                          {translationAvailable && (
-                            <span className="text-xs bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
-                              DeepL
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-foreground font-medium">
-                          {translationLoading ? (
-                            <span className="italic text-muted-foreground">Translating...</span>
-                          ) : (
-                            <span className={getCurrentTranslation() ? '' : 'italic text-muted-foreground'}>
-                              {getCurrentTranslation() || 'Translation not available'}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Vocabulary Analysis */}
-            <div className="lg:col-span-1">
-              <div className="bg-card rounded-lg border border-border">
-                <div className="p-4 border-b border-border">
-                  <h3 className="font-medium text-foreground mb-2">📚 Key Vocabulary</h3>
-                </div>
-                <div className="p-4">
-                  <div className="flex flex-wrap gap-2">
-                    {sentences[controls.currentSentence]
-                      ?.match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]{2,}/g)
-                      ?.slice(0, 6)
-                      .map((word, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-2 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-lg text-sm cursor-pointer hover:bg-green-200 dark:hover:bg-green-700 transition-colors"
-                        >
-                          {word}
-                        </span>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Error Display */}
-          {error && (
-            <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
-              <div className="flex items-center gap-2 text-red-800 dark:text-red-200">
-                <span>⚠️</span>
-                <span>{error}</span>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Audio Controls */}
+        <div className="bg-card rounded-lg border border-border mb-6 p-6">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <button
+              onClick={previousSentence}
+              disabled={controls.currentSentence === 0}
+              className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ⏮️
+            </button>
+
+            <button
+              onClick={() => controls.isPlaying ? togglePause() : playCurrentSentence()}
+              disabled={isLoading}
+              className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 text-xl"
+            >
+              {isLoading ? '⏳' : controls.isPlaying ? '⏸️' : '▶️'}
+            </button>
+
+            <button
+              onClick={nextSentence}
+              disabled={controls.currentSentence === sentences.length - 1}
+              className="p-3 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ⏭️
+            </button>
+          </div>
+
+          {/* Progress and Controls */}
+          <div className="space-y-4">
+            {/* Progress Bar */}
+            <div>
+              <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                <span>Progress</span>
+                <span>{controls.currentSentence + 1} / {sentences.length}</span>
+              </div>
+              <div className="w-full bg-muted rounded-full h-3">
+                <div
+                  className="bg-primary h-3 rounded-full transition-all duration-300"
+                  style={{ width: `${((controls.currentSentence + 1) / sentences.length) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Speed and Auto-advance */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-foreground mb-2">Playback Speed</label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value={controls.playbackSpeed}
+                  onChange={(e) => setControls(prev => ({ ...prev, playbackSpeed: parseFloat(e.target.value) }))}
+                  className="w-full"
+                />
+                <div className="text-xs text-muted-foreground mt-1">{controls.playbackSpeed}x</div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-foreground">Auto-advance</span>
+                <input
+                  type="checkbox"
+                  checked={controls.autoAdvance}
+                  onChange={(e) => setControls(prev => ({ ...prev, autoAdvance: e.target.checked }))}
+                  className="rounded"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Individual Sentence Card */}
+        <div className="bg-card rounded-lg border border-border mb-6 p-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+              {controls.currentSentence + 1}
+            </div>
+            <div className="flex-1 text-foreground">
+              {currentSentence}
+            </div>
+            <button
+              onClick={() => playCurrentSentence()}
+              disabled={isLoading}
+              className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+            >
+              {isLoading ? '⏳' : '▶️'}
+            </button>
+          </div>
+        </div>
+
+        {/* Current Sentence Magnified */}
+        <div className="bg-card rounded-lg border border-border mb-6">
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className="text-red-500">🎯</span>
+              <h3 className="font-medium text-foreground">Current Sentence</h3>
+              <span className="text-sm text-muted-foreground">
+                {controls.currentSentence + 1} of {sentences.length}
+              </span>
+            </div>
+          </div>
+          <div className="p-8">
+            <div
+              className="text-3xl leading-relaxed text-foreground text-center"
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.classList.contains('vocabulary-highlight')) {
+                  handleWordClick(e as any);
+                }
+              }}
+              dangerouslySetInnerHTML={{
+                __html: enhancedSentence
+              }}
+            />
+          </div>
+        </div>
+
+        {/* English Translation */}
+        <div className="bg-card rounded-lg border border-border mb-6">
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span>💡</span>
+              <span className="font-medium text-foreground">English Translation</span>
+              {translationLoading && <span className="animate-spin">⏳</span>}
+              {translationAvailable && (
+                <span className="text-xs bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
+                  DeepL
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="text-xl text-foreground text-center">
+              {translationLoading ? (
+                <span className="italic text-muted-foreground">Translating...</span>
+              ) : (
+                <span className={getCurrentTranslation() ? '' : 'italic text-muted-foreground'}>
+                  {getCurrentTranslation() || 'Translation not available'}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
+            <div className="flex items-center gap-2 text-red-800 dark:text-red-200">
+              <span>⚠️</span>
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Vocabulary Popup */}
+        {selectedWord && (
+          <VocabularyPopup
+            word={selectedWord.word}
+            position={selectedWord.position}
+            onClose={() => setSelectedWord(null)}
+            onSaveToList={handleSaveWordToList}
+          />
+        )}
+
+        {/* Save Word Modal */}
+        {showSaveWordModal && wordToSave && (
+          <SaveWordModal
+            word={wordToSave}
+            onClose={() => {
+              setShowSaveWordModal(false);
+              setWordToSave(null);
+            }}
+            onSaved={() => {
+              setShowSaveWordModal(false);
+              setWordToSave(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );

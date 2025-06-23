@@ -97,6 +97,18 @@ Welcome to the complete documentation collection for **Doshi Sensei** - a Next.j
 
 *Complete documentation for the theme system implementation and usage.*
 
+### [Admin Dashboard Implementation Plan](./ADMIN_DASHBOARD_IMPLEMENTATION_PLAN.md)
+**Comprehensive admin dashboard implementation strategy and technical documentation**
+
+- 🚀 **Admin-only Access**: Restricted to emmanuelfabiani23@gmail.com with email verification
+- 📊 **Real-time Statistics**: Live user counts, subscription metrics, and feature usage analytics
+- 👥 **User Management**: Search users, grant premium accounts, and view subscription details
+- 🎨 **Mood Board Management**: Hybrid editor (Form + JSON modes) for creating/editing mood boards
+- 📱 **Mobile Responsive**: Full mobile support with adaptive layout design
+- 🔒 **Security Architecture**: Firestore security rules, admin action logging, and route protection
+
+*Complete technical plan for the admin dashboard with Firestore integration and hybrid mood board editor.*
+
 ---
 
 ## 🧪 Development & Testing
@@ -172,10 +184,10 @@ Welcome to the complete documentation collection for **Doshi Sensei** - a Next.j
 | Category | Documents | Total Size | Key Features |
 |----------|-----------|------------|--------------|
 | **Project Overview** | 2 docs | ~15KB | Requirements, setup |
-| **Implementation** | 5 docs | ~130KB | System fixes, roadmap, feature plans, themes |
+| **Implementation** | 6 docs | ~180KB | System fixes, roadmap, feature plans, themes, admin dashboard |
 | **Development** | 1 doc | ~25KB | Testing, CI/CD |
 | **Storage** | 2 docs | ~85KB | Architecture, API reference |
-| **Total** | **10 docs** | **~255KB** | **Complete project coverage** |
+| **Total** | **11 docs** | **~305KB** | **Complete project coverage** |
 
 ---
 

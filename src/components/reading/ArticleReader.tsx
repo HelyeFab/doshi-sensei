@@ -11,6 +11,7 @@ import {
   formatReadingTime,
   getReadingSpeedCategory
 } from '@/utils/readingAnalytics';
+import { generateFuriganaWithCache, checkFuriganaApiHealth } from '@/utils/furigana';
 import ComprehensionQuiz from './ComprehensionQuiz';
 
 interface ReadingSettings {
@@ -319,147 +320,21 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     }
   };
 
-  // Add furigana to Japanese text using pattern-based approach
+  // Add furigana to Japanese text using Kuromoji tokenizer
   const addFuriganaToText = async (text: string): Promise<string> => {
     if (!settings.showFurigana) {
       return text;
     }
 
-    // Comprehensive furigana patterns for common Japanese words
-    const furiganaPatterns: { [key: string]: string } = {
-      // Time and dates
-      '今日': '<ruby>今日<rp>(</rp><rt>きょう</rt><rp>)</rp></ruby>',
-      '明日': '<ruby>明日<rp>(</rp><rt>あした</rt><rp>)</rp></ruby>',
-      '昨日': '<ruby>昨日<rp>(</rp><rt>きのう</rt><rp>)</rp></ruby>',
-      '時間': '<ruby>時間<rp>(</rp><rt>じかん</rt><rp>)</rp></ruby>',
-      '午前': '<ruby>午前<rp>(</rp><rt>ごぜん</rt><rp>)</rp></ruby>',
-      '午後': '<ruby>午後<rp>(</rp><rt>ごご</rt><rp>)</rp></ruby>',
-      '毎年': '<ruby>毎年<rp>(</rp><rt>まいとし</rt><rp>)</rp></ruby>',
-      '去年': '<ruby>去年<rp>(</rp><rt>きょねん</rt><rp>)</rp></ruby>',
-
-      // Places and geography
-      '東京': '<ruby>東京<rp>(</rp><rt>とうきょう</rt><rp>)</rp></ruby>',
-      '日本': '<ruby>日本<rp>(</rp><rt>にほん</rt><rp>)</rp></ruby>',
-      '学校': '<ruby>学校<rp>(</rp><rt>がっこう</rt><rp>)</rp></ruby>',
-      '会社': '<ruby>会社<rp>(</rp><rt>かいしゃ</rt><rp>)</rp></ruby>',
-      '病院': '<ruby>病院<rp>(</rp><rt>びょういん</rt><rp>)</rp></ruby>',
-      '空港': '<ruby>空港<rp>(</rp><rt>くうこう</rt><rp>)</rp></ruby>',
-      '駅': '<ruby>駅<rp>(</rp><rt>えき</rt><rp>)</rp></ruby>',
-      '図書館': '<ruby>図書館<rp>(</rp><rt>としょかん</rt><rp>)</rp></ruby>',
-      '市内': '<ruby>市内<rp>(</rp><rt>しない</rt><rp>)</rp></ruby>',
-      '県内': '<ruby>県内<rp>(</rp><rt>けんない</rt><rp>)</rp></ruby>',
-      '国内': '<ruby>国内<rp>(</rp><rt>こくない</rt><rp>)</rp></ruby>',
-      '海外': '<ruby>海外<rp>(</rp><rt>かいがい</rt><rp>)</rp></ruby>',
-
-      // Demographics and society
-      '人口': '<ruby>人口<rp>(</rp><rt>じんこう</rt><rp>)</rp></ruby>',
-      '減少': '<ruby>減少<rp>(</rp><rt>げんしょう</rt><rp>)</rp></ruby>',
-      '出生率': '<ruby>出生率<rp>(</rp><rt>しゅっしょうりつ</rt><rp>)</rp></ruby>',
-      '高齢化': '<ruby>高齢化<rp>(</rp><rt>こうれいか</rt><rp>)</rp></ruby>',
-      '社会': '<ruby>社会<rp>(</rp><rt>しゃかい</rt><rp>)</rp></ruby>',
-      '文化': '<ruby>文化<rp>(</rp><rt>ぶんか</rt><rp>)</rp></ruby>',
-      '教育': '<ruby>教育<rp>(</rp><rt>きょういく</rt><rp>)</rp></ruby>',
-      '経済': '<ruby>経済<rp>(</rp><rt>けいざい</rt><rp>)</rp></ruby>',
-
-      // Government and politics
-      '政府': '<ruby>政府<rp>(</rp><rt>せいふ</rt><rp>)</rp></ruby>',
-      '対策': '<ruby>対策<rp>(</rp><rt>たいさく</rt><rp>)</rp></ruby>',
-      '法律': '<ruby>法律<rp>(</rp><rt>ほうりつ</rt><rp>)</rp></ruby>',
-      '規則': '<ruby>規則<rp>(</rp><rt>きそく</rt><rp>)</rp></ruby>',
-      '制限': '<ruby>制限<rp>(</rp><rt>せいげん</rt><rp>)</rp></ruby>',
-      '禁止': '<ruby>禁止<rp>(</rp><rt>きんし</rt><rp>)</rp></ruby>',
-      '許可': '<ruby>許可<rp>(</rp><rt>きょか</rt><rp>)</rp></ruby>',
-      '申請': '<ruby>申請<rp>(</rp><rt>しんせい</rt><rp>)</rp></ruby>',
-
-      // Common words and expressions
-      '問題': '<ruby>問題<rp>(</rp><rt>もんだい</rt><rp>)</rp></ruby>',
-      '可能': '<ruby>可能<rp>(</rp><rt>かのう</rt><rp>)</rp></ruby>',
-      '必要': '<ruby>必要<rp>(</rp><rt>ひつよう</rt><rp>)</rp></ruby>',
-      '重要': '<ruby>重要<rp>(</rp><rt>じゅうよう</rt><rp>)</rp></ruby>',
-      '大切': '<ruby>大切<rp>(</rp><rt>たいせつ</rt><rp>)</rp></ruby>',
-      '特別': '<ruby>特別<rp>(</rp><rt>とくべつ</rt><rp>)</rp></ruby>',
-      '普通': '<ruby>普通<rp>(</rp><rt>ふつう</rt><rp>)</rp></ruby>',
-      '一般': '<ruby>一般<rp>(</rp><rt>いっぱん</rt><rp>)</rp></ruby>',
-      '全体': '<ruby>全体<rp>(</rp><rt>ぜんたい</rt><rp>)</rp></ruby>',
-      '部分': '<ruby>部分<rp>(</rp><rt>ぶぶん</rt><rp>)</rp></ruby>',
-      '方法': '<ruby>方法<rp>(</rp><rt>ほうほう</rt><rp>)</rp></ruby>',
-      '手段': '<ruby>手段<rp>(</rp><rt>しゅだん</rt><rp>)</rp></ruby>',
-      '計画': '<ruby>計画<rp>(</rp><rt>けいかく</rt><rp>)</rp></ruby>',
-      '予定': '<ruby>予定<rp>(</rp><rt>よてい</rt><rp>)</rp></ruby>',
-      '決定': '<ruby>決定<rp>(</rp><rt>けってい</rt><rp>)</rp></ruby>',
-      '変更': '<ruby>変更<rp>(</rp><rt>へんこう</rt><rp>)</rp></ruby>',
-      '中止': '<ruby>中止<rp>(</rp><rt>ちゅうし</rt><rp>)</rp></ruby>',
-      '延期': '<ruby>延期<rp>(</rp><rt>えんき</rt><rp>)</rp></ruby>',
-      '実施': '<ruby>実施<rp>(</rp><rt>じっし</rt><rp>)</rp></ruby>',
-      '開始': '<ruby>開始<rp>(</rp><rt>かいし</rt><rp>)</rp></ruby>',
-      '終了': '<ruby>終了<rp>(</rp><rt>しゅうりょう</rt><rp>)</rp></ruby>',
-      '継続': '<ruby>継続<rp>(</rp><rt>けいぞく</rt><rp>)</rp></ruby>',
-
-      // Numbers and quantities
-      '万人': '<ruby>万人<rp>(</rp><rt>まんにん</rt><rp>)</rp></ruby>',
-      '最近': '<ruby>最近<rp>(</rp><rt>さいきん</rt><rp>)</rp></ruby>',
-      '以前': '<ruby>以前<rp>(</rp><rt>いぜん</rt><rp>)</rp></ruby>',
-      '将来': '<ruby>将来<rp>(</rp><rt>しょうらい</rt><rp>)</rp></ruby>',
-      '過去': '<ruby>過去<rp>(</rp><rt>かこ</rt><rp>)</rp></ruby>',
-      '現在': '<ruby>現在<rp>(</rp><rt>げんざい</rt><rp>)</rp></ruby>',
-      '未来': '<ruby>未来<rp>(</rp><rt>みらい</rt><rp>)</rp></ruby>',
-
-      // Weather and environment
-      '天気': '<ruby>天気<rp>(</rp><rt>てんき</rt><rp>)</rp></ruby>',
-      '雨': '<ruby>雨<rp>(</rp><rt>あめ</rt><rp>)</rp></ruby>',
-      '雪': '<ruby>雪<rp>(</rp><rt>ゆき</rt><rp>)</rp></ruby>',
-      '風': '<ruby>風<rp>(</rp><rt>かぜ</rt><rp>)</rp></ruby>',
-      '台風': '<ruby>台風<rp>(</rp><rt>たいふう</rt><rp>)</rp></ruby>',
-      '地震': '<ruby>地震<rp>(</rp><rt>じしん</rt><rp>)</rp></ruby>',
-      '災害': '<ruby>災害<rp>(</rp><rt>さいがい</rt><rp>)</rp></ruby>',
-      '環境': '<ruby>環境<rp>(</rp><rt>かんきょう</rt><rp>)</rp></ruby>',
-      '自然': '<ruby>自然<rp>(</rp><rt>しぜん</rt><rp>)</rp></ruby>',
-      '地球': '<ruby>地球<rp>(</rp><rt>ちきゅう</rt><rp>)</rp></ruby>',
-
-      // Technology and business
-      '技術': '<ruby>技術<rp>(</rp><rt>ぎじゅつ</rt><rp>)</rp></ruby>',
-      '科学': '<ruby>科学<rp>(</rp><rt>かがく</rt><rp>)</rp></ruby>',
-      '研究': '<ruby>研究<rp>(</rp><rt>けんきゅう</rt><rp>)</rp></ruby>',
-      '開発': '<ruby>開発<rp>(</rp><rt>かいはつ</rt><rp>)</rp></ruby>',
-      '建設': '<ruby>建設<rp>(</rp><rt>けんせつ</rt><rp>)</rp></ruby>',
-      '工事': '<ruby>工事<rp>(</rp><rt>こうじ</rt><rp>)</rp></ruby>',
-      '製造': '<ruby>製造<rp>(</rp><rt>せいぞう</rt><rp>)</rp></ruby>',
-      '生産': '<ruby>生産<rp>(</rp><rt>せいさん</rt><rp>)</rp></ruby>',
-      '販売': '<ruby>販売<rp>(</rp><rt>はんばい</rt><rp>)</rp></ruby>',
-      '商品': '<ruby>商品<rp>(</rp><rt>しょうひん</rt><rp>)</rp></ruby>',
-      '価格': '<ruby>価格<rp>(</rp><rt>かかく</rt><rp>)</rp></ruby>',
-      '料金': '<ruby>料金<rp>(</rp><rt>りょうきん</rt><rp>)</rp></ruby>',
-
-      // Single kanji common words
-      '人': '<ruby>人<rp>(</rp><rt>ひと</rt><rp>)</rp></ruby>',
-      '年': '<ruby>年<rp>(</rp><rt>とし</rt><rp>)</rp></ruby>',
-      '月': '<ruby>月<rp>(</rp><rt>つき</rt><rp>)</rp></ruby>',
-      '日': '<ruby>日<rp>(</rp><rt>ひ</rt><rp>)</rp></ruby>',
-      '車': '<ruby>車<rp>(</rp><rt>くるま</rt><rp>)</rp></ruby>',
-      '水': '<ruby>水<rp>(</rp><rt>みず</rt><rp>)</rp></ruby>',
-      '火': '<ruby>火<rp>(</rp><rt>ひ</rt><rp>)</rp></ruby>',
-      '土': '<ruby>土<rp>(</rp><rt>つち</rt><rp>)</rp></ruby>',
-      '木': '<ruby>木<rp>(</rp><rt>き</rt><rp>)</rp></ruby>',
-      '金': '<ruby>金<rp>(</rp><rt>きん</rt><rp>)</rp></ruby>',
-      '山': '<ruby>山<rp>(</rp><rt>やま</rt><rp>)</rp></ruby>',
-      '川': '<ruby>川<rp>(</rp><rt>かわ</rt><rp>)</rp></ruby>',
-      '海': '<ruby>海<rp>(</rp><rt>うみ</rt><rp>)</rp></ruby>',
-      '空': '<ruby>空<rp>(</rp><rt>そら</rt><rp>)</rp></ruby>'
-    };
-
-    let processedText = text;
-
-    // Sort by length to handle compound words first
-    const sortedPatterns = Object.entries(furiganaPatterns).sort(([a], [b]) => b.length - a.length);
-
-    sortedPatterns.forEach(([kanji, furigana]) => {
-      // Use word boundary-aware regex to prevent partial matches
-      const regex = new RegExp(`(?<![一-龯])${kanji.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![一-龯])`, 'g');
-      processedText = processedText.replace(regex, furigana);
-    });
-
-    console.log(`Applied furigana to text: ${sortedPatterns.length} patterns processed`);
-    return processedText;
+    try {
+      // Use the new Kuromoji-based furigana API with caching
+      const furiganaText = await generateFuriganaWithCache(text);
+      return furiganaText;
+    } catch (error) {
+      console.error('Failed to generate furigana:', error);
+      // Fallback to original text if furigana generation fails
+      return text;
+    }
   };
 
   // Render text with vocabulary highlighting and furigana
@@ -636,7 +511,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Open Audio Reader"
             >
-              🎵
+              📚
             </button>
 
 

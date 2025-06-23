@@ -235,7 +235,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="min-w-0 flex-1 mr-4">
-            <h2 className="text-lg font-bold text-foreground truncate">🎵 Audio Reader</h2>
+            <h2 className="text-lg font-bold text-foreground truncate">📚 Audio Reader</h2>
             <p className="text-sm text-muted-foreground truncate">{article.title}</p>
           </div>
           <button

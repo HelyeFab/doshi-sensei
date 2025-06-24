@@ -123,7 +123,7 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       }
 
       const moodBoardsRef = collection(db, 'moodBoards');
-      const q = query(moodBoardsRef, orderBy('sortOrder', 'asc'), orderBy('createdAt', 'desc'));
+      const q = query(moodBoardsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
 
       const fetchedMoodBoards: MoodBoard[] = snapshot.docs.map(doc => {
@@ -132,6 +132,16 @@ export function useMoodBoards(): UseMoodBoardsReturn {
           ...doc.data()
         };
         return convertFirebaseMoodBoard(firebaseMoodBoard);
+      });
+
+      // Sort by sortOrder first, then by createdAt (in JavaScript to avoid composite index requirement)
+      fetchedMoodBoards.sort((a, b) => {
+        const aSortOrder = a.sortOrder || 0;
+        const bSortOrder = b.sortOrder || 0;
+        if (aSortOrder !== bSortOrder) {
+          return aSortOrder - bSortOrder;
+        }
+        return b.createdAt.getTime() - a.createdAt.getTime();
       });
 
       // If no Firestore data, migrate from JSON
@@ -284,7 +294,7 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       }
 
       const moodBoardsRef = collection(db, 'moodBoards');
-      const q = query(moodBoardsRef, orderBy('sortOrder', 'asc'), orderBy('createdAt', 'desc'));
+      const q = query(moodBoardsRef, orderBy('createdAt', 'desc'));
 
       unsubscribe = onSnapshot(
         q,
@@ -296,6 +306,16 @@ export function useMoodBoards(): UseMoodBoardsReturn {
                 ...doc.data()
               };
               return convertFirebaseMoodBoard(firebaseMoodBoard);
+            });
+
+            // Sort by sortOrder first, then by createdAt (in JavaScript to avoid composite index requirement)
+            fetchedMoodBoards.sort((a, b) => {
+              const aSortOrder = a.sortOrder || 0;
+              const bSortOrder = b.sortOrder || 0;
+              if (aSortOrder !== bSortOrder) {
+                return aSortOrder - bSortOrder;
+              }
+              return b.createdAt.getTime() - a.createdAt.getTime();
             });
 
             setMoodBoards(fetchedMoodBoards);

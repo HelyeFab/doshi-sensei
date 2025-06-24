@@ -247,7 +247,7 @@ export function UserTable({
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-8 w-8">
                           <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                            {user.displayName?.[0] || user.email[0].toUpperCase()}
+                            {user.displayName?.[0] || user.email?.[0]?.toUpperCase() || '?'}
                           </div>
                         </div>
                         <div className="ml-4">

@@ -39,6 +39,20 @@ service cloud.firestore {
       }
     }
 
+    // Mood boards collection - admin access for management
+    match /moodBoards/{boardId} {
+      // Allow admin full access to mood boards
+      allow read, write: if isAdmin();
+
+      // Allow authenticated users to read mood boards
+      allow read: if request.auth != null;
+    }
+
+    // Admin logs collection (optional)
+    match /adminLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

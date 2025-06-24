@@ -6,24 +6,59 @@ const { URL } = require('url');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
-if (!admin.apps.length) {
-  const serviceAccount = {
-    type: "service_account",
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
-    auth_uri: "https://accounts.google.com/o/oauth2/auth",
-    token_uri: "https://oauth2.googleapis.com/token",
-    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-    client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
-  };
+let firebaseInitialized = false;
+try {
+  if (!admin.apps.length) {
+    // Use either FIREBASE_PROJECT_ID or NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    
+    // Check if all required environment variables are present
+    const requiredEnvVars = [
+      'FIREBASE_PRIVATE_KEY_ID', 
+      'FIREBASE_PRIVATE_KEY',
+      'FIREBASE_CLIENT_EMAIL',
+      'FIREBASE_CLIENT_ID'
+    ];
 
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`
-  });
+    const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+    
+    if (!projectId) {
+      missingVars.push('FIREBASE_PROJECT_ID (or NEXT_PUBLIC_FIREBASE_PROJECT_ID)');
+    }
+    
+    if (missingVars.length > 0) {
+      console.error('❌ Missing Firebase Admin environment variables:', missingVars.join(', '));
+      console.error('💡 These are required for the Netlify function to write to Firestore');
+      console.error('📝 Available env vars:', Object.keys(process.env).filter(key => key.includes('FIREBASE')));
+      throw new Error(`Missing Firebase Admin environment variables: ${missingVars.join(', ')}`);
+    }
+
+    const serviceAccount = {
+      type: "service_account",
+      project_id: projectId,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      client_id: process.env.FIREBASE_CLIENT_ID,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    };
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`
+    });
+    
+    firebaseInitialized = true;
+    console.log('✅ Firebase Admin SDK initialized successfully');
+  } else {
+    firebaseInitialized = true;
+  }
+} catch (error) {
+  console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
+  firebaseInitialized = false;
 }
 
 const db = admin.firestore();
@@ -563,9 +598,20 @@ const scrapeWatanocHandler = async (event, context) => {
     console.log('🚀 Watanoc scraping function triggered');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
     
-    // Check if Firebase environment variables are set
-    if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_PRIVATE_KEY) {
-      throw new Error('Firebase environment variables not configured');
+    // Check if Firebase is properly initialized
+    if (!firebaseInitialized) {
+      console.error('❌ Firebase Admin SDK not initialized');
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: 'Firebase Admin SDK not configured. Missing environment variables for Firebase service account.',
+          requiredVars: ['FIREBASE_PRIVATE_KEY_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_CLIENT_ID'],
+          availableVars: Object.keys(process.env).filter(key => key.includes('FIREBASE')),
+          timestamp: new Date().toISOString()
+        }),
+      };
     }
     
     // Scrape articles from Watanoc

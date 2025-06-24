@@ -109,7 +109,7 @@ export async function triggerArticleScraping(): Promise<ScrapingResult> {
   try {
     console.log('🚀 Triggering article scraping...');
 
-    const response = await fetch('/.netlify/functions/scrape-watanoc-articles', {
+    const response = await fetch('/.netlify/functions/scrape-watanoc-working', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

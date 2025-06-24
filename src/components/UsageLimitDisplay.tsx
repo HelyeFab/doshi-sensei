@@ -12,9 +12,15 @@ interface UsageLimitDisplayProps {
 export function UsageLimitDisplay({ type, className = '' }: UsageLimitDisplayProps) {
   const { userSubscription, userType, guestUsage } = useSubscription();
 
+  // Guest/free plan limits (hardcoded)
+  const FREE_LIMITS = {
+    maxDrillsPerDay: 50,
+    maxLists: 3
+  };
+
   if (userType === 'guest') {
     if (type === 'drills' && guestUsage) {
-      const maxDrills = SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay;
+      const maxDrills = FREE_LIMITS.maxDrillsPerDay;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
       const currentUsage = isToday ? guestUsage.drillsToday : 0;
@@ -98,13 +104,19 @@ interface UsageProgressBarProps {
 export function UsageProgressBar({ type, className = '' }: UsageProgressBarProps) {
   const { userSubscription, userType, guestUsage } = useSubscription();
 
+  // Guest/free plan limits (hardcoded)
+  const FREE_LIMITS = {
+    maxDrillsPerDay: 50,
+    maxLists: 3
+  };
+
   let current = 0;
   let max = 0;
   let color = 'bg-primary';
 
   if (userType === 'guest') {
     if (type === 'drills' && guestUsage) {
-      max = SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay;
+      max = FREE_LIMITS.maxDrillsPerDay;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
       current = isToday ? guestUsage.drillsToday : 0;

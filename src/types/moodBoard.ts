@@ -6,6 +6,11 @@ export interface MoodBoard {
   background: string;
   description: string;
   kanji: KanjiItem[];
+  createdAt: Date;
+  updatedAt?: Date;
+  createdBy?: string; // Always "admin" for admin-created boards
+  isActive: boolean;
+  sortOrder?: number;
 }
 
 export interface KanjiItem {

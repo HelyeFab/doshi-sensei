@@ -16,6 +16,9 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
 
   if (!isOpen) return null;
 
+  const monthlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'monthly');
+  const yearlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'yearly');
+
   const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
     try {
       // These would be your Stripe price IDs
@@ -47,7 +50,7 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
               <strong>Premium Benefits:</strong>
             </div>
             <div className="text-sm text-foreground space-y-1">
-              {SUBSCRIPTION_PLANS.monthly.features.map((feature, index) => (
+              {monthlyPlan?.features.map((feature: string, index: number) => (
                 <div key={index} className="flex items-center gap-2">
                   <span className="text-green-500">✓</span>
                   <span>{feature}</span>
@@ -64,7 +67,7 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
               <div className="absolute top-0 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-b transform translate-y-0">
                 Save 17%
               </div>
-              <div className="text-lg">${SUBSCRIPTION_PLANS.yearly.price}/year</div>
+              <div className="text-lg">${yearlyPlan?.price}/year</div>
               <div className="text-sm opacity-90">Best Value</div>
             </button>
 
@@ -72,7 +75,7 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
               onClick={() => handleUpgrade('monthly')}
               className="w-full px-4 py-3 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors font-medium"
             >
-              <div className="text-lg">${SUBSCRIPTION_PLANS.monthly.price}/month</div>
+              <div className="text-lg">${monthlyPlan?.price}/month</div>
               <div className="text-sm opacity-70">Monthly Plan</div>
             </button>
           </div>

@@ -43,7 +43,9 @@ export default function SubscriptionPlans() {
   };
 
   const currentPlan = userSubscription?.subscription.plan || 'free';
-  const currentPlanData = SUBSCRIPTION_PLANS[currentPlan];
+  const currentPlanData = SUBSCRIPTION_PLANS.find(plan => plan.id === currentPlan);
+  const monthlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'monthly');
+  const yearlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'yearly');
 
   return (
     <div className="space-y-6">
@@ -51,7 +53,7 @@ export default function SubscriptionPlans() {
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-foreground">Current Plan</h3>
-          {currentPlan !== 'free' && (
+          {currentPlan !== 'free' && currentPlanData && (
             <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
               {currentPlanData.name}
             </span>
@@ -62,7 +64,7 @@ export default function SubscriptionPlans() {
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Plan</span>
             <span className="text-sm font-medium text-foreground">
-              {currentPlanData.name} {currentPlan !== 'free' && `($${currentPlanData.price}/${currentPlan === 'monthly' ? 'month' : 'year'})`}
+              {currentPlanData?.name || 'Free'} {currentPlan !== 'free' && currentPlanData && `($${currentPlanData.price}/${currentPlan === 'monthly' ? 'month' : 'year'})`}
             </span>
           </div>
 
@@ -112,67 +114,71 @@ export default function SubscriptionPlans() {
 
           <div className="grid md:grid-cols-2 gap-4">
             {/* Monthly Plan */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-center mb-4">
-                <h4 className="text-lg font-semibold text-foreground">Monthly</h4>
-                <div className="text-3xl font-bold text-primary mt-2">
-                  ${SUBSCRIPTION_PLANS.monthly.price}
-                  <span className="text-sm font-normal text-muted-foreground">/month</span>
+            {monthlyPlan && (
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="text-center mb-4">
+                  <h4 className="text-lg font-semibold text-foreground">Monthly</h4>
+                  <div className="text-3xl font-bold text-primary mt-2">
+                    ${monthlyPlan.price}
+                    <span className="text-sm font-normal text-muted-foreground">/month</span>
+                  </div>
                 </div>
+
+                <ul className="space-y-2 mb-6">
+                  {monthlyPlan.features.map((feature: string, index: number) => (
+                    <li key={index} className="flex items-center text-sm text-foreground">
+                      <span className="text-green-500 mr-2">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handleUpgrade('monthly')}
+                  disabled={isProcessing}
+                  className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
+                >
+                  {isProcessing ? 'Processing...' : 'Upgrade to Monthly'}
+                </button>
               </div>
-
-              <ul className="space-y-2 mb-6">
-                {SUBSCRIPTION_PLANS.monthly.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-sm text-foreground">
-                    <span className="text-green-500 mr-2">✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => handleUpgrade('monthly')}
-                disabled={isProcessing}
-                className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
-              >
-                {isProcessing ? 'Processing...' : 'Upgrade to Monthly'}
-              </button>
-            </div>
+            )}
 
             {/* Yearly Plan */}
-            <div className="bg-card border border-primary rounded-lg p-6 relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                  Best Value
-                </span>
-              </div>
-
-              <div className="text-center mb-4">
-                <h4 className="text-lg font-semibold text-foreground">Yearly</h4>
-                <div className="text-3xl font-bold text-primary mt-2">
-                  ${SUBSCRIPTION_PLANS.yearly.price}
-                  <span className="text-sm font-normal text-muted-foreground">/year</span>
+            {yearlyPlan && (
+              <div className="bg-card border border-primary rounded-lg p-6 relative">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                    Best Value
+                  </span>
                 </div>
-                <p className="text-sm text-green-600 mt-1">2 months free!</p>
+
+                <div className="text-center mb-4">
+                  <h4 className="text-lg font-semibold text-foreground">Yearly</h4>
+                  <div className="text-3xl font-bold text-primary mt-2">
+                    ${yearlyPlan.price}
+                    <span className="text-sm font-normal text-muted-foreground">/year</span>
+                  </div>
+                  <p className="text-sm text-green-600 mt-1">2 months free!</p>
+                </div>
+
+                <ul className="space-y-2 mb-6">
+                  {yearlyPlan.features.map((feature: string, index: number) => (
+                    <li key={index} className="flex items-center text-sm text-foreground">
+                      <span className="text-green-500 mr-2">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handleUpgrade('yearly')}
+                  disabled={isProcessing}
+                  className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
+                >
+                  {isProcessing ? 'Processing...' : 'Upgrade to Yearly'}
+                </button>
               </div>
-
-              <ul className="space-y-2 mb-6">
-                {SUBSCRIPTION_PLANS.yearly.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-sm text-foreground">
-                    <span className="text-green-500 mr-2">✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => handleUpgrade('yearly')}
-                disabled={isProcessing}
-                className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
-              >
-                {isProcessing ? 'Processing...' : 'Upgrade to Yearly'}
-              </button>
-            </div>
+            )}
           </div>
         </div>
       )}

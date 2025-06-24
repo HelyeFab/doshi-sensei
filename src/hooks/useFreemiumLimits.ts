@@ -1,7 +1,7 @@
 'use client';
 
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { SUBSCRIPTION_PLANS } from '@/types/subscription';
+import { SUBSCRIPTION_PLANS_MAP } from '@/types/subscription';
 
 export function useFreemiumLimits() {
   const {
@@ -25,7 +25,7 @@ export function useFreemiumLimits() {
         drillsToday: isToday ? guestUsage.drillsToday : 0,
         listsCount: 0,
         plan: 'guest' as const,
-        limits: SUBSCRIPTION_PLANS.guest.limits
+        limits: SUBSCRIPTION_PLANS_MAP.guest.limits
       };
     }
 
@@ -44,7 +44,7 @@ export function useFreemiumLimits() {
       drillsToday: 0,
       listsCount: 0,
       plan: 'guest' as const,
-      limits: SUBSCRIPTION_PLANS.guest.limits
+      limits: SUBSCRIPTION_PLANS_MAP.guest.limits
     };
   };
 
@@ -85,7 +85,7 @@ export function useFreemiumLimits() {
     if (userType === 'guest') {
       if (feature === 'drills') {
         showLoginPrompt(
-          `You've used all ${SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay} daily drills. Sign up free for ${SUBSCRIPTION_PLANS.free.limits.maxDrillsPerDay} drills per day!`,
+          `You've used all ${SUBSCRIPTION_PLANS_MAP.guest.limits.maxDrillsPerDay} daily drills. Sign up free for ${SUBSCRIPTION_PLANS_MAP.free.limits.maxDrillsPerDay} drills per day!`,
           'drills'
         );
       } else {
@@ -98,12 +98,12 @@ export function useFreemiumLimits() {
       // Free user hitting premium limits
       if (feature === 'drills') {
         showUpgradePrompt(
-          `You've completed your ${SUBSCRIPTION_PLANS.free.limits.maxDrillsPerDay} daily drills. Upgrade for unlimited practice!`,
+          `You've completed your ${SUBSCRIPTION_PLANS_MAP.free.limits.maxDrillsPerDay} daily drills. Upgrade for unlimited practice!`,
           feature
         );
       } else if (feature === 'lists') {
         showUpgradePrompt(
-          `You've reached the limit of ${SUBSCRIPTION_PLANS.free.limits.maxLists} lists. Upgrade for unlimited lists!`,
+          `You've reached the limit of ${SUBSCRIPTION_PLANS_MAP.free.limits.maxLists} lists. Upgrade for unlimited lists!`,
           feature
         );
       } else {
@@ -120,7 +120,7 @@ export function useFreemiumLimits() {
   // Get user benefits for current plan
   const getCurrentPlanBenefits = () => {
     const usage = getCurrentUsage();
-    return SUBSCRIPTION_PLANS[usage.plan];
+    return SUBSCRIPTION_PLANS_MAP[usage.plan as keyof typeof SUBSCRIPTION_PLANS_MAP];
   };
 
   // Get upgrade recommendations
@@ -133,7 +133,7 @@ export function useFreemiumLimits() {
         recommendations.push({
           type: 'signup',
           reason: 'Get more daily drills',
-          benefit: `${SUBSCRIPTION_PLANS.free.limits.maxDrillsPerDay - SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay} extra drill per day`,
+          benefit: `${SUBSCRIPTION_PLANS_MAP.free.limits.maxDrillsPerDay - SUBSCRIPTION_PLANS_MAP.guest.limits.maxDrillsPerDay} extra drill per day`,
           cta: 'Sign Up Free'
         });
       }

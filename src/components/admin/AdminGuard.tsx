@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_EMAIL } from '@/types/admin';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 interface AdminGuardProps {
   children: React.ReactNode;
@@ -57,12 +58,12 @@ export function AdminNotFound() {
           You don't have permission to access this admin area.
           Only authorized administrators can view this content.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           ← Back to Home
-        </a>
+        </Link>
       </div>
     </div>
   );

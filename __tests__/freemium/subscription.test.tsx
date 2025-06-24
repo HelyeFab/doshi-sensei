@@ -2,7 +2,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act } from 'react';
 import '@testing-library/jest-dom';
 import { SubscriptionProvider, useSubscription } from '@/contexts/SubscriptionContext';
-import { SUBSCRIPTION_PLANS } from '@/types/subscription';
+import { SUBSCRIPTION_PLANS_MAP } from '@/types/subscription';
 import { GuestMigrationManager } from '@/utils/guestMigration';
 
 // Mock Firebase
@@ -98,7 +98,7 @@ describe('Subscription Context - Freemium Flow', () => {
 
       // Simulate reaching guest limit
       const today = new Date().toISOString().split('T')[0];
-      const maxGuestDrills = SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay;
+      const maxGuestDrills = SUBSCRIPTION_PLANS_MAP.guest.limits.maxDrillsPerDay;
 
       localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify({
         drillsToday: maxGuestDrills,
@@ -199,7 +199,7 @@ describe('Subscription Context - Freemium Flow', () => {
           data: () => ({
             subscription: {
               subscription: { status: 'active', plan: 'free' },
-              limits: SUBSCRIPTION_PLANS.free.limits,
+              limits: SUBSCRIPTION_PLANS_MAP.free.limits,
               currentUsage: {
                 listsCount: 1,
                 drillsToday: 2,
@@ -241,7 +241,7 @@ describe('Subscription Context - Freemium Flow', () => {
           data: () => ({
             subscription: {
               subscription: { status: 'active', plan: 'free' },
-              limits: SUBSCRIPTION_PLANS.free.limits,
+              limits: SUBSCRIPTION_PLANS_MAP.free.limits,
               currentUsage: {
                 listsCount: 3, // At the limit
                 drillsToday: 0,
@@ -281,7 +281,7 @@ describe('Subscription Context - Freemium Flow', () => {
           data: () => ({
             subscription: {
               subscription: { status: 'active', plan: 'free' },
-              limits: SUBSCRIPTION_PLANS.free.limits,
+              limits: SUBSCRIPTION_PLANS_MAP.free.limits,
               currentUsage: {
                 listsCount: 1,
                 drillsToday: 3, // At the limit
@@ -323,7 +323,7 @@ describe('Subscription Context - Freemium Flow', () => {
           data: () => ({
             subscription: {
               subscription: { status: 'active', plan: 'monthly' },
-              limits: SUBSCRIPTION_PLANS.monthly.limits,
+              limits: SUBSCRIPTION_PLANS_MAP.monthly.limits,
               currentUsage: {
                 listsCount: 10,
                 drillsToday: 50,
@@ -403,7 +403,7 @@ describe('Subscription Context - Freemium Flow', () => {
           data: () => ({
             subscription: {
               subscription: { status: 'active', plan: 'free' },
-              limits: SUBSCRIPTION_PLANS.free.limits,
+              limits: SUBSCRIPTION_PLANS_MAP.free.limits,
               currentUsage: {
                 listsCount: 1,
                 drillsToday: 1,

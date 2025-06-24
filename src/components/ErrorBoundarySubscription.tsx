@@ -86,12 +86,12 @@ function SubscriptionFallback({ error, onRetry }: FallbackProps) {
               <strong>Guest Access Available:</strong>
             </div>
             <ul className="text-sm text-foreground space-y-1">
-              {SUBSCRIPTION_PLANS.guest.features.map((feature, index) => (
+              {SUBSCRIPTION_PLANS.find(plan => plan.id === 'free')?.features.map((feature, index) => (
                 <li key={index} className="flex items-center gap-2">
                   <span className="text-primary">•</span>
                   <span>{feature}</span>
                 </li>
-              ))}
+              )) || []}
             </ul>
           </div>
 

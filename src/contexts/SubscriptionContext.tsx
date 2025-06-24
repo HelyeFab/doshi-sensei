@@ -6,7 +6,6 @@ import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import {
   UserSubscription,
-  Subscription,
   SubscriptionPlan,
   UserType,
   GuestUsage,
@@ -58,12 +57,20 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
   // Initialize default subscription for new users
   const initializeDefaultSubscription = async (userId: string) => {
+    // Free plan limits (hardcoded)
+    const FREE_LIMITS = {
+      maxLists: 3,
+      maxDrillsPerDay: 50,
+      canSync: false,
+      canSave: true,
+    };
+
     const defaultSubscription: UserSubscription = {
       subscription: {
         status: 'active',
         plan: 'free',
       },
-      limits: SUBSCRIPTION_PLANS.free.limits,
+      limits: FREE_LIMITS,
       currentUsage: {
         listsCount: 0,
         drillsToday: 0,
@@ -119,13 +126,21 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
   // Create offline default subscription (doesn't require Firebase)
   const createOfflineDefaultSubscription = (): UserSubscription => {
+    // Free plan limits (hardcoded)
+    const FREE_LIMITS = {
+      maxLists: 3,
+      maxDrillsPerDay: 50,
+      canSync: false,
+      canSave: true,
+    };
+
     const today = new Date().toISOString().split('T')[0];
     return {
       subscription: {
         status: 'active',
         plan: 'free',
       },
-      limits: SUBSCRIPTION_PLANS.free.limits,
+      limits: FREE_LIMITS,
       currentUsage: {
         listsCount: 0,
         drillsToday: 0,
@@ -221,11 +236,12 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
 
     if (!user && feature === 'drills') {
-      // Check guest drill limits
+      // Check guest drill limits (hardcoded)
+      const GUEST_MAX_DRILLS = 50;
       if (!guestUsage) return false;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
-      return !isToday || guestUsage.drillsToday < SUBSCRIPTION_PLANS.guest.limits.maxDrillsPerDay;
+      return !isToday || guestUsage.drillsToday < GUEST_MAX_DRILLS;
     }
 
     if (!userSubscription) return false;

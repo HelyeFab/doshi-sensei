@@ -1,31 +1,7 @@
 'use client';
 
 import { AdminLayout } from '@/components/admin/AdminLayout';
-
-// Placeholder components that we'll implement later
-function StatsCard({ title, value, icon, trend }: {
-  title: string;
-  value: string | number;
-  icon: string;
-  trend?: string;
-}) {
-  return (
-    <div className="bg-card border border-border rounded-lg p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
-          {trend && (
-            <p className="text-xs text-green-600 mt-1">
-              {trend}
-            </p>
-          )}
-        </div>
-        <div className="text-3xl">{icon}</div>
-      </div>
-    </div>
-  );
-}
+import { StatsOverview } from '@/components/admin/StatsOverview';
 
 function QuickAction({ title, description, icon, onClick }: {
   title: string;
@@ -50,14 +26,6 @@ function QuickAction({ title, description, icon, onClick }: {
 }
 
 export default function AdminDashboard() {
-  // Placeholder data - will be replaced with real data later
-  const stats = {
-    totalUsers: 156,
-    newUsersToday: 8,
-    premiumUsers: 23,
-    moodBoards: 3,
-  };
-
   const handleQuickAction = (action: string) => {
     console.log(`Quick action: ${action}`);
     // TODO: Implement navigation or action
@@ -76,34 +44,8 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        {/* Stats overview */}
-        <div>
-          <h3 className="text-lg font-semibold text-foreground mb-4">Overview</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatsCard
-              title="Total Users"
-              value={stats.totalUsers}
-              icon="👥"
-              trend="+12% this month"
-            />
-            <StatsCard
-              title="New Users Today"
-              value={stats.newUsersToday}
-              icon="🆕"
-            />
-            <StatsCard
-              title="Premium Users"
-              value={stats.premiumUsers}
-              icon="⭐"
-              trend="+3 this week"
-            />
-            <StatsCard
-              title="Mood Boards"
-              value={stats.moodBoards}
-              icon="🎨"
-            />
-          </div>
-        </div>
+        {/* Real-time Stats overview */}
+        <StatsOverview />
 
         {/* Quick actions */}
         <div>
@@ -118,7 +60,7 @@ export default function AdminDashboard() {
             <QuickAction
               title="Create Mood Board"
               description="Add new kanji mood boards"
-              icon="🎨"
+              icon="�"
               onClick={() => handleQuickAction('create-mood-board')}
             />
             <QuickAction

@@ -38,9 +38,17 @@ const config = withPWA({
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
   // Additional PWA options for static export
-  buildExcludes: [/middleware-manifest\.json$/],
+  buildExcludes: [/middleware-manifest\.json$/, /app-build-manifest\.json$/],
   cacheOnFrontEndNav: true,
   reloadOnOnline: true,
+  // Exclude problematic manifest files
+  manifestTransforms: [(manifestEntries) => {
+    const manifest = manifestEntries.filter(entry => 
+      !entry.url.includes('app-build-manifest.json') &&
+      !entry.url.includes('middleware-manifest.json')
+    );
+    return { manifest, warnings: [] };
+  }],
   // Fix caching issues
   runtimeCaching: [
     {

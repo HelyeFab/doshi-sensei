@@ -1,4 +1,4 @@
-const { schedule } = require('@netlify/functions');
+// const { schedule } = require('@netlify/functions'); // Commented out for now
 const https = require('https');
 const { URL } = require('url');
 
@@ -688,8 +688,8 @@ const scrapeWatanocHandler = async (event, context) => {
   }
 };
 
-// Export as regular function and scheduled function
+// Export as regular function for manual triggers
 exports.handler = scrapeWatanocHandler;
 
-// Schedule to run daily at 6 AM UTC (3 PM JST)
-exports.handler = schedule('0 6 * * *', scrapeWatanocHandler);
+// Note: Scheduled function would need to be separate file or use different approach
+// For now, we'll just export the regular handler for manual testing

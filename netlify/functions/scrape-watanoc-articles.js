@@ -7,61 +7,71 @@ const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
 let firebaseInitialized = false;
-try {
-  if (!admin.apps.length) {
-    // Use either FIREBASE_PROJECT_ID or NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    
-    // Check if all required environment variables are present
-    const requiredEnvVars = [
-      'FIREBASE_PRIVATE_KEY_ID', 
-      'FIREBASE_PRIVATE_KEY',
-      'FIREBASE_CLIENT_EMAIL',
-      'FIREBASE_CLIENT_ID'
-    ];
+let db = null;
 
-    const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-    
-    if (!projectId) {
-      missingVars.push('FIREBASE_PROJECT_ID (or NEXT_PUBLIC_FIREBASE_PROJECT_ID)');
-    }
-    
-    if (missingVars.length > 0) {
-      console.error('❌ Missing Firebase Admin environment variables:', missingVars.join(', '));
-      console.error('💡 These are required for the Netlify function to write to Firestore');
-      console.error('📝 Available env vars:', Object.keys(process.env).filter(key => key.includes('FIREBASE')));
-      throw new Error(`Missing Firebase Admin environment variables: ${missingVars.join(', ')}`);
-    }
+// Check Firebase credentials availability first
+const checkFirebaseCredentials = () => {
+  const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const requiredEnvVars = [
+    'FIREBASE_PRIVATE_KEY_ID', 
+    'FIREBASE_PRIVATE_KEY',
+    'FIREBASE_CLIENT_EMAIL',
+    'FIREBASE_CLIENT_ID'
+  ];
 
-    const serviceAccount = {
-      type: "service_account",
-      project_id: projectId,
-      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      client_email: process.env.FIREBASE_CLIENT_EMAIL,
-      client_id: process.env.FIREBASE_CLIENT_ID,
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
-    };
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`
-    });
-    
-    firebaseInitialized = true;
-    console.log('✅ Firebase Admin SDK initialized successfully');
-  } else {
-    firebaseInitialized = true;
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  
+  if (!projectId) {
+    missingVars.push('FIREBASE_PROJECT_ID (or NEXT_PUBLIC_FIREBASE_PROJECT_ID)');
   }
-} catch (error) {
-  console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
+  
+  return {
+    hasAllCredentials: missingVars.length === 0,
+    missingVars,
+    projectId
+  };
+};
+
+const credentialCheck = checkFirebaseCredentials();
+
+if (credentialCheck.hasAllCredentials) {
+  try {
+    if (!admin.apps.length) {
+      const serviceAccount = {
+        type: "service_account",
+        project_id: credentialCheck.projectId,
+        private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+        private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        client_id: process.env.FIREBASE_CLIENT_ID,
+        auth_uri: "https://accounts.google.com/o/oauth2/auth",
+        token_uri: "https://oauth2.googleapis.com/token",
+        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+      };
+
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: `https://${credentialCheck.projectId}-default-rtdb.firebaseio.com`
+      });
+      
+      firebaseInitialized = true;
+      db = admin.firestore();
+      console.log('✅ Firebase Admin SDK initialized successfully');
+    } else {
+      firebaseInitialized = true;
+      db = admin.firestore();
+    }
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
+    firebaseInitialized = false;
+  }
+} else {
+  console.error('❌ Missing Firebase Admin environment variables:', credentialCheck.missingVars.join(', '));
+  console.error('💡 These are required for the Netlify function to write to Firestore');
+  console.error('📝 Available env vars:', Object.keys(process.env).filter(key => key.includes('FIREBASE')));
   firebaseInitialized = false;
 }
-
-const db = admin.firestore();
 
 // JLPT Level mapping based on article complexity and vocabulary
 const JLPT_DIFFICULTY_MAP = {
@@ -607,8 +617,9 @@ const scrapeWatanocHandler = async (event, context) => {
         body: JSON.stringify({
           success: false,
           error: 'Firebase Admin SDK not configured. Missing environment variables for Firebase service account.',
-          requiredVars: ['FIREBASE_PRIVATE_KEY_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_CLIENT_ID'],
+          missingVars: credentialCheck.missingVars,
           availableVars: Object.keys(process.env).filter(key => key.includes('FIREBASE')),
+          instructions: 'Add the missing Firebase Admin environment variables to Netlify. Generate a service account key from Firebase Console > Project Settings > Service Accounts.',
           timestamp: new Date().toISOString()
         }),
       };

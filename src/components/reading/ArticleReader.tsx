@@ -12,6 +12,39 @@ import {
   getReadingSpeedCategory
 } from '@/utils/readingAnalytics';
 import { generateFuriganaWithCache, checkFuriganaApiHealth } from '@/utils/furigana';
+
+// Ruby tag parser for enhanced reading
+function parseWithRubyTags(text: string): string {
+  // Convert furigana notation like 漢字[かんじ] to <ruby>漢字<rt>かんじ</rt></ruby>
+  const rubyPattern = /([一-龯]+)\[([ひらがな\u3040-\u309F]+)\]/g;
+  return text.replace(rubyPattern, '<ruby>$1<rt>$2</rt></ruby>');
+}
+
+// Enhanced text renderer with ruby tag support
+function RubyTextRenderer({ text, settings, onWordClick }: { 
+  text: string; 
+  settings: ReadingSettings;
+  onWordClick?: (event: React.MouseEvent<HTMLElement>) => void;
+}) {
+  const processedText = parseWithRubyTags(text);
+  
+  return (
+    <div 
+      className={`${
+        settings.fontSize === 'small' ? 'text-sm' :
+        settings.fontSize === 'medium' ? 'text-base' :
+        settings.fontSize === 'large' ? 'text-lg' :
+        'text-xl'
+      } leading-relaxed [&_ruby]:cursor-pointer [&_ruby]:hover:bg-primary/20 [&_ruby]:transition-colors [&_ruby]:rounded [&_ruby]:px-0.5`}
+      dangerouslySetInnerHTML={{ __html: processedText }}
+      onClick={onWordClick}
+      style={{
+        lineHeight: '1.8',
+        fontFamily: 'system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif'
+      }}
+    />
+  );
+}
 import ComprehensionQuiz from './ComprehensionQuiz';
 
 interface ReadingSettings {
@@ -275,11 +308,29 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   };
 
   // Handle word click for vocabulary lookup
-  const handleWordClick = (event: React.MouseEvent<HTMLSpanElement>) => {
+  const handleWordClick = (event: React.MouseEvent<HTMLElement>) => {
     if (!settings.highlightVocabulary) return;
 
-    const target = event.target as HTMLSpanElement;
-    const word = target.textContent?.trim();
+    const target = event.target as HTMLElement;
+    let word = '';
+    
+    // Check if clicked element is part of a ruby tag
+    if (target.tagName === 'RT') {
+      // Clicked on furigana - get the kanji from the parent ruby element
+      const rubyElement = target.closest('ruby');
+      if (rubyElement) {
+        // Extract just the kanji text (before the <rt> tag)
+        const textNode = rubyElement.firstChild;
+        word = textNode?.textContent?.trim() || '';
+      }
+    } else if (target.tagName === 'RUBY') {
+      // Clicked on ruby element - get the kanji part
+      const textNode = target.firstChild;
+      word = textNode?.textContent?.trim() || '';
+    } else {
+      // Regular text element
+      word = target.textContent?.trim() || '';
+    }
 
     if (word && word.length > 1) {
       const rect = target.getBoundingClientRect();
@@ -610,12 +661,6 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           {/* Article body */}
           <div
             className={`prose prose-lg max-w-none leading-relaxed ${getFontSizeClass()}`}
-            onClick={(e) => {
-              const target = e.target as HTMLElement;
-              if (target.classList.contains('vocabulary-highlight')) {
-                handleWordClick(e as any);
-              }
-            }}
           >
             {contentLoading ? (
               <div className="text-center py-8">
@@ -624,13 +669,21 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               </div>
             ) : (
               processedContent.map((paragraph, index) => (
-                <p
-                  key={index}
-                  className="mb-6 text-foreground"
-                  dangerouslySetInnerHTML={{
-                    __html: paragraph
-                  }}
-                />
+                <div key={index} className="mb-6">
+                  <RubyTextRenderer 
+                    text={paragraph} 
+                    settings={settings}
+                    onWordClick={(e) => {
+                      const target = e.target as HTMLElement;
+                      if (target.classList.contains('vocabulary-highlight') || 
+                          target.tagName === 'RUBY' || 
+                          target.tagName === 'RT' ||
+                          target.closest('ruby')) {
+                        handleWordClick(e);
+                      }
+                    }}
+                  />
+                </div>
               ))
             )}
           </div>

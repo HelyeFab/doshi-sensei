@@ -24,7 +24,7 @@ export default function UsersPage() {
     <AdminLayout title="User Management">
       <div className="space-y-6">
         {/* Page header */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 sm:p-6 border border-blue-200 dark:border-blue-800">
           <h2 className="text-xl font-bold text-foreground mb-2">
             User Management
           </h2>

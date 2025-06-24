@@ -81,7 +81,7 @@ export function StatsOverview() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-foreground mb-4">User Statistics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatsCard
             title="Total Users"
             value={userStats?.totalUsers ?? 0}
@@ -115,7 +115,7 @@ export function StatsOverview() {
 
       <div>
         <h3 className="text-lg font-semibold text-foreground mb-4">Subscription Statistics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatsCard
             title="Free Users"
             value={subscriptionStats?.freeUsers ?? 0}
@@ -147,7 +147,7 @@ export function StatsOverview() {
 
       <div>
         <h3 className="text-lg font-semibold text-foreground mb-4">Feature Usage</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatsCard
             title="Drills Today"
             value={featureStats?.drillsCompletedToday ?? 0}

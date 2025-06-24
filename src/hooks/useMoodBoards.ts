@@ -16,6 +16,7 @@ import {
 import { db } from '@/lib/firebase';
 import { MoodBoard } from '@/types/moodBoard';
 import moodBoardsData from '@/data/moodBoards.json';
+import { logAdminAction } from '@/utils/adminLogs';
 
 interface UseMoodBoardsReturn {
   moodBoards: MoodBoard[];
@@ -222,6 +223,18 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       };
 
       const docRef = await addDoc(moodBoardsRef, newBoard);
+      
+      // Log admin action
+      await logAdminAction({
+        action: 'mood_board_created',
+        targetMoodBoardId: docRef.id,
+        details: {
+          title: board.title,
+          jlpt: board.jlpt,
+          kanjiCount: board.kanji?.length || 0,
+        },
+      });
+      
       await refreshMoodBoards();
       return docRef.id;
     } catch (err) {
@@ -243,6 +256,18 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       };
 
       await updateDoc(moodBoardRef, updateData);
+      
+      // Log admin action
+      await logAdminAction({
+        action: 'mood_board_updated',
+        targetMoodBoardId: id,
+        details: {
+          updatedFields: Object.keys(updates),
+          title: updates.title,
+          jlpt: updates.jlpt,
+        },
+      });
+      
       await refreshMoodBoards();
     } catch (err) {
       console.error('Error updating mood board:', err);
@@ -257,7 +282,23 @@ export function useMoodBoards(): UseMoodBoardsReturn {
 
     try {
       const moodBoardRef = doc(db, 'moodBoards', id);
+      
+      // Get mood board details for logging before deletion
+      const boardToDelete = moodBoards.find(board => board.id === id);
+      
       await deleteDoc(moodBoardRef);
+      
+      // Log admin action
+      await logAdminAction({
+        action: 'mood_board_deleted',
+        targetMoodBoardId: id,
+        details: {
+          title: boardToDelete?.title || 'Unknown',
+          jlpt: boardToDelete?.jlpt || 'Unknown',
+          kanjiCount: boardToDelete?.kanji?.length || 0,
+        },
+      });
+      
       await refreshMoodBoards();
     } catch (err) {
       console.error('Error deleting mood board:', err);
@@ -276,6 +317,19 @@ export function useMoodBoards(): UseMoodBoardsReturn {
         isActive,
         updatedAt: Timestamp.now(),
       });
+      
+      // Log admin action
+      const board = moodBoards.find(b => b.id === id);
+      await logAdminAction({
+        action: isActive ? 'mood_board_published' : 'mood_board_unpublished',
+        targetMoodBoardId: id,
+        details: {
+          title: board?.title || 'Unknown',
+          jlpt: board?.jlpt || 'Unknown',
+          newStatus: isActive ? 'active' : 'inactive',
+        },
+      });
+      
       await refreshMoodBoards();
     } catch (err) {
       console.error('Error toggling mood board status:', err);

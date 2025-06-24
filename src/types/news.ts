@@ -11,7 +11,7 @@ export interface NewsArticle {
   imageUrl?: string;
   publishDate: Date;
   scrapedAt: Date;
-  source: NewsSource;
+  source: ArticleSource;
   category: string;
   tags: string[];
   difficulty: JLPTLevel;
@@ -22,7 +22,14 @@ export interface NewsArticle {
   readingProgress?: number; // 0-100 percentage
 }
 
-// News Source Configuration
+// Simplified source for articles
+export interface ArticleSource {
+  id: string;
+  name: string;
+  displayName: string;
+}
+
+// Full News Source Configuration
 export interface NewsSource {
   id: string;
   name: string;

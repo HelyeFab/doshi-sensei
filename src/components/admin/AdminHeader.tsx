@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -9,10 +10,21 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
   const { user, logout } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Determine if we should show the back button (not on main admin dashboard)
+  const shouldShowBackButton = pathname !== '/admin';
+
+  const handleBackClick = () => {
+    router.push('/admin');
+  };
 
   const handleLogout = async () => {
     try {
       await logout();
+      // Redirect to home page after successful logout
+      router.push('/');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -42,11 +54,26 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
               />
             </svg>
           </button>
+          
           <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         </div>
 
-        {/* Right side - User info and actions */}
+        {/* Right side - Back button, User info and actions */}
         <div className="flex items-center gap-4">
+          {/* Back button - positioned safely on the right side */}
+          {shouldShowBackButton && (
+            <button
+              onClick={handleBackClick}
+              className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors inline-flex items-center justify-center"
+              aria-label="Back to admin dashboard"
+              title="Back to Dashboard"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          
           {/* Quick stats - optional, can be added later */}
           <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>

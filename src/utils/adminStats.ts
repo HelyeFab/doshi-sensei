@@ -58,6 +58,15 @@ export async function getUserStats(): Promise<UserStats> {
       ...doc.data()
     } as FirebaseUser));
 
+    // Debug: Log first few users to understand the data structure
+    console.log('🔍 Sample user data for debugging:', allUsers.slice(0, 2).map(user => ({
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      hasSubscription: !!user.subscription,
+      subscriptionStructure: user.subscription,
+    })));
+
     const totalUsers = allUsers.length;
 
     // Filter users by registration date
@@ -126,18 +135,29 @@ export async function getSubscriptionStats(): Promise<SubscriptionStats> {
       ...doc.data()
     } as FirebaseUser));
 
-    // Filter by subscription type
-    const freeUsers = allUsers.filter(user =>
-      user.subscription?.subscription?.plan === 'free'
-    ).length;
+    // Debug: Log user data to understand the structure
+    console.log('🔍 All users data:', allUsers.map(user => ({
+      id: user.id,
+      email: user.email,
+      subscription: user.subscription,
+      subscriptionPlan: user.subscription?.subscription?.plan,
+    })));
 
-    const monthlySubscribers = allUsers.filter(user =>
-      user.subscription?.subscription?.plan === 'monthly'
-    ).length;
+    // Filter by subscription type - check both potential structures
+    const freeUsers = allUsers.filter(user => {
+      const plan = user.subscription?.subscription?.plan;
+      return plan === 'free' || !plan; // Count users with no plan as free
+    }).length;
 
-    const yearlySubscribers = allUsers.filter(user =>
-      user.subscription?.subscription?.plan === 'yearly'
-    ).length;
+    const monthlySubscribers = allUsers.filter(user => {
+      const plan = user.subscription?.subscription?.plan;
+      return plan === 'monthly';
+    }).length;
+
+    const yearlySubscribers = allUsers.filter(user => {
+      const plan = user.subscription?.subscription?.plan;
+      return plan === 'yearly';
+    }).length;
 
     const totalSubscribers = monthlySubscribers + yearlySubscribers;
     const totalUsers = allUsers.length;
@@ -171,26 +191,33 @@ export async function getSubscriptionStats(): Promise<SubscriptionStats> {
 }
 
 /**
- * Get feature usage statistics (placeholder - will be enhanced later)
+ * Get feature usage statistics from real analytics data
  */
 export async function getFeatureStats(): Promise<FeatureStats> {
   try {
-    // These would come from usage analytics in a real implementation
-    // For now, we'll return placeholder data
+    const { getTodayAnalytics, getMostPopularMoodBoard, getAverageSessionDuration } = await import('@/utils/analytics');
+    
+    const [todayStats, mostPopularBoard, avgSessionDuration] = await Promise.all([
+      getTodayAnalytics().catch(() => ({ drillsCompleted: 0, vocabularySearches: 0, moodBoardViews: 0, uniqueUsers: 0 })),
+      getMostPopularMoodBoard(7).catch(() => 'Analytics unavailable'), // Last 7 days
+      getAverageSessionDuration(7).catch(() => 0), // Last 7 days
+    ]);
+
     return {
-      drillsCompletedToday: 45,
-      vocabularySearchesToday: 128,
-      moodBoardViewsToday: 23,
-      mostPopularMoodBoard: 'Nature N5',
-      averageSessionDuration: 12.5, // minutes
+      drillsCompletedToday: todayStats.drillsCompleted,
+      vocabularySearchesToday: todayStats.vocabularySearches,
+      moodBoardViewsToday: todayStats.moodBoardViews,
+      mostPopularMoodBoard: mostPopularBoard,
+      averageSessionDuration: avgSessionDuration,
     };
   } catch (error) {
     console.error('Error fetching feature stats:', error);
+    // Fallback to zero data if analytics fails
     return {
       drillsCompletedToday: 0,
       vocabularySearchesToday: 0,
       moodBoardViewsToday: 0,
-      mostPopularMoodBoard: 'Unknown',
+      mostPopularMoodBoard: 'Analytics permissions needed',
       averageSessionDuration: 0,
     };
   }

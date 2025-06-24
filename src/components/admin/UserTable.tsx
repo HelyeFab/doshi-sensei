@@ -215,23 +215,24 @@ export function UserTable({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full sm:min-w-[640px]">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Subscription
+                  <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:table-cell">
+                    Plan
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">
                     Registered
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell">
                     Last Active
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -243,33 +244,37 @@ export function UserTable({
                     className="hover:bg-muted/50 cursor-pointer transition-colors"
                     onClick={() => handleUserClick(user)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-2 sm:px-6 py-4">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-8 w-8">
                           <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
                             {user.displayName?.[0] || user.email?.[0]?.toUpperCase() || '?'}
                           </div>
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-foreground">
+                        <div className="ml-2 sm:ml-3 min-w-0 flex-1">
+                          <div className="text-sm font-medium text-foreground truncate">
                             {user.displayName || 'Anonymous User'}
                           </div>
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-xs sm:text-sm text-muted-foreground truncate">
                             {user.email}
+                          </div>
+                          {/* Show subscription on mobile when column is hidden */}
+                          <div className="sm:hidden mt-1">
+                            {getSubscriptionBadge(user.subscription)}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                       {getSubscriptionBadge(user.subscription)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm text-muted-foreground hidden md:table-cell">
                       {formatDate(user.createdAt)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm text-muted-foreground hidden lg:table-cell">
                       {formatDate(user.lastLoginAt)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div onClick={(e) => e.stopPropagation()}>
                         <PremiumUpgradeButton
                           user={user}
@@ -280,16 +285,18 @@ export function UserTable({
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-border">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-muted-foreground">
-                Showing {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users
+          <div className="px-3 sm:px-6 py-4 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-muted-foreground text-center sm:text-left">
+                <span className="hidden sm:inline">Showing {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users</span>
+                <span className="sm:hidden">{filteredUsers.length} users</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -297,17 +304,19 @@ export function UserTable({
                   disabled={currentPage === 1}
                   className="px-3 py-1 border border-border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
-                  Previous
+                  <span className="hidden sm:inline">Previous</span>
+                  <span className="sm:hidden">‹</span>
                 </button>
-                <span className="text-sm text-muted-foreground">
-                  Page {currentPage} of {totalPages}
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  {currentPage} / {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 border border-border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
-                  Next
+                  <span className="hidden sm:inline">Next</span>
+                  <span className="sm:hidden">›</span>
                 </button>
               </div>
             </div>

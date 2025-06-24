@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { ADMIN_EMAIL, AdminContextType, AdminSection } from '@/types/admin';
+import { logAdminAction } from '@/utils/adminLogs';
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
@@ -18,6 +19,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState<AdminSection>('dashboard');
+  const [hasLoggedLogin, setHasLoggedLogin] = useState(false);
 
   // Check if current user is admin
   const isAdmin = user?.email === ADMIN_EMAIL;
@@ -25,8 +27,23 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!authLoading) {
       setLoading(false);
+      
+      // Log admin login when user is authenticated as admin
+      if (isAdmin && !hasLoggedLogin) {
+        logAdminAction({
+          action: 'admin_login',
+          details: {
+            loginTime: new Date().toISOString(),
+            userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
+          },
+        }).then(() => {
+          setHasLoggedLogin(true);
+        }).catch(err => {
+          console.error('Failed to log admin login:', err);
+        });
+      }
     }
-  }, [authLoading]);
+  }, [authLoading, isAdmin, hasLoggedLogin]);
 
   const value: AdminContextType = {
     isAdmin,

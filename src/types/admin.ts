@@ -31,7 +31,7 @@ export interface FeatureStats {
 // Admin action logging
 export interface AdminLog {
   id: string;
-  action: string;
+  action: AdminLogAction;
   adminEmail: string;
   targetUserId?: string;
   targetMoodBoardId?: string;
@@ -39,13 +39,24 @@ export interface AdminLog {
   timestamp: Date;
 }
 
-export type AdminAction =
+export type AdminLogAction =
   | 'user_upgraded_to_premium'
+  | 'user_downgraded_to_free'
+  | 'user_suspended'
+  | 'user_unsuspended'
+  | 'user_deleted'
   | 'mood_board_created'
   | 'mood_board_updated'
   | 'mood_board_deleted'
-  | 'user_searched'
-  | 'dashboard_accessed';
+  | 'mood_board_published'
+  | 'mood_board_unpublished'
+  | 'system_backup_created'
+  | 'system_settings_updated'
+  | 'admin_login'
+  | 'admin_logout';
+
+// Legacy type alias for backward compatibility
+export type AdminAction = AdminLogAction;
 
 // Admin user management
 export interface AdminUserDetails {

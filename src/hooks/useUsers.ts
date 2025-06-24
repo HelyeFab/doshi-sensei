@@ -5,6 +5,7 @@ import { collection, query, getDocs, doc, updateDoc, onSnapshot } from 'firebase
 import { db } from '@/lib/firebase';
 import { AdminUserDetails } from '@/types/admin';
 import { UserSubscription, getDefaultSubscription } from '@/types/subscription';
+import { logAdminAction } from '@/utils/adminLogs';
 
 interface UseUsersReturn {
   users: AdminUserDetails[];
@@ -74,6 +75,16 @@ export function useUsers(): UseUsersReturn {
           id: doc.id,
           ...doc.data()
         };
+        
+        // Debug: Log raw Firebase user data
+        console.log('🔍 Raw Firebase user data:', {
+          id: doc.id,
+          rawData: doc.data(),
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          hasSubscription: !!firebaseUser.subscription,
+        });
+        
         return convertFirebaseUser(firebaseUser);
       });
 
@@ -137,9 +148,13 @@ export function useUsers(): UseUsersReturn {
       );
 
       // Log admin action
-      await logAdminAction('user_upgraded_to_premium', {
+      await logAdminAction({
+        action: 'user_upgraded_to_premium',
         targetUserId: userId,
-        newPlan: plan,
+        details: {
+          newPlan: plan,
+          previousPlan: users.find(u => u.id === userId)?.subscription?.subscription?.plan || 'free',
+        },
       });
 
     } catch (err) {
@@ -148,19 +163,6 @@ export function useUsers(): UseUsersReturn {
     }
   };
 
-  // Log admin actions (simplified for now)
-  const logAdminAction = async (action: string, details: Record<string, any>) => {
-    try {
-      if (!db) return;
-
-      const logsRef = collection(db, 'adminLogs');
-      // Note: This would normally use addDoc, but keeping it simple for now
-      console.log('Admin action logged:', { action, details, timestamp: new Date() });
-    } catch (err) {
-      console.error('Error logging admin action:', err);
-      // Don't throw here as this is just logging
-    }
-  };
 
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;

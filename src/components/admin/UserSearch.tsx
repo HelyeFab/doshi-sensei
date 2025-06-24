@@ -25,7 +25,7 @@ export function UserSearch({
   ] as const;
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6">
+    <div className="bg-card border border-border rounded-lg p-4 sm:p-6">
       <div className="space-y-4">
         {/* Main search bar */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -52,7 +52,7 @@ export function UserSearch({
               <input
                 id="user-search"
                 type="text"
-                placeholder="Search by email, name, or user ID..."
+                placeholder="Search users..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="block w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -151,8 +151,8 @@ export function UserSearch({
                 <select className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground">
                   <option value="">All subscriptions</option>
                   <option value="free">Free</option>
-                  <option value="monthly">Monthly Premium</option>
-                  <option value="yearly">Yearly Premium</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
                 </select>
               </div>
 

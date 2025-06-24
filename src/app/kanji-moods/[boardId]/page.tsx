@@ -5,11 +5,14 @@ import { useRouter, useParams } from 'next/navigation';
 import { getMoodBoardById, moodBoardExists } from '@/utils/moodBoardData';
 import MoodBoard from '@/components/kanji-moods/MoodBoard';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
+import { Analytics } from '@/utils/analytics';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MoodBoardPage() {
   const router = useRouter();
   const params = useParams();
   const boardId = params.boardId as string;
+  const { user } = useAuth();
 
   const [board, setBoard] = useState<MoodBoardType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +38,15 @@ export default function MoodBoardPage() {
         const boardData = getMoodBoardById(boardId);
         if (boardData) {
           setBoard(boardData);
+          
+          // Track mood board view analytics
+          Analytics.trackMoodBoardView(user?.uid, {
+            moodBoardId: boardId,
+            boardTitle: boardData.title,
+            jlptLevel: boardData.jlpt,
+            kanjiCount: boardData.kanji?.length || 0,
+            viewedAt: new Date().toISOString(),
+          });
         } else {
           setNotFound(true);
         }

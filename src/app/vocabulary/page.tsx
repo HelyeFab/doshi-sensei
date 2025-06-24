@@ -11,9 +11,11 @@ import WordListManager from '@/utils/wordLists';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { TTSManager } from '@/utils/tts';
+import { Analytics } from '@/utils/analytics';
 import CompanionTrigger from '@/components/CompanionTrigger';
 
 export default function VocabularyPage() {
+  const { user } = useAuth();
   const [wordLists, setWordLists] = useState<WordList[]>([]);
   const [selectedList, setSelectedList] = useState<WordList | null>(null);
   const [listWords, setListWords] = useState<JapaneseWord[]>([]);
@@ -75,6 +77,13 @@ export default function VocabularyPage() {
       setCurrentSearchResults(searchResults);
       setCurrentSearchTerm(term);
       setShowSearchResults(true);
+      
+      // Track vocabulary search analytics
+      Analytics.trackVocabularySearch(user?.uid, {
+        searchTerm: term,
+        resultsCount: searchResults.length,
+        searchedAt: new Date().toISOString(),
+      });
     } catch (err) {
       setError('Search failed. Please try again.');
       console.error('Error searching words:', err);

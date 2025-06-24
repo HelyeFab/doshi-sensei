@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
+import { NotificationProvider } from './AdminNotifications';
 
 interface AdminLayoutProps {
   title: string;
@@ -21,22 +22,24 @@ export function AdminLayout({ title, children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <AdminSidebar isOpen={sidebarOpen} onClose={handleSidebarClose} />
+    <NotificationProvider>
+      <div className="min-h-screen bg-background flex">
+        {/* Sidebar */}
+        <AdminSidebar isOpen={sidebarOpen} onClose={handleSidebarClose} />
 
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <AdminHeader onMenuClick={handleMenuClick} title={title} />
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <AdminHeader onMenuClick={handleMenuClick} title={title} />
 
-        {/* Main content */}
-        <main className="flex-1 overflow-auto">
-          <div className="p-6">
-            {children}
-          </div>
-        </main>
+          {/* Main content */}
+          <main className="flex-1 overflow-auto">
+            <div className="p-4 sm:p-6 pb-40 md:pb-20">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </NotificationProvider>
   );
 }

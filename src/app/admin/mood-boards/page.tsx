@@ -2,12 +2,20 @@
 
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { MoodBoardManager } from '@/components/admin/MoodBoardManager';
-import { useState } from 'react';
+import { useMoodBoards } from '@/hooks/useMoodBoards';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function MoodBoardsPage() {
+  const { moodBoards, loading } = useMoodBoards();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterJLPT, setFilterJLPT] = useState<'all' | 'N5' | 'N4' | 'N3' | 'N2' | 'N1'>('all');
+  const [stats, setStats] = useState({
+    totalBoards: 0,
+    activeBoards: 0,
+    mostPopular: 'Loading...',
+    lastUpdated: 'Calculating...'
+  });
 
   const jlptOptions = [
     { value: 'all', label: 'All Levels', color: 'bg-gray-100 text-gray-800' },
@@ -17,6 +25,45 @@ export default function MoodBoardsPage() {
     { value: 'N2', label: 'JLPT N2', color: 'bg-orange-100 text-orange-800' },
     { value: 'N1', label: 'JLPT N1', color: 'bg-red-100 text-red-800' },
   ] as const;
+
+  // Calculate real statistics from mood boards data
+  useEffect(() => {
+    if (!loading && moodBoards.length > 0) {
+      const totalBoards = moodBoards.length;
+      const activeBoards = moodBoards.filter(board => board.isActive !== false).length;
+      
+      // Find most popular mood board (could be based on views or usage)
+      const mostPopular = moodBoards.find(board => board.isActive !== false)?.title || 'None';
+      
+      // Find the most recently updated board
+      const mostRecentBoard = moodBoards.reduce((latest, current) => {
+        const currentDate = current.updatedAt ? new Date(current.updatedAt) : new Date(0);
+        const latestDate = latest.updatedAt ? new Date(latest.updatedAt) : new Date(0);
+        return currentDate > latestDate ? current : latest;
+      }, moodBoards[0]);
+      
+      const lastUpdated = mostRecentBoard?.updatedAt 
+        ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+            Math.floor((new Date(mostRecentBoard.updatedAt).getTime() - Date.now()) / (1000 * 60 * 60)), 
+            'hour'
+          )
+        : 'Unknown';
+
+      setStats({
+        totalBoards,
+        activeBoards,
+        mostPopular,
+        lastUpdated
+      });
+    } else if (!loading) {
+      setStats({
+        totalBoards: 0,
+        activeBoards: 0,
+        mostPopular: 'None',
+        lastUpdated: 'Never'
+      });
+    }
+  }, [moodBoards, loading]);
 
   return (
     <AdminLayout title="Mood Board Management">
@@ -155,7 +202,9 @@ export default function MoodBoardsPage() {
               <div className="text-2xl">📊</div>
               <div>
                 <div className="text-sm text-muted-foreground">Total Boards</div>
-                <div className="text-xl font-bold text-foreground">12</div>
+                <div className="text-xl font-bold text-foreground">
+                  {loading ? '...' : stats.totalBoards}
+                </div>
               </div>
             </div>
           </div>
@@ -165,7 +214,9 @@ export default function MoodBoardsPage() {
               <div className="text-2xl">🎯</div>
               <div>
                 <div className="text-sm text-muted-foreground">Active Boards</div>
-                <div className="text-xl font-bold text-foreground">11</div>
+                <div className="text-xl font-bold text-foreground">
+                  {loading ? '...' : stats.activeBoards}
+                </div>
               </div>
             </div>
           </div>
@@ -175,7 +226,9 @@ export default function MoodBoardsPage() {
               <div className="text-2xl">📈</div>
               <div>
                 <div className="text-sm text-muted-foreground">Most Popular</div>
-                <div className="text-sm font-medium text-foreground">Nature N5</div>
+                <div className="text-sm font-medium text-foreground">
+                  {loading ? 'Loading...' : stats.mostPopular}
+                </div>
               </div>
             </div>
           </div>
@@ -185,7 +238,9 @@ export default function MoodBoardsPage() {
               <div className="text-2xl">🕒</div>
               <div>
                 <div className="text-sm text-muted-foreground">Last Updated</div>
-                <div className="text-sm font-medium text-foreground">2 hours ago</div>
+                <div className="text-sm font-medium text-foreground">
+                  {loading ? 'Calculating...' : stats.lastUpdated}
+                </div>
               </div>
             </div>
           </div>

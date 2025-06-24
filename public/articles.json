@@ -1,0 +1,79 @@
+{
+  "lastUpdated": "2025-01-24T10:00:00.000Z",
+  "source": "watanoc",
+  "totalArticles": 3,
+  "metadata": {
+    "scrapedAt": "2025-01-24T10:00:00.000Z",
+    "source": "watanoc",
+    "articleCount": 3,
+    "nextScrapeTime": "2025-01-25T10:00:00.000Z"
+  },
+  "articles": [
+    {
+      "id": "watanoc_001_initial",
+      "title": "日本の桜祭り",
+      "content": "日本では、春になると桜が咲きます。多くの人が公園に行って、桜を見ます。これを「花見」と言います。家族や友達と一緒に、桜の下でお弁当を食べたり、お酒を飲んだりします。\n\n桜は日本の象徴的な花です。桜の季節は短くて、だいたい一週間から二週間ぐらいです。だから、桜が咲いている間に、多くの人が花見をしたがります。\n\n有名な花見の場所は、東京の上野公園や新宿御苑、京都の円山公園などです。夜になると、ライトアップされた桜を見ることもできます。これを「夜桜」と言います。",
+      "url": "https://watanoc.com/culture/sakura-festival",
+      "category": "culture",
+      "difficulty": "N5",
+      "jlpt": "N5",
+      "estimatedReadingTime": 3,
+      "tags": ["sakura", "spring", "festival", "hanami"],
+      "publishDate": "2025-01-24T10:00:00.000Z",
+      "scrapedAt": "2025-01-24T10:00:00.000Z",
+      "source": {
+        "id": "watanoc",
+        "name": "Watanoc",
+        "displayName": "Watanoc - Japanese Learning Articles"
+      },
+      "summary": "日本の春の伝統的な桜祭りと花見について説明した記事です。",
+      "imageUrl": "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400",
+      "vocabulary": [],
+      "kanji": []
+    },
+    {
+      "id": "watanoc_002_initial",
+      "title": "日本の電車システム",
+      "content": "日本の電車システムは世界で最も効率的だと言われています。特に東京では、JR、地下鉄、私鉄などの多くの路線が複雑に結ばれています。\n\n新幹線は日本の高速鉄道で、最高速度は320km/hに達します。東京から大阪まで約2時間30分で移動できます。新幹線の運行は非常に正確で、平均遅延時間は1分以下です。\n\n日本人は電車の中で静かにしています。電話で話すことや大きな声で話すことは避けられています。また、優先席では携帯電話の電源を切ることがマナーです。",
+      "url": "https://watanoc.com/transportation/train-system",
+      "category": "transportation",
+      "difficulty": "N4",
+      "jlpt": "N4",
+      "estimatedReadingTime": 4,
+      "tags": ["train", "shinkansen", "transportation", "efficiency"],
+      "publishDate": "2025-01-23T10:00:00.000Z",
+      "scrapedAt": "2025-01-24T10:00:00.000Z",
+      "source": {
+        "id": "watanoc",
+        "name": "Watanoc",
+        "displayName": "Watanoc - Japanese Learning Articles"
+      },
+      "summary": "日本の優れた電車システムと新幹線の効率性について解説した記事です。",
+      "imageUrl": "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=400",
+      "vocabulary": [],
+      "kanji": []
+    },
+    {
+      "id": "watanoc_003_initial",
+      "title": "日本のビジネス文化における「おもてなし」",
+      "content": "「おもてなし」は日本独特の概念で、お客様に対する心からのサービス精神を表現しています。この理念は日本のビジネス文化の根幹を成しており、多くの企業で実践されています。\n\nおもてなしの特徴は、相手のニーズを先読みし、期待を上回るサービスを提供することです。これは単なる接客技術ではなく、相手を思いやる心から生まれる行動です。\n\n国際ビジネスにおいても、この「おもてなし」の精神は日本企業の競争優位性となっています。顧客満足度を最優先に考える企業文化は、長期的な信頼関係の構築に貢献しています。",
+      "url": "https://watanoc.com/business/omotenashi-culture",
+      "category": "business",
+      "difficulty": "N3",
+      "jlpt": "N3",
+      "estimatedReadingTime": 5,
+      "tags": ["omotenashi", "business", "culture", "service", "hospitality"],
+      "publishDate": "2025-01-22T10:00:00.000Z",
+      "scrapedAt": "2025-01-24T10:00:00.000Z",
+      "source": {
+        "id": "watanoc",
+        "name": "Watanoc",
+        "displayName": "Watanoc - Japanese Learning Articles"
+      },
+      "summary": "日本のビジネス文化における「おもてなし」の概念とその重要性について詳しく説明した記事です。",
+      "imageUrl": "https://images.unsplash.com/photo-1551218372-a8789b81b253?w=400",
+      "vocabulary": [],
+      "kanji": []
+    }
+  ]
+}

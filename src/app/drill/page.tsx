@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { Analytics } from '@/utils/analytics';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
 import KanjiListManager from '@/utils/kanjiListManager';
@@ -848,6 +849,15 @@ export default function DrillPage() {
     if (isLastQuestion && gameStarted && questions.length > 0) {
       setTimeout(async () => {
         await recordDrillSession(newScore);
+        
+        // Track drill completion analytics
+        Analytics.trackDrillCompleted(user?.uid, {
+          score: newScore,
+          totalQuestions: questions.length,
+          accuracy: Math.round((newScore / questions.length) * 100),
+          mode: drillMode,
+          completedAt: new Date().toISOString(),
+        });
       }, 100);
     }
 

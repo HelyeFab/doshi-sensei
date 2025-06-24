@@ -16,9 +16,9 @@ export function AdminGuard({ children }: AdminGuardProps) {
 
   useEffect(() => {
     if (!loading) {
-      // If not authenticated or not admin, redirect to 404
+      // If not authenticated or not admin, redirect to home page
       if (!user || user.email !== ADMIN_EMAIL) {
-        router.replace('/404');
+        router.replace('/');
         return;
       }
     }

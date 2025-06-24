@@ -287,6 +287,15 @@ export default function Home() {
                   color="orange"
                   description="Practice reading"
                 />
+
+                {/* News Card */}
+                <FeatureCard
+                  title="News"
+                  icon="🗞️"
+                  href="/news"
+                  color="purple"
+                  description="Japanese articles"
+                />
               </div>
             </div>
 
@@ -373,6 +382,15 @@ export default function Home() {
                 href="/reading"
                 color="orange"
                 description="Practice reading"
+              />
+
+              {/* News Card */}
+              <FeatureCard
+                title="News"
+                icon="🗞️"
+                href="/news"
+                color="purple"
+                description="Japanese articles"
               />
             </div>
           </div>

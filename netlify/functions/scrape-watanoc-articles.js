@@ -51,8 +51,7 @@ if (credentialCheck.hasAllCredentials) {
       };
 
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-        databaseURL: `https://${credentialCheck.projectId}-default-rtdb.firebaseio.com`
+        credential: admin.credential.cert(serviceAccount)
       });
       
       firebaseInitialized = true;
@@ -607,6 +606,8 @@ const scrapeWatanocHandler = async (event, context) => {
   try {
     console.log('🚀 Watanoc scraping function triggered');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
+    console.log('🔧 Firebase initialized:', firebaseInitialized);
+    console.log('🔧 Database instance:', !!db);
     
     // Check if Firebase is properly initialized
     if (!firebaseInitialized) {
@@ -625,6 +626,21 @@ const scrapeWatanocHandler = async (event, context) => {
       };
     }
     
+    // Check if this is a test call
+    if (event.body && JSON.parse(event.body || '{}').test === true) {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: true,
+          message: 'Test successful - Firebase Admin SDK is working',
+          firebaseInitialized,
+          hasDatabase: !!db,
+          timestamp: new Date().toISOString()
+        }),
+      };
+    }
+
     // Scrape articles from Watanoc
     const scrapingResult = await scrapeWatanocArticles();
     

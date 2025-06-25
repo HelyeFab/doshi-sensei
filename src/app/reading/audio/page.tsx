@@ -433,6 +433,14 @@ export default function AudioPlayerPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState<Record<number, number>>({});
+  
+  // Use ref to track current autoAdvance state for real-time updates
+  const autoAdvanceRef = useRef<boolean>(true);
+  
+  // Keep ref synchronized with controls state
+  useEffect(() => {
+    autoAdvanceRef.current = controls.autoAdvance;
+  }, [controls.autoAdvance]);
   const [loadingArticle, setLoadingArticle] = useState(true);
   const [translations, setTranslations] = useState<Map<string, string>>(new Map());
   const [translationLoading, setTranslationLoading] = useState(false);
@@ -614,7 +622,7 @@ export default function AudioPlayerPage() {
 
   // Handle audio completion and auto-advance
   const handleAudioComplete = (currentIndex: number) => {
-    if (controls.autoAdvance && currentIndex < sentences.length - 1) {
+    if (autoAdvanceRef.current && currentIndex < sentences.length - 1) {
       // Auto-advance to next sentence
       const nextIndex = currentIndex + 1;
       setTimeout(() => {
@@ -646,7 +654,7 @@ export default function AudioPlayerPage() {
       setError(`Skipped sentence ${index + 1} after ${MAX_RETRIES_PER_SENTENCE} failed attempts`);
 
       // Auto-advance to next sentence if possible
-      if (controls.autoAdvance && index < sentences.length - 1) {
+      if (autoAdvanceRef.current && index < sentences.length - 1) {
         setTimeout(() => {
           playCurrentSentence(index + 1);
         }, 1000);
@@ -698,7 +706,7 @@ export default function AudioPlayerPage() {
         setError(`Failed to play sentence ${index + 1} after ${MAX_RETRIES_PER_SENTENCE} attempts. Skipping to next.`);
 
         // Auto-advance to next sentence if possible
-        if (controls.autoAdvance && index < sentences.length - 1) {
+        if (autoAdvanceRef.current && index < sentences.length - 1) {
           setTimeout(() => {
             playCurrentSentence(index + 1);
           }, 1000);

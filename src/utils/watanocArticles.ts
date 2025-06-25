@@ -265,26 +265,8 @@ export async function getArticleStats(): Promise<{
       throw new Error('Firebase not initialized');
     }
 
-    // Try to get cached stats from Firebase first
-    const statsDoc = await getDoc(doc(db, 'articlesMetadata', 'stats'));
-    
-    if (statsDoc.exists()) {
-      const statsData = statsDoc.data();
-      const lastUpdated = statsData.lastUpdated instanceof Timestamp 
-        ? statsData.lastUpdated.toDate().toISOString()
-        : new Date().toISOString();
-
-      return {
-        totalArticles: statsData.totalArticles || 0,
-        articlesByLevel: statsData.articlesByLevel || {
-          'N5': 0, 'N4': 0, 'N3': 0, 'N2': 0, 'N1': 0
-        },
-        articlesByCategory: statsData.articlesByCategory || {},
-        lastUpdated
-      };
-    }
-
-    // Fallback: calculate stats from articles
+    // Always calculate fresh stats from articles (skip cached stats)
+    // Note: Previously cached stats can be stale after manual deletions
     const articles = await getWatanocArticles();
     
     const articlesByLevel: Record<JLPTLevel, number> = {

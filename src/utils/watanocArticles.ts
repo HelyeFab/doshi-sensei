@@ -38,6 +38,10 @@ let articlesCache: NewsArticle[] | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+// Clear any existing cache on module load
+articlesCache = null;
+cacheTimestamp = 0;
+
 /**
  * Fetch articles from Firebase Firestore
  * Articles are stored by the Netlify function
@@ -67,8 +71,8 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
     const querySnapshot = await getDocs(articlesQuery);
     
     if (querySnapshot.empty) {
-      console.log('⚠️ No articles found in Firebase, using fallback');
-      return getFallbackArticles();
+      console.log('⚠️ No articles found in Firebase');
+      return [];
     }
 
     // Process articles from Firestore
@@ -96,8 +100,8 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
   } catch (error) {
     console.error('❌ Error fetching Watanoc articles from Firebase:', error);
     
-    // Return fallback articles if main fetch fails
-    return getFallbackArticles();
+    // Return empty array if main fetch fails
+    return [];
   }
 }
 
@@ -207,38 +211,6 @@ export async function searchWatanocArticles(query: string): Promise<NewsArticle[
   );
 }
 
-/**
- * Fallback articles in case of fetch failure
- */
-function getFallbackArticles(): NewsArticle[] {
-  console.log('📦 Using fallback Watanoc articles');
-  
-  return [
-    {
-      id: 'watanoc_fallback_001',
-      title: '日本の四季',
-      content: '日本には美しい四季があります。春は桜、夏は祭り、秋は紅葉、冬は雪です。それぞれの季節には特別な魅力があります。',
-      summary: '日本の四季の美しさについての簡単な紹介記事です。',
-      url: 'https://watanoc.com/fallback/seasons',
-      imageUrl: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400',
-      publishDate: new Date(),
-      scrapedAt: new Date(),
-      source: {
-        id: 'watanoc',
-        name: 'Watanoc',
-        displayName: 'Watanoc - Japanese Learning Articles'
-      },
-      category: 'culture',
-      tags: ['seasons', 'nature', 'culture'],
-      difficulty: 'N5' as JLPTLevel,
-      estimatedReadingTime: 2,
-      vocabulary: [],
-      kanji: [],
-      isBookmarked: false,
-      readingProgress: 0
-    }
-  ];
-}
 
 /**
  * Get cache status and metadata
@@ -258,12 +230,25 @@ export function getCacheInfo(): {
 }
 
 /**
- * Clear the articles cache
+ * Clear the articles cache and force refresh
  */
 export function clearCache(): void {
   articlesCache = null;
   cacheTimestamp = 0;
-  console.log('🗑️ Watanoc articles cache cleared');
+  
+  // Also clear any potential browser storage
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem('watanoc_articles_cache');
+      localStorage.removeItem('articles_cache');
+      sessionStorage.removeItem('watanoc_articles_cache');
+      sessionStorage.removeItem('articles_cache');
+    } catch (e) {
+      // Ignore storage errors
+    }
+  }
+  
+  console.log('🗑️ All articles cache cleared (memory + browser storage)');
 }
 
 /**

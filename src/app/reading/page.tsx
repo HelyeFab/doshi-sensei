@@ -358,7 +358,7 @@ export default function ReadingPage() {
           {/* Description */}
           <div className="mb-6">
             <p className="text-muted-foreground">
-              Read curated Japanese articles from Watanoc and Todaii to improve your reading comprehension. Articles are organized by JLPT level for fresh content.
+              Read curated Japanese articles from Watanoc and Todaii News to improve your reading comprehension. Articles are organized by JLPT level and updated daily with fresh content.
             </p>
             
             {/* Debug info */}

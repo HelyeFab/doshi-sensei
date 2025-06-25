@@ -1,16 +1,16 @@
-import { 
-  collection, 
-  doc, 
-  getDocs, 
-  getDoc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  startAfter, 
+import {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
   Timestamp,
   increment
 } from 'firebase/firestore';
@@ -51,8 +51,8 @@ export function extractExcerpt(content: string, maxLength: number = 160): string
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // Links
     .replace(/\n+/g, ' ') // Line breaks
     .trim();
-  
-  return plainText.length > maxLength 
+
+  return plainText.length > maxLength
     ? plainText.substring(0, maxLength).trim() + '...'
     : plainText;
 }
@@ -64,14 +64,14 @@ export async function createResourcePost(data: ResourceFormData, authorId: strin
   try {
     const now = new Date();
     const slug = data.slug || generateSlug(data.title);
-    
+
     // Check if slug already exists
     const slugQuery = query(
       collection(db, RESOURCES_COLLECTION),
       where('slug', '==', slug)
     );
     const slugSnapshot = await getDocs(slugQuery);
-    
+
     if (!slugSnapshot.empty) {
       throw new Error('A post with this slug already exists');
     }
@@ -79,26 +79,21 @@ export async function createResourcePost(data: ResourceFormData, authorId: strin
     const readingTime = calculateReadingTime(data.content);
     const excerpt = data.excerpt || extractExcerpt(data.content);
 
-    const resourcePost: Omit<ResourcePost, 'id'> = {
+    // Build the resource object with only defined values
+    const resourcePost: any = {
       title: data.title.trim(),
-      subtitle: data.subtitle?.trim() || undefined,
       slug,
       content: data.content,
       excerpt,
-      imageUrl: data.imageUrl?.trim() || undefined,
-      imageAlt: data.imageAlt?.trim() || undefined,
       author: {
         id: authorId,
         name: 'Admin', // You can enhance this with actual user data
         email: '' // You can enhance this with actual user data
       },
       status: data.status,
-      publishedAt: data.status === 'published' ? now : undefined,
-      scheduledFor: data.scheduledFor ? new Date(data.scheduledFor) : undefined,
       createdAt: now,
       updatedAt: now,
       tags: data.tags.filter(tag => tag.trim()).map(tag => tag.trim()),
-      category: data.category?.trim() || undefined,
       readingTimeMinutes: readingTime,
       views: 0,
       isPremium: data.isPremium || false,
@@ -106,6 +101,26 @@ export async function createResourcePost(data: ResourceFormData, authorId: strin
       seoDescription: data.seoDescription?.trim() || excerpt,
       featured: data.featured || false
     };
+
+    // Add optional fields only if they have values
+    if (data.subtitle?.trim()) {
+      resourcePost.subtitle = data.subtitle.trim();
+    }
+    if (data.imageUrl?.trim()) {
+      resourcePost.imageUrl = data.imageUrl.trim();
+    }
+    if (data.imageAlt?.trim()) {
+      resourcePost.imageAlt = data.imageAlt.trim();
+    }
+    if (data.category?.trim()) {
+      resourcePost.category = data.category.trim();
+    }
+    if (data.status === 'published') {
+      resourcePost.publishedAt = now;
+    }
+    if (data.scheduledFor) {
+      resourcePost.scheduledFor = new Date(data.scheduledFor);
+    }
 
     const docRef = await addDoc(collection(db, RESOURCES_COLLECTION), resourcePost);
     console.log('Resource post created:', docRef.id);
@@ -123,29 +138,56 @@ export async function updateResourcePost(id: string, data: ResourceFormData): Pr
   try {
     const docRef = doc(db, RESOURCES_COLLECTION, id);
     const now = new Date();
-    
+
     const readingTime = calculateReadingTime(data.content);
     const excerpt = data.excerpt || extractExcerpt(data.content);
 
-    const updates = {
+    // Build the updates object with only defined values
+    const updates: any = {
       title: data.title.trim(),
-      subtitle: data.subtitle?.trim() || undefined,
       slug: data.slug || generateSlug(data.title),
       content: data.content,
       excerpt,
-      imageUrl: data.imageUrl?.trim() || undefined,
-      imageAlt: data.imageAlt?.trim() || undefined,
       status: data.status,
-      scheduledFor: data.scheduledFor ? new Date(data.scheduledFor) : undefined,
       updatedAt: now,
       tags: data.tags.filter(tag => tag.trim()).map(tag => tag.trim()),
-      category: data.category?.trim() || undefined,
       readingTimeMinutes: readingTime,
       isPremium: data.isPremium || false,
       seoTitle: data.seoTitle?.trim() || data.title,
       seoDescription: data.seoDescription?.trim() || excerpt,
       featured: data.featured || false
     };
+
+    // Add optional fields only if they have values
+    if (data.subtitle?.trim()) {
+      updates.subtitle = data.subtitle.trim();
+    } else {
+      updates.subtitle = null; // Explicitly remove the field
+    }
+
+    if (data.imageUrl?.trim()) {
+      updates.imageUrl = data.imageUrl.trim();
+    } else {
+      updates.imageUrl = null;
+    }
+
+    if (data.imageAlt?.trim()) {
+      updates.imageAlt = data.imageAlt.trim();
+    } else {
+      updates.imageAlt = null;
+    }
+
+    if (data.category?.trim()) {
+      updates.category = data.category.trim();
+    } else {
+      updates.category = null;
+    }
+
+    if (data.scheduledFor) {
+      updates.scheduledFor = new Date(data.scheduledFor);
+    } else {
+      updates.scheduledFor = null;
+    }
 
     // If changing from draft to published, set publishedAt
     if (data.status === 'published') {
@@ -184,7 +226,7 @@ export async function getResourcePost(id: string): Promise<ResourcePost | null> 
   try {
     const docRef = doc(db, RESOURCES_COLLECTION, id);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
@@ -196,7 +238,7 @@ export async function getResourcePost(id: string): Promise<ResourcePost | null> 
         scheduledFor: data.scheduledFor?.toDate() || undefined,
       } as ResourcePost;
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error getting resource post:', error);
@@ -214,9 +256,9 @@ export async function getResourcePostBySlug(slug: string): Promise<ResourcePost 
       where('slug', '==', slug),
       where('status', '==', 'published')
     );
-    
+
     const querySnapshot = await getDocs(q);
-    
+
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];
       const data = doc.data();
@@ -229,7 +271,7 @@ export async function getResourcePostBySlug(slug: string): Promise<ResourcePost 
         scheduledFor: data.scheduledFor?.toDate() || undefined,
       } as ResourcePost;
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error getting resource post by slug:', error);
@@ -246,38 +288,45 @@ export async function getPublishedResourcePosts(
   lastDoc?: any
 ): Promise<{ posts: ResourcePost[]; hasMore: boolean; lastDoc: any }> {
   try {
-    let q = query(
+    // Get all resources and filter in memory to avoid composite index requirements
+    const q = query(
       collection(db, RESOURCES_COLLECTION),
-      where('status', '==', 'published'),
-      orderBy('publishedAt', 'desc')
+      orderBy('createdAt', 'desc'), // Use createdAt which doesn't require composite index
+      limit(pageSize * 3) // Get more documents to account for filtering
     );
 
-    // Apply filters
-    if (filters.category) {
-      q = query(q, where('category', '==', filters.category));
-    }
-    
-    if (filters.featured !== undefined) {
-      q = query(q, where('featured', '==', filters.featured));
-    }
-
-    if (filters.tags && filters.tags.length > 0) {
-      q = query(q, where('tags', 'array-contains-any', filters.tags));
-    }
-
-    // Pagination
-    if (lastDoc) {
-      q = query(q, startAfter(lastDoc));
-    }
-    
-    q = query(q, limit(pageSize + 1)); // Get one extra to check if there are more
-
     const querySnapshot = await getDocs(q);
-    const posts: ResourcePost[] = [];
-    
-    querySnapshot.docs.slice(0, pageSize).forEach((doc) => {
+    const allPosts: ResourcePost[] = [];
+
+    querySnapshot.forEach((doc) => {
       const data = doc.data();
-      posts.push({
+
+      // Only include published posts
+      if (data.status !== 'published') {
+        return;
+      }
+
+      // Apply category filter
+      if (filters.category && data.category !== filters.category) {
+        return;
+      }
+
+      // Apply featured filter
+      if (filters.featured !== undefined && data.featured !== filters.featured) {
+        return;
+      }
+
+      // Apply tags filter
+      if (filters.tags && filters.tags.length > 0) {
+        const hasMatchingTag = filters.tags.some(tag =>
+          (data.tags || []).includes(tag)
+        );
+        if (!hasMatchingTag) {
+          return;
+        }
+      }
+
+      allPosts.push({
         id: doc.id,
         ...data,
         createdAt: data.createdAt?.toDate() || new Date(),
@@ -287,11 +336,18 @@ export async function getPublishedResourcePosts(
       } as ResourcePost);
     });
 
-    // Filter by search query (client-side for simplicity)
-    let filteredPosts = posts;
+    // Sort by publishedAt date (newest first)
+    allPosts.sort((a, b) => {
+      const dateA = a.publishedAt || a.createdAt;
+      const dateB = b.publishedAt || b.createdAt;
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    // Apply search filter
+    let filteredPosts = allPosts;
     if (filters.query) {
       const searchQuery = filters.query.toLowerCase();
-      filteredPosts = posts.filter(post => 
+      filteredPosts = allPosts.filter(post =>
         post.title.toLowerCase().includes(searchQuery) ||
         post.subtitle?.toLowerCase().includes(searchQuery) ||
         post.excerpt.toLowerCase().includes(searchQuery) ||
@@ -299,13 +355,14 @@ export async function getPublishedResourcePosts(
       );
     }
 
-    const hasMore = querySnapshot.docs.length > pageSize;
-    const newLastDoc = querySnapshot.docs.length > 0 ? querySnapshot.docs[Math.min(pageSize - 1, querySnapshot.docs.length - 1)] : null;
+    // Apply pagination
+    const paginatedPosts = filteredPosts.slice(0, pageSize);
+    const hasMore = filteredPosts.length > pageSize;
 
     return {
-      posts: filteredPosts,
+      posts: paginatedPosts,
       hasMore,
-      lastDoc: newLastDoc
+      lastDoc: null // We're not using cursor-based pagination anymore
     };
   } catch (error) {
     console.error('Error getting published resource posts:', error);
@@ -318,25 +375,24 @@ export async function getPublishedResourcePosts(
  */
 export async function getAllResourcePosts(filters: ResourceSearchFilters = {}): Promise<ResourceListItem[]> {
   try {
-    let q = query(
+    // Always get all resources ordered by updatedAt
+    // We'll filter by status in memory to avoid composite index requirements
+    const q = query(
       collection(db, RESOURCES_COLLECTION),
       orderBy('updatedAt', 'desc')
     );
 
-    // Apply status filter
-    if (filters.status) {
-      q = query(
-        collection(db, RESOURCES_COLLECTION),
-        where('status', '==', filters.status),
-        orderBy('updatedAt', 'desc')
-      );
-    }
-
     const querySnapshot = await getDocs(q);
     const posts: ResourceListItem[] = [];
-    
+
     querySnapshot.forEach((doc) => {
       const data = doc.data();
+
+      // Apply status filter in memory if specified
+      if (filters.status && data.status !== filters.status) {
+        return; // Skip this document if it doesn't match the status filter
+      }
+
       posts.push({
         id: doc.id,
         title: data.title,

@@ -329,6 +329,23 @@ export default function SettingsPage() {
         {/* Main Content */}
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
         <div className="space-y-8">
+          {/* Virtual Companion Settings */}
+          <SettingsSection title="Virtual Companion">
+            <div className="space-y-4">
+              <ToggleSetting
+                label="Show Virtual Companion"
+                description="Display the friendly companion character across the app for encouragement"
+                checked={settings.showCompanion ?? true}
+                onChange={(checked) => updateSetting('showCompanion', checked)}
+              />
+              <div className="pt-2 border-t border-border">
+                <p className="text-xs text-muted-foreground">
+                  The virtual companion provides motivational messages and adds a friendly touch to your learning experience.
+                </p>
+              </div>
+            </div>
+          </SettingsSection>
+
           {/* Theme Settings */}
           <SettingsSection title="Appearance">
             <ThemeSelector
@@ -348,14 +365,14 @@ export default function SettingsPage() {
                 label="Custom Navigation"
                 description="Customize which features appear in your mobile bottom navigation"
                 checked={settings.navigationPreferences?.useCustomNavigation || false}
-                onChange={(checked) => 
+                onChange={(checked) =>
                   updateSetting('navigationPreferences', {
                     customNavItems: settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS,
                     useCustomNavigation: checked
                   })
                 }
               />
-              
+
               {settings.navigationPreferences?.useCustomNavigation && (
                 <div className="mt-4 p-4 bg-muted/50 rounded-lg">
                   <h4 className="text-sm font-medium text-foreground mb-3">
@@ -373,14 +390,14 @@ export default function SettingsPage() {
                             const newItems = e.target.checked
                               ? [...currentItems, item.id].slice(0, 3) // Limit to 3 items
                               : currentItems.filter(id => id !== item.id);
-                            
+
                             updateSetting('navigationPreferences', {
                               useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
                               customNavItems: newItems
                             });
                           }}
                           disabled={
-                            !(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id) && 
+                            !(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id) &&
                             (settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).length >= 3
                           }
                           className="rounded"
@@ -397,10 +414,10 @@ export default function SettingsPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="mt-4 pt-3 border-t border-border">
                     <button
-                      onClick={() => 
+                      onClick={() =>
                         updateSetting('navigationPreferences', {
                           useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
                           customNavItems: DEFAULT_NAV_ITEMS
@@ -416,7 +433,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
               )}
-              
+
               <div className="pt-2 border-t border-border">
                 <p className="text-xs text-muted-foreground">
                   <strong>Note:</strong> When new features are added to the app, remember to check back here to add them to your navigation if desired.

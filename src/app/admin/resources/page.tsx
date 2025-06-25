@@ -12,7 +12,7 @@ export default function AdminResourcesPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
-  
+
   const [resources, setResources] = useState<ResourceListItem[]>([]);
   const [stats, setStats] = useState<ResourceStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function AdminResourcesPage() {
         getAllResourcePosts(filters),
         getResourceStats()
       ]);
-      
+
       setResources(resourcesData);
       setStats(statsData);
     } catch (error) {
@@ -68,7 +68,7 @@ export default function AdminResourcesPage() {
 
   const handleBulkDelete = async () => {
     if (selectedResources.length === 0) return;
-    
+
     if (!confirm(`Are you sure you want to delete ${selectedResources.length} resources? This action cannot be undone.`)) {
       return;
     }
@@ -84,8 +84,8 @@ export default function AdminResourcesPage() {
   };
 
   const toggleResourceSelection = (id: string) => {
-    setSelectedResources(prev => 
-      prev.includes(id) 
+    setSelectedResources(prev =>
+      prev.includes(id)
         ? prev.filter(resourceId => resourceId !== id)
         : [...prev, id]
     );
@@ -101,11 +101,11 @@ export default function AdminResourcesPage() {
 
   // Filter resources based on search query
   const filteredResources = resources.filter(resource => {
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       resource.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       resource.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    
+
     return matchesSearch;
   });
 
@@ -128,59 +128,84 @@ export default function AdminResourcesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-6 md:px-6 md:py-8 max-w-7xl">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Resources Management</h1>
-          <p className="text-muted-foreground mt-1">Create and manage blog posts and resources</p>
-        </div>
+      <div className="flex flex-col gap-4 mb-6">
+        {/* Back button */}
         <button
-          onClick={() => router.push('/admin/resources/new')}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          onClick={() => router.push('/admin')}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors w-fit"
         >
-          + New Resource
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          <span className="text-sm md:text-base">Back to Admin Dashboard</span>
         </button>
+
+        {/* Title and action button */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Resources Management</h1>
+            <p className="text-sm md:text-base text-muted-foreground mt-1">Create and manage blog posts and resources</p>
+          </div>
+          <button
+            onClick={() => router.push('/admin/resources/new')}
+            className="w-full sm:w-auto px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm md:text-base"
+          >
+            + New Resource
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-card rounded-lg p-6 border border-border">
-            <div className="text-2xl font-bold text-primary">{stats.totalPosts}</div>
-            <div className="text-sm text-muted-foreground">Total Posts</div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+          <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
+            <div className="text-xl md:text-2xl font-bold text-primary">{stats.totalPosts}</div>
+            <div className="text-xs md:text-sm text-muted-foreground">Total Posts</div>
           </div>
-          <div className="bg-card rounded-lg p-6 border border-border">
-            <div className="text-2xl font-bold text-green-600">{stats.publishedPosts}</div>
-            <div className="text-sm text-muted-foreground">Published</div>
+          <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
+            <div className="text-xl md:text-2xl font-bold text-green-600">{stats.publishedPosts}</div>
+            <div className="text-xs md:text-sm text-muted-foreground">Published</div>
           </div>
-          <div className="bg-card rounded-lg p-6 border border-border">
-            <div className="text-2xl font-bold text-gray-600">{stats.draftPosts}</div>
-            <div className="text-sm text-muted-foreground">Drafts</div>
+          <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
+            <div className="text-xl md:text-2xl font-bold text-gray-600">{stats.draftPosts}</div>
+            <div className="text-xs md:text-sm text-muted-foreground">Drafts</div>
           </div>
-          <div className="bg-card rounded-lg p-6 border border-border">
-            <div className="text-2xl font-bold text-secondary">{stats.totalViews.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Total Views</div>
+          <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
+            <div className="text-xl md:text-2xl font-bold text-secondary">{stats.totalViews.toLocaleString()}</div>
+            <div className="text-xs md:text-sm text-muted-foreground">Total Views</div>
           </div>
         </div>
       )}
 
       {/* Filters and Search */}
-      <div className="bg-card rounded-lg p-6 border border-border">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="bg-card rounded-lg p-4 md:p-6 border border-border mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           <div className="flex-1">
             <input
               type="text"
               placeholder="Search resources..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
+              className="w-full px-3 py-2 text-sm md:text-base border border-border rounded-lg bg-background text-foreground"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-3 py-2 border border-border rounded-lg bg-background text-foreground"
+            className="px-3 py-2 text-sm md:text-base border border-border rounded-lg bg-background text-foreground"
           >
             <option value="all">All Status</option>
             <option value="published">Published</option>
@@ -211,7 +236,7 @@ export default function AdminResourcesPage() {
         )}
       </div>
 
-      {/* Resources Table */}
+      {/* Resources Table/Cards */}
       <div className="bg-card rounded-lg border border-border overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-muted-foreground">Loading resources...</div>
@@ -220,82 +245,154 @@ export default function AdminResourcesPage() {
             {searchQuery ? 'No resources found matching your search.' : 'No resources found. Create your first resource!'}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-left p-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedResources.length === filteredResources.length && filteredResources.length > 0}
-                      onChange={toggleSelectAll}
-                      className="rounded"
-                    />
-                  </th>
-                  <th className="text-left p-4 font-medium">Title</th>
-                  <th className="text-left p-4 font-medium">Status</th>
-                  <th className="text-left p-4 font-medium">Category</th>
-                  <th className="text-left p-4 font-medium">Views</th>
-                  <th className="text-left p-4 font-medium">Updated</th>
-                  <th className="text-left p-4 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+          <>
+            {/* Mobile Cards View */}
+            <div className="md:hidden">
+              {/* Select All for mobile */}
+              <div className="p-4 border-b border-border bg-muted/50">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={selectedResources.length === filteredResources.length && filteredResources.length > 0}
+                    onChange={toggleSelectAll}
+                    className="rounded"
+                  />
+                  Select all
+                </label>
+              </div>
+
+              {/* Resource Cards */}
+              <div className="divide-y divide-border">
                 {filteredResources.map((resource) => (
-                  <tr key={resource.id} className="border-t border-border hover:bg-muted/30">
-                    <td className="p-4">
+                  <div key={resource.id} className="p-4 hover:bg-muted/30">
+                    <div className="flex items-start gap-3">
                       <input
                         type="checkbox"
                         checked={selectedResources.includes(resource.id)}
                         onChange={() => toggleResourceSelection(resource.id)}
-                        className="rounded"
+                        className="rounded mt-1"
                       />
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex-1 space-y-2">
                         <div>
-                          <div className="font-medium text-foreground">{resource.title}</div>
-                          {resource.featured && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                              Featured
-                            </span>
-                          )}
+                          <h3 className="font-medium text-foreground">{resource.title}</h3>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {getStatusBadge(resource.status)}
+                            {resource.featured && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                Featured
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-sm text-muted-foreground space-y-1">
+                          <div>{resource.category || 'Uncategorized'}</div>
+                          <div>{resource.views.toLocaleString()} views • {formatDistanceToNow(resource.updatedAt, { addSuffix: true })}</div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          <button
+                            onClick={() => router.push(`/admin/resources/${resource.id}/edit`)}
+                            className="px-3 py-1.5 text-sm bg-secondary text-secondary-foreground rounded hover:bg-secondary/90"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => window.open(`/resources/${resource.id}`, '_blank')}
+                            className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() => handleDeleteResource(resource.id)}
+                            className="px-3 py-1.5 text-sm bg-destructive text-destructive-foreground rounded hover:bg-destructive/90"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </div>
-                    </td>
-                    <td className="p-4">{getStatusBadge(resource.status)}</td>
-                    <td className="p-4 text-muted-foreground">{resource.category || 'Uncategorized'}</td>
-                    <td className="p-4 text-muted-foreground">{resource.views.toLocaleString()}</td>
-                    <td className="p-4 text-muted-foreground">
-                      {formatDistanceToNow(resource.updatedAt, { addSuffix: true })}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => router.push(`/admin/resources/${resource.id}/edit`)}
-                          className="px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/90"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => window.open(`/resources/${resource.id}`, '_blank')}
-                          className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
-                        >
-                          View
-                        </button>
-                        <button
-                          onClick={() => handleDeleteResource(resource.id)}
-                          className="px-2 py-1 text-xs bg-destructive text-destructive-foreground rounded hover:bg-destructive/90"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-left p-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedResources.length === filteredResources.length && filteredResources.length > 0}
+                        onChange={toggleSelectAll}
+                        className="rounded"
+                      />
+                    </th>
+                    <th className="text-left p-4 font-medium">Title</th>
+                    <th className="text-left p-4 font-medium">Status</th>
+                    <th className="text-left p-4 font-medium">Category</th>
+                    <th className="text-left p-4 font-medium">Views</th>
+                    <th className="text-left p-4 font-medium">Updated</th>
+                    <th className="text-left p-4 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredResources.map((resource) => (
+                    <tr key={resource.id} className="border-t border-border hover:bg-muted/30">
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedResources.includes(resource.id)}
+                          onChange={() => toggleResourceSelection(resource.id)}
+                          className="rounded"
+                        />
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <div>
+                            <div className="font-medium text-foreground">{resource.title}</div>
+                            {resource.featured && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                Featured
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4">{getStatusBadge(resource.status)}</td>
+                      <td className="p-4 text-muted-foreground">{resource.category || 'Uncategorized'}</td>
+                      <td className="p-4 text-muted-foreground">{resource.views.toLocaleString()}</td>
+                      <td className="p-4 text-muted-foreground">
+                        {formatDistanceToNow(resource.updatedAt, { addSuffix: true })}
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => router.push(`/admin/resources/${resource.id}/edit`)}
+                            className="px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/90"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => window.open(`/resources/${resource.id}`, '_blank')}
+                            className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() => handleDeleteResource(resource.id)}
+                            className="px-2 py-1 text-xs bg-destructive text-destructive-foreground rounded hover:bg-destructive/90"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
 import VirtualCompanion from './VirtualCompanion';
 
 export default function CompanionTrigger() {
+  const { settings, isLoading } = useSettings();
   const [isCompanionOpen, setIsCompanionOpen] = useState(false);
 
   const handleOpenCompanion = () => {
@@ -13,6 +15,11 @@ export default function CompanionTrigger() {
   const handleCloseCompanion = () => {
     setIsCompanionOpen(false);
   };
+
+  // Don't render anything if settings are loading or showCompanion is disabled
+  if (isLoading || !settings.showCompanion) {
+    return null;
+  }
 
   return (
     <>

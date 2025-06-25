@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { ResourceFormData, RESOURCE_CATEGORIES } from '@/types/resources';
 import { createResourcePost, generateSlug, extractExcerpt, calculateReadingTime } from '@/utils/resources';
 import { marked } from 'marked';
+import { storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function NewResourcePage() {
   const router = useRouter();
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
-  
+
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [formData, setFormData] = useState<ResourceFormData>({
@@ -32,8 +34,10 @@ export default function NewResourcePage() {
     seoDescription: '',
     featured: false
   });
-  
+
   const [tagInput, setTagInput] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check admin access
   useEffect(() => {
@@ -62,15 +66,15 @@ export default function NewResourcePage() {
 
     try {
       setLoading(true);
-      
-      // Validation
+
+      // Friendly validation messages
       if (!formData.title.trim()) {
-        alert('Title is required');
+        alert('📝 Please enter a title for your resource.\n\nThe title is required and will be displayed in resource listings.');
         return;
       }
-      
+
       if (!formData.content.trim()) {
-        alert('Content is required');
+        alert('📄 Please add some content to your resource.\n\nContent is required - this is the main body of your article or resource.');
         return;
       }
 
@@ -78,7 +82,21 @@ export default function NewResourcePage() {
       router.push('/admin/resources');
     } catch (error: any) {
       console.error('Error creating resource:', error);
-      alert(error.message || 'Failed to create resource. Please try again.');
+
+      // Provide more helpful error messages
+      let errorMessage = 'Failed to create resource. ';
+
+      if (error.message?.includes('slug already exists')) {
+        errorMessage = '🔗 This URL slug is already in use.\n\nPlease choose a different slug or modify the title.';
+      } else if (error.message?.includes('permission')) {
+        errorMessage = '🔒 You don\'t have permission to create resources.\n\nPlease ensure you\'re logged in as an admin.';
+      } else if (error.message?.includes('network')) {
+        errorMessage = '🌐 Network error occurred.\n\nPlease check your internet connection and try again.';
+      } else {
+        errorMessage += error.message || 'Please try again.';
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -105,9 +123,55 @@ export default function NewResourcePage() {
     }));
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size must be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+
+      // Create a unique file name
+      const timestamp = Date.now();
+      const fileName = `resources/${user.uid}/${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+
+      // Upload to Firebase Storage
+      const storageRef = ref(storage, fileName);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // Update form with the uploaded image URL
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: downloadURL
+      }));
+
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const insertImageToContent = () => {
     if (!formData.imageUrl) return;
-    
+
     const imageMarkdown = `![${formData.imageAlt || 'Image'}](${formData.imageUrl})`;
     setFormData(prev => ({
       ...prev,
@@ -163,10 +227,18 @@ export default function NewResourcePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Required Fields Notice */}
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+          <p className="text-sm text-foreground">
+            <strong>ℹ️ Quick tip:</strong> Only fields marked with <span className="text-destructive">*</span> are required.
+            You can start with just a title and content, then add other details later!
+          </p>
+        </div>
+
         {/* Basic Information */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Basic Information</h2>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Title *</label>
@@ -179,7 +251,7 @@ export default function NewResourcePage() {
                 placeholder="Enter resource title"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Subtitle</label>
               <input
@@ -204,7 +276,7 @@ export default function NewResourcePage() {
               />
               <p className="text-xs text-muted-foreground mt-1">URL: /resources/{formData.slug}</p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Category</label>
               <select
@@ -280,7 +352,49 @@ export default function NewResourcePage() {
         {/* Image */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Featured Image</h2>
-          
+
+          {/* Upload Button */}
+          <div className="mb-4">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+            />
+            <label
+              htmlFor="image-upload"
+              className={`inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer ${
+                uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {uploadingImage ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent mr-2"></div>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Upload from Computer
+                </>
+              )}
+            </label>
+            <p className="text-xs text-muted-foreground mt-1">Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP</p>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">or use URL</span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Image URL</label>
@@ -290,9 +404,10 @@ export default function NewResourcePage() {
                 onChange={(e) => handleInputChange('imageUrl', e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
                 placeholder="https://example.com/image.jpg"
+                disabled={uploadingImage}
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Image Alt Text</label>
               <input
@@ -307,10 +422,11 @@ export default function NewResourcePage() {
 
           {formData.imageUrl && (
             <div className="mt-4">
+              <p className="text-sm font-medium mb-2">Preview:</p>
               <img
                 src={formData.imageUrl}
                 alt={formData.imageAlt || 'Preview'}
-                className="max-w-xs rounded-lg"
+                className="max-w-xs rounded-lg border border-border"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -322,7 +438,7 @@ export default function NewResourcePage() {
         {/* Tags */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Tags</h2>
-          
+
           <div className="flex gap-2">
             <input
               type="text"
@@ -370,7 +486,7 @@ export default function NewResourcePage() {
         {/* Publishing Options */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Publishing Options</h2>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Status</label>
@@ -384,7 +500,7 @@ export default function NewResourcePage() {
                 <option value="scheduled">Scheduled</option>
               </select>
             </div>
-            
+
             {formData.status === 'scheduled' && (
               <div>
                 <label className="block text-sm font-medium mb-2">Scheduled For</label>
@@ -408,7 +524,7 @@ export default function NewResourcePage() {
               />
               <span className="text-sm">Featured post</span>
             </label>
-            
+
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -424,7 +540,7 @@ export default function NewResourcePage() {
         {/* SEO */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">SEO</h2>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">SEO Title</label>
             <input
@@ -436,7 +552,7 @@ export default function NewResourcePage() {
             />
             <p className="text-xs text-muted-foreground mt-1">{formData.seoTitle.length}/60 characters</p>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">SEO Description</label>
             <textarea

@@ -1,6 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,6 +18,7 @@ const firebaseConfig = {
 let app: any = null;
 let auth: any = null;
 let db: any = null;
+let storage: any = null;
 
 if (typeof window !== 'undefined') {
   // Only initialize on client side
@@ -31,7 +33,10 @@ if (typeof window !== 'undefined') {
 
   // Initialize Cloud Firestore and get a reference to the service
   db = getFirestore(app);
+
+  // Initialize Firebase Storage and get a reference to the service
+  storage = getStorage(app);
 }
 
-export { auth, db };
+export { auth, db, storage };
 export default app;

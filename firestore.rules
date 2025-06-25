@@ -57,7 +57,7 @@ service cloud.firestore {
     match /analytics/{analyticsId} {
       // Allow admin to read all analytics data
       allow read: if isAdmin();
-      
+
       // Allow any authenticated user to create analytics events
       allow write: if request.auth != null;
     }
@@ -66,7 +66,7 @@ service cloud.firestore {
     match /articles/{articleId} {
       // Allow anyone to read articles (no authentication required)
       allow read: if true;
-      
+
       // Only admin or Netlify functions can write articles
       allow write: if isAdmin();
     }
@@ -75,9 +75,18 @@ service cloud.firestore {
     match /articlesMetadata/stats {
       // Allow anyone to read article statistics
       allow read: if true;
-      
+
       // Only admin can write metadata
       allow write: if isAdmin();
+    }
+
+    // Resources collection (blog posts and learning resources)
+    match /resources/{resourceId} {
+      // Allow anyone to read published resources
+      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
+
+      // Only admin can create, update, or delete resources
+      allow create, update, delete: if isAdmin();
     }
 
     // Deny all other access

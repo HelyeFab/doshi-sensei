@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { ResourceFormData, ResourcePost, RESOURCE_CATEGORIES } from '@/types/resources';
 import { getResourcePost, updateResourcePost, extractExcerpt, calculateReadingTime } from '@/utils/resources';
 import { marked } from 'marked';
+import { storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface EditResourcePageProps {
   params: Promise<{
@@ -18,7 +20,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
   const router = useRouter();
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
-  
+
   const [resourceId, setResourceId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,8 +43,10 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
     seoDescription: '',
     featured: false
   });
-  
+
   const [tagInput, setTagInput] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Resolve params
   useEffect(() => {
@@ -69,7 +73,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
     try {
       setLoading(true);
       const resourceData = await getResourcePost(resourceId);
-      
+
       if (!resourceData) {
         alert('Resource not found');
         router.push('/admin/resources');
@@ -109,13 +113,13 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
 
     try {
       setSaving(true);
-      
+
       // Validation
       if (!formData.title.trim()) {
         alert('Title is required');
         return;
       }
-      
+
       if (!formData.content.trim()) {
         alert('Content is required');
         return;
@@ -152,9 +156,55 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
     }));
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size must be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+
+      // Create a unique file name
+      const timestamp = Date.now();
+      const fileName = `resources/${user.uid}/${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+
+      // Upload to Firebase Storage
+      const storageRef = ref(storage, fileName);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // Update form with the uploaded image URL
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: downloadURL
+      }));
+
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const insertImageToContent = () => {
     if (!formData.imageUrl) return;
-    
+
     const imageMarkdown = `![${formData.imageAlt || 'Image'}](${formData.imageUrl})`;
     setFormData(prev => ({
       ...prev,
@@ -223,7 +273,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
         {/* Basic Information */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Basic Information</h2>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Title *</label>
@@ -236,7 +286,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
                 placeholder="Enter resource title"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Subtitle</label>
               <input
@@ -261,7 +311,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
               />
               <p className="text-xs text-muted-foreground mt-1">URL: /resources/{formData.slug}</p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Category</label>
               <select
@@ -337,7 +387,49 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
         {/* Image */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Featured Image</h2>
-          
+
+          {/* Upload Button */}
+          <div className="mb-4">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+            />
+            <label
+              htmlFor="image-upload"
+              className={`inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer ${
+                uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {uploadingImage ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent mr-2"></div>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Upload from Computer
+                </>
+              )}
+            </label>
+            <p className="text-xs text-muted-foreground mt-1">Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP</p>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">or use URL</span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Image URL</label>
@@ -347,9 +439,10 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
                 onChange={(e) => handleInputChange('imageUrl', e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
                 placeholder="https://example.com/image.jpg"
+                disabled={uploadingImage}
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Image Alt Text</label>
               <input
@@ -364,10 +457,11 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
 
           {formData.imageUrl && (
             <div className="mt-4">
+              <p className="text-sm font-medium mb-2">Preview:</p>
               <img
                 src={formData.imageUrl}
                 alt={formData.imageAlt || 'Preview'}
-                className="max-w-xs rounded-lg"
+                className="max-w-xs rounded-lg border border-border"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -379,7 +473,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
         {/* Tags */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Tags</h2>
-          
+
           <div className="flex gap-2">
             <input
               type="text"
@@ -427,7 +521,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
         {/* Publishing Options */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">Publishing Options</h2>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Status</label>
@@ -441,7 +535,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
                 <option value="scheduled">Scheduled</option>
               </select>
             </div>
-            
+
             {formData.status === 'scheduled' && (
               <div>
                 <label className="block text-sm font-medium mb-2">Scheduled For</label>
@@ -465,7 +559,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
               />
               <span className="text-sm">Featured post</span>
             </label>
-            
+
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -481,7 +575,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
         {/* SEO */}
         <div className="bg-card rounded-lg p-6 border border-border space-y-4">
           <h2 className="text-xl font-semibold">SEO</h2>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">SEO Title</label>
             <input
@@ -493,7 +587,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
             />
             <p className="text-xs text-muted-foreground mt-1">{formData.seoTitle.length}/60 characters</p>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">SEO Description</label>
             <textarea

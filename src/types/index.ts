@@ -212,6 +212,7 @@ export interface AppSettings {
   showRomaji: boolean;
   dailyGoal: number;
   practiceReminders: boolean;
+  showCompanion: boolean; // Toggle to show/hide virtual companion
   companionHistory: CompanionHistory;
   navigationPreferences?: NavigationPreferences; // Optional for backward compatibility
 }

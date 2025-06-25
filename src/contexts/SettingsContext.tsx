@@ -10,6 +10,7 @@ const defaultSettings: AppSettings = {
   showRomaji: true,
   dailyGoal: 10,
   practiceReminders: false,
+  showCompanion: true, // Show virtual companion by default
   companionHistory: {
     recentCharacters: [],
     lastShownDate: undefined

@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for SEO
@@ -50,6 +51,7 @@ interface UserStats {
 export default function Home() {
   const { user } = useAuth();
   const { userSubscription } = useSubscription();
+  const { settings } = useSettings();
   const [stats, setStats] = useState<UserStats>({
     drillsCompleted: 0,
     accuracy: 0,
@@ -297,14 +299,14 @@ export default function Home() {
                   description="Japanese articles"
                 />
 
-                {/* Games Card - Temporarily disabled */}
-                {/* <FeatureCard
+                {/* Games Card */}
+                <FeatureCard
                   title="Games"
                   icon="🎮"
                   href="/games"
                   color="green"
                   description="Listening quiz"
-                /> */}
+                />
 
                 {/* Resources Card */}
                 <FeatureCard
@@ -411,14 +413,14 @@ export default function Home() {
                 description="Japanese articles"
               />
 
-              {/* Games Card - Temporarily disabled */}
-              {/* <FeatureCard
+              {/* Games Card */}
+              <FeatureCard
                 title="Games"
                 icon="🎮"
                 href="/games"
                 color="green"
                 description="Listening quiz"
-              /> */}
+              />
 
               {/* Resources Card */}
               <FeatureCard

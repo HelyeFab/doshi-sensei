@@ -2,23 +2,23 @@ import { NavItem } from '@/types';
 
 /**
  * ⚠️  IMPORTANT: NAVIGATION MAINTENANCE REMINDER ⚠️
- * 
+ *
  * When adding new pages/features to the app, you MUST update this file to include
  * the new navigation option so users can add it to their custom navigation.
- * 
+ *
  * Steps when adding a new page:
  * 1. Add the new NavItem to AVAILABLE_NAV_ITEMS array below
  * 2. Test that it appears in Settings > Mobile Navigation
  * 3. Verify the navigation works correctly in the bottom nav
  * 4. Update any relevant documentation
- * 
+ *
  * This ensures users can customize their navigation to include new features.
  */
 
 /**
  * Available navigation items for mobile bottom navigation
  * Home is always included and cannot be removed
- * 
+ *
  * 🔥 REMEMBER: When adding new app features, add them here too!
  */
 export const AVAILABLE_NAV_ITEMS: NavItem[] = [
@@ -71,14 +71,13 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
     href: '/news',
     description: 'Read Japanese news articles'
   },
-  // Temporarily disabled during build investigation
-  // {
-  //   id: 'games',
-  //   label: 'Games',
-  //   icon: '🎮',
-  //   href: '/games',
-  //   description: 'Fun listening and word games'
-  // },
+  {
+    id: 'games',
+    label: 'Games',
+    icon: '🎮',
+    href: '/games',
+    description: 'Fun listening and word games'
+  },
   // {
   //   id: 'favourites',
   //   label: 'Saved',
@@ -125,7 +124,7 @@ export const HOME_NAV_ITEM: NavItem = {
  */
 export const DEFAULT_NAV_ITEMS = [
   'drill',
-  'kanji-moods', 
+  'kanji-moods',
   'resources'
 ];
 

@@ -100,25 +100,38 @@ function makeRequest(url, options = {}) {
       path: parsedUrl.pathname + parsedUrl.search,
       method: options.method || 'GET',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; DoshiSensei/1.0; +https://doshisensei.com)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'ja,en-US;q=0.8,en;q=0.5',
-        'Accept-Encoding': 'gzip, deflate',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9,ja;q=0.8',
+        'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
         ...options.headers
       },
-      timeout: 10000
+      timeout: 30000
     };
 
     const req = https.request(requestOptions, (res) => {
+      console.log(`  Response status: ${res.statusCode} for ${url}`);
+      
+      // Handle redirects
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        console.log(`  Redirect to: ${res.headers.location}`);
+        // Follow redirect
+        makeRequest(res.headers.location, options).then(resolve).catch(reject);
+        return;
+      }
+      
       let data = '';
+      
+      res.setEncoding('utf8');
       
       res.on('data', (chunk) => {
         data += chunk;
       });
       
       res.on('end', () => {
+        console.log(`  Response length: ${data.length} characters`);
         resolve({
           statusCode: res.statusCode,
           headers: res.headers,
@@ -293,7 +306,7 @@ async function scrapeWatanocArticles() {
     // If we couldn't scrape enough real articles, fill with high-quality mock articles
     if (scrapedArticles.length < 3) {
       console.log(`⚠️ Only scraped ${scrapedArticles.length} articles, adding mock articles`);
-      const mockArticles = generateMockArticles(3 - scrapedArticles.length);
+      const mockArticles = generateMockArticles(Math.min(5, 5 - scrapedArticles.length));
       scrapedArticles.push(...mockArticles);
     }
 

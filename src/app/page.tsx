@@ -296,6 +296,15 @@ export default function Home() {
                   color="purple"
                   description="Japanese articles"
                 />
+
+                {/* Games Card */}
+                <FeatureCard
+                  title="Games"
+                  icon="🎮"
+                  href="/games"
+                  color="green"
+                  description="Listening quiz"
+                />
               </div>
             </div>
 
@@ -391,6 +400,15 @@ export default function Home() {
                 href="/news"
                 color="purple"
                 description="Japanese articles"
+              />
+
+              {/* Games Card */}
+              <FeatureCard
+                title="Games"
+                icon="🎮"
+                href="/games"
+                color="green"
+                description="Listening quiz"
               />
             </div>
           </div>

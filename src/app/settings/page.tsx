@@ -13,6 +13,7 @@ import WordListManager from '@/utils/wordLists';
 import useCloudSync from '@/hooks/useCloudSync';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import CompanionTrigger from '@/components/CompanionTrigger';
+import { AVAILABLE_NAV_ITEMS, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 
 export default function SettingsPage() {
   const { settings, updateSetting, resetSettings } = useSettings();
@@ -338,6 +339,90 @@ export default function SettingsPage() {
                 updateSetting('colorScheme', colorScheme);
               }}
             />
+          </SettingsSection>
+
+          {/* Navigation Settings */}
+          <SettingsSection title="Mobile Navigation">
+            <div className="space-y-4">
+              <ToggleSetting
+                label="Custom Navigation"
+                description="Customize which features appear in your mobile bottom navigation"
+                checked={settings.navigationPreferences?.useCustomNavigation || false}
+                onChange={(checked) => 
+                  updateSetting('navigationPreferences', {
+                    customNavItems: settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS,
+                    useCustomNavigation: checked
+                  })
+                }
+              />
+              
+              {settings.navigationPreferences?.useCustomNavigation && (
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                  <h4 className="text-sm font-medium text-foreground mb-3">
+                    Choose 3 navigation items (Home is always included)
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
+                    {AVAILABLE_NAV_ITEMS.map((item) => (
+                      <div key={item.id} className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          id={`nav-${item.id}`}
+                          checked={(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id)}
+                          onChange={(e) => {
+                            const currentItems = settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS;
+                            const newItems = e.target.checked
+                              ? [...currentItems, item.id].slice(0, 3) // Limit to 3 items
+                              : currentItems.filter(id => id !== item.id);
+                            
+                            updateSetting('navigationPreferences', {
+                              useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
+                              customNavItems: newItems
+                            });
+                          }}
+                          disabled={
+                            !(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id) && 
+                            (settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).length >= 3
+                          }
+                          className="rounded"
+                        />
+                        <label htmlFor={`nav-${item.id}`} className="flex-1 cursor-pointer">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg">{item.icon}</span>
+                            <div>
+                              <div className="text-sm font-medium text-foreground">{item.label}</div>
+                              <div className="text-xs text-muted-foreground">{item.description}</div>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-4 pt-3 border-t border-border">
+                    <button
+                      onClick={() => 
+                        updateSetting('navigationPreferences', {
+                          useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
+                          customNavItems: DEFAULT_NAV_ITEMS
+                        })
+                      }
+                      className="text-sm text-primary hover:text-primary/80 transition-colors"
+                    >
+                      Reset to defaults
+                    </button>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Selected: {(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).length}/3 items
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="pt-2 border-t border-border">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Note:</strong> When new features are added to the app, remember to check back here to add them to your navigation if desired.
+                </p>
+              </div>
+            </div>
           </SettingsSection>
 
           {/* Tutorial & Learning */}

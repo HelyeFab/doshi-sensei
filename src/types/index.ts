@@ -192,6 +192,20 @@ export interface CompanionHistory {
   lastShownDate?: string;
 }
 
+// Navigation preferences
+export interface NavItem {
+  id: string;
+  label: string;
+  icon: string;
+  href: string;
+  description: string;
+}
+
+export interface NavigationPreferences {
+  customNavItems: string[]; // Array of nav item IDs (excluding home)
+  useCustomNavigation: boolean;
+}
+
 export interface AppSettings {
   theme: ThemeMode;
   colorScheme: ColorScheme;
@@ -199,6 +213,7 @@ export interface AppSettings {
   dailyGoal: number;
   practiceReminders: boolean;
   companionHistory: CompanionHistory;
+  navigationPreferences?: NavigationPreferences; // Optional for backward compatibility
 }
 
 // Filter Options

@@ -13,6 +13,10 @@ const defaultSettings: AppSettings = {
   companionHistory: {
     recentCharacters: [],
     lastShownDate: undefined
+  },
+  navigationPreferences: {
+    customNavItems: ['drill', 'kanji-moods', 'resources'], // Default 3 navigation items
+    useCustomNavigation: false // Start with default navigation
   }
 };
 

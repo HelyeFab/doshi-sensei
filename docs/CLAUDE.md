@@ -155,6 +155,21 @@ The app is configured for static export to Firebase Hosting:
 
 ## Common Tasks
 
+### ⚠️ Adding New Pages/Features - NAVIGATION MAINTENANCE REQUIRED
+**CRITICAL:** When adding new pages or features to the app, you MUST update the mobile navigation options:
+
+1. **Add navigation item** to `src/config/navigation.ts` in the `AVAILABLE_NAV_ITEMS` array
+2. **Test navigation** in Settings > Mobile Navigation to ensure it appears
+3. **Verify functionality** in the mobile bottom navigation
+4. **Update documentation** as needed
+
+**Why this matters:** Users can customize their mobile bottom navigation (Home + 3 items). New features won't be discoverable unless added to the navigation options. This is a user-facing feature that directly impacts UX.
+
+**Files to check:**
+- `src/config/navigation.ts` - Add new navigation items here
+- `src/components/BottomNavigation.tsx` - Dynamic navigation logic
+- `src/app/settings/page.tsx` - Navigation customization UI
+
 ### Adding New Learning Content
 1. Update data in `src/data/` directory
 2. Run `npm run chunk-jmdict` to process dictionary updates

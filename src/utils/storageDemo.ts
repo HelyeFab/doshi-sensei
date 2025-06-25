@@ -50,6 +50,10 @@ export class StorageDemo {
       companionHistory: {
         recentCharacters: [],
         lastShownDate: undefined
+      },
+      navigationPreferences: {
+        customNavItems: ['drill', 'vocabulary', 'games'],
+        useCustomNavigation: false
       }
     };
 

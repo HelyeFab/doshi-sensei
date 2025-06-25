@@ -297,13 +297,22 @@ export default function Home() {
                   description="Japanese articles"
                 />
 
-                {/* Games Card */}
-                <FeatureCard
+                {/* Games Card - Temporarily disabled */}
+                {/* <FeatureCard
                   title="Games"
                   icon="🎮"
                   href="/games"
                   color="green"
                   description="Listening quiz"
+                /> */}
+
+                {/* Resources Card */}
+                <FeatureCard
+                  title="Resources"
+                  icon="✨🎌✨"
+                  href="/resources"
+                  color="purple"
+                  description="Articles & tips"
                 />
               </div>
             </div>
@@ -402,13 +411,22 @@ export default function Home() {
                 description="Japanese articles"
               />
 
-              {/* Games Card */}
-              <FeatureCard
+              {/* Games Card - Temporarily disabled */}
+              {/* <FeatureCard
                 title="Games"
                 icon="🎮"
                 href="/games"
                 color="green"
                 description="Listening quiz"
+              /> */}
+
+              {/* Resources Card */}
+              <FeatureCard
+                title="Resources"
+                icon="✨🎌✨"
+                href="/resources"
+                color="purple"
+                description="Articles & tips"
               />
             </div>
           </div>

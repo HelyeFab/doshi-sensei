@@ -281,7 +281,7 @@ function extractJLPTLevel(html) {
 }
 
 // Scrape individual Todaii article
-async function scrapeTodaiiArticle(link) {
+async function scrapeTodaiiArticle(link, index = 0) {
   try {
     console.log(`📖 Scraping: ${link.url}`);
     const response = await makeRequest(link.url);
@@ -303,6 +303,7 @@ async function scrapeTodaiiArticle(link) {
       content: content.substring(0, 5000),
       summary: content.substring(0, 200) + '...',
       url: link.url,
+      imageUrl: generateTodaiiImageUrl(index),
       publishDate: new Date(),
       scrapedAt: new Date(),
       source: {
@@ -362,14 +363,16 @@ async function scrapeTodaiiNews() {
         }
       ];
       
-      for (const articleData of fallbackArticles) {
+      for (let i = 0; i < fallbackArticles.length; i++) {
+        const articleData = fallbackArticles[i];
         const article = {
-          id: `todaii_fallback_${Date.now()}_${articles.length}`,
+          id: `todaii_fallback_${Date.now()}_${i}`,
           title: articleData.title,
           content: articleData.content,
           summary: articleData.content.substring(0, 100) + '...',
-          url: `https://japanese.todaiinews.com/fallback/${articles.length + 1}`,
-          publishDate: new Date(Date.now() - articles.length * 86400000),
+          url: `https://japanese.todaiinews.com/fallback/${i + 1}`,
+          imageUrl: generateTodaiiImageUrl(i),
+          publishDate: new Date(Date.now() - i * 86400000),
           scrapedAt: new Date(),
           source: {
             id: 'todaii-news',
@@ -390,8 +393,9 @@ async function scrapeTodaiiNews() {
       }
     } else {
       // Scrape individual articles
-      for (const link of articleLinks.slice(0, targetCount)) {
-        const article = await scrapeTodaiiArticle(link);
+      for (let i = 0; i < articleLinks.slice(0, targetCount).length; i++) {
+        const link = articleLinks[i];
+        const article = await scrapeTodaiiArticle(link, i);
         if (article) {
           articles.push(article);
           console.log(`✅ Scraped: ${article.title}`);
@@ -429,15 +433,121 @@ async function scrapeTodaiiNews() {
   }
 }
 
+// Function to check for existing articles by title/content similarity
+async function checkForDuplicates(newArticles) {
+  if (!db || !firebaseInitialized) {
+    return newArticles;
+  }
+
+  try {
+    console.log('🔍 Checking for duplicate articles...');
+    
+    const existingSnapshot = await db.collection('articles').get();
+    const existingArticles = existingSnapshot.docs.map(doc => doc.data());
+    
+    console.log(`📊 Found ${existingArticles.length} existing articles in database`);
+    
+    const uniqueArticles = newArticles.filter(newArticle => {
+      const isDuplicate = existingArticles.some(existingArticle => {
+        const newTitle = newArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
+        const existingTitle = existingArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
+        
+        const similarity = calculateSimilarity(newTitle, existingTitle);
+        return similarity > 0.8;
+      });
+      
+      if (isDuplicate) {
+        console.log(`⚠️ Duplicate detected: "${newArticle.title}" - skipping`);
+      }
+      
+      return !isDuplicate;
+    });
+    
+    console.log(`✅ Filtered ${newArticles.length - uniqueArticles.length} duplicates, ${uniqueArticles.length} unique articles remaining`);
+    
+    return uniqueArticles;
+    
+  } catch (error) {
+    console.error('❌ Error checking duplicates:', error.message);
+    return newArticles;
+  }
+}
+
+// Simple string similarity function
+function calculateSimilarity(str1, str2) {
+  const longer = str1.length > str2.length ? str1 : str2;
+  const shorter = str1.length > str2.length ? str2 : str1;
+  
+  if (longer.length === 0) return 1.0;
+  
+  const editDistance = levenshteinDistance(longer, shorter);
+  return (longer.length - editDistance) / longer.length;
+}
+
+// Levenshtein distance calculation
+function levenshteinDistance(str1, str2) {
+  const matrix = [];
+  
+  for (let i = 0; i <= str2.length; i++) {
+    matrix[i] = [i];
+  }
+  
+  for (let j = 0; j <= str1.length; j++) {
+    matrix[0][j] = j;
+  }
+  
+  for (let i = 1; i <= str2.length; i++) {
+    for (let j = 1; j <= str1.length; j++) {
+      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  
+  return matrix[str2.length][str1.length];
+}
+
+// Function to generate diverse image URLs
+function generateTodaiiImageUrl(index) {
+  const todaiiImages = [
+    'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400', // japanese temple
+    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400', // train
+    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400', // japanese garden
+    'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400', // bullet train
+    'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400', // traditional building
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400', // mountain landscape
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400', // forest
+    'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400', // school
+    'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400', // tech
+    'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400'  // japanese art
+  ];
+  
+  return todaiiImages[index % todaiiImages.length];
+}
+
 // Save articles to Firebase
 async function saveArticlesToFirebase(articles, metadata) {
   if (!firebaseInitialized || !db) {
     throw new Error('Firebase not initialized');
   }
 
+  // Check for duplicates before saving
+  const uniqueArticles = await checkForDuplicates(articles);
+  
+  if (uniqueArticles.length === 0) {
+    console.log('⚠️ No new unique articles to save - all were duplicates');
+    return true;
+  }
+
   const batch = db.batch();
   
-  for (const article of articles) {
+  for (const article of uniqueArticles) {
     const docRef = db.collection('articles').doc(article.id);
     batch.set(docRef, {
       ...article,
@@ -450,11 +560,13 @@ async function saveArticlesToFirebase(articles, metadata) {
   const metadataRef = db.collection('articlesMetadata').doc('todaii-news-stats');
   batch.set(metadataRef, {
     ...metadata,
-    lastUpdated: admin.firestore.Timestamp.fromDate(new Date())
+    lastUpdated: admin.firestore.Timestamp.fromDate(new Date()),
+    uniqueArticlesSaved: uniqueArticles.length,
+    duplicatesSkipped: articles.length - uniqueArticles.length
   });
   
   await batch.commit();
-  console.log(`✅ Saved ${articles.length} articles to Firebase`);
+  console.log(`✅ Saved ${uniqueArticles.length} unique articles to Firebase`);
 }
 
 // Handler

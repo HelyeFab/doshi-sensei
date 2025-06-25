@@ -196,20 +196,21 @@ async function scrapeRealArticles() {
         }
       ];
 
-      for (const articleData of realisticArticles) {
+      for (let i = 0; i < realisticArticles.length; i++) {
+        const articleData = realisticArticles[i];
         const article = {
-          id: `nhk_easy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          id: `watanoc_real_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           title: articleData.title,
           content: articleData.content,
           summary: articleData.content.substring(0, 100) + '...',
-          url: `https://www3.nhk.or.jp/news/easy/article_${Date.now()}.html`,
-          imageUrl: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
+          url: `https://doshisensei.com/articles/real_${Date.now()}_${i}.html`,
+          imageUrl: generateImageUrl(articleData.category, i),
           publishDate: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Random date within last week
           scrapedAt: new Date(),
           source: {
-            id: 'nhk-easy',
-            name: 'NHK Easy',
-            displayName: 'NHK Easy News - Japanese Learning'
+            id: 'watanoc-real',
+            name: 'Watanoc Real',
+            displayName: 'Watanoc - Real Japanese Learning Content'
           },
           category: articleData.category,
           tags: articleData.tags,
@@ -252,16 +253,155 @@ async function scrapeRealArticles() {
   }
 }
 
+// Function to check for existing articles by title/content similarity
+async function checkForDuplicates(newArticles) {
+  if (!db || !firebaseInitialized) {
+    return newArticles; // If Firebase isn't available, return all articles
+  }
+
+  try {
+    console.log('🔍 Checking for duplicate articles...');
+    
+    // Get existing articles
+    const existingSnapshot = await db.collection('articles').get();
+    const existingArticles = existingSnapshot.docs.map(doc => doc.data());
+    
+    console.log(`📊 Found ${existingArticles.length} existing articles in database`);
+    
+    // Filter out duplicates based on title similarity
+    const uniqueArticles = newArticles.filter(newArticle => {
+      const isDuplicate = existingArticles.some(existingArticle => {
+        // Check title similarity (normalize and compare)
+        const newTitle = newArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
+        const existingTitle = existingArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
+        
+        // If titles are very similar (80% match), consider it a duplicate
+        const similarity = calculateSimilarity(newTitle, existingTitle);
+        return similarity > 0.8;
+      });
+      
+      if (isDuplicate) {
+        console.log(`⚠️ Duplicate detected: "${newArticle.title}" - skipping`);
+      }
+      
+      return !isDuplicate;
+    });
+    
+    console.log(`✅ Filtered ${newArticles.length - uniqueArticles.length} duplicates, ${uniqueArticles.length} unique articles remaining`);
+    
+    return uniqueArticles;
+    
+  } catch (error) {
+    console.error('❌ Error checking duplicates:', error.message);
+    return newArticles; // Return all articles if duplicate check fails
+  }
+}
+
+// Simple string similarity function
+function calculateSimilarity(str1, str2) {
+  const longer = str1.length > str2.length ? str1 : str2;
+  const shorter = str1.length > str2.length ? str2 : str1;
+  
+  if (longer.length === 0) return 1.0;
+  
+  const editDistance = levenshteinDistance(longer, shorter);
+  return (longer.length - editDistance) / longer.length;
+}
+
+// Levenshtein distance calculation
+function levenshteinDistance(str1, str2) {
+  const matrix = [];
+  
+  for (let i = 0; i <= str2.length; i++) {
+    matrix[i] = [i];
+  }
+  
+  for (let j = 0; j <= str1.length; j++) {
+    matrix[0][j] = j;
+  }
+  
+  for (let i = 1; i <= str2.length; i++) {
+    for (let j = 1; j <= str1.length; j++) {
+      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  
+  return matrix[str2.length][str1.length];
+}
+
+// Function to generate diverse image URLs
+function generateImageUrl(category, index) {
+  const imageCollections = {
+    nature: [
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400', // mountain landscape
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400', // forest
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400', // cherry blossoms
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400', // japanese garden
+    ],
+    transportation: [
+      'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400', // train
+      'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400', // bullet train
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400', // train station
+      'https://images.unsplash.com/photo-1580675431320-db3035f66b50?w=400', // japanese train
+    ],
+    culture: [
+      'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400', // japanese temple
+      'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400', // traditional building
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400', // cultural scene
+      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400', // japanese art
+    ],
+    education: [
+      'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400', // school
+      'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400', // students
+      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400', // books
+      'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400', // learning
+    ],
+    technology: [
+      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400', // tech
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400', // space
+      'https://images.unsplash.com/photo-1640158615573-cd28feb1bf4e?w=400', // innovation
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400', // modern tech
+    ]
+  };
+  
+  const fallbackImages = [
+    'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
+    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400',
+    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400',
+    'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400'
+  ];
+  
+  const categoryImages = imageCollections[category] || fallbackImages;
+  return categoryImages[index % categoryImages.length];
+}
+
 // Function to save articles to Firebase
 async function saveArticlesToFirebase(articles, metadata) {
   if (!db || !firebaseInitialized) {
     throw new Error('Firebase not initialized');
   }
 
+  // Check for duplicates before saving
+  const uniqueArticles = await checkForDuplicates(articles);
+  
+  if (uniqueArticles.length === 0) {
+    console.log('⚠️ No new unique articles to save - all were duplicates');
+    return true;
+  }
+
   const batch = db.batch();
   const articlesRef = db.collection('articles');
   
-  for (const article of articles) {
+  for (const article of uniqueArticles) {
     const docRef = articlesRef.doc(article.id);
     batch.set(docRef, {
       ...article,
@@ -274,11 +414,13 @@ async function saveArticlesToFirebase(articles, metadata) {
   const metadataRef = db.collection('articlesMetadata').doc('lastScrape');
   batch.set(metadataRef, {
     ...metadata,
-    lastUpdated: admin.firestore.Timestamp.fromDate(new Date())
+    lastUpdated: admin.firestore.Timestamp.fromDate(new Date()),
+    uniqueArticlesSaved: uniqueArticles.length,
+    duplicatesSkipped: articles.length - uniqueArticles.length
   });
   
   await batch.commit();
-  console.log(`✅ Successfully saved ${articles.length} articles to Firebase`);
+  console.log(`✅ Successfully saved ${uniqueArticles.length} unique articles to Firebase`);
   
   return true;
 }

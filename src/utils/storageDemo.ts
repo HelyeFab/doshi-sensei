@@ -45,6 +45,7 @@ export class StorageDemo {
       theme: 'dark',
       colorScheme: 'default',
       showRomaji: true,
+      showCompanion: true, // Add this line
       dailyGoal: 50,
       practiceReminders: true,
       companionHistory: {

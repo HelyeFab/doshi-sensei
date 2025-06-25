@@ -70,7 +70,7 @@ export interface AdminUserDetails {
 }
 
 // Admin dashboard sections
-export type AdminSection = 'dashboard' | 'users' | 'mood-boards' | 'logs';
+export type AdminSection = 'dashboard' | 'users' | 'mood-boards' | 'logs' | 'resources';
 
 // Admin context type
 export interface AdminContextType {

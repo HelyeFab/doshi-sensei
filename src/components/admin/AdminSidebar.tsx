@@ -32,6 +32,12 @@ const sidebarItems: SidebarItem[] = [
     href: '/admin/mood-boards',
   },
   {
+    id: 'resources',
+    label: 'Resources',
+    icon: '📚',
+    href: '/admin/resources',
+  },
+  {
     id: 'logs',
     label: 'Activity Logs',
     icon: '📝',

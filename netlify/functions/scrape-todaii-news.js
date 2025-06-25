@@ -181,31 +181,35 @@ function estimateJLPTLevelAdvanced(text) {
     avgSentenceLength: text.split(/[。！？]/).filter(s => s.length > 0).reduce((acc, s) => acc + s.length, 0) / text.split(/[。！？]/).length || 0
   };
   
-  // Determine level based on multiple factors
+  // Determine level based on multiple factors - adjusted for better N4/N5 distribution
   let level = 'N4'; // Default
   
-  if (kanjiRatio < 0.12 && kanaRatio > 0.7 && textComplexityIndicators.avgSentenceLength < 25) {
+  if (kanjiRatio < 0.15 && kanaRatio > 0.65 && textComplexityIndicators.avgSentenceLength < 30) {
     level = 'N5';
-  } else if (kanjiRatio < 0.20 && textComplexityIndicators.simplePatterns && !textComplexityIndicators.complexGrammar) {
+  } else if (kanjiRatio < 0.25 && textComplexityIndicators.simplePatterns && !textComplexityIndicators.complexGrammar) {
     level = 'N4';
-  } else if (kanjiRatio < 0.30 && textComplexityIndicators.avgSentenceLength < 40) {
+  } else if (kanjiRatio < 0.35 && textComplexityIndicators.avgSentenceLength < 45) {
     level = 'N3';
-  } else if (kanjiRatio < 0.40 || textComplexityIndicators.complexGrammar) {
+  } else if (kanjiRatio < 0.45 || textComplexityIndicators.complexGrammar) {
     level = 'N2';
-  } else if (kanjiRatio >= 0.40 || textComplexityIndicators.avgSentenceLength > 50) {
+  } else {
     level = 'N1';
   }
   
-  // Add some variation for educational content
+  // Add some variation for educational content - favor beginner levels
   const contentLength = text.length;
-  if (contentLength < 200) {
+  if (contentLength < 300) {
     // Shorter articles are often simpler
     if (level === 'N3') level = 'N4';
     if (level === 'N2') level = 'N3';
-  } else if (contentLength > 800) {
-    // Longer articles are often more complex
-    if (level === 'N5') level = 'N4';
-    if (level === 'N4') level = 'N3';
+    if (level === 'N1') level = 'N2';
+  } else if (contentLength > 600) {
+    // Longer articles can be more complex, but don't always bump up
+    const random = Math.random();
+    if (random < 0.3) { // Only 30% chance to bump up difficulty
+      if (level === 'N5') level = 'N4';
+      if (level === 'N4') level = 'N3';
+    }
   }
   
   console.log(`📊 JLPT Level estimation for text (${contentLength} chars): ${level} (kanji: ${kanjiRatio.toFixed(2)}, avgSent: ${textComplexityIndicators.avgSentenceLength.toFixed(1)})`);

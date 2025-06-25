@@ -556,14 +556,11 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           </button>
 
           <div className="flex items-center gap-2">
-            {/* Audio Player button - Temporarily disabled to prevent crashes */}
+            {/* Audio Player button */}
             <button
-              onClick={() => {
-                // TODO: Implement proper TTS functionality
-                alert('TTS Audio feature is temporarily unavailable. We are working on fixing this.');
-              }}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors opacity-50"
-              title="TTS Audio (Coming Soon)"
+              onClick={() => window.location.href = `/reading/audio?id=${article.id}&source=news`}
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              title="Open Audio Reader"
             >
               📚
             </button>

@@ -417,6 +417,7 @@ export default function AudioPlayerPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const articleId = searchParams.get('id');
+  const source = searchParams.get('source') || 'reading'; // Default to reading for backward compatibility
 
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [sentences, setSentences] = useState<string[]>([]);
@@ -467,7 +468,7 @@ export default function AudioPlayerPage() {
   useEffect(() => {
     const loadArticle = async () => {
       if (!articleId) {
-        router.push('/reading');
+        router.push(source === 'news' ? '/news' : '/reading');
         return;
       }
 
@@ -478,7 +479,7 @@ export default function AudioPlayerPage() {
         const foundArticle = articles.find(a => a.id === articleId);
 
         if (!foundArticle) {
-          router.push('/reading');
+          router.push(source === 'news' ? '/news' : '/reading');
           return;
         }
 
@@ -855,7 +856,7 @@ export default function AudioPlayerPage() {
             The requested article could not be loaded.
           </p>
           <button
-            onClick={() => router.push('/reading')}
+            onClick={() => router.push(source === 'news' ? '/news' : '/reading')}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
           >
             Back to Reading
@@ -880,7 +881,7 @@ export default function AudioPlayerPage() {
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-foreground">📚 Audio Reader</h1>
             <button
-              onClick={() => router.push('/reading')}
+              onClick={() => router.push(source === 'news' ? '/news' : '/reading')}
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               ← Back

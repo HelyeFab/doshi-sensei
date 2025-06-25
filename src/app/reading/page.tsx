@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/PageHeader';
 import { NewsArticle, NewsAPIResponse } from '@/types/news';
-import { JapaneseNewsScraper } from '@/utils/newsScraper';
+import { getWatanocArticles } from '@/utils/watanocArticles';
 import { ArticleReader } from '@/components/reading/ArticleReader';
 import CompanionTrigger from '@/components/CompanionTrigger';
 
@@ -48,12 +48,12 @@ function ArticleCard({ article, onClick }: ArticleCardProps) {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      weather: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      politics: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-      economics: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      society: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      technology: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
-      sports: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+      news: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      culture: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+      transportation: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      nature: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
+      education: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
+      technology: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
       general: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
     };
     return colors[category as keyof typeof colors] || colors.general;
@@ -156,10 +156,12 @@ function FilterBar({
 }: FilterBarProps) {
   const categories = [
     { id: 'all', name: 'All', icon: '📰' },
-    { id: 'weather', name: 'Weather', icon: '🌤️' },
-    { id: 'society', name: 'Society', icon: '🏛️' },
+    { id: 'news', name: 'News', icon: '📰' },
+    { id: 'culture', name: 'Culture', icon: '🏯' },
+    { id: 'transportation', name: 'Transportation', icon: '🚄' },
+    { id: 'nature', name: 'Nature', icon: '🌸' },
+    { id: 'education', name: 'Education', icon: '🎓' },
     { id: 'technology', name: 'Technology', icon: '💻' },
-    { id: 'sports', name: 'Sports', icon: '⚽' },
     { id: 'general', name: 'General', icon: '📋' }
   ];
 
@@ -267,9 +269,17 @@ export default function ReadingPage() {
       setLoading(true);
       setError(null);
 
-      // Try to get articles from the scraper
-      const fetchedArticles = await JapaneseNewsScraper.getArticles('nhk-easy', 10, forceRefresh);
-      setArticles(fetchedArticles);
+      // Get articles from Firebase (scraped by our Netlify functions)
+      const fetchedArticles = await getWatanocArticles(forceRefresh);
+      
+      // Sort articles by publication date (newest first)
+      const sortedArticles = fetchedArticles.sort((a, b) => {
+        const dateA = new Date(a.publishDate);
+        const dateB = new Date(b.publishDate);
+        return dateB.getTime() - dateA.getTime();
+      });
+      
+      setArticles(sortedArticles);
     } catch (err) {
       console.error('Failed to load articles:', err);
       setError('Failed to load articles. Please try again later.');
@@ -281,16 +291,29 @@ export default function ReadingPage() {
   const filterArticles = () => {
     let filtered = articles;
 
+    console.log('🔍 Filtering articles:', {
+      totalArticles: articles.length,
+      selectedCategory,
+      selectedDifficulty,
+      categoriesInData: [...new Set(articles.map(a => a.category))],
+      difficultiesInData: [...new Set(articles.map(a => a.difficulty))]
+    });
+
     // Filter by category
     if (selectedCategory !== 'all') {
+      const beforeFilter = filtered.length;
       filtered = filtered.filter(article => article.category === selectedCategory);
+      console.log(`Category filter: ${beforeFilter} -> ${filtered.length} articles`);
     }
 
     // Filter by difficulty
     if (selectedDifficulty !== 'all') {
+      const beforeFilter = filtered.length;
       filtered = filtered.filter(article => article.difficulty === selectedDifficulty);
+      console.log(`Difficulty filter: ${beforeFilter} -> ${filtered.length} articles`);
     }
 
+    console.log('✅ Final filtered articles:', filtered.length);
     setFilteredArticles(filtered);
   };
 
@@ -335,8 +358,20 @@ export default function ReadingPage() {
           {/* Description */}
           <div className="mb-6">
             <p className="text-muted-foreground">
-              Read the latest news articles from NHK NEWS WEB EASY to improve your Japanese reading comprehension.
+              Read curated Japanese articles from Watanoc and Todaii to improve your reading comprehension. Articles are organized by JLPT level for fresh content.
             </p>
+            
+            {/* Debug info */}
+            {articles.length > 0 && (
+              <div className="mt-4 flex items-center gap-4 text-sm">
+                <span className="flex items-center gap-1">
+                  📚 {articles.length} articles available
+                </span>
+                <span className="flex items-center gap-1">
+                  📅 Updated: {new Date().toLocaleDateString()}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Filter Bar */}

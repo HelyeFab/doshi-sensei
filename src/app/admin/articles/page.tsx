@@ -97,6 +97,36 @@ export default function ArticlesManagementPage() {
     }
   };
 
+  const handleTodaiiScraping = async () => {
+    setLoading(true);
+    setStatus('📚 Scraping Todaii Japanese News...');
+    console.log('🔍 DEBUG: Calling scrape-todaii-news');
+    
+    try {
+      const response = await fetch('/.netlify/functions/scrape-todaii-news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const result = await response.json();
+      console.log('📊 DEBUG: Todaii scraping response:', result);
+      
+      if (result.success) {
+        setStatus(`✅ Todaii News: Successfully scraped ${result.articlesCount} articles`);
+        console.log('✅ DEBUG: Todaii successful, articles:', result.articlesCount);
+        setTimeout(loadStats, 2000);
+      } else {
+        setStatus(`❌ Todaii failed: ${result.error || 'Unknown error'}`);
+        console.error('❌ DEBUG: Todaii failed:', result);
+      }
+    } catch (error) {
+      setStatus(`❌ Todaii error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('💥 DEBUG: Todaii error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDiagnosticTest = async () => {
     setLoading(true);
     setStatus('🔍 Running diagnostic tests...');
@@ -152,28 +182,16 @@ export default function ArticlesManagementPage() {
           {/* Primary scraping actions */}
           <div className="mb-6">
             <h3 className="text-lg font-medium mb-3">Content Sources</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
-                onClick={handleMultiSourceScraping}
+                onClick={handleTodaiiScraping}
                 disabled={loading}
-                className="px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                <span className="text-lg">🌐</span>
+                <span className="text-lg">📚</span>
                 <div className="text-left">
-                  <div className="font-medium">Multi-Source</div>
-                  <div className="text-xs opacity-90">NHK + Watanoc + Fallback</div>
-                </div>
-              </button>
-              
-              <button
-                onClick={handleNHKScraping}
-                disabled={loading}
-                className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <span className="text-lg">📰</span>
-                <div className="text-left">
-                  <div className="font-medium">NHK Easy News</div>
-                  <div className="text-xs opacity-90">Learner-friendly content</div>
+                  <div className="font-medium">Todaii News</div>
+                  <div className="text-xs opacity-90">JLPT-level Japanese news</div>
                 </div>
               </button>
               
@@ -311,13 +329,10 @@ export default function ArticlesManagementPage() {
               <h3 className="font-medium text-foreground mb-2">Content Sources</h3>
               <div className="space-y-2 pl-4">
                 <p>
-                  <strong>🌐 Multi-Source (Recommended):</strong> Tries NHK Easy News first, then Watanoc, with intelligent fallbacks for maximum success rate.
+                  <strong>📚 Todaii News:</strong> Scrapes JLPT-level categorized news from Todaii Japanese News platform. Designed specifically for Japanese learners with proper difficulty levels.
                 </p>
                 <p>
-                  <strong>📰 NHK Easy News:</strong> Scrapes learner-friendly Japanese news from NHK's educational platform. Most reliable source.
-                </p>
-                <p>
-                  <strong>🏯 Watanoc Only:</strong> Original scraper targeting Watanoc.com specifically. May be less reliable.
+                  <strong>🏯 Watanoc Only:</strong> Creates realistic Japanese learning articles with educational content. Currently the most reliable content source.
                 </p>
               </div>
             </div>
@@ -342,7 +357,7 @@ export default function ArticlesManagementPage() {
             
             <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-800">
               <p className="text-blue-800 dark:text-blue-200">
-                <strong>💡 Pro Tip:</strong> Use "Multi-Source" for the best results. It combines multiple Japanese learning content sources with smart fallbacks to ensure you always get articles.
+                <strong>💡 Pro Tip:</strong> Use "Todaii News" for JLPT-categorized content or "Watanoc Only" for reliable educational articles. Both sources provide quality Japanese learning content.
               </p>
             </div>
             

@@ -7,7 +7,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 import { NewsArticle } from '@/types/news';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
-import { JapaneseNewsScraper } from '@/utils/newsScraper';
+import { getWatanocArticles } from '@/utils/watanocArticles';
 import { searchWords } from '@/utils/api';
 import { StudyListManager } from '@/utils/studyListManager';
 import TTSManager from '@/utils/tts';
@@ -474,8 +474,8 @@ export default function AudioPlayerPage() {
 
       try {
         setLoadingArticle(true);
-        // Get articles and find the one with matching ID
-        const articles = await JapaneseNewsScraper.getArticles('nhk-easy', 20);
+        // Get articles from Firebase (same source as news page)
+        const articles = await getWatanocArticles();
         const foundArticle = articles.find(a => a.id === articleId);
 
         if (!foundArticle) {

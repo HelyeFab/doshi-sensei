@@ -13,19 +13,24 @@ export default function ArticlesManagementPage() {
   const handleTriggerScraping = async () => {
     setLoading(true);
     setStatus('🚀 Triggering article scraping...');
+    console.log('🔍 DEBUG: Calling scrape-watanoc-real via triggerArticleScraping');
     
     try {
       const result = await triggerArticleScraping();
+      console.log('📊 DEBUG: Watanoc scraping result:', result);
       
       if (result.success) {
         setStatus(`✅ Successfully scraped ${result.articlesScraped} articles`);
+        console.log('✅ DEBUG: Watanoc scraping successful, articles:', result.articlesScraped);
         // Refresh stats after scraping
         setTimeout(loadStats, 2000);
       } else {
         setStatus(`❌ Scraping failed: ${result.errors[0]?.message || 'Unknown error'}`);
+        console.error('❌ DEBUG: Watanoc scraping failed:', result.errors);
       }
     } catch (error) {
       setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('💥 DEBUG: Watanoc scraping error:', error);
     } finally {
       setLoading(false);
     }
@@ -34,6 +39,7 @@ export default function ArticlesManagementPage() {
   const handleNHKScraping = async () => {
     setLoading(true);
     setStatus('📰 Scraping NHK Easy News...');
+    console.log('🔍 DEBUG: Calling scrape-nhk-easy-news');
     
     try {
       const response = await fetch('/.netlify/functions/scrape-nhk-easy-news', {
@@ -42,15 +48,19 @@ export default function ArticlesManagementPage() {
       });
       
       const result = await response.json();
+      console.log('📊 DEBUG: NHK Easy scraping response:', result);
       
       if (result.success) {
         setStatus(`✅ NHK Easy: Successfully scraped ${result.articlesCount} articles`);
+        console.log('✅ DEBUG: NHK Easy successful, articles:', result.articlesCount);
         setTimeout(loadStats, 2000);
       } else {
         setStatus(`❌ NHK Easy failed: ${result.error || 'Unknown error'}`);
+        console.error('❌ DEBUG: NHK Easy failed:', result);
       }
     } catch (error) {
       setStatus(`❌ NHK Easy error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('💥 DEBUG: NHK Easy error:', error);
     } finally {
       setLoading(false);
     }
@@ -59,6 +69,7 @@ export default function ArticlesManagementPage() {
   const handleMultiSourceScraping = async () => {
     setLoading(true);
     setStatus('🌐 Scraping from multiple sources...');
+    console.log('🔍 DEBUG: Calling scrape-multi-source');
     
     try {
       const response = await fetch('/.netlify/functions/scrape-multi-source', {
@@ -67,16 +78,20 @@ export default function ArticlesManagementPage() {
       });
       
       const result = await response.json();
+      console.log('📊 DEBUG: Multi-source scraping response:', result);
       
       if (result.success) {
         const breakdown = result.sources;
         setStatus(`✅ Multi-source: ${result.articlesCount} articles (NHK: ${breakdown.nhkEasy}, Watanoc: ${breakdown.watanoc}, Fallback: ${breakdown.fallback})`);
+        console.log('✅ DEBUG: Multi-source successful, breakdown:', breakdown);
         setTimeout(loadStats, 2000);
       } else {
         setStatus(`❌ Multi-source failed: ${result.error || 'Unknown error'}`);
+        console.error('❌ DEBUG: Multi-source failed:', result);
       }
     } catch (error) {
       setStatus(`❌ Multi-source error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('💥 DEBUG: Multi-source error:', error);
     } finally {
       setLoading(false);
     }

@@ -302,11 +302,13 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    console.log('🚀 Real article scraping function triggered');
+    console.log('🚀 ====== WATANOC-REAL SCRAPER ACTIVATED ======');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
+    console.log('🎯 THIS IS THE WORKING SCRAPER!');
 
     // Check if Firebase is properly initialized
     if (!firebaseInitialized) {
+      console.error('❌ Firebase not initialized - scraper will fail');
       return {
         statusCode: 500,
         headers,
@@ -318,10 +320,19 @@ exports.handler = async (event, context) => {
       };
     }
 
+    console.log('✅ Firebase is initialized, starting article scraping...');
+    
     // Scrape real articles
     const scrapingResult = await scrapeRealArticles();
     
+    console.log('📊 Scraping result:', {
+      success: scrapingResult.success,
+      articleCount: scrapingResult.articles.length,
+      source: scrapingResult.metadata.source
+    });
+    
     if (!scrapingResult.success || scrapingResult.articles.length === 0) {
+      console.error('❌ Scraping failed - no articles found');
       return {
         statusCode: 500,
         headers,
@@ -335,7 +346,10 @@ exports.handler = async (event, context) => {
     }
     
     // Save articles to Firebase
+    console.log('💾 Saving articles to Firebase...');
     await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
+    
+    console.log('🎉 SUCCESS! Articles saved to Firebase');
     
     // Return success response
     return {
@@ -345,14 +359,15 @@ exports.handler = async (event, context) => {
         success: true,
         message: `Successfully scraped and saved ${scrapingResult.articles.length} real Japanese articles`,
         articlesCount: scrapingResult.articles.length,
-        source: 'NHK Easy News',
+        source: 'NHK Easy News (watanoc-real)',
         metadata: scrapingResult.metadata,
         timestamp: new Date().toISOString()
       }),
     };
     
   } catch (error) {
-    console.error('💥 Unexpected error in real scraping function:', error);
+    console.error('💥 CRITICAL ERROR in watanoc-real scraping function:', error);
+    console.error('Stack trace:', error.stack);
     
     return {
       statusCode: 500,

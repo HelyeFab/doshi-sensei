@@ -455,51 +455,83 @@ exports.handler = async (event) => {
   try {
     console.log('🚀 Multi-source scraping function triggered');
     
+    // Enhanced Firebase debugging
+    console.log('🔍 Checking Firebase configuration...');
+    console.log('  - Project ID:', projectId || 'MISSING');
+    console.log('  - Client Email:', process.env.FIREBASE_CLIENT_EMAIL ? 'SET' : 'MISSING');
+    console.log('  - Private Key:', process.env.FIREBASE_PRIVATE_KEY ? 'SET' : 'MISSING');
+    console.log('  - Firebase Initialized:', firebaseInitialized);
+    console.log('  - Database object:', !!db);
+    
     if (!firebaseInitialized) {
+      console.error('❌ Firebase not initialized - returning error');
       return {
         statusCode: 500,
         headers,
         body: JSON.stringify({
           success: false,
-          error: 'Firebase Admin SDK not configured'
+          error: 'Firebase Admin SDK not configured',
+          debug: {
+            projectId: !!projectId,
+            clientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: !!process.env.FIREBASE_PRIVATE_KEY
+          }
         }),
       };
     }
     
+    console.log('✅ Starting multi-source scraping...');
     const scrapingResult = await scrapeMultiSource();
+    console.log('✅ Scraping completed:', scrapingResult.success, scrapingResult.articles.length);
     
     if (scrapingResult.success && scrapingResult.articles.length > 0) {
+      console.log('💾 Saving articles to Firebase...');
       await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
+      console.log('✅ Articles saved successfully');
+    } else {
+      console.log('⚠️ No articles to save');
     }
+    
+    const response = {
+      success: scrapingResult.success,
+      message: `Successfully scraped ${scrapingResult.articles.length} articles from multiple sources`,
+      articlesCount: scrapingResult.articles.length,
+      sources: scrapingResult.metadata.breakdown,
+      articles: scrapingResult.articles.map(a => ({
+        id: a.id,
+        title: a.title,
+        source: a.source.name,
+        difficulty: a.difficulty,
+        category: a.category
+      })),
+      metadata: scrapingResult.metadata
+    };
+    
+    console.log('📤 Returning response:', JSON.stringify(response, null, 2));
     
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({
-        success: scrapingResult.success,
-        message: `Successfully scraped ${scrapingResult.articles.length} articles from multiple sources`,
-        articlesCount: scrapingResult.articles.length,
-        sources: scrapingResult.metadata.breakdown,
-        articles: scrapingResult.articles.map(a => ({
-          id: a.id,
-          title: a.title,
-          source: a.source.name,
-          difficulty: a.difficulty,
-          category: a.category
-        })),
-        metadata: scrapingResult.metadata
-      }),
+      body: JSON.stringify(response),
     };
     
   } catch (error) {
-    console.error('💥 Error in multi-source scraping:', error);
+    console.error('💥 DETAILED ERROR in multi-source scraping:');
+    console.error('  - Error message:', error.message);
+    console.error('  - Error stack:', error.stack);
+    console.error('  - Error name:', error.name);
+    console.error('  - Error code:', error.code);
     
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
         success: false,
-        error: error.message
+        error: error.message,
+        errorType: error.name,
+        errorCode: error.code,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
       }),
     };
   }

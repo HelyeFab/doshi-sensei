@@ -162,6 +162,57 @@ function estimateReadingTime(text) {
   return Math.max(1, Math.ceil(text.length / 400));
 }
 
+// Function to estimate JLPT level with improved algorithm
+function estimateJLPTLevelAdvanced(text) {
+  const kanjiCount = (text.match(/[\u4e00-\u9faf]/g) || []).length;
+  const hiraganaCount = (text.match(/[\u3040-\u309f]/g) || []).length;
+  const katakanaCount = (text.match(/[\u30a0-\u30ff]/g) || []).length;
+  const totalChars = text.length;
+  const kanjiRatio = kanjiCount / totalChars;
+  const kanaRatio = (hiraganaCount + katakanaCount) / totalChars;
+  
+  // Advanced heuristics based on text complexity
+  const textComplexityIndicators = {
+    // Complex grammar patterns (more advanced levels)
+    complexGrammar: /(?:によって|について|に関して|ということ|というのは|のみならず|したがって)/g.test(text),
+    // Simple patterns (beginner levels)  
+    simplePatterns: /(?:です|ます|でした|ました|だった|である)$/gm.test(text),
+    // Sentence length (longer = more complex)
+    avgSentenceLength: text.split(/[。！？]/).filter(s => s.length > 0).reduce((acc, s) => acc + s.length, 0) / text.split(/[。！？]/).length || 0
+  };
+  
+  // Determine level based on multiple factors
+  let level = 'N4'; // Default
+  
+  if (kanjiRatio < 0.12 && kanaRatio > 0.7 && textComplexityIndicators.avgSentenceLength < 25) {
+    level = 'N5';
+  } else if (kanjiRatio < 0.20 && textComplexityIndicators.simplePatterns && !textComplexityIndicators.complexGrammar) {
+    level = 'N4';
+  } else if (kanjiRatio < 0.30 && textComplexityIndicators.avgSentenceLength < 40) {
+    level = 'N3';
+  } else if (kanjiRatio < 0.40 || textComplexityIndicators.complexGrammar) {
+    level = 'N2';
+  } else if (kanjiRatio >= 0.40 || textComplexityIndicators.avgSentenceLength > 50) {
+    level = 'N1';
+  }
+  
+  // Add some variation for educational content
+  const contentLength = text.length;
+  if (contentLength < 200) {
+    // Shorter articles are often simpler
+    if (level === 'N3') level = 'N4';
+    if (level === 'N2') level = 'N3';
+  } else if (contentLength > 800) {
+    // Longer articles are often more complex
+    if (level === 'N5') level = 'N4';
+    if (level === 'N4') level = 'N3';
+  }
+  
+  console.log(`📊 JLPT Level estimation for text (${contentLength} chars): ${level} (kanji: ${kanjiRatio.toFixed(2)}, avgSent: ${textComplexityIndicators.avgSentenceLength.toFixed(1)})`);
+  
+  return level;
+}
+
 // Extract article links from Todaii News
 function extractTodaiiArticleLinks(html) {
   const links = [];
@@ -313,7 +364,7 @@ async function scrapeTodaiiArticle(link, index = 0) {
       },
       category: 'news',
       tags: ['news', 'japanese', 'learning', 'todaii'],
-      difficulty: difficulty,
+      difficulty: estimateJLPTLevelAdvanced(content), // Use improved algorithm
       estimatedReadingTime: estimateReadingTime(content),
       vocabulary: vocabulary,
       kanji: kanji,
@@ -381,7 +432,7 @@ async function scrapeTodaiiNews() {
           },
           category: 'news',
           tags: ['news', 'japanese', 'learning', 'todaii'],
-          difficulty: articleData.difficulty,
+          difficulty: estimateJLPTLevelAdvanced(articleData.content),
           estimatedReadingTime: estimateReadingTime(articleData.content),
           vocabulary: extractVocabulary(articleData.content),
           kanji: extractKanji(articleData.content),

@@ -207,17 +207,20 @@ async function scrapeWatanocArticles() {
   console.log('🔍 Starting real Watanoc article scraping...');
   
   try {
-    // Watanoc article listing URLs by category
+    // Use actual Watanoc category and tag URLs
     const categoryUrls = [
-      'https://watanoc.com/culture',
-      'https://watanoc.com/society', 
-      'https://watanoc.com/technology',
-      'https://watanoc.com/business',
-      'https://watanoc.com'  // Main page for general articles
+      'https://watanoc.com/category/japan-fun/meal',       // Food & dining articles
+      'https://watanoc.com/category/japan-fun/sightseeing', // Tourism articles
+      'https://watanoc.com/category/japan-fun/event',      // Events & festivals
+      'https://watanoc.com/category/japan-fun/culture',    // Culture articles
+      'https://watanoc.com/category/simplejapanese',       // Simple Japanese articles
+      'https://watanoc.com/tag/n5',                        // N5 level articles
+      'https://watanoc.com/tag/n4',                        // N4 level articles
+      'https://watanoc.com/tag/n3'                         // N3 level articles
     ];
 
     const scrapedArticles = [];
-    const targetArticleCount = 5; // Aim for 5 articles
+    const targetArticleCount = 10; // Aim for 10 articles
     
     for (const categoryUrl of categoryUrls) {
       if (scrapedArticles.length >= targetArticleCount) break;
@@ -233,20 +236,48 @@ async function scrapeWatanocArticles() {
         }
 
         // Parse article links from the listing page
+        console.log(`📝 HTML response length: ${response.body.length} characters`);
+        
+        // Log a sample of the HTML to understand the structure
+        if (response.body.includes('watanoc')) {
+          console.log(`✓ Found 'watanoc' in HTML`);
+        }
+        
         const articleLinks = extractArticleLinks(response.body, categoryUrl);
         
-        // Scrape individual articles
-        for (const link of articleLinks.slice(0, 2)) { // Max 2 articles per category
+        if (articleLinks.length === 0) {
+          console.log(`⚠️ No article links found on ${categoryUrl}`);
+          
+          // Log some diagnostic info
+          const hasArticleTags = response.body.includes('<article') ? 'Yes' : 'No';
+          const hasHrefLinks = response.body.includes('href=') ? 'Yes' : 'No';
+          console.log(`  Diagnostic: Has <article> tags: ${hasArticleTags}, Has href links: ${hasHrefLinks}`);
+          
+          // Try to find any links in the page for debugging
+          const anyLinks = response.body.match(/href=["']([^"']+)["']/gi) || [];
+          console.log(`  Total links found in page: ${anyLinks.length}`);
+          if (anyLinks.length > 0 && anyLinks.length < 10) {
+            console.log(`  Sample links:`, anyLinks.slice(0, 5).map(l => l.replace(/href=["']|["']/g, '')));
+          }
+          
+          continue;
+        }
+        
+        // Scrape individual articles - increase limit per category
+        const articlesPerCategory = Math.min(5, targetArticleCount - scrapedArticles.length);
+        
+        for (const link of articleLinks.slice(0, articlesPerCategory)) {
           if (scrapedArticles.length >= targetArticleCount) break;
           
           try {
+            console.log(`  📄 Attempting to scrape: ${link.url}`);
             const article = await scrapeIndividualArticle(link);
             if (article) {
               scrapedArticles.push(article);
-              console.log(`✅ Scraped: ${article.title}`);
+              console.log(`  ✅ Successfully scraped: ${article.title}`);
             }
           } catch (error) {
-            console.log(`❌ Failed to scrape article ${link.url}:`, error.message);
+            console.log(`  ❌ Failed to scrape article ${link.url}:`, error.message);
           }
           
           // Be respectful - wait between requests
@@ -302,34 +333,77 @@ async function scrapeWatanocArticles() {
 // Function to extract article links from category pages
 function extractArticleLinks(html, baseUrl) {
   const links = [];
+  const seenUrls = new Set();
   
-  // Look for article links in the HTML
-  // This is a simplified regex - in production you'd want more robust parsing
-  const linkMatches = html.match(/<a[^>]+href=["']([^"']+)["'][^>]*>.*?<\/a>/gi) || [];
+  console.log(`🔎 Extracting article links from ${baseUrl}`);
   
-  for (const match of linkMatches) {
-    const hrefMatch = match.match(/href=["']([^"']+)["']/);
-    if (hrefMatch) {
-      let url = hrefMatch[1];
+  // Multiple strategies to find article links
+  // Strategy 1: Look for common article link patterns
+  const patterns = [
+    /<a[^>]+href=["']([^"']+)["'][^>]*>.*?<\/a>/gi,
+    /href=["'](\/[^"'#?]+(?:\.html?)?|https?:\/\/watanoc\.com\/[^"'#?]+)["']/gi,
+    /<article[^>]*>.*?<a[^>]+href=["']([^"']+)["'][^>]*>/gi,
+    /<h[1-6][^>]*>.*?<a[^>]+href=["']([^"']+)["'][^>]*>/gi
+  ];
+  
+  for (const pattern of patterns) {
+    const matches = html.matchAll(pattern);
+    for (const match of matches) {
+      let url = match[1] || match[0].match(/href=["']([^"']+)["']/)?.[1];
+      if (!url) continue;
       
       // Convert relative URLs to absolute
       if (url.startsWith('/')) {
         url = 'https://watanoc.com' + url;
       } else if (!url.startsWith('http')) {
-        continue; // Skip invalid URLs
+        url = new URL(url, baseUrl).href;
       }
       
-      // Only include Watanoc article URLs
-      if (url.includes('watanoc.com') && !url.includes('#') && !url.includes('?')) {
-        const title = extractTextFromHTML(match).substring(0, 100);
-        if (title.length > 10) { // Only if we can extract a reasonable title
-          links.push({ url, title });
+      // Filter for valid article URLs
+      // Note: Don't exclude category/tag pages themselves, only exclude them as article links
+      const isListingPage = url.includes('/category/') || url.includes('/tag/') || url.includes('/page/');
+      
+      if (url.includes('watanoc.com') && 
+          !url.includes('#') && 
+          !url.includes('/author/') &&
+          !url.includes('/wp-') &&
+          !url.includes('/feed') &&
+          !url.includes('.jpg') &&
+          !url.includes('.png') &&
+          !url.includes('.css') &&
+          !url.includes('.js') &&
+          !url.includes('.xml') &&
+          url !== 'https://watanoc.com/' &&
+          url !== 'https://watanoc.com' &&
+          !isListingPage &&  // Exclude category/tag listing pages as articles
+          !seenUrls.has(url)) {
+        
+        seenUrls.add(url);
+        
+        // Try to extract a title
+        const titleMatch = html.match(new RegExp(`<a[^>]*href=["']${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>([^<]+)<\/a>`, 'i'));
+        let title = titleMatch ? extractTextFromHTML(titleMatch[1]) : '';
+        
+        // If no title found in link, look for nearby heading
+        if (!title || title.length < 10) {
+          const headingPattern = new RegExp(`<h[1-6][^>]*>([^<]+)<\/h[1-6]>.*?href=["']${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`, 'si');
+          const headingMatch = html.match(headingPattern);
+          if (headingMatch) {
+            title = extractTextFromHTML(headingMatch[1]);
+          }
+        }
+        
+        if (title && title.length > 5) {
+          links.push({ url, title: title.substring(0, 200) });
+          console.log(`  ✓ Found article: ${title.substring(0, 50)}...`);
         }
       }
     }
   }
   
-  return links.slice(0, 5); // Return max 5 links per category
+  console.log(`📊 Extracted ${links.length} unique article links`);
+  
+  return links.slice(0, 10); // Return max 10 links per category
 }
 
 // Function to scrape an individual article
@@ -353,7 +427,19 @@ async function scrapeIndividualArticle(link) {
   }
 
   // Generate article metadata
-  const difficulty = estimateJLPTLevel(content);
+  // Check if difficulty is specified in URL (from tag pages)
+  let difficulty = null;
+  if (link.url.includes('/tag/n5')) difficulty = 'N5';
+  else if (link.url.includes('/tag/n4')) difficulty = 'N4';
+  else if (link.url.includes('/tag/n3')) difficulty = 'N3';
+  else if (link.url.includes('/tag/n2')) difficulty = 'N2';
+  else if (link.url.includes('/tag/n1')) difficulty = 'N1';
+  
+  // If not found in URL, estimate from content
+  if (!difficulty) {
+    difficulty = estimateJLPTLevel(content);
+  }
+  
   const estimatedReadingTime = estimateReadingTime(content);
   const vocabulary = extractVocabulary(content);
   const kanji = extractKanji(content);
@@ -361,7 +447,7 @@ async function scrapeIndividualArticle(link) {
   const tags = generateTags(title, content, category);
 
   return {
-    id: `watanoc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id: `watanoc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
     title: title.substring(0, 200), // Limit title length
     content: content.substring(0, 5000), // Limit content length
     summary: summary,
@@ -396,24 +482,44 @@ function extractContent(html) {
     /<article[^>]*>(.*?)<\/article>/is,
     /<main[^>]*>(.*?)<\/main>/is,
     /<div[^>]*class="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/is,
-    /<div[^>]*class="[^"]*post[^"]*"[^>]*>(.*?)<\/div>/is
+    /<div[^>]*class="[^"]*post[^"]*"[^>]*>(.*?)<\/div>/is,
+    /<div[^>]*class="[^"]*entry[^"]*"[^>]*>(.*?)<\/div>/is,
+    /<div[^>]*class="[^"]*article[^"]*"[^>]*>(.*?)<\/div>/is,
+    /<div[^>]*class="[^"]*text[^"]*"[^>]*>(.*?)<\/div>/is,
+    /<div[^>]*id="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/is
   ];
+  
+  let bestContent = '';
   
   for (const selector of contentSelectors) {
     const match = html.match(selector);
     if (match) {
       const content = extractTextFromHTML(match[1]);
-      if (content.length > 200) {
-        return content;
+      if (content.length > bestContent.length) {
+        bestContent = content;
       }
     }
   }
   
+  // If we found good content, return it
+  if (bestContent.length > 200) {
+    return bestContent;
+  }
+  
   // Fallback: extract all paragraph content
   const paragraphs = html.match(/<p[^>]*>.*?<\/p>/gi) || [];
-  const content = paragraphs.map(p => extractTextFromHTML(p)).join('\n\n');
+  const paragraphContent = paragraphs.map(p => extractTextFromHTML(p)).filter(p => p.length > 20).join('\n\n');
   
-  return content.length > 100 ? content : null;
+  // Also try to get content from divs with Japanese text
+  if (paragraphContent.length < 200) {
+    const japanesePattern = /<div[^>]*>[^<]*[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf][^<]*<\/div>/gi;
+    const japaneseDivs = html.match(japanesePattern) || [];
+    const japaneseContent = japaneseDivs.map(div => extractTextFromHTML(div)).filter(text => text.length > 50).join('\n\n');
+    
+    return japaneseContent.length > paragraphContent.length ? japaneseContent : paragraphContent;
+  }
+  
+  return paragraphContent.length > 100 ? paragraphContent : null;
 }
 
 function extractSummary(html, content) {
@@ -447,21 +553,26 @@ function extractImageUrl(html) {
 function determineCategoryFromUrl(url) {
   const urlLower = url.toLowerCase();
   
-  if (urlLower.includes('culture') || urlLower.includes('festival') || urlLower.includes('tradition')) return 'culture';
-  if (urlLower.includes('business') || urlLower.includes('economy') || urlLower.includes('company')) return 'business';
-  if (urlLower.includes('technology') || urlLower.includes('tech') || urlLower.includes('digital')) return 'technology';
-  if (urlLower.includes('society') || urlLower.includes('social') || urlLower.includes('news')) return 'society';
-  if (urlLower.includes('transport') || urlLower.includes('train') || urlLower.includes('travel')) return 'transportation';
+  // Map Watanoc's actual categories
+  if (urlLower.includes('/meal') || urlLower.includes('food')) return 'food';
+  if (urlLower.includes('/sightseeing') || urlLower.includes('travel')) return 'sightseeing';
+  if (urlLower.includes('/event') || urlLower.includes('festival')) return 'event';
+  if (urlLower.includes('/culture') || urlLower.includes('tradition')) return 'culture';
+  if (urlLower.includes('business') || urlLower.includes('economy')) return 'business';
+  if (urlLower.includes('technology') || urlLower.includes('tech')) return 'technology';
+  if (urlLower.includes('transport') || urlLower.includes('train')) return 'transportation';
   
   return 'general';
 }
 
 function generateTags(title, content, category) {
   const commonTags = {
-    culture: ['culture', 'tradition', 'japanese-culture'],
+    food: ['food', 'cuisine', 'japanese-food', 'dining'],
+    sightseeing: ['travel', 'tourism', 'sightseeing', 'japan-travel'],
+    event: ['events', 'festivals', 'celebrations', 'japanese-events'],
+    culture: ['culture', 'tradition', 'japanese-culture', 'customs'],
     business: ['business', 'economy', 'work'],
     technology: ['technology', 'innovation', 'digital'],
-    society: ['society', 'social-issues', 'japan'],
     transportation: ['transportation', 'travel', 'infrastructure'],
     general: ['japan', 'japanese', 'learning']
   };
@@ -586,7 +697,7 @@ function calculateArticleStats(articles) {
 }
 
 // Main handler function
-const scrapeWatanocHandler = async (event, context) => {
+const scrapeWatanocHandler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',

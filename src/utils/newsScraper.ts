@@ -200,13 +200,14 @@ export class JapaneseNewsScraper {
         ? window.location.origin
         : 'https://doshi-sensei.netlify.app'; // Fallback for SSR
 
-      // Split articles evenly between sources
-      const articlesPerSource = Math.ceil(maxArticles / 2);
+      // Split articles evenly between three sources
+      const articlesPerSource = Math.ceil(maxArticles / 3);
       
       // Scraping functions to call
       const scrapingFunctions = [
         { url: `${baseUrl}/.netlify/functions/scrape-watanoc-real`, name: 'Watanoc' },
-        { url: `${baseUrl}/.netlify/functions/scrape-todaii-news`, name: 'Todaii' }
+        { url: `${baseUrl}/.netlify/functions/scrape-todaii-news`, name: 'Todaii' },
+        { url: `${baseUrl}/.netlify/functions/scrape-nhk-easy`, name: 'NHK Easy' }
       ];
 
       console.log(`🎯 Balanced scraping: ${articlesPerSource} articles per source (${scrapingFunctions.length} sources)`);

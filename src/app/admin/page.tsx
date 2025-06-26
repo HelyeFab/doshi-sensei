@@ -5,7 +5,14 @@ import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverview } from '@/components/admin/StatsOverview';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
-import { triggerArticleScraping } from '@/utils/watanocArticles';
+import { 
+  triggerWatanocScraping, 
+  triggerTodaiiScraping, 
+  triggerNHKEasyScraping,
+  triggerAllSourcesScraping,
+  NEWS_SOURCES,
+  formatScrapingResult
+} from '@/utils/newsSources';
 
 function QuickAction({ title, description, icon, onClick, loading }: {
   title: string;
@@ -33,8 +40,18 @@ function QuickAction({ title, description, icon, onClick, loading }: {
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [scrapingLoading, setScrapingLoading] = useState(false);
-  const [scrapingStatus, setScrapingStatus] = useState<string>('');
+  const [scrapingLoading, setScrapingLoading] = useState<Record<string, boolean>>({
+    watanoc: false,
+    todaii: false,
+    nhkEasy: false,
+    all: false
+  });
+  const [scrapingStatus, setScrapingStatus] = useState<Record<string, string>>({
+    watanoc: '',
+    todaii: '',
+    nhkEasy: '',
+    all: ''
+  });
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -54,24 +71,72 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleTriggerScraping = async () => {
-    setScrapingLoading(true);
-    setScrapingStatus('🚀 Triggering article scraping...');
+  // Individual source scraping handlers
+  const handleSourceScraping = async (sourceId: string, scrapingFunction: () => Promise<any>) => {
+    setScrapingLoading(prev => ({ ...prev, [sourceId]: true }));
+    setScrapingStatus(prev => ({ ...prev, [sourceId]: `🚀 Starting ${NEWS_SOURCES[sourceId]?.name || sourceId} scraping...` }));
     
     try {
-      const result = await triggerArticleScraping();
+      const result = await scrapingFunction();
+      const source = NEWS_SOURCES[sourceId];
       
       if (result.success) {
-        setScrapingStatus(`✅ Successfully scraped ${result.articlesScraped} articles`);
+        const message = formatScrapingResult(result, source);
+        setScrapingStatus(prev => ({ ...prev, [sourceId]: message }));
       } else {
-        setScrapingStatus(`❌ Scraping failed: ${result.errors[0]?.message || 'Unknown error'}`);
+        const message = formatScrapingResult(result, source);
+        setScrapingStatus(prev => ({ ...prev, [sourceId]: message }));
       }
     } catch (error) {
-      setScrapingStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setScrapingStatus(prev => ({ 
+        ...prev, 
+        [sourceId]: `❌ ${NEWS_SOURCES[sourceId]?.name || sourceId}: ${error instanceof Error ? error.message : 'Unknown error'}` 
+      }));
     } finally {
-      setScrapingLoading(false);
-      // Clear status after 5 seconds
-      setTimeout(() => setScrapingStatus(''), 5000);
+      setScrapingLoading(prev => ({ ...prev, [sourceId]: false }));
+      // Clear status after 10 seconds
+      setTimeout(() => {
+        setScrapingStatus(prev => ({ ...prev, [sourceId]: '' }));
+      }, 10000);
+    }
+  };
+
+  const handleWatanocScraping = () => handleSourceScraping('watanoc', triggerWatanocScraping);
+  const handleTodaiiScraping = () => handleSourceScraping('todaii', triggerTodaiiScraping);
+  const handleNHKEasyScraping = () => handleSourceScraping('nhkEasy', triggerNHKEasyScraping);
+
+  const handleAllSourcesScraping = async () => {
+    setScrapingLoading(prev => ({ ...prev, all: true }));
+    setScrapingStatus(prev => ({ ...prev, all: '🚀 Starting all sources scraping...' }));
+    
+    try {
+      const results = await triggerAllSourcesScraping();
+      const { overall } = results;
+      
+      // Set individual results
+      setScrapingStatus(prev => ({
+        ...prev,
+        watanoc: formatScrapingResult(results.watanoc, NEWS_SOURCES.watanoc),
+        todaii: formatScrapingResult(results.todaii, NEWS_SOURCES.todaii),
+        nhkEasy: formatScrapingResult(results.nhkEasy, NEWS_SOURCES.nhkEasy),
+        all: `🎉 All sources completed: ${overall.totalArticles} total articles from ${overall.successfulSources}/3 sources (${overall.totalTimeElapsed}s)`
+      }));
+    } catch (error) {
+      setScrapingStatus(prev => ({ 
+        ...prev, 
+        all: `❌ All sources failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
+      }));
+    } finally {
+      setScrapingLoading(prev => ({ ...prev, all: false }));
+      // Clear all status after 15 seconds
+      setTimeout(() => {
+        setScrapingStatus({
+          watanoc: '',
+          todaii: '',
+          nhkEasy: '',
+          all: ''
+        });
+      }, 15000);
     }
   };
 
@@ -97,7 +162,7 @@ export default function AdminDashboard() {
         {/* Quick actions */}
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <QuickAction
               title="Manage Users"
               description="Search users and manage premium accounts"
@@ -111,26 +176,60 @@ export default function AdminDashboard() {
               onClick={() => handleQuickAction('create-mood-board')}
             />
             <QuickAction
-              title="Scrape Articles"
-              description="Trigger Watanoc article scraping"
-              icon="📰"
-              onClick={handleTriggerScraping}
-              loading={scrapingLoading}
-            />
-            <QuickAction
               title="Manage Articles"
               description="View article stats and management"
               icon="📋"
               onClick={() => handleQuickAction('articles')}
             />
           </div>
+        </div>
+
+        {/* News Sources Scraping */}
+        <div>
+          <h3 className="text-lg font-semibold text-foreground mb-4">News Sources Scraping</h3>
+          
+          {/* Individual source buttons */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <QuickAction
+              title={NEWS_SOURCES.watanoc.name}
+              description={NEWS_SOURCES.watanoc.description}
+              icon={NEWS_SOURCES.watanoc.emoji}
+              onClick={handleWatanocScraping}
+              loading={scrapingLoading.watanoc}
+            />
+            <QuickAction
+              title={NEWS_SOURCES.todaii.name}
+              description={NEWS_SOURCES.todaii.description}
+              icon={NEWS_SOURCES.todaii.emoji}
+              onClick={handleTodaiiScraping}
+              loading={scrapingLoading.todaii}
+            />
+            <QuickAction
+              title={NEWS_SOURCES.nhkEasy.name}
+              description={NEWS_SOURCES.nhkEasy.description}
+              icon={NEWS_SOURCES.nhkEasy.emoji}
+              onClick={handleNHKEasyScraping}
+              loading={scrapingLoading.nhkEasy}
+            />
+            <QuickAction
+              title="All Sources"
+              description="Scrape all three sources in parallel"
+              icon="🚀"
+              onClick={handleAllSourcesScraping}
+              loading={scrapingLoading.all}
+            />
+          </div>
           
           {/* Scraping status */}
-          {scrapingStatus && (
-            <div className="mt-4 p-3 bg-muted rounded-lg">
-              <p className="text-sm">{scrapingStatus}</p>
-            </div>
-          )}
+          <div className="space-y-2">
+            {Object.entries(scrapingStatus).map(([sourceId, status]) => 
+              status && (
+                <div key={sourceId} className="p-3 bg-muted rounded-lg">
+                  <p className="text-sm font-mono">{status}</p>
+                </div>
+              )
+            )}
+          </div>
         </div>
 
         {/* Recent activity placeholder */}

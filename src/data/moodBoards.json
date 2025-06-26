@@ -117,43 +117,6 @@
       }
     ]
   },
-  "colors": {
-    "title": "Colors N4",
-    "emoji": "🌈",
-    "jlpt": "N4",
-    "background": "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
-    "description": "Color-related kanji",
-    "kanji": [
-      {
-        "char": "赤",
-        "meaning": "red",
-        "readings": { "on": ["セキ", "シャク"], "kun": ["あか"] },
-        "examples": ["赤 (red)", "赤ちゃん (baby)"],
-        "difficulty": 2
-      },
-      {
-        "char": "青",
-        "meaning": "blue",
-        "readings": { "on": ["セイ", "ショウ"], "kun": ["あお"] },
-        "examples": ["青 (blue)", "青い (blue - adjective)"],
-        "difficulty": 2
-      },
-      {
-        "char": "白",
-        "meaning": "white",
-        "readings": { "on": ["ハク", "ビャク"], "kun": ["しろ"] },
-        "examples": ["白 (white)", "白い (white - adjective)"],
-        "difficulty": 2
-      },
-      {
-        "char": "黒",
-        "meaning": "black",
-        "readings": { "on": ["コク"], "kun": ["くろ"] },
-        "examples": ["黒 (black)", "黒い (black - adjective)"],
-        "difficulty": 2
-      }
-    ]
-  },
   "food": {
     "title": "Food N4",
     "emoji": "🍜",

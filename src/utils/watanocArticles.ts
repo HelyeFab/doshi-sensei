@@ -50,11 +50,9 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
   try {
     // Check cache first (unless force refresh)
     if (!forceRefresh && articlesCache && (Date.now() - cacheTimestamp) < CACHE_DURATION) {
-      console.log('📋 Using cached Watanoc articles');
       return articlesCache;
     }
 
-    console.log('🔄 Fetching fresh Watanoc articles from Firebase...');
 
     if (!db) {
       throw new Error('Firebase not initialized');
@@ -71,7 +69,6 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
     const querySnapshot = await getDocs(articlesQuery);
     
     if (querySnapshot.empty) {
-      console.log('⚠️ No articles found in Firebase');
       return [];
     }
 
@@ -94,7 +91,6 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
     articlesCache = processedArticles;
     cacheTimestamp = Date.now();
 
-    console.log(`✅ Successfully loaded ${processedArticles.length} Watanoc articles from Firebase`);
     return processedArticles;
 
   } catch (error) {
@@ -111,7 +107,6 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
  */
 export async function triggerArticleScraping(): Promise<ScrapingResult> {
   try {
-    console.log('🚀 Triggering article scraping...');
 
     const response = await fetch('/.netlify/functions/scrape-watanoc-real', {
       method: 'POST',
@@ -248,7 +243,6 @@ export function clearCache(): void {
     }
   }
   
-  console.log('🗑️ All articles cache cleared (memory + browser storage)');
 }
 
 /**
@@ -320,7 +314,6 @@ export async function deleteArticle(articleId: string): Promise<{ success: boole
       throw new Error('Firebase not initialized');
     }
 
-    console.log(`🗑️ Deleting article: ${articleId}`);
 
     // Delete the article document
     await deleteDoc(doc(db, 'articles', articleId));
@@ -329,7 +322,6 @@ export async function deleteArticle(articleId: string): Promise<{ success: boole
     articlesCache = null;
     cacheTimestamp = 0;
 
-    console.log(`✅ Successfully deleted article: ${articleId}`);
 
     return { success: true };
 
@@ -360,7 +352,6 @@ export async function deleteArticles(articleIds: string[]): Promise<{
       return { success: true, deletedCount: 0, failedCount: 0, errors: [] };
     }
 
-    console.log(`🗑️ Bulk deleting ${articleIds.length} articles...`);
 
     const batch = writeBatch(db);
     const errors: string[] = [];
@@ -393,7 +384,6 @@ export async function deleteArticles(articleIds: string[]): Promise<{
 
     const failedCount = articleIds.length - deletedCount;
 
-    console.log(`✅ Bulk deletion completed: ${deletedCount} deleted, ${failedCount} failed`);
 
     return { 
       success: failedCount === 0, 
@@ -426,7 +416,6 @@ export async function deleteAllArticles(): Promise<{
       throw new Error('Firebase not initialized');
     }
 
-    console.log('🗑️ Deleting all articles...');
 
     // Get all article IDs
     const articlesQuery = query(collection(db, 'articles'));
@@ -442,7 +431,6 @@ export async function deleteAllArticles(): Promise<{
     const result = await deleteArticles(articleIds);
     
     if (result.success) {
-      console.log(`✅ Successfully deleted all ${result.deletedCount} articles`);
       return { success: true, deletedCount: result.deletedCount };
     } else {
       return { 
@@ -482,7 +470,6 @@ async function updateArticleStatistics(): Promise<void> {
       lastUpdated: Timestamp.fromDate(new Date())
     }, { merge: true });
 
-    console.log('📊 Article statistics updated after deletion');
 
   } catch (error) {
     console.error('❌ Error updating article statistics:', error);

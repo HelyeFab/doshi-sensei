@@ -24,7 +24,6 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
         const isHomePage = currentPath === '/' || currentPath === '/home';
         const shouldShowOnThisPage = isHomePage || isManualTrigger;
 
-        console.log('🔍 Onboarding check:', {
           hasCompleted,
           isFirstVisit,
           isManualTrigger,
@@ -36,10 +35,8 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
 
         // Show onboarding for new users on home page, or if manually triggered anywhere
         if ((isFirstVisit || isManualTrigger) && shouldShowOnThisPage) {
-          console.log('✅ Showing onboarding modal');
           setShowOnboarding(true);
         } else {
-          console.log('❌ Not showing onboarding modal');
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);

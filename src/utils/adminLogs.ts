@@ -48,7 +48,6 @@ export async function logAdminAction({
     const logsRef = collection(db, 'adminLogs');
     await addDoc(logsRef, logData);
 
-    console.log('Admin action logged:', { action, adminEmail, timestamp: new Date() });
   } catch (error) {
     console.error('Error logging admin action:', error);
     // Don't throw here as this is just logging

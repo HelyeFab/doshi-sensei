@@ -147,7 +147,6 @@ export function useMoodBoards(): UseMoodBoardsReturn {
 
       // If no Firestore data, migrate from JSON
       if (fetchedMoodBoards.length === 0) {
-        console.log('No Firestore mood boards found, migrating from JSON...');
         await migrateJsonToFirestore();
         return fetchMoodBoards(); // Retry after migration
       }
@@ -195,7 +194,6 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       });
 
       await Promise.all(migrationPromises);
-      console.log('Successfully migrated mood boards from JSON to Firestore');
     } catch (error) {
       console.error('Failed to migrate mood boards:', error);
       throw error;

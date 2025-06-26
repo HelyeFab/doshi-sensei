@@ -13,11 +13,8 @@ export default function TestSearchPage() {
     setLoading(true);
     setResults([]);
 
-    // Capture console.log output
-    const originalLog = console.log;
     const logs: string[] = [];
 
-    console.log = (...args) => {
       logs.push(args.join(' '));
       originalLog(...args);
     };
@@ -29,7 +26,6 @@ export default function TestSearchPage() {
       logs.push(`Error: ${error}`);
       setResults(logs);
     } finally {
-      console.log = originalLog;
       setLoading(false);
     }
   };
@@ -38,10 +34,8 @@ export default function TestSearchPage() {
     setLoading(true);
     setResults([]);
 
-    const originalLog = console.log;
     const logs: string[] = [];
 
-    console.log = (...args) => {
       logs.push(args.join(' '));
       originalLog(...args);
     };
@@ -53,7 +47,6 @@ export default function TestSearchPage() {
       logs.push(`Error: ${error}`);
       setResults(logs);
     } finally {
-      console.log = originalLog;
       setLoading(false);
     }
   };

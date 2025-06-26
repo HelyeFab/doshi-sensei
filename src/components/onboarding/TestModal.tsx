@@ -43,7 +43,6 @@ export function TestModal() {
             cursor: 'pointer',
             fontSize: '16px',
           }}
-          onClick={() => console.log('Test button clicked!')}
         >
           Test Button
         </button>

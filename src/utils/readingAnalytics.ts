@@ -405,7 +405,6 @@ export class ReadingAnalyticsManager {
   private static updateAnalytics(session: ReadingSession): void {
     // Update overall analytics based on completed session
     // This would integrate with a more comprehensive analytics system
-    console.log('Analytics updated for session:', session.id);
   }
 
   private static calculateReadingStreak(sessions: ReadingSession[]): number {

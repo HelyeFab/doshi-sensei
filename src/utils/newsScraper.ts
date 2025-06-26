@@ -113,7 +113,6 @@ export class JapaneseNewsScraper {
     if (this.isInitialized) return;
 
     // Future: Initialize Puppeteer browser
-    console.log('🔧 JapaneseNewsScraper initialized');
     this.isInitialized = true;
   }
 
@@ -136,20 +135,17 @@ export class JapaneseNewsScraper {
     let articlesScraped = 0;
 
     try {
-      console.log(`🔄 Starting scrape of ${source.displayName}...`);
 
       // Check rate limiting
       await this.rateLimiter.waitForRateLimit(sourceId, source.rateLimit.requestsPerMinute);
 
       // Phase 2A: Use real scraping via Netlify Functions
-      console.log('🚀 Calling Netlify function for real scraping...');
       const scrapedArticles = await this.callNetlifyScrapingFunction(maxArticles);
       articlesScraped = scrapedArticles.length;
 
       // Cache the articles
       await this.cacheArticles(sourceId, scrapedArticles);
 
-      console.log(`✅ Successfully scraped ${articlesScraped} articles from ${source.displayName}`);
 
       return {
         success: true,
@@ -172,7 +168,6 @@ export class JapaneseNewsScraper {
       console.error(`❌ Failed to scrape ${source.displayName}:`, error);
 
       // Fallback to mock data if real scraping fails
-      console.log('🔄 Falling back to mock data...');
       try {
         const mockArticles = await this.mockScrapeNHKEasy(maxArticles);
         await this.cacheArticles(sourceId, mockArticles);
@@ -207,7 +202,6 @@ export class JapaneseNewsScraper {
 
       const functionUrl = `${baseUrl}/.netlify/functions/scrape-nhk-news`;
 
-      console.log(`🌐 Calling: ${functionUrl}?limit=${maxArticles}`);
 
       const response = await fetch(`${functionUrl}?limit=${maxArticles}`, {
         method: 'GET',
@@ -226,7 +220,6 @@ export class JapaneseNewsScraper {
         throw new Error(result.error?.message || 'Scraping failed');
       }
 
-      console.log(`📰 Received ${result.data.length} articles from Netlify function`);
 
       // Transform articles to match our NewsArticle interface
       const articles: NewsArticle[] = await Promise.all(
@@ -370,7 +363,6 @@ export class JapaneseNewsScraper {
       // Store in localStorage for now (will integrate with IndexedDB later)
       if (typeof window !== 'undefined') {
         localStorage.setItem(`doshi_news_cache_${sourceId}`, JSON.stringify(cacheData));
-        console.log(`💾 Cached ${articles.length} articles for ${sourceId}`);
       }
     } catch (error) {
       console.error('Failed to cache articles:', error);
@@ -384,7 +376,6 @@ export class JapaneseNewsScraper {
 
       const cached = localStorage.getItem(`doshi_news_cache_${sourceId}`);
       if (!cached) {
-        console.log(`📖 No cache found for ${sourceId}`);
         return [];
       }
 
@@ -393,7 +384,6 @@ export class JapaneseNewsScraper {
       // Check if cache is expired
       const expiryDate = new Date(cacheData.expiryDate);
       if (new Date() > expiryDate) {
-        console.log(`🗑️ Cache expired for ${sourceId}, removing...`);
         localStorage.removeItem(`doshi_news_cache_${sourceId}`);
         return [];
       }
@@ -405,7 +395,6 @@ export class JapaneseNewsScraper {
         scrapedAt: new Date(article.scrapedAt)
       }));
 
-      console.log(`📖 Retrieved ${articles.length} cached articles for ${sourceId}`);
       return articles;
     } catch (error) {
       console.error('Failed to get cached articles:', error);
@@ -420,12 +409,10 @@ export class JapaneseNewsScraper {
 
       if (sourceId) {
         localStorage.removeItem(`doshi_news_cache_${sourceId}`);
-        console.log(`🗑️ Cleared cache for ${sourceId}`);
       } else {
         // Clear all news caches
         const keys = Object.keys(localStorage).filter(key => key.startsWith('doshi_news_cache_'));
         keys.forEach(key => localStorage.removeItem(key));
-        console.log(`🗑️ Cleared all news caches (${keys.length} items)`);
       }
     } catch (error) {
       console.error('Failed to clear cache:', error);
@@ -435,12 +422,10 @@ export class JapaneseNewsScraper {
   // Get articles from cache or scrape if needed
   static async getArticles(sourceId: string, maxArticles: number = 10, forceRefresh: boolean = false): Promise<NewsArticle[]> {
     try {
-      console.log(`📰 getArticles called: sourceId=${sourceId}, maxArticles=${maxArticles}, forceRefresh=${forceRefresh}`);
 
       // Check cache first (unless forced refresh)
       if (!forceRefresh) {
         const cachedArticles = await this.getCachedArticles(sourceId);
-        console.log(`📖 Found ${cachedArticles.length} cached articles`);
         if (cachedArticles.length > 0) {
           return cachedArticles.slice(0, maxArticles);
         }
@@ -457,12 +442,10 @@ export class JapaneseNewsScraper {
           throw new Error(`Unsupported news source: ${sourceId}`);
       }
 
-      console.log(`🔍 Scraping result:`, scrapingResult);
 
       if (scrapingResult.success) {
         // Get the articles from cache after scraping
         const freshArticles = await this.getCachedArticles(sourceId);
-        console.log(`✅ Returning ${freshArticles.length} fresh articles after scraping`);
         return freshArticles.slice(0, maxArticles);
       } else {
         throw new Error(`Failed to scrape ${sourceId}: ${scrapingResult.errors.map(e => e.message).join(', ')}`);

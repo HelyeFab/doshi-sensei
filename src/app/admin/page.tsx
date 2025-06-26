@@ -48,10 +48,8 @@ export default function AdminDashboard() {
         break;
       case 'logs':
         // TODO: Implement logs page
-        console.log('Admin logs page not yet implemented');
         break;
       default:
-        console.log(`Unknown action: ${action}`);
     }
   };
 

@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🔄 DeepL API translating: "${text.substring(0, 50)}..."`);
     const startTime = Date.now();
 
     // DeepL API endpoint (use the correct one based on your API key type)
@@ -67,7 +66,6 @@ export async function POST(request: NextRequest) {
 
     if (data.translations && data.translations.length > 0) {
       const translation = data.translations[0];
-      console.log(`✅ DeepL translation successful! API call took ${apiTime}ms`);
 
       return NextResponse.json({
         success: true,

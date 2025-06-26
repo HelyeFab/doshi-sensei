@@ -68,7 +68,6 @@ export default function Home() {
 
         if (user) {
           const canSync = userSubscription?.subscription?.status === 'active';
-          console.log('🏠 Homepage - setting up StatsManager:', {
             userEmail: user.email,
             canSync: canSync,
             subscriptionStatus: userSubscription?.subscription?.status

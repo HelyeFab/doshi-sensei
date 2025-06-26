@@ -12,9 +12,6 @@ export async function POST(request: NextRequest) {
     const { EdgeTTS } = await import('@lixen/edge-tts');
     const tts = new EdgeTTS();
 
-    console.log('🎤 Server-side Edge TTS: Starting synthesis...');
-    console.log('📝 Text:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
-    console.log('🗣️ Voice:', voice);
 
     // Synthesize speech with text and voice - Edge TTS API takes both parameters
     const audioBuffer = await tts.synthesize(text, voice);
@@ -23,8 +20,6 @@ export async function POST(request: NextRequest) {
       throw new Error('Edge TTS returned empty audio buffer');
     }
 
-    console.log('✅ Server-side Edge TTS: Audio generated successfully');
-    console.log('📊 Audio buffer size:', audioBuffer.byteLength, 'bytes');
 
     // Convert ArrayBuffer to Buffer for Node.js response
     const buffer = Buffer.from(audioBuffer);

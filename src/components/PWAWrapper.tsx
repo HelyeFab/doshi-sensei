@@ -37,7 +37,6 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
           // Ensure service worker is active
           registrations.forEach(registration => {
             if (registration.active) {
-              console.log('Service worker is active');
             }
           });
         });

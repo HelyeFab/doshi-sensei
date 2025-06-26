@@ -396,7 +396,6 @@ function WordCard({ word, onSelect }: WordCardProps) {
       setSelectedLists([]);
 
       // Show success message briefly
-      console.log(`Word "${word.kanji}" saved to ${selectedLists.length} list(s)`);
     } catch (err) {
       console.error('Error saving word to lists:', err);
     } finally {
@@ -733,7 +732,6 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
     const recordWordStudy = async () => {
       try {
         await StatsManager.recordWordStudied(word.id);
-        console.log(`Word study recorded: ${word.kanji}`);
       } catch (err) {
         console.error('Error recording word study:', err);
       }

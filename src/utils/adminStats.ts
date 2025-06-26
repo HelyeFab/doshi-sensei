@@ -59,7 +59,6 @@ export async function getUserStats(): Promise<UserStats> {
     } as FirebaseUser));
 
     // Debug: Log first few users to understand the data structure
-    console.log('🔍 Sample user data for debugging:', allUsers.slice(0, 2).map(user => ({
       id: user.id,
       email: user.email,
       displayName: user.displayName,
@@ -136,7 +135,6 @@ export async function getSubscriptionStats(): Promise<SubscriptionStats> {
     } as FirebaseUser));
 
     // Debug: Log user data to understand the structure
-    console.log('🔍 All users data:', allUsers.map(user => ({
       id: user.id,
       email: user.email,
       subscription: user.subscription,

@@ -21,9 +21,7 @@ export class TranslationManager {
       this.isInitialized = true;
 
       if (this.apiKey) {
-        console.log('✅ DeepL Translation initialized');
       } else {
-        console.log('⚠️ DeepL API key not found. Translation features disabled.');
       }
     } catch (error) {
       console.error('❌ DeepL Translation initialization failed:', error);
@@ -54,7 +52,6 @@ export class TranslationManager {
    */
   static async translateText(text: string): Promise<TranslationResult> {
     if (!this.isAvailable()) {
-      console.log('🔍 DeepL Translation not available - API key not configured');
       return {
         translatedText: 'Translation service not configured',
         detectedLanguage: 'ja'
@@ -71,7 +68,6 @@ export class TranslationManager {
     }
 
     try {
-      console.log(`🔄 Translating: "${text.substring(0, 50)}..."`);
       const startTime = performance.now();
 
       // Use server-side API route to avoid CORS and keep API key secure
@@ -91,7 +87,6 @@ export class TranslationManager {
       const apiTime = performance.now() - startTime;
 
       if (response.ok && data.success && data.translation) {
-        console.log(`✅ Translation successful! API call took ${apiTime.toFixed(2)}ms`);
 
         const translatedText = data.translation;
 
@@ -153,7 +148,6 @@ export class TranslationManager {
    */
   static clearCache(): void {
     this.cache.clear();
-    console.log('🗑️ Translation cache cleared');
   }
 
   /**
@@ -171,9 +165,7 @@ export class TranslationManager {
    */
   static async test(): Promise<boolean> {
     try {
-      console.log('🧪 Testing DeepL translation...');
       const result = await this.translateText('こんにちは、元気ですか？');
-      console.log('✅ DeepL test successful!', result);
       return true;
     } catch (error) {
       console.error('❌ DeepL test failed:', error);

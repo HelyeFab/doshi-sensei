@@ -13,7 +13,6 @@ const initializeWaniKaniToken = () => {
 
   if (token) {
     setWanikaniApiToken(token);
-    console.log('✅ WaniKani API token initialized');
     return true;
   } else {
     console.warn('⚠️ WaniKani API token not found');
@@ -157,11 +156,9 @@ export class VocabularyAnalyzer {
     }
 
     try {
-      console.log('🔍 Analyzing vocabulary with WaniKani API...');
 
       // Extract potential words from text
       const potentialWords = JapaneseTextProcessor.extractWords(text);
-      console.log(`Found ${potentialWords.length} potential words to analyze`);
 
       // Analyze each word with WaniKani
       const vocabularyResults: ExtractedVocabulary[] = [];
@@ -203,7 +200,6 @@ export class VocabularyAnalyzer {
         }
       }
 
-      console.log(`✅ Analyzed ${vocabularyResults.length} vocabulary items`);
       return vocabularyResults;
 
     } catch (error) {
@@ -362,7 +358,6 @@ export class VocabularyAnalyzer {
 // Export utility function to set WaniKani token dynamically
 export function setWaniKaniToken(token: string): void {
   setWanikaniApiToken(token);
-  console.log('✅ WaniKani API token updated');
 }
 
 // Export function to check if WaniKani is available

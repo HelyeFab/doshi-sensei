@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    console.log('🎯 Server-side TTS request:', { text, voice, apiKeyPresent: !!apiKey });
 
     const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`, {
       method: 'POST',
@@ -55,7 +54,6 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (data.audioContent) {
-      console.log('✅ Server-side TTS successful');
       return NextResponse.json({
         audioContent: data.audioContent,
         success: true

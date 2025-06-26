@@ -38,25 +38,19 @@ function VocabularyPopup({ word, position, onClose, onSaveToList }: VocabularyPo
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  console.log('🎉 VocabularyPopup RENDERED! Word:', word, 'Position:', position);
 
   useEffect(() => {
-    console.log('🔍 VocabularyPopup useEffect triggered for word:', word);
     const fetchWordData = async () => {
       try {
         setLoading(true);
         setError(null);
-        console.log('📡 Fetching word data for:', word);
         const results = await searchWords(word, 1);
         if (results.length > 0) {
-          console.log('✅ Word data found:', results[0]);
           setWordData(results[0]);
         } else {
-          console.log('❌ No word data found');
           setError('Word not found');
         }
       } catch (err) {
-        console.log('❌ Error fetching word data:', err);
         setError('Failed to search for word');
       } finally {
         setLoading(false);
@@ -462,9 +456,7 @@ export default function AudioPlayerPage() {
       try {
         const translationAvailable = TranslationManager.isAvailable();
         setTranslationAvailable(translationAvailable);
-        console.log('🔍 DeepL Translation available:', translationAvailable);
       } catch (error) {
-        console.log('❌ Translation availability check failed:', error);
         setTranslationAvailable(false);
       }
     };
@@ -520,14 +512,10 @@ export default function AudioPlayerPage() {
 
   // Handle vocabulary word click
   const handleWordClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log('🔍 Click detected on:', event.target);
     const target = event.target as HTMLElement;
     const word = target.textContent?.trim();
-    console.log('🔍 Extracted word:', word);
-    console.log('🔍 Target classes:', target.className);
 
     if (word && word.length >= 1) {
-      console.log('✅ Word is valid, showing popup for:', word);
       const rect = target.getBoundingClientRect();
       const newSelectedWord = {
         word,
@@ -536,11 +524,8 @@ export default function AudioPlayerPage() {
           y: rect.top + window.scrollY
         }
       };
-      console.log('🔍 Setting selectedWord to:', newSelectedWord);
       setSelectedWord(newSelectedWord);
-      console.log('🔍 selectedWord state after setting:', selectedWord);
     } else {
-      console.log('❌ Word not valid or too short');
     }
   };
 
@@ -571,10 +556,8 @@ export default function AudioPlayerPage() {
 
   // Enhanced text rendering with intelligent word highlighting using furigana boundaries
   const renderTextWithHighlighting = async (text: string): Promise<string> => {
-    console.log('🔍 Processing text for highlighting:', text);
 
     if (!text || text.trim() === '') {
-      console.log('❌ No text to process');
       return text;
     }
 
@@ -585,7 +568,6 @@ export default function AudioPlayerPage() {
     const rubyRegex = /<ruby>([^<]+)<rp>\(<\/rp><rt>([^<]+)<\/rt><rp>\)<\/rp><\/ruby>/g;
     const rubyMatches = [...text.matchAll(rubyRegex)];
 
-    console.log('📝 Found ruby words:', rubyMatches.map(match => ({
       word: match[1],
       reading: match[2]
     })));
@@ -613,10 +595,8 @@ export default function AudioPlayerPage() {
       // Replace the original ruby tag with the enhanced version
       processedText = processedText.replace(fullMatch, enhancedRuby);
 
-      console.log(`✅ Enhanced word: ${word} (${reading}) with color ${index % colorRotation.length}`);
     });
 
-    console.log('✅ Final processed text with word-based highlighting:', processedText);
     return processedText;
   };
 
@@ -791,7 +771,6 @@ export default function AudioPlayerPage() {
         const result = await TranslationManager.translateText(currentSentence);
         setTranslations(prev => new Map(prev.set(currentSentence, result.translatedText)));
       } catch (error) {
-        console.log('Translation skipped:', error instanceof Error ? error.message : 'Unknown error');
         // Set a fallback message instead of throwing
         setTranslations(prev => new Map(prev.set(currentSentence, 'Translation service not configured')));
       } finally {
@@ -877,9 +856,6 @@ export default function AudioPlayerPage() {
   const currentSentence = sentences[controls.currentSentence] || '';
   const currentProcessedSentence = processedSentences[controls.currentSentence] || currentSentence;
 
-  console.log('🔍 Debug - Current sentence:', currentSentence);
-  console.log('🔍 Debug - Processed sentence:', currentProcessedSentence);
-  console.log('🔍 Debug - Enhanced sentence state:', enhancedSentence);
 
   return (
     <div className="min-h-screen bg-background">

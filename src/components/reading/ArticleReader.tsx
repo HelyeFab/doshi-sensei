@@ -365,7 +365,6 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       setSelectedWord(null);
 
       // Show success message (you could add a toast notification here)
-      console.log(`Saved "${word.kanji}" to Reading Practice list`);
     } catch (error) {
       console.error('Failed to save word to list:', error);
     }

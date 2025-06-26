@@ -23,7 +23,6 @@ export async function GET() {
           allKanjiData.push(...kanjiData);
         }
       } catch (error) {
-        console.log(`Could not load ${folder}, skipping...`);
         // Continue loading other folders even if one fails
       }
     }

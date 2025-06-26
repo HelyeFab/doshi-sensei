@@ -15,28 +15,24 @@ const initWanikaniApi = () => {
   // Check for server-side environment variables
   if (typeof process !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
     setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from server-side environment variables');
     return;
   }
 
   // Check for client-side environment variables
   if (typeof window !== 'undefined' && (window as any).__NEXT_DATA__?.props?.pageProps?.env?.WANIKANI_API_TOKEN) {
     setWanikaniApiToken((window as any).__NEXT_DATA__.props.pageProps.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from client-side environment variables');
     return;
   }
 
   // Check for Next.js exposed environment variables
   if (typeof window !== 'undefined' && (window as any).ENV?.WANIKANI_API_TOKEN) {
     setWanikaniApiToken((window as any).ENV.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from Next.js exposed environment variables');
     return;
   }
 
   // Check for Next.js config environment variables
   if (typeof window !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
     setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
-    console.log('WaniKani API token set from Next.js config environment variables');
     return;
   }
 
@@ -171,23 +167,18 @@ function generateRomaji(kana: string): string {
 // Simple search with WaniKani as primary source (pure results as requested)
 export async function searchWords(query: string, limit: number = 20): Promise<JapaneseWord[]> {
   try {
-    console.log(`Searching for "${query}" using WaniKani (primary source)`);
 
     // Primary search with WaniKani - pure results
     const wanikaniResults = await searchWanikaniVocabulary(query, limit);
 
     if (wanikaniResults.length > 0) {
-      console.log(`Found ${wanikaniResults.length} results from WaniKani`);
       const topResult = wanikaniResults[0];
-      console.log(`Top result: ${topResult.kanji} (${topResult.kana}) - ${topResult.meaning}`);
       return wanikaniResults;
     }
 
-    console.log('No results from WaniKani, providing mock data for development');
 
     // For development, provide mock data when APIs fail
     if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      console.log('Providing mock vocabulary data for local development');
       return getMockVocabularyData(query);
     }
 
@@ -196,7 +187,6 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
       const jishoResults = await searchJisho(query, 1);
 
       if (jishoResults.data && jishoResults.data.length > 0) {
-        console.log(`Found ${jishoResults.data.length} results from Jisho fallback`);
         const convertedResults = processJishoResponse(jishoResults, limit);
         return convertedResults;
       }
@@ -204,7 +194,6 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
       console.warn('Jisho fallback failed:', jishoError);
     }
 
-    console.log('No results from any search method');
     return [];
 
   } catch (error) {
@@ -357,17 +346,14 @@ function shuffleArray<T>(array: T[]): T[] {
 // Get common words (verbs and adjectives) for practice - WaniKani primary
 export async function getCommonWordsForPractice(limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    console.log('Fetching common verbs and adjectives from WaniKani');
     const wanikaniResults = await getCommonWordsFromWanikani();
 
     if (wanikaniResults.length > 0) {
-      console.log(`Found ${wanikaniResults.length} common words from WaniKani`);
       // Shuffle to provide variety on each reload
       const shuffledResults = shuffleArray(wanikaniResults);
       return shuffledResults.slice(0, limit);
     }
 
-    console.log('No results from WaniKani');
     return [];
   } catch (error) {
     console.error('Error fetching common words for practice:', error);
@@ -378,15 +364,12 @@ export async function getCommonWordsForPractice(limit: number = 50): Promise<Jap
 // Get common verbs for practice - WaniKani primary
 export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    console.log('Fetching common verbs from WaniKani');
     const wanikaniResults = await getCommonVerbsFromWanikani();
 
     if (wanikaniResults.length > 0) {
-      console.log(`Found ${wanikaniResults.length} common verbs from WaniKani`);
       return wanikaniResults;
     }
 
-    console.log('No results from WaniKani');
     return [];
   } catch (error) {
     console.error('Error fetching common verbs:', error);
@@ -397,21 +380,17 @@ export async function getCommonVerbs(limit: number = 50): Promise<JapaneseWord[]
 // Get sample words for each JLPT level - WaniKani primary
 export async function getWordsByJLPTLevel(level: JLPTLevel, limit: number = 30): Promise<JapaneseWord[]> {
   try {
-    console.log(`Fetching ${level} words from WaniKani`);
     const wanikaniResults = await getWordsByJLPTLevelFromWanikani(level);
 
     if (wanikaniResults.length > 0) {
-      console.log(`Found ${wanikaniResults.length} ${level} words from WaniKani`);
       return wanikaniResults;
     }
 
     // Fallback to Jisho if WaniKani has no results for this level
     try {
-      console.log(`No results from WaniKani, trying Jisho fallback for ${level}`);
       const jishoResults = await searchJishoByJLPT(level, limit);
 
       if (jishoResults.length > 0) {
-        console.log(`Found ${jishoResults.length} ${level} words from Jisho fallback`);
         return jishoResults;
       }
     } catch (jishoError) {
@@ -452,7 +431,6 @@ export async function searchJisho(
       // If direct call fails and we're in a deployed environment, try Netlify proxy
       if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
         try {
-          console.log('Trying Netlify proxy fallback');
           const proxyResponse = await jishoAxios.get<JishoAPIResponse>(`?${params.toString()}`);
           return proxyResponse.data;
         } catch (proxyError) {

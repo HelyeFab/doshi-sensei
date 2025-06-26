@@ -22,16 +22,8 @@ export class TTSManager {
                    (typeof window !== 'undefined' ? localStorage.getItem('google_tts_api_key') : null);
     }
     this.isInitialized = true;
-    console.log('🔧 TTS Manager Debugging:');
-    console.log('  - process.env available:', typeof process !== 'undefined');
-    console.log('  - NEXT_PUBLIC_GOOGLE_TTS_API_KEY:', process?.env?.NEXT_PUBLIC_GOOGLE_TTS_API_KEY ? 'found' : 'not found');
-    console.log('  - localStorage key:', typeof window !== 'undefined' ? localStorage.getItem('google_tts_api_key') ? 'found' : 'not found' : 'N/A');
-    console.log('  - Final API key:', this.apiKey ? `${this.apiKey.substring(0, 10)}...` : 'null');
-    console.log('TTS Manager initialized with key:', !!this.apiKey);
     if (this.apiKey) {
-      console.log('✅ API key loaded successfully');
     } else {
-      console.log('❌ No API key found. Please set NEXT_PUBLIC_GOOGLE_TTS_API_KEY in .env.local');
     }
   }
 
@@ -63,7 +55,6 @@ export class TTSManager {
     }
 
     try {
-      console.log('🧪 Testing Google TTS API key...');
       const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${this.apiKey}`, {
         method: 'POST',
         headers: {
@@ -77,7 +68,6 @@ export class TTSManager {
       });
 
       if (response.ok) {
-        console.log('✅ API key is valid!');
         return true;
       } else {
         const errorText = await response.text();
@@ -94,7 +84,6 @@ export class TTSManager {
    * Speak Japanese text using Google Cloud TTS via server-side API
    */
   static async speak(text: string, voice: 'male' | 'female' = 'female'): Promise<void> {
-    console.log(`🎯 Attempting Google TTS for: "${text}" with voice: ${voice}`);
 
     try {
       const startTime = performance.now();
@@ -115,7 +104,6 @@ export class TTSManager {
       const apiTime = performance.now() - startTime;
 
       if (response.ok && data.success && data.audioContent) {
-        console.log(`✅ Google TTS successful! API call took ${apiTime.toFixed(2)}ms`);
 
         // Convert base64 to audio and play
         const audioData = `data:audio/mp3;base64,${data.audioContent}`;
@@ -124,11 +112,9 @@ export class TTSManager {
         // Return a promise that resolves when audio finishes playing
         return new Promise<void>((resolve, reject) => {
           audio.addEventListener('loadstart', () => {
-            console.log('🎵 Playing Google TTS audio...');
           });
 
           audio.addEventListener('ended', () => {
-            console.log('🎵 Google TTS audio finished playing');
             resolve();
           });
 
@@ -145,7 +131,6 @@ export class TTSManager {
         console.warn(`⚠️ Google TTS failed: ${errorMsg}`);
 
         if (data.fallback) {
-          console.log('🔄 Falling back to browser TTS as requested by server...');
           await this.fallbackToWebSpeech(text);
         } else {
           throw new Error(errorMsg);
@@ -153,7 +138,6 @@ export class TTSManager {
       }
     } catch (error) {
       console.error('❌ TTS API call failed:', error);
-      console.log('🔄 Falling back to browser TTS...');
       // Fallback to browser TTS
       await this.fallbackToWebSpeech(text);
     }
@@ -186,7 +170,6 @@ export class TTSManager {
 
         // Handle speech events
         utterance.onend = () => {
-          console.log('🎵 Web Speech TTS finished');
           resolve();
         };
 
@@ -196,7 +179,6 @@ export class TTSManager {
         };
 
         speechSynthesis.speak(utterance);
-        console.log('🎵 Using Web Speech TTS fallback...');
       } else {
         console.warn('Speech synthesis not supported in this browser');
         reject(new Error('Speech synthesis not supported'));

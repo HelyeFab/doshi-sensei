@@ -17,7 +17,6 @@ export default function UsersPage() {
 
   const handleUserUpdate = (updatedUser: AdminUserDetails) => {
     // Handle user updates after premium upgrade, etc.
-    console.log('User updated:', updatedUser);
   };
 
   return (

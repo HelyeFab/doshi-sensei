@@ -29,7 +29,6 @@ export class PracticeCache {
 
       // Check cache version
       if (cache.version !== this.CACHE_VERSION) {
-        console.log('Cache version mismatch, clearing cache');
         this.clear();
         return null;
       }
@@ -39,12 +38,10 @@ export class PracticeCache {
 
       // Check if expired
       if (Date.now() > entry.expires) {
-        console.log(`Cache expired for ${key}`);
         this.delete(key);
         return null;
       }
 
-      console.log(`Cache hit for ${key}, ${Array.isArray(entry.data) ? entry.data.length : 'N/A'} items`);
       return entry.data;
     } catch (error) {
       console.error('Error reading from practice cache:', error);
@@ -90,7 +87,6 @@ export class PracticeCache {
       (cache.data as any)[key] = entry;
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(cache));
 
-      console.log(`Cached ${key} with ${Array.isArray(data) ? data.length : 'N/A'} items, expires in ${Math.round(duration / 60000)} minutes`);
     } catch (error) {
       console.error('Error writing to practice cache:', error);
     }
@@ -108,7 +104,6 @@ export class PracticeCache {
       if (cache.data && cache.data[key]) {
         delete cache.data[key];
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(cache));
-        console.log(`Deleted cache entry: ${key}`);
       }
     } catch (error) {
       console.error('Error deleting from practice cache:', error);
@@ -121,7 +116,6 @@ export class PracticeCache {
   static clear(): void {
     try {
       localStorage.removeItem(this.CACHE_KEY);
-      console.log('Practice cache cleared');
     } catch (error) {
       console.error('Error clearing practice cache:', error);
     }
@@ -187,11 +181,9 @@ export class PracticeCache {
     const { getCommonWordsForPractice } = await import('./api');
 
     try {
-      console.log('🔄 Preloading practice cache in background...');
 
       // Check if we already have valid cache
       if (this.isValid('commonWords')) {
-        console.log('✅ Cache already valid, skipping preload');
         return;
       }
 
@@ -213,7 +205,6 @@ export class PracticeCache {
         this.set('verbs', verbs);
         this.set('adjectives', adjectives);
 
-        console.log(`✅ Practice cache preloaded: ${commonWords.length} words, ${verbs.length} verbs, ${adjectives.length} adjectives`);
       } else {
         console.warn('⚠️ No words loaded for cache preload');
       }
@@ -230,7 +221,6 @@ export async function getCachedCommonWordsForPractice(limit: number = 50): Promi
   // Try to get from cache first
   const cached = PracticeCache.get<JapaneseWord[]>('commonWords');
   if (cached && cached.length > 0) {
-    console.log(`📦 Using cached common words (${cached.length} available)`);
 
     // Shuffle and return requested amount
     const shuffled = [...cached].sort(() => Math.random() - 0.5);
@@ -238,7 +228,6 @@ export async function getCachedCommonWordsForPractice(limit: number = 50): Promi
   }
 
   // If no cache, load fresh data
-  console.log('📥 Loading fresh common words data...');
   const { getCommonWordsForPractice } = await import('./api');
 
   const words = await getCommonWordsForPractice(Math.max(limit, 100)); // Get more for caching
@@ -275,7 +264,6 @@ export async function getCachedFilteredWords(filter: 'all' | 'verbs' | 'adjectiv
   const cached = PracticeCache.get<JapaneseWord[]>(cacheKey);
 
   if (cached && cached.length > 0) {
-    console.log(`📦 Using cached ${filter} (${cached.length} available)`);
     const shuffled = [...cached].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, Math.min(limit, cached.length));
   }

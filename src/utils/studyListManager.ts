@@ -35,7 +35,6 @@ export class StudyListManager {
    * Initialize the new system and clear legacy data
    */
   static async initializeNewSystem(): Promise<void> {
-    console.log('🗑️ Clearing legacy list data...');
 
     // Clear all legacy localStorage data
     LEGACY_KEYS.forEach(key => {
@@ -53,7 +52,6 @@ export class StudyListManager {
       console.warn('Legacy data cleanup warning:', error);
     }
 
-    console.log('✅ Legacy data cleared, new unified system ready');
   }
 
   /**
@@ -130,7 +128,6 @@ export class StudyListManager {
       // Auto-sync for premium users
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log(`🎯 Created ${type} study list:`, newList.name);
       return newList;
     } catch (error) {
       console.error('Error creating study list:', error);
@@ -142,24 +139,20 @@ export class StudyListManager {
    * Validate if an item can be added to a specific list type
    */
   static canAddToList(itemType: StudyItemType, item: JapaneseWord | Kanji, listType: StudyListType): boolean {
-    console.log('🔍 canAddToList called:', { itemType, listType, word: itemType === 'word' ? (item as JapaneseWord).kanji : 'N/A' });
 
     if (listType === 'flashcard') {
       // Flashcard lists accept any content
-      console.log('✅ Flashcard list - allowing all content');
       return true;
     }
 
     if (listType === 'drillable') {
       // Drillable lists only accept conjugable words
       if (itemType === 'kanji') {
-        console.log('❌ Kanji cannot be conjugated');
         return false; // Kanji cannot be conjugated
       }
 
       if (itemType === 'word') {
         const word = item as JapaneseWord;
-        console.log('🔍 Checking word for drillable compatibility:', {
           kanji: word.kanji,
           kana: word.kana,
           type: word.type,
@@ -169,14 +162,12 @@ export class StudyListManager {
         // Check for explicit conjugable types
         const conjugableTypes: WordType[] = ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'];
         if (conjugableTypes.includes(word.type)) {
-          console.log('✅ Word type is explicitly conjugable:', word.type);
           return true;
         }
 
         // For words that might be classified as 'other' but are actually verbs/adjectives
         // Check if the word has detailed part of speech information
         if (word.detailedMeaning && word.detailedMeaning.length > 0) {
-          console.log('🔍 Checking detailed meaning for POS info:', word.detailedMeaning);
           const hasConjugablePOS = word.detailedMeaning.some(meaning =>
             meaning.partOfSpeech.some(pos => {
               const lowerPos = pos.toLowerCase();
@@ -187,7 +178,6 @@ export class StudyListManager {
                      lowerPos.includes('i-adjective') ||
                      lowerPos.includes('na-adjective');
               if (isConjugable) {
-                console.log('✅ Found conjugable POS in detailed meaning:', pos);
               }
               return isConjugable;
             })
@@ -199,18 +189,15 @@ export class StudyListManager {
 
         // Enhanced fallback: check verb ending patterns for any word type
         const kana = word.kana;
-        console.log('🔍 Checking verb ending patterns for:', kana);
 
         // Common verb endings that suggest conjugability
         const verbEndings = ['る', 'す', 'く', 'ぐ', 'む', 'ぬ', 'ぶ', 'つ', 'う'];
         const endsWithVerbPattern = verbEndings.some(ending => kana.endsWith(ending));
 
         if (endsWithVerbPattern) {
-          console.log(`✅ Allowing '${word.kanji}' (${word.kana}) in drillable list - detected verb pattern ending with: ${kana.slice(-1)}`);
           return true;
         }
 
-        console.log('❌ Word does not match any conjugable patterns');
         return false;
       }
     }
@@ -342,7 +329,6 @@ export class StudyListManager {
       await this.autoSyncItems(user, subscriptionStatus);
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log('🎯 Added item to lists:', { itemId, listIds: validListIds });
       return { success: true, errors };
     } catch (error) {
       console.error('Error adding item to lists:', error);
@@ -391,7 +377,6 @@ export class StudyListManager {
       await this.autoSyncItems(user, subscriptionStatus);
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log('🗑️ Removed item from list:', { itemId, listId });
     } catch (error) {
       console.error('Error removing item from list:', error);
       throw error;
@@ -434,7 +419,6 @@ export class StudyListManager {
       await this.autoSyncItems(user, subscriptionStatus);
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log('🗑️ Deleted study list:', listId);
     } catch (error) {
       console.error('Error deleting study list:', error);
       throw error;
@@ -523,7 +507,6 @@ export class StudyListManager {
         studyLists: lists,
         updatedAt: new Date()
       });
-      console.log('🔄 Study lists auto-sync completed');
     } catch (error) {
       console.error('Study lists auto-sync failed:', error);
       // Don't throw - auto-sync should be silent
@@ -544,7 +527,6 @@ export class StudyListManager {
         savedStudyItems: items,
         updatedAt: new Date()
       });
-      console.log('🔄 Saved study items auto-sync completed');
     } catch (error) {
       console.error('Saved study items auto-sync failed:', error);
       // Don't throw - auto-sync should be silent
@@ -557,7 +539,6 @@ export class StudyListManager {
   static async clearAllStudyLists(): Promise<void> {
     localStorage.removeItem(STUDY_LISTS_KEY);
     localStorage.removeItem(SAVED_STUDY_ITEMS_KEY);
-    console.log('🗑️ Cleared all study data');
   }
 
   /**

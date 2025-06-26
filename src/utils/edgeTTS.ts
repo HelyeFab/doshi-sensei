@@ -14,7 +14,6 @@ export class EdgeTTSManager {
     try {
       // Check if running in browser environment
       if (typeof window === 'undefined') {
-        console.log('❌ Edge TTS not available in server environment');
         this.isInitialized = false;
         return false;
       }
@@ -29,7 +28,6 @@ export class EdgeTTSManager {
         this.edgeTTS = new EdgeTTS();
       }
       this.isInitialized = true;
-      console.log('✅ Edge TTS initialized successfully');
       return true;
     } catch (error) {
       console.error('❌ Edge TTS initialization failed:', error);
@@ -53,7 +51,6 @@ export class EdgeTTSManager {
         voice.Locale.startsWith('ja-') || voice.Locale.includes('JP')
       );
 
-      console.log('🎌 Available Japanese voices:', japaneseVoices.length);
       return japaneseVoices;
     } catch (error) {
       console.error('❌ Failed to get Japanese voices:', error);
@@ -66,12 +63,10 @@ export class EdgeTTSManager {
    */
   static async speak(text: string, voiceName?: string): Promise<void> {
     try {
-      console.log(`🎯 Edge TTS (Server-Side) speaking: "${text}"`);
       const startTime = performance.now();
 
       // Use default high-quality Japanese voice if none specified
       const selectedVoice = voiceName || 'ja-JP-NanamiNeural'; // High-quality female Japanese voice
-      console.log(`🎵 Using voice: ${selectedVoice}`);
 
       // Call our server-side Edge TTS API
       const response = await fetch('/api/edge-tts', {
@@ -94,8 +89,6 @@ export class EdgeTTSManager {
       const audioBlob = await response.blob();
       const apiTime = performance.now() - startTime;
 
-      console.log(`✅ Server-side Edge TTS generation took ${apiTime.toFixed(2)}ms`);
-      console.log(`📊 Audio blob size: ${audioBlob.size} bytes`);
 
       // Create audio URL and play
       const audioUrl = URL.createObjectURL(audioBlob);
@@ -103,11 +96,9 @@ export class EdgeTTSManager {
 
       return new Promise<void>((resolve, reject) => {
         audio.addEventListener('loadstart', () => {
-          console.log('🎵 Playing server-side Edge TTS audio...');
         });
 
         audio.addEventListener('ended', () => {
-          console.log('🎵 Server-side Edge TTS audio finished playing');
           URL.revokeObjectURL(audioUrl); // Clean up
           resolve();
         });
@@ -134,7 +125,6 @@ export class EdgeTTSManager {
     try {
       // For server-side Edge TTS, we just need to check if our API endpoint is available
       // This is much simpler and more reliable than browser-based checks
-      console.log('🔍 Checking server-side Edge TTS availability...');
 
       // Quick test call to our API
       const response = await fetch('/api/edge-tts', {
@@ -149,10 +139,8 @@ export class EdgeTTSManager {
       });
 
       const available = response.ok;
-      console.log(`🔍 Server-side Edge TTS available: ${available}`);
       return available;
     } catch (error) {
-      console.log('❌ Server-side Edge TTS availability check failed:', error);
       return false;
     }
   }
@@ -163,7 +151,6 @@ export class EdgeTTSManager {
   static stop(): void {
     // Edge TTS doesn't have a direct stop method,
     // but stopping audio elements should work
-    console.log('🛑 Edge TTS stop requested (stopping audio elements)');
   }
 
   /**
@@ -171,9 +158,7 @@ export class EdgeTTSManager {
    */
   static async test(): Promise<boolean> {
     try {
-      console.log('🧪 Testing Edge TTS...');
       await this.speak('こんにちは');
-      console.log('✅ Edge TTS test successful!');
       return true;
     } catch (error) {
       console.error('❌ Edge TTS test failed:', error);

@@ -79,7 +79,6 @@ export class KanjiListManager {
       // Auto-sync for premium users
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log('🎯 Created kanji list:', newList.name);
       return newList;
     } catch (error) {
       console.error('Error creating kanji list:', error);
@@ -169,7 +168,6 @@ export class KanjiListManager {
       await this.autoSyncKanji(user, subscriptionStatus);
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log('🎯 Saved kanji to lists:', { kanji: kanjiId, listIds });
     } catch (error) {
       console.error('Error saving kanji to lists:', error);
       throw error;
@@ -220,7 +218,6 @@ export class KanjiListManager {
       await this.autoSyncKanji(user, subscriptionStatus);
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log('🗑️ Removed kanji from list:', { kanjiId, listId });
     } catch (error) {
       console.error('Error removing kanji from list:', error);
       throw error;
@@ -263,7 +260,6 @@ export class KanjiListManager {
       await this.autoSyncKanji(user, subscriptionStatus);
       await this.autoSyncLists(user, subscriptionStatus);
 
-      console.log('🗑️ Deleted kanji list:', listId);
     } catch (error) {
       console.error('Error deleting kanji list:', error);
       throw error;
@@ -357,7 +353,6 @@ export class KanjiListManager {
         const shouldUseCloud = this.shouldUseCloudListData(localLists, download.data);
 
         if (shouldUseCloud) {
-          console.log('Using cloud kanji lists data (newer)');
 
           // Convert Firestore timestamps back to Date objects
           const cloudLists = download.data.kanjiLists.map(list => ({
@@ -373,7 +368,6 @@ export class KanjiListManager {
             await this.dbManager.put('kanjiLists', list);
           }
         } else {
-          console.log('Using local kanji lists data (newer or equal)');
           // Upload local data to cloud since it's newer
           return await this.syncListsToCloud(user, subscriptionStatus);
         }
@@ -423,7 +417,6 @@ export class KanjiListManager {
 
     try {
       await this.syncListsToCloud(user, subscriptionStatus);
-      console.log('🔄 Kanji lists auto-sync completed');
     } catch (error) {
       console.error('Kanji lists auto-sync failed:', error);
       // Don't throw - auto-sync should be silent
@@ -440,7 +433,6 @@ export class KanjiListManager {
 
     try {
       await this.syncKanjiToCloud(user, subscriptionStatus);
-      console.log('🔄 Saved kanji auto-sync completed');
     } catch (error) {
       console.error('Saved kanji auto-sync failed:', error);
       // Don't throw - auto-sync should be silent

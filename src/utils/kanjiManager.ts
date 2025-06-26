@@ -319,7 +319,6 @@ export class KanjiManager {
         const shouldUseCloud = this.shouldUseCloudData(localKanji, download.data);
 
         if (shouldUseCloud) {
-          console.log('Using cloud kanji data (newer)');
 
           // Convert Firestore timestamps back to Date objects
           const cloudKanji = download.data.savedKanji.map(saved => ({
@@ -334,7 +333,6 @@ export class KanjiManager {
             await this.dbManager.put('savedKanji', saved);
           }
         } else {
-          console.log('Using local kanji data (newer or equal)');
           // Upload local data to cloud since it's newer
           return await this.syncToCloud(user, subscriptionStatus);
         }
@@ -357,18 +355,15 @@ export class KanjiManager {
       return { success: false, error: 'Sync not available - requires active subscription' };
     }
 
-    console.log('🔄 Starting kanji full sync...');
 
     // First, try to download from cloud
     const downloadResult = await this.syncFromCloud(user, subscriptionStatus);
 
     if (!downloadResult.success) {
       // If download fails, try to upload local data
-      console.log('📤 Kanji download failed, trying upload...');
       return await this.syncToCloud(user, subscriptionStatus);
     }
 
-    console.log('✅ Kanji full sync completed');
     return downloadResult;
   }
 
@@ -382,7 +377,6 @@ export class KanjiManager {
 
     try {
       await this.syncToCloud(user, subscriptionStatus);
-      console.log('🔄 Kanji auto-sync completed');
     } catch (error) {
       console.error('Kanji auto-sync failed:', error);
       // Don't throw - auto-sync should be silent

@@ -244,7 +244,6 @@ async function fetchAllWanikaniVocabulary(): Promise<WanikaniSubject[]> {
       nextUrl = response.data.pages.next_url;
 
       // Log progress
-      console.log(`Fetched ${allVocabulary.length} vocabulary items so far...`);
 
       // Remove the base URL from next_url if present
       if (nextUrl && nextUrl.startsWith('https://api.wanikani.com/v2')) {
@@ -256,7 +255,6 @@ async function fetchAllWanikaniVocabulary(): Promise<WanikaniSubject[]> {
     }
   }
 
-  console.log(`Total vocabulary items fetched: ${allVocabulary.length}`);
   return allVocabulary;
 }
 
@@ -274,17 +272,14 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       return [];
     }
 
-    console.log(`Searching WaniKani vocabulary for "${query}"...`);
 
     // Check if we have valid cached data
     const now = Date.now();
     if (vocabularyCache && (now - cacheTimestamp) < CACHE_DURATION) {
-      console.log('🚀 Using cached WaniKani data (lightning fast!)');
       return performSearch(vocabularyCache, query, limit);
     }
 
     // If no cache or expired, fetch from API
-    console.log('📡 Fetching fresh WaniKani data (this might take a moment...)');
     const allWords: JapaneseWord[] = [];
 
     // Optimized parallel requests instead of sequential
@@ -321,7 +316,6 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       }
     }
 
-    console.log(`📚 Fetched ${allWords.length} words from WaniKani (cached for 30 minutes)`);
 
     // Cache the results
     vocabularyCache = allWords;
@@ -387,7 +381,6 @@ function performSearch(words: JapaneseWord[], query: string, limit: number): Jap
     return 0;
   });
 
-  console.log(`Found ${sortedMatches.length} total matches for "${query}" in WaniKani`);
   return sortedMatches.slice(0, limit);
 }
 
@@ -395,7 +388,6 @@ function performSearch(words: JapaneseWord[], query: string, limit: number): Jap
 export function clearWanikaniCache(): void {
   vocabularyCache = null;
   cacheTimestamp = 0;
-  console.log('🗑️ WaniKani cache cleared');
 }
 
 // Fallback conjugable words when WaniKani API is not available
@@ -633,13 +625,10 @@ export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
         subject.data.parts_of_speech.forEach(pos => allPartsOfSpeech.add(pos));
       }
     });
-    console.log('All parts of speech from WaniKani:', Array.from(allPartsOfSpeech).sort());
 
     // Debug: Log some examples with their parts of speech
-    console.log('Sample words with parts of speech:');
     allWords.slice(0, 10).forEach(word => {
       const originalSubject = response.data.data.find(s => s.id === parseInt(word.id.replace('wanikani-', '')));
-      console.log(`${word.kanji} (${word.kana}) - ${word.type} - Parts: [${originalSubject?.data.parts_of_speech?.join(', ') || 'none'}]`);
     });
 
     // Filter for verbs and adjectives only
@@ -651,7 +640,6 @@ export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
       word.type === 'na-adjective'
     );
 
-    console.log(`Found ${practiceWords.length} verbs and adjectives from WaniKani`);
 
     // Log breakdown by type for debugging
     const breakdown = {
@@ -661,7 +649,6 @@ export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
       iAdjective: practiceWords.filter(w => w.type === 'i-adjective').length,
       naAdjective: practiceWords.filter(w => w.type === 'na-adjective').length
     };
-    console.log('WaniKani word type breakdown:', breakdown);
 
     return practiceWords.slice(0, 50); // Return top 50 words (mixed verbs and adjectives)
   } catch (error) {

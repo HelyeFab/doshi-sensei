@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
     const maxArticles = parseInt(searchParams.get('limit') || '10');
     const forceRefresh = searchParams.get('refresh') === 'true';
 
-    console.log(`📰 API: Fetching NHK Easy articles (limit: ${maxArticles}, refresh: ${forceRefresh})`);
 
     // Initialize scraper
     await JapaneseNewsScraper.initialize();
@@ -34,7 +33,6 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    console.log(`✅ API: Successfully returned ${articles.length} NHK Easy articles`);
 
     return NextResponse.json(response, {
       status: 200,
@@ -68,7 +66,6 @@ export async function POST(request: NextRequest) {
   try {
     const { maxArticles = 10 } = await request.json();
 
-    console.log(`📰 API: Manual scraping request for NHK Easy (limit: ${maxArticles})`);
 
     // Initialize scraper
     await JapaneseNewsScraper.initialize();
@@ -89,7 +86,6 @@ export async function POST(request: NextRequest) {
         }
       };
 
-      console.log(`✅ API: Successfully scraped ${scrapingResult.articlesScraped} new articles`);
 
       return NextResponse.json(response, {
         status: 200,

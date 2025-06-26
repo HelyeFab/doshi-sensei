@@ -165,7 +165,6 @@ export default function DrillPage() {
         allWords = [...allWords, ...kanjiAsWords];
       }
 
-      console.log('🎴 Loaded items from unified system for flashcards:', allWords);
 
       if (allWords.length === 0) {
         setFlashcardQuestions([]);
@@ -319,13 +318,10 @@ export default function DrillPage() {
   };
 
   const generateDistractors = (word: JapaneseWord, targetForm: keyof ConjugationForms, correctAnswer: string): string[] => {
-    console.log(`🔧 DEBUG: Word: ${word.kanji} (${word.kana}), Target: ${targetForm}, Correct: ${correctAnswer}`);
 
     const conjugations = ConjugationEngine.conjugate(word);
-    console.log(`🔧 DEBUG: All conjugations:`, conjugations);
 
     const allForms = Object.values(conjugations).filter(form => form && form !== correctAnswer);
-    console.log(`🔧 DEBUG: Available forms (excluding correct):`, allForms);
 
     const distractors: string[] = [];
 
@@ -333,10 +329,8 @@ export default function DrillPage() {
     for (let i = 0; i < Math.min(4, allForms.length); i++) {
       if (!distractors.includes(allForms[i])) {
         distractors.push(allForms[i]);
-        console.log(`🔧 DEBUG: Added conjugation distractor: ${allForms[i]}`);
       }
     }
-    console.log(`🔧 DEBUG: Distractors from conjugations: ${distractors.length}`, distractors);
 
     // Generate artificial distractors if needed
     while (distractors.length < 4) {
@@ -352,7 +346,6 @@ export default function DrillPage() {
             !allForms.includes(distractor) &&
             distractor !== word.kanji) {
           distractors.push(distractor);
-          console.log(`🔧 DEBUG: Added artificial distractor: ${distractor}`);
         }
       }
 
@@ -363,7 +356,6 @@ export default function DrillPage() {
           if (distractors.length >= 4) break;
           if (!distractors.includes(emerg)) {
             distractors.push(emerg);
-            console.log(`🔧 DEBUG: Added emergency distractor: ${emerg}`);
           }
         }
       }
@@ -371,25 +363,20 @@ export default function DrillPage() {
       break; // Prevent infinite loop
     }
 
-    console.log(`🔧 DEBUG: Final distractors (${distractors.length}):`, distractors);
     return distractors.slice(0, 4); // Return exactly 4 distractors
   };
 
   const loadWordLists = useCallback(async () => {
     try {
-      console.log('🔍 Loading word lists from StudyListManager...');
 
       // Load unified study lists and convert them to legacy format for compatibility
       const studyLists = await StudyListManager.getAllStudyLists();
-      console.log('🔍 Raw study lists from StudyListManager:', studyLists);
 
       // Also try loading from legacy WordListManager as fallback
       let legacyLists: WordList[] = [];
       try {
         legacyLists = await WordListManager.getAllWordLists();
-        console.log('🔍 Legacy word lists from WordListManager:', legacyLists);
       } catch (legacyErr) {
-        console.log('🔍 No legacy word lists found (this is normal)');
       }
 
       const legacyWordLists: WordList[] = studyLists.map(studyList => ({
@@ -405,18 +392,13 @@ export default function DrillPage() {
 
       // Combine unified lists with any legacy lists
       const combinedLists = [...legacyWordLists, ...legacyLists];
-      console.log('📚 Combined word lists:', combinedLists);
-      console.log('📚 Study list types:', studyLists.map(list => ({ name: list.name, type: list.type, itemCount: list.itemIds.length })));
-      console.log('📚 Total lists for flashcards:', combinedLists.length);
 
       setWordLists(combinedLists);
     } catch (err) {
       console.error('Error loading word lists:', err);
       // Try fallback to legacy system only
       try {
-        console.log('🔍 Trying fallback to legacy WordListManager only...');
         const legacyLists = await WordListManager.getAllWordLists();
-        console.log('📚 Fallback legacy lists:', legacyLists);
         setWordLists(legacyLists);
       } catch (fallbackErr) {
         console.error('Error loading legacy word lists:', fallbackErr);
@@ -429,7 +411,6 @@ export default function DrillPage() {
     try {
       // For now, load legacy kanji lists until we fully migrate
       const lists = await KanjiListManager.getAllKanjiLists();
-      console.log('漢字 Loaded kanji lists:', lists);
       setKanjiLists(lists);
     } catch (err) {
       console.error('Error loading kanji lists:', err);
@@ -484,7 +465,6 @@ export default function DrillPage() {
           words = [...words, ...listWords];
         }
 
-        console.log('📚 Loaded words from unified system:', words);
 
         if (words.length === 0) {
           setQuestions([]);
@@ -493,7 +473,6 @@ export default function DrillPage() {
 
         // Debug: log word types before filtering
         words.forEach((word, index) => {
-          console.log(`📚 Word ${index + 1}: "${word.kanji}" (${word.kana}) - Type: "${word.type}"`);
         });
 
         // Keep track of all words before filtering
@@ -505,20 +484,16 @@ export default function DrillPage() {
           // Check for explicit conjugable types
           const conjugableTypes: WordType[] = ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'];
           if (conjugableTypes.includes(word.type)) {
-            console.log(`✅ Including conjugable word: ${word.kanji} (${word.kana}) - ${word.type}`);
             return true;
           }
 
           // For words that might be misclassified, try to fix them via API lookup
-          console.log(`❓ Checking misclassified word: ${word.kanji} (${word.kana}) - currently "${word.type}"`);
           return false; // We'll handle API lookup separately
         });
 
-        console.log(`📚 After strict filtering: ${words.length}/${originalCount} conjugable words found`);
 
         // If we have few or no conjugable words, try to fix misclassified ones
         if (words.length < 5) {
-          console.log('🔧 Attempting to fix word types for remaining words...');
           const remainingWords = allWords.filter((w: JapaneseWord) => !words.includes(w));
 
           for (const word of remainingWords.slice(0, 10)) { // Limit API calls
@@ -526,7 +501,6 @@ export default function DrillPage() {
               const fixedWord = await fixWordType(word);
               const conjugableTypes: WordType[] = ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'];
               if (conjugableTypes.includes(fixedWord.type)) {
-                console.log(`🔧 Fixed word type: ${fixedWord.kanji} (${fixedWord.kana}) - ${word.type} → ${fixedWord.type}`);
                 words.push(fixedWord);
               }
             } catch (error) {
@@ -535,7 +509,6 @@ export default function DrillPage() {
           }
         }
 
-        console.log('📚 Conjugable words after filtering:', words);
 
         if (words.length === 0) {
           setQuestions([]);
@@ -576,12 +549,10 @@ export default function DrillPage() {
       return word; // Already correctly classified
     }
 
-    console.log(`🔧 API Lookup: Checking word type for ${word.kanji} (${word.kana}) - currently classified as "${word.type}"`);
 
     // First try pattern-based classification (faster and doesn't rely on API)
     const patternFixedWord = fixWordTypeByPattern(word);
     if (patternFixedWord.type !== word.type) {
-      console.log(`🔧 Fixed word type by pattern: ${word.kanji} (${word.kana}) from "${word.type}" to "${patternFixedWord.type}"`);
       return patternFixedWord;
     }
 
@@ -592,11 +563,9 @@ export default function DrillPage() {
 
       if (apiResults.length > 0) {
         const apiWord = apiResults[0];
-        console.log(`🔧 API Result: ${apiWord.kanji} (${apiWord.kana}) - Type: "${apiWord.type}"`);
 
         // If API gives us a conjugable type, use it
         if (['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'].includes(apiWord.type)) {
-          console.log(`🔧 Fixed word type: ${word.kanji} (${word.kana}) from "${word.type}" to "${apiWord.type}" (API lookup)`);
           return { ...word, type: apiWord.type };
         }
       }
@@ -606,19 +575,15 @@ export default function DrillPage() {
         const kanaResults = await searchWords(word.kana, 1);
         if (kanaResults.length > 0) {
           const kanaWord = kanaResults[0];
-          console.log(`🔧 API Result (kana): ${kanaWord.kanji} (${kanaWord.kana}) - Type: "${kanaWord.type}"`);
 
           if (['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'].includes(kanaWord.type)) {
-            console.log(`🔧 Fixed word type: ${word.kanji} (${word.kana}) from "${word.type}" to "${kanaWord.type}" (API kana lookup)`);
             return { ...word, type: kanaWord.type };
           }
         }
       }
 
-      console.log(`🔧 API lookup found no conjugable classification for ${word.kanji} (${word.kana})`);
     } catch (error) {
       console.error(`🔧 API lookup failed for ${word.kanji} (${word.kana}):`, error);
-      console.log(`🔧 API failed, trying pattern matching as fallback...`);
     }
 
     return word; // No change needed or API failed
@@ -697,19 +662,15 @@ export default function DrillPage() {
       const conjugations = ConjugationEngine.conjugate(word);
       const correctAnswer = conjugations[targetForm];
 
-      console.log(`🔧 Question generation - Word: ${word.kanji} (type: ${originalWord.type} → ${word.type}), Target: ${targetForm}, Correct: "${correctAnswer}"`);
 
       // Skip words that have empty/invalid conjugations
       if (!correctAnswer || correctAnswer.trim() === '') {
-        console.log(`🔧 Skipping word ${word.kanji} - no valid conjugation for ${targetForm}`);
 
         // Try present form as fallback
         if (conjugations.present && conjugations.present.trim() !== '') {
           questions.push(generateDrillQuestion(word, 'present', conjugations.present));
-          console.log(`🔧 Using present form fallback: ${conjugations.present}`);
         } else {
           // Skip this word entirely if no valid conjugations exist
-          console.log(`🔧 Skipping word ${word.kanji} entirely - no valid conjugations`);
           continue;
         }
       } else {
@@ -725,7 +686,6 @@ export default function DrillPage() {
       // Only initialize if we haven't already done so
       const hasInitialized = localStorage.getItem('doshi_sensei_system_initialized');
       if (!hasInitialized) {
-        console.log('🔄 First-time initialization of unified study system');
         await StudyListManager.initializeNewSystem();
         localStorage.setItem('doshi_sensei_system_initialized', 'true');
       }
@@ -778,20 +738,14 @@ export default function DrillPage() {
   // Ensure lists are loaded when switching to flashcard tab
   useEffect(() => {
     if (activeTab === 'flashcards') {
-      console.log('🎴 Flashcard tab selected, ensuring lists are loaded...');
-      console.log('🎴 Current allLists length:', allLists.length);
-      console.log('🎴 Current wordLists length:', wordLists.length);
-      console.log('🎴 Current kanjiLists length:', kanjiLists.length);
 
       // Force load all lists immediately when switching to flashcards
       const forceLoadLists = async () => {
-        console.log('🎴 Force loading lists for flashcards...');
 
         // Load the lists directly and update state immediately
         try {
           const [loadedWordLists, loadedKanjiLists] = await Promise.all([
             (async () => {
-              console.log('🎴 Loading word lists directly...');
               const studyLists = await StudyListManager.getAllStudyLists();
               const legacyWordLists = studyLists.map(studyList => ({
                 id: studyList.id,
@@ -803,14 +757,11 @@ export default function DrillPage() {
                 color: studyList.color,
                 isConjugable: studyList.type === 'drillable'
               }));
-              console.log('🎴 Loaded word lists directly:', legacyWordLists.length);
               setWordLists(legacyWordLists);
               return legacyWordLists;
             })(),
             (async () => {
-              console.log('🎴 Loading kanji lists directly...');
               const lists = await KanjiListManager.getAllKanjiLists();
-              console.log('🎴 Loaded kanji lists directly:', lists.length);
               setKanjiLists(lists);
               return lists;
             })()
@@ -818,7 +769,6 @@ export default function DrillPage() {
 
           // Immediately update allLists with the combined results
           const combinedLists = [...loadedWordLists, ...loadedKanjiLists];
-          console.log('🎴 Setting allLists directly to:', combinedLists.length, 'items');
           setAllLists(combinedLists);
 
           // Also update conjugableLists
@@ -897,14 +847,11 @@ export default function DrillPage() {
   };
 
   const handleListToggle = (listId: string) => {
-    console.log('🔧 handleListToggle called with listId:', listId);
-    console.log('🔧 Current selectedLists:', selectedLists);
 
     setSelectedLists(prev => {
       const newSelection = prev.includes(listId)
         ? prev.filter(id => id !== listId)
         : [...prev, listId];
-      console.log('🔧 New selectedLists:', newSelection);
       return newSelection;
     });
   };

@@ -85,7 +85,6 @@ export function useCloudSync(): CloudSyncHook {
   // Auto-sync on login for paid users
   useEffect(() => {
     if (user && canSync) {
-      console.log('🔄 User logged in with sync capability, triggering auto-sync...');
       triggerSync().catch(error => {
         console.error('Auto-sync on login failed:', error);
       });

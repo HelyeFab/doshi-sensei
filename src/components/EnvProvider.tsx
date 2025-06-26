@@ -14,7 +14,6 @@ export function EnvProvider({ children }: EnvProviderProps) {
         WANIKANI_API_TOKEN: process.env.WANIKANI_API_TOKEN,
       };
 
-      console.log('Environment variables exposed to client-side code');
     }
   }, []);
 

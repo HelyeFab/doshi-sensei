@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  console.log('Webhook event received:', event.type);
 
   try {
     switch (event.type) {
@@ -45,7 +44,6 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
@@ -59,16 +57,13 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  console.log(`Checkout completed - Mode: ${session.mode}, Type: ${session.metadata?.type}`);
 
   // Handle donations (one-time payments)
   if (session.mode === 'payment' && session.metadata?.type === 'donation') {
-    console.log(`Donation received: $${(session.amount_total || 0) / 100} from ${session.customer_details?.email}`);
 
     // Log the donation
     try {
       // You could store donation records in Firestore here if needed
-      console.log('Donation processed successfully');
     } catch (error) {
       console.error('Error logging donation:', error);
     }
@@ -79,11 +74,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const firebaseUID = session.metadata?.firebaseUID;
 
   if (!firebaseUID) {
-    console.log('No Firebase UID found in checkout session metadata (possibly a guest donation)');
     return;
   }
 
-  console.log(`Subscription checkout completed for user: ${firebaseUID}`);
 
   // The subscription will be handled by the subscription.created event
   // This is mainly for logging and any additional setup needed
@@ -97,7 +90,6 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     return;
   }
 
-  console.log(`Updating subscription for user: ${firebaseUID}`);
 
   // Determine plan from price ID
   const priceId = subscription.items.data[0]?.price.id;
@@ -141,7 +133,6 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
   await setDoc(userDocRef, { subscription: updatedSubscription }, { merge: true });
 
-  console.log(`Updated subscription for user ${firebaseUID} - Plan: ${plan}, Status: ${subscription.status}`);
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
@@ -152,7 +143,6 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     return;
   }
 
-  console.log(`Subscription deleted for user: ${firebaseUID}`);
 
   // Get current user subscription data
   const userDocRef = doc(db, 'users', firebaseUID);
@@ -182,19 +172,16 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
   await setDoc(userDocRef, { subscription: updatedSubscription }, { merge: true });
 
-  console.log(`Reverted user ${firebaseUID} to free plan`);
 }
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   if ((invoice as any).subscription) {
-    console.log(`Payment succeeded for subscription: ${(invoice as any).subscription}`);
     // Subscription status will be updated via subscription.updated event
   }
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   if ((invoice as any).subscription) {
-    console.log(`Payment failed for subscription: ${(invoice as any).subscription}`);
     // Handle payment failure - could send notification to user
   }
 }

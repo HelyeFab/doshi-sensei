@@ -25,11 +25,9 @@ export class EnhancedStorageManager {
       this.useIndexedDB = await isIndexedDBAvailable();
       if (this.useIndexedDB) {
         await initializeDB();
-        console.log('IndexedDB initialized successfully');
         // Migrate data from localStorage to IndexedDB if needed
         await this.migrateFromLocalStorage();
       } else {
-        console.log('IndexedDB not available, falling back to localStorage');
       }
     } catch (error) {
       console.error('Storage initialization failed:', error);
@@ -76,7 +74,6 @@ export class EnhancedStorageManager {
         const settings = JSON.parse(savedSettings) as AppSettings;
         await SettingsManager.saveSettings(settings);
         localStorage.removeItem(SETTINGS_KEY);
-        console.log('Settings migrated from localStorage to IndexedDB');
       }
 
       // Migrate recent words
@@ -87,7 +84,6 @@ export class EnhancedStorageManager {
           await RecentlyViewedManager.addRecentlyViewed(wordId, 'migrated');
         }
         localStorage.removeItem(RECENT_WORDS_KEY);
-        console.log('Recent words migrated from localStorage to IndexedDB');
       }
     } catch (error) {
       console.error('Error migrating data from localStorage:', error);

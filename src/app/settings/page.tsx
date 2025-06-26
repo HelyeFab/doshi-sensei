@@ -255,15 +255,12 @@ export default function SettingsPage() {
   const handleResetAllData = async () => {
     setIsResetting(true);
     try {
-      console.log('Starting complete data reset...');
 
       // Clear all data from EnhancedStorageManager (settings, progress, recently viewed, etc.)
       await EnhancedStorageManager.clearAllData();
-      console.log('Cleared all storage manager data');
 
       // Clear word lists and saved words
       await WordListManager.clearAllWordLists();
-      console.log('Cleared all word lists and saved words');
 
       // Clear any remaining localStorage items
       const keysToCheck = [
@@ -277,15 +274,12 @@ export default function SettingsPage() {
       keysToCheck.forEach(key => {
         if (localStorage.getItem(key)) {
           localStorage.removeItem(key);
-          console.log(`Cleared localStorage key: ${key}`);
         }
       });
 
       // Clear any sessionStorage items
       sessionStorage.clear();
-      console.log('Cleared sessionStorage');
 
-      console.log('Complete data reset successful');
 
       // Reset settings to defaults (this will trigger a reload)
       resetSettings();

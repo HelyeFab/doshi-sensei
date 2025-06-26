@@ -28,7 +28,6 @@ export default function MobileHome() {
   useEffect(() => {
     if (user) {
       const canSync = userSubscription?.subscription?.status === 'active';
-      console.log('📱 MobileHome - setting up StatsManager:', {
         userEmail: user.email,
         canSync: canSync,
         subscriptionStatus: userSubscription?.subscription?.status

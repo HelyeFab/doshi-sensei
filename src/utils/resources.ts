@@ -123,7 +123,6 @@ export async function createResourcePost(data: ResourceFormData, authorId: strin
     }
 
     const docRef = await addDoc(collection(db, RESOURCES_COLLECTION), resourcePost);
-    console.log('Resource post created:', docRef.id);
     return docRef.id;
   } catch (error) {
     console.error('Error creating resource post:', error);
@@ -199,7 +198,6 @@ export async function updateResourcePost(id: string, data: ResourceFormData): Pr
     }
 
     await updateDoc(docRef, updates);
-    console.log('Resource post updated:', id);
   } catch (error) {
     console.error('Error updating resource post:', error);
     throw error;
@@ -212,7 +210,6 @@ export async function updateResourcePost(id: string, data: ResourceFormData): Pr
 export async function deleteResourcePost(id: string): Promise<void> {
   try {
     await deleteDoc(doc(db, RESOURCES_COLLECTION, id));
-    console.log('Resource post deleted:', id);
   } catch (error) {
     console.error('Error deleting resource post:', error);
     throw error;

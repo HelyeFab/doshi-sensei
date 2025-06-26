@@ -470,7 +470,6 @@ export class WordListManager {
         );
 
         if (shouldUseCloud) {
-          console.log('Using cloud data (newer)');
 
           // Convert Firestore timestamps back to Date objects
           const cloudLists = listsDownload.data.lists.map(list => ({
@@ -487,7 +486,6 @@ export class WordListManager {
           await this.saveWordLists(cloudLists);
           await this.saveSavedWords(cloudWords);
         } else {
-          console.log('Using local data (newer or equal)');
           // Upload local data to cloud since it's newer
           return await this.syncToCloud(user, subscriptionStatus);
         }
@@ -510,18 +508,15 @@ export class WordListManager {
       return { success: false, error: 'Sync not available - requires active subscription' };
     }
 
-    console.log('🔄 Starting full sync...');
 
     // First, try to download from cloud
     const downloadResult = await this.syncFromCloud(user, subscriptionStatus, subscriptionPlan);
 
     if (!downloadResult.success) {
       // If download fails, try to upload local data
-      console.log('📤 Download failed, trying upload...');
       return await this.syncToCloud(user, subscriptionStatus, subscriptionPlan);
     }
 
-    console.log('✅ Full sync completed');
     return downloadResult;
   }
 
@@ -535,7 +530,6 @@ export class WordListManager {
 
     try {
       await this.syncToCloud(user, subscriptionStatus);
-      console.log('🔄 Auto-sync completed');
     } catch (error) {
       console.error('Auto-sync failed:', error);
       // Don't throw - auto-sync should be silent

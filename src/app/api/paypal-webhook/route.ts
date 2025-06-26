@@ -80,7 +80,6 @@ export async function POST(request: NextRequest) {
     }
 
     const event = JSON.parse(body);
-    console.log('PayPal webhook event received:', event.event_type);
 
     switch (event.event_type) {
       case 'CHECKOUT.ORDER.APPROVED':
@@ -97,7 +96,6 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        console.log(`Unhandled PayPal event type: ${event.event_type}`);
     }
 
     return NextResponse.json({ received: true });
@@ -112,7 +110,6 @@ export async function POST(request: NextRequest) {
 
 async function handleOrderApproved(event: any) {
   const order = event.resource;
-  console.log(`PayPal order approved: ${order.id}`);
 
   // Order is approved but not yet captured
   // The actual payment capture will trigger PAYMENT.CAPTURE.COMPLETED
@@ -125,13 +122,10 @@ async function handlePaymentCompleted(event: any) {
   const payerEmail = capture.payer?.email_address;
   const customId = capture.custom_id;
 
-  console.log(`PayPal donation completed: ${currency} ${amount} from ${payerEmail}`);
-  console.log(`Custom ID: ${customId}`);
 
   // Log the successful donation
   try {
     // You could store donation records in Firestore here if needed
-    console.log('PayPal donation processed successfully');
   } catch (error) {
     console.error('Error logging PayPal donation:', error);
   }
@@ -141,12 +135,9 @@ async function handlePaymentFailed(event: any) {
   const capture = event.resource;
   const customId = capture.custom_id;
 
-  console.log(`PayPal payment failed/refunded: ${event.event_type}`);
-  console.log(`Custom ID: ${customId}`);
 
   // Handle payment failure or refund
   try {
-    console.log('PayPal payment failure processed');
   } catch (error) {
     console.error('Error processing PayPal payment failure:', error);
   }

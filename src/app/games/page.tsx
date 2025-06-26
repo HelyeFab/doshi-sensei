@@ -184,7 +184,6 @@ export default function GamesPage() {
       }
       
       setStudyLists(listsWithWords);
-      console.log(`📚 Loaded ${listsWithWords.length} study lists with words`);
     } catch (error) {
       console.error('Failed to load study lists:', error);
     } finally {
@@ -209,7 +208,6 @@ export default function GamesPage() {
         );
       
       setSavedWords(uniqueWords);
-      console.log(`📚 Loaded ${uniqueWords.length} words from ${selectedListIds.length} selected lists`);
     } catch (error) {
       console.error('Failed to load words from selected lists:', error);
       setSavedWords([]);

@@ -35,7 +35,6 @@ export async function trackEvent(
     const analyticsRef = collection(db, 'analytics');
     await addDoc(analyticsRef, eventData);
 
-    console.log('Analytics event tracked:', { eventType, userId, data });
   } catch (error) {
     // Check if it's a permission error (user already signed out)
     if (error instanceof Error && error.message.includes('permissions')) {

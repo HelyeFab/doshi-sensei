@@ -57,7 +57,6 @@ const createOrUpdateUserDocument = async (user: User) => {
         lastLoginAt: new Date(),
         isActive: true,
       });
-      console.log('Created new user document for:', user.email);
     } else {
       // Update existing user document with latest info
       await updateDoc(userRef, {
@@ -66,7 +65,6 @@ const createOrUpdateUserDocument = async (user: User) => {
         lastLoginAt: new Date(),
         isActive: true,
       });
-      console.log('Updated user document for:', user.email);
     }
   } catch (error) {
     console.error('Error creating/updating user document:', error);

@@ -25,9 +25,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
   // Track initial screen view
   useEffect(() => {
-    console.log('🎭 OnboardingModal mounted, state:', state);
     if (state.isActive) {
-      console.log('📺 Onboarding is active, showing screen:', state.currentScreen);
       // Track welcome screen view on mount
     }
   }, [state.isActive, state.currentScreen]);

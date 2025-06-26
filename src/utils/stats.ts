@@ -38,7 +38,6 @@ export class StatsManager {
    * Initialize with user context for cloud sync
    */
   static setUser(user: User | null, canSync: boolean = false): void {
-    console.log('🔧 StatsManager.setUser called:', {
       userEmail: user?.email,
       userUID: user?.uid,
       canSync: canSync,
@@ -52,7 +51,6 @@ export class StatsManager {
    * Get current user statistics with cloud sync
    */
   static async getUserStats(): Promise<UserStats> {
-    console.log('🔍 getUserStats called:', {
       hasUser: !!this.currentUser,
       userEmail: this.currentUser?.email,
       userUID: this.currentUser?.uid,
@@ -66,23 +64,19 @@ export class StatsManager {
 
       // If user is logged in and has cloud sync, try to sync in background
       if (this.currentUser && this.hasCloudSync) {
-        console.log('☁️ Starting background cloud sync for user:', this.currentUser.email);
 
         // Don't wait for cloud sync - do it in background
         this.backgroundCloudSync(localStats).catch((error: Error) => {
           console.error('❌ Background cloud sync failed:', error);
         });
       } else if (this.currentUser && !this.hasCloudSync) {
-        console.log('⚠️ User logged in but no cloud sync available');
       }
 
       // Return local stats immediately or create initial stats
       if (localStats) {
-        console.log('📊 Loaded local stats:', localStats);
         return localStats;
       } else {
         const initialStats = this.createInitialStats();
-        console.log('🆕 Created initial stats:', initialStats);
         return initialStats;
       }
     } catch (error) {
@@ -105,7 +99,6 @@ export class StatsManager {
       );
 
       if (data) {
-        console.log('📊 Loaded stats from cloud:', data);
         return data;
       }
       return null;
@@ -164,7 +157,6 @@ export class StatsManager {
       );
 
       if (result.success) {
-        console.log('📊 Stats synced to cloud successfully');
       } else {
         console.error('Failed to sync stats to cloud:', result.error);
       }
@@ -248,7 +240,6 @@ export class StatsManager {
     const SYNC_TIMEOUT = 10000; // 10 seconds timeout
 
     try {
-      console.log('🔄 Starting background cloud sync...');
 
       // Create a timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -268,23 +259,18 @@ export class StatsManager {
         if (resolution === 'cloud') {
           // Cloud data is newer, update local
           await this.saveStatsLocally(cloudStats);
-          console.log('📥 Updated local stats from cloud (background sync)');
         } else if (resolution === 'local') {
           // Local data is newer, upload to cloud
           await this.saveStatsToCloudWithRetry(localStats);
-          console.log('📤 Uploaded local stats to cloud (background sync)');
         }
       } else if (cloudStats && !localStats) {
         // No local data, save cloud data locally
         await this.saveStatsLocally(cloudStats);
-        console.log('📥 Saved cloud stats locally (background sync)');
       } else if (localStats && !cloudStats) {
         // No cloud data, upload local data
         await this.saveStatsToCloudWithRetry(localStats);
-        console.log('📤 Uploaded local stats to cloud (background sync)');
       }
 
-      console.log('✅ Background cloud sync completed successfully');
     } catch (error) {
       console.error('❌ Background cloud sync failed:', error);
       // Don't throw - this is background sync, app should continue normally
@@ -299,7 +285,6 @@ export class StatsManager {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`🔄 Cloud sync attempt ${attempt}/${maxRetries}`);
         return await this.loadStatsFromCloud();
       } catch (error) {
         lastError = error as Error;
@@ -324,7 +309,6 @@ export class StatsManager {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`🔄 Cloud upload attempt ${attempt}/${maxRetries}`);
         await this.saveStatsToCloud(stats);
         return; // Success
       } catch (error) {
@@ -512,7 +496,6 @@ export class StatsManager {
           );
         }
 
-        console.log('🧹 Service worker and browser caches cleared');
       }
     } catch (error) {
       console.error('Error clearing service worker cache:', error);
@@ -565,7 +548,6 @@ export class StatsManager {
     const diffTime = todayDate_obj.getTime() - lastActiveDate_obj.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    console.log('📅 Updating daily usage and streak:', {
       lastActiveDate: normalizedLastActive,
       today: normalizedToday,
       diffDays,
@@ -585,20 +567,15 @@ export class StatsManager {
       // Consecutive day - increment streak
       stats.currentStreak += 1;
       stats.longestStreak = Math.max(stats.longestStreak, stats.currentStreak);
-      console.log('🔥 Consecutive day! Streak incremented to:', stats.currentStreak);
     } else if (diffDays > 1) {
       // Streak broken - reset to 1 (today counts as new streak start)
       stats.currentStreak = 1;
-      console.log('💔 Streak broken after', diffDays, 'days. Reset to 1');
     } else if (diffDays === 0) {
       // Same day - maintain current streak
-      console.log('📅 Same day activity - no streak change');
     } else {
       // Negative difference (clock moved backwards) - maintain streak but don't increment
-      console.log('⚠️ Date moved backwards:', diffDays, '. Maintaining current streak');
     }
 
-    console.log('📊 Final streak values:', {
       currentStreak: stats.currentStreak,
       longestStreak: stats.longestStreak,
       totalDaysUsed: stats.totalDaysUsed

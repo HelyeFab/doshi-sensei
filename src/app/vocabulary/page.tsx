@@ -648,7 +648,6 @@ function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
 
     try {
       setCreating(true);
-      console.log('🔄 Creating word list with unified system...', {
         userUID: user?.uid,
         subscriptionStatus: userSubscription?.subscription?.status,
         canSync: userSubscription?.limits?.canSync

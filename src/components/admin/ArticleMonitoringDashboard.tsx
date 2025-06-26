@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { AlertCircle, RefreshCw, Database, BookOpen, TrendingUp, Clock } from 'lucide-react';
+// Using emoji icons to match the app's aesthetic
 import { ArticleStats } from '@/types/news';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -121,13 +121,13 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
+            <span className="text-xl">📊</span>
             Article Monitoring Dashboard
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <RefreshCw className="h-6 w-6 animate-spin" />
+            <span className="text-xl animate-spin">🔄</span>
           </div>
         </CardContent>
       </Card>
@@ -139,7 +139,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
+            <span className="text-xl text-red-500">⚠️</span>
             Error Loading Dashboard
           </CardTitle>
         </CardHeader>
@@ -174,7 +174,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
+            <span className="text-xl">📊</span>
             Article Monitoring Dashboard
           </CardTitle>
           <CardDescription>
@@ -188,9 +188,9 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
               variant="outline"
             >
               {isRefreshing ? (
-                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                <span className="text-sm animate-spin mr-2">🔄</span>
               ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <span className="text-sm mr-2">🔄</span>
               )}
               Refresh Articles
             </Button>
@@ -201,9 +201,9 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
               variant="outline"
             >
               {isCleaningUp ? (
-                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                <span className="text-sm animate-spin mr-2">🔄</span>
               ) : (
-                <Database className="h-4 w-4 mr-2" />
+                <span className="text-sm mr-2">🗄️</span>
               )}
               Cleanup
             </Button>
@@ -227,7 +227,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
                         <p className="text-sm text-muted-foreground">Total Articles</p>
                         <p className="text-2xl font-bold">{stats.totalArticles}</p>
                       </div>
-                      <BookOpen className="h-8 w-8 text-blue-500" />
+                      <span className="text-2xl">📚</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -239,7 +239,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
                         <p className="text-sm text-muted-foreground">Total Bookmarks</p>
                         <p className="text-2xl font-bold">{stats.totalBookmarks}</p>
                       </div>
-                      <TrendingUp className="h-8 w-8 text-green-500" />
+                      <span className="text-2xl">📈</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -251,7 +251,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
                         <p className="text-sm text-muted-foreground">Avg Reading Time</p>
                         <p className="text-2xl font-bold">{stats.averageReadingTime}m</p>
                       </div>
-                      <Clock className="h-8 w-8 text-purple-500" />
+                      <span className="text-2xl">⏱️</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -263,7 +263,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
                         <p className="text-sm text-muted-foreground">Expiring Soon</p>
                         <p className="text-2xl font-bold">{stats.expiringSoon}</p>
                       </div>
-                      <AlertCircle className="h-8 w-8 text-orange-500" />
+                      <span className="text-2xl">⚠️</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -326,7 +326,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
                       size="sm"
                     >
                       {isCleaningUp ? (
-                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        <span className="text-sm animate-spin">🔄</span>
                       ) : (
                         'Run Cleanup'
                       )}
@@ -347,7 +347,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
                       size="sm"
                     >
                       {isRefreshing ? (
-                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        <span className="text-sm animate-spin">🔄</span>
                       ) : (
                         'Refresh'
                       )}
@@ -357,7 +357,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
                   {stats.expiringSoon > 0 && (
                     <div className="p-3 border rounded-lg bg-orange-50">
                       <div className="flex items-center gap-2 text-orange-800">
-                        <AlertCircle className="h-4 w-4" />
+                        <span className="text-sm">⚠️</span>
                         <p className="font-medium">
                           {stats.expiringSoon} articles expire within 7 days
                         </p>

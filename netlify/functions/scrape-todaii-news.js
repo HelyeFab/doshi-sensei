@@ -162,7 +162,7 @@ function estimateReadingTime(text) {
   return Math.max(1, Math.ceil(text.length / 400));
 }
 
-// Function to estimate JLPT level with improved algorithm
+// Function to estimate JLPT level with inclusive algorithm favoring N4/N5
 function estimateJLPTLevelAdvanced(text) {
   const kanjiCount = (text.match(/[\u4e00-\u9faf]/g) || []).length;
   const hiraganaCount = (text.match(/[\u3040-\u309f]/g) || []).length;
@@ -171,48 +171,101 @@ function estimateJLPTLevelAdvanced(text) {
   const kanjiRatio = kanjiCount / totalChars;
   const kanaRatio = (hiraganaCount + katakanaCount) / totalChars;
   
-  // Advanced heuristics based on text complexity
-  const textComplexityIndicators = {
-    // Complex grammar patterns (more advanced levels)
-    complexGrammar: /(?:によって|について|に関して|ということ|というのは|のみならず|したがって)/g.test(text),
-    // Simple patterns (beginner levels)  
-    simplePatterns: /(?:です|ます|でした|ました|だった|である)$/gm.test(text),
-    // Sentence length (longer = more complex)
-    avgSentenceLength: text.split(/[。！？]/).filter(s => s.length > 0).reduce((acc, s) => acc + s.length, 0) / text.split(/[。！？]/).length || 0
+  // Expanded vocabulary analysis for better level detection
+  const vocabularyIndicators = {
+    // N5 vocabulary patterns (very basic)
+    n5Words: /(?:です|ます|これ|それ|あれ|どれ|ここ|そこ|あそこ|どこ|今日|明日|昨日|家|学校|会社|友達|食べる|飲む|見る|聞く|話す|読む|書く|行く|来る|帰る|いい|悪い|大きい|小さい|新しい|古い|高い|安い|おいしい|とても|少し)/g,
+    
+    // N4 vocabulary patterns (basic conversational)
+    n4Words: /(?:知っている|思う|言う|作る|買う|売る|始める|終わる|起きる|寝る|歩く|走る|泳ぐ|勉強|仕事|電話|手紙|写真|映画|音楽|料理|天気|季節|春|夏|秋|冬|朝|昼|夜|年|月|週|日|時間|分|秒|お金|病院|駅|空港|ホテル|レストラン)/g,
+    
+    // N3 vocabulary patterns (intermediate)
+    n3Words: /(?:経験|機会|意見|問題|解決|説明|紹介|連絡|準備|計画|予定|約束|相談|注意|心配|安心|便利|不便|簡単|複雑|重要|必要|特別|普通|自然|環境|社会|文化|伝統|科学|技術|政治|経済)/g,
+    
+    // Complex grammar patterns (N2/N1)
+    complexGrammar: /(?:によって|について|に関して|に対して|に比べて|にとって|において|ということ|というのは|のみならず|したがって|そのため|その結果|一方|他方|ただし|なお|また|さらに|特に|例えば|つまり|要するに)/g,
+    
+    // Simple polite patterns (beginner friendly)
+    politePatterns: /(?:です|ます|でした|ました|ください|お願いします|ありがとうございます|すみません|失礼します)/g
   };
   
-  // Determine level based on multiple factors - adjusted for better N4/N5 distribution
-  let level = 'N4'; // Default
+  // Count vocabulary matches
+  const n5Count = (text.match(vocabularyIndicators.n5Words) || []).length;
+  const n4Count = (text.match(vocabularyIndicators.n4Words) || []).length;
+  const n3Count = (text.match(vocabularyIndicators.n3Words) || []).length;
+  const complexGrammarCount = (text.match(vocabularyIndicators.complexGrammar) || []).length;
+  const politePatternCount = (text.match(vocabularyIndicators.politePatterns) || []).length;
   
-  if (kanjiRatio < 0.15 && kanaRatio > 0.65 && textComplexityIndicators.avgSentenceLength < 30) {
+  // Calculate sentence complexity
+  const sentences = text.split(/[。！？]/).filter(s => s.trim().length > 0);
+  const avgSentenceLength = sentences.reduce((acc, s) => acc + s.length, 0) / sentences.length || 0;
+  const shortSentences = sentences.filter(s => s.length < 25).length;
+  const longSentences = sentences.filter(s => s.length > 50).length;
+  
+  // Start with scoring system (higher score = more beginner friendly)
+  let beginnerScore = 0;
+  
+  // Kanji ratio scoring (less kanji = more beginner friendly)
+  if (kanjiRatio < 0.1) beginnerScore += 40;
+  else if (kanjiRatio < 0.2) beginnerScore += 30;
+  else if (kanjiRatio < 0.3) beginnerScore += 20;
+  else if (kanjiRatio < 0.4) beginnerScore += 10;
+  
+  // Kana ratio scoring (more kana = more beginner friendly)
+  if (kanaRatio > 0.7) beginnerScore += 30;
+  else if (kanaRatio > 0.6) beginnerScore += 20;
+  else if (kanaRatio > 0.5) beginnerScore += 10;
+  
+  // Vocabulary scoring
+  beginnerScore += n5Count * 5; // N5 words heavily favor beginner
+  beginnerScore += n4Count * 3; // N4 words moderately favor beginner
+  beginnerScore += politePatternCount * 2; // Polite patterns favor beginner
+  beginnerScore -= n3Count * 2; // N3 words slightly against beginner
+  beginnerScore -= complexGrammarCount * 10; // Complex grammar strongly against beginner
+  
+  // Sentence length scoring
+  beginnerScore += shortSentences * 3;
+  beginnerScore -= longSentences * 5;
+  if (avgSentenceLength < 20) beginnerScore += 20;
+  else if (avgSentenceLength < 30) beginnerScore += 10;
+  else if (avgSentenceLength > 50) beginnerScore -= 20;
+  
+  // Text length adjustment (shorter = often simpler)
+  if (totalChars < 200) beginnerScore += 15;
+  else if (totalChars < 400) beginnerScore += 10;
+  else if (totalChars > 800) beginnerScore -= 10;
+  
+  // Determine level based on score with bias toward N4/N5
+  let level = 'N3'; // Default to intermediate
+  
+  if (beginnerScore >= 80) {
     level = 'N5';
-  } else if (kanjiRatio < 0.25 && textComplexityIndicators.simplePatterns && !textComplexityIndicators.complexGrammar) {
+  } else if (beginnerScore >= 50) {
     level = 'N4';
-  } else if (kanjiRatio < 0.35 && textComplexityIndicators.avgSentenceLength < 45) {
+  } else if (beginnerScore >= 20) {
     level = 'N3';
-  } else if (kanjiRatio < 0.45 || textComplexityIndicators.complexGrammar) {
+  } else if (beginnerScore >= -10) {
     level = 'N2';
   } else {
     level = 'N1';
   }
   
-  // Add some variation for educational content - favor beginner levels
-  const contentLength = text.length;
-  if (contentLength < 300) {
-    // Shorter articles are often simpler
+  // Apply random variation to increase N4/N5 distribution
+  const random = Math.random();
+  if (random < 0.25) { // 25% chance to bump down difficulty
     if (level === 'N3') level = 'N4';
     if (level === 'N2') level = 'N3';
     if (level === 'N1') level = 'N2';
-  } else if (contentLength > 600) {
-    // Longer articles can be more complex, but don't always bump up
-    const random = Math.random();
-    if (random < 0.3) { // Only 30% chance to bump up difficulty
-      if (level === 'N5') level = 'N4';
-      if (level === 'N4') level = 'N3';
-    }
   }
   
-  console.log(`📊 JLPT Level estimation for text (${contentLength} chars): ${level} (kanji: ${kanjiRatio.toFixed(2)}, avgSent: ${textComplexityIndicators.avgSentenceLength.toFixed(1)})`);
+  // Special case: if text has lots of basic patterns, bias toward beginner
+  const basicPatternRatio = (n5Count + n4Count + politePatternCount) / (totalChars / 50);
+  if (basicPatternRatio > 2 && level !== 'N5') {
+    if (level === 'N3') level = 'N4';
+    if (level === 'N2') level = 'N3';
+  }
+  
+  console.log(`📊 JLPT Level: ${level} | Score: ${beginnerScore} | Kanji: ${kanjiRatio.toFixed(2)} | N5: ${n5Count} | N4: ${n4Count} | Complex: ${complexGrammarCount} | AvgSent: ${avgSentenceLength.toFixed(1)}`);
   
   return level;
 }

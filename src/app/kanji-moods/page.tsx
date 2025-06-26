@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAllMoodBoards } from '@/utils/moodBoardData';
+import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { getAllProgress } from '@/utils/moodBoardProgress';
 import { PageHeader } from '@/components/PageHeader';
 import MoodBoardCard from '@/components/kanji-moods/MoodBoardCard';
@@ -10,27 +10,21 @@ import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
 
 export default function KanjiMoodsPage() {
   const router = useRouter();
-  const [boards, setBoards] = useState<MoodBoard[]>([]);
+  const { moodBoards, loading } = useMoodBoards();
   const [progress, setProgress] = useState<MoodBoardsProgress>({});
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load mood boards and progress
-    const loadData = () => {
+    // Load progress data
+    const loadProgress = () => {
       try {
-        const allBoards = getAllMoodBoards();
         const allProgress = getAllProgress();
-
-        setBoards(allBoards);
         setProgress(allProgress);
       } catch (error) {
-        console.error('Error loading mood boards:', error);
-      } finally {
-        setLoading(false);
+        console.error('Error loading progress:', error);
       }
     };
 
-    loadData();
+    loadProgress();
   }, []);
 
   const handleBoardClick = (boardId: string) => {
@@ -51,7 +45,10 @@ export default function KanjiMoodsPage() {
     );
   }
 
-  const completedBoards = boards.filter(board =>
+  // Filter only active mood boards
+  const activeBoards = moodBoards.filter(board => board.isActive !== false);
+  
+  const completedBoards = activeBoards.filter(board =>
     progress[board.id]?.progressPercentage === 100
   ).length;
 
@@ -80,7 +77,7 @@ export default function KanjiMoodsPage() {
           <h3 className="text-lg font-semibold text-foreground mb-4">Your Progress</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{boards.length}</div>
+              <div className="text-2xl font-bold text-primary">{activeBoards.length}</div>
               <div className="text-sm text-muted-foreground">Total Boards</div>
             </div>
             <div className="text-center">
@@ -89,7 +86,7 @@ export default function KanjiMoodsPage() {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
-                {boards.reduce((sum, board) => sum + board.kanji.length, 0)}
+                {activeBoards.reduce((sum, board) => sum + board.kanji.length, 0)}
               </div>
               <div className="text-sm text-muted-foreground">Total Kanji</div>
             </div>
@@ -109,9 +106,9 @@ export default function KanjiMoodsPage() {
           Available Mood Boards
         </h3>
 
-        {boards.length > 0 ? (
+        {activeBoards.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {boards.map((board) => (
+            {activeBoards.map((board) => (
               <MoodBoardCard
                 key={board.id}
                 board={board}

@@ -24,21 +24,13 @@ async function copyDirectory(src, dest) {
 
 async function prepareForDeploy() {
   try {
-    console.log('Preparing dictionary files for Netlify deployment...');
+    console.log('Preparing for Netlify deployment...');
 
     // Create .next directory if it doesn't exist
     await fs.mkdir('.next', { recursive: true });
 
-    // Copy dictionary files to .next/dict for function access
-    await copyDirectory('public/dict', '.next/dict');
-
-    // Also copy to netlify functions directory so serverless functions can access them
-    await fs.mkdir('netlify/functions/dict', { recursive: true });
-    await copyDirectory('public/dict', 'netlify/functions/dict');
-
-    console.log('✅ Dictionary files prepared for deployment');
-    console.log('Files copied to .next/dict/ for static site');
-    console.log('Files copied to netlify/functions/dict/ for serverless function access');
+    console.log('✅ Deployment preparation complete');
+    console.log('No dictionary files to copy (Jisho removed)');
 
   } catch (error) {
     console.error('❌ Error preparing for deployment:', error);

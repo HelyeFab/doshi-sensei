@@ -52,13 +52,6 @@ export class CloudSync {
     timeoutMs: number = 15000
   ): Promise<SyncResult> {
     try {
-        userUID: user.uid,
-        userEmail: user.email,
-        collection,
-        documentId,
-        dataKeys: Object.keys(data as any),
-        timeout: timeoutMs
-      });
 
       this.setSyncStatus({ isSyncing: true });
 
@@ -69,12 +62,6 @@ export class CloudSync {
         updatedAt: serverTimestamp(),
         syncedAt: serverTimestamp()
       };
-
-        originalDataSize: JSON.stringify(data).length,
-        syncDataKeys: Object.keys(syncData),
-        hasUpdatedAt: 'updatedAt' in syncData,
-        hasSyncedAt: 'syncedAt' in syncData
-      });
 
       // Create timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {

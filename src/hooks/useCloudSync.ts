@@ -21,11 +21,11 @@ export interface CloudSyncHook {
 
 export function useCloudSync(): CloudSyncHook {
   const { user } = useAuth();
-  const { userSubscription } = useSubscription();
+  const { userSubscription, isFeatureAvailable } = useSubscription();
   const [syncStatus, setSyncStatus] = useState<SyncStatus>(CloudSync.getSyncStatus());
 
-  // Check if user can sync
-  const canSync = CloudSync.canSync(user, userSubscription?.subscription.status);
+  // Check if user can sync using SubscriptionContext logic
+  const canSync = isFeatureAvailable('sync');
 
   // Initialize network monitoring and sync status listener
   useEffect(() => {
@@ -51,8 +51,8 @@ export function useCloudSync(): CloudSyncHook {
       return { success: false, error: 'User not authenticated' };
     }
 
-    return await WordListManager.syncToCloud(user, userSubscription?.subscription.status);
-  }, [user, userSubscription?.subscription.status]);
+    return await WordListManager.syncToCloud(user, userSubscription?.subscription.status, userSubscription?.subscription.plan);
+  }, [user, userSubscription?.subscription.status, userSubscription?.subscription.plan]);
 
   // Sync word lists from cloud
   const syncWordListsFromCloud = useCallback(async (): Promise<SyncResult> => {
@@ -60,8 +60,8 @@ export function useCloudSync(): CloudSyncHook {
       return { success: false, error: 'User not authenticated' };
     }
 
-    return await WordListManager.syncFromCloud(user, userSubscription?.subscription.status);
-  }, [user, userSubscription?.subscription.status]);
+    return await WordListManager.syncFromCloud(user, userSubscription?.subscription.status, userSubscription?.subscription.plan);
+  }, [user, userSubscription?.subscription.status, userSubscription?.subscription.plan]);
 
   // Perform full bidirectional sync
   const performFullWordListSync = useCallback(async (): Promise<SyncResult> => {
@@ -69,8 +69,8 @@ export function useCloudSync(): CloudSyncHook {
       return { success: false, error: 'User not authenticated' };
     }
 
-    return await WordListManager.performFullSync(user, userSubscription?.subscription.status);
-  }, [user, userSubscription?.subscription.status]);
+    return await WordListManager.performFullSync(user, userSubscription?.subscription.status, userSubscription?.subscription.plan);
+  }, [user, userSubscription?.subscription.status, userSubscription?.subscription.plan]);
 
   // Trigger sync (convenience method for full sync)
   const triggerSync = useCallback(async (): Promise<SyncResult> => {

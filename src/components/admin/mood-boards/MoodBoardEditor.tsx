@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { MoodBoard, KanjiItem } from '@/types/moodBoard';
 import { KanjiEditor } from './KanjiEditor';
 import { MoodBoardPreview } from './MoodBoardPreview';
-// import { JsonEditor } from './JsonEditor';
+import { JsonEditor } from './JsonEditor';
 
 interface MoodBoardEditorProps {
   initialData?: MoodBoard;
@@ -46,7 +46,6 @@ export function MoodBoardEditor({
   const [editorMode, setEditorMode] = useState<'form' | 'json'>('form');
   const [showPreview, setShowPreview] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -100,69 +99,6 @@ export function MoodBoardEditor({
     setFormData(prev => ({ ...prev, kanji }));
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const jsonData = JSON.parse(e.target?.result as string);
-        
-        // Handle the specific format from colors_kanji_board.json
-        if (Array.isArray(jsonData) && jsonData.length > 0) {
-          const boardData = jsonData[0];
-          
-          // Convert the kanji format
-          const convertedKanji = boardData.kanjiList?.map((k: any) => ({
-            char: k.kanji,
-            meaning: k.meaning,
-            readings: {
-              on: k.kana ? [] : [],  // This format doesn't have on/kun separation
-              kun: k.kana ? [k.kana] : []
-            },
-            examples: k.examples?.map((ex: any) => ex.sentence) || [],
-            difficulty: k.jlptLevel === 'N5' ? 1 : k.jlptLevel === 'N4' ? 2 : 3
-          })) || [];
-          
-          setFormData({
-            title: boardData.category || 'Untitled',
-            emoji: '🎨',  // Default emoji since the format doesn't include one
-            jlpt: 'N5',   // Default to N5
-            background: `linear-gradient(135deg, ${boardData.themeColor || '#F6C667'} 0%, ${boardData.themeColor || '#F6C667'}aa 100%)`,
-            description: boardData.description || '',
-            kanji: convertedKanji,
-            isActive: true,
-            sortOrder: 0
-          });
-          
-          setUploadError(null);
-        } else if (jsonData.title) {
-          // Handle standard mood board format
-          setFormData({
-            title: jsonData.title || '',
-            emoji: jsonData.emoji || '🎨',
-            jlpt: jsonData.jlpt || 'N5',
-            background: jsonData.background || DEFAULT_GRADIENTS[0].value,
-            description: jsonData.description || '',
-            kanji: jsonData.kanji || [],
-            isActive: jsonData.isActive ?? true,
-            sortOrder: jsonData.sortOrder ?? 0
-          });
-          
-          setUploadError(null);
-        } else {
-          setUploadError('Invalid JSON format');
-        }
-      } catch (error) {
-        setUploadError('Failed to parse JSON file');
-        console.error('JSON parse error:', error);
-      }
-    };
-    
-    reader.readAsText(file);
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
@@ -188,7 +124,6 @@ export function MoodBoardEditor({
     }
   };
 
-  // Temporarily disable JSON mode to fix client-side exception
   if (editorMode === 'json') {
     return (
       <div className="space-y-4">
@@ -202,10 +137,19 @@ export function MoodBoardEditor({
             </svg>
             Switch to Form Mode
           </button>
+          <button
+            onClick={() => setShowPreview(true)}
+            className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Preview
+          </button>
         </div>
-        <div className="p-8 text-center text-muted-foreground">
-          JSON Editor temporarily disabled. Please use the file upload feature instead.
-        </div>
+        <JsonEditor
+          initialData={formData}
+          onSave={onSave}
+          onCancel={onCancel}
+          isSaving={isSaving}
+        />
       </div>
     );
   }
@@ -238,31 +182,14 @@ export function MoodBoardEditor({
               >
                 Preview
               </button>
+              <button
+                type="button"
+                onClick={() => setEditorMode('json')}
+                className="px-4 py-2 text-sm bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                JSON Mode
+              </button>
             </div>
-          </div>
-
-          {/* File Upload Section */}
-          <div className="mb-6 p-4 bg-muted/30 rounded-lg border border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-foreground mb-1">Import from JSON File</h3>
-                <p className="text-xs text-muted-foreground">Upload a JSON file to populate the form</p>
-              </div>
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-                <span className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors inline-block">
-                  📁 Choose File
-                </span>
-              </label>
-            </div>
-            {uploadError && (
-              <div className="mt-2 text-sm text-destructive">{uploadError}</div>
-            )}
           </div>
 
           {/* Basic Information */}

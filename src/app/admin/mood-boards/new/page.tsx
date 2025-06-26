@@ -7,7 +7,7 @@ import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useAdminNotifications } from '@/components/admin/AdminNotifications';
 import { useState } from 'react';
 
-export default function NewMoodBoardPage() {
+function NewMoodBoardContent() {
   const router = useRouter();
   const { createMoodBoard } = useMoodBoards();
   const { success, error: showError } = useAdminNotifications();
@@ -43,24 +43,30 @@ export default function NewMoodBoardPage() {
   };
 
   return (
-    <AdminLayout title="Create New Mood Board">
-      <div className="space-y-6">
-        {/* Page header */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
-          <h2 className="text-xl font-bold text-foreground mb-2">
-            Create New Mood Board
-          </h2>
-          <p className="text-muted-foreground">
-            Create a new mood board with kanji characters for learners
-          </p>
-        </div>
-
-        <MoodBoardEditor
-          onSave={handleSave}
-          onCancel={handleCancel}
-          isSaving={isCreating}
-        />
+    <div className="space-y-6">
+      {/* Page header */}
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
+        <h2 className="text-xl font-bold text-foreground mb-2">
+          Create New Mood Board
+        </h2>
+        <p className="text-muted-foreground">
+          Create a new mood board with kanji characters for learners
+        </p>
       </div>
+
+      <MoodBoardEditor
+        onSave={handleSave}
+        onCancel={handleCancel}
+        isSaving={isCreating}
+      />
+    </div>
+  );
+}
+
+export default function NewMoodBoardPage() {
+  return (
+    <AdminLayout title="Create New Mood Board">
+      <NewMoodBoardContent />
     </AdminLayout>
   );
 }

@@ -244,7 +244,7 @@ function estimateJLPTLevelAdvanced(text) {
     level = 'N4';
   } else if (beginnerScore >= 20) {
     level = 'N3';
-  } else if (beginnerScore >= -10) {
+  } else if (beginnerScore >= 5) {
     level = 'N2';
   } else {
     level = 'N1';
@@ -256,6 +256,8 @@ function estimateJLPTLevelAdvanced(text) {
     if (level === 'N3') level = 'N4';
     if (level === 'N2') level = 'N3';
     if (level === 'N1') level = 'N2';
+  } else if (random < 0.35) { // 10% chance to bump up N3 to N2 for better N2 distribution
+    if (level === 'N3') level = 'N2';
   }
   
   // Special case: if text has lots of basic patterns, bias toward beginner

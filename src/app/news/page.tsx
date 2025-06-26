@@ -379,7 +379,7 @@ export default function NewsPage() {
           {/* Description */}
           <div className="mb-8">
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Read curated Japanese articles from <strong>Watanoc and Todaii News</strong> to improve your reading comprehension. 
+              Read curated Japanese articles from <strong>Watanoc, Todaii News, and NHK Easy</strong> to improve your reading comprehension. 
               Articles are organized by JLPT level and updated daily with fresh content.
             </p>
             {stats && (

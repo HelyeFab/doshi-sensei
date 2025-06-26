@@ -68,11 +68,14 @@ export class BookmarkManager {
       };
     } catch (error) {
       console.error('Error getting bookmark stats:', error);
+      // Important fix: When there's an error, we should still allow bookmarking if user is under limit
+      // Default to 0 bookmarks and calculate canBookmark based on that
+      const bookmarkLimit = this.getBookmarkLimit(isPremium);
       return {
         totalBookmarks: 0,
-        bookmarkLimit: this.getBookmarkLimit(isPremium),
-        canBookmark: false,
-        remainingBookmarks: 0
+        bookmarkLimit,
+        canBookmark: isPremium || bookmarkLimit > 0, // Allow bookmarking for premium users or free users under limit
+        remainingBookmarks: bookmarkLimit === -1 ? -1 : bookmarkLimit
       };
     }
   }
@@ -324,6 +327,45 @@ export class BookmarkManager {
         success: false, 
         error: error instanceof Error ? error.message : 'Failed to clear bookmarks' 
       };
+    }
+  }
+
+  /**
+   * Debug bookmark counts across collections
+   */
+  static async debugBookmarkCounts(userId: string): Promise<void> {
+    console.log(`\n🔍 Debugging bookmarks for user: ${userId}\n`);
+    
+    try {
+      // Check current collection
+      const stats = await this.getBookmarkStats(userId, false);
+      console.log(`📚 BookmarkManager stats:`, stats);
+      
+      // Check for bookmarks in old ArticleManager collection
+      const oldCollectionQuery = query(
+        collection(db, 'userBookmarks'), // ArticleManager uses this
+        where('userId', '==', userId)
+      );
+      const oldSnapshot = await getDocs(oldCollectionQuery);
+      
+      if (oldSnapshot.size > 0) {
+        console.log(`\n⚠️  WARNING: Found ${oldSnapshot.size} bookmarks in old 'userBookmarks' collection!`);
+        console.log('This might be interfering with bookmark limits.');
+        oldSnapshot.docs.forEach(doc => {
+          const data = doc.data();
+          console.log(`  - ${data.articleTitle || 'Unknown'} (ID: ${doc.id})`);
+        });
+      }
+      
+      // Get actual bookmarks from current system
+      const currentBookmarks = await this.getUserBookmarks(userId);
+      console.log(`\n📋 Current bookmarks (${currentBookmarks.length}):`);
+      currentBookmarks.forEach(bookmark => {
+        console.log(`  - ${bookmark.articleTitle} (ID: ${bookmark.articleId})`);
+      });
+      
+    } catch (error) {
+      console.error('❌ Error debugging bookmarks:', error);
     }
   }
 }

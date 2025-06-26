@@ -5,6 +5,7 @@ import { strings } from "@/config/strings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { EnvProvider } from "@/components/EnvProvider";
 import BottomNavigation from "@/components/BottomNavigation";
@@ -188,8 +189,9 @@ export default function RootLayout({
           <SettingsProvider>
             <AuthProvider>
               <SubscriptionProvider>
-                {/* Use a client component to connect settings to theme */}
-                <ClientThemeWrapper>
+                <AdminProvider>
+                  {/* Use a client component to connect settings to theme */}
+                  <ClientThemeWrapper>
                   <PWAWrapper>
                     <OnboardingWrapper>
                       <div className="min-h-screen bg-background text-foreground">
@@ -201,7 +203,8 @@ export default function RootLayout({
                       </div>
                     </OnboardingWrapper>
                   </PWAWrapper>
-                </ClientThemeWrapper>
+                  </ClientThemeWrapper>
+                </AdminProvider>
               </SubscriptionProvider>
             </AuthProvider>
           </SettingsProvider>

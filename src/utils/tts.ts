@@ -116,7 +116,10 @@ export class TTSManager {
             reject(new Error('Audio playback failed'));
           });
 
-          audio.play().catch(reject);
+          // Small delay to prevent syllable cutoff
+          setTimeout(() => {
+            audio.play().catch(reject);
+          }, 100);
         });
       } else {
         throw new Error('Failed to generate or retrieve audio');

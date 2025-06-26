@@ -3,86 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { ArticleManagement } from '@/components/admin/ArticleManagement';
-import { triggerArticleScraping, getArticleStats, clearCache } from '@/utils/watanocArticles';
+import { getArticleStats, clearCache } from '@/utils/watanocArticles';
+import { 
+  triggerWatanocScraping, 
+  triggerTodaiiScraping, 
+  triggerNHKEasyScraping,
+  triggerAllSourcesScraping,
+  NEWS_SOURCES,
+  formatScrapingResult
+} from '@/utils/newsSources';
 
 export default function ArticlesManagementPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [stats, setStats] = useState<any>(null);
 
-  const handleTriggerScraping = async () => {
+  const handleWatanocScraping = async () => {
     setLoading(true);
-    setStatus('🚀 Triggering article scraping...');
+    setStatus('🚀 Triggering Watanoc scraping...');
     
     try {
-      const result = await triggerArticleScraping();
+      const result = await triggerWatanocScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.watanoc));
       
       if (result.success) {
-        setStatus(`✅ Successfully scraped ${result.articlesScraped} articles`);
-        // Refresh stats after scraping
         setTimeout(loadStats, 2000);
-      } else {
-        setStatus(`❌ Scraping failed: ${result.errors[0]?.message || 'Unknown error'}`);
-        console.error('❌ DEBUG: Watanoc scraping failed:', result.errors);
       }
     } catch (error) {
       setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      console.error('💥 DEBUG: Watanoc scraping error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNHKScraping = async () => {
-    setLoading(true);
-    setStatus('📰 Scraping NHK Easy News...');
-    
-    try {
-      const response = await fetch('/.netlify/functions/scrape-nhk-easy-news', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        setStatus(`✅ NHK Easy: Successfully scraped ${result.articlesCount} articles`);
-        setTimeout(loadStats, 2000);
-      } else {
-        setStatus(`❌ NHK Easy failed: ${result.error || 'Unknown error'}`);
-        console.error('❌ DEBUG: NHK Easy failed:', result);
-      }
-    } catch (error) {
-      setStatus(`❌ NHK Easy error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      console.error('💥 DEBUG: NHK Easy error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMultiSourceScraping = async () => {
-    setLoading(true);
-    setStatus('🌐 Scraping from multiple sources...');
-    
-    try {
-      const response = await fetch('/.netlify/functions/scrape-multi-source', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        const breakdown = result.sources;
-        setStatus(`✅ Multi-source: ${result.articlesCount} articles (NHK: ${breakdown.nhkEasy}, Watanoc: ${breakdown.watanoc}, Fallback: ${breakdown.fallback})`);
-        setTimeout(loadStats, 2000);
-      } else {
-        setStatus(`❌ Multi-source failed: ${result.error || 'Unknown error'}`);
-        console.error('❌ DEBUG: Multi-source failed:', result);
-      }
-    } catch (error) {
-      setStatus(`❌ Multi-source error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      console.error('💥 DEBUG: Multi-source error:', error);
     } finally {
       setLoading(false);
     }
@@ -93,23 +41,60 @@ export default function ArticlesManagementPage() {
     setStatus('📚 Scraping Todaii Japanese News...');
     
     try {
-      const response = await fetch('/.netlify/functions/scrape-todaii-news', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      const result = await response.json();
+      const result = await triggerTodaiiScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.todaii));
       
       if (result.success) {
-        setStatus(`✅ Todaii News: Successfully scraped ${result.articlesCount} articles`);
         setTimeout(loadStats, 2000);
-      } else {
-        setStatus(`❌ Todaii failed: ${result.error || 'Unknown error'}`);
-        console.error('❌ DEBUG: Todaii failed:', result);
       }
     } catch (error) {
-      setStatus(`❌ Todaii error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      console.error('💥 DEBUG: Todaii error:', error);
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNHKEasyScraping = async () => {
+    setLoading(true);
+    setStatus('📺 Scraping NHK Easy News...');
+    
+    try {
+      const result = await triggerNHKEasyScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.nhkEasy));
+      
+      if (result.success) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAllSourcesScraping = async () => {
+    setLoading(true);
+    setStatus('🚀 Starting all sources scraping...');
+    
+    try {
+      const results = await triggerAllSourcesScraping();
+      const { overall } = results;
+      
+      // Build detailed status message
+      const statusMessages = [
+        formatScrapingResult(results.watanoc, NEWS_SOURCES.watanoc),
+        formatScrapingResult(results.todaii, NEWS_SOURCES.todaii),
+        formatScrapingResult(results.nhkEasy, NEWS_SOURCES.nhkEasy),
+        `\n🎉 Overall: ${overall.totalArticles} total articles from ${overall.successfulSources}/3 sources (${overall.totalTimeElapsed}s)`
+      ];
+      
+      setStatus(statusMessages.join('\n'));
+      
+      if (overall.successfulSources > 0) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -169,29 +154,53 @@ export default function ArticlesManagementPage() {
           
           {/* Primary scraping actions */}
           <div className="mb-6">
-            <h3 className="text-lg font-medium mb-3">Content Sources</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h3 className="text-lg font-medium mb-3">News Sources</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <button
+                onClick={handleWatanocScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.watanoc.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.watanoc.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.watanoc.description}</div>
+                </div>
+              </button>
+              
               <button
                 onClick={handleTodaiiScraping}
                 disabled={loading}
                 className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                <span className="text-lg">📚</span>
+                <span className="text-lg">{NEWS_SOURCES.todaii.emoji}</span>
                 <div className="text-left">
-                  <div className="font-medium">Todaii News</div>
-                  <div className="text-xs opacity-90">JLPT-level Japanese news</div>
+                  <div className="font-medium">{NEWS_SOURCES.todaii.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.todaii.description}</div>
                 </div>
               </button>
               
               <button
-                onClick={handleTriggerScraping}
+                onClick={handleNHKEasyScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.nhkEasy.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.nhkEasy.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.nhkEasy.description}</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={handleAllSourcesScraping}
                 disabled={loading}
                 className="px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                <span className="text-lg">🏯</span>
+                <span className="text-lg">🚀</span>
                 <div className="text-left">
-                  <div className="font-medium">Watanoc Only</div>
-                  <div className="text-xs opacity-90">Original scraper</div>
+                  <div className="font-medium">All Sources</div>
+                  <div className="text-xs opacity-90">Scrape all three sources</div>
                 </div>
               </button>
             </div>

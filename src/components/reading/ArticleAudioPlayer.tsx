@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { NewsArticle } from '@/types/news';
 import TTSManager from '@/utils/tts';
+import { TranslationCache } from '@/utils/translationCache';
 
 interface ArticleAudioPlayerProps {
   article: NewsArticle;
@@ -33,9 +34,54 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
   const [retryCount, setRetryCount] = useState<Record<number, number>>({});
   const [preloadProgress, setPreloadProgress] = useState<{ completed: number; total: number } | null>(null);
   const [isPreloading, setIsPreloading] = useState(false);
+  const [currentTranslation, setCurrentTranslation] = useState<string>('');
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const translationCache = TranslationCache.getInstance();
 
   const audioTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const MAX_RETRIES_PER_SENTENCE = 2;
+
+  // Translate current sentence
+  const translateCurrentSentence = async (sentenceIndex: number) => {
+    if (sentenceIndex >= sentences.length) return;
+    
+    setIsTranslating(true);
+    const sentence = sentences[sentenceIndex];
+    
+    try {
+      const translation = await translationCache.getTranslation(
+        sentence,
+        'ja',
+        'en',
+        'deepl',
+        async () => {
+          // Mock translation for now - integrate with actual DeepL API
+          const response = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: sentence, from: 'ja', to: 'en' })
+          });
+          const data = await response.json();
+          return data.translation || 'Translation not available';
+        }
+      );
+      
+      setCurrentTranslation(translation || 'Translation not available');
+    } catch (error) {
+      console.error('Translation error:', error);
+      setCurrentTranslation('Translation failed');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  // Update translation when current sentence changes
+  useEffect(() => {
+    if (sentences.length > 0) {
+      translateCurrentSentence(controls.currentSentence);
+    }
+  }, [controls.currentSentence, sentences]);
 
   // Parse article into sentences
   useEffect(() => {
@@ -70,7 +116,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
         article.id,
         sentences,
         'female', // Default voice
-        1.0, // Default speed
+        controls.playbackSpeed, // Use current playback speed
         (completed, total) => {
           setPreloadProgress({ completed, total });
         }
@@ -146,8 +192,8 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
         currentSentence: index
       }));
 
-      // Play sentence with TTS
-      await TTSManager.speak(sentence, 'female');
+      // Play sentence with TTS using current playback speed
+      await TTSManager.speak(sentence, 'female', controls.playbackSpeed);
 
       // Reset retry count on success
       setRetryCount(prev => ({
@@ -353,11 +399,13 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
                     </div>
                   </div>
 
-                  {/* Translation Placeholder */}
+                  {/* Translation */}
                   <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <div className="text-sm text-blue-600 dark:text-blue-400 mb-1">💡 English Translation</div>
+                    <div className="text-sm text-blue-600 dark:text-blue-400 mb-1">
+                      💡 English Translation {isTranslating && '(Loading...)'}
+                    </div>
                     <div className="text-blue-800 dark:text-blue-200 italic">
-                      [Translation would appear here with AI integration]
+                      {currentTranslation || 'Loading translation...'}
                     </div>
                   </div>
 
@@ -437,6 +485,26 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
 
             {/* Separator */}
             <div className="w-px h-8 bg-border mx-2"></div>
+
+            {/* Playback Speed Control */}
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-foreground">Speed:</span>
+              <select
+                value={controls.playbackSpeed}
+                onChange={(e) => setControls(prev => ({
+                  ...prev,
+                  playbackSpeed: parseFloat(e.target.value)
+                }))}
+                className="px-2 py-1 rounded bg-muted text-foreground border border-border"
+              >
+                <option value={0.5}>0.5x</option>
+                <option value={0.75}>0.75x</option>
+                <option value={1.0}>1.0x</option>
+                <option value={1.25}>1.25x</option>
+                <option value={1.5}>1.5x</option>
+                <option value={2.0}>2.0x</option>
+              </select>
+            </div>
 
             {/* Auto-advance toggle */}
             <label className="flex items-center gap-2 text-sm">

@@ -136,18 +136,22 @@ function estimateJLPTLevelAdvanced(text) {
   const kanjiRatio = kanjiCount / totalChars;
   const kanaRatio = kanaCount / totalChars;
 
-  // Vocabulary indicators with enhanced patterns for N4/N5
+  // Vocabulary indicators with enhanced patterns for all levels
   const vocabularyIndicators = {
     n5Words: /(?:です|ます|これ|それ|あれ|どれ|ここ|そこ|あそこ|どこ|今日|明日|昨日|家|学校|会社|友達|食べる|飲む|見る|聞く|話す|読む|書く|行く|来る|帰る|いい|悪い|大きい|小さい|新しい|古い|高い|安い|おいしい|とても|少し)/g,
     n4Words: /(?:知っている|思う|言う|作る|買う|売る|始める|終わる|起きる|寝る|歩く|走る|泳ぐ|勉強|仕事|電話|手紙|写真|映画|音楽|料理|天気|季節|春|夏|秋|冬|朝|昼|夜|年|月|週|日|時間|分|秒|お金|病院|駅|空港|ホテル|レストラン)/g,
     n3Words: /(?:経験|意見|計画|準備|説明|理由|結果|問題|解決|文化|歴史|政治|経済|社会|環境|技術|科学|教育|医療|交通|建設|工業|農業|商業|国際|地域|都市|田舎|伝統|現代)/g,
+    n2Words: /(?:政策|対策|措置|制度|改革|推進|促進|発展|成長|拡大|縮小|増加|減少|上昇|下降|変動|傾向|状況|現状|実態|課題|検討|議論|協議|決定|判断|評価|分析|調査|研究|開発|導入|実施|運用|管理|統制|規制|緩和|強化|改善|向上|効率|生産|消費|供給|需要|市場|競争|協力|連携|提携|交渉|合意|契約|取引|投資|融資|資金|予算|収支|利益|損失|負担|支援|援助|補助|保障|保険|年金|税金|財政|金融|通貨|為替|株式|債券|証券|不動産|資産|負債|破産|倒産)/g,
+    n1Words: /(?:抽象|具体|概念|観念|理念|思想|哲学|論理|倫理|道徳|価値|意義|本質|実質|形式|内容|構造|機能|体系|秩序|統一|調和|均衡|比例|対称|相対|絶対|普遍|特殊|一般|個別|全体|部分|要素|成分|因子|条件|前提|仮定|仮説|理論|学説|原理|法則|規則|基準|標準|規範|模範|典型|類型|範疇|分類|区分|種類|部類|系統|系列|段階|過程|経過|推移|変遷|進化|退化|発生|生成|形成|構成|組成|合成|分解|結合|分離|統合|分化|集約|拡散|収束|発散|浸透|拡散|伝播|波及|影響|作用|反作用|相互|交互|連鎖|循環|反復|継続|持続|永続|恒久|一時|暫定|臨時|緊急|異常|正常|平常|日常|非常|特別|例外|通常|普通|一般|共通|固有|独自|独特|特有|特徴|性質|属性|特性)/g,
     politePattern: /(?:ます|です|ございます|いらっしゃいます|でございます)/g,
-    complexGrammar: /(?:にもかかわらず|ということは|ばかりでなく|に関して|について|によって|ために|として|といえば|ものの|わけです)/g
+    complexGrammar: /(?:にもかかわらず|ということは|ばかりでなく|に関して|について|によって|ために|として|といえば|ものの|わけです|に際して|を踏まえて|を契機に|に先立って|を通じて|に基づいて|に照らして|を問わず|のみならず|はもとより|いずれにせよ|すなわち|換言すれば)/g
   };
 
   const n5Count = (text.match(vocabularyIndicators.n5Words) || []).length;
   const n4Count = (text.match(vocabularyIndicators.n4Words) || []).length;
   const n3Count = (text.match(vocabularyIndicators.n3Words) || []).length;
+  const n2Count = (text.match(vocabularyIndicators.n2Words) || []).length;
+  const n1Count = (text.match(vocabularyIndicators.n1Words) || []).length;
   const politePatternCount = (text.match(vocabularyIndicators.politePattern) || []).length;
   const complexGrammarCount = (text.match(vocabularyIndicators.complexGrammar) || []).length;
 
@@ -176,6 +180,8 @@ function estimateJLPTLevelAdvanced(text) {
   beginnerScore += n4Count * 3; // N4 words moderately favor beginner
   beginnerScore += politePatternCount * 2; // Polite patterns favor beginner
   beginnerScore -= n3Count * 2; // N3 words slightly against beginner
+  beginnerScore -= n2Count * 5; // N2 words against beginner
+  beginnerScore -= n1Count * 8; // N1 words strongly against beginner
   beginnerScore -= complexGrammarCount * 10; // Complex grammar strongly against beginner
   
   // Sentence length scoring
@@ -190,7 +196,7 @@ function estimateJLPTLevelAdvanced(text) {
   else if (totalChars < 400) beginnerScore += 10;
   else if (totalChars > 800) beginnerScore -= 10;
   
-  // Determine level based on score with bias toward N4/N5
+  // Determine level based on score with more balanced distribution
   let level = 'N3'; // Default to intermediate
   
   if (beginnerScore >= 80) {
@@ -199,20 +205,25 @@ function estimateJLPTLevelAdvanced(text) {
     level = 'N4';
   } else if (beginnerScore >= 20) {
     level = 'N3';
-  } else if (beginnerScore >= 5) {
+  } else if (beginnerScore >= -10) {  // More generous N2 threshold
     level = 'N2';
   } else {
     level = 'N1';
   }
   
-  // Apply random variation to increase N4/N5 distribution
+  // Apply random variation for better distribution across all levels
   const random = Math.random();
-  if (random < 0.25) { // 25% chance to bump down difficulty
+  if (random < 0.15) { // 15% chance to bump up difficulty for higher levels
+    if (level === 'N3') level = 'N2';
+    if (level === 'N2') level = 'N1';
+  } else if (random < 0.30) { // 15% chance to bump down difficulty
     if (level === 'N3') level = 'N4';
     if (level === 'N2') level = 'N3';
     if (level === 'N1') level = 'N2';
-  } else if (random < 0.35) { // 10% chance to bump up N3 to N2 for better N2 distribution
-    if (level === 'N3') level = 'N2';
+  } else if (random < 0.40 && level === 'N3') { // 10% chance to make N3 become N2
+    level = 'N2';
+  } else if (random < 0.45 && level === 'N2') { // 5% chance to make N2 become N1
+    level = 'N1';
   }
   
   // Special case: if text has lots of basic patterns, bias toward beginner
@@ -436,7 +447,7 @@ async function scrapeNHKEasyArticle(link, index = 0) {
 }
 
 // Main scraping function
-async function scrapeNHKEasy(targetCount = 6) {
+async function scrapeNHKEasy(targetCount = 12) {
   console.log('🚀 ====== NHK EASY NEWS SCRAPER ACTIVATED ======');
   console.log(`🎯 Target: ${targetCount} articles`);
   

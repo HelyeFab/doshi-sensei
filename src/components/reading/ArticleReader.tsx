@@ -12,6 +12,9 @@ import {
   getReadingSpeedCategory
 } from '@/utils/readingAnalytics';
 import { generateFuriganaWithCache, checkFuriganaApiHealth } from '@/utils/furigana';
+import { BookmarkManager } from '@/utils/bookmarkManager';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -268,6 +271,9 @@ interface ArticleReaderProps {
 }
 
 export function ArticleReader({ article, onBack }: ArticleReaderProps) {
+  const { user } = useAuth();
+  const { isPremium } = useSubscription();
+  
   const [settings, setSettings] = useState<ReadingSettings>({
     fontSize: 'medium',
     showFurigana: true,
@@ -281,6 +287,8 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     position: { x: number; y: number };
   } | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+  const [bookmarkError, setBookmarkError] = useState<string | null>(null);
   const [readingStartTime] = useState(new Date());
   const [readingProgress, setReadingProgress] = useState(0);
   const [readingSession, setReadingSession] = useState<ReadingSession | null>(null);
@@ -495,14 +503,47 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
   // Load bookmark status
   useEffect(() => {
-    // This would check if the article is bookmarked
-    // For now, we'll just set it to false
-    setIsBookmarked(false);
-  }, [article.id]);
+    const checkBookmarkStatus = async () => {
+      if (!user) {
+        setIsBookmarked(false);
+        return;
+      }
+      
+      try {
+        const bookmarked = await BookmarkManager.isArticleBookmarked(user.uid, article.id);
+        setIsBookmarked(bookmarked);
+      } catch (error) {
+        console.error('Error checking bookmark status:', error);
+        setIsBookmarked(false);
+      }
+    };
 
-  const handleBookmarkToggle = () => {
-    setIsBookmarked(!isBookmarked);
-    // Here you would save/remove the bookmark from storage
+    checkBookmarkStatus();
+  }, [article.id, user]);
+
+  const handleBookmarkToggle = async () => {
+    if (!user) {
+      setBookmarkError('Please log in to bookmark articles');
+      return;
+    }
+
+    setBookmarkLoading(true);
+    setBookmarkError(null);
+
+    try {
+      const result = await BookmarkManager.toggleBookmark(user.uid, article, isPremium);
+      
+      if (result.success) {
+        setIsBookmarked(result.isBookmarked);
+      } else {
+        setBookmarkError(result.error || 'Failed to update bookmark');
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+      setBookmarkError('Failed to update bookmark');
+    } finally {
+      setBookmarkLoading(false);
+    }
   };
 
   // Handle reading completion
@@ -582,13 +623,15 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             {/* Bookmark button */}
             <button
               onClick={handleBookmarkToggle}
+              disabled={bookmarkLoading}
               className={`p-2 rounded-lg transition-colors ${
                 isBookmarked
                   ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              }`}
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              title={user ? (isBookmarked ? 'Remove bookmark' : 'Bookmark article') : 'Login to bookmark'}
             >
-              {isBookmarked ? '★' : '☆'}
+              {bookmarkLoading ? '⏳' : (isBookmarked ? '★' : '☆')}
             </button>
 
             {/* Settings button */}
@@ -714,6 +757,45 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             onClose={() => setSelectedWord(null)}
             onSaveToList={handleSaveWordToList}
           />
+        )}
+
+        {/* Bookmark error notification */}
+        {bookmarkError && (
+          <div className="fixed top-4 right-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 shadow-lg max-w-sm z-50">
+            <div className="flex items-start gap-3">
+              <span className="text-red-500">⚠️</span>
+              <div className="flex-1">
+                <h4 className="font-medium text-red-800 dark:text-red-200 mb-1">
+                  Bookmark Limit Reached
+                </h4>
+                <p className="text-sm text-red-700 dark:text-red-300 mb-3">
+                  {bookmarkError}
+                </p>
+                {bookmarkError.includes('Upgrade to Premium') && (
+                  <div className="flex gap-2">
+                    <a
+                      href="/subscription"
+                      className="px-3 py-1.5 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90 transition-colors"
+                    >
+                      Upgrade Now
+                    </a>
+                    <button
+                      onClick={() => setBookmarkError(null)}
+                      className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      Not Now
+                    </button>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setBookmarkError(null)}
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
         )}
 
 

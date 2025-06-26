@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MoodBoard, KanjiItem } from '@/types/moodBoard';
+import { MoodBoard, KanjiItem, MoodBoardImport } from '@/types/moodBoard';
 import { KanjiEditor } from './KanjiEditor';
 import { MoodBoardPreview } from './MoodBoardPreview';
 import { JsonEditor } from './JsonEditor';
+import { convertImportToMoodBoard, validateMoodBoardImport } from '@/utils/moodBoardConverter';
 
 interface MoodBoardEditorProps {
   initialData?: MoodBoard;
@@ -46,6 +47,7 @@ export function MoodBoardEditor({
   const [editorMode, setEditorMode] = useState<'form' | 'json'>('form');
   const [showPreview, setShowPreview] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -97,6 +99,45 @@ export function MoodBoardEditor({
 
   const handleKanjiUpdate = (kanji: KanjiItem[]) => {
     setFormData(prev => ({ ...prev, kanji }));
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonData = JSON.parse(e.target?.result as string);
+        
+        // Handle array format (your JSON has an array with one object)
+        const importData = Array.isArray(jsonData) ? jsonData[0] : jsonData;
+        
+        // Validate the import format
+        if (!validateMoodBoardImport(importData)) {
+          setUploadError('Invalid JSON format. Please check the file structure.');
+          return;
+        }
+        
+        // Convert to internal format
+        const convertedData = convertImportToMoodBoard(importData);
+        
+        // Update form with converted data
+        setFormData({
+          ...convertedData,
+          isActive: formData.isActive,
+          sortOrder: formData.sortOrder
+        } as any);
+        
+        setUploadError(null);
+        setErrors({});
+      } catch (error) {
+        setUploadError('Failed to parse JSON file: ' + (error instanceof Error ? error.message : 'Unknown error'));
+        console.error('JSON parse error:', error);
+      }
+    };
+    
+    reader.readAsText(file);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -190,6 +231,30 @@ export function MoodBoardEditor({
                 JSON Mode
               </button>
             </div>
+          </div>
+
+          {/* File Upload Section */}
+          <div className="mb-6 p-4 bg-muted/30 rounded-lg border border-border">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-foreground mb-1">Import from JSON File</h3>
+                <p className="text-xs text-muted-foreground">Upload a JSON file to populate the form</p>
+              </div>
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <span className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors inline-block">
+                  📁 Choose File
+                </span>
+              </label>
+            </div>
+            {uploadError && (
+              <div className="mt-2 text-sm text-destructive">{uploadError}</div>
+            )}
           </div>
 
           {/* Basic Information */}

@@ -1,3 +1,4 @@
+// Main MoodBoard type used internally
 export interface MoodBoard {
   id: string;
   title: string;
@@ -13,6 +14,16 @@ export interface MoodBoard {
   sortOrder?: number;
 }
 
+// Alternative format for importing mood boards from JSON
+export interface MoodBoardImport {
+  category: string;  // Maps to title
+  themeColor: string;  // Used to generate background gradient
+  description: string;
+  kanjiList: KanjiImportItem[];  // Maps to kanji array
+  emoji?: string;  // Optional, will use default if not provided
+  jlptLevel?: 'N5' | 'N4' | 'N3' | 'N2' | 'N1';  // Optional, will use N5 if not provided
+}
+
 export interface KanjiItem {
   char: string;
   meaning: string;
@@ -22,6 +33,21 @@ export interface KanjiItem {
   };
   examples: string[];
   difficulty: number; // 1-5
+}
+
+// Kanji format for imports
+export interface KanjiImportItem {
+  kanji: string;  // Maps to char
+  kana: string;  // Primary reading (usually kun)
+  meaning: string;
+  jlptLevel: 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
+  examples: {
+    sentence: string;
+    translation: string;
+  }[];
+  radicals?: string[];
+  strokeCount?: number;
+  tags?: string[];
 }
 
 export interface BoardProgress {

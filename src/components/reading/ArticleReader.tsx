@@ -272,7 +272,8 @@ interface ArticleReaderProps {
 
 export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const { user } = useAuth();
-  const { isPremium } = useSubscription();
+  const { userType } = useSubscription();
+  const isPremium = userType === 'premium';
   
   const [settings, setSettings] = useState<ReadingSettings>({
     fontSize: 'medium',

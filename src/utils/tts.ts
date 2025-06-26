@@ -4,6 +4,7 @@ export class TTSManager {
   private static apiKey: string | null = null;
   private static isInitialized = false;
   private static cache = TTSCache.getInstance();
+  private static currentAudio: HTMLAudioElement | null = null;
 
   /**
    * Initialize TTS with Google Cloud API key
@@ -100,19 +101,31 @@ export class TTSManager {
       );
 
       if (cachedAudio) {
+        // Stop any currently playing audio
+        this.stop();
+        
         // Play cached audio
         const audio = new Audio(URL.createObjectURL(cachedAudio));
         audio.playbackRate = speed;
+        
+        // Store reference to current audio
+        this.currentAudio = audio;
 
         return new Promise<void>((resolve, reject) => {
           audio.addEventListener('ended', () => {
             URL.revokeObjectURL(audio.src); // Clean up blob URL
+            if (this.currentAudio === audio) {
+              this.currentAudio = null;
+            }
             resolve();
           });
 
           audio.addEventListener('error', (e) => {
             console.error('❌ Audio playback error:', e);
             URL.revokeObjectURL(audio.src);
+            if (this.currentAudio === audio) {
+              this.currentAudio = null;
+            }
             reject(new Error('Audio playback failed'));
           });
 
@@ -214,9 +227,34 @@ export class TTSManager {
   }
 
   /**
+   * Check if audio is currently playing
+   */
+  static isPlaying(): boolean {
+    if (this.currentAudio && !this.currentAudio.paused) {
+      return true;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      return speechSynthesis.speaking;
+    }
+    return false;
+  }
+
+  /**
    * Stop any ongoing speech
    */
   static stop(): void {
+    // Stop HTML audio if playing
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio.currentTime = 0;
+      // Clean up blob URL if exists
+      if (this.currentAudio.src.startsWith('blob:')) {
+        URL.revokeObjectURL(this.currentAudio.src);
+      }
+      this.currentAudio = null;
+    }
+    
+    // Also stop Web Speech API if active
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       speechSynthesis.cancel();
     }

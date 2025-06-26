@@ -24,19 +24,11 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
         const isHomePage = currentPath === '/' || currentPath === '/home';
         const shouldShowOnThisPage = isHomePage || isManualTrigger;
 
-          hasCompleted,
-          isFirstVisit,
-          isManualTrigger,
-          currentPath,
-          isHomePage,
-          shouldShowOnThisPage,
-          willShow: (isFirstVisit || isManualTrigger) && shouldShowOnThisPage
-        });
-
         // Show onboarding for new users on home page, or if manually triggered anywhere
         if ((isFirstVisit || isManualTrigger) && shouldShowOnThisPage) {
           setShowOnboarding(true);
         } else {
+          setShowOnboarding(false);
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);

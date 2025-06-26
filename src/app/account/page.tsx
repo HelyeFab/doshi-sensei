@@ -30,13 +30,6 @@ export default function AccountPage() {
     if (user) {
       // Initialize StatsManager with user context and cloud sync capability
       const canSync = userSubscription?.subscription?.status === 'active';
-        userEmail: user.email,
-        userUID: user.uid,
-        subscriptionStatus: userSubscription?.subscription?.status,
-        canSync: canSync,
-        hasSubscription: !!userSubscription,
-        subscriptionData: userSubscription
-      });
       StatsManager.setUser(user, canSync);
 
       loadUserStats();

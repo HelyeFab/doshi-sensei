@@ -59,12 +59,6 @@ export async function getUserStats(): Promise<UserStats> {
     } as FirebaseUser));
 
     // Debug: Log first few users to understand the data structure
-      id: user.id,
-      email: user.email,
-      displayName: user.displayName,
-      hasSubscription: !!user.subscription,
-      subscriptionStructure: user.subscription,
-    })));
 
     const totalUsers = allUsers.length;
 
@@ -135,11 +129,6 @@ export async function getSubscriptionStats(): Promise<SubscriptionStats> {
     } as FirebaseUser));
 
     // Debug: Log user data to understand the structure
-      id: user.id,
-      email: user.email,
-      subscription: user.subscription,
-      subscriptionPlan: user.subscription?.subscription?.plan,
-    })));
 
     // Filter by subscription type - check both potential structures
     const freeUsers = allUsers.filter(user => {

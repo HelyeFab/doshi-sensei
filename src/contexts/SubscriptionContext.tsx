@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, getDoc, runTransaction } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import {
   UserSubscription,
@@ -60,7 +60,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     // Free plan limits (hardcoded)
     const FREE_LIMITS = {
       maxLists: 3,
-      maxDrillsPerDay: 50,
+      maxDrillsPerDay: 3,
       canSync: false,
       canSave: true,
     };
@@ -96,16 +96,19 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     const unsubscribe = onSnapshot(userDocRef, async (doc) => {
       try {
         const userData = doc.data();
+        console.log('Doshi Sensei Debug: Raw user data from Firestore:', userData);
 
         if (userData?.subscription) {
+          console.log('Doshi Sensei Debug: Found subscription in user data:', userData.subscription);
           setUserSubscription(userData.subscription);
         } else {
+          console.log('Doshi Sensei Debug: No subscription found, initializing default.');
           // Initialize default subscription for new user
           const defaultSub = await initializeDefaultSubscription(user.uid);
           setUserSubscription(defaultSub);
         }
       } catch (error) {
-        console.error('Error loading subscription:', error);
+        console.error('Doshi Sensei Debug: Error loading subscription:', error);
         // Fallback to default subscription without trying to save to Firebase
         const defaultSub = createOfflineDefaultSubscription();
         setUserSubscription(defaultSub);
@@ -114,7 +117,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       }
     }, (error) => {
       // Handle Firebase connection errors
-      console.error('Firebase connection error:', error);
+      console.error('Doshi Sensei Debug: Firebase connection error:', error);
       // Use offline default subscription
       const defaultSub = createOfflineDefaultSubscription();
       setUserSubscription(defaultSub);
@@ -129,7 +132,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     // Free plan limits (hardcoded)
     const FREE_LIMITS = {
       maxLists: 3,
-      maxDrillsPerDay: 50,
+      maxDrillsPerDay: 3,
       canSync: false,
       canSave: true,
     };
@@ -237,7 +240,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
     if (!user && feature === 'drills') {
       // Check guest drill limits (hardcoded)
-      const GUEST_MAX_DRILLS = 50;
+      const GUEST_MAX_DRILLS = 3;
       if (!guestUsage) return false;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
@@ -300,37 +303,71 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const canDoDrill = (): boolean => isFeatureAvailable('drills');
 
   const incrementListCount = async () => {
-    if (!user || !userSubscription) return;
-
-    const updatedSubscription = {
-      ...userSubscription,
-      currentUsage: {
-        ...userSubscription.currentUsage,
-        listsCount: userSubscription.currentUsage.listsCount + 1,
-      },
-    };
+    if (!user) return;
 
     const userDocRef = doc(db, 'users', user.uid);
-    await setDoc(userDocRef, { subscription: updatedSubscription }, { merge: true });
+    
+    try {
+      await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentData = userDoc.data();
+        
+        if (!currentData?.subscription) {
+          throw new Error('No subscription data found');
+        }
+        
+        const currentCount = currentData.subscription.currentUsage?.listsCount || 0;
+        
+        const updatedSubscription = {
+          ...currentData.subscription,
+          currentUsage: {
+            ...currentData.subscription.currentUsage,
+            listsCount: currentCount + 1,
+          },
+        };
+        
+        transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+      });
+    } catch (error) {
+      console.error('Failed to increment list count:', error);
+      throw error;
+    }
   };
 
   const incrementDrillCount = async () => {
-    if (!user || !userSubscription) return;
-
-    const today = new Date().toISOString().split('T')[0];
-    const isToday = userSubscription.currentUsage.lastDrillDate === today;
-
-    const updatedSubscription = {
-      ...userSubscription,
-      currentUsage: {
-        ...userSubscription.currentUsage,
-        drillsToday: isToday ? userSubscription.currentUsage.drillsToday + 1 : 1,
-        lastDrillDate: today,
-      },
-    };
+    if (!user) return;
 
     const userDocRef = doc(db, 'users', user.uid);
-    await setDoc(userDocRef, { subscription: updatedSubscription }, { merge: true });
+    const today = new Date().toISOString().split('T')[0];
+    
+    try {
+      await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentData = userDoc.data();
+        
+        if (!currentData?.subscription) {
+          throw new Error('No subscription data found');
+        }
+        
+        const currentUsage = currentData.subscription.currentUsage || {};
+        const isToday = currentUsage.lastDrillDate === today;
+        const currentCount = isToday ? (currentUsage.drillsToday || 0) : 0;
+        
+        const updatedSubscription = {
+          ...currentData.subscription,
+          currentUsage: {
+            ...currentUsage,
+            drillsToday: currentCount + 1,
+            lastDrillDate: today,
+          },
+        };
+        
+        transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+      });
+    } catch (error) {
+      console.error('Failed to increment drill count:', error);
+      throw error;
+    }
   };
 
   const refreshSubscription = async () => {

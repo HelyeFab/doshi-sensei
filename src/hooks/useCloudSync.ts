@@ -27,10 +27,36 @@ export function useCloudSync(): CloudSyncHook {
   // Check if user can sync using SubscriptionContext logic
   const canSync = isFeatureAvailable('sync');
 
+  // Debug logging for troubleshooting
+  useEffect(() => {
+    if (user && userSubscription) {
+      console.log('CloudSync Debug:', {
+        userEmail: user.email,
+        subscriptionPlan: userSubscription.subscription?.plan,
+        subscriptionStatus: userSubscription.subscription?.status,
+        canSyncLimit: userSubscription.limits?.canSync,
+        isFeatureAvailableResult: isFeatureAvailable('sync'),
+        canSyncValue: canSync
+      });
+    }
+  }, [user, userSubscription, canSync, isFeatureAvailable]);
+
   // Initialize network monitoring and sync status listener
   useEffect(() => {
     // Initialize network monitoring
     CloudSync.initNetworkMonitoring();
+    
+    // Initialize sync queue
+    const initializeQueue = async () => {
+      try {
+        const { syncQueue } = await import('@/utils/syncQueue');
+        syncQueue.initializeQueue();
+      } catch (error) {
+        console.error('Failed to initialize sync queue:', error);
+      }
+    };
+    
+    initializeQueue();
 
     // Listen to sync status changes
     const handleSyncStatusChange = (status: SyncStatus) => {

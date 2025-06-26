@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_EMAIL } from '@/types/admin';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface AdminGuardProps {
@@ -13,35 +13,75 @@ interface AdminGuardProps {
 export function AdminGuard({ children }: AdminGuardProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [isVerifyingAdmin, setIsVerifyingAdmin] = useState(false);
+  const [isAdminVerified, setIsAdminVerified] = useState(false);
 
   useEffect(() => {
-    if (!loading) {
-      // If not authenticated or not admin, redirect to home page
-      if (!user || user.email !== ADMIN_EMAIL) {
+    const verifyAdminRole = async () => {
+      if (!loading && user) {
+        // First check client-side email for quick rejection
+        if (user.email !== ADMIN_EMAIL) {
+          router.replace('/');
+          return;
+        }
+
+        setIsVerifyingAdmin(true);
+        
+        try {
+          // Get Firebase ID token
+          const token = await user.getIdToken();
+          
+          // Verify admin role server-side
+          const response = await fetch('/api/admin/verify-role', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+          });
+
+          const result = await response.json();
+
+          if (result.isAdmin) {
+            setIsAdminVerified(true);
+          } else {
+            console.warn('Admin verification failed:', result);
+            router.replace('/');
+          }
+        } catch (error) {
+          console.error('Admin verification error:', error);
+          router.replace('/');
+        } finally {
+          setIsVerifyingAdmin(false);
+        }
+      } else if (!loading && !user) {
         router.replace('/');
-        return;
       }
-    }
+    };
+
+    verifyAdminRole();
   }, [user, loading, router]);
 
-  // Show loading while checking authentication
-  if (loading) {
+  // Show loading while checking authentication or verifying admin
+  if (loading || isVerifyingAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin text-4xl mb-4">⏳</div>
-          <p className="text-muted-foreground">Verifying admin access...</p>
+          <p className="text-muted-foreground">
+            {loading ? 'Checking authentication...' : 'Verifying admin access...'}
+          </p>
         </div>
       </div>
     );
   }
 
-  // If user is not admin, don't render anything (redirect is in useEffect)
-  if (!user || user.email !== ADMIN_EMAIL) {
+  // If user is not admin or verification failed, don't render anything
+  if (!user || !isAdminVerified) {
     return null;
   }
 
-  // User is admin, render the protected content
+  // User is verified admin, render the protected content
   return <>{children}</>;
 }
 

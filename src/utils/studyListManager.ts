@@ -153,11 +153,6 @@ export class StudyListManager {
 
       if (itemType === 'word') {
         const word = item as JapaneseWord;
-          kanji: word.kanji,
-          kana: word.kana,
-          type: word.type,
-          hasDetailedMeaning: !!word.detailedMeaning
-        });
 
         // Check for explicit conjugable types
         const conjugableTypes: WordType[] = ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'];

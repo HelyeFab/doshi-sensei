@@ -15,6 +15,7 @@ export interface SyncResult {
   success: boolean;
   error?: string;
   synced?: boolean;
+  queued?: boolean;
 }
 
 export interface SyncStatus {
@@ -49,9 +50,29 @@ export class CloudSync {
     collection: string,
     documentId: string,
     data: T,
-    timeoutMs: number = 15000
+    timeoutMs: number = 15000,
+    useQueue: boolean = true
   ): Promise<SyncResult> {
     try {
+      // If offline and queue enabled, add to queue
+      if (!navigator.onLine && useQueue) {
+        const { syncQueue } = await import('./syncQueue');
+        const operationId = syncQueue.addOperation({
+          type: 'upload',
+          collection,
+          documentId,
+          data,
+          userId: user.uid,
+          priority: 'medium',
+          maxRetries: 3
+        });
+        
+        return { 
+          success: true, 
+          synced: false,
+          error: `Queued for sync when online (ID: ${operationId})`
+        };
+      }
 
       this.setSyncStatus({ isSyncing: true });
 
@@ -93,6 +114,31 @@ export class CloudSync {
       });
 
       this.setSyncStatus({ isSyncing: false });
+      
+      // If using queue and it's a recoverable error, queue for retry
+      if (useQueue && this.isRecoverableError(error)) {
+        try {
+          const { syncQueue } = await import('./syncQueue');
+          const operationId = syncQueue.addOperation({
+            type: 'upload',
+            collection,
+            documentId,
+            data,
+            userId: user.uid,
+            priority: 'high', // Failed operations get high priority
+            maxRetries: 5 // More retries for failed operations
+          });
+          
+          return {
+            success: false,
+            synced: false,
+            error: `Upload failed, queued for retry (ID: ${operationId}): ${error instanceof Error ? error.message : 'Unknown error'}`
+          };
+        } catch (queueError) {
+          console.error('Failed to queue retry operation:', queueError);
+        }
+      }
+      
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Upload failed'
@@ -260,15 +306,74 @@ export class CloudSync {
   }
 
   /**
+   * Check if an error is recoverable and should be retried
+   */
+  private static isRecoverableError(error: any): boolean {
+    if (!error) return false;
+    
+    const errorMessage = error.message || error.toString().toLowerCase();
+    
+    // Network-related errors that are recoverable
+    const recoverableErrors = [
+      'network error',
+      'timeout',
+      'connection',
+      'unavailable',
+      'failed to fetch',
+      'fetch failed',
+      'offline',
+      'network request failed',
+      'load failed',
+      'cors',
+      'temporarily overloaded',
+      'rate limit',
+      'quota exceeded'
+    ];
+    
+    // Firebase-specific recoverable errors
+    const firebaseRecoverableErrors = [
+      'failed-precondition',
+      'aborted',
+      'internal',
+      'unavailable',
+      'deadline-exceeded',
+      'resource-exhausted'
+    ];
+    
+    return recoverableErrors.some(pattern => errorMessage.includes(pattern)) ||
+           firebaseRecoverableErrors.some(code => errorMessage.includes(code)) ||
+           // HTTP status codes that are recoverable
+           /5\d\d/.test(errorMessage) || // 5xx server errors
+           errorMessage.includes('429'); // Rate limiting
+  }
+
+  /**
    * Network status monitoring
    */
   static initNetworkMonitoring(): void {
     const updateOnlineStatus = () => {
       this.setSyncStatus({ isOnline: navigator.onLine });
+      
+      // Try to process queue when going online
+      if (navigator.onLine) {
+        this.processOfflineQueue();
+      }
     };
 
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
+  }
+
+  /**
+   * Process offline queue when coming back online
+   */
+  private static async processOfflineQueue(): Promise<void> {
+    try {
+      const { syncQueue } = await import('./syncQueue');
+      await syncQueue.processQueue();
+    } catch (error) {
+      console.error('Failed to process offline queue:', error);
+    }
   }
 }
 

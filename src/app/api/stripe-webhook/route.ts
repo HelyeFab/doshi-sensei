@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, runTransaction, collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -19,6 +19,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
+  // Check for idempotency - prevent duplicate processing
+  const idempotencyKey = event.id;
+  const processedEventRef = doc(db, 'webhook_events', idempotencyKey);
+  
+  try {
+    const existingEvent = await getDoc(processedEventRef);
+    if (existingEvent.exists()) {
+      console.log(`Webhook event ${idempotencyKey} already processed, skipping`);
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+  } catch (error) {
+    console.error('Error checking idempotency:', error);
+    // Continue processing if idempotency check fails
+  }
 
   try {
     switch (event.type) {
@@ -46,9 +60,24 @@ export async function POST(request: NextRequest) {
       default:
     }
 
+    // Mark event as processed
+    await setDoc(processedEventRef, {
+      eventId: event.id,
+      eventType: event.type,
+      processedAt: new Date().toISOString(),
+      success: true
+    });
+
+    // Log successful processing
+    await logWebhookEvent(event, 'success');
+
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing webhook:', error);
+    
+    // Log failed processing
+    await logWebhookEvent(event, 'error', error instanceof Error ? error.message : 'Unknown error');
+    
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -90,7 +119,6 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     return;
   }
 
-
   // Determine plan from price ID
   const priceId = subscription.items.data[0]?.price.id;
   let plan: 'monthly' | 'yearly' = 'monthly';
@@ -99,40 +127,51 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     plan = 'yearly';
   }
 
-  // Get current user subscription data
+  // Use transaction to prevent race conditions
   const userDocRef = doc(db, 'users', firebaseUID);
-  const userDoc = await getDoc(userDocRef);
-  const currentData = userDoc.data();
+  
+  await runTransaction(db, async (transaction) => {
+    const userDoc = await transaction.get(userDocRef);
+    const currentData = userDoc.data();
 
-  // Update subscription data
-  const updatedSubscription = {
-    ...currentData?.subscription,
-    subscription: {
-      status: subscription.status as any,
-      plan: plan,
-      renewalDate: new Date((subscription as any).current_period_end * 1000).toISOString(),
-      cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
-      stripeSubscriptionId: subscription.id,
-      stripePriceId: priceId,
-    },
-    limits: plan === 'monthly' || plan === 'yearly' ? {
-      maxLists: -1,
-      maxDrillsPerDay: -1,
-      canSync: true,
-    } : {
-      maxLists: 3,
-      maxDrillsPerDay: 3,
-      canSync: false,
-    },
-    currentUsage: currentData?.subscription?.currentUsage || {
-      listsCount: 0,
-      drillsToday: 0,
-      lastDrillDate: new Date().toISOString().split('T')[0],
-    },
-  };
+    // Validate subscription status
+    const validStatuses = ['active', 'trialing', 'past_due', 'canceled', 'unpaid'];
+    if (!validStatuses.includes(subscription.status)) {
+      throw new Error(`Invalid subscription status: ${subscription.status}`);
+    }
 
-  await setDoc(userDocRef, { subscription: updatedSubscription }, { merge: true });
+    // Build updated subscription data
+    const updatedSubscription = {
+      ...currentData?.subscription,
+      subscription: {
+        status: subscription.status,
+        plan: plan,
+        renewalDate: new Date(subscription.current_period_end * 1000).toISOString(),
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        stripeSubscriptionId: subscription.id,
+        stripePriceId: priceId,
+        updatedAt: new Date().toISOString(),
+      },
+      limits: (plan === 'monthly' || plan === 'yearly') && subscription.status === 'active' ? {
+        maxLists: -1,
+        maxDrillsPerDay: -1,
+        canSync: true,
+        canSave: true,
+      } : {
+        maxLists: 3,
+        maxDrillsPerDay: 3,
+        canSync: false,
+        canSave: true,
+      },
+      currentUsage: currentData?.subscription?.currentUsage || {
+        listsCount: 0,
+        drillsToday: 0,
+        lastDrillDate: new Date().toISOString().split('T')[0],
+      },
+    };
 
+    transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+  });
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
@@ -143,35 +182,39 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     return;
   }
 
-
-  // Get current user subscription data
+  // Use transaction to prevent race conditions
   const userDocRef = doc(db, 'users', firebaseUID);
-  const userDoc = await getDoc(userDocRef);
-  const currentData = userDoc.data();
+  
+  await runTransaction(db, async (transaction) => {
+    const userDoc = await transaction.get(userDocRef);
+    const currentData = userDoc.data();
 
-  // Revert to free plan
-  const updatedSubscription = {
-    ...currentData?.subscription,
-    subscription: {
-      status: 'inactive' as any,
-      plan: 'free' as any,
-      stripeSubscriptionId: null,
-      stripePriceId: null,
-    },
-    limits: {
-      maxLists: 3,
-      maxDrillsPerDay: 3,
-      canSync: false,
-    },
-    currentUsage: currentData?.subscription?.currentUsage || {
-      listsCount: 0,
-      drillsToday: 0,
-      lastDrillDate: new Date().toISOString().split('T')[0],
-    },
-  };
+    // Revert to free plan
+    const updatedSubscription = {
+      ...currentData?.subscription,
+      subscription: {
+        status: 'inactive',
+        plan: 'free',
+        stripeSubscriptionId: null,
+        stripePriceId: null,
+        canceledAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      limits: {
+        maxLists: 3,
+        maxDrillsPerDay: 3,
+        canSync: false,
+        canSave: true,
+      },
+      currentUsage: currentData?.subscription?.currentUsage || {
+        listsCount: 0,
+        drillsToday: 0,
+        lastDrillDate: new Date().toISOString().split('T')[0],
+      },
+    };
 
-  await setDoc(userDocRef, { subscription: updatedSubscription }, { merge: true });
-
+    transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+  });
 }
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
@@ -183,5 +226,39 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   if ((invoice as any).subscription) {
     // Handle payment failure - could send notification to user
+    const subscriptionId = (invoice as any).subscription;
+    console.error(`Payment failed for subscription: ${subscriptionId}`);
+    
+    // Log payment failure for monitoring
+    await logWebhookEvent({
+      id: invoice.id,
+      type: 'invoice.payment_failed',
+      data: { object: invoice }
+    } as Stripe.Event, 'payment_failed', `Payment failed for subscription ${subscriptionId}`);
+  }
+}
+
+// Logging function for webhook events
+async function logWebhookEvent(event: Stripe.Event, status: 'success' | 'error' | 'payment_failed', errorMessage?: string) {
+  try {
+    const logData = {
+      eventId: event.id,
+      eventType: event.type,
+      status: status,
+      timestamp: new Date().toISOString(),
+      error: errorMessage || null,
+      data: {
+        // Store relevant event data for debugging
+        objectId: (event.data.object as any)?.id,
+        customerId: (event.data.object as any)?.customer,
+        subscriptionId: (event.data.object as any)?.subscription || (event.data.object as any)?.id,
+      }
+    };
+
+    // Store in webhook_logs collection for monitoring
+    await addDoc(collection(db, 'webhook_logs'), logData);
+  } catch (error) {
+    console.error('Failed to log webhook event:', error);
+    // Don't throw error to avoid disrupting webhook processing
   }
 }

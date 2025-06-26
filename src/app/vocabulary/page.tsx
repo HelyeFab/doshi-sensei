@@ -648,10 +648,6 @@ function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
 
     try {
       setCreating(true);
-        userUID: user?.uid,
-        subscriptionStatus: userSubscription?.subscription?.status,
-        canSync: userSubscription?.limits?.canSync
-      });
 
       // Use the unified StudyListManager system instead of the old WordListManager
       await StudyListManager.createStudyList(

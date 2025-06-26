@@ -5,7 +5,13 @@ import moodBoardsData from '@/data/moodBoards.json';
  * Get all available mood boards
  */
 export function getAllMoodBoards(): MoodBoard[] {
-  return Object.values(moodBoardsData) as MoodBoard[];
+  return Object.entries(moodBoardsData).map(([id, board]) => ({
+    ...board,
+    id,
+    createdAt: new Date(board.createdAt || Date.now()),
+    updatedAt: board.updatedAt ? new Date(board.updatedAt) : undefined,
+    isActive: board.isActive ?? true,
+  })) as MoodBoard[];
 }
 
 /**

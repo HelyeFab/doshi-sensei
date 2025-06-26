@@ -77,12 +77,6 @@ export function useUsers(): UseUsersReturn {
         };
         
         // Debug: Log raw Firebase user data
-          id: doc.id,
-          rawData: doc.data(),
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          hasSubscription: !!firebaseUser.subscription,
-        });
         
         return convertFirebaseUser(firebaseUser);
       });

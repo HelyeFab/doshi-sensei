@@ -38,11 +38,6 @@ export class StatsManager {
    * Initialize with user context for cloud sync
    */
   static setUser(user: User | null, canSync: boolean = false): void {
-      userEmail: user?.email,
-      userUID: user?.uid,
-      canSync: canSync,
-      timestamp: new Date().toISOString()
-    });
     this.currentUser = user;
     this.hasCloudSync = canSync;
   }
@@ -51,12 +46,6 @@ export class StatsManager {
    * Get current user statistics with cloud sync
    */
   static async getUserStats(): Promise<UserStats> {
-      hasUser: !!this.currentUser,
-      userEmail: this.currentUser?.email,
-      userUID: this.currentUser?.uid,
-      hasCloudSync: this.hasCloudSync,
-      timestamp: new Date().toISOString()
-    });
 
     try {
       // Always load local stats first for immediate response
@@ -548,12 +537,6 @@ export class StatsManager {
     const diffTime = todayDate_obj.getTime() - lastActiveDate_obj.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-      lastActiveDate: normalizedLastActive,
-      today: normalizedToday,
-      diffDays,
-      currentStreak: stats.currentStreak
-    });
-
     // Update last active date
     stats.lastActiveDate = today;
 
@@ -575,11 +558,6 @@ export class StatsManager {
     } else {
       // Negative difference (clock moved backwards) - maintain streak but don't increment
     }
-
-      currentStreak: stats.currentStreak,
-      longestStreak: stats.longestStreak,
-      totalDaysUsed: stats.totalDaysUsed
-    });
   }
 
   /**

@@ -15,10 +15,6 @@ export default function TestSearchPage() {
 
     const logs: string[] = [];
 
-      logs.push(args.join(' '));
-      originalLog(...args);
-    };
-
     try {
       await testSearchIssue();
       setResults(logs);
@@ -35,10 +31,6 @@ export default function TestSearchPage() {
     setResults([]);
 
     const logs: string[] = [];
-
-      logs.push(args.join(' '));
-      originalLog(...args);
-    };
 
     try {
       await testSpecificWord(testWord);

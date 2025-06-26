@@ -62,6 +62,20 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Webhook events collection - server-side only
+    match /webhook_events/{eventId} {
+      // Only allow server-side access (no client access)
+      allow read, write: if false;
+    }
+
+    // Webhook logs collection - admin read only
+    match /webhook_logs/{logId} {
+      // Only admin can read webhook logs
+      allow read: if isAdmin();
+      // Server-side writes only (no client writes)
+      allow write: if false;
+    }
+
     // News articles collection - public read access, admin write access
     match /articles/{articleId} {
       // Allow anyone to read articles (no authentication required)

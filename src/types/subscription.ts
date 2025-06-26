@@ -70,7 +70,7 @@ export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
   },
   limits: {
     maxLists: 3,
-    maxDrillsPerDay: 50,
+    maxDrillsPerDay: 3,
     canSync: false,
     canSave: true
   },
@@ -160,8 +160,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     currency: 'USD',
     interval: 'month',
     features: [
-      '50 drill questions per day',
-      '10 vocabulary searches per day',
+      '3 drill questions per day',
+      'Unlimited vocabulary searches',
       'Basic mood boards access',
       'Community support'
     ],
@@ -171,7 +171,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'monthly',
     name: 'Monthly Premium',
     description: 'Unlock unlimited access to all features',
-    price: 9.99,
+    price: 3.99,
     currency: 'USD',
     interval: 'month',
     features: [
@@ -190,7 +190,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'yearly',
     name: 'Yearly Premium',
     description: 'Best value - save 30% with annual billing',
-    price: 83.99,
+    price: 39.99,
     currency: 'USD',
     interval: 'year',
     features: [

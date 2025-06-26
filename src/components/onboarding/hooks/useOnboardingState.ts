@@ -51,11 +51,6 @@ export function useOnboardingState() {
   // Initialize onboarding state
   useEffect(() => {
     const { shouldShow, isFirstVisit, isManualTrigger } = checkOnboardingStatus();
-      shouldShow,
-      isFirstVisit,
-      isManualTrigger,
-      currentState: state
-    });
     if (shouldShow) {
       setState(prev => ({ ...prev, isActive: true }));
       setStartTime(new Date());

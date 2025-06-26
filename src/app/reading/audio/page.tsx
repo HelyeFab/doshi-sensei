@@ -568,10 +568,6 @@ export default function AudioPlayerPage() {
     const rubyRegex = /<ruby>([^<]+)<rp>\(<\/rp><rt>([^<]+)<\/rt><rp>\)<\/rp><\/ruby>/g;
     const rubyMatches = [...text.matchAll(rubyRegex)];
 
-      word: match[1],
-      reading: match[2]
-    })));
-
     // Use inline styles for colors since Tailwind classes won't be included in build
     const colorRotation = [
       'border-bottom: 2px solid #60a5fa; cursor: pointer; transition: all 0.2s;', // Blue

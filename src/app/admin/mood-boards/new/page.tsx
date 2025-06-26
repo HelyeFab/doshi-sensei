@@ -10,8 +10,16 @@ import { useState } from 'react';
 function NewMoodBoardContent() {
   const router = useRouter();
   const { createMoodBoard } = useMoodBoards();
-  const { success, error: showError } = useAdminNotifications();
   const [isCreating, setIsCreating] = useState(false);
+  
+  // Use a try-catch to handle the notification hook more defensively
+  let notifications: any = { success: () => {}, error: () => {} };
+  try {
+    notifications = useAdminNotifications();
+  } catch (e) {
+    // If notifications aren't available, we'll use console logging as fallback
+    console.warn('Notifications not available:', e);
+  }
 
   const handleSave = async (moodBoardData: any) => {
     try {
@@ -28,11 +36,15 @@ function NewMoodBoardContent() {
         sortOrder: moodBoardData.sortOrder ?? 0,
       });
       
-      success('Mood Board Created', `"${moodBoardData.title}" has been created successfully`);
+      if (notifications.success) {
+        notifications.success('Mood Board Created', `"${moodBoardData.title}" has been created successfully`);
+      }
       router.push('/admin/mood-boards');
     } catch (err) {
       console.error('Error creating mood board:', err);
-      showError('Failed to Create Mood Board', err instanceof Error ? err.message : 'An unexpected error occurred');
+      if (notifications.error) {
+        notifications.error('Failed to Create Mood Board', err instanceof Error ? err.message : 'An unexpected error occurred');
+      }
     } finally {
       setIsCreating(false);
     }

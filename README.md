@@ -141,3 +141,4 @@ This project is open source. The dictionary data is used under the EDRDG License
 ### Dictionary Data
 - **Jim Breen** and the **Electronic Dictionary Research and Development Group (EDRDG)** for creating and maintaining JMdict
 - **scriptin** for the JMdict Simplified project that makes this integration possible
+# Deployment trigger

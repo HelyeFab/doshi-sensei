@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getMoodBoardById, moodBoardExists } from '@/utils/moodBoardData';
+import { useMoodBoards } from '@/hooks/useMoodBoards';
 import MoodBoard from '@/components/kanji-moods/MoodBoard';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { Analytics } from '@/utils/analytics';
@@ -13,41 +13,37 @@ export default function MoodBoardPage() {
   const params = useParams();
   const boardId = params.boardId as string;
   const { user } = useAuth();
+  const { moodBoards, loading: boardsLoading } = useMoodBoards();
 
   const [board, setBoard] = useState<MoodBoardType | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    const loadBoard = () => {
-      try {
-        if (!boardId) {
-          setNotFound(true);
-          setLoading(false);
-          return;
-        }
+    if (!boardsLoading) {
+      const loadBoard = () => {
+        try {
+          if (!boardId) {
+            setNotFound(true);
+            setLoading(false);
+            return;
+          }
 
-        // Check if board exists
-        if (!moodBoardExists(boardId)) {
-          setNotFound(true);
-          setLoading(false);
-          return;
-        }
-
-        // Load the specific board
-        const boardData = getMoodBoardById(boardId);
-        if (boardData) {
-          setBoard(boardData);
+          // Find the board in Firebase data
+          const boardData = moodBoards.find(b => b.id === boardId);
           
-          // Track mood board view analytics
-          Analytics.trackMoodBoardView(user?.uid, {
-            moodBoardId: boardId,
-            boardTitle: boardData.title,
-            jlptLevel: boardData.jlpt,
-            kanjiCount: boardData.kanji?.length || 0,
-            viewedAt: new Date().toISOString(),
-          });
-        } else {
+          if (boardData && boardData.isActive !== false) {
+            setBoard(boardData);
+            
+            // Track mood board view analytics
+            Analytics.trackMoodBoardView(user?.uid, {
+              moodBoardId: boardId,
+              boardTitle: boardData.title,
+              jlptLevel: boardData.jlpt,
+              kanjiCount: boardData.kanji?.length || 0,
+              viewedAt: new Date().toISOString(),
+            });
+          } else {
           setNotFound(true);
         }
       } catch (error) {
@@ -58,15 +54,16 @@ export default function MoodBoardPage() {
       }
     };
 
-    loadBoard();
-  }, [boardId]);
+      loadBoard();
+    }
+  }, [boardId, boardsLoading, moodBoards, user?.uid]);
 
   const handleBack = () => {
     router.push('/kanji-moods');
   };
 
   // Loading state
-  if (loading) {
+  if (loading || boardsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

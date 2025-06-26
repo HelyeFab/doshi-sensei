@@ -1,7 +1,9 @@
-// Text-to-Speech utility using Google Cloud Text-to-Speech API
+// Text-to-Speech utility using Google Cloud Text-to-Speech API with caching
+import TTSCache from './ttsCache';
 export class TTSManager {
   private static apiKey: string | null = null;
   private static isInitialized = false;
+  private static cache = TTSCache.getInstance();
 
   /**
    * Initialize TTS with Google Cloud API key
@@ -81,65 +83,87 @@ export class TTSManager {
   }
 
   /**
-   * Speak Japanese text using Google Cloud TTS via server-side API
+   * Speak Japanese text using Google Cloud TTS via server-side API with caching
    */
-  static async speak(text: string, voice: 'male' | 'female' = 'female'): Promise<void> {
-
+  static async speak(text: string, voice: 'male' | 'female' = 'female', speed: number = 1.0): Promise<void> {
     try {
-      const startTime = performance.now();
+      const voiceName = voice === 'male' ? 'ja-JP-Neural2-C' : 'ja-JP-Neural2-B';
+      
+      // Try to get cached audio first
+      const cachedAudio = await this.cache.getAudio(
+        text, 
+        voiceName, 
+        speed,
+        undefined,
+        undefined,
+        () => this.generateAudio(text, voice)
+      );
 
-      // Use server-side API route to avoid CORS issues
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: text,
-          voice: voice
-        })
-      });
+      if (cachedAudio) {
+        // Play cached audio
+        const audio = new Audio(URL.createObjectURL(cachedAudio));
+        audio.playbackRate = speed;
 
-      const data = await response.json();
-      const apiTime = performance.now() - startTime;
-
-      if (response.ok && data.success && data.audioContent) {
-
-        // Convert base64 to audio and play
-        const audioData = `data:audio/mp3;base64,${data.audioContent}`;
-        const audio = new Audio(audioData);
-
-        // Return a promise that resolves when audio finishes playing
         return new Promise<void>((resolve, reject) => {
-          audio.addEventListener('loadstart', () => {
-          });
-
           audio.addEventListener('ended', () => {
+            URL.revokeObjectURL(audio.src); // Clean up blob URL
             resolve();
           });
 
           audio.addEventListener('error', (e) => {
             console.error('❌ Audio playback error:', e);
+            URL.revokeObjectURL(audio.src);
             reject(new Error('Audio playback failed'));
           });
 
           audio.play().catch(reject);
         });
       } else {
-        // Server indicated we should fallback or there was an error
-        const errorMsg = data.error || 'Unknown error';
-        console.warn(`⚠️ Google TTS failed: ${errorMsg}`);
-
-        if (data.fallback) {
-          await this.fallbackToWebSpeech(text);
-        } else {
-          throw new Error(errorMsg);
-        }
+        throw new Error('Failed to generate or retrieve audio');
       }
     } catch (error) {
-      console.error('❌ TTS API call failed:', error);
-      // Fallback to browser TTS
-      await this.fallbackToWebSpeech(text);
+      console.error('❌ TTS speak error:', error);
+      // Fallback to browser TTS if available
+      await this.fallbackToWebSpeech(text, speed);
+    }
+  }
+
+  /**
+   * Generate audio via API (used by cache system)
+   */
+  private static async generateAudio(text: string, voice: 'male' | 'female' = 'female'): Promise<Blob> {
+    const startTime = performance.now();
+
+    // Use server-side API route to avoid CORS issues
+    const response = await fetch('/api/tts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: text,
+        voice: voice
+      })
+    });
+
+    const data = await response.json();
+    const apiTime = performance.now() - startTime;
+
+    if (response.ok && data.success && data.audioContent) {
+      // Convert base64 to blob
+      const binaryString = atob(data.audioContent);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      console.log(`🎤 Audio generated in ${apiTime.toFixed(2)}ms for: ${text.substring(0, 30)}...`);
+      return new Blob([bytes], { type: 'audio/mp3' });
+    } else {
+      // Server indicated we should fallback or there was an error
+      const errorMsg = data.error || 'Unknown error';
+      console.warn(`⚠️ Google TTS failed: ${errorMsg}`);
+      throw new Error(errorMsg);
     }
   }
 
@@ -206,6 +230,99 @@ export class TTSManager {
       );
     }
     return [];
+  }
+
+  /**
+   * Preload audio for an entire article (for better UX)
+   */
+  static async preloadArticleAudio(
+    articleId: string,
+    sentences: string[],
+    voice: 'male' | 'female' = 'female',
+    speed: number = 1.0,
+    onProgress?: (completed: number, total: number) => void
+  ): Promise<void> {
+    const voiceName = voice === 'male' ? 'ja-JP-Neural2-C' : 'ja-JP-Neural2-B';
+    
+    await this.cache.preloadArticleAudio(
+      articleId,
+      sentences,
+      voiceName,
+      speed,
+      (text) => this.generateAudio(text, voice),
+      onProgress
+    );
+  }
+
+  /**
+   * Get cached audio for an article
+   */
+  static async getArticleAudio(articleId: string) {
+    return await this.cache.getArticleAudio(articleId);
+  }
+
+  /**
+   * Remove cached audio for an article
+   */
+  static async removeArticleAudio(articleId: string): Promise<void> {
+    await this.cache.removeArticleAudio(articleId);
+  }
+
+  /**
+   * Get TTS cache statistics
+   */
+  static async getCacheStats() {
+    return await this.cache.getStats();
+  }
+
+  /**
+   * Clear TTS cache
+   */
+  static async clearCache(): Promise<void> {
+    await this.cache.clearCache();
+  }
+
+  /**
+   * Add fallback method for Web Speech API
+   */
+  private static async fallbackToWebSpeech(text: string, speed: number = 1.0): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        // Cancel any ongoing speech
+        speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        utterance.rate = speed * 0.8;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        // Try to find a Japanese voice
+        const voices = speechSynthesis.getVoices();
+        const japaneseVoice = voices.find(voice =>
+          voice.lang.startsWith('ja') || voice.lang.includes('JP')
+        );
+
+        if (japaneseVoice) {
+          utterance.voice = japaneseVoice;
+        }
+
+        // Handle speech events
+        utterance.onend = () => {
+          resolve();
+        };
+
+        utterance.onerror = (event) => {
+          console.error('❌ Web Speech TTS error:', event.error);
+          reject(new Error(`Speech synthesis failed: ${event.error}`));
+        };
+
+        // Start speaking
+        speechSynthesis.speak(utterance);
+      } else {
+        reject(new Error('Speech synthesis not supported'));
+      }
+    });
   }
 }
 

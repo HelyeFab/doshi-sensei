@@ -31,6 +31,8 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState<Record<number, number>>({});
+  const [preloadProgress, setPreloadProgress] = useState<{ completed: number; total: number } | null>(null);
+  const [isPreloading, setIsPreloading] = useState(false);
 
   const audioTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const MAX_RETRIES_PER_SENTENCE = 2;
@@ -49,6 +51,39 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
 
     parseArticle();
   }, [article.content]);
+
+  // Preload audio when sentences are ready
+  useEffect(() => {
+    if (sentences.length > 0 && !isPreloading) {
+      startPreloading();
+    }
+  }, [sentences]);
+
+  const startPreloading = async () => {
+    if (sentences.length === 0) return;
+    
+    setIsPreloading(true);
+    setPreloadProgress({ completed: 0, total: sentences.length });
+    
+    try {
+      await TTSManager.preloadArticleAudio(
+        article.id,
+        sentences,
+        'female', // Default voice
+        1.0, // Default speed
+        (completed, total) => {
+          setPreloadProgress({ completed, total });
+        }
+      );
+      
+      console.log(`✅ Preloaded audio for ${sentences.length} sentences`);
+    } catch (error) {
+      console.error('Error preloading audio:', error);
+    } finally {
+      setIsPreloading(false);
+      setPreloadProgress(null);
+    }
+  };
 
   // Handle audio completion and auto-advance
   const handleAudioComplete = (currentIndex: number) => {

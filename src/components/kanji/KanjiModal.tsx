@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Kanji } from '@/types';
-import { TTSManager } from '@/utils/tts';
+import { KanjiTTSButton } from '@/components/ui/TTSButton';
 
 interface KanjiModalProps {
   kanji: Kanji;
@@ -47,14 +47,7 @@ export default function KanjiModal({
   };
 
 
-  // TTS functions
-  const handlePlayTTS = async (text: string) => {
-    try {
-      await TTSManager.speak(text);
-    } catch (error) {
-      console.error('TTS error:', error);
-    }
-  };
+  // TTS functionality now handled by KanjiTTSButton component
 
   return (
     <div
@@ -118,15 +111,13 @@ export default function KanjiModal({
                       className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md text-sm japanese-text"
                     >
                       <span>{reading}</span>
-                      <button
-                        onClick={() => handlePlayTTS(reading)}
-                        className="p-1 hover:bg-primary/20 rounded transition-colors"
-                        title={`Play pronunciation: ${reading}`}
-                      >
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                        </svg>
-                      </button>
+                      <KanjiTTSButton 
+                        kanji={kanji.character}
+                        reading={reading}
+                        readingType="on"
+                        size="sm"
+                        variant="minimal"
+                      />
                     </div>
                   ))
                 ) : (
@@ -148,15 +139,13 @@ export default function KanjiModal({
                       className="flex items-center gap-2 px-3 py-1 bg-purple-500/10 text-purple-600 border border-purple-500/20 rounded-md text-sm japanese-text"
                     >
                       <span>{reading}</span>
-                      <button
-                        onClick={() => handlePlayTTS(reading)}
-                        className="p-1 hover:bg-purple-500/20 rounded transition-colors"
-                        title={`Play pronunciation: ${reading}`}
-                      >
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                        </svg>
-                      </button>
+                      <KanjiTTSButton 
+                        kanji={kanji.character}
+                        reading={reading}
+                        readingType="kun"
+                        size="sm"
+                        variant="minimal"
+                      />
                     </div>
                   ))
                 ) : (

@@ -10,7 +10,7 @@ import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { TTSManager } from '@/utils/tts';
+import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
 import CompanionTrigger from '@/components/CompanionTrigger';
 
@@ -986,14 +986,7 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
     onClose();
   };
 
-  // TTS function
-  const handlePlayTTS = async (text: string) => {
-    try {
-      await TTSManager.speak(text);
-    } catch (error) {
-      console.error('TTS error:', error);
-    }
-  };
+  // TTS functionality now handled by VocabularyTTSButton component
 
   const canBeConjugated = word.type === 'Ichidan' ||
                          word.type === 'Godan' ||
@@ -1043,15 +1036,12 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
                   <div className="text-xl japanese-text text-card-foreground">
                     {word.kana} ({word.romaji})
                   </div>
-                  <button
-                    onClick={() => handlePlayTTS(word.kana)}
-                    className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-600"
-                    title={`Play pronunciation: ${word.kana}`}
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                    </svg>
-                  </button>
+                  <VocabularyTTSButton 
+                    word={word.kanji || word.kana}
+                    kana={word.kana}
+                    size="md"
+                    variant="default"
+                  />
                 </div>
               </div>
 

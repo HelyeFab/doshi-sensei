@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverview } from '@/components/admin/StatsOverview';
+import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
 import { triggerArticleScraping } from '@/utils/watanocArticles';
 
 function QuickAction({ title, description, icon, onClick, loading }: {
@@ -89,6 +90,9 @@ export default function AdminDashboard() {
 
         {/* Real-time Stats overview */}
         <StatsOverview />
+
+        {/* Article Monitoring Dashboard */}
+        <ArticleMonitoringDashboard />
 
         {/* Quick actions */}
         <div>

@@ -517,29 +517,38 @@ async function saveArticlesToFirebase(articles, metadata) {
     return true;
   }
 
+  // Use ArticleManager-style expiration management
   const batch = db.batch();
   const articlesRef = db.collection('articles');
+  const expiresAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
   
   for (const article of uniqueArticles) {
-    const docRef = articlesRef.doc(article.id);
-    batch.set(docRef, {
+    const articleWithExpiration = {
       ...article,
+      expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
       publishDate: admin.firestore.Timestamp.fromDate(article.publishDate),
-      scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt)
-    });
+      scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt),
+      viewCount: 0,
+      bookmarkedBy: [],
+      isArchived: false
+    };
+    
+    const docRef = articlesRef.doc(article.id);
+    batch.set(docRef, articleWithExpiration);
   }
   
   // Save metadata
-  const metadataRef = db.collection('articlesMetadata').doc('lastScrape');
+  const metadataRef = db.collection('articlesMetadata').doc('watanoc-real-stats');
   batch.set(metadataRef, {
     ...metadata,
     lastUpdated: admin.firestore.Timestamp.fromDate(new Date()),
     uniqueArticlesSaved: uniqueArticles.length,
-    duplicatesSkipped: articles.length - uniqueArticles.length
+    duplicatesSkipped: articles.length - uniqueArticles.length,
+    expiresAt: admin.firestore.Timestamp.fromDate(expiresAt)
   });
   
   await batch.commit();
-  console.log(`✅ Successfully saved ${uniqueArticles.length} unique articles to Firebase`);
+  console.log(`✅ Successfully saved ${uniqueArticles.length} unique articles with expiration management`);
   
   return true;
 }

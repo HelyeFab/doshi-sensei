@@ -39,3 +39,9 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Scheduled Functions
+# Article cleanup runs every day at 2 AM UTC
+[functions]
+  [functions."article-cleanup"]
+    schedule = "0 2 * * *"

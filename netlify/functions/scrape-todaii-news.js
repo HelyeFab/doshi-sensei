@@ -644,7 +644,7 @@ function generateTodaiiImageUrl(index) {
   return todaiiImages[index % todaiiImages.length];
 }
 
-// Save articles to Firebase
+// Save articles using ArticleManager
 async function saveArticlesToFirebase(articles, metadata) {
   if (!firebaseInitialized || !db) {
     throw new Error('Firebase not initialized');
@@ -658,15 +658,23 @@ async function saveArticlesToFirebase(articles, metadata) {
     return true;
   }
 
+  // Use ArticleManager for saving with expiration management
   const batch = db.batch();
+  const expiresAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
   
   for (const article of uniqueArticles) {
-    const docRef = db.collection('articles').doc(article.id);
-    batch.set(docRef, {
+    const articleWithExpiration = {
       ...article,
+      expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
       publishDate: admin.firestore.Timestamp.fromDate(article.publishDate),
-      scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt)
-    });
+      scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt),
+      viewCount: 0,
+      bookmarkedBy: [],
+      isArchived: false
+    };
+    
+    const docRef = db.collection('articles').doc(article.id);
+    batch.set(docRef, articleWithExpiration);
   }
   
   // Save metadata
@@ -675,11 +683,12 @@ async function saveArticlesToFirebase(articles, metadata) {
     ...metadata,
     lastUpdated: admin.firestore.Timestamp.fromDate(new Date()),
     uniqueArticlesSaved: uniqueArticles.length,
-    duplicatesSkipped: articles.length - uniqueArticles.length
+    duplicatesSkipped: articles.length - uniqueArticles.length,
+    expiresAt: admin.firestore.Timestamp.fromDate(expiresAt)
   });
   
   await batch.commit();
-  console.log(`✅ Saved ${uniqueArticles.length} unique articles to Firebase`);
+  console.log(`✅ Saved ${uniqueArticles.length} unique articles with expiration management`);
 }
 
 // Handler

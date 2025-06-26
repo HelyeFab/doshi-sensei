@@ -20,6 +20,13 @@ export interface NewsArticle {
   kanji: ExtractedKanji[];
   isBookmarked?: boolean;
   readingProgress?: number; // 0-100 percentage
+  
+  // Article Management Fields
+  expiresAt?: Date; // Auto-delete after 60 days
+  isArchived?: boolean; // Moved to cold storage
+  bookmarkedBy?: string[]; // User IDs who bookmarked this
+  viewCount?: number; // How many times viewed
+  lastViewedAt?: Date; // Last view timestamp
 }
 
 // Simplified source for articles
@@ -323,3 +330,56 @@ export const DIFFICULTY_LEVELS = {
 export type NewsSourceId = typeof NEWS_SOURCES[keyof typeof NEWS_SOURCES];
 export type NewsCategoryId = typeof NEWS_CATEGORIES[keyof typeof NEWS_CATEGORIES];
 export type DifficultyLevel = typeof DIFFICULTY_LEVELS[keyof typeof DIFFICULTY_LEVELS];
+
+// User Bookmark System
+export interface UserBookmark {
+  id: string;
+  userId: string;
+  articleId: string;
+  articleTitle: string;
+  articleDifficulty: JLPTLevel;
+  bookmarkedAt: Date;
+  readingProgress?: number;
+  notes?: string;
+}
+
+// Article Pagination
+export interface ArticlePaginationOptions {
+  page: number;
+  limit: number;
+  difficulty?: JLPTLevel[];
+  category?: string[];
+  source?: string[];
+  sortBy?: 'publishDate' | 'scrapedAt' | 'difficulty' | 'viewCount';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface ArticlePaginationResult {
+  articles: NewsArticle[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+// Article Management Configuration
+export interface ArticleManagementConfig {
+  maxArticlesPerSource: number;
+  expirationDays: number;
+  freeUserBookmarkLimit: number;
+  premiumUserBookmarkLimit: number;
+  archiveAfterDays: number;
+  cleanupIntervalHours: number;
+}
+
+// Article Statistics
+export interface ArticleStats {
+  totalArticles: number;
+  articlesByDifficulty: Record<JLPTLevel, number>;
+  articlesBySource: Record<string, number>;
+  articlesByCategory: Record<string, number>;
+  averageReadingTime: number;
+  totalBookmarks: number;
+  expiringSoon: number; // Articles expiring in next 7 days
+}

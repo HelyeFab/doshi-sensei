@@ -193,50 +193,92 @@ export class JapaneseNewsScraper {
     }
   }
 
-  // Call Netlify Function for real scraping
+  // Call Netlify Functions for balanced multi-source scraping
   private static async callNetlifyScrapingFunction(maxArticles: number): Promise<NewsArticle[]> {
     try {
       const baseUrl = typeof window !== 'undefined'
         ? window.location.origin
         : 'https://doshi-sensei.netlify.app'; // Fallback for SSR
 
-      const functionUrl = `${baseUrl}/.netlify/functions/scrape-nhk-news`;
+      // Split articles evenly between sources
+      const articlesPerSource = Math.ceil(maxArticles / 2);
+      
+      // Scraping functions to call
+      const scrapingFunctions = [
+        { url: `${baseUrl}/.netlify/functions/scrape-watanoc-real`, name: 'Watanoc' },
+        { url: `${baseUrl}/.netlify/functions/scrape-todaii-news`, name: 'Todaii' }
+      ];
 
+      console.log(`🎯 Balanced scraping: ${articlesPerSource} articles per source (${scrapingFunctions.length} sources)`);
 
-      const response = await fetch(`${functionUrl}?limit=${maxArticles}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const allArticles: NewsArticle[] = [];
+      const scrapingResults: any[] = [];
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      // Call both scraping functions in parallel
+      for (const func of scrapingFunctions) {
+        try {
+          console.log(`📡 Calling ${func.name} scraper...`);
+          
+          const response = await fetch(`${func.url}?limit=${articlesPerSource}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            console.warn(`⚠️ ${func.name} scraper failed: HTTP ${response.status}`);
+            continue;
+          }
+
+          const result = await response.json();
+          scrapingResults.push({ source: func.name, result });
+
+          if (result.success && result.articles) {
+            // Transform articles to match our NewsArticle interface
+            const transformedArticles = await Promise.all(
+              result.articles.map(async (article: any) => ({
+                ...article,
+                publishDate: new Date(article.publishDate),
+                scrapedAt: new Date(article.scrapedAt),
+                // Keep original source info from scraper
+                vocabulary: await this.extractVocabulary(article.content),
+                kanji: await this.extractKanji(article.content)
+              }))
+            );
+
+            allArticles.push(...transformedArticles);
+            console.log(`✅ ${func.name}: ${transformedArticles.length} articles scraped`);
+          } else {
+            console.warn(`⚠️ ${func.name} returned no articles or failed`);
+          }
+        } catch (error) {
+          console.error(`❌ ${func.name} scraping error:`, error);
+        }
       }
 
-      const result = await response.json();
+      // Log distribution summary
+      const sourceDistribution = allArticles.reduce((acc: any, article) => {
+        const source = article.source?.name || 'Unknown';
+        acc[source] = (acc[source] || 0) + 1;
+        return acc;
+      }, {});
 
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Scraping failed');
-      }
+      const jlptDistribution = allArticles.reduce((acc: any, article) => {
+        const level = article.difficulty || 'Unknown';
+        acc[level] = (acc[level] || 0) + 1;
+        return acc;
+      }, {});
 
+      console.log(`📊 Source distribution:`, sourceDistribution);
+      console.log(`📊 JLPT distribution:`, jlptDistribution);
 
-      // Transform articles to match our NewsArticle interface
-      const articles: NewsArticle[] = await Promise.all(
-        result.data.map(async (article: any) => ({
-          ...article,
-          publishDate: new Date(article.publishDate),
-          scrapedAt: new Date(article.scrapedAt),
-          source: NEWS_SOURCE_CONFIGS[NEWS_SOURCES.NHK_EASY],
-          vocabulary: await this.extractVocabulary(article.content),
-          kanji: await this.extractKanji(article.content)
-        }))
-      );
-
-      return articles;
+      // Shuffle to mix sources and return requested amount
+      const shuffledArticles = allArticles.sort(() => Math.random() - 0.5);
+      return shuffledArticles.slice(0, maxArticles);
 
     } catch (error) {
-      console.error('❌ Failed to call Netlify scraping function:', error);
+      console.error('❌ Failed to call Netlify scraping functions:', error);
       throw error;
     }
   }

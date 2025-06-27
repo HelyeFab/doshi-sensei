@@ -37,16 +37,18 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
           style={{ background: board.background }}
         >
           {/* Overlay */}
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-transparent" />
 
           {/* Content */}
           <div className="relative flex items-center justify-between text-white p-6">
             <button
               onClick={onBack}
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+              className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 text-white hover:bg-white/20 transition-all duration-200 shadow-lg"
             >
-              <span className="text-xl">←</span>
-              <span className="hidden sm:inline">Back</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="hidden sm:inline text-sm font-medium">Back</span>
             </button>
 
             <div className="text-center">
@@ -67,7 +69,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
         </div>
 
         {/* Progress Bar */}
-        <div className="px-6 py-4 bg-card border-b border-border">
+        <div className="px-6 py-4 bg-card/95 backdrop-blur-sm border-b border-border/50">
           <ProgressIndicator
             current={learnedCount}
             total={totalCount}

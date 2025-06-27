@@ -2,167 +2,96 @@
 
 import { useState } from 'react';
 import { KanjiCardProps } from '@/types/moodBoard';
+import KanjiModal from './KanjiModal';
 
 export default function KanjiCard({
   kanji,
   isLearned,
   onToggleLearned,
-  showBack = false
 }: KanjiCardProps) {
-  const [isFlipped, setIsFlipped] = useState(showBack);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleFlip = () => {
-    setIsFlipped(!isFlipped);
-  };
-
-  const handleToggleLearned = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleLearned(kanji.char);
+  const handleCardClick = () => {
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="kanji-card-container">
+    <>
       <div
-        className={`kanji-card ${isFlipped ? 'flipped' : ''}`}
-        onClick={handleFlip}
+        className="kanji-card-container w-full cursor-pointer hover:scale-[1.02] transition-transform"
+        onClick={handleCardClick}
       >
-        {/* Front Side */}
-        <div className="kanji-card-face kanji-card-front">
-          <div className="flex flex-col h-full">
-            {/* Learned Status Indicator */}
-            <div className="flex justify-end mb-2">
-              <button
-                onClick={handleToggleLearned}
-                className={`w-6 h-6 rounded-full transition-all duration-200 ${
-                  isLearned
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
-                }`}
-                aria-label={isLearned ? 'Mark as not learned' : 'Mark as learned'}
-              >
-                {isLearned ? '✓' : '○'}
-              </button>
-            </div>
-
-            {/* Kanji Character */}
-            <div className="flex-1 flex items-center justify-center">
-              <span className="text-6xl md:text-7xl font-bold text-foreground">
+        <div className="kanji-card">
+          <div className="kanji-card-face">
+            <div className="flex flex-col items-center justify-center h-full p-4">
+              <div className="text-6xl font-bold text-foreground mb-3">
                 {kanji.char}
-              </span>
-            </div>
-
-            {/* Meaning */}
-            <div className="text-center pb-4">
-              <p className="text-lg font-medium text-muted-foreground">
+              </div>
+              <div className="text-lg text-muted-foreground text-center">
                 {kanji.meaning}
-              </p>
+              </div>
+              
+              {/* Readings Preview */}
+              {(kanji.readings?.on?.length > 0 || kanji.readings?.kun?.length > 0) && (
+                <div className="mt-3 space-y-1">
+                  {kanji.readings.on?.length > 0 && (
+                    <div className="text-xs text-blue-600 dark:text-blue-400">
+                      {kanji.readings.on[0]}
+                    </div>
+                  )}
+                  {kanji.readings.kun?.length > 0 && (
+                    <div className="text-xs text-green-600 dark:text-green-400">
+                      {kanji.readings.kun[0]}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Flip Hint */}
-            <div className="text-center text-xs text-muted-foreground opacity-60">
-              Tap to flip
-            </div>
-          </div>
-        </div>
-
-        {/* Back Side */}
-        <div className="kanji-card-face kanji-card-back">
-          <div className="flex flex-col h-full p-4">
-            {/* Header with kanji and learned status */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-2xl font-bold text-foreground">
-                {kanji.char}
-              </span>
-              <button
-                onClick={handleToggleLearned}
-                className={`w-6 h-6 rounded-full transition-all duration-200 ${
+            {/* Learned Indicator - Pastel Colors */}
+            <div className="absolute top-3 right-3">
+              <div
+                className={`w-6 h-6 rounded-full transition-all duration-200 flex items-center justify-center ${
                   isLearned
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
+                    ? 'bg-emerald-200 text-emerald-700 dark:bg-emerald-800/30 dark:text-emerald-300'
+                    : 'bg-violet-200 text-violet-600 dark:bg-violet-800/30 dark:text-violet-400'
                 }`}
-                aria-label={isLearned ? 'Mark as not learned' : 'Mark as learned'}
+                aria-label={isLearned ? 'Learned' : 'Not learned'}
               >
-                {isLearned ? '✓' : '○'}
-              </button>
-            </div>
-
-            {/* Readings */}
-            <div className="space-y-3 flex-1">
-              <div>
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                  On'yomi
-                </h4>
-                <div className="flex flex-wrap gap-1">
-                  {kanji.readings.on.map((reading, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-sm"
-                    >
-                      {reading}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                  Kun'yomi
-                </h4>
-                <div className="flex flex-wrap gap-1">
-                  {kanji.readings.kun.map((reading, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-sm"
-                    >
-                      {reading}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Examples */}
-              <div>
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                  Examples
-                </h4>
-                <div className="space-y-1">
-                  {kanji.examples.slice(0, 3).map((example, index) => (
-                    <span
-                      key={index}
-                      className="inline-block px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded text-sm mr-1 mb-1"
-                    >
-                      {example}
-                    </span>
-                  ))}
-                </div>
+                {isLearned && (
+                  <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
               </div>
             </div>
 
-            {/* Flip Hint */}
-            <div className="text-center text-xs text-muted-foreground opacity-60 mt-2">
-              Tap to flip back
+            {/* Click Hint */}
+            <div className="absolute bottom-3 w-full text-center text-xs text-muted-foreground opacity-60">
+              Tap to view details
             </div>
           </div>
         </div>
       </div>
 
+      {/* Modal */}
+      <KanjiModal
+        kanji={kanji}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isLearned={isLearned}
+        onToggleLearned={onToggleLearned}
+      />
+
       <style jsx>{`
         .kanji-card-container {
-          perspective: 1000px;
-          height: 280px;
+          height: 240px;
         }
 
         .kanji-card {
           position: relative;
           width: 100%;
           height: 100%;
-          transition: transform 0.6s;
-          transform-style: preserve-3d;
-          cursor: pointer;
-        }
-
-        .kanji-card.flipped {
-          transform: rotateY(180deg);
         }
 
         .kanji-card-face {
@@ -173,25 +102,31 @@ export default function KanjiCard({
           border-radius: 12px;
           border: 2px solid var(--border);
           background: var(--card);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
           transition: box-shadow 0.2s ease-in-out;
-          padding: 16px;
+          display: flex;
+          flex-direction: column;
         }
 
-        .kanji-card-face:hover {
+        .kanji-card:hover .kanji-card-face {
           box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .kanji-card-back {
-          transform: rotateY(180deg);
+        .kanji-card-face::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: var(--gradient);
+          opacity: 0.1;
+          border-radius: 12px;
         }
 
         @media (max-width: 768px) {
           .kanji-card-container {
-            height: 240px;
+            height: 200px;
           }
         }
       `}</style>
-    </div>
+    </>
   );
 }

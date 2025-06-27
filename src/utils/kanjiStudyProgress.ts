@@ -1,4 +1,4 @@
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { 
   doc, 
   setDoc, 
@@ -7,8 +7,7 @@ import {
   serverTimestamp,
   arrayUnion,
   increment
-} from 'firebase/firestore';
-import { firestore } from '@/lib/firebase';
+} from 'firebase/db';
 import { 
   FlashcardProgress, 
   FlashcardQuality,
@@ -87,8 +86,10 @@ function saveAllKanjiProgress(progress: Record<string, KanjiProgress>): void {
  * Initialize or get kanji progress
  */
 export async function getKanjiProgress(boardId: string, kanjiChar: string): Promise<KanjiProgress | null> {
+  if (typeof window === 'undefined') return null;
+  
   try {
-    const userId = auth.currentUser?.uid;
+    const userId = auth?.currentUser?.uid;
     if (!userId) return null;
 
     const progressId = `${userId}_${boardId}_${kanjiChar}`;
@@ -99,7 +100,7 @@ export async function getKanjiProgress(boardId: string, kanjiChar: string): Prom
     if (localProgress) return localProgress;
 
     // If not found locally, try Firebase
-    const docRef = doc(firestore, 'users', userId, 'kanjiProgress', progressId);
+    const docRef = doc(db, 'users', userId, 'kanjiProgress', progressId);
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
@@ -121,7 +122,9 @@ export async function getKanjiProgress(boardId: string, kanjiChar: string): Prom
  * Initialize kanji progress for a new kanji
  */
 export async function initializeKanjiProgress(boardId: string, kanjiChar: string): Promise<KanjiProgress> {
-  const userId = auth.currentUser?.uid;
+  if (typeof window === 'undefined') throw new Error('Cannot initialize on server side');
+  
+  const userId = auth?.currentUser?.uid;
   if (!userId) throw new Error('User not authenticated');
 
   const progressId = `${userId}_${boardId}_${kanjiChar}`;
@@ -145,7 +148,7 @@ export async function initializeKanjiProgress(boardId: string, kanjiChar: string
   saveAllKanjiProgress(allProgress);
   
   // Sync to Firebase
-  const docRef = doc(firestore, 'users', userId, 'kanjiProgress', progressId);
+  const docRef = doc(db, 'users', userId, 'kanjiProgress', progressId);
   await setDoc(docRef, {
     ...kanjiProgress,
     createdAt: serverTimestamp(),
@@ -162,7 +165,9 @@ export async function updateKanjiProgressFromResult(
   result: KanjiStudyResult,
   responseTime: number
 ): Promise<KanjiProgress> {
-  const userId = auth.currentUser?.uid;
+  if (typeof window === 'undefined') throw new Error('Cannot update on server side');
+  
+  const userId = auth?.currentUser?.uid;
   if (!userId) throw new Error('User not authenticated');
 
   // Get or initialize progress
@@ -247,7 +252,7 @@ export async function updateKanjiProgressFromResult(
   saveAllKanjiProgress(allProgress);
 
   // Sync to Firebase
-  const docRef = doc(firestore, 'users', userId, 'kanjiProgress', progressId);
+  const docRef = doc(db, 'users', userId, 'kanjiProgress', progressId);
   try {
     await updateDoc(docRef, {
       ...kanjiProgress,
@@ -313,35 +318,55 @@ export function incrementDailyStudyCount(): void {
 /**
  * Check if user can study (considering daily limit for free users)
  */
-export async function canUserStudy(): Promise<{ canStudy: boolean; remainingSessions: number; isPremium: boolean }> {
-  const userId = auth.currentUser?.uid;
-  if (!userId) {
+export async function canUserStudy(userId?: string): Promise<{ canStudy: boolean; remainingSessions: number; isPremium: boolean }> {
+  if (typeof window === 'undefined') {
+    // Server-side: return default values
+    return { canStudy: false, remainingSessions: 0, isPremium: false };
+  }
+  
+  // Allow passing userId to avoid auth timing issues
+  const effectiveUserId = userId || auth?.currentUser?.uid;
+  if (!effectiveUserId) {
     return { canStudy: false, remainingSessions: 0, isPremium: false };
   }
 
-  // Check if user is premium
-  const userDoc = await getDoc(doc(firestore, 'users', userId));
-  const isPremium = userDoc.data()?.isPremium || false;
-  
-  if (isPremium) {
-    return { canStudy: true, remainingSessions: -1, isPremium: true }; // -1 means unlimited
+  try {
+    // Check if user is premium
+    const userDoc = await getDoc(doc(db, 'users', effectiveUserId));
+    const isPremium = userDoc.data()?.isPremium || false;
+    
+    if (isPremium) {
+      return { canStudy: true, remainingSessions: -1, isPremium: true }; // -1 means unlimited
+    }
+    
+    // Free user - check daily limit
+    const dailyCount = getDailyStudyCount();
+    const DAILY_LIMIT = 3;
+    const canStudy = dailyCount < DAILY_LIMIT;
+    const remainingSessions = Math.max(0, DAILY_LIMIT - dailyCount);
+    
+    return { canStudy, remainingSessions, isPremium: false };
+  } catch (error) {
+    console.error('Error checking study access:', error);
+    // Default to free user limits on error
+    const dailyCount = getDailyStudyCount();
+    const DAILY_LIMIT = 3;
+    return { 
+      canStudy: dailyCount < DAILY_LIMIT, 
+      remainingSessions: Math.max(0, DAILY_LIMIT - dailyCount), 
+      isPremium: false 
+    };
   }
-  
-  // Free user - check daily limit
-  const dailyCount = getDailyStudyCount();
-  const DAILY_LIMIT = 3;
-  const canStudy = dailyCount < DAILY_LIMIT;
-  const remainingSessions = Math.max(0, DAILY_LIMIT - dailyCount);
-  
-  return { canStudy, remainingSessions, isPremium: false };
 }
 
 /**
  * Save a complete study session
  */
 export async function saveStudySession(session: KanjiStudySession): Promise<void> {
+  if (typeof window === 'undefined') return;
+  
   try {
-    const userId = auth.currentUser?.uid;
+    const userId = auth?.currentUser?.uid;
     if (!userId) return;
 
     const sessionId = `${userId}_${session.boardId}_${session.startedAt.getTime()}`;
@@ -359,7 +384,7 @@ export async function saveStudySession(session: KanjiStudySession): Promise<void
     localStorage.setItem(KANJI_SESSIONS_KEY, JSON.stringify(sessions));
 
     // Save to Firebase
-    const userDocRef = doc(firestore, 'users', userId);
+    const userDocRef = doc(db, 'users', userId);
     await updateDoc(userDocRef, {
       kanjiStudySessions: arrayUnion({
         ...session,
@@ -376,7 +401,7 @@ export async function saveStudySession(session: KanjiStudySession): Promise<void
     });
 
     // Update board-specific stats
-    const boardStatsRef = doc(firestore, 'users', userId, 'boardStats', session.boardId);
+    const boardStatsRef = doc(db, 'users', userId, 'boardStats', session.boardId);
     const boardStatsSnap = await getDoc(boardStatsRef);
     
     if (boardStatsSnap.exists()) {
@@ -411,11 +436,13 @@ export async function saveStudySession(session: KanjiStudySession): Promise<void
  * Get study statistics for a board
  */
 export async function getBoardStudyStats(boardId: string) {
+  if (typeof window === 'undefined') return null;
+  
   try {
-    const userId = auth.currentUser?.uid;
+    const userId = auth?.currentUser?.uid;
     if (!userId) return null;
 
-    const boardStatsRef = doc(firestore, 'users', userId, 'boardStats', boardId);
+    const boardStatsRef = doc(db, 'users', userId, 'boardStats', boardId);
     const boardStatsSnap = await getDoc(boardStatsRef);
     
     if (boardStatsSnap.exists()) {
@@ -433,8 +460,10 @@ export async function getBoardStudyStats(boardId: string) {
  * Get all kanji progress for a board
  */
 export async function getBoardKanjiProgress(boardId: string): Promise<KanjiProgress[]> {
+  if (typeof window === 'undefined') return [];
+  
   try {
-    const userId = auth.currentUser?.uid;
+    const userId = auth?.currentUser?.uid;
     if (!userId) return [];
 
     // Get all kanji progress from localStorage

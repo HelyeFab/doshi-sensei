@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { getBoardProgress, toggleKanjiLearned, isKanjiLearned } from '@/utils/moodBoardProgress';
 import { canUserStudy } from '@/utils/kanjiStudyProgress';
+import { useAuth } from '@/contexts/AuthContext';
 import KanjiCard from './KanjiCard';
 import ProgressIndicator from './ProgressIndicator';
 import KanjiStudyModal from './KanjiStudyModal';
-import UpgradePromptModal from '@/components/UpgradePromptModal';
+import { UpgradePromptModal } from '@/components/UpgradePromptModal';
 
 interface MoodBoardProps {
   board: MoodBoardType;
@@ -15,6 +16,7 @@ interface MoodBoardProps {
 }
 
 export default function MoodBoard({ board, onBack }: MoodBoardProps) {
+  const { user } = useAuth();
   const [progress, setProgress] = useState(getBoardProgress(board.id));
   const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -31,8 +33,10 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
 
   // Check study access
   useEffect(() => {
-    canUserStudy().then(setStudyAccess);
-  }, []);
+    if (user?.uid) {
+      canUserStudy(user.uid).then(setStudyAccess);
+    }
+  }, [user]);
 
   const handleToggleKanji = (kanjiChar: string) => {
     const newProgress = toggleKanjiLearned(board.id, kanjiChar);
@@ -190,7 +194,9 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
         onClose={() => {
           setIsStudyModalOpen(false);
           // Refresh study access after closing
-          canUserStudy().then(setStudyAccess);
+          if (user?.uid) {
+            canUserStudy(user.uid).then(setStudyAccess);
+          }
         }}
         boardId={board.id}
         boardTitle={board.title}
@@ -201,7 +207,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         feature="Unlimited Kanji Study"
-        customMessage={`You've used all ${3 - studyAccess.remainingSessions} of your daily study sessions. Upgrade to Premium for unlimited kanji study sessions!`}
+        message={`You've used all ${3 - studyAccess.remainingSessions} of your daily study sessions. Upgrade to Premium for unlimited kanji study sessions!`}
       />
     </div>
   );

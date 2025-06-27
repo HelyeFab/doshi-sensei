@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { getBoardProgress, toggleKanjiLearned, isKanjiLearned } from '@/utils/moodBoardProgress';
+import { canUserStudy } from '@/utils/kanjiStudyProgress';
 import KanjiCard from './KanjiCard';
 import ProgressIndicator from './ProgressIndicator';
+import KanjiStudyModal from './KanjiStudyModal';
+import UpgradePromptModal from '@/components/UpgradePromptModal';
 
 interface MoodBoardProps {
   board: MoodBoardType;
@@ -13,11 +16,23 @@ interface MoodBoardProps {
 
 export default function MoodBoard({ board, onBack }: MoodBoardProps) {
   const [progress, setProgress] = useState(getBoardProgress(board.id));
+  const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [studyAccess, setStudyAccess] = useState<{ canStudy: boolean; remainingSessions: number; isPremium: boolean }>({ 
+    canStudy: false, 
+    remainingSessions: 0, 
+    isPremium: false 
+  });
 
   // Update progress when component mounts or board changes
   useEffect(() => {
     setProgress(getBoardProgress(board.id));
   }, [board.id]);
+
+  // Check study access
+  useEffect(() => {
+    canUserStudy().then(setStudyAccess);
+  }, []);
 
   const handleToggleKanji = (kanjiChar: string) => {
     const newProgress = toggleKanjiLearned(board.id, kanjiChar);
@@ -49,6 +64,29 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               <span className="hidden sm:inline text-sm font-medium">Back</span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (studyAccess.canStudy) {
+                  setIsStudyModalOpen(true);
+                } else {
+                  setShowUpgradeModal(true);
+                }
+              }}
+              className={`flex items-center gap-2 backdrop-blur-md rounded-full px-4 py-2 text-white transition-all duration-200 shadow-lg ${
+                studyAccess.canStudy 
+                  ? 'bg-white/10 hover:bg-white/20' 
+                  : 'bg-white/5 opacity-75 cursor-not-allowed'
+              }`}
+              title={studyAccess.canStudy ? "Study all kanji" : `${studyAccess.remainingSessions} sessions remaining today`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span className="hidden sm:inline text-sm font-medium">
+                Study {!studyAccess.isPremium && !studyAccess.canStudy && `(${studyAccess.remainingSessions} left)`}
+              </span>
             </button>
 
             <div className="text-center">
@@ -110,6 +148,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                 Study Tips
               </h3>
               <div className="space-y-2 text-sm text-muted-foreground">
+                <p>• Click the Study button to test your knowledge of all kanji</p>
                 <p>• Tap any kanji card to see its readings and example words</p>
                 <p>• Mark kanji as learned by clicking the circle button</p>
                 <p>• Try to find connections between kanji in this theme</p>
@@ -143,6 +182,27 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
           }
         }
       `}</style>
+
+      {/* Study Modal */}
+      <KanjiStudyModal
+        kanjiList={board.kanji}
+        isOpen={isStudyModalOpen}
+        onClose={() => {
+          setIsStudyModalOpen(false);
+          // Refresh study access after closing
+          canUserStudy().then(setStudyAccess);
+        }}
+        boardId={board.id}
+        boardTitle={board.title}
+      />
+
+      {/* Upgrade Prompt Modal */}
+      <UpgradePromptModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature="Unlimited Kanji Study"
+        customMessage={`You've used all ${3 - studyAccess.remainingSessions} of your daily study sessions. Upgrade to Premium for unlimited kanji study sessions!`}
+      />
     </div>
   );
 }

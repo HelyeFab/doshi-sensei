@@ -144,31 +144,31 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
             if (row === 'y') {
               return (
                 <React.Fragment key={row}>
-                  {renderKanaCell(rowKana.find(k => k.column === 'a') || null)}
-                  <div className="w-full" />
-                  {renderKanaCell(rowKana.find(k => k.column === 'u') || null)}
-                  <div className="w-full" />
-                  {renderKanaCell(rowKana.find(k => k.column === 'o') || null)}
+                  <div key={`${row}-a`}>{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
+                  <div key={`${row}-i`} className="w-full" />
+                  <div key={`${row}-u`}>{renderKanaCell(rowKana.find(k => k.column === 'u') || null)}</div>
+                  <div key={`${row}-e`} className="w-full" />
+                  <div key={`${row}-o`}>{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
                 </React.Fragment>
               );
             } else if (row === 'w') {
               return (
                 <React.Fragment key={row}>
-                  {renderKanaCell(rowKana.find(k => k.column === 'a') || null)}
-                  <div className="w-full" />
-                  <div className="w-full" />
-                  <div className="w-full" />
-                  {renderKanaCell(rowKana.find(k => k.column === 'o') || null)}
+                  <div key={`${row}-a`}>{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
+                  <div key={`${row}-i`} className="w-full" />
+                  <div key={`${row}-u`} className="w-full" />
+                  <div key={`${row}-e`} className="w-full" />
+                  <div key={`${row}-o`}>{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
                 </React.Fragment>
               );
             } else if (row === 'special') {
               return (
                 <React.Fragment key={row}>
-                  <div className="w-full" />
-                  <div className="w-full" />
-                  {renderKanaCell(rowKana[0] || null)}
-                  <div className="w-full" />
-                  <div className="w-full" />
+                  <div key={`${row}-a`} className="w-full" />
+                  <div key={`${row}-i`} className="w-full" />
+                  <div key={`${row}-n`}>{renderKanaCell(rowKana[0] || null)}</div>
+                  <div key={`${row}-e`} className="w-full" />
+                  <div key={`${row}-o`} className="w-full" />
                 </React.Fragment>
               );
             }

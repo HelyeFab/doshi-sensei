@@ -67,7 +67,11 @@ export default function KanaStudyModal({ isOpen, onClose, selectedKanaIds, study
   const handleSpeak = async () => {
     try {
       setPlayingAudio(true);
-      await TTSManager.speak(currentItem.character);
+      // Use Google TTS for single kana characters
+      await TTSManager.speak(currentItem.character, {
+        voice: 'female',
+        provider: 'google'
+      });
     } catch (error) {
       console.error('Error speaking kana:', error);
     } finally {

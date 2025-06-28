@@ -19,8 +19,14 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
   const handleSpeak = async (kana: KanaCharacter) => {
     try {
       setPlayingId(kana.id);
-      const textToSpeak = chartType === 'hiragana' ? kana.hiragana : kana.katakana;
-      await TTSManager.speak(textToSpeak);
+      const character = chartType === 'hiragana' ? kana.hiragana : kana.katakana;
+      
+      // For single kana characters, use Google TTS which handles Japanese pronunciation better
+      // ElevenLabs is optimized for longer text, not single characters
+      await TTSManager.speak(character, {
+        voice: 'female',
+        provider: 'google' // Force Google TTS for accurate single kana pronunciation
+      });
     } catch (error) {
       console.error('Error speaking kana:', error);
     } finally {

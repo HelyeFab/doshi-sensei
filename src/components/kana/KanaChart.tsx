@@ -21,11 +21,10 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
       setPlayingId(kana.id);
       const character = chartType === 'hiragana' ? kana.hiragana : kana.katakana;
       
-      // For single kana characters, use Google TTS which handles Japanese pronunciation better
-      // ElevenLabs is optimized for longer text, not single characters
+      // Use Google TTS for single kana characters
       await TTSManager.speak(character, {
         voice: 'female',
-        provider: 'google' // Force Google TTS for accurate single kana pronunciation
+        provider: 'google'
       });
     } catch (error) {
       console.error('Error speaking kana:', error);
@@ -63,25 +62,28 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
           onClick={() => onToggleKana(kana.id)}
         >
           <div className="relative flex flex-col items-center justify-center p-2 aspect-square">
-            {/* Character */}
-            <div className="text-2xl sm:text-3xl md:text-4xl font-medium japanese-text">
-              {character}
-            </div>
-            
-            {/* Romaji */}
-            {showRomaji && (
-              <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                {kana.romaji}
+            {/* Main content wrapper */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              {/* Character */}
+              <div className="text-2xl sm:text-3xl md:text-4xl font-medium japanese-text">
+                {character}
               </div>
-            )}
+              
+              {/* Romaji */}
+              {showRomaji && (
+                <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                  {kana.romaji}
+                </div>
+              )}
+            </div>
 
-            {/* Speak button */}
+            {/* Speak button - positioned at bottom */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleSpeak(kana);
               }}
-              className="absolute top-1 right-1 p-1 text-purple-400 hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
+              className="mt-1 p-1 text-purple-400 hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
               disabled={playingId === kana.id}
             >
               {playingId === kana.id ? (
@@ -144,31 +146,31 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
             if (row === 'y') {
               return (
                 <React.Fragment key={row}>
-                  <div key={`${row}-a`}>{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
-                  <div key={`${row}-i`} className="w-full" />
-                  <div key={`${row}-u`}>{renderKanaCell(rowKana.find(k => k.column === 'u') || null)}</div>
-                  <div key={`${row}-e`} className="w-full" />
-                  <div key={`${row}-o`}>{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
+                  <div>{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
+                  <div className="w-full" />
+                  <div>{renderKanaCell(rowKana.find(k => k.column === 'u') || null)}</div>
+                  <div className="w-full" />
+                  <div>{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
                 </React.Fragment>
               );
             } else if (row === 'w') {
               return (
                 <React.Fragment key={row}>
-                  <div key={`${row}-a`}>{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
-                  <div key={`${row}-i`} className="w-full" />
-                  <div key={`${row}-u`} className="w-full" />
-                  <div key={`${row}-e`} className="w-full" />
-                  <div key={`${row}-o`}>{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
+                  <div>{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
+                  <div className="w-full" />
+                  <div className="w-full" />
+                  <div className="w-full" />
+                  <div>{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
                 </React.Fragment>
               );
             } else if (row === 'special') {
               return (
                 <React.Fragment key={row}>
-                  <div key={`${row}-a`} className="w-full" />
-                  <div key={`${row}-i`} className="w-full" />
-                  <div key={`${row}-n`}>{renderKanaCell(rowKana[0] || null)}</div>
-                  <div key={`${row}-e`} className="w-full" />
-                  <div key={`${row}-o`} className="w-full" />
+                  <div className="w-full" />
+                  <div className="w-full" />
+                  <div>{renderKanaCell(rowKana[0] || null)}</div>
+                  <div className="w-full" />
+                  <div className="w-full" />
                 </React.Fragment>
               );
             }

@@ -160,16 +160,43 @@ export class TTSManager {
   /**
    * Speak text using ElevenLabs as primary, Google TTS as secondary fallback, and Web Speech as final fallback
    */
-  static async speak(text: string, voice: 'male' | 'female' = 'female', speed: number = 1.0): Promise<void> {
+  static async speak(
+    text: string, 
+    voiceOrOptions?: 'male' | 'female' | { voice?: 'male' | 'female'; provider?: 'google' | 'elevenlabs'; speed?: number },
+    speed: number = 1.0
+  ): Promise<void> {
     try {
       // Stop any currently playing audio
       this.stop();
       
+      // Parse options
+      let voice: 'male' | 'female' = 'female';
+      let forceProvider: 'google' | 'elevenlabs' | undefined;
+      let playbackSpeed = speed;
+      
+      if (typeof voiceOrOptions === 'string') {
+        voice = voiceOrOptions;
+      } else if (voiceOrOptions && typeof voiceOrOptions === 'object') {
+        voice = voiceOrOptions.voice || 'female';
+        forceProvider = voiceOrOptions.provider;
+        playbackSpeed = voiceOrOptions.speed || 1.0;
+      }
+      
       let audioBlob: Blob | null = null;
       let provider: 'elevenlabs' | 'google' | 'webspeech' = 'elevenlabs';
       
-      // Try ElevenLabs first if available
-      if (this.elevenLabsApiKey) {
+      // If provider is forced to Google, skip ElevenLabs
+      if (forceProvider === 'google' && this.googleApiKey) {
+        try {
+          console.log('🎤 Using forced Google TTS...');
+          audioBlob = await this.generateGoogleAudio(text, voice);
+          provider = 'google';
+        } catch (googleError) {
+          console.warn('⚠️ Google TTS failed:', googleError);
+        }
+      }
+      // Try ElevenLabs first if available and not forced to Google
+      else if (this.elevenLabsApiKey && forceProvider !== 'google') {
         try {
           console.log('🎤 Attempting ElevenLabs TTS...');
           audioBlob = await this.generateElevenLabsAudio(text, voice);
@@ -193,7 +220,7 @@ export class TTSManager {
       // If we have audio from either provider, play it
       if (audioBlob) {
         const audio = new Audio(URL.createObjectURL(audioBlob));
-        audio.playbackRate = speed;
+        audio.playbackRate = playbackSpeed;
         
         // Store reference to current audio
         this.currentAudio = audio;
@@ -225,12 +252,12 @@ export class TTSManager {
       } else {
         // Final fallback to Web Speech API
         console.log('🎤 Using Web Speech API as final fallback...');
-        await this.fallbackToWebSpeech(text, speed);
+        await this.fallbackToWebSpeech(text, playbackSpeed);
       }
     } catch (error) {
       console.error('❌ TTS speak error:', error);
       // Last resort: try Web Speech API
-      await this.fallbackToWebSpeech(text, speed);
+      await this.fallbackToWebSpeech(text, playbackSpeed);
     }
   }
 

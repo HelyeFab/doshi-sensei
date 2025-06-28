@@ -75,7 +75,8 @@ export default function PracticePage() {
   
   // Kana chart states
   const [kanaChartType, setKanaChartType] = useState<'hiragana' | 'katakana'>('hiragana');
-  const [selectedKana, setSelectedKana] = useState<Set<string>>(new Set());
+  const [selectedHiragana, setSelectedHiragana] = useState<Set<string>>(new Set());
+  const [selectedKatakana, setSelectedKatakana] = useState<Set<string>>(new Set());
   const [showKanaStudyModal, setShowKanaStudyModal] = useState(false);
   const [kanaStudyType, setKanaStudyType] = useState<'hiragana' | 'katakana' | 'both'>('both');
   const [showRomaji, setShowRomaji] = useState(true);
@@ -92,9 +93,13 @@ export default function PracticePage() {
   // Load saved kana selection
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('kana-study-selection');
-      if (saved) {
-        setSelectedKana(new Set(JSON.parse(saved)));
+      const savedHiragana = localStorage.getItem('kana-study-selection-hiragana');
+      const savedKatakana = localStorage.getItem('kana-study-selection-katakana');
+      if (savedHiragana) {
+        setSelectedHiragana(new Set(JSON.parse(savedHiragana)));
+      }
+      if (savedKatakana) {
+        setSelectedKatakana(new Set(JSON.parse(savedKatakana)));
       }
     }
   }, []);
@@ -102,9 +107,15 @@ export default function PracticePage() {
   // Save kana selection
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('kana-study-selection', JSON.stringify([...selectedKana]));
+      localStorage.setItem('kana-study-selection-hiragana', JSON.stringify([...selectedHiragana]));
     }
-  }, [selectedKana]);
+  }, [selectedHiragana]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kana-study-selection-katakana', JSON.stringify([...selectedKatakana]));
+    }
+  }, [selectedKatakana]);
 
   const loadInitialWords = async () => {
     try {
@@ -158,17 +169,28 @@ export default function PracticePage() {
   });
 
   const handleToggleKana = (kanaId: string) => {
-    const newSelection = new Set(selectedKana);
-    if (newSelection.has(kanaId)) {
-      newSelection.delete(kanaId);
+    if (kanaChartType === 'hiragana') {
+      const newSelection = new Set(selectedHiragana);
+      if (newSelection.has(kanaId)) {
+        newSelection.delete(kanaId);
+      } else {
+        newSelection.add(kanaId);
+      }
+      setSelectedHiragana(newSelection);
     } else {
-      newSelection.add(kanaId);
+      const newSelection = new Set(selectedKatakana);
+      if (newSelection.has(kanaId)) {
+        newSelection.delete(kanaId);
+      } else {
+        newSelection.add(kanaId);
+      }
+      setSelectedKatakana(newSelection);
     }
-    setSelectedKana(newSelection);
   };
 
   const handleStartKanaStudy = () => {
-    if (selectedKana.size === 0) {
+    const totalSelected = selectedHiragana.size + selectedKatakana.size;
+    if (totalSelected === 0) {
       showNotification({
         title: 'No Characters Selected',
         message: 'Please select some kana characters to study first!',
@@ -180,8 +202,10 @@ export default function PracticePage() {
   };
 
   const handleClearKanaSelection = () => {
-    setSelectedKana(new Set());
-    localStorage.removeItem('kana-study-selection');
+    setSelectedHiragana(new Set());
+    setSelectedKatakana(new Set());
+    localStorage.removeItem('kana-study-selection-hiragana');
+    localStorage.removeItem('kana-study-selection-katakana');
   };
 
   if (selectedWord) {
@@ -286,13 +310,13 @@ export default function PracticePage() {
                     <span className="text-sm">Show Romaji</span>
                   </label>
 
-                  {selectedKana.size > 0 && (
+                  {(selectedHiragana.size > 0 || selectedKatakana.size > 0) && (
                     <>
                       <button
                         onClick={handleClearKanaSelection}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
-                        Clear Selection ({selectedKana.size})
+                        Clear Selection ({selectedHiragana.size + selectedKatakana.size})
                       </button>
                       
                       <div className="flex items-center gap-2">
@@ -315,7 +339,7 @@ export default function PracticePage() {
                               d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
                             />
                           </svg>
-                          <span>Start Study ({selectedKana.size} selected)</span>
+                          <span>Start Study ({selectedHiragana.size + selectedKatakana.size} selected)</span>
                         </button>
                       </div>
                     </>
@@ -327,7 +351,7 @@ export default function PracticePage() {
               <div className="w-full">
                 <KanaChart
                   chartType={kanaChartType}
-                  selectedKana={selectedKana}
+                  selectedKana={kanaChartType === 'hiragana' ? selectedHiragana : selectedKatakana}
                   onToggleKana={handleToggleKana}
                   showRomaji={showRomaji}
                 />
@@ -347,7 +371,7 @@ export default function PracticePage() {
                       });
                     }
                   }}
-                  selectedKanaIds={[...selectedKana]}
+                  selectedKanaIds={[...selectedHiragana, ...selectedKatakana]}
                   studyType={kanaStudyType}
                 />
               )}

@@ -28,10 +28,6 @@ export default function MobileHome() {
   useEffect(() => {
     if (user) {
       const canSync = userSubscription?.subscription?.status === 'active';
-        userEmail: user.email,
-        canSync: canSync,
-        subscriptionStatus: userSubscription?.subscription?.status
-      });
       StatsManager.setUser(user, canSync);
     } else {
       StatsManager.setUser(null, false);

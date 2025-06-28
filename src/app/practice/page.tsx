@@ -13,20 +13,23 @@ import StatsManager from '@/utils/stats';
 import TTSManager from '@/utils/tts';
 import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
 import CompanionTrigger from '@/components/CompanionTrigger';
+import KanaChart from '@/components/kana/KanaChart';
+import KanaStudyModal from '@/components/kana/KanaStudyModal';
+import { useNotification } from '@/contexts/NotificationContext';
 
 // Structured Data for Practice Page
 const practiceStructuredData = {
   "@context": "https://schema.org",
   "@type": "LearningResource",
-  "name": "Japanese Verb Conjugation Practice",
-  "description": "Interactive Japanese verb and adjective conjugation practice with detailed explanations. Study ichidan, godan, and irregular verbs.",
+  "name": "Japanese Language Practice - Conjugation & Kana",
+  "description": "Interactive Japanese verb and adjective conjugation practice with detailed explanations. Study hiragana and katakana charts with pronunciation.",
   "url": "https://doshisensei.com/practice",
   "educationalLevel": ["Beginner", "Intermediate", "Advanced"],
   "learningResourceType": "Interactive Practice",
   "about": {
     "@type": "Thing",
     "name": "Japanese Language",
-    "description": "Japanese verb conjugations, grammar, and vocabulary"
+    "description": "Japanese verb conjugations, grammar, vocabulary, hiragana and katakana"
   },
   "teaches": [
     "Japanese verb conjugation",
@@ -35,7 +38,10 @@ const practiceStructuredData = {
     "Irregular verb forms",
     "I-adjective conjugation",
     "Na-adjective conjugation",
-    "JLPT grammar patterns"
+    "JLPT grammar patterns",
+    "Hiragana characters",
+    "Katakana characters",
+    "Japanese syllabary"
   ],
   "educationalRole": "Student",
   "typicalAgeRange": "13-65",
@@ -49,11 +55,15 @@ const practiceStructuredData = {
     "JLPT preparation",
     "Japanese learning",
     "ichidan verbs",
-    "godan verbs"
+    "godan verbs",
+    "hiragana chart",
+    "katakana chart",
+    "kana practice"
   ]
 };
 
 export default function PracticePage() {
+  const [activeTab, setActiveTab] = useState<'conjugation' | 'kana'>('conjugation');
   const [words, setWords] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,13 +72,39 @@ export default function PracticePage() {
   const [showRules, setShowRules] = useState(false);
   const [showFurigana, setShowFurigana] = useState(false);
   const [wordTypeFilter, setWordTypeFilter] = useState<'all' | 'verbs' | 'adjectives'>('all');
+  
+  // Kana chart states
+  const [kanaChartType, setKanaChartType] = useState<'hiragana' | 'katakana'>('hiragana');
+  const [selectedKana, setSelectedKana] = useState<Set<string>>(new Set());
+  const [showKanaStudyModal, setShowKanaStudyModal] = useState(false);
+  const [kanaStudyType, setKanaStudyType] = useState<'hiragana' | 'katakana' | 'both'>('both');
+  const [showRomaji, setShowRomaji] = useState(true);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
-    loadInitialWords();
+    if (activeTab === 'conjugation') {
+      loadInitialWords();
+      // Preload cache in background for faster future loads
+      PracticeCache.preloadCache();
+    }
+  }, [activeTab]);
 
-    // Preload cache in background for faster future loads
-    PracticeCache.preloadCache();
+  // Load saved kana selection
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('kana-study-selection');
+      if (saved) {
+        setSelectedKana(new Set(JSON.parse(saved)));
+      }
+    }
   }, []);
+
+  // Save kana selection
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kana-study-selection', JSON.stringify([...selectedKana]));
+    }
+  }, [selectedKana]);
 
   const loadInitialWords = async () => {
     try {
@@ -121,6 +157,33 @@ export default function PracticePage() {
     return true; // 'all' shows everything
   });
 
+  const handleToggleKana = (kanaId: string) => {
+    const newSelection = new Set(selectedKana);
+    if (newSelection.has(kanaId)) {
+      newSelection.delete(kanaId);
+    } else {
+      newSelection.add(kanaId);
+    }
+    setSelectedKana(newSelection);
+  };
+
+  const handleStartKanaStudy = () => {
+    if (selectedKana.size === 0) {
+      showNotification({
+        title: 'No Characters Selected',
+        message: 'Please select some kana characters to study first!',
+        type: 'info'
+      });
+      return;
+    }
+    setShowKanaStudyModal(true);
+  };
+
+  const handleClearKanaSelection = () => {
+    setSelectedKana(new Set());
+    localStorage.removeItem('kana-study-selection');
+  };
+
   if (selectedWord) {
     return <WordPractice word={selectedWord} onBack={handleBackToList} />;
   }
@@ -151,12 +214,40 @@ export default function PracticePage() {
 
         <PageHeader title={strings.practice.title} />
 
-        <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
-          <p className="text-muted-foreground mb-8 text-center">
-            {strings.practice.selectWord}
-          </p>
+        <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex bg-muted rounded-lg p-1">
+              <button
+                onClick={() => setActiveTab('conjugation')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'conjugation'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Conjugation Practice
+              </button>
+              <button
+                onClick={() => setActiveTab('kana')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'kana'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Kana Charts
+              </button>
+            </div>
+          </div>
 
-          <WordSelector
+          {activeTab === 'conjugation' ? (
+            <>
+              <p className="text-muted-foreground mb-8 text-center">
+                {strings.practice.selectWord}
+              </p>
+
+              <WordSelector
             words={filteredWords}
             loading={loading}
             error={error}
@@ -168,6 +259,119 @@ export default function PracticePage() {
             onSelectWord={handleWordSelect}
             onRetry={loadInitialWords}
           />
+            </>
+          ) : (
+            // Kana Charts Tab
+            <div className="space-y-6">
+              {/* Header with controls */}
+              <div className="text-center space-y-4">
+                <p className="text-muted-foreground">
+                  Select kana characters to practice. No limit on selection!
+                </p>
+                
+                {/* Chart Type Toggle */}
+                <div className="flex justify-center gap-2">
+                  <button
+                    onClick={() => setKanaChartType('hiragana')}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      kanaChartType === 'hiragana'
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background text-foreground border-input hover:bg-muted'
+                    }`}
+                  >
+                    ひらがな Hiragana
+                  </button>
+                  <button
+                    onClick={() => setKanaChartType('katakana')}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      kanaChartType === 'katakana'
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background text-foreground border-input hover:bg-muted'
+                    }`}
+                  >
+                    カタカナ Katakana
+                  </button>
+                </div>
+
+                {/* Options and Study Button */}
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showRomaji}
+                      onChange={(e) => setShowRomaji(e.target.checked)}
+                      className="rounded border-input"
+                    />
+                    <span className="text-sm">Show Romaji</span>
+                  </label>
+
+                  {selectedKana.size > 0 && (
+                    <>
+                      <button
+                        onClick={handleClearKanaSelection}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Clear Selection ({selectedKana.size})
+                      </button>
+                      
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={kanaStudyType}
+                          onChange={(e) => setKanaStudyType(e.target.value as 'hiragana' | 'katakana' | 'both')}
+                          className="px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm"
+                        >
+                          <option value="hiragana">Study Hiragana</option>
+                          <option value="katakana">Study Katakana</option>
+                          <option value="both">Study Both</option>
+                        </select>
+                        
+                        <button
+                          onClick={handleStartKanaStudy}
+                          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
+                            />
+                          </svg>
+                          <span>Start Study ({selectedKana.size} selected)</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Kana Chart */}
+              <div className="w-full">
+                <KanaChart
+                  chartType={kanaChartType}
+                  selectedKana={selectedKana}
+                  onToggleKana={handleToggleKana}
+                  showRomaji={showRomaji}
+                />
+              </div>
+
+              {/* Kana Study Modal */}
+              {showKanaStudyModal && (
+                <KanaStudyModal
+                  isOpen={showKanaStudyModal}
+                  onClose={(completed) => {
+                    setShowKanaStudyModal(false);
+                    if (completed) {
+                      showNotification({
+                        title: 'Study Session Complete!',
+                        message: 'Great job practicing your kana!',
+                        type: 'success'
+                      });
+                    }
+                  }}
+                  selectedKanaIds={[...selectedKana]}
+                  studyType={kanaStudyType}
+                />
+              )}
+            </div>
+          )}
         </main>
       </div>
     </>

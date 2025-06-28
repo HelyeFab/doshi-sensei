@@ -63,7 +63,7 @@ const practiceStructuredData = {
 };
 
 export default function PracticePage() {
-  const [activeTab, setActiveTab] = useState<'conjugation' | 'kana'>('conjugation');
+  const [activeTab, setActiveTab] = useState<'conjugation' | 'kana'>('kana');
   const [words, setWords] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -219,16 +219,6 @@ export default function PracticePage() {
           <div className="flex justify-center mb-8">
             <div className="inline-flex bg-muted rounded-lg p-1">
               <button
-                onClick={() => setActiveTab('conjugation')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'conjugation'
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Conjugation Practice
-              </button>
-              <button
                 onClick={() => setActiveTab('kana')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   activeTab === 'kana'
@@ -238,29 +228,20 @@ export default function PracticePage() {
               >
                 Kana Charts
               </button>
+              <button
+                onClick={() => setActiveTab('conjugation')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'conjugation'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Conjugation Practice
+              </button>
             </div>
           </div>
 
-          {activeTab === 'conjugation' ? (
-            <>
-              <p className="text-muted-foreground mb-8 text-center">
-                {strings.practice.selectWord}
-              </p>
-
-              <WordSelector
-            words={filteredWords}
-            loading={loading}
-            error={error}
-            searchTerm={searchTerm}
-            wordTypeFilter={wordTypeFilter}
-            onSearchTermChange={setSearchTerm}
-            onWordTypeFilterChange={setWordTypeFilter}
-            onSearch={handleSearch}
-            onSelectWord={handleWordSelect}
-            onRetry={loadInitialWords}
-          />
-            </>
-          ) : (
+          {activeTab === 'kana' ? (
             // Kana Charts Tab
             <div className="space-y-6">
               {/* Header with controls */}
@@ -371,6 +352,25 @@ export default function PracticePage() {
                 />
               )}
             </div>
+          ) : (
+            <>
+              <p className="text-muted-foreground mb-8 text-center">
+                {strings.practice.selectWord}
+              </p>
+
+              <WordSelector
+                words={filteredWords}
+                loading={loading}
+                error={error}
+                searchTerm={searchTerm}
+                wordTypeFilter={wordTypeFilter}
+                onSearchTermChange={setSearchTerm}
+                onWordTypeFilterChange={setWordTypeFilter}
+                onSearch={handleSearch}
+                onSelectWord={handleWordSelect}
+                onRetry={loadInitialWords}
+              />
+            </>
           )}
         </main>
       </div>

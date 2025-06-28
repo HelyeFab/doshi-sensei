@@ -30,7 +30,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
 
   const renderKanaCell = (kana: KanaCharacter | null, isHeader = false) => {
     if (!kana) {
-      return <div className="aspect-square" />;
+      return <div className="w-full" />;
     }
 
     const isSelected = selectedKana.has(kana.id);
@@ -38,75 +38,77 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
 
     if (isHeader) {
       return (
-        <div className="aspect-square flex items-center justify-center text-sm font-medium text-muted-foreground">
+        <div className="flex items-center justify-center h-8 text-sm font-medium text-muted-foreground">
           {kana.column.toUpperCase()}
         </div>
       );
     }
 
     return (
-      <div
-        className={`
-          relative rounded-lg border-2 transition-all cursor-pointer
-          ${isSelected 
-            ? 'bg-primary/20 border-primary text-primary-foreground ring-2 ring-primary/50' 
-            : 'bg-card border-border text-card-foreground hover:bg-muted hover:border-muted-foreground/50'
-          }
-        `}
-        onClick={() => onToggleKana(kana.id)}
-      >
-        <div className="relative flex flex-col items-center justify-center p-2 md:p-3 min-h-[100px] md:min-h-[120px]">
-          {/* Character */}
-          <div className="text-3xl md:text-4xl lg:text-5xl font-medium japanese-text leading-tight">
-            {character}
-          </div>
-          
-          {/* Romaji */}
-          {showRomaji && (
-            <div className="text-sm md:text-base text-muted-foreground mt-1">
-              {kana.romaji}
+      <div className="relative">
+        <div
+          className={`
+            relative rounded-lg border-2 transition-all cursor-pointer overflow-hidden
+            ${isSelected 
+              ? 'bg-primary/20 border-primary text-primary-foreground ring-2 ring-primary/50' 
+              : 'bg-card border-border text-card-foreground hover:bg-muted hover:border-muted-foreground/50'
+            }
+          `}
+          onClick={() => onToggleKana(kana.id)}
+        >
+          <div className="relative flex flex-col items-center justify-center p-2 aspect-square">
+            {/* Character */}
+            <div className="text-2xl sm:text-3xl md:text-4xl font-medium japanese-text">
+              {character}
             </div>
-          )}
-
-          {/* Speak button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSpeak(kana);
-            }}
-            className="absolute top-1 right-1 p-1.5 rounded-full bg-background/80 hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all"
-            disabled={playingId === kana.id}
-          >
-            {playingId === kana.id ? (
-              <svg className="w-4 h-4 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              </svg>
-            )}
-          </button>
-
-          {/* Selection indicator */}
-          {isSelected && (
-            <div className="absolute -top-1 -left-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          )}
-
-          {/* Pronunciation note */}
-          {kana.pronunciation && (
-            <div className="absolute bottom-0 left-0 right-0 mx-1 mb-1">
-              <div className="bg-yellow-500/20 rounded px-1.5 py-0.5 text-[10px] md:text-xs text-yellow-600 dark:text-yellow-400 text-center leading-tight">
-                {kana.pronunciation}
+            
+            {/* Romaji */}
+            {showRomaji && (
+              <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                {kana.romaji}
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Speak button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSpeak(kana);
+              }}
+              className="absolute top-1 right-1 p-1 text-purple-400 hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
+              disabled={playingId === kana.id}
+            >
+              {playingId === kana.id ? (
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                </svg>
+              ) : (
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+              )}
+            </button>
+
+            {/* Selection indicator */}
+            {isSelected && (
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            )}
+          </div>
         </div>
+        
+        {/* Pronunciation note - Outside the card */}
+        {kana.pronunciation && (
+          <div className="mt-1 px-1">
+            <div className="bg-yellow-500/20 rounded px-1 py-0.5 text-[10px] sm:text-xs text-yellow-600 dark:text-yellow-400 text-center">
+              {kana.pronunciation}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -115,15 +117,15 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
     const columns = ['a', 'i', 'u', 'e', 'o'];
     
     return (
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-6 text-card-foreground">
+      <div className="mb-8 w-full">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">
           Basic {chartType === 'hiragana' ? 'Hiragana' : 'Katakana'}
         </h3>
-        <div className="inline-block bg-card/50 backdrop-blur rounded-xl p-4 md:p-6 border border-border/50">
-          <div className="grid grid-cols-5 gap-2 md:gap-3 lg:gap-4">
+        <div className="w-full max-w-xl mx-auto">
+          <div className="grid grid-cols-5 gap-1.5 sm:gap-2 md:gap-3">
             {/* Header row */}
             {columns.map(col => (
-              <div key={`header-${col}`} className="flex items-center justify-center h-12 md:h-14 text-sm md:text-base font-semibold text-muted-foreground bg-muted/30 rounded-lg">
+              <div key={`header-${col}`} className="flex items-center justify-center h-8 text-xs sm:text-sm font-semibold text-muted-foreground bg-muted/30 rounded">
                 {col.toUpperCase()}
               </div>
             ))}
@@ -136,31 +138,31 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
             if (row === 'y') {
               return (
                 <React.Fragment key={row}>
-                  <div key={`${row}-a`} className="aspect-square">{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
-                  <div key={`${row}-i`} className="aspect-square" />
-                  <div key={`${row}-u`} className="aspect-square">{renderKanaCell(rowKana.find(k => k.column === 'u') || null)}</div>
-                  <div key={`${row}-e`} className="aspect-square" />
-                  <div key={`${row}-o`} className="aspect-square">{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
+                  {renderKanaCell(rowKana.find(k => k.column === 'a') || null)}
+                  <div className="w-full" />
+                  {renderKanaCell(rowKana.find(k => k.column === 'u') || null)}
+                  <div className="w-full" />
+                  {renderKanaCell(rowKana.find(k => k.column === 'o') || null)}
                 </React.Fragment>
               );
             } else if (row === 'w') {
               return (
                 <React.Fragment key={row}>
-                  <div key={`${row}-a`} className="aspect-square">{renderKanaCell(rowKana.find(k => k.column === 'a') || null)}</div>
-                  <div key={`${row}-i`} className="aspect-square" />
-                  <div key={`${row}-u`} className="aspect-square" />
-                  <div key={`${row}-e`} className="aspect-square" />
-                  <div key={`${row}-o`} className="aspect-square">{renderKanaCell(rowKana.find(k => k.column === 'o') || null)}</div>
+                  {renderKanaCell(rowKana.find(k => k.column === 'a') || null)}
+                  <div className="w-full" />
+                  <div className="w-full" />
+                  <div className="w-full" />
+                  {renderKanaCell(rowKana.find(k => k.column === 'o') || null)}
                 </React.Fragment>
               );
             } else if (row === 'special') {
               return (
                 <React.Fragment key={row}>
-                  <div key={`${row}-a`} className="aspect-square" />
-                  <div key={`${row}-i`} className="aspect-square" />
-                  <div key={`${row}-n`} className="aspect-square">{renderKanaCell(rowKana[0] || null)}</div>
-                  <div key={`${row}-e`} className="aspect-square" />
-                  <div key={`${row}-o`} className="aspect-square" />
+                  <div className="w-full" />
+                  <div className="w-full" />
+                  {renderKanaCell(rowKana[0] || null)}
+                  <div className="w-full" />
+                  <div className="w-full" />
                 </React.Fragment>
               );
             }
@@ -170,7 +172,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               <React.Fragment key={row}>
                 {columns.map(col => {
                   const kana = rowKana.find(k => k.column === col);
-                  return <div key={`${row}-${col}`} className="aspect-square">{renderKanaCell(kana || null)}</div>;
+                  return <div key={`${row}-${col}`}>{renderKanaCell(kana || null)}</div>;
                 })}
               </React.Fragment>
             );
@@ -185,15 +187,15 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
     const columns = ['a', 'u', 'o'];
     
     return (
-      <div>
-        <h3 className="text-xl font-semibold mb-6 text-card-foreground">
-          Digraphs (Yōon) - {chartType === 'hiragana' ? 'Hiragana' : 'Katakana'}
+      <div className="w-full">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">
+          Digraphs (Yōon)
         </h3>
-        <div className="inline-block bg-card/50 backdrop-blur rounded-xl p-4 md:p-6 border border-border/50">
-          <div className="grid grid-cols-3 gap-2 md:gap-3 lg:gap-4">
+        <div className="w-full max-w-sm mx-auto">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3">
             {/* Header row */}
             {columns.map(col => (
-              <div key={`digraph-header-${col}`} className="flex items-center justify-center h-12 md:h-14 text-sm md:text-base font-semibold text-muted-foreground bg-muted/30 rounded-lg">
+              <div key={`digraph-header-${col}`} className="flex items-center justify-center h-8 text-xs sm:text-sm font-semibold text-muted-foreground bg-muted/30 rounded">
                 Y{col.toUpperCase()}
               </div>
             ))}
@@ -204,7 +206,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
             
             return columns.map(col => {
               const kana = rowDigraphs.find(k => k.column === col);
-              return <div key={`${row}-${col}`} className="aspect-square">{renderKanaCell(kana || null)}</div>;
+              return renderKanaCell(kana || null);
             });
           })}
           </div>
@@ -214,9 +216,11 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-      <div>{renderBasicChart()}</div>
-      <div>{renderDigraphChart()}</div>
+    <div className="w-full">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start justify-center">
+        <div className="w-full lg:w-auto">{renderBasicChart()}</div>
+        <div className="w-full lg:w-auto">{renderDigraphChart()}</div>
+      </div>
     </div>
   );
 }

@@ -35,29 +35,29 @@ export const kanaData: KanaCharacter[] = [
 
   // S-row
   { id: 'sa', hiragana: 'さ', katakana: 'サ', romaji: 'sa', type: 'consonant', row: 's', column: 'a' },
-  { id: 'shi', hiragana: 'し', katakana: 'シ', romaji: 'shi', type: 'consonant', row: 's', column: 'i', pronunciation: 'shi (not si)' },
+  { id: 'shi', hiragana: 'し', katakana: 'シ', romaji: 'shi', type: 'consonant', row: 's', column: 'i', pronunciation: 'not si' },
   { id: 'su', hiragana: 'す', katakana: 'ス', romaji: 'su', type: 'consonant', row: 's', column: 'u' },
   { id: 'se', hiragana: 'せ', katakana: 'セ', romaji: 'se', type: 'consonant', row: 's', column: 'e' },
   { id: 'so', hiragana: 'そ', katakana: 'ソ', romaji: 'so', type: 'consonant', row: 's', column: 'o' },
 
   // Z-row (dakuten)
   { id: 'za', hiragana: 'ざ', katakana: 'ザ', romaji: 'za', type: 'consonant', row: 'z', column: 'a' },
-  { id: 'ji', hiragana: 'じ', katakana: 'ジ', romaji: 'ji', type: 'consonant', row: 'z', column: 'i', pronunciation: 'ji (not zi)' },
+  { id: 'ji', hiragana: 'じ', katakana: 'ジ', romaji: 'ji', type: 'consonant', row: 'z', column: 'i', pronunciation: 'not zi' },
   { id: 'zu', hiragana: 'ず', katakana: 'ズ', romaji: 'zu', type: 'consonant', row: 'z', column: 'u' },
   { id: 'ze', hiragana: 'ぜ', katakana: 'ゼ', romaji: 'ze', type: 'consonant', row: 'z', column: 'e' },
   { id: 'zo', hiragana: 'ぞ', katakana: 'ゾ', romaji: 'zo', type: 'consonant', row: 'z', column: 'o' },
 
   // T-row
   { id: 'ta', hiragana: 'た', katakana: 'タ', romaji: 'ta', type: 'consonant', row: 't', column: 'a' },
-  { id: 'chi', hiragana: 'ち', katakana: 'チ', romaji: 'chi', type: 'consonant', row: 't', column: 'i', pronunciation: 'chi (not ti)' },
-  { id: 'tsu', hiragana: 'つ', katakana: 'ツ', romaji: 'tsu', type: 'consonant', row: 't', column: 'u', pronunciation: 'tsu (not tu)' },
+  { id: 'chi', hiragana: 'ち', katakana: 'チ', romaji: 'chi', type: 'consonant', row: 't', column: 'i', pronunciation: 'not ti' },
+  { id: 'tsu', hiragana: 'つ', katakana: 'ツ', romaji: 'tsu', type: 'consonant', row: 't', column: 'u', pronunciation: 'not tu' },
   { id: 'te', hiragana: 'て', katakana: 'テ', romaji: 'te', type: 'consonant', row: 't', column: 'e' },
   { id: 'to', hiragana: 'と', katakana: 'ト', romaji: 'to', type: 'consonant', row: 't', column: 'o' },
 
   // D-row (dakuten)
   { id: 'da', hiragana: 'だ', katakana: 'ダ', romaji: 'da', type: 'consonant', row: 'd', column: 'a' },
-  { id: 'ji2', hiragana: 'ぢ', katakana: 'ヂ', romaji: 'ji', type: 'consonant', row: 'd', column: 'i', pronunciation: 'ji (rarely used)' },
-  { id: 'zu2', hiragana: 'づ', katakana: 'ヅ', romaji: 'zu', type: 'consonant', row: 'd', column: 'u', pronunciation: 'zu (rarely used)' },
+  { id: 'ji2', hiragana: 'ぢ', katakana: 'ヂ', romaji: 'ji', type: 'consonant', row: 'd', column: 'i', pronunciation: 'rarely used' },
+  { id: 'zu2', hiragana: 'づ', katakana: 'ヅ', romaji: 'zu', type: 'consonant', row: 'd', column: 'u', pronunciation: 'rarely used' },
   { id: 'de', hiragana: 'で', katakana: 'デ', romaji: 'de', type: 'consonant', row: 'd', column: 'e' },
   { id: 'do', hiragana: 'ど', katakana: 'ド', romaji: 'do', type: 'consonant', row: 'd', column: 'o' },
 
@@ -71,7 +71,7 @@ export const kanaData: KanaCharacter[] = [
   // H-row
   { id: 'ha', hiragana: 'は', katakana: 'ハ', romaji: 'ha', type: 'consonant', row: 'h', column: 'a' },
   { id: 'hi', hiragana: 'ひ', katakana: 'ヒ', romaji: 'hi', type: 'consonant', row: 'h', column: 'i' },
-  { id: 'fu', hiragana: 'ふ', katakana: 'フ', romaji: 'fu', type: 'consonant', row: 'h', column: 'u', pronunciation: 'fu (not hu)' },
+  { id: 'fu', hiragana: 'ふ', katakana: 'フ', romaji: 'fu', type: 'consonant', row: 'h', column: 'u', pronunciation: 'not hu' },
   { id: 'he', hiragana: 'へ', katakana: 'ヘ', romaji: 'he', type: 'consonant', row: 'h', column: 'e' },
   { id: 'ho', hiragana: 'ほ', katakana: 'ホ', romaji: 'ho', type: 'consonant', row: 'h', column: 'o' },
 
@@ -110,7 +110,7 @@ export const kanaData: KanaCharacter[] = [
 
   // W-row
   { id: 'wa', hiragana: 'わ', katakana: 'ワ', romaji: 'wa', type: 'consonant', row: 'w', column: 'a' },
-  { id: 'wo', hiragana: 'を', katakana: 'ヲ', romaji: 'wo', type: 'consonant', row: 'w', column: 'o', pronunciation: 'wo (particle only)' },
+  { id: 'wo', hiragana: 'を', katakana: 'ヲ', romaji: 'wo', type: 'consonant', row: 'w', column: 'o', pronunciation: 'particle を' },
 
   // N
   { id: 'n', hiragana: 'ん', katakana: 'ン', romaji: 'n', type: 'consonant', row: 'special', column: 'n' },

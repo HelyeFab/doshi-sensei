@@ -55,7 +55,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
         `}
         onClick={() => onToggleKana(kana.id)}
       >
-        <div className="relative flex flex-col items-center justify-center p-2 md:p-3">
+        <div className="relative flex flex-col items-center justify-center p-2 md:p-3 min-h-[100px] md:min-h-[120px]">
           {/* Character */}
           <div className="text-3xl md:text-4xl lg:text-5xl font-medium japanese-text leading-tight">
             {character}
@@ -100,8 +100,10 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
 
           {/* Pronunciation note */}
           {kana.pronunciation && (
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-2 py-0.5 bg-yellow-500/20 rounded text-xs text-yellow-600 dark:text-yellow-400 whitespace-nowrap">
-              {kana.pronunciation}
+            <div className="absolute bottom-0 left-0 right-0 mx-1 mb-1">
+              <div className="bg-yellow-500/20 rounded px-1.5 py-0.5 text-[10px] md:text-xs text-yellow-600 dark:text-yellow-400 text-center leading-tight">
+                {kana.pronunciation}
+              </div>
             </div>
           )}
         </div>

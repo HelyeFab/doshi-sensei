@@ -210,10 +210,14 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
           {digraphRowOrder.map(row => {
             const rowDigraphs = digraphs.filter(k => k.row === row);
             
-            return columns.map(col => {
-              const kana = rowDigraphs.find(k => k.column === col);
-              return renderKanaCell(kana || null);
-            });
+            return (
+              <React.Fragment key={row}>
+                {columns.map(col => {
+                  const kana = rowDigraphs.find(k => k.column === col);
+                  return <div key={`${row}-${col}`}>{renderKanaCell(kana || null)}</div>;
+                })}
+              </React.Fragment>
+            );
           })}
           </div>
         </div>

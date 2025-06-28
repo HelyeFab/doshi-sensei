@@ -11,13 +11,17 @@ interface KanjiModalProps {
   onSave: () => void;
   isSaved?: boolean;
   onRemove?: () => Promise<void>;
+  isSelectedForStudy?: boolean;
+  onToggleStudy?: () => void;
 }
 
 export default function KanjiModal({
   kanji,
   isOpen,
   onClose,
-  onSave
+  onSave,
+  isSelectedForStudy = false,
+  onToggleStudy
 }: KanjiModalProps) {
   // Close modal on escape key
   useEffect(() => {
@@ -112,7 +116,7 @@ export default function KanjiModal({
                     >
                       <span>{reading}</span>
                       <KanjiTTSButton 
-                        kanji={kanji.character}
+                        kanji={kanji.kanji}
                         reading={reading}
                         readingType="on"
                         size="sm"
@@ -140,7 +144,7 @@ export default function KanjiModal({
                     >
                       <span>{reading}</span>
                       <KanjiTTSButton 
-                        kanji={kanji.character}
+                        kanji={kanji.kanji}
                         reading={reading}
                         readingType="kun"
                         size="sm"
@@ -154,6 +158,45 @@ export default function KanjiModal({
               </div>
             </div>
           </div>
+
+          {/* Study Selection */}
+          {onToggleStudy && (
+            <div className="mb-6">
+              <button
+                onClick={onToggleStudy}
+                className={`w-full flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
+                  isSelectedForStudy
+                    ? 'bg-accent/10 border-accent text-accent-foreground'
+                    : 'bg-muted/50 border-border hover:bg-muted'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
+                    isSelectedForStudy
+                      ? 'bg-accent border-accent'
+                      : 'border-muted-foreground'
+                  }`}>
+                    {isSelectedForStudy && (
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium">Add to Study Session</div>
+                    <div className="text-sm text-muted-foreground">
+                      {isSelectedForStudy ? 'Selected for study' : 'Click to add to study session'}
+                    </div>
+                  </div>
+                </div>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-3">

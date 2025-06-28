@@ -52,59 +52,109 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
       {/* Header */}
       <div className="mood-board-header">
         <div
-          className="mood-board-hero"
+          className="mood-board-hero relative overflow-hidden"
           style={{ background: board.background }}
         >
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-transparent" />
 
-          {/* Content */}
-          <div className="relative flex items-center justify-between text-white p-6">
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 text-white hover:bg-white/20 transition-all duration-200 shadow-lg"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="hidden sm:inline text-sm font-medium">Back</span>
-            </button>
+          {/* Desktop Layout */}
+          <div className="relative text-white h-full hidden lg:flex lg:flex-col lg:justify-center px-8">
+            <div className="flex items-center justify-between">
+              {/* Back button */}
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-5 py-2.5 text-white hover:bg-white/20 transition-all duration-200 shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+              </button>
 
-            <button
-              onClick={() => {
-                if (studyAccess.canStudy) {
-                  setIsStudyModalOpen(true);
-                } else {
-                  setShowUpgradeModal(true);
-                }
-              }}
-              className={`flex items-center gap-2 backdrop-blur-md rounded-full px-4 py-2 text-white transition-all duration-200 shadow-lg ${
-                studyAccess.canStudy 
-                  ? 'bg-white/10 hover:bg-white/20' 
-                  : 'bg-white/5 opacity-75 cursor-not-allowed'
-              }`}
-              title={studyAccess.canStudy ? "Study all kanji" : `${studyAccess.remainingSessions} sessions remaining today`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              <span className="hidden sm:inline text-sm font-medium">
-                Study {!studyAccess.isPremium && !studyAccess.canStudy && `(${studyAccess.remainingSessions} left)`}
-              </span>
-            </button>
-
-            <div className="text-center">
-              <div className="text-5xl mb-2">{board.emoji}</div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-1">{board.title}</h1>
-              <p className="text-sm md:text-base opacity-90">{board.description}</p>
-            </div>
-
-            <div className="text-right">
-              <div className="text-lg font-semibold">
-                {learnedCount}/{totalCount}
+              {/* Center section - Title and description */}
+              <div className="text-center flex-1 max-w-2xl mx-auto px-8">
+                <div className="text-5xl mb-3">{board.emoji}</div>
+                <h1 className="text-3xl font-bold mb-2">{board.title}</h1>
+                <p className="text-base opacity-90">{board.description}</p>
+                <div className="mt-3 text-sm opacity-80">
+                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned • 
+                  <span className="ml-1">{progress?.progressPercentage || 0}% complete</span>
+                </div>
               </div>
-              <div className="text-sm opacity-90">
-                {progress?.progressPercentage || 0}%
+
+              {/* Study button */}
+              <button
+                onClick={() => {
+                  if (studyAccess.canStudy) {
+                    setIsStudyModalOpen(true);
+                  } else {
+                    setShowUpgradeModal(true);
+                  }
+                }}
+                className={`flex items-center gap-2 backdrop-blur-md rounded-full px-5 py-2.5 text-white transition-all duration-200 shadow-lg ${
+                  studyAccess.canStudy 
+                    ? 'bg-white/10 hover:bg-white/20' 
+                    : 'bg-white/5 opacity-75 cursor-not-allowed'
+                }`}
+                title={studyAccess.canStudy ? "Study all kanji" : `${studyAccess.remainingSessions} sessions remaining today`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span className="text-sm font-medium">
+                  Study {!studyAccess.isPremium && !studyAccess.canStudy && `(${studyAccess.remainingSessions} left)`}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile/Tablet Layout */}
+          <div className="relative text-white h-full lg:hidden flex flex-col">
+            {/* Buttons row with proper padding */}
+            <div className="flex items-center justify-between p-4">
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 text-white hover:bg-white/20 transition-all duration-200 shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="hidden sm:inline text-sm font-medium">Back</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (studyAccess.canStudy) {
+                    setIsStudyModalOpen(true);
+                  } else {
+                    setShowUpgradeModal(true);
+                  }
+                }}
+                className={`flex items-center gap-2 backdrop-blur-md rounded-full px-4 py-2 text-white transition-all duration-200 shadow-lg ${
+                  studyAccess.canStudy 
+                    ? 'bg-white/10 hover:bg-white/20' 
+                    : 'bg-white/5 opacity-75 cursor-not-allowed'
+                }`}
+                title={studyAccess.canStudy ? "Study all kanji" : `${studyAccess.remainingSessions} sessions remaining today`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span className="text-sm font-medium">Study</span>
+              </button>
+            </div>
+            
+            {/* Content centered in remaining space */}
+            <div className="flex-1 flex items-center justify-center px-4 pb-4">
+              <div className="text-center">
+                <div className="text-4xl mb-2">{board.emoji}</div>
+                <h1 className="text-xl sm:text-2xl font-bold mb-1">{board.title}</h1>
+                <p className="text-sm opacity-90">{board.description}</p>
+                <div className="mt-2 text-xs sm:text-sm opacity-80">
+                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned • 
+                  <span>{progress?.progressPercentage || 0}% complete</span>
+                </div>
               </div>
             </div>
           </div>
@@ -171,18 +221,34 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
 
         .mood-board-hero {
           position: relative;
-          height: 200px;
-          display: flex;
-          align-items: center;
+          height: 240px;
         }
 
         .mood-board-content {
           flex: 1;
         }
 
+        @media (min-width: 1024px) {
+          .mood-board-hero {
+            height: 280px;
+          }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .mood-board-hero {
+            height: 260px;
+          }
+        }
+
         @media (max-width: 640px) {
           .mood-board-hero {
-            height: 160px;
+            height: 240px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .mood-board-hero {
+            height: 220px;
           }
         }
       `}</style>

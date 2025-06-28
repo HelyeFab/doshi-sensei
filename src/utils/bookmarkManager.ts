@@ -224,6 +224,26 @@ export class BookmarkManager {
       return snapshot.docs.map(doc => doc.data() as BookmarkedArticle);
     } catch (error) {
       console.error('Error getting user bookmarks:', error);
+      
+      // If there's an index error, try without ordering
+      if (error instanceof Error && error.message.includes('index')) {
+        try {
+          const fallbackQuery = query(
+            collection(db, this.COLLECTION_NAME),
+            where('userId', '==', userId)
+          );
+          
+          const snapshot = await getDocs(fallbackQuery);
+          const bookmarks = snapshot.docs.map(doc => doc.data() as BookmarkedArticle);
+          
+          // Sort manually
+          return bookmarks.sort((a, b) => b.bookmarkedAt.toMillis() - a.bookmarkedAt.toMillis());
+        } catch (fallbackError) {
+          console.error('Fallback query also failed:', fallbackError);
+          return [];
+        }
+      }
+      
       return [];
     }
   }

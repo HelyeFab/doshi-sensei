@@ -10,6 +10,8 @@ import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
 import KanjiModal from '@/components/kanji/KanjiModal';
 import CompanionTrigger from '@/components/CompanionTrigger';
+import KanjiStudyModal from '@/components/kanji-moods/KanjiStudyModal';
+import { useNotification } from '@/contexts/NotificationContext';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -64,6 +66,11 @@ export default function KanjiBrowserPage() {
   const [kanjiLists, setKanjiLists] = useState<KanjiList[]>([]);
   const [showSaveKanjiModal, setShowSaveKanjiModal] = useState(false);
   const [kanjiToSave, setKanjiToSave] = useState<Kanji | null>(null);
+  
+  // Study selection state
+  const [studySelection, setStudySelection] = useState<Set<string>>(new Set());
+  const [showStudyModal, setShowStudyModal] = useState(false);
+  const { showNotification } = useNotification();
 
   // JLPT level info
   const levelInfo = {
@@ -79,7 +86,15 @@ export default function KanjiBrowserPage() {
     loadKanjiData();
     loadSavedKanji();
     loadKanjiLists();
+    loadStudySelection();
   }, []);
+
+  // Save study selection when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kanji-study-selection', JSON.stringify([...studySelection]));
+    }
+  }, [studySelection]);
 
   // Handle search
   useEffect(() => {
@@ -120,6 +135,45 @@ export default function KanjiBrowserPage() {
     } catch (error) {
       console.error('Error loading kanji lists:', error);
     }
+  };
+
+  const loadStudySelection = () => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('kanji-study-selection');
+      if (saved) {
+        setStudySelection(new Set(JSON.parse(saved)));
+      }
+    }
+  };
+
+  const toggleStudySelection = (kanji: string) => {
+    const newSelection = new Set(studySelection);
+    
+    if (newSelection.has(kanji)) {
+      newSelection.delete(kanji);
+    } else {
+      // Check if we've reached the limit of 10
+      if (newSelection.size >= 10) {
+        const messages = [
+          "Woah there, eager learner! 🌟 Master these 10 first!",
+          "10 kanji is the perfect study portion! 🍱 Quality over quantity!",
+          "Your brain will thank you for keeping it to 10! 🧠✨",
+          "10 kanji selected! Time to study these beauties! 📚",
+          "That's a full study session! Let's ace these 10 first! 🎯"
+        ];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        
+        showNotification({
+          title: "Study Limit Reached",
+          message: randomMessage,
+          type: 'info'
+        });
+        return;
+      }
+      newSelection.add(kanji);
+    }
+    
+    setStudySelection(newSelection);
   };
 
   const performSearch = async () => {
@@ -206,14 +260,25 @@ export default function KanjiBrowserPage() {
           onClick={() => handleKanjiClick(kanjiItem)}
           className={`
             relative aspect-square flex items-center justify-center text-2xl font-medium rounded-lg border-2 transition-all hover:scale-105
-            ${savedKanjiSet.has(kanjiItem.kanji)
+            ${studySelection.has(kanjiItem.kanji)
+              ? 'bg-accent/20 border-accent text-accent-foreground ring-2 ring-accent/50'
+              : savedKanjiSet.has(kanjiItem.kanji)
               ? 'bg-primary/10 border-primary text-primary'
               : 'bg-card border-border text-card-foreground hover:bg-muted'
             }
           `}
         >
           {kanjiItem.kanji}
-          {savedKanjiSet.has(kanjiItem.kanji) && (
+          {/* Study selection indicator */}
+          {studySelection.has(kanjiItem.kanji) && (
+            <div className="absolute -top-1 -left-1 w-4 h-4 bg-accent rounded-full flex items-center justify-center">
+              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          )}
+          {/* Saved indicator */}
+          {savedKanjiSet.has(kanjiItem.kanji) && !studySelection.has(kanjiItem.kanji) && (
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
           )}
         </button>
@@ -258,7 +323,23 @@ export default function KanjiBrowserPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <PageHeader title="漢字 Kanji Browser" />
+          <div className="relative">
+            <PageHeader title="漢字 Kanji Browser" />
+            {/* Study Button */}
+            {studySelection.size > 0 && (
+              <button
+                onClick={() => setShowStudyModal(true)}
+                className="absolute top-0 right-0 flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
+                  />
+                </svg>
+                <span>Study ({studySelection.size}/10)</span>
+              </button>
+            )}
+          </div>
           <p className="text-muted-foreground text-center mt-2">
             Browse Japanese kanji organized by JLPT levels. Click any kanji to see details and save favorites.
           </p>
@@ -382,6 +463,8 @@ export default function KanjiBrowserPage() {
             isOpen={!!selectedKanji}
             onClose={() => setSelectedKanji(null)}
             onSave={() => handleKanjiSave(selectedKanji)}
+            isSelectedForStudy={studySelection.has(selectedKanji.kanji)}
+            onToggleStudy={() => toggleStudySelection(selectedKanji.kanji)}
           />
         )}
 
@@ -399,6 +482,61 @@ export default function KanjiBrowserPage() {
               setKanjiToSave(null);
             }}
             onSaveToLists={handleSaveKanjiToLists}
+          />
+        )}
+
+        {/* Kanji Study Modal */}
+        {showStudyModal && (
+          <KanjiStudyModal
+            isOpen={showStudyModal}
+            onClose={(completed) => {
+              setShowStudyModal(false);
+              // Only clear selection if study was completed
+              if (completed) {
+                setStudySelection(new Set());
+                localStorage.removeItem('kanji-study-selection');
+              }
+            }}
+            boardId="kanji-browser-study"
+            boardTitle="Kanji Study Session"
+            kanjiList={Array.from(studySelection).map(kanjiChar => {
+              // Find the full kanji object from our data
+              let found: Kanji | undefined;
+              for (const level in kanjiData) {
+                found = kanjiData[level as JLPTLevel].find(k => k.kanji === kanjiChar);
+                if (found) break;
+              }
+              // Also check search results if not found
+              if (!found) {
+                found = searchResults.find(k => k.kanji === kanjiChar);
+              }
+              
+              // Transform to KanjiItem format
+              if (found) {
+                return {
+                  char: found.kanji,
+                  meaning: found.meaning,
+                  readings: {
+                    on: found.onyomi || [],
+                    kun: found.kunyomi || []
+                  },
+                  examples: [], // No examples in our Kanji type
+                  difficulty: found.jlpt === 'N5' ? 1 : 
+                             found.jlpt === 'N4' ? 2 :
+                             found.jlpt === 'N3' ? 3 :
+                             found.jlpt === 'N2' ? 4 : 5
+                };
+              }
+              
+              // Fallback (shouldn't happen)
+              return {
+                char: kanjiChar,
+                meaning: '',
+                readings: { on: [], kun: [] },
+                examples: [],
+                difficulty: 1
+              };
+            })}
           />
         )}
       </div>

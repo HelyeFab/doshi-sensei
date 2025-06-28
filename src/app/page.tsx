@@ -46,6 +46,9 @@ interface UserStats {
   accuracy: number;
   streak: number;
   totalDaysUsed: number;
+  kanjiStudySessions: number;
+  kanjiAccuracy: number;
+  totalKanjiLearned: number;
 }
 
 export default function Home() {
@@ -56,7 +59,10 @@ export default function Home() {
     drillsCompleted: 0,
     accuracy: 0,
     streak: 0,
-    totalDaysUsed: 0
+    totalDaysUsed: 0,
+    kanjiStudySessions: 0,
+    kanjiAccuracy: 0,
+    totalKanjiLearned: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -115,7 +121,10 @@ export default function Home() {
         drillsCompleted: userStats.drillsCompleted,
         accuracy: Math.round(userStats.accuracy),
         streak: userStats.currentStreak,
-        totalDaysUsed: userStats.totalDaysUsed
+        totalDaysUsed: userStats.totalDaysUsed,
+        kanjiStudySessions: userStats.kanjiStudySessions || 0,
+        kanjiAccuracy: Math.round(userStats.kanjiAccuracy || 0),
+        totalKanjiLearned: userStats.totalKanjiLearned || 0
       });
     } catch (err) {
       console.error('Error loading stats:', err);
@@ -164,7 +173,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 md:py-8 min-h-screen pb-24 md:pb-8">
+      <div className="container mx-auto px-4 py-6 md:py-8 min-h-screen pb-32 md:pb-8">
         {/* Welcome Header */}
         <header className="mb-8 md:mb-12 text-center">
           {/* Welcome Text with Inline Avatar */}
@@ -199,11 +208,11 @@ export default function Home() {
 
         {/* Main Navigation Cards */}
         <main className="max-w-6xl mx-auto">
-          {/* Vertically Scrollable Cards in 2x2 Grid */}
+          {/* Navigation Cards */}
           <div className="mb-6 md:mb-8">
-            {/* Mobile: 2x2 Grid with Vertical Scroll */}
-            <div className="md:hidden max-h-80 overflow-y-auto scrollbar-hide">
-              <div className="grid grid-cols-2 gap-3 pb-4">
+            {/* Mobile: 2x2 Grid without scroll container */}
+            <div className="md:hidden">
+              <div className="grid grid-cols-2 gap-3">
                 {/* Practice Card */}
                 <FeatureCard
                   title="Practice"
@@ -428,48 +437,94 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Circular Progress Stats */}
-          <div
-            className="bg-card rounded-xl p-4 md:p-6 shadow-sm"
-            style={{
-              border: '2px solid white',
-              boxShadow: 'inset 0 0 0 1px var(--primary), 0 4px 12px rgba(0,0,0,0.1)'
-            }}
-          >
-            <h2 className="text-lg md:text-xl font-semibold mb-6 text-card-foreground">
-              Your Progress
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              <StatCircle
-                label="Days Used"
-                value={loading ? 0 : stats.totalDaysUsed}
-                maxValue={365}
-                color="blue"
-                loading={loading}
-              />
-              <StatCircle
-                label="Drills"
-                value={loading ? 0 : stats.drillsCompleted}
-                maxValue={100}
-                color="purple"
-                loading={loading}
-              />
-              <StatCircle
-                label="Accuracy"
-                value={loading ? 0 : stats.accuracy}
-                maxValue={100}
-                color="green"
-                loading={loading}
-                isPercentage={true}
-              />
-              <StatCircle
-                label="Streak"
-                value={loading ? 0 : stats.streak}
-                maxValue={30}
-                color="orange"
-                loading={loading}
-                suffix="days"
-              />
+          {/* Minimal Stats Bar */}
+          <div className="bg-card/50 backdrop-blur rounded-lg p-3 md:p-4 border border-border/50 mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-2 md:gap-4">
+              {/* Streak Badge */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                  <span className="text-sm">🔥</span>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Streak</div>
+                  <div className="text-sm font-semibold">{loading ? '...' : `${stats.streak} days`}</div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="hidden md:block h-8 w-px bg-border" />
+
+              {/* Combined Activity */}
+              <div className="flex items-center gap-4 md:gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                    <span className="text-sm">⚡</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">{loading ? '...' : stats.drillsCompleted}</div>
+                    <div className="text-xs text-muted-foreground">Drills</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                    <span className="text-sm">🍙</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">{loading ? '...' : stats.kanjiStudySessions}</div>
+                    <div className="text-xs text-muted-foreground">Sessions</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                    <span className="text-sm">📚</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">{loading ? '...' : stats.totalKanjiLearned}</div>
+                    <div className="text-xs text-muted-foreground">Learned</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="hidden md:block h-8 w-px bg-border" />
+
+              {/* Overall Accuracy */}
+              <div className="flex items-center gap-2">
+                <div className="relative w-10 h-10">
+                  <svg className="w-full h-full -rotate-90">
+                    <circle
+                      cx="20"
+                      cy="20"
+                      r="16"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      fill="none"
+                      className="text-muted"
+                      opacity="0.2"
+                    />
+                    <circle
+                      cx="20"
+                      cy="20"
+                      r="16"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeDasharray={`${loading ? 0 : (Math.max(stats.accuracy, stats.kanjiAccuracy) / 100) * 100} 100`}
+                      strokeLinecap="round"
+                      className="text-green-600 dark:text-green-400 transition-all duration-500"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-semibold">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Avg Accuracy</div>
+                  <div className="text-sm font-semibold text-green-600 dark:text-green-400">
+                    {loading ? '...' : 'Good'}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -602,7 +657,7 @@ interface StatCircleProps {
   label: string;
   value: number;
   maxValue: number;
-  color: 'blue' | 'green' | 'purple' | 'orange';
+  color: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'indigo' | 'teal';
   loading: boolean;
   isPercentage?: boolean;
   suffix?: string;
@@ -613,14 +668,20 @@ function StatCircle({ label, value, maxValue, color, loading, isPercentage = fal
     blue: 'text-blue-600 dark:text-blue-400',
     green: 'text-green-600 dark:text-green-400',
     purple: 'text-purple-600 dark:text-purple-400',
-    orange: 'text-orange-600 dark:text-orange-400'
+    orange: 'text-orange-600 dark:text-orange-400',
+    pink: 'text-pink-600 dark:text-pink-400',
+    indigo: 'text-indigo-600 dark:text-indigo-400',
+    teal: 'text-teal-600 dark:text-teal-400'
   };
 
   const strokeClasses = {
     blue: 'stroke-blue-600 dark:stroke-blue-400',
     green: 'stroke-green-600 dark:stroke-green-400',
     purple: 'stroke-purple-600 dark:stroke-purple-400',
-    orange: 'stroke-orange-600 dark:stroke-orange-400'
+    orange: 'stroke-orange-600 dark:stroke-orange-400',
+    pink: 'stroke-pink-600 dark:stroke-pink-400',
+    indigo: 'stroke-indigo-600 dark:stroke-indigo-400',
+    teal: 'stroke-teal-600 dark:stroke-teal-400'
   };
 
   const percentage = Math.min((value / maxValue) * 100, 100);

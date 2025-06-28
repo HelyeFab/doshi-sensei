@@ -15,6 +15,7 @@ import { generateFuriganaWithCache, checkFuriganaApiHealth } from '@/utils/furig
 import { BookmarkManager } from '@/utils/bookmarkManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import ArticleAudioPlayer from '@/components/audio/ArticleAudioPlayer';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -700,6 +701,9 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               </div>
             )}
           </header>
+
+          {/* Audio Player */}
+          <ArticleAudioPlayer article={article} />
 
           {/* Article body */}
           <div

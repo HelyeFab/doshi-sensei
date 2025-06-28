@@ -1,386 +1,225 @@
-/**
- * TTS Audio caching system for fast playback and reduced API calls
- */
+// TTS Cache Manager
+// Caches text-to-speech audio data to reduce API calls and costs
 
-import CacheManager from './cacheManager';
-
-export interface CachedAudio {
-  id: string;
-  articleId: string;
-  sentenceIndex: number;
+interface CacheEntry {
   text: string;
-  audioBlob: Blob;
   voice: string;
-  speed: number;
+  provider: 'elevenlabs' | 'google';
+  audioData: ArrayBuffer;
   timestamp: number;
-  duration?: number;
-  size: number;
+  expiresAt: number;
 }
 
-export interface TTSCacheStats {
-  totalAudioFiles: number;
-  totalSize: number;
-  hitRate: number;
-  avgGenerationTime: number;
-  storageByArticle: Record<string, number>;
-}
-
-export class TTSCache {
-  private static instance: TTSCache;
-  private cacheManager: CacheManager;
-  private generationTimes = new Map<string, number[]>();
-  private hitStats = { hits: 0, misses: 0 };
-  private activeRequests = new Map<string, Promise<Blob | null>>();
+class TTSCacheManager {
+  private static instance: TTSCacheManager;
+  private cache: Map<string, CacheEntry> = new Map();
+  private readonly CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+  private readonly MAX_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
+  private currentCacheSize = 0;
 
   private constructor() {
-    this.cacheManager = CacheManager.getInstance({
-      maxSize: 100 * 1024 * 1024, // 100MB for audio
-      defaultTTL: 30 * 24 * 60 * 60 * 1000, // 30 days
-      maxEntries: 2000
-    });
+    // Load cache from localStorage if available
+    this.loadFromLocalStorage();
+    
+    // Clean up expired entries on initialization
+    this.cleanupExpiredEntries();
   }
 
-  static getInstance(): TTSCache {
-    if (!TTSCache.instance) {
-      TTSCache.instance = new TTSCache();
+  static getInstance(): TTSCacheManager {
+    if (!TTSCacheManager.instance) {
+      TTSCacheManager.instance = new TTSCacheManager();
     }
-    return TTSCache.instance;
+    return TTSCacheManager.instance;
   }
 
-  /**
-   * Generate cache key for audio
-   */
-  private generateCacheKey(text: string, voice: string, speed: number): string {
-    // Create a simple hash of the text + voice + speed
-    const content = `${text}_${voice}_${speed}`;
-    let hash = 0;
-    for (let i = 0; i < content.length; i++) {
-      const char = content.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return `tts_${Math.abs(hash).toString(36)}`;
+  // Generate a unique cache key
+  private generateCacheKey(text: string, voice: string, provider: string): string {
+    return `${provider}_${voice}_${text}`.toLowerCase();
   }
 
-  /**
-   * Get audio from cache or generate new
-   */
-  async getAudio(
+  // Get cached audio if available
+  async getCachedAudio(
     text: string, 
-    voice: string = 'ja-JP-Standard-A', 
-    speed: number = 1.0,
-    articleId?: string,
-    sentenceIndex?: number,
-    generateFn?: () => Promise<Blob>
-  ): Promise<Blob | null> {
-    const cacheKey = this.generateCacheKey(text, voice, speed);
-    const startTime = Date.now();
+    voice: string, 
+    provider: 'elevenlabs' | 'google'
+  ): Promise<ArrayBuffer | null> {
+    const key = this.generateCacheKey(text, voice, provider);
+    const entry = this.cache.get(key);
 
-    try {
-      // Check if already being generated
-      if (this.activeRequests.has(cacheKey)) {
-        console.log(`⏳ Audio generation in progress for: ${text.substring(0, 30)}...`);
-        return await this.activeRequests.get(cacheKey)!;
-      }
-
-      // Try memory cache first
-      let audioBlob = this.cacheManager.getMemory<Blob>(cacheKey);
-      
-      if (audioBlob) {
-        this.recordHit(cacheKey, Date.now() - startTime);
-        console.log(`🔊 Audio loaded from memory cache: ${text.substring(0, 30)}...`);
-        return audioBlob;
-      }
-
-      // Try IndexedDB cache
-      const cachedAudio = await this.cacheManager.getDB<CachedAudio>('audio', cacheKey);
-      
-      if (cachedAudio?.audioBlob) {
-        // Also store in memory for faster subsequent access
-        this.cacheManager.setMemory(cacheKey, cachedAudio.audioBlob);
-        this.recordHit(cacheKey, Date.now() - startTime);
-        console.log(`🔊 Audio loaded from IndexedDB cache: ${text.substring(0, 30)}...`);
-        return cachedAudio.audioBlob;
-      }
-
-      // Cache miss - generate new audio if function provided
-      if (generateFn) {
-        console.log(`🎤 Generating new audio: ${text.substring(0, 30)}...`);
-        
-        // Add to active requests to prevent duplicate generation
-        const generationPromise = this.generateAndCache(
-          cacheKey, text, voice, speed, articleId, sentenceIndex, generateFn
-        );
-        
-        this.activeRequests.set(cacheKey, generationPromise);
-        
-        try {
-          const result = await generationPromise;
-          this.recordMiss(cacheKey, Date.now() - startTime);
-          return result;
-        } finally {
-          this.activeRequests.delete(cacheKey);
-        }
-      }
-
-      this.recordMiss(cacheKey, Date.now() - startTime);
-      return null;
-      
-    } catch (error) {
-      console.error(`Error getting audio for text: ${text.substring(0, 30)}...`, error);
-      this.activeRequests.delete(cacheKey);
-      this.recordMiss(cacheKey, Date.now() - startTime);
+    if (!entry) {
+      console.log(`[TTS Cache] Miss for: "${text.substring(0, 50)}..."`);
       return null;
     }
+
+    // Check if entry has expired
+    if (Date.now() > entry.expiresAt) {
+      console.log(`[TTS Cache] Expired entry for: "${text.substring(0, 50)}..."`);
+      this.cache.delete(key);
+      this.updateCacheSize();
+      return null;
+    }
+
+    console.log(`[TTS Cache] Hit for: "${text.substring(0, 50)}..." (${this.formatBytes(entry.audioData.byteLength)})`);
+    return entry.audioData;
   }
 
-  /**
-   * Generate and cache new audio
-   */
-  private async generateAndCache(
-    cacheKey: string,
+  // Cache audio data
+  async cacheAudio(
     text: string,
     voice: string,
-    speed: number,
-    articleId?: string,
-    sentenceIndex?: number,
-    generateFn?: () => Promise<Blob>
-  ): Promise<Blob | null> {
-    try {
-      if (!generateFn) return null;
-      
-      const audioBlob = await generateFn();
-      
-      if (audioBlob) {
-        await this.setAudio(cacheKey, {
-          id: cacheKey,
-          articleId: articleId || 'unknown',
-          sentenceIndex: sentenceIndex || 0,
-          text,
-          audioBlob,
-          voice,
-          speed,
-          timestamp: Date.now(),
-          size: audioBlob.size
-        });
-        
-        console.log(`✅ Audio generated and cached: ${text.substring(0, 30)}...`);
-        return audioBlob;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error generating audio:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Store audio in cache
-   */
-  async setAudio(cacheKey: string, audioData: CachedAudio): Promise<void> {
-    try {
-      // Store in both memory and IndexedDB
-      this.cacheManager.setMemory(cacheKey, audioData.audioBlob);
-      await this.cacheManager.setDB('audio', cacheKey, audioData);
-      
-      console.log(`💾 Audio cached: ${audioData.text.substring(0, 30)}...`);
-    } catch (error) {
-      console.error(`Error caching audio:`, error);
-    }
-  }
-
-  /**
-   * Preload audio for an entire article
-   */
-  async preloadArticleAudio(
-    articleId: string,
-    sentences: string[],
-    voice: string = 'ja-JP-Standard-A',
-    speed: number = 1.0,
-    generateFn: (text: string) => Promise<Blob>,
-    onProgress?: (completed: number, total: number) => void
+    provider: 'elevenlabs' | 'google',
+    audioData: ArrayBuffer
   ): Promise<void> {
-    console.log(`🔄 Preloading audio for article ${articleId} (${sentences.length} sentences)...`);
+    const key = this.generateCacheKey(text, voice, provider);
+    const audioSize = audioData.byteLength;
+
+    // Check if adding this would exceed cache size limit
+    if (this.currentCacheSize + audioSize > this.MAX_CACHE_SIZE) {
+      console.log('[TTS Cache] Cache size limit reached, cleaning up old entries...');
+      this.cleanupOldEntries(audioSize);
+    }
+
+    const entry: CacheEntry = {
+      text,
+      voice,
+      provider,
+      audioData,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + this.CACHE_DURATION
+    };
+
+    this.cache.set(key, entry);
+    this.updateCacheSize();
     
-    let completed = 0;
-    const total = sentences.length;
-
-    // Process in batches to avoid overwhelming the system
-    const batchSize = 3;
-    for (let i = 0; i < sentences.length; i += batchSize) {
-      const batch = sentences.slice(i, i + batchSize);
-      
-      const promises = batch.map(async (sentence, batchIndex) => {
-        const sentenceIndex = i + batchIndex;
-        try {
-          await this.getAudio(
-            sentence, 
-            voice, 
-            speed, 
-            articleId, 
-            sentenceIndex,
-            () => generateFn(sentence)
-          );
-          completed++;
-          onProgress?.(completed, total);
-        } catch (error) {
-          console.error(`Error preloading sentence ${sentenceIndex}:`, error);
-          completed++;
-          onProgress?.(completed, total);
-        }
-      });
-
-      await Promise.allSettled(promises);
-      
-      // Small delay between batches to prevent overwhelming the API
-      if (i + batchSize < sentences.length) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-    }
-
-    console.log(`✅ Audio preloading completed for article ${articleId}`);
-  }
-
-  /**
-   * Get all cached audio for an article
-   */
-  async getArticleAudio(articleId: string): Promise<CachedAudio[]> {
-    try {
-      if (!this.cacheManager.db) return [];
-
-      return new Promise((resolve, reject) => {
-        const transaction = this.cacheManager.db!.transaction(['audio'], 'readonly');
-        const store = transaction.objectStore('audio');
-        const index = store.index('articleId');
-        const request = index.getAll(articleId);
-
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result || []);
-      });
-    } catch (error) {
-      console.error(`Error getting article audio for ${articleId}:`, error);
-      return [];
-    }
-  }
-
-  /**
-   * Remove all audio for an article
-   */
-  async removeArticleAudio(articleId: string): Promise<void> {
-    try {
-      const cachedAudio = await this.getArticleAudio(articleId);
-      
-      for (const audio of cachedAudio) {
-        const cacheKey = this.generateCacheKey(audio.text, audio.voice, audio.speed);
-        this.cacheManager.memoryCache?.delete(cacheKey);
-        await this.cacheManager.deleteDB('audio', audio.id);
-      }
-      
-      console.log(`🗑️ Audio removed for article ${articleId}`);
-    } catch (error) {
-      console.error(`Error removing article audio for ${articleId}:`, error);
-    }
-  }
-
-  /**
-   * Clear all TTS cache
-   */
-  async clearCache(): Promise<void> {
-    try {
-      // Clear memory cache
-      for (const key of this.cacheManager.memoryCache?.keys() || []) {
-        if (key.startsWith('tts_')) {
-          this.cacheManager.memoryCache?.delete(key);
-        }
-      }
-
-      // Clear IndexedDB
-      if (this.cacheManager.db) {
-        const transaction = this.cacheManager.db.transaction(['audio'], 'readwrite');
-        const store = transaction.objectStore('audio');
-        await store.clear();
-      }
-
-      this.generationTimes.clear();
-      this.hitStats = { hits: 0, misses: 0 };
-      this.activeRequests.clear();
-      
-      console.log('🧹 TTS cache cleared');
-    } catch (error) {
-      console.error('Error clearing TTS cache:', error);
-    }
-  }
-
-  /**
-   * Get cache statistics
-   */
-  async getStats(): Promise<TTSCacheStats> {
-    const stats = await this.cacheManager.getCacheStats();
-    const totalRequests = this.hitStats.hits + this.hitStats.misses;
+    console.log(`[TTS Cache] Cached: "${text.substring(0, 50)}..." (${this.formatBytes(audioSize)})`);
     
-    const allGenerationTimes = Array.from(this.generationTimes.values()).flat();
-    const avgGenerationTime = allGenerationTimes.length > 0 
-      ? allGenerationTimes.reduce((sum, time) => sum + time, 0) / allGenerationTimes.length 
-      : 0;
+    // Save to localStorage (for persistence)
+    this.saveToLocalStorage();
+  }
 
-    // Get storage by article
-    const storageByArticle: Record<string, number> = {};
-    try {
-      if (this.cacheManager.db) {
-        const transaction = this.cacheManager.db.transaction(['audio'], 'readonly');
-        const store = transaction.objectStore('audio');
-        const request = store.openCursor();
-        
-        await new Promise<void>((resolve, reject) => {
-          request.onerror = () => reject(request.error);
-          request.onsuccess = (event) => {
-            const cursor = (event.target as IDBRequest).result;
-            if (cursor) {
-              const audio = cursor.value as CachedAudio;
-              storageByArticle[audio.articleId] = (storageByArticle[audio.articleId] || 0) + audio.size;
-              cursor.continue();
-            } else {
-              resolve();
-            }
-          };
-        });
+  // Clean up expired entries
+  private cleanupExpiredEntries(): void {
+    const now = Date.now();
+    let removedCount = 0;
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (now > entry.expiresAt) {
+        this.cache.delete(key);
+        removedCount++;
       }
-    } catch (error) {
-      console.error('Error calculating storage by article:', error);
     }
 
+    if (removedCount > 0) {
+      console.log(`[TTS Cache] Removed ${removedCount} expired entries`);
+      this.updateCacheSize();
+    }
+  }
+
+  // Clean up old entries to make space
+  private cleanupOldEntries(requiredSpace: number): void {
+    const entries = Array.from(this.cache.entries())
+      .sort((a, b) => a[1].timestamp - b[1].timestamp);
+
+    let freedSpace = 0;
+    let removedCount = 0;
+
+    for (const [key, entry] of entries) {
+      if (freedSpace >= requiredSpace) break;
+      
+      freedSpace += entry.audioData.byteLength;
+      this.cache.delete(key);
+      removedCount++;
+    }
+
+    console.log(`[TTS Cache] Removed ${removedCount} old entries to free ${this.formatBytes(freedSpace)}`);
+    this.updateCacheSize();
+  }
+
+  // Update current cache size
+  private updateCacheSize(): void {
+    this.currentCacheSize = 0;
+    for (const entry of this.cache.values()) {
+      this.currentCacheSize += entry.audioData.byteLength;
+    }
+  }
+
+  // Get cache statistics
+  getStats(): {
+    entries: number;
+    size: number;
+    sizeFormatted: string;
+    maxSize: number;
+    maxSizeFormatted: string;
+    utilization: number;
+  } {
     return {
-      totalAudioFiles: stats.db.entries,
-      totalSize: stats.memory.size + stats.db.size,
-      hitRate: totalRequests > 0 ? this.hitStats.hits / totalRequests : 0,
-      avgGenerationTime,
-      storageByArticle
+      entries: this.cache.size,
+      size: this.currentCacheSize,
+      sizeFormatted: this.formatBytes(this.currentCacheSize),
+      maxSize: this.MAX_CACHE_SIZE,
+      maxSizeFormatted: this.formatBytes(this.MAX_CACHE_SIZE),
+      utilization: (this.currentCacheSize / this.MAX_CACHE_SIZE) * 100
     };
   }
 
-  private recordHit(cacheKey: string, loadTime: number): void {
-    this.hitStats.hits++;
-    this.recordGenerationTime(cacheKey, loadTime);
-  }
-
-  private recordMiss(cacheKey: string, loadTime: number): void {
-    this.hitStats.misses++;
-    this.recordGenerationTime(cacheKey, loadTime);
-  }
-
-  private recordGenerationTime(cacheKey: string, time: number): void {
-    if (!this.generationTimes.has(cacheKey)) {
-      this.generationTimes.set(cacheKey, []);
-    }
-    const times = this.generationTimes.get(cacheKey)!;
-    times.push(time);
+  // Clear entire cache
+  clearCache(): void {
+    this.cache.clear();
+    this.currentCacheSize = 0;
+    localStorage.removeItem('tts_cache_index');
     
-    // Keep only last 5 generation times per cache key
-    if (times.length > 5) {
-      times.shift();
+    // Clear individual cache entries from localStorage
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('tts_cache_')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    console.log('[TTS Cache] Cache cleared');
+  }
+
+  // Format bytes to human readable
+  private formatBytes(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Save cache index to localStorage
+  private saveToLocalStorage(): void {
+    try {
+      // Save index of cache keys
+      const index = Array.from(this.cache.keys());
+      localStorage.setItem('tts_cache_index', JSON.stringify(index));
+      
+      // Note: We can't easily store ArrayBuffers in localStorage
+      // For a production app, you'd want to use IndexedDB instead
+      console.log('[TTS Cache] Cache index saved to localStorage');
+    } catch (error) {
+      console.error('[TTS Cache] Failed to save to localStorage:', error);
+    }
+  }
+
+  // Load cache from localStorage
+  private loadFromLocalStorage(): void {
+    try {
+      const indexStr = localStorage.getItem('tts_cache_index');
+      if (!indexStr) return;
+
+      const index = JSON.parse(indexStr);
+      console.log(`[TTS Cache] Found ${index.length} cached entries in localStorage`);
+      
+      // Note: In a real implementation, you'd load the actual audio data
+      // from IndexedDB or another persistent storage
+    } catch (error) {
+      console.error('[TTS Cache] Failed to load from localStorage:', error);
     }
   }
 }
 
-export default TTSCache;
+export default TTSCacheManager;

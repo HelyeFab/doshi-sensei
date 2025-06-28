@@ -103,6 +103,21 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // User bookmarks collection for articles
+    match /user_bookmarks/{bookmarkId} {
+      // Users can read their own bookmarks
+      allow read: if request.auth != null && 
+        (isAdmin() || resource.data.userId == request.auth.uid);
+      
+      // Users can create bookmarks for themselves
+      allow create: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can update/delete their own bookmarks
+      allow update, delete: if request.auth != null && 
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

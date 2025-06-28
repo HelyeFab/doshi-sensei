@@ -7,7 +7,7 @@ import {
   serverTimestamp,
   arrayUnion,
   increment
-} from 'firebase/db';
+} from 'firebase/firestore';
 import { 
   FlashcardProgress, 
   FlashcardQuality,
@@ -15,6 +15,7 @@ import {
   initializeFlashcardProgress,
   updateFlashcardProgress 
 } from './spacedRepetition';
+import { StatsManager } from './stats';
 
 export interface KanjiStudyResult {
   boardId: string;
@@ -382,6 +383,12 @@ export async function saveStudySession(session: KanjiStudySession): Promise<void
     const sessions = storedSessions ? JSON.parse(storedSessions) : {};
     sessions[sessionId] = session;
     localStorage.setItem(KANJI_SESSIONS_KEY, JSON.stringify(sessions));
+
+    // Update stats
+    await StatsManager.recordKanjiStudySession(
+      session.totalQuestions,
+      session.correctAnswers
+    );
 
     // Save to Firebase
     const userDocRef = doc(db, 'users', userId);

@@ -103,10 +103,8 @@ export function useTTS(): TTSHookReturn {
 
   const stop = useCallback(() => {
     try {
-      // Stop any ongoing speech
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
+      // Use TTSManager's stop method which handles all providers
+      TTSManager.stop();
       
       setState(prev => ({
         ...prev,

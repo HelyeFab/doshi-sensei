@@ -1,24 +1,113 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+interface ElevenLabsSettings {
+  stability: number;
+  similarity_boost: number;
+  style?: number;
+  use_speaker_boost?: boolean;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { text, voice = 'female' } = await request.json();
+    const { text, voice = 'female', provider = 'elevenlabs' } = await request.json();
 
     if (!text) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY;
+    // Try ElevenLabs first if requested and API key exists
+    if (provider === 'elevenlabs') {
+      const elevenLabsApiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY;
+      
+      if (elevenLabsApiKey) {
+        try {
+          console.log('🎤 Using ElevenLabs TTS...');
+          
+          // ElevenLabs voice IDs for Japanese-capable voices
+          const voiceId = voice === 'female' 
+            ? 'XB0fDUnXU5powFXDhCwa'  // Charlotte
+            : 'pNInz6obpgDQGcFmaJgB'; // Adam
+          
+          const settings: ElevenLabsSettings = {
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0,
+            use_speaker_boost: true,
+          };
 
-    if (!apiKey) {
+          const response = await fetch(
+            `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+            {
+              method: 'POST',
+              headers: {
+                'Accept': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'xi-api-key': elevenLabsApiKey,
+              },
+              body: JSON.stringify({
+                text,
+                model_id: 'eleven_multilingual_v2', // Supports Japanese
+                voice_settings: settings,
+              }),
+            }
+          );
+
+          if (response.ok) {
+            const audioBuffer = await response.arrayBuffer();
+            // Convert to base64 for consistent API response
+            const base64Audio = Buffer.from(audioBuffer).toString('base64');
+            
+            return NextResponse.json({
+              audioContent: base64Audio,
+              success: true,
+              provider: 'elevenlabs'
+            });
+          } else {
+            const errorText = await response.text();
+            let errorMessage = `ElevenLabs TTS failed: ${response.status}`;
+            
+            try {
+              const errorJson = JSON.parse(errorText);
+              if (errorJson.detail?.message) {
+                errorMessage = errorJson.detail.message;
+              } else if (errorJson.message) {
+                errorMessage = errorJson.message;
+              }
+              
+              // Check for specific error types
+              if (errorMessage.includes('detected_unusual_activity')) {
+                errorMessage = 'ElevenLabs has detected unusual activity. This may be due to testing from a production environment.';
+              } else if (response.status === 401) {
+                errorMessage = 'Invalid ElevenLabs API key.';
+              } else if (response.status === 429) {
+                errorMessage = 'ElevenLabs rate limit exceeded or quota reached.';
+              }
+            } catch (e) {
+              errorMessage += ` - ${errorText}`;
+            }
+            
+            console.error('❌ ElevenLabs error:', errorMessage);
+            // Fall through to Google TTS
+          }
+        } catch (error) {
+          console.error('❌ ElevenLabs API error:', error);
+          // Fall through to Google TTS
+        }
+      }
+    }
+
+    // Fallback to Google TTS
+    console.log('🎤 Using Google TTS...');
+    const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY;
+
+    if (!googleApiKey) {
       return NextResponse.json({
-        error: 'Google TTS API key not configured',
+        error: 'No TTS API keys configured',
         fallback: true
       }, { status: 500 });
     }
 
-
-    const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`, {
+    const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${googleApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,7 +145,8 @@ export async function POST(request: NextRequest) {
     if (data.audioContent) {
       return NextResponse.json({
         audioContent: data.audioContent,
-        success: true
+        success: true,
+        provider: 'google'
       });
     } else {
       return NextResponse.json({

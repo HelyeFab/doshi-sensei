@@ -11,6 +11,12 @@ export interface UserStats {
   lastActiveDate: string;
   firstUseDate: string;
   totalDaysUsed: number;
+  // Kanji study stats
+  kanjiStudySessions: number;
+  kanjiStudyQuestions: number;
+  kanjiCorrectAnswers: number;
+  kanjiAccuracy: number;
+  totalKanjiLearned: number;
   updatedAt?: any; // For cloud sync timestamp
 }
 
@@ -379,6 +385,37 @@ export class StatsManager {
   }
 
   /**
+   * Record a kanji study session
+   */
+  static async recordKanjiStudySession(questionsAnswered: number, correctAnswers: number, kanjiLearned: number = 0): Promise<void> {
+    try {
+      const stats = await this.getUserStats();
+      const today = new Date().toDateString();
+
+      // Update kanji study statistics
+      stats.kanjiStudySessions += 1;
+      stats.kanjiStudyQuestions += questionsAnswered;
+      stats.kanjiCorrectAnswers += correctAnswers;
+      stats.kanjiAccuracy = stats.kanjiStudyQuestions > 0 
+        ? Math.round((stats.kanjiCorrectAnswers / stats.kanjiStudyQuestions) * 100) 
+        : 0;
+      
+      // Update total kanji learned (if any new kanji were marked as learned)
+      if (kanjiLearned > 0) {
+        stats.totalKanjiLearned += kanjiLearned;
+      }
+
+      // Update usage tracking and streak
+      await this.updateDailyUsageAndStreak(stats, today);
+
+      await this.saveStats(stats);
+
+    } catch (error) {
+      console.error('Error recording kanji study session:', error);
+    }
+  }
+
+  /**
    * Get detailed drill history
    */
   static async getDrillHistory(): Promise<DrillSession[]> {
@@ -506,7 +543,13 @@ export class StatsManager {
       longestStreak: 0,
       lastActiveDate: today,
       firstUseDate: today,
-      totalDaysUsed: 1
+      totalDaysUsed: 1,
+      // Kanji study stats
+      kanjiStudySessions: 0,
+      kanjiStudyQuestions: 0,
+      kanjiCorrectAnswers: 0,
+      kanjiAccuracy: 0,
+      totalKanjiLearned: 0
     };
   }
 

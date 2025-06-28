@@ -1,63 +1,37 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { JapaneseWord, WordList, StudyList, StudyListType, Kanji } from '@/types';
+import { JapaneseWord } from '@/types';
 import { searchWords } from '@/utils/api';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
-import StudyListManager from '@/utils/studyListManager';
-import WordListManager from '@/utils/wordLists';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
 import CompanionTrigger from '@/components/CompanionTrigger';
+import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
 
 export default function VocabularyPage() {
   const { user } = useAuth();
-  const [wordLists, setWordLists] = useState<WordList[]>([]);
-  const [selectedList, setSelectedList] = useState<WordList | null>(null);
-  const [listWords, setListWords] = useState<JapaneseWord[]>([]);
-  const [listKanji, setListKanji] = useState<Kanji[]>([]);
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<JapaneseWord[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
-  const [showCreateListModal, setShowCreateListModal] = useState(false);
-  const [showSaveWordModal, setShowSaveWordModal] = useState(false);
-  const [wordToSave, setWordToSave] = useState<JapaneseWord | null>(null);
 
   useEffect(() => {
-    loadWordLists();
+    loadSearchHistory();
   }, []);
 
-  const loadWordLists = async () => {
+  const loadSearchHistory = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      // Load unified study lists and convert them to legacy format for compatibility
-      const studyLists = await StudyListManager.getAllStudyLists();
-      const legacyWordLists: WordList[] = studyLists.map(studyList => ({
-        id: studyList.id,
-        name: studyList.name,
-        description: studyList.description,
-        wordIds: studyList.itemIds,
-        createdAt: studyList.createdAt,
-        updatedAt: studyList.updatedAt,
-        color: studyList.color,
-        isConjugable: studyList.type === 'drillable'
-      }));
-      setWordLists(legacyWordLists);
+      const history = await SearchHistoryManager.getSearchHistory();
+      setSearchHistory(history);
     } catch (err) {
-      setError('Failed to load word lists');
-      console.error('Error loading word lists:', err);
-    } finally {
-      setLoading(false);
+      console.error('Error loading search history:', err);
     }
   };
 
@@ -78,6 +52,10 @@ export default function VocabularyPage() {
       setCurrentSearchTerm(term);
       setShowSearchResults(true);
       
+      // Save to search history
+      await SearchHistoryManager.addSearchEntry(term, searchResults);
+      await loadSearchHistory(); // Reload history to show the new entry
+      
       // Track vocabulary search analytics
       Analytics.trackVocabularySearch(user?.uid, {
         searchTerm: term,
@@ -92,29 +70,6 @@ export default function VocabularyPage() {
     }
   };
 
-  const handleListClick = async (list: WordList) => {
-    try {
-      setSelectedList(list);
-      // Use the unified system to get both words and kanji from the list
-      const { words, kanji } = await StudyListManager.getItemsInList(list.id);
-      setListWords(words);
-      setListKanji(kanji);
-      setShowSearchResults(false);
-    } catch (err) {
-      console.error('Error loading list items:', err);
-    }
-  };
-
-  const handleBackToLists = () => {
-    setSelectedList(null);
-    setListWords([]);
-    setListKanji([]);
-    setShowSearchResults(false);
-    setCurrentSearchResults([]);
-    setCurrentSearchTerm('');
-    setSearchTerm('');
-  };
-
   const handleWordClick = (word: JapaneseWord) => {
     setSelectedWord(word);
   };
@@ -123,42 +78,46 @@ export default function VocabularyPage() {
     setSelectedWord(null);
   };
 
-  const handleSaveWordClick = (word: JapaneseWord) => {
-    setWordToSave(word);
-    setShowSaveWordModal(true);
+  const handleSearchHistoryClick = async (entry: SearchHistoryEntry) => {
+    setSearchTerm(entry.searchTerm);
+    setCurrentSearchTerm(entry.searchTerm);
+    setCurrentSearchResults(entry.results);
+    setShowSearchResults(true);
   };
 
-  const handleRemoveWordFromList = async (wordId: string) => {
-    if (!selectedList) return;
-
+  const handleDeleteSearchEntry = async (entryId: string) => {
     try {
-      // Use the unified system to remove word from list
-      await StudyListManager.removeItemFromList(wordId, selectedList.id);
-      // Refresh list words using unified system
-      const { words } = await StudyListManager.getItemsInList(selectedList.id);
-      setListWords(words);
-    } catch (err) {
-      console.error('Error removing word from list:', err);
+      await SearchHistoryManager.deleteSearchEntry(entryId);
+      await loadSearchHistory();
+    } catch (error) {
+      console.error('Error deleting search entry:', error);
     }
   };
 
-  const handleDeleteList = async (listId: string) => {
-    if (!confirm('Are you sure you want to delete this list? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      // Use the unified system to delete list
-      await StudyListManager.deleteStudyList(listId);
-      await loadWordLists();
-
-      // If we're currently viewing the deleted list, go back to lists view
-      if (selectedList?.id === listId) {
-        handleBackToLists();
+  const handleClearSearchHistory = async () => {
+    if (confirm('Are you sure you want to clear all search history?')) {
+      try {
+        await SearchHistoryManager.clearSearchHistory();
+        setSearchHistory([]);
+      } catch (error) {
+        console.error('Error clearing search history:', error);
       }
-    } catch (err) {
-      console.error('Error deleting list:', err);
     }
+  };
+
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
   };
 
   return (
@@ -176,200 +135,156 @@ export default function VocabularyPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
+      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
         <PageHeader title={strings.vocab.title} />
 
         <main className="max-w-4xl mx-auto">
-        <p className="text-muted-foreground mb-6 text-center">
-          Search and save words to your custom lists
-        </p>
+          <p className="text-muted-foreground mb-6 text-center">
+            Search Japanese words and browse your search history
+          </p>
 
-        {/* Search */}
-        <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchTerm); }} className="mb-6">
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={strings.vocab.searchPlaceholder}
-              className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <button
-              type="submit"
-              disabled={searching}
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center justify-center disabled:opacity-50"
-            >
-              {searching ? (
-                <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
-              ) : (
-                <>
-                  <svg className="w-5 h-5 md:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                  </svg>
-                  <span className="hidden md:inline">Search</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-
-        {/* Show Current Search Results */}
-        {showSearchResults && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-foreground">
-                Search Results for "{currentSearchTerm}"
-              </h3>
+          {/* Search */}
+          <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchTerm); }} className="mb-8">
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={strings.vocab.searchPlaceholder}
+                className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
               <button
-                onClick={handleBackToLists}
-                className="text-primary hover:text-primary/80 transition-colors text-sm"
+                type="submit"
+                disabled={searching}
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center justify-center disabled:opacity-50"
               >
-                ← Back to Lists
+                {searching ? (
+                  <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5 md:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <span className="hidden md:inline">Search</span>
+                  </>
+                )}
               </button>
             </div>
-            {currentSearchResults.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                {currentSearchResults.map((word) => (
-                  <WordCard
-                    key={word.id}
-                    word={word}
-                    onWordClick={() => handleWordClick(word)}
-                    onSaveClick={() => handleSaveWordClick(word)}
-                    showSaveButton={true}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No results found for "{currentSearchTerm}"</p>
-              </div>
-            )}
-          </div>
-        )}
+          </form>
 
-        {/* Show Selected List Words */}
-        {selectedList && !showSearchResults && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: selectedList.color }}
-                ></div>
+          {/* Error */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
+              {error}
+            </div>
+          )}
+
+          {/* Show Current Search Results */}
+          {showSearchResults ? (
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-foreground">
-                  {selectedList.name}
+                  Search Results for "{currentSearchTerm}"
                 </h3>
-                <span className="text-sm text-muted-foreground">
-                  ({listWords.length + listKanji.length} items)
-                </span>
-              </div>
-              <div className="flex gap-2">
                 <button
-                  onClick={() => handleDeleteList(selectedList.id)}
-                  className="text-red-400 hover:text-red-300 transition-colors text-sm"
-                >
-                  Delete List
-                </button>
-                <button
-                  onClick={handleBackToLists}
+                  onClick={() => {
+                    setShowSearchResults(false);
+                    setCurrentSearchResults([]);
+                    setCurrentSearchTerm('');
+                    setSearchTerm('');
+                  }}
                   className="text-primary hover:text-primary/80 transition-colors text-sm"
                 >
-                  ← Back to Lists
+                  ← Back to History
                 </button>
               </div>
-            </div>
-            {(listWords.length > 0 || listKanji.length > 0) ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                {/* Display Words */}
-                {listWords.map((word) => (
-                  <WordCard
-                    key={word.id}
-                    word={word}
-                    onWordClick={() => handleWordClick(word)}
-                    onRemoveClick={() => handleRemoveWordFromList(word.id)}
-                    showRemoveButton={true}
-                  />
-                ))}
-                {/* Display Kanji */}
-                {listKanji.map((kanji) => (
-                  <KanjiCard
-                    key={`kanji_${kanji.kanji}`}
-                    kanji={kanji}
-                    onRemoveClick={() => handleRemoveWordFromList(`kanji_${kanji.kanji}`)}
-                    showRemoveButton={true}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No items in this list yet</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Word Lists */}
-        {!showSearchResults && !selectedList && (
-          <>
-            {loading && (
-              <div className="text-center py-12">
-                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading word lists...</p>
-              </div>
-            )}
-
-            {error && (
-              <div className="text-center py-12">
-                <p className="text-red-400 mb-4">{error}</p>
-                <button
-                  onClick={loadWordLists}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  {strings.common.retry}
-                </button>
-              </div>
-            )}
-
-            {!loading && !error && (
-              <div className="mb-32 md:mb-8 pb-safe">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-foreground">My Word Lists</h2>
-                  <button
-                    onClick={() => setShowCreateListModal(true)}
-                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-                  >
-                    + Create List
-                  </button>
+              {currentSearchResults.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {currentSearchResults.map((word) => (
+                    <WordCard
+                      key={word.id}
+                      word={word}
+                      onWordClick={() => handleWordClick(word)}
+                    />
+                  ))}
                 </div>
-
-                {wordLists.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-4">📚</div>
-                    <h3 className="text-lg font-medium text-foreground mb-2">No Word Lists Yet</h3>
-                    <p className="text-muted-foreground mb-4">Create your first list to start saving Japanese words!</p>
-                    <button
-                      onClick={() => setShowCreateListModal(true)}
-                      className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                    >
-                      Create Your First List
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-3">
-                    {wordLists.map((list) => (
-                      <ListPill
-                        key={list.id}
-                        list={list}
-                        onClick={() => handleListClick(list)}
-                      />
-                    ))}
-                  </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No results found for "{currentSearchTerm}"</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Search History
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-foreground">Search History</h2>
+                {searchHistory.length > 0 && (
+                  <button
+                    onClick={handleClearSearchHistory}
+                    className="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    Clear History
+                  </button>
                 )}
               </div>
-            )}
-          </>
-        )}
+
+              {searchHistory.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <h3 className="text-lg font-medium text-foreground mb-2">No Search History</h3>
+                  <p className="text-muted-foreground">
+                    Your search history will appear here as you search for Japanese words.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {searchHistory.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer group"
+                      onClick={() => handleSearchHistoryClick(entry)}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-baseline gap-3 mb-1">
+                            <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
+                              {entry.searchTerm}
+                            </h3>
+                            <span className="text-sm text-muted-foreground">
+                              {entry.results.length} results
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>{formatDate(entry.timestamp)}</span>
+                            {entry.results.length > 0 && (
+                              <span className="text-xs">
+                                {entry.results.slice(0, 3).map(w => w.word).join(', ')}
+                                {entry.results.length > 3 && '...'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteSearchEntry(entry.id);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-600 p-1"
+                          title="Delete entry"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </main>
 
         {/* Word Detail Modal */}
@@ -377,34 +292,12 @@ export default function VocabularyPage() {
           <WordModal
             word={selectedWord}
             onClose={handleCloseModal}
-            onSave={() => handleSaveWordClick(selectedWord)}
-          />
-        )}
-
-        {/* Create List Modal */}
-        {showCreateListModal && (
-          <CreateListModal
-            onClose={() => setShowCreateListModal(false)}
-            onCreated={loadWordLists}
-          />
-        )}
-
-        {/* Save Word Modal */}
-        {showSaveWordModal && wordToSave && (
-          <SaveWordModal
-            word={wordToSave}
-            wordLists={wordLists}
-            onClose={() => {
-              setShowSaveWordModal(false);
-              setWordToSave(null);
-            }}
-            onSaved={loadWordLists}
           />
         )}
 
         {/* Search Loading Overlay */}
         {searching && (
-          <SearchLoadingOverlay searchTerm={currentSearchTerm || searchTerm} />
+          <SearchLoadingOverlay searchTerm={searchTerm || currentSearchTerm} />
         )}
       </div>
     </>
@@ -449,42 +342,12 @@ function SearchLoadingOverlay({ searchTerm }: SearchLoadingOverlayProps) {
   );
 }
 
-interface ListPillProps {
-  list: WordList;
-  onClick: () => void;
-}
-
-function ListPill({ list, onClick }: ListPillProps) {
-  return (
-    <button
-      onClick={onClick}
-      className="group flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-primary/50 transition-all hover:scale-105 active:scale-95"
-      style={{ backgroundColor: `${list.color}20`, borderColor: `${list.color}60` }}
-    >
-      <div
-        className="w-3 h-3 rounded-full"
-        style={{ backgroundColor: list.color }}
-      ></div>
-      <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-        {list.name}
-      </span>
-      <span className="text-xs text-muted-foreground">
-        ({list.wordIds.length})
-      </span>
-    </button>
-  );
-}
-
 interface WordCardProps {
   word: JapaneseWord;
   onWordClick: () => void;
-  onSaveClick?: () => void;
-  onRemoveClick?: () => void;
-  showSaveButton?: boolean;
-  showRemoveButton?: boolean;
 }
 
-function WordCard({ word, onWordClick, onSaveClick, onRemoveClick, showSaveButton, showRemoveButton }: WordCardProps) {
+function WordCard({ word, onWordClick }: WordCardProps) {
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'Ichidan':
@@ -502,463 +365,23 @@ function WordCard({ word, onWordClick, onSaveClick, onRemoveClick, showSaveButto
     }
   };
 
-  const getFrequencyColor = (frequency: number = 0) => {
-    if (frequency >= 80) return 'text-green-400';
-    if (frequency >= 50) return 'text-yellow-400';
-    if (frequency >= 20) return 'text-orange-400';
-    return 'text-gray-400';
-  };
-
   return (
-    <div className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors group relative">
-      <div
-        onClick={onWordClick}
-        className="cursor-pointer"
-      >
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
-              {word.kanji}
-            </div>
-            <div className="text-lg japanese-text text-muted-foreground mb-1">
-              {word.kana}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {word.romaji}
-            </div>
-          </div>
-          <div className="text-right">
-            <div className={`inline-block px-2 py-1 text-xs rounded border ${getTypeColor(word.type)}`}>
-              {word.type}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {word.jlpt}
-            </div>
-            {word.frequency && (
-              <div className={`text-xs mt-1 ${getFrequencyColor(word.frequency)}`}>
-                ★ {word.frequency >= 80 ? 'High' : word.frequency >= 50 ? 'Med' : 'Low'}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="text-sm text-muted-foreground mb-2">
-          {word.meaning.length > 60 ? `${word.meaning.substring(0, 60)}...` : word.meaning}
-        </div>
+    <div
+      onClick={onWordClick}
+      className="bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer group"
+    >
+      <div className="flex items-baseline gap-3 mb-2">
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">{word.kanji}</h3>
+        <span className="text-sm text-muted-foreground">{word.kana}</span>
       </div>
-
-      {/* Action buttons */}
-      <div className="flex gap-2 mt-3 pt-3 border-t border-border/50">
-        {showSaveButton && onSaveClick && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSaveClick();
-            }}
-            className="flex-1 px-3 py-1.5 text-xs bg-primary/10 text-primary border border-primary/20 rounded-md hover:bg-primary/20 transition-colors"
-          >
-            Save to List
-          </button>
+      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{word.meaning}</p>
+      <div className="flex items-center justify-between gap-2">
+        {word.type && (
+          <span className={`inline-block px-2 py-1 text-xs rounded-full border ${getTypeColor(word.type)}`}>
+            {word.type}
+          </span>
         )}
-        {showRemoveButton && onRemoveClick && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveClick();
-            }}
-            className="flex-1 px-3 py-1.5 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-md hover:bg-red-500/20 transition-colors"
-          >
-            Remove
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-interface KanjiCardProps {
-  kanji: Kanji;
-  onRemoveClick?: () => void;
-  showRemoveButton?: boolean;
-}
-
-function KanjiCard({ kanji, onRemoveClick, showRemoveButton }: KanjiCardProps) {
-  return (
-    <div className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors group relative">
-      <div className="cursor-pointer">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <div className="text-2xl japanese-text font-medium text-card-foreground mb-1">
-              {kanji.kanji}
-            </div>
-            <div className="text-lg text-muted-foreground mb-1">
-              {kanji.kunyomi} / {kanji.onyomi}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Readings: {kanji.kunyomi}, {kanji.onyomi}
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="inline-block px-2 py-1 text-xs rounded border bg-orange-500/10 text-orange-400 border-orange-500/20">
-              Kanji
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {kanji.jlpt || 'N/A'}
-            </div>
-          </div>
-        </div>
-
-        <div className="text-sm text-muted-foreground mb-2">
-          {kanji.meaning.length > 60 ? `${kanji.meaning.substring(0, 60)}...` : kanji.meaning}
-        </div>
-      </div>
-
-      {/* Action buttons */}
-      {showRemoveButton && onRemoveClick && (
-        <div className="flex gap-2 mt-3 pt-3 border-t border-border/50">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveClick();
-            }}
-            className="flex-1 px-3 py-1.5 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-md hover:bg-red-500/20 transition-colors"
-          >
-            Remove
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface CreateListModalProps {
-  onClose: () => void;
-  onCreated: () => void;
-}
-
-function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
-  const { user } = useAuth();
-  const { userSubscription } = useSubscription();
-  const [listName, setListName] = useState('');
-  const [description, setDescription] = useState('');
-  const [creating, setCreating] = useState(false);
-
-  const handleCreate = async () => {
-    if (!listName.trim()) return;
-
-    try {
-      setCreating(true);
-
-      // Use the unified StudyListManager system instead of the old WordListManager
-      await StudyListManager.createStudyList(
-        listName,
-        'flashcard', // Default to flashcard type for simple word lists
-        description,
-        user,
-        userSubscription?.subscription?.status
-      );
-      onCreated();
-      onClose();
-    } catch (err) {
-      console.error('Error creating list:', err);
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
-        <h3 className="text-lg font-semibold text-card-foreground mb-4">Create New List</h3>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              List Name *
-            </label>
-            <input
-              type="text"
-              value={listName}
-              onChange={(e) => setListName(e.target.value)}
-              placeholder="e.g., JLPT N5 Verbs, Cooking Terms"
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              maxLength={50}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Description (optional)
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description of this list..."
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              rows={3}
-              maxLength={200}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleCreate}
-            disabled={!listName.trim() || creating}
-            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {creating ? 'Creating...' : 'Create List'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface SaveWordModalProps {
-  word: JapaneseWord;
-  wordLists: WordList[];
-  onClose: () => void;
-  onSaved: () => void;
-}
-
-function SaveWordModal({ word, wordLists, onClose, onSaved }: SaveWordModalProps) {
-  const { user } = useAuth();
-  const { userSubscription } = useSubscription();
-  const [studyLists, setStudyLists] = useState<StudyList[]>([]);
-  const [selectedLists, setSelectedLists] = useState<string[]>([]);
-  const [showCreateNew, setShowCreateNew] = useState(false);
-  const [newListName, setNewListName] = useState('');
-  const [newListType, setNewListType] = useState<StudyListType>('flashcard');
-  const [saving, setSaving] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
-
-  // Load unified study lists
-  useEffect(() => {
-    const loadStudyLists = async () => {
-      try {
-        const lists = await StudyListManager.getAllStudyLists();
-        setStudyLists(lists);
-      } catch (error) {
-        console.error('Error loading study lists:', error);
-      }
-    };
-    loadStudyLists();
-  }, []);
-
-  const handleToggleList = (listId: string) => {
-    setSelectedLists(prev =>
-      prev.includes(listId)
-        ? prev.filter(id => id !== listId)
-        : [...prev, listId]
-    );
-  };
-
-  const canAddToList = (listType: StudyListType): boolean => {
-    return StudyListManager.canAddToList('word', word, listType);
-  };
-
-  const getValidationMessage = (listType: StudyListType): string => {
-    if (listType === 'drillable') {
-      const canAdd = StudyListManager.canAddToList('word', word, listType);
-      return canAdd ? 'Compatible: Can be used for conjugation drills' : 'Not compatible: Only verbs and adjectives can be conjugated';
-    }
-    return 'Compatible: Can be used for flashcard review';
-  };
-
-  const handleSave = async () => {
-    if (selectedLists.length === 0 && !newListName.trim()) return;
-
-    try {
-      setSaving(true);
-      setErrors([]);
-
-      let listsToSaveTo = [...selectedLists];
-
-      // Create new list if specified
-      if (newListName.trim()) {
-        const newList = await StudyListManager.createStudyList(
-          newListName,
-          newListType,
-          `Created for saving ${word.kanji}`,
-          user,
-          userSubscription?.subscription?.status
-        );
-        listsToSaveTo.push(newList.id);
-      }
-
-      // Save word to selected lists using new unified system
-      const result = await StudyListManager.addItemToLists(
-        word,
-        'word',
-        listsToSaveTo,
-        user,
-        userSubscription?.subscription?.status
-      );
-
-      if (result.success) {
-        onSaved();
-        onClose();
-      } else {
-        setErrors(result.errors);
-      }
-    } catch (err) {
-      console.error('Error saving word:', err);
-      setErrors(['Failed to save word to lists']);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
-        <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          Save "{word.kanji}" to Lists
-        </h3>
-
-        {/* Error messages */}
-        {errors.length > 0 && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
-            <div className="text-sm text-red-400">
-              {errors.map((error, index) => (
-                <div key={index}>• {error}</div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {studyLists.length > 0 && (
-          <div className="space-y-3 mb-4">
-            <h4 className="text-sm font-medium text-muted-foreground">Select existing lists:</h4>
-            {studyLists.map((list) => {
-              const canAdd = canAddToList(list.type);
-              return (
-                <label key={list.id} className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg transition-colors ${
-                  canAdd ? 'hover:bg-muted/50' : 'opacity-60'
-                }`}>
-                  <input
-                    type="checkbox"
-                    checked={selectedLists.includes(list.id)}
-                    onChange={() => canAdd && handleToggleList(list.id)}
-                    disabled={!canAdd}
-                    className="rounded border-border mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: list.color }}
-                      ></div>
-                      <span className="text-sm text-foreground">{list.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        ({list.itemIds.length} items)
-                      </span>
-                      <span className={`text-xs px-2 py-0.5 rounded ${
-                        list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
-                      }`}>
-                        {list.type}
-                      </span>
-                    </div>
-                    <div className={`text-xs ${canAdd ? 'text-green-400' : 'text-red-400'}`}>
-                      {getValidationMessage(list.type)}
-                    </div>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        )}
-
-        <div className="border-t border-border pt-4">
-          <div className="flex items-center gap-2 mb-3">
-            <input
-              type="checkbox"
-              checked={showCreateNew}
-              onChange={(e) => setShowCreateNew(e.target.checked)}
-              className="rounded border-border"
-            />
-            <label className="text-sm font-medium text-muted-foreground cursor-pointer">
-              Create new list
-            </label>
-          </div>
-
-          {showCreateNew && (
-            <div className="space-y-3">
-              <input
-                type="text"
-                value={newListName}
-                onChange={(e) => setNewListName(e.target.value)}
-                placeholder="New list name..."
-                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                maxLength={50}
-              />
-
-              <div>
-                <label className="block text-xs text-muted-foreground mb-2">List Type:</label>
-                <div className="space-y-2">
-                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
-                    <input
-                      type="radio"
-                      name="listType"
-                      value="flashcard"
-                      checked={newListType === 'flashcard'}
-                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
-                      className="mt-0.5"
-                    />
-                    <div>
-                      <div className="text-sm font-medium text-foreground">Flashcard List</div>
-                      <div className="text-xs text-muted-foreground">For memorization and review (accepts any content)</div>
-                    </div>
-                  </label>
-
-                  <label className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg border transition-colors ${
-                    canAddToList('drillable') ? 'border-input' : 'border-input opacity-60'
-                  }`}>
-                    <input
-                      type="radio"
-                      name="listType"
-                      value="drillable"
-                      checked={newListType === 'drillable'}
-                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
-                      disabled={!canAddToList('drillable')}
-                      className="mt-0.5"
-                    />
-                    <div>
-                      <div className="text-sm font-medium text-foreground">Drillable List</div>
-                      <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
-                      {!canAddToList('drillable') && (
-                        <div className="text-xs text-red-400 mt-1">⚠️ This word cannot be conjugated</div>
-                      )}
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={(selectedLists.length === 0 && !newListName.trim()) || saving}
-            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {saving ? 'Saving...' : 'Save Word'}
-          </button>
-        </div>
+        <VocabularyTTSButton word={word} size="sm" />
       </div>
     </div>
   );
@@ -967,128 +390,61 @@ function SaveWordModal({ word, wordLists, onClose, onSaved }: SaveWordModalProps
 interface WordModalProps {
   word: JapaneseWord;
   onClose: () => void;
-  onSave: () => void;
 }
 
-function WordModal({ word, onClose, onSave }: WordModalProps) {
-  const router = useRouter();
-  const [showExamples, setShowExamples] = useState(false);
-
-  const handlePracticeClick = () => {
-    sessionStorage.setItem('selectedWord', JSON.stringify(word));
-    router.push('/practice');
-    onClose();
-  };
-
-  const handleDrillClick = () => {
-    sessionStorage.setItem('drillWord', JSON.stringify(word));
-    router.push('/drill');
-    onClose();
-  };
-
-  // TTS functionality now handled by VocabularyTTSButton component
-
-  const canBeConjugated = word.type === 'Ichidan' ||
-                         word.type === 'Godan' ||
-                         word.type === 'Irregular' ||
-                         word.type === 'i-adjective' ||
-                         word.type === 'na-adjective';
-
+function WordModal({ word, onClose }: WordModalProps) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-card border border-border rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-card-foreground">
-            Japanese Dictionary
-          </h2>
-          <div className="flex gap-2">
-            <button
-              onClick={onSave}
-              className="px-3 py-1.5 text-sm bg-primary/10 text-primary border border-primary/20 rounded-md hover:bg-primary/20 transition-colors"
-            >
-              Save to List
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-card border border-border rounded-lg p-6 max-w-md w-full"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between mb-4">
+          <h2 className="text-2xl font-bold text-foreground">{word.kanji}</h2>
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-
-        <div className="space-y-6">
-          {/* Main Word Information */}
-          <div className="bg-background/50 border border-border rounded-lg p-4">
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm font-medium text-muted-foreground">Kanji:</span>
-                <div className="text-3xl japanese-text font-medium text-card-foreground mt-1">
-                  {word.kanji}
-                </div>
-              </div>
-
-              <div>
-                <span className="text-sm font-medium text-muted-foreground">Reading:</span>
-                <div className="flex items-center gap-3 mt-1">
-                  <div className="text-xl japanese-text text-card-foreground">
-                    {word.kana} ({word.romaji})
-                  </div>
-                  <VocabularyTTSButton 
-                    word={word.kanji || word.kana}
-                    kana={word.kana}
-                    size="md"
-                    variant="default"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <span className="text-sm font-medium text-muted-foreground">English:</span>
-                <div className="text-base text-card-foreground mt-1">
-                  {word.meaning}
-                </div>
-              </div>
-
-              <div>
-                <span className="text-sm font-medium text-muted-foreground">Part of Speech:</span>
-                <div className="text-sm text-card-foreground mt-1">
-                  {word.type}
-                </div>
-              </div>
-
-              <div>
-                <span className="text-sm font-medium text-muted-foreground">JLPT Level:</span>
-                <div className="text-sm text-card-foreground mt-1">
-                  {word.jlpt}
-                </div>
-              </div>
-            </div>
+        
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Reading</p>
+            <p className="text-lg flex items-center gap-2">
+              {word.kana}
+              <VocabularyTTSButton word={word} />
+            </p>
           </div>
-
-          {/* Action Buttons */}
-          {canBeConjugated ? (
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={handlePracticeClick}
-                className="flex-1 bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-              >
-                {strings.practice.showConjugations}
-              </button>
-              <button
-                onClick={handleDrillClick}
-                className="flex-1 bg-secondary text-secondary-foreground py-3 px-4 rounded-lg hover:bg-secondary/80 transition-colors font-medium"
-              >
-                {strings.drill.title}
-              </button>
+          
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Meaning</p>
+            <p className="text-lg">{word.meaning}</p>
+          </div>
+          
+          {word.type && (
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Type</p>
+              <p className="text-lg">{word.type}</p>
             </div>
-          ) : (
-            <div className="pt-2 text-center">
-              <p className="text-sm text-muted-foreground">
-                This word type does not have conjugations.
-              </p>
+          )}
+
+          {/* Conjugation Link */}
+          {(word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' || 
+            word.type === 'i-adjective' || word.type === 'na-adjective') && (
+            <div className="pt-4 border-t border-border">
+              <a
+                href={`/practice?word=${encodeURIComponent(word.kanji)}`}
+                className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-center font-medium"
+              >
+                Practice Conjugations
+              </a>
             </div>
           )}
         </div>

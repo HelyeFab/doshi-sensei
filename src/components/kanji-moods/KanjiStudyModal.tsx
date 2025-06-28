@@ -8,11 +8,12 @@ import {
   updateKanjiProgressFromResult,
   saveStudySession 
 } from '@/utils/kanjiStudyProgress';
+import { japaneseTextMatches } from '@/utils/japaneseConversion';
 
 interface KanjiStudyModalProps {
   kanjiList: KanjiItem[];
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (completed?: boolean) => void;
   boardId: string;
   boardTitle: string;
 }
@@ -62,19 +63,36 @@ export default function KanjiStudyModal({
   // Initialize study session
   useEffect(() => {
     if (isOpen && kanjiList.length > 0) {
-      // Create random order for kanji
-      const studyOrder = [...Array(kanjiList.length)].map((_, i) => i);
-      for (let i = studyOrder.length - 1; i > 0; i--) {
+      // Create a queue of valid questions
+      const questionQueue: Array<{ kanjiIndex: number; mode: StudyMode }> = [];
+      
+      kanjiList.forEach((kanji, index) => {
+        // Always include kanji->meaning question
+        questionQueue.push({ kanjiIndex: index, mode: 'kanji' });
+        
+        // Always include meaning->kanji question
+        questionQueue.push({ kanjiIndex: index, mode: 'meaning' });
+        
+        // Only include onyomi question if kanji has onyomi readings
+        if (kanji.readings.on && kanji.readings.on.length > 0) {
+          questionQueue.push({ kanjiIndex: index, mode: 'onyomi' });
+        }
+        
+        // Only include kunyomi question if kanji has kunyomi readings
+        if (kanji.readings.kun && kanji.readings.kun.length > 0) {
+          questionQueue.push({ kanjiIndex: index, mode: 'kunyomi' });
+        }
+      });
+
+      // Randomize the question queue
+      for (let i = questionQueue.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [studyOrder[i], studyOrder[j]] = [studyOrder[j], studyOrder[i]];
+        [questionQueue[i], questionQueue[j]] = [questionQueue[j], questionQueue[i]];
       }
 
-      // Create random order for modes per kanji
-      const modeOrder = [...STUDY_MODES];
-      for (let i = modeOrder.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [modeOrder[i], modeOrder[j]] = [modeOrder[j], modeOrder[i]];
-      }
+      // Extract study order and mode order from the shuffled queue
+      const studyOrder = questionQueue.map(q => q.kanjiIndex);
+      const modeOrder = questionQueue.map(q => q.mode);
 
       setSession({
         currentIndex: 0,
@@ -83,7 +101,7 @@ export default function KanjiStudyModal({
         userAnswer: '',
         isCorrect: null,
         score: 0,
-        totalQuestions: kanjiList.length * STUDY_MODES.length,
+        totalQuestions: questionQueue.length,
         studyOrder,
         modeOrder,
         questionStartTime: Date.now(),
@@ -114,9 +132,21 @@ export default function KanjiStudyModal({
 
   if (!isOpen || kanjiList.length === 0) return null;
 
-  const currentKanji = kanjiList[session.studyOrder[Math.floor(session.currentIndex / STUDY_MODES.length)]];
-  const currentModeIndex = session.currentIndex % STUDY_MODES.length;
-  const currentMode = session.modeOrder[currentModeIndex];
+  // Ensure session is properly initialized
+  if (!session.studyOrder || session.studyOrder.length === 0 || !session.modeOrder) {
+    return null;
+  }
+
+  const kanjiIndex = session.studyOrder[session.currentIndex];
+  const currentKanji = kanjiList[kanjiIndex];
+  const currentMode = session.modeOrder[session.currentIndex];
+
+  // Safety check: ensure currentKanji exists
+  if (!currentKanji) {
+    console.error('Invalid kanji index:', kanjiIndex, 'for list length:', kanjiList.length);
+    console.error('Session state:', session);
+    return null;
+  }
 
   const getQuestionText = () => {
     switch (currentMode) {
@@ -151,28 +181,28 @@ export default function KanjiStudyModal({
 
   const checkAnswer = async () => {
     let isCorrect = false;
-    const userAnswerLower = session.userAnswer.trim().toLowerCase();
+    const userAnswer = session.userAnswer.trim();
     const responseTime = Date.now() - session.questionStartTime;
 
     switch (currentMode) {
       case 'kanji':
-        // Check meaning
-        isCorrect = userAnswerLower === currentKanji.meaning.toLowerCase();
+        // Check meaning (English text, so simple comparison)
+        isCorrect = userAnswer.toLowerCase() === currentKanji.meaning.toLowerCase();
         break;
       case 'meaning':
-        // Check if user typed the kanji
-        isCorrect = session.userAnswer.trim() === currentKanji.char;
+        // Check if user typed the kanji (exact match required)
+        isCorrect = userAnswer === currentKanji.char;
         break;
       case 'onyomi':
-        // Check onyomi readings
+        // Check onyomi readings with Japanese text matching
         isCorrect = currentKanji.readings.on.some(
-          reading => reading.toLowerCase() === userAnswerLower
+          reading => japaneseTextMatches(userAnswer, reading)
         );
         break;
       case 'kunyomi':
-        // Check kunyomi readings
+        // Check kunyomi readings with Japanese text matching
         isCorrect = currentKanji.readings.kun.some(
-          reading => reading.toLowerCase() === userAnswerLower
+          reading => japaneseTextMatches(userAnswer, reading)
         );
         break;
     }
@@ -237,23 +267,11 @@ export default function KanjiStudyModal({
 
     // Move to next question
     const nextIndex = session.currentIndex + 1;
-    const nextModeIndex = nextIndex % STUDY_MODES.length;
-    
-    // If starting a new kanji, shuffle the modes
-    let newModeOrder = session.modeOrder;
-    if (nextModeIndex === 0) {
-      newModeOrder = [...STUDY_MODES];
-      for (let i = newModeOrder.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newModeOrder[i], newModeOrder[j]] = [newModeOrder[j], newModeOrder[i]];
-      }
-    }
 
     setSession(prev => ({
       ...prev,
       currentIndex: nextIndex,
-      currentMode: newModeOrder[nextModeIndex],
-      modeOrder: newModeOrder,
+      currentMode: prev.modeOrder[nextIndex],
       phase: 'question',
       userAnswer: '',
       isCorrect: null,
@@ -277,7 +295,7 @@ export default function KanjiStudyModal({
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-gradient-to-br from-gray-600/30 via-gray-700/40 to-gray-800/50 dark:from-black/50 dark:via-black/60 dark:to-black/70 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={() => onClose(false)}
       />
 
       {/* Modal */}
@@ -292,7 +310,7 @@ export default function KanjiStudyModal({
               </p>
             </div>
             <button
-              onClick={onClose}
+              onClick={() => onClose(false)}
               className="p-2 rounded-full hover:bg-muted transition-colors"
               aria-label="Close"
             >
@@ -344,10 +362,19 @@ export default function KanjiStudyModal({
                       type="text"
                       value={session.userAnswer}
                       onChange={(e) => setSession(prev => ({ ...prev, userAnswer: e.target.value }))}
-                      placeholder="Type your answer..."
+                      placeholder={
+                        currentMode === 'onyomi' || currentMode === 'kunyomi' 
+                          ? "Type in romaji, hiragana or katakana..." 
+                          : "Type your answer..."
+                      }
                       className="w-full px-4 py-3 text-lg rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       autoFocus
                     />
+                    {(currentMode === 'onyomi' || currentMode === 'kunyomi') && (
+                      <p className="text-sm text-muted-foreground text-center">
+                        💡 You can type in romaji (e.g., "kuro"), hiragana (くろ), or katakana (クロ)
+                      </p>
+                    )}
                     <button
                       type="submit"
                       disabled={!session.userAnswer.trim()}
@@ -412,7 +439,7 @@ export default function KanjiStudyModal({
                 <p className="text-sm text-muted-foreground">Accuracy</p>
               </div>
               <button
-                onClick={onClose}
+                onClick={() => onClose(true)}
                 className="py-3 px-8 rounded-lg font-semibold text-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
               >
                 Finish

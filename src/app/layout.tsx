@@ -6,7 +6,9 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { AdminProvider } from "@/contexts/AdminContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
+import { ToastContainer } from "@/components/ui/Toast";
 import { EnvProvider } from "@/components/EnvProvider";
 import BottomNavigation from "@/components/BottomNavigation";
 import PWAInstaller from "@/components/PWAInstaller";
@@ -188,24 +190,27 @@ export default function RootLayout({
         <EnvProvider>
           <SettingsProvider>
             <AuthProvider>
-              <SubscriptionProvider>
-                <AdminProvider>
-                  {/* Use a client component to connect settings to theme */}
-                  <ClientThemeWrapper>
-                  <PWAWrapper>
-                    <OnboardingWrapper>
-                      <div className="min-h-screen bg-background text-foreground">
-                        {children}
-                        <BottomNavigation />
-                        <PWAInstaller />
-                        <FloatingDonateButton />
-                        <CompanionTrigger />
-                      </div>
-                    </OnboardingWrapper>
-                  </PWAWrapper>
-                  </ClientThemeWrapper>
-                </AdminProvider>
-              </SubscriptionProvider>
+              <NotificationProvider>
+                <SubscriptionProvider>
+                  <AdminProvider>
+                    {/* Use a client component to connect settings to theme */}
+                    <ClientThemeWrapper>
+                    <PWAWrapper>
+                      <OnboardingWrapper>
+                        <div className="min-h-screen bg-background text-foreground">
+                          {children}
+                          <BottomNavigation />
+                          <PWAInstaller />
+                          <FloatingDonateButton />
+                          <CompanionTrigger />
+                          <ToastContainer />
+                        </div>
+                      </OnboardingWrapper>
+                    </PWAWrapper>
+                    </ClientThemeWrapper>
+                  </AdminProvider>
+                </SubscriptionProvider>
+              </NotificationProvider>
             </AuthProvider>
           </SettingsProvider>
         </EnvProvider>

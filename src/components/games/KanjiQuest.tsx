@@ -91,8 +91,10 @@ export default function KanjiQuest({
         }
         
         // Show Pokémon-themed limit messages
-        const maxEncounters = 3; // Both guest and free users get 3 encounters
-        const encountersUsed = playsToday + 1; // Add 1 because they just tried to play
+        const maxEncounters = userType === 'guest' 
+          ? 3 // Guest limit
+          : (userSubscription?.limits?.maxKanjiQuestPerDay || 3); // User limit from subscription
+        const encountersUsed = Math.min(playsToday + 1, maxEncounters); // Cap at max to avoid showing 4/3
         
         if (userType === 'guest') {
           showLoginPrompt(

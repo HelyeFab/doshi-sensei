@@ -75,7 +75,9 @@ export function StatsOverview() {
 
   // Calculate growth trends (simplified for demo)
   const userGrowthTrend = userStats?.newUsersThisWeek ? `+${userStats.newUsersThisWeek} this week` : undefined;
-  const subscriptionTrend = subscriptionStats?.conversionRate !== undefined ? `${subscriptionStats.conversionRate.toFixed(1)}% conversion` : undefined;
+  const subscriptionTrend = subscriptionStats?.conversionRate !== undefined && !isNaN(subscriptionStats.conversionRate) 
+    ? `${subscriptionStats.conversionRate.toFixed(1)}% conversion` 
+    : undefined;
 
   return (
     <div className="space-y-6">

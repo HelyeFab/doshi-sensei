@@ -104,6 +104,24 @@ async function updateUserSubscription(userId, userData) {
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   };
   
+  // Dry run option for safety
+  const isDryRun = process.argv.includes('--dry-run');
+  
+  if (isDryRun) {
+    console.log('🔍 DRY RUN - Would update subscription to:', JSON.stringify(updatedSubscription, null, 2));
+    return;
+  }
+  
+  // Create backup before updating
+  const backupDoc = {
+    userId,
+    originalData: userData,
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    reason: 'fix-premium-subscription script'
+  };
+  
+  await db.collection('subscription_backups').add(backupDoc);
+  
   // Update the user document
   await db.collection('users').doc(userId).update({
     subscription: updatedSubscription

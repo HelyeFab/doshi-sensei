@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import withPWA from 'next-pwa';
+// import withPWA from 'next-pwa';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -39,7 +39,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-const config = withPWA({
+// Temporarily comment out PWA entirely
+const config = nextConfig;
+
+/* const config = withPWA({
   dest: 'public',
   register: true,
   skipWaiting: true,
@@ -96,6 +99,6 @@ const config = withPWA({
   ],
   // Additional exclusions to prevent caching errors
   publicExcludes: ['!workbox-*.js', '!sw.js'],
-})(nextConfig as any);
+})(nextConfig as any); */
 
 export default config;

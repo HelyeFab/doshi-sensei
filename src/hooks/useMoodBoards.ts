@@ -15,7 +15,6 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { MoodBoard } from '@/types/moodBoard';
-// import moodBoardsData from '@/data/moodBoards.json'; // Removed - using KanjiManager now
 import { logAdminAction } from '@/utils/adminLogs';
 
 interface UseMoodBoardsReturn {
@@ -79,29 +78,6 @@ function convertFirebaseMoodBoard(fireboardMoodBoard: FirebaseMoodBoard): MoodBo
   };
 }
 
-// Convert JSON mood board data to MoodBoard format
-function convertJsonMoodBoard(key: string, jsonBoard: any): MoodBoard {
-  return {
-    id: key,
-    title: jsonBoard.title || key,
-    emoji: jsonBoard.emoji || '🎨',
-    jlpt: jsonBoard.jlpt || 'N5',
-    background: jsonBoard.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    description: jsonBoard.description || '',
-    kanji: jsonBoard.kanji?.map((k: any) => ({
-      char: typeof k === 'string' ? k : k.char,
-      meaning: typeof k === 'string' ? '' : k.meaning || '',
-      readings: typeof k === 'string' ? { on: [], kun: [] } : k.readings || { on: [], kun: [] },
-      examples: typeof k === 'string' ? [] : k.examples || [],
-      difficulty: typeof k === 'string' ? 1 : k.difficulty || 1,
-    })) || [],
-    createdAt: new Date('2024-01-01'), // Default date for JSON data
-    updatedAt: undefined,
-    createdBy: 'admin',
-    isActive: true,
-    sortOrder: 0,
-  };
-}
 
 export function useMoodBoards(): UseMoodBoardsReturn {
   const [moodBoards, setMoodBoards] = useState<MoodBoard[]>([]);
@@ -113,12 +89,9 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       setError(null);
 
       if (!db) {
-        // Fallback to JSON data if Firebase is not available
-        console.warn('Firebase not initialized, using static mood board data');
-        const jsonMoodBoards = Object.entries(moodBoardsData).map(([key, board]) =>
-          convertJsonMoodBoard(key, board)
-        );
-        setMoodBoards(jsonMoodBoards);
+        // Firebase not initialized - no fallback data available
+        console.warn('Firebase not initialized, no mood boards available');
+        setMoodBoards([]);
         setLoading(false);
         return;
       }
@@ -157,15 +130,8 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       console.error('Error fetching mood boards:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch mood boards');
 
-      // Fallback to JSON data on error
-      try {
-        const jsonMoodBoards = Object.entries(moodBoardsData).map(([key, board]) =>
-          convertJsonMoodBoard(key, board)
-        );
-        setMoodBoards(jsonMoodBoards);
-      } catch (jsonError) {
-        console.error('Failed to load JSON fallback data:', jsonError);
-      }
+      // No fallback data available
+      setMoodBoards([]);
 
       setLoading(false);
     }
@@ -174,30 +140,8 @@ export function useMoodBoards(): UseMoodBoardsReturn {
   const migrateJsonToFirestore = async () => {
     if (!db) return;
 
-    try {
-      const moodBoardsRef = collection(db, 'moodBoards');
-      const migrationPromises = Object.entries(moodBoardsData).map(async ([key, board], index) => {
-        const moodBoardData = {
-          title: board.title || key,
-          emoji: board.emoji || '🎨',
-          jlpt: board.jlpt || 'N5',
-          background: board.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          description: board.description || '',
-          kanji: board.kanji || [],
-          createdAt: Timestamp.now(),
-          createdBy: 'admin',
-          isActive: true,
-          sortOrder: index,
-        };
-
-        await addDoc(moodBoardsRef, moodBoardData);
-      });
-
-      await Promise.all(migrationPromises);
-    } catch (error) {
-      console.error('Failed to migrate mood boards:', error);
-      throw error;
-    }
+    // Migration no longer needed - mood boards are managed through Firebase
+    console.warn('Migration function called but no JSON data available');
   };
 
   const refreshMoodBoards = async () => {

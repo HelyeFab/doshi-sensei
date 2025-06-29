@@ -27,7 +27,7 @@ export interface SyncStatus {
 
 export class CloudSync {
   private static syncStatus: SyncStatus = {
-    isOnline: navigator.onLine,
+    isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
     isSyncing: false,
     hasChanges: false
   };
@@ -55,7 +55,7 @@ export class CloudSync {
   ): Promise<SyncResult> {
     try {
       // If offline and queue enabled, add to queue
-      if (!navigator.onLine && useQueue) {
+      if (typeof navigator !== 'undefined' && !navigator.onLine && useQueue) {
         const { syncQueue } = await import('./syncQueue');
         const operationId = syncQueue.addOperation({
           type: 'upload',
@@ -351,6 +351,10 @@ export class CloudSync {
    * Network status monitoring
    */
   static initNetworkMonitoring(): void {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return;
+    }
+    
     const updateOnlineStatus = () => {
       this.setSyncStatus({ isOnline: navigator.onLine });
       

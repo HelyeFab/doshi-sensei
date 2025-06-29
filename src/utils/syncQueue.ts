@@ -55,7 +55,7 @@ class SyncQueueManager {
     this.notifyListeners();
     
     // Auto-start processing if online
-    if (navigator.onLine && !this.isProcessing) {
+    if (typeof navigator !== 'undefined' && navigator.onLine && !this.isProcessing) {
       this.processQueue();
     }
 
@@ -84,7 +84,7 @@ class SyncQueueManager {
   private async doProcessQueue(): Promise<void> {
     const errors: string[] = [];
 
-    while (this.queue.length > 0 && navigator.onLine) {
+    while (this.queue.length > 0 && (typeof navigator === 'undefined' || navigator.onLine)) {
       const operation = this.queue[0];
 
       try {
@@ -237,7 +237,7 @@ class SyncQueueManager {
     }
 
     // Start processing if online
-    if (navigator.onLine) {
+    if (typeof navigator === 'undefined' || navigator.onLine) {
       this.processQueue();
     }
 

@@ -513,7 +513,7 @@ export class StatsManager {
    */
   static async clearServiceWorkerCache(): Promise<void> {
     // Check if we're in the browser environment
-    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    if (typeof window === 'undefined') {
       return;
     }
 

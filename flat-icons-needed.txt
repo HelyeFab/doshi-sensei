@@ -1,0 +1,99 @@
+# Flat Icons Required for Doshi Sensei
+
+## Summary
+The codebase references icons from 5 different flat-icon collections. Below are all the unique icon files that are actually being used in the application.
+
+## Icons Currently Used in Source Code (53 files):
+
+### Pokemon Go Collection (6 files)
+/flat-icons/188915-pokemon-go/png/smartphone.png
+/flat-icons/188915-pokemon-go/png/map.png
+/flat-icons/188915-pokemon-go/png/pokeball.png
+/flat-icons/188915-pokemon-go/png/pokedex.png
+/flat-icons/188915-pokemon-go/png/star.png
+
+### Wild Animals Collection (21 files)
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/001-raccoon.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/002-zebra.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/003-bear.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/004-cheetah.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/005-fox.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/006-leopard.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/008-koala.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/009-panda bear.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/010-tiger.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/012-sloth.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/013-hippopotamus.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/014-rhinoceros.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/015-monkey.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/016-deer.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/019-lion.svg
+/flat-icons/8376275-wild-animals-flat-1-of-1/svg/020-elephant.svg
+
+### Animals Collection (11 files)
+/flat-icons/4193242-animals/svg/002-buffalo.svg
+/flat-icons/4193242-animals/svg/003-flamingo.svg
+/flat-icons/4193242-animals/svg/004-sheep.svg
+/flat-icons/4193242-animals/svg/005-horse.svg
+/flat-icons/4193242-animals/svg/006-cow.svg
+/flat-icons/4193242-animals/svg/007-pig.svg
+/flat-icons/4193242-animals/svg/008-hedgehog.svg
+/flat-icons/4193242-animals/svg/010-rabbit.svg
+/flat-icons/4193242-animals/svg/015-alpaca.svg
+/flat-icons/4193242-animals/svg/019-llama.svg
+/flat-icons/4193242-animals/svg/020-goat.svg
+/flat-icons/4193242-animals/svg/026-squirrel.svg
+
+### Summer Watermelon Collection (7 files)
+/flat-icons/17517790-summer-watermelon/svg/001-happy.svg
+/flat-icons/17517790-summer-watermelon/svg/002-love.svg
+/flat-icons/17517790-summer-watermelon/svg/011-laugh emoji.svg
+/flat-icons/17517790-summer-watermelon/svg/013-wow.svg
+/flat-icons/17517790-summer-watermelon/svg/014-angel.svg
+/flat-icons/17517790-summer-watermelon/svg/018-valentin day.svg
+/flat-icons/17517790-summer-watermelon/svg/020-ok.svg
+
+### Education Collection (11 files)
+/flat-icons/4341021-education/png/006-whistle.png
+/flat-icons/4341021-education/svg/011-book.svg
+/flat-icons/4341021-education/svg/012-laptop.svg
+/flat-icons/4341021-education/svg/017-dictionary.svg
+/flat-icons/4341021-education/svg/018-paper plane.svg
+/flat-icons/4341021-education/svg/025-medal.svg
+/flat-icons/4341021-education/svg/029-telescope.svg
+/flat-icons/4341021-education/svg/037-trophy.svg
+/flat-icons/4341021-education/svg/044-color palette.svg
+/flat-icons/4341021-education/svg/048-microscope.svg
+/flat-icons/4341021-education/svg/049-mortarboard.svg
+
+## Additional Considerations
+
+### Service Worker Cache
+The service worker (sw.js) references 2,136 icon files from various collections. However, these appear to be pre-cached for offline support and are not all actively used in the application.
+
+### Directory Structure Required
+Based on the paths, you'll need to create the following directory structure under `/public/flat-icons/`:
+- 188915-pokemon-go/png/
+- 8376275-wild-animals-flat-1-of-1/svg/
+- 4193242-animals/svg/
+- 17517790-summer-watermelon/svg/
+- 4341021-education/png/
+- 4341021-education/svg/
+
+### Restoration Priority
+1. **Critical Icons** (directly visible in UI):
+   - /flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg (Companion trigger)
+   - /flat-icons/4341021-education/png/006-whistle.png (Help icon)
+   - Pokemon Go PNG icons (Pokedex feature)
+
+2. **Virtual Companion Icons**: All the animal and emotion SVGs listed above are used for the virtual companion feature
+
+3. **Optional**: The service worker cached icons could be restored later for full offline support, but the app will function without them.
+
+## File Formats
+- Pokemon Go: PNG format
+- Education: Mixed (1 PNG, rest SVG)
+- All others: SVG format
+
+Total files needed for core functionality: 53 files

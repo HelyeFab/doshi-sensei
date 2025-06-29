@@ -62,3 +62,8 @@ src/utils/rate-limiter.ts
 /flat-icons/
 flat-icons/
 
+# But allow the specific icons we need
+!/public/flat-icons/8376275-wild-animals-flat-1-of-1/
+!/public/flat-icons/8376275-wild-animals-flat-1-of-1/png/
+!/public/flat-icons/8376275-wild-animals-flat-1-of-1/png/007-giraffe.png
+

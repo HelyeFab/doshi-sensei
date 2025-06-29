@@ -45,14 +45,16 @@ const config = withPWA({
   skipWaiting: true,
   disable: true, // Temporarily disable PWA to fix SSR issues
   // Additional PWA options for static export
-  buildExcludes: [/middleware-manifest\.json$/, /app-build-manifest\.json$/],
+  buildExcludes: [/middleware-manifest\.json$/, /app-build-manifest\.json$/, /flat-icons/],
   cacheOnFrontEndNav: true,
   reloadOnOnline: true,
+  cleanupOutdatedCaches: true, // Clean old caches
   // Exclude problematic manifest files
   manifestTransforms: [(manifestEntries) => {
     const manifest = manifestEntries.filter(entry => 
       !entry.url.includes('app-build-manifest.json') &&
-      !entry.url.includes('middleware-manifest.json')
+      !entry.url.includes('middleware-manifest.json') &&
+      !entry.url.includes('flat-icons') // Exclude flat-icons from caching
     );
     return { manifest, warnings: [] };
   }],

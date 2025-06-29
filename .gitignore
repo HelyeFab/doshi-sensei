@@ -57,3 +57,7 @@ public/workbox-*.js
 sensei-feedback/
 src/utils/rate-limiter.ts
 
+# Large icon files that shouldn't be served
+/public/flat-icons/
+/flat-icons/
+

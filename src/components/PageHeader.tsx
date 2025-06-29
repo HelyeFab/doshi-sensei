@@ -1,14 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import { PageHelpIcon } from '@/components/PageHelpIcon';
+import { pageHelpContent } from '@/config/pageHelp';
 
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
   showBackButton?: boolean;
+  helpKey?: string;
 }
 
-export function PageHeader({ title, subtitle, showBackButton = true }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, showBackButton = true, helpKey }: PageHeaderProps) {
+  const helpContent = helpKey ? pageHelpContent[helpKey] : null;
   return (
     <header className="mb-8">
       <div className="flex items-center mb-4">
@@ -24,10 +28,19 @@ export function PageHeader({ title, subtitle, showBackButton = true }: PageHeade
           </Link>
         )}
 
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            {title}
-          </h1>
+        <div className="flex-1">
+          <div className="flex items-center">
+            <h1 className="text-3xl font-bold text-foreground">
+              {title}
+            </h1>
+            {helpContent && (
+              <PageHelpIcon
+                title={helpContent.title}
+                description={helpContent.description}
+                tips={helpContent.tips}
+              />
+            )}
+          </div>
           {subtitle && (
             <p className="text-muted-foreground mt-1">{subtitle}</p>
           )}

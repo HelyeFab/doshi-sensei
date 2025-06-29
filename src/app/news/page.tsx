@@ -373,7 +373,7 @@ export default function NewsPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title="Japanese News Articles" showBackButton={true} />
+        <PageHeader title="Japanese News Articles" showBackButton={true} helpKey="news" />
 
         <div className="max-w-6xl mx-auto">
           {/* Description */}

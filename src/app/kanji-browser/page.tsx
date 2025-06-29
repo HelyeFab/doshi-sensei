@@ -324,7 +324,7 @@ export default function KanjiBrowserPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="relative">
-            <PageHeader title="漢字 Kanji Browser" />
+            <PageHeader title="漢字 Kanji Browser" helpKey="kanji-browser" />
             {/* Study Button */}
             {studySelection.size > 0 && (
               <button

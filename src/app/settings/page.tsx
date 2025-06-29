@@ -318,7 +318,7 @@ export default function SettingsPage() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen">
         {/* Header */}
-        <PageHeader title={strings.settings.title} />
+        <PageHeader title={strings.settings.title} helpKey="settings" />
 
         {/* Main Content */}
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">

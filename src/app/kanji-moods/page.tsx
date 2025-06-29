@@ -7,6 +7,7 @@ import { getAllProgress } from '@/utils/moodBoardProgress';
 import { PageHeader } from '@/components/PageHeader';
 import MoodBoardCard from '@/components/kanji-moods/MoodBoardCard';
 import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 export default function KanjiMoodsPage() {
   const router = useRouter();
@@ -33,12 +34,26 @@ export default function KanjiMoodsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-6 min-h-screen">
-        <PageHeader title="Kanji Mood Boards" showBackButton={true} />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin text-4xl mb-4">⏳</div>
-            <p className="text-muted-foreground">Loading mood boards...</p>
+      <div className="min-h-screen bg-background">
+        {/* Virtual Companion Section - 1/6th of screen height */}
+        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+          
+          {/* Gradient to White Fade */}
+          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+          
+          {/* Virtual Companion Button positioned within this section */}
+          <CompanionTrigger />
+        </div>
+
+        <div className="container mx-auto px-4 pb-20">
+          <PageHeader title="Kanji Mood Boards" showBackButton={true} helpKey="kanji-moods" />
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin text-4xl mb-4">⏳</div>
+              <p className="text-muted-foreground">Loading mood boards...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -53,10 +68,23 @@ export default function KanjiMoodsPage() {
   ).length;
 
   return (
-    <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
-      <PageHeader title="Kanji Mood Boards" showBackButton={true} />
+    <div className="min-h-screen bg-background">
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+        
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+        
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
+      </div>
 
-      {/* Hero Section */}
+      <div className="container mx-auto px-4 pb-24 md:pb-8">
+        <PageHeader title="Kanji Mood Boards" showBackButton={true} helpKey="kanji-moods" />
+
+        {/* Hero Section */}
       <div className="mb-8">
         <div className="text-center max-w-2xl mx-auto">
           <div className="text-6xl mb-4">🗺️</div>
@@ -188,6 +216,7 @@ export default function KanjiMoodsPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -236,7 +236,7 @@ export default function PracticePage() {
           }}
         />
 
-        <PageHeader title={strings.practice.title} />
+        <PageHeader title={strings.practice.title} helpKey="practice" />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Tab Navigation */}

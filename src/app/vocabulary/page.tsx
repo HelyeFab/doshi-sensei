@@ -136,7 +136,7 @@ export default function VocabularyPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title={strings.vocab.title} />
+        <PageHeader title={strings.vocab.title} helpKey="vocabulary" />
 
         <main className="max-w-4xl mx-auto">
           <p className="text-muted-foreground mb-6 text-center">

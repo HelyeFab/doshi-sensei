@@ -7,6 +7,19 @@
 
 import { getFirebaseAdminSync } from './firebase-admin-safe';
 
-// Export the synchronous version as default for backward compatibility
+// Create a proxy that delays access until runtime
+// This prevents initialization during build time
+const adminProxy = new Proxy({}, {
+  get(target, prop) {
+    const admin = getFirebaseAdminSync();
+    return admin[prop as keyof typeof admin];
+  },
+  has(target, prop) {
+    const admin = getFirebaseAdminSync();
+    return prop in admin;
+  }
+});
+
+// Export as default for backward compatibility
 // API routes should use getFirebaseAdmin() from firebase-admin-safe for proper async initialization
-export default getFirebaseAdminSync();
+export default adminProxy;

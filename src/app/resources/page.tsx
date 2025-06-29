@@ -100,7 +100,7 @@ export default function ResourcesPage() {
       </div>
 
       <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
-        <PageHeader title="Resources" showBackButton={true} />
+        <PageHeader title="Resources" showBackButton={true} helpKey="resources" />
 
         {/* Search and Filters */}
         <div className="max-w-4xl mx-auto mb-8">

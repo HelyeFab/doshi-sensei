@@ -9,6 +9,7 @@ import { BookmarkManager, BookmarkedArticle } from '@/utils/bookmarkManager';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
 import Link from 'next/link';
+import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -250,7 +251,7 @@ export default function FavouritesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -259,13 +260,26 @@ export default function FavouritesPage() {
         }}
       />
 
-      {/* Header */}
-      <div className="mb-8">
-        <PageHeader title="⭐ My Favourites" />
-        <p className="text-muted-foreground text-center mt-2">
-          Your personal collection of vocabulary lists and bookmarked articles.
-        </p>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+        
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+        
+        {/* Virtual Companion Button positioned within this section */}
+        <CompanionTrigger />
       </div>
+
+      <div className="container mx-auto px-4 pb-20">
+        {/* Header */}
+        <div className="mb-8">
+          <PageHeader title="⭐ My Favourites" helpKey="favourites" />
+          <p className="text-muted-foreground text-center mt-2">
+            Your personal collection of vocabulary lists and bookmarked articles.
+          </p>
+        </div>
 
       {/* Tab Navigation */}
       <div className="flex justify-center mb-8">
@@ -670,6 +684,7 @@ export default function FavouritesPage() {
           onCreated={loadWordLists}
         />
       )}
+      </div>
     </div>
   );
 }

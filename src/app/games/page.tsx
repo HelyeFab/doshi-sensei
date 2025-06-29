@@ -731,7 +731,7 @@ export default function GamesPage() {
         </div>
 
         <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
-          <PageHeader title={currentGameMode === 'assembly' ? "Word Assembly" : "Listening Games"} showBackButton={true} />
+          <PageHeader title={currentGameMode === 'assembly' ? "Word Assembly" : "Listening Games"} showBackButton={true} helpKey="games" />
           
           <div className="max-w-2xl mx-auto text-center py-16">
             <div className="text-8xl mb-6">🎧</div>
@@ -767,6 +767,7 @@ export default function GamesPage() {
         <PageHeader 
           title={showGameSelection ? "Games" : currentGameMode === 'listening' ? "Listening Games" : currentGameMode === 'assembly' ? "Word Assembly" : "Games"} 
           showBackButton={true} 
+          helpKey="games"
         />
         
         <div className="max-w-2xl mx-auto">

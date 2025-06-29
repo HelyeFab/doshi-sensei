@@ -180,7 +180,7 @@ export default function AccountPage() {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 py-8 min-h-screen">
-          <PageHeader title="Account" />
+          <PageHeader title="Account" helpKey="account" />
 
           <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="space-y-6">
@@ -421,7 +421,7 @@ export default function AccountPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen">
-        <PageHeader title="Account" />
+        <PageHeader title="Account" helpKey="account" />
 
         <main className="max-w-md mx-auto mb-32 md:mb-8 pb-safe">
         <div className="bg-card border border-border rounded-lg p-6">

@@ -938,7 +938,7 @@ export default function DrillPage() {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <PageHeader title={strings.drill.title} />
+          <PageHeader title={strings.drill.title} helpKey="drill" />
 
         {((activeTab === 'conjugation' && gameStarted) || (activeTab === 'flashcards' && flashcardGameStarted)) && (
           <div className="text-right">

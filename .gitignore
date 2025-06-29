@@ -60,4 +60,5 @@ src/utils/rate-limiter.ts
 # Large icon files that shouldn't be served
 /public/flat-icons/
 /flat-icons/
+flat-icons/
 

@@ -18,8 +18,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // Disable static optimization to avoid webpack runtime issues
-  output: 'standalone',
+  // Netlify deployment configuration
+  // Remove output: 'standalone' for Netlify compatibility
   // Configure webpack to handle the runtime issues
   webpack: (config, { isServer }) => {
     if (!isServer) {

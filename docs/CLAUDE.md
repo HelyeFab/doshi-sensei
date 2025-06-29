@@ -184,3 +184,45 @@ The app is configured for static export to Firebase Hosting:
 1. Create routes in `src/app/api/`
 2. Update CORS configuration in `next.config.ts`
 3. Test with both authenticated and unauthenticated requests
+
+## Session History - June 29, 2025
+
+### Fixed "navigator is not defined" SSR Errors
+**Problem:** Netlify deployment was failing with "navigator is not defined" errors occurring randomly on different pages, particularly on kanji-moods pages. The error happened during static site generation when browser APIs were accessed at module level.
+
+**Root Causes:**
+1. `cloudSync.ts` was accessing `navigator.onLine` during class initialization
+2. Multiple utility files were using `navigator` without SSR checks
+3. `useMoodBoards` hook referenced undefined `moodBoardsData` variable
+
+**Solutions Applied:**
+1. Added SSR checks (`typeof navigator !== 'undefined'`) to:
+   - `/src/utils/cloudSync.ts` - Fixed static initialization and all navigator usage
+   - `/src/utils/stats.ts` - Simplified browser environment check
+   - `/src/utils/syncQueue.ts` - Added checks before navigator.onLine access
+2. Fixed undefined reference in `/src/hooks/useMoodBoards.ts`
+3. Temporarily disabled PWA in `next.config.ts` to isolate issues
+
+### Removed Massive Unused Icon Collection
+**Problem:** The app had 2,138 flat-icon files in the public folder, causing performance issues and unnecessary bloat.
+
+**Solution:**
+1. Identified only 53 icons were actually used in the codebase
+2. Removed entire flat-icons folder from public directory
+3. Added flat-icons to .gitignore to prevent re-addition
+4. Created `flat-icons-needed.txt` documenting all required icons
+
+### Fixed Missing Icons
+**Problem:** After removing flat-icons, the virtual companion giraffe icon and help icons were missing.
+
+**Solutions:**
+1. Restored giraffe icon:
+   - Copied from source to `/public/flat-icons/8376275-wild-animals-flat-1-of-1/png/007-giraffe.png`
+   - Updated .gitignore to allow specific needed icons
+2. Replaced help whistle icon with ℹ️ emoji in `PageHelpIcon.tsx`
+
+### Key Learnings
+- Always check for browser API usage during SSR
+- Module-level code runs during static generation
+- Large asset folders should be audited for actual usage
+- Simple emoji solutions can replace complex icon dependencies

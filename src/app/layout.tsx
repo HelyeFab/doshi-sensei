@@ -124,6 +124,7 @@ export const viewport = {
   themeColor: '#6366f1',
 };
 
+// Force clean rebuild: Sun Jun 29 2025 22:43:00
 export default function RootLayout({
   children,
 }: Readonly<{

@@ -28,6 +28,9 @@ export class WordListManager {
    */
   static async getAllWordLists(): Promise<WordList[]> {
     try {
+      if (typeof window === 'undefined') {
+        return []; // No localStorage on server
+      }
       const listsData = localStorage.getItem(WORD_LISTS_KEY);
       if (!listsData) return [];
 
@@ -290,6 +293,9 @@ export class WordListManager {
    */
   static async getAllSavedWords(): Promise<SavedWord[]> {
     try {
+      if (typeof window === 'undefined') {
+        return []; // No localStorage on server
+      }
       const savedWordsData = localStorage.getItem(SAVED_WORDS_KEY);
       if (!savedWordsData) return [];
 
@@ -331,6 +337,9 @@ export class WordListManager {
    * Clear all word lists and saved words
    */
   static async clearAllWordLists(): Promise<void> {
+    if (typeof window === 'undefined') {
+      return; // No localStorage on server
+    }
     localStorage.removeItem(WORD_LISTS_KEY);
     localStorage.removeItem(SAVED_WORDS_KEY);
   }
@@ -580,6 +589,9 @@ export class WordListManager {
    */
   private static async saveWordLists(lists: WordList[]): Promise<void> {
     try {
+      if (typeof window === 'undefined') {
+        throw new Error('Cannot save word lists on server side');
+      }
       localStorage.setItem(WORD_LISTS_KEY, JSON.stringify(lists));
     } catch (error) {
       console.error('Error saving word lists:', error);
@@ -592,6 +604,9 @@ export class WordListManager {
    */
   private static async saveSavedWords(savedWords: SavedWord[]): Promise<void> {
     try {
+      if (typeof window === 'undefined') {
+        throw new Error('Cannot save saved words on server side');
+      }
       localStorage.setItem(SAVED_WORDS_KEY, JSON.stringify(savedWords));
     } catch (error) {
       console.error('Error saving saved words:', error);

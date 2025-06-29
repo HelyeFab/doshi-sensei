@@ -126,6 +126,9 @@ export class StatsManager {
    */
   private static async saveStatsLocally(stats: UserStats): Promise<void> {
     try {
+      if (typeof window === 'undefined') {
+        return; // Skip on server-side
+      }
       const statsWithTimestamp = {
         ...stats,
         updatedAt: new Date().toISOString()
@@ -208,6 +211,11 @@ export class StatsManager {
             lastActiveDate: localStats.lastActiveDate > cloudStats.lastActiveDate ? localStats.lastActiveDate : cloudStats.lastActiveDate,
             firstUseDate: localStats.firstUseDate < cloudStats.firstUseDate ? localStats.firstUseDate : cloudStats.firstUseDate,
             totalDaysUsed: Math.max(localStats.totalDaysUsed, cloudStats.totalDaysUsed),
+            kanjiStudySessions: Math.max(localStats.kanjiStudySessions || 0, cloudStats.kanjiStudySessions || 0),
+            kanjiStudyQuestions: Math.max(localStats.kanjiStudyQuestions || 0, cloudStats.kanjiStudyQuestions || 0),
+            kanjiCorrectAnswers: Math.max(localStats.kanjiCorrectAnswers || 0, cloudStats.kanjiCorrectAnswers || 0),
+            kanjiAccuracy: Math.max(localStats.kanjiAccuracy || 0, cloudStats.kanjiAccuracy || 0),
+            totalKanjiLearned: Math.max(localStats.totalKanjiLearned || 0, cloudStats.totalKanjiLearned || 0),
             updatedAt: new Date().toISOString()
           };
 
@@ -326,6 +334,9 @@ export class StatsManager {
    */
   private static getLocalStats(): UserStats | null {
     try {
+      if (typeof window === 'undefined') {
+        return null; // No localStorage on server
+      }
       const statsData = localStorage.getItem(STATS_KEY);
       if (!statsData) return null;
       return JSON.parse(statsData) as UserStats;
@@ -370,7 +381,7 @@ export class StatsManager {
   /**
    * Record studying a word (from practice/vocabulary pages)
    */
-  static async recordWordStudied(wordId: string): Promise<void> {
+  static async recordWordStudied(_wordId: string): Promise<void> {
     try {
       const stats = await this.getUserStats();
       const today = new Date().toDateString();
@@ -420,6 +431,9 @@ export class StatsManager {
    */
   static async getDrillHistory(): Promise<DrillSession[]> {
     try {
+      if (typeof window === 'undefined') {
+        return []; // No localStorage on server
+      }
       const sessionsData = localStorage.getItem(SESSIONS_KEY);
       if (!sessionsData) return [];
 
@@ -472,6 +486,9 @@ export class StatsManager {
    * Reset all statistics
    */
   static async resetStats(): Promise<void> {
+    if (typeof window === 'undefined') {
+      return; // No localStorage on server
+    }
     localStorage.removeItem(STATS_KEY);
     localStorage.removeItem(SESSIONS_KEY);
   }
@@ -495,6 +512,11 @@ export class StatsManager {
    * Clear service worker cache to fix sync issues
    */
   static async clearServiceWorkerCache(): Promise<void> {
+    // Check if we're in the browser environment
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return;
+    }
+
     try {
       if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
@@ -631,7 +653,9 @@ export class StatsManager {
 
       const recentSessions = sessions.filter(s => new Date(s.date) >= cutoffDate);
 
-      localStorage.setItem(SESSIONS_KEY, JSON.stringify(recentSessions));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(SESSIONS_KEY, JSON.stringify(recentSessions));
+      }
     } catch (error) {
       console.error('Error recording session:', error);
       throw error;

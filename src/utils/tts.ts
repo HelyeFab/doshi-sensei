@@ -628,7 +628,7 @@ export class TTSManager {
 }
 
 // Initialize on import
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   // Initialize when voices are loaded
   speechSynthesis.addEventListener('voiceschanged', () => {
     TTSManager.initialize();

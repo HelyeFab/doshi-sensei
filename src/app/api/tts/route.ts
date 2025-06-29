@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
               },
               body: JSON.stringify({
                 text,
-                model_id: 'eleven_multilingual_v2', // Supports Japanese
+                model_id: 'eleven_turbo_v2_5', // Better Japanese support
                 voice_settings: settings,
               }),
             }

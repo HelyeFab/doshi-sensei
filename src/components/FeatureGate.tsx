@@ -89,7 +89,7 @@ export function FeatureGate({
 // Convenience components for common use cases
 export function LoginRequired({ children, message }: { children: React.ReactNode; message?: string }) {
   return (
-    <FeatureGate requiredUserType={['free', 'premium']} loginMessage={message}>
+    <FeatureGate requiredUserType={['free', 'monthly', 'yearly']} loginMessage={message}>
       {children}
     </FeatureGate>
   );
@@ -97,7 +97,7 @@ export function LoginRequired({ children, message }: { children: React.ReactNode
 
 export function PremiumOnly({ children, message }: { children: React.ReactNode; message?: string }) {
   return (
-    <FeatureGate requiredUserType="premium" upgradeMessage={message}>
+    <FeatureGate requiredUserType={['monthly', 'yearly']} upgradeMessage={message}>
       {children}
     </FeatureGate>
   );

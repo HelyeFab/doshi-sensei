@@ -91,14 +91,17 @@ export default function KanjiQuest({
         }
         
         // Show Pokémon-themed limit messages
+        const maxEncounters = 3; // Both guest and free users get 3 encounters
+        const encountersUsed = playsToday + 1; // Add 1 because they just tried to play
+        
         if (userType === 'guest') {
           showLoginPrompt(
-            `You've used all ${playsToday}/3 daily Pokémon encounters! Team Rocket won't let you pass! 🚫\n\nSign up free to get more encounters and save your Pokédex!`,
+            `You've used all ${encountersUsed}/${maxEncounters} daily Pokémon encounters! Team Rocket won't let you pass! 🚫\n\nSign up free to get more encounters and save your Pokédex!`,
             'kanjiquest'
           );
         } else {
           showUpgradePrompt(
-            `You've reached your daily limit of ${playsToday}/3 Pokémon encounters! 🎮\n\nUpgrade to Premium for unlimited encounters and become a true Pokémon Master!`,
+            `You've reached your daily limit of ${encountersUsed}/${maxEncounters} Pokémon encounters! 🎮\n\nUpgrade to Premium for unlimited encounters and become a true Pokémon Master!`,
             'kanjiquest'
           );
         }

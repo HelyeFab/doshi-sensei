@@ -30,28 +30,55 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
     };
 
     // Initialize app
-    const initializeApp = () => {
-      // Clear any stale caches that might cause hanging
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-          // Ensure service worker is active
-          registrations.forEach(registration => {
-            if (registration.active) {
+    const initializeApp = async () => {
+      try {
+        // Clear any stale caches that might cause hanging
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          
+          // Wait for service worker to be ready
+          if (registrations.length > 0) {
+            await navigator.serviceWorker.ready;
+          }
+          
+          // Check for stale cache issues
+          if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            console.log('Active caches:', cacheNames);
+            
+            // If we have too many caches, it might indicate a problem
+            if (cacheNames.length > 10) {
+              console.warn('Too many caches detected, cleaning up...');
+              // The service worker registration will handle cleanup
             }
-          });
-        });
-      }
+          }
+        }
 
-      // Force reload of critical resources
-      const criticalResources = ['/doshi.png', '/manifest.json'];
+        // Force reload of critical resources with timeout
+        const criticalResources = ['/doshi.png', '/manifest.json'];
+        const fetchWithTimeout = (url: string, timeout = 5000) => {
+          return Promise.race([
+            fetch(url, { cache: 'no-cache' }),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout')), timeout)
+            )
+          ]);
+        };
 
-      Promise.all(
-        criticalResources.map(resource =>
-          fetch(resource, { cache: 'reload' }).catch(() => null)
-        )
-      ).finally(() => {
+        await Promise.allSettled(
+          criticalResources.map(resource => 
+            fetchWithTimeout(resource).catch(err => {
+              console.warn(`Failed to fetch ${resource}:`, err);
+              return null;
+            })
+          )
+        );
+      } catch (error) {
+        console.error('Error during app initialization:', error);
+      } finally {
+        // Always set ready after a maximum wait time
         setIsReady(true);
-      });
+      }
     };
 
     if (isPWALaunch()) {

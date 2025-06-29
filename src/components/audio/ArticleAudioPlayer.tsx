@@ -74,7 +74,7 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
 
     try {
       await TTSManager.stop();
-      await TTSManager.speak(sentence, controls.playbackSpeed);
+      await TTSManager.speak(sentence, 1.0);
       
       setControls(prev => ({
         ...prev,
@@ -216,7 +216,7 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
               ) : controls.isPlaying ? (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" 
+                    d="M10 9v6m4-6v6" 
                   />
                 </svg>
               ) : (
@@ -261,33 +261,6 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
           </div>
         </div>
 
-        {/* Speed Control */}
-        <div className="flex items-center gap-4">
-          <label className="text-sm text-foreground">Speed:</label>
-          <input
-            type="range"
-            min="0.5"
-            max="2"
-            step="0.1"
-            value={controls.playbackSpeed}
-            onChange={(e) => setControls(prev => ({ ...prev, playbackSpeed: parseFloat(e.target.value) }))}
-            className="flex-1"
-          />
-          <span className="text-sm text-muted-foreground min-w-[3rem] text-right">
-            {controls.playbackSpeed}x
-          </span>
-        </div>
-
-        {/* Auto-advance Toggle */}
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={controls.autoAdvance}
-            onChange={(e) => setControls(prev => ({ ...prev, autoAdvance: e.target.checked }))}
-            className="rounded"
-          />
-          <span className="text-sm text-foreground">Auto-advance to next sentence</span>
-        </label>
       </div>
     </div>
   );

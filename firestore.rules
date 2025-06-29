@@ -81,8 +81,14 @@ service cloud.firestore {
       // Allow anyone to read articles (no authentication required)
       allow read: if true;
 
-      // Only admin or Netlify functions can write articles
+      // Only admin can write articles
       allow write: if isAdmin();
+      
+      // Allow reading subcollections
+      match /{document=**} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
     }
 
     // Articles metadata collection
@@ -116,6 +122,44 @@ service cloud.firestore {
       // Users can update/delete their own bookmarks
       allow update, delete: if request.auth != null && 
         (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // Stories collection
+    match /stories/{storyId} {
+      // Allow anyone to read published stories
+      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
+      
+      // Only admin can write stories
+      allow write: if isAdmin();
+    }
+
+    // Story progress tracking
+    match /storyProgress/{progressId} {
+      // Users can read their own progress
+      allow read: if request.auth != null && 
+        (isAdmin() || resource.data.userId == request.auth.uid);
+      
+      // Users can create/update their own progress
+      allow create, update: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own progress
+      allow delete: if request.auth != null && 
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // User stats collection (for stories and other features)
+    match /userStats/{userId} {
+      // Users can read their own stats
+      allow read: if request.auth != null && 
+        (isAdmin() || request.auth.uid == userId);
+      
+      // Users can create/update their own stats
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId;
+      
+      // Only admin can delete stats
+      allow delete: if isAdmin();
     }
 
     // Deny all other access

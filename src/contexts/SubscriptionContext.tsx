@@ -104,9 +104,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
         if (userData?.subscription) {
           console.log('Doshi Sensei Debug: Found subscription in user data:', userData.subscription);
+          console.log('Doshi Sensei Debug: Subscription plan:', userData.subscription?.subscription?.plan);
           setUserSubscription(userData.subscription);
         } else {
-          console.log('Doshi Sensei Debug: No subscription found, initializing default.');
+          // console.log('Doshi Sensei Debug: No subscription found, initializing default.');
           // Initialize default subscription for new user
           const defaultSub = await initializeDefaultSubscription(user.uid);
           setUserSubscription(defaultSub);
@@ -240,6 +241,13 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   // Determine user type
   const userType: UserType = !user ? 'guest' :
     (userSubscription?.subscription.plan === 'monthly' || userSubscription?.subscription.plan === 'yearly') ? 'premium' : 'free';
+  
+  console.log('Doshi Sensei Debug: UserType calculation:', {
+    user: !!user,
+    userSubscription: userSubscription,
+    plan: userSubscription?.subscription?.plan,
+    calculatedUserType: userType
+  });
 
   const isFeatureAvailable = (feature: 'lists' | 'drills' | 'sync' | 'save' | 'kanjiquest'): boolean => {
     if (!user && feature !== 'drills' && feature !== 'kanjiquest') {

@@ -79,10 +79,10 @@ function VocabularyPopup({ word, position, onClose, onSaveToList }: VocabularyPo
         if (results.length > 0) {
           setWordData(results[0]);
         } else {
-          setError('単語が見つかりません');
+          setError('Word not found');
         }
       } catch (err) {
-        setError('単語の検索に失敗しました');
+        setError('Failed to search for word');
       } finally {
         setLoading(false);
       }
@@ -118,7 +118,7 @@ function VocabularyPopup({ word, position, onClose, onSaveToList }: VocabularyPo
       {loading && (
         <div className="flex items-center gap-2 text-muted-foreground">
           <span className="animate-spin">⏳</span>
-          <span>検索中...</span>
+          <span>Searching...</span>
         </div>
       )}
 
@@ -129,12 +129,12 @@ function VocabularyPopup({ word, position, onClose, onSaveToList }: VocabularyPo
       {wordData && (
         <div className="space-y-3">
           <div>
-            <div className="text-sm text-muted-foreground">読み方</div>
+            <div className="text-sm text-muted-foreground">Reading</div>
             <div className="font-medium">{wordData.kana}</div>
           </div>
 
           <div>
-            <div className="text-sm text-muted-foreground">意味</div>
+            <div className="text-sm text-muted-foreground">Meaning</div>
             <div>{wordData.meaning}</div>
           </div>
 
@@ -183,7 +183,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
   return (
     <div className="absolute top-12 right-0 z-40 bg-card border border-border rounded-lg shadow-lg p-4 w-64">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-medium text-foreground">読み設定</h3>
+        <h3 className="font-medium text-foreground">Reading Settings</h3>
         <button
           onClick={onClose}
           className="text-muted-foreground hover:text-foreground"
@@ -196,7 +196,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
         {/* Font Size */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
-            文字サイズ
+            Text Size
           </label>
           <div className="flex gap-2">
             {(['small', 'medium', 'large', 'xlarge'] as const).map((size) => (
@@ -210,10 +210,10 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
                 }`}
               >
                 {{
-                  small: '小',
-                  medium: '中',
-                  large: '大',
-                  xlarge: '特大'
+                  small: 'S',
+                  medium: 'M',
+                  large: 'L',
+                  xlarge: 'XL'
                 }[size]}
               </button>
             ))}
@@ -224,7 +224,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
         <div>
           <label className="flex items-center justify-between">
             <span className="text-sm font-medium text-foreground">
-              ふりがな表示
+              Show Furigana
             </span>
             <button
               onClick={handleToggleFurigana}
@@ -245,7 +245,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
         <div>
           <label className="flex items-center justify-between">
             <span className="text-sm font-medium text-foreground">
-              単語ハイライト
+              Highlight Vocabulary
             </span>
             <button
               onClick={handleToggleVocabularyHighlight}
@@ -274,13 +274,26 @@ interface ArticleReaderProps {
 export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const { user } = useAuth();
   const { userType } = useSubscription();
-  const isPremium = userType === 'premium';
+  const isPremium = userType === 'monthly' || userType === 'yearly';
   
-  const [settings, setSettings] = useState<ReadingSettings>({
-    fontSize: 'medium',
-    showFurigana: true,
-    highlightVocabulary: true,
-    darkMode: false
+  const [settings, setSettings] = useState<ReadingSettings>(() => {
+    // Load settings from localStorage
+    if (typeof window !== 'undefined') {
+      const savedSettings = localStorage.getItem('readingSettings');
+      if (savedSettings) {
+        try {
+          return JSON.parse(savedSettings);
+        } catch (e) {
+          console.error('Failed to parse saved settings:', e);
+        }
+      }
+    }
+    return {
+      fontSize: 'medium',
+      showFurigana: true,
+      highlightVocabulary: true,
+      darkMode: false
+    };
   });
 
   const [showSettings, setShowSettings] = useState(false);
@@ -308,6 +321,13 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
   const articleRef = useRef<HTMLDivElement>(null);
   const timeUpdateInterval = useRef<NodeJS.Timeout | null>(null);
+
+  // Save settings to localStorage when they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('readingSettings', JSON.stringify(settings));
+    }
+  }, [settings]);
 
   // Extract vocabulary from article content
   const extractVocabularyFromText = (text: string): string[] => {
@@ -594,7 +614,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
           >
             <span>←</span>
-            記事一覧に戻る
+            Back to Articles
           </button>
 
           <div className="flex items-center gap-2">
@@ -682,7 +702,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             {/* Article metadata */}
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
               <span>📅 {new Date(article.publishDate).toLocaleDateString('ja-JP')}</span>
-              <span>📖 約{article.estimatedReadingTime}分</span>
+              <span>📖 About {article.estimatedReadingTime} min</span>
               <span>📊 {article.difficulty}</span>
               <span>🏷️ {article.category}</span>
             </div>

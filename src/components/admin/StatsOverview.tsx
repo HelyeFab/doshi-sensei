@@ -35,20 +35,20 @@ function StatsCard({ title, value, icon, trend, trendDirection = 'neutral', load
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
+    <div className="bg-card border border-border rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">{title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-foreground">{value}</p>
           {trend && (
-            <p className={`text-xs mt-1 ${trendColors[trendDirection]}`}>
+            <p className={`text-xs mt-1 ${trendColors[trendDirection]} truncate`}>
               {trendDirection === 'up' && '↗ '}
               {trendDirection === 'down' && '↘ '}
               {trend}
             </p>
           )}
         </div>
-        <div className="text-3xl">{icon}</div>
+        <div className="text-2xl sm:text-3xl flex-shrink-0">{icon}</div>
       </div>
     </div>
   );
@@ -75,7 +75,7 @@ export function StatsOverview() {
 
   // Calculate growth trends (simplified for demo)
   const userGrowthTrend = userStats?.newUsersThisWeek ? `+${userStats.newUsersThisWeek} this week` : undefined;
-  const subscriptionTrend = subscriptionStats?.conversionRate ? `${formatPercentage(subscriptionStats.conversionRate)} conversion` : undefined;
+  const subscriptionTrend = subscriptionStats?.conversionRate !== undefined ? `${subscriptionStats.conversionRate.toFixed(1)}% conversion` : undefined;
 
   return (
     <div className="space-y-6">

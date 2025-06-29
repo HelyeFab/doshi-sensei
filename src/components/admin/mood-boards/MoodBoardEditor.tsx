@@ -196,7 +196,7 @@ export function MoodBoardEditor({
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto overflow-x-hidden">
       {showPreview && (
         <MoodBoardPreview
           moodBoard={{
@@ -296,13 +296,13 @@ export function MoodBoardEditor({
                     }`}
                     maxLength={2}
                   />
-                  <div className="flex gap-1">
+                  <div className="flex flex-wrap gap-1">
                     {['🌿', '🏠', '🔢', '🍱', '🎌', '🏮', '🌸', '⛩️'].map(emoji => (
                       <button
                         key={emoji}
                         type="button"
                         onClick={() => handleEmojiSelect(emoji)}
-                        className="p-2 text-xl hover:bg-muted rounded"
+                        className="p-1.5 sm:p-2 text-lg sm:text-xl hover:bg-muted rounded"
                       >
                         {emoji}
                       </button>
@@ -407,7 +407,7 @@ export function MoodBoardEditor({
                   onClick={() => setFormData(prev => ({ ...prev, background: gradient.value }))}
                   className={`relative h-20 rounded-lg overflow-hidden border-2 transition-all ${
                     formData.background === gradient.value
-                      ? 'border-primary ring-2 ring-primary ring-offset-2'
+                      ? 'border-primary ring-2 ring-primary ring-offset-1 sm:ring-offset-2'
                       : 'border-border hover:border-muted-foreground'
                   }`}
                   style={{ background: gradient.value }}

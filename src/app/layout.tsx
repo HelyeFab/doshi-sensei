@@ -17,6 +17,8 @@ import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
 import JMdictInitializer from "@/components/JMdictInitializer";
+import OfflineNotification from "@/components/OfflineNotification";
+import { ModalProvider } from "@/contexts/ModalContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -194,22 +196,25 @@ export default function RootLayout({
               <NotificationProvider>
                 <SubscriptionProvider>
                   <AdminProvider>
-                    {/* Use a client component to connect settings to theme */}
-                    <ClientThemeWrapper>
-                    <PWAWrapper>
-                      <OnboardingWrapper>
-                        <div className="min-h-screen bg-background text-foreground">
-                          <JMdictInitializer />
-                          {children}
-                          <BottomNavigation />
-                          <PWAInstaller />
-                          <FloatingDonateButton />
-                          <CompanionTrigger />
-                          <ToastContainer />
-                        </div>
-                      </OnboardingWrapper>
-                    </PWAWrapper>
-                    </ClientThemeWrapper>
+                    <ModalProvider>
+                      {/* Use a client component to connect settings to theme */}
+                      <ClientThemeWrapper>
+                      <PWAWrapper>
+                        <OnboardingWrapper>
+                          <div className="min-h-screen bg-background text-foreground">
+                            <OfflineNotification />
+                            <JMdictInitializer />
+                            {children}
+                            <BottomNavigation />
+                            <PWAInstaller />
+                            <FloatingDonateButton />
+                            <CompanionTrigger />
+                            <ToastContainer />
+                          </div>
+                        </OnboardingWrapper>
+                      </PWAWrapper>
+                      </ClientThemeWrapper>
+                    </ModalProvider>
                   </AdminProvider>
                 </SubscriptionProvider>
               </NotificationProvider>

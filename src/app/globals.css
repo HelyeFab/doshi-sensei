@@ -291,6 +291,36 @@ body {
   }
 }
 
+/* Mobile text size adjustments for better readability */
+@media (max-width: 768px) {
+  /* Increase base font size slightly on mobile */
+  html {
+    font-size: 17px; /* Default is usually 16px */
+  }
+  
+  /* Adjust specific text sizes */
+  .text-xs {
+    font-size: 0.8125rem; /* 13px instead of 12px */
+  }
+  
+  .text-sm {
+    font-size: 0.9375rem; /* 15px instead of 14px */
+  }
+  
+  .text-base {
+    font-size: 1.0625rem; /* 17px instead of 16px */
+  }
+  
+  .text-lg {
+    font-size: 1.1875rem; /* 19px instead of 18px */
+  }
+  
+  /* Improve line height for better readability */
+  p, .leading-relaxed {
+    line-height: 1.7;
+  }
+}
+
 /* Mobile-first responsive utilities */
 .container {
   width: 100%;

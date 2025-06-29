@@ -137,8 +137,16 @@ export default function Home() {
       // Get Pokémon count
       const pokedexData = getPokedexData(user?.uid);
       
-      // Get story stats
-      const storyStats = user ? await storyManager.getUserStoryStats(user.uid) : { totalStoriesRead: 0 };
+      // Get story stats with error handling
+      let storyStats = { totalStoriesRead: 0 };
+      if (user) {
+        try {
+          storyStats = await storyManager.getUserStoryStats(user.uid);
+        } catch (error) {
+          // Silently fail if Firebase permissions are not set up
+          console.warn('Could not fetch story stats:', error);
+        }
+      }
       
       setStats(prevStats => ({
         drillsCompleted: userStats.drillsCompleted,
@@ -482,59 +490,63 @@ export default function Home() {
           </div>
 
           {/* Minimal Stats Bar */}
-          <div className="bg-card/50 backdrop-blur rounded-lg p-3 md:p-4 border border-border/50 mb-8">
-            <div className="flex flex-wrap items-center justify-between gap-2 md:gap-4">
+          <div className="bg-card/50 backdrop-blur rounded-lg p-4 md:p-5 mb-8 relative before:absolute before:inset-0 before:rounded-lg before:p-[1px] before:bg-gradient-to-r before:from-primary/50 before:to-accent/50 before:content-[''] before:-z-10 after:absolute after:inset-0 after:rounded-lg after:p-[3px] after:bg-gradient-to-r after:from-primary/20 after:to-accent/20 after:content-[''] after:-z-20">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">
               {/* Streak Badge */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
-                  <span className="text-sm">🔥</span>
+                <div className="w-10 h-10 md:w-8 md:h-8 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                  <span className="text-base md:text-sm">🔥</span>
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground">Streak</div>
-                  <div className="text-sm font-semibold">{loading ? '...' : `${stats.streak} days`}</div>
+                  <div className="text-sm md:text-xs text-muted-foreground">Streak</div>
+                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : `${stats.streak} days`}</div>
                 </div>
               </div>
 
               {/* Divider */}
               <div className="hidden md:block h-8 w-px bg-border" />
 
-              {/* Combined Activity */}
-              <div className="flex items-center gap-4 md:gap-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                    <span className="text-sm">⚡</span>
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">{loading ? '...' : stats.drillsCompleted}</div>
-                    <div className="text-xs text-muted-foreground">Drills</div>
-                  </div>
+              {/* Drills */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                  <span className="text-base md:text-sm">⚡</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
-                    <span className="text-sm">🍙</span>
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">{loading ? '...' : stats.kanjiStudySessions}</div>
-                    <div className="text-xs text-muted-foreground">Sessions</div>
-                  </div>
+                <div>
+                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.drillsCompleted}</div>
+                  <div className="text-sm md:text-xs text-muted-foreground">Drills</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                    <span className="text-sm">📚</span>
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">{loading ? '...' : stats.totalKanjiLearned}</div>
-                    <div className="text-xs text-muted-foreground">Learned</div>
-                  </div>
+              </div>
+              
+              {/* Sessions */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                  <span className="text-base md:text-sm">🍙</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
-                    <span className="text-sm">🎯</span>
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">{loading ? '...' : stats.pokemonCaught}</div>
-                    <div className="text-xs text-muted-foreground">Pokémon</div>
-                  </div>
+                <div>
+                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.kanjiStudySessions}</div>
+                  <div className="text-sm md:text-xs text-muted-foreground">Sessions</div>
+                </div>
+              </div>
+              
+              {/* Learned */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                  <span className="text-base md:text-sm">📚</span>
+                </div>
+                <div>
+                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.totalKanjiLearned}</div>
+                  <div className="text-sm md:text-xs text-muted-foreground">Learned</div>
+                </div>
+              </div>
+              
+              {/* Pokemon */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
+                  <span className="text-base md:text-sm">🎯</span>
+                </div>
+                <div>
+                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.pokemonCaught}</div>
+                  <div className="text-sm md:text-xs text-muted-foreground">Pokémon</div>
                 </div>
               </div>
 
@@ -544,12 +556,12 @@ export default function Home() {
               {/* Stories Read */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
-                    <span className="text-sm">📖</span>
+                  <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                    <span className="text-base md:text-sm">📖</span>
                   </div>
                   <div>
-                    <div className="text-sm font-semibold">{loading ? '...' : stats.storiesRead}</div>
-                    <div className="text-xs text-muted-foreground">Stories</div>
+                    <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.storiesRead}</div>
+                    <div className="text-sm md:text-xs text-muted-foreground">Stories</div>
                   </div>
                 </div>
               </div>
@@ -558,7 +570,7 @@ export default function Home() {
               <div className="hidden md:block h-8 w-px bg-border" />
 
               {/* Overall Accuracy */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
                 <div className="relative w-10 h-10">
                   <svg className="w-full h-full -rotate-90">
                     <circle

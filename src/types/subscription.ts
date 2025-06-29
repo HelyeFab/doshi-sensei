@@ -7,6 +7,8 @@ export interface GuestUsage {
   lastKanjiQuestDate: string;
   storiesToday: number;
   lastStoryDate: string;
+  articlesToday: number;
+  lastArticleDate: string;
 }
 
 export interface UserSubscription {
@@ -28,6 +30,7 @@ export interface UserSubscription {
     maxDrillsPerDay: number; // -1 means unlimited
     maxKanjiQuestPerDay: number; // -1 means unlimited
     maxStoriesPerDay: number; // -1 means unlimited
+    maxArticlesPerDay: number; // -1 means unlimited
     canSync: boolean;
     canSave: boolean;
   };
@@ -39,6 +42,8 @@ export interface UserSubscription {
     lastKanjiQuestDate?: string;
     storiesToday?: number;
     lastStoryDate?: string;
+    articlesToday?: number;
+    lastArticleDate?: string;
   };
   createdAt?: Date;
   updatedAt?: Date;
@@ -82,7 +87,8 @@ export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
     maxLists: 3,
     maxDrillsPerDay: 3,
     maxKanjiQuestPerDay: 3,
-    maxStoriesPerDay: 1,
+    maxStoriesPerDay: 3,
+    maxArticlesPerDay: 3,
     canSync: false,
     canSave: true
   },
@@ -93,7 +99,9 @@ export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
     kanjiQuestToday: 0,
     lastKanjiQuestDate: new Date().toISOString(),
     storiesToday: 0,
-    lastStoryDate: new Date().toISOString()
+    lastStoryDate: new Date().toISOString(),
+    articlesToday: 0,
+    lastArticleDate: new Date().toISOString()
   }
 };
 
@@ -107,6 +115,7 @@ export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
     maxDrillsPerDay: -1, // unlimited
     maxKanjiQuestPerDay: -1, // unlimited
     maxStoriesPerDay: -1, // unlimited
+    maxArticlesPerDay: -1, // unlimited
     canSync: true,
     canSave: true
   },
@@ -117,7 +126,9 @@ export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
     kanjiQuestToday: 0,
     lastKanjiQuestDate: new Date().toISOString(),
     storiesToday: 0,
-    lastStoryDate: new Date().toISOString()
+    lastStoryDate: new Date().toISOString(),
+    articlesToday: 0,
+    lastArticleDate: new Date().toISOString()
   }
 };
 
@@ -131,6 +142,7 @@ export const DEFAULT_YEARLY_SUBSCRIPTION: UserSubscription = {
     maxDrillsPerDay: -1, // unlimited
     maxKanjiQuestPerDay: -1, // unlimited
     maxStoriesPerDay: -1, // unlimited
+    maxArticlesPerDay: -1, // unlimited
     canSync: true,
     canSave: true
   },
@@ -141,7 +153,9 @@ export const DEFAULT_YEARLY_SUBSCRIPTION: UserSubscription = {
     kanjiQuestToday: 0,
     lastKanjiQuestDate: new Date().toISOString(),
     storiesToday: 0,
-    lastStoryDate: new Date().toISOString()
+    lastStoryDate: new Date().toISOString(),
+    articlesToday: 0,
+    lastArticleDate: new Date().toISOString()
   }
 };
 
@@ -175,7 +189,8 @@ export const GUEST_LIMITS = {
   maxLists: 0,
   maxDrillsPerDay: 3,
   maxKanjiQuestPerDay: 3,
-  maxStoriesPerDay: 1,
+  maxStoriesPerDay: 3,
+  maxArticlesPerDay: 3,
   canSync: false,
   canSave: false
 };

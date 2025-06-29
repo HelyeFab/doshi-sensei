@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useModal } from '@/contexts/ModalContext';
 import { HOME_NAV_ITEM, getNavItemsByIds, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 import type { NavItem } from '@/types';
 
 export default function BottomNavigation() {
   const pathname = usePathname();
   const { settings } = useSettings();
+  const { isModalOpen } = useModal();
 
   // Build navigation items based on user preferences
   const getNavigationItems = (): NavItem[] => {
@@ -54,6 +56,11 @@ export default function BottomNavigation() {
     
     return false;
   };
+
+  // Hide navigation when modal is open on mobile
+  if (isModalOpen) {
+    return null;
+  }
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50 p-4 pb-6">

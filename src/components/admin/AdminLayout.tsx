@@ -28,13 +28,13 @@ export function AdminLayout({ title, children }: AdminLayoutProps) {
         <AdminSidebar isOpen={sidebarOpen} onClose={handleSidebarClose} />
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
           <AdminHeader onMenuClick={handleMenuClick} title={title} />
 
           {/* Main content */}
-          <main className="flex-1 overflow-auto">
-            <div className="p-4 sm:p-6 pb-40 md:pb-20">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="p-4 sm:p-6 pb-40 md:pb-20 max-w-full overflow-hidden">
               {children}
             </div>
           </main>

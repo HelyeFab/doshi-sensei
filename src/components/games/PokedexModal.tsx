@@ -7,6 +7,7 @@ import { getPokedexData, PokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useModal } from '@/contexts/ModalContext';
 
 interface PokedexModalProps {
   isOpen: boolean;
@@ -93,6 +94,7 @@ const POKEMON_NAMES: Record<number, string> = {
 export default function PokedexModal({ isOpen, onClose, userId }: PokedexModalProps) {
   const { user } = useAuth();
   const { userType } = useSubscription();
+  const { setModalOpen } = useModal();
   const [caughtPokemonIds, setCaughtPokemonIds] = useState<number[]>([]);
   const [selectedPokemon, setSelectedPokemon] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'caught'>('caught');
@@ -108,8 +110,18 @@ export default function PokedexModal({ isOpen, onClose, userId }: PokedexModalPr
       setSelectedPokemon(null); // Reset selected Pokemon when modal opens
       setActiveTab('caught'); // Reset to caught tab
       setLoadedPokemonCount(251); // Reset loaded count
+      setModalOpen(true); // Set modal state for navbar hiding
+    } else {
+      setModalOpen(false); // Reset modal state
     }
-  }, [isOpen, user, userType]);
+  }, [isOpen, user, userType, setModalOpen]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      setModalOpen(false);
+    };
+  }, [setModalOpen]);
 
   const loadCaughtPokemon = async () => {
     try {

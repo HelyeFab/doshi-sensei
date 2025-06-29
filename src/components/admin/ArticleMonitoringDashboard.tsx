@@ -211,11 +211,11 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="jlpt">JLPT Levels</TabsTrigger>
+              <TabsTrigger value="jlpt">JLPT</TabsTrigger>
               <TabsTrigger value="sources">Sources</TabsTrigger>
-              <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+              <TabsTrigger value="maintenance">Maint.</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="mt-6">

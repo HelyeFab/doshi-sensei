@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 
 interface PageHelpIconProps {
   title: string;
@@ -16,16 +15,10 @@ export function PageHelpIcon({ title, description, tips }: PageHelpIconProps) {
     return (
       <button
         onClick={() => setShowModal(true)}
-        className="ml-2 inline-flex items-center justify-center w-6 h-6 hover:opacity-80 transition-opacity"
+        className="ml-2 inline-flex items-center justify-center w-6 h-6 hover:opacity-80 transition-opacity text-lg"
         aria-label="Page help"
       >
-        <Image
-          src="/flat-icons/4341021-education/png/006-whistle.png"
-          alt="Help"
-          width={24}
-          height={24}
-          className="w-full h-full"
-        />
+        ℹ️
       </button>
     );
   }
@@ -34,16 +27,10 @@ export function PageHelpIcon({ title, description, tips }: PageHelpIconProps) {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="ml-2 inline-flex items-center justify-center w-6 h-6 hover:opacity-80 transition-opacity"
+        className="ml-2 inline-flex items-center justify-center w-6 h-6 hover:opacity-80 transition-opacity text-lg"
         aria-label="Page help"
       >
-        <Image
-          src="/flat-icons/4341021-education/png/006-whistle.png"
-          alt="Help"
-          width={24}
-          height={24}
-          className="w-full h-full"
-        />
+        ℹ️
       </button>
 
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">

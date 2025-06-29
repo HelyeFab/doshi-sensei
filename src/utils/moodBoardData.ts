@@ -1,5 +1,6 @@
 import { MoodBoard, MoodBoardsProgress, BoardProgress } from '@/types/moodBoard';
-import moodBoardsData from '@/data/moodBoards.json';
+// import moodBoardsData from '@/data/moodBoards.json'; // Removed - using KanjiManager now
+const moodBoardsData = {}; // Temporary empty object
 
 /**
  * Get all available mood boards

@@ -25,8 +25,8 @@ export class TTSManager {
   // ElevenLabs configuration
   private static elevenLabsBaseUrl = 'https://api.elevenlabs.io/v1';
   private static elevenLabsVoices = {
-    female: 'XB0fDUnXU5powFXDhCwa', // Charlotte - Japanese capable
-    male: 'pNInz6obpgDQGcFmaJgB'     // Adam - Japanese capable
+    female: 'RBnMinrYKeccY3vaUxlZ', // Japanese female voice
+    male: 'Mv8AjrYZCBkdsmDHNwcB'     // Japanese male voice
   };
 
   /**
@@ -170,14 +170,14 @@ export class TTSManager {
       this.stop();
       
       // Parse options
-      let voice: 'male' | 'female' = 'female';
+      let voice: 'male' | 'female' = 'male'; // Default to male voice
       let forceProvider: 'google' | 'elevenlabs' | undefined;
       let playbackSpeed = speed;
       
       if (typeof voiceOrOptions === 'string') {
         voice = voiceOrOptions;
       } else if (voiceOrOptions && typeof voiceOrOptions === 'object') {
-        voice = voiceOrOptions.voice || 'female';
+        voice = voiceOrOptions.voice || 'male'; // Default to male voice
         forceProvider = voiceOrOptions.provider;
         playbackSpeed = voiceOrOptions.speed || 1.0;
       }
@@ -264,7 +264,7 @@ export class TTSManager {
   /**
    * Generate audio using ElevenLabs API
    */
-  private static async generateElevenLabsAudio(text: string, voice: 'male' | 'female' = 'female'): Promise<Blob> {
+  private static async generateElevenLabsAudio(text: string, voice: 'male' | 'female' = 'male'): Promise<Blob> {
     const startTime = performance.now();
     const voiceId = this.elevenLabsVoices[voice];
     
@@ -314,7 +314,7 @@ export class TTSManager {
   /**
    * Generate audio using Google TTS API
    */
-  private static async generateGoogleAudio(text: string, voice: 'male' | 'female' = 'female'): Promise<Blob> {
+  private static async generateGoogleAudio(text: string, voice: 'male' | 'female' = 'male'): Promise<Blob> {
     const startTime = performance.now();
     const voiceName = voice === 'male' ? 'ja-JP-Neural2-C' : 'ja-JP-Neural2-B';
     

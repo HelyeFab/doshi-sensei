@@ -1,27 +1,25 @@
-import { KanjiItem } from '@/types/moodBoard';
-import moodBoardsData from '@/data/moodBoards.json';
+import { Kanji } from '@/types';
+import KanjiManager from './kanjiManager';
 
-// Extract all unique kanji from existing mood boards
-function extractKanjiFromMoodBoards(): KanjiItem[] {
-  const kanjiMap = new Map<string, KanjiItem>();
+// Extract all unique kanji from all JLPT levels
+async function extractAllKanji(): Promise<Kanji[]> {
+  const kanjiMap = new Map<string, Kanji>();
+  const levels: Array<'N5' | 'N4' | 'N3' | 'N2' | 'N1'> = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
-  Object.values(moodBoardsData).forEach((board: any) => {
-    if (board.kanji && Array.isArray(board.kanji)) {
-      board.kanji.forEach((kanji: any) => {
-        if (kanji.char && !kanjiMap.has(kanji.char)) {
-          kanjiMap.set(kanji.char, {
-            char: kanji.char,
-            meaning: kanji.meaning || '',
-            readings: kanji.readings || { on: [], kun: [] },
-            examples: kanji.examples || [],
-            difficulty: kanji.difficulty || 1,
-          });
+  for (const level of levels) {
+    try {
+      const levelKanji = await KanjiManager.loadKanjiByLevel(level);
+      levelKanji.forEach(kanji => {
+        if (!kanjiMap.has(kanji.kanji)) {
+          kanjiMap.set(kanji.kanji, kanji);
         }
       });
+    } catch (error) {
+      console.error(`Error loading kanji for ${level}:`, error);
     }
-  });
+  }
 
-  return Array.from(kanjiMap.values()).sort((a, b) => a.char.localeCompare(b.char));
+  return Array.from(kanjiMap.values()).sort((a, b) => a.kanji.localeCompare(b.kanji));
 }
 
 // Common N5 kanji for quick suggestions

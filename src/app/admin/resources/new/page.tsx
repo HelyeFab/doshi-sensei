@@ -7,8 +7,6 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { ResourceFormData, RESOURCE_CATEGORIES } from '@/types/resources';
 import { createResourcePost, generateSlug, extractExcerpt, calculateReadingTime } from '@/utils/resources';
 import { marked } from 'marked';
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function NewResourcePage() {
   const router = useRouter();
@@ -125,7 +123,19 @@ export default function NewResourcePage() {
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !user) return;
+    
+    console.log('File selected:', file);
+    console.log('User:', user);
+    
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+    
+    if (!user) {
+      alert('You must be logged in to upload images');
+      return;
+    }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -141,29 +151,62 @@ export default function NewResourcePage() {
 
     try {
       setUploadingImage(true);
+      console.log('Starting image upload...');
 
-      // Create a unique file name
-      const timestamp = Date.now();
-      const fileName = `resources/${user.uid}/${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      // Get user token for authorization
+      const token = await user.getIdToken();
+      
+      // Create form data
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
 
-      // Upload to Firebase Storage
-      const storageRef = ref(storage, fileName);
-      const snapshot = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(snapshot.ref);
+      // Upload through our API route to avoid CORS issues
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: uploadFormData
+      });
+
+      const data = await response.json();
+      console.log('Upload response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
 
       // Update form with the uploaded image URL
-      setFormData(prev => ({
-        ...prev,
-        imageUrl: downloadURL
-      }));
+      handleInputChange('imageUrl', data.url);
 
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    } catch (error) {
+      
+      // Show success message if using fallback
+      if (data.message) {
+        console.log(data.message);
+      }
+    } catch (error: any) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
+      
+      // More detailed error messages
+      let errorMessage = 'Failed to upload image. ';
+      
+      if (error.code === 'storage/unauthorized') {
+        errorMessage = 'You don\'t have permission to upload images. Please check your Firebase Storage rules.';
+      } else if (error.code === 'storage/quota-exceeded') {
+        errorMessage = 'Storage quota exceeded. Please contact support.';
+      } else if (error.code === 'storage/unauthenticated') {
+        errorMessage = 'You must be logged in to upload images.';
+      } else if (error.message?.includes('Firebase Storage is not initialized')) {
+        errorMessage = 'Storage service is not available. Please refresh the page and try again.';
+      } else {
+        errorMessage += error.message || 'Please try again.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setUploadingImage(false);
     }
@@ -362,12 +405,18 @@ export default function NewResourcePage() {
               onChange={handleImageUpload}
               className="hidden"
               id="image-upload"
+              disabled={uploadingImage}
             />
             <label
               htmlFor="image-upload"
               className={`inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer ${
                 uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
               }`}
+              onClick={(e) => {
+                if (uploadingImage) {
+                  e.preventDefault();
+                }
+              }}
             >
               {uploadingImage ? (
                 <>

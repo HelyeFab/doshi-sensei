@@ -150,7 +150,7 @@ export function TTSButton({
 
 // Specialized TTS buttons for different contexts
 
-interface VocabularyTTSButtonProps extends Omit<TTSButtonProps, 'options'> {
+interface VocabularyTTSButtonProps extends Omit<TTSButtonProps, 'options' | 'text'> {
   word: string;
   kana?: string;
   voice?: 'male' | 'female';
@@ -160,7 +160,7 @@ interface VocabularyTTSButtonProps extends Omit<TTSButtonProps, 'options'> {
 export function VocabularyTTSButton({
   word,
   kana,
-  voice = 'female',
+  voice = 'male',
   speed = 1.0,
   ...props
 }: VocabularyTTSButtonProps) {
@@ -174,7 +174,7 @@ export function VocabularyTTSButton({
   );
 }
 
-interface KanjiTTSButtonProps extends Omit<TTSButtonProps, 'options'> {
+interface KanjiTTSButtonProps extends Omit<TTSButtonProps, 'options' | 'text'> {
   kanji: string;
   reading?: string;
   readingType?: 'kun' | 'on';
@@ -186,7 +186,7 @@ export function KanjiTTSButton({
   kanji,
   reading,
   readingType = 'kun',
-  voice = 'female',
+  voice = 'male',
   speed = 1.0,
   ...props
 }: KanjiTTSButtonProps) {
@@ -212,7 +212,7 @@ interface GameTTSButtonProps extends Omit<TTSButtonProps, 'options'> {
 
 export function GameTTSButton({
   gameType,
-  voice = 'female',
+  voice = 'male',
   speed = 1.0,
   ...props
 }: GameTTSButtonProps) {

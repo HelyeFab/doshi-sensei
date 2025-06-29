@@ -16,6 +16,7 @@ import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
+import JMdictInitializer from "@/components/JMdictInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -198,6 +199,7 @@ export default function RootLayout({
                     <PWAWrapper>
                       <OnboardingWrapper>
                         <div className="min-h-screen bg-background text-foreground">
+                          <JMdictInitializer />
                           {children}
                           <BottomNavigation />
                           <PWAInstaller />

@@ -9,7 +9,7 @@ interface ElevenLabsSettings {
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, voice = 'female', provider = 'elevenlabs' } = await request.json();
+    const { text, voice = 'male', provider = 'elevenlabs' } = await request.json();
 
     if (!text) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
@@ -23,15 +23,15 @@ export async function POST(request: NextRequest) {
         try {
           console.log('🎤 Using ElevenLabs TTS...');
           
-          // ElevenLabs voice IDs for Japanese-capable voices
+          // ElevenLabs voice IDs - high-quality Japanese voices
           const voiceId = voice === 'female' 
-            ? 'XB0fDUnXU5powFXDhCwa'  // Charlotte
-            : 'pNInz6obpgDQGcFmaJgB'; // Adam
+            ? 'RBnMinrYKeccY3vaUxlZ'  // Japanese female voice
+            : 'Mv8AjrYZCBkdsmDHNwcB'; // Japanese male voice
           
           const settings: ElevenLabsSettings = {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0,
+            stability: 0.65,        // Slightly higher for clearer pronunciation
+            similarity_boost: 0.85, // Higher for better voice consistency
+            style: 0.3,            // Small amount for more natural speech
             use_speaker_boost: true,
           };
 

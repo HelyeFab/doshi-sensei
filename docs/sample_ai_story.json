@@ -1,0 +1,48 @@
+{
+  "id": "story001",
+  "title": "ひみつのもり",
+  "jlptLevel": "N5",
+  "theme": "Fantasy",
+  "description": "A beginner-friendly story about a child who finds a hidden forest.",
+  "pages": [
+    {
+      "pageNumber": 1,
+      "image": "https://example.com/images/page1.jpg",
+      "text": "ある日、<ruby>太郎<rt>たろう</rt></ruby>は<ruby>森<rt>もり</rt></ruby>の<ruby>中<rt>なか</rt></ruby>でふしぎな<ruby>光<rt>ひかり</rt></ruby>を<ruby>見<rt>み</rt></ruby>つけました。",
+      "translation": "One day, Tarou found a mysterious light in the forest."
+    },
+    {
+      "pageNumber": 2,
+      "image": "https://example.com/images/page2.jpg",
+      "text": "その<ruby>光<rt>ひかり</rt></ruby>を<ruby>追<rt>お</rt></ruby>いかけると、<ruby>秘密<rt>ひみつ</rt></ruby>の<ruby>森<rt>もり</rt></ruby>が<ruby>現<rt>あらわ</rt></ruby>れました。",
+      "translation": "When he followed the light, a secret forest appeared."
+    }
+  ],
+  "tags": [
+    "fantasy",
+    "beginner",
+    "nature"
+  ],
+  "quiz": [
+    {
+      "question": "「森」の<ruby>意味<rt>いみ</rt></ruby>は？",
+      "choices": [
+        "mountain",
+        "river",
+        "forest",
+        "light"
+      ],
+      "answer": "forest"
+    },
+    {
+      "question": "「秘密」はどれ？",
+      "choices": [
+        "もり",
+        "ひみつ",
+        "ひかり",
+        "たろう"
+      ],
+      "answer": "ひみつ"
+    }
+  ]
+}

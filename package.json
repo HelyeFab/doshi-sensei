@@ -25,6 +25,8 @@
     "dotenv": "^16.5.0",
     "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
+    "framer-motion": "^12.19.2",
+    "idb": "^8.0.3",
     "kuromoji": "^0.1.2",
     "marked": "^15.0.12",
     "next": "15.3.3",

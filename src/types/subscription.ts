@@ -3,6 +3,10 @@ export type UserType = 'guest' | 'free' | 'monthly' | 'yearly' | 'premium';
 export interface GuestUsage {
   drillsToday: number;
   lastDrillDate: string;
+  kanjiQuestToday: number;
+  lastKanjiQuestDate: string;
+  storiesToday: number;
+  lastStoryDate: string;
 }
 
 export interface UserSubscription {
@@ -22,6 +26,8 @@ export interface UserSubscription {
   limits: {
     maxLists: number; // -1 means unlimited
     maxDrillsPerDay: number; // -1 means unlimited
+    maxKanjiQuestPerDay: number; // -1 means unlimited
+    maxStoriesPerDay: number; // -1 means unlimited
     canSync: boolean;
     canSave: boolean;
   };
@@ -29,6 +35,10 @@ export interface UserSubscription {
     listsCount: number;
     drillsToday: number;
     lastDrillDate: string;
+    kanjiQuestToday?: number;
+    lastKanjiQuestDate?: string;
+    storiesToday?: number;
+    lastStoryDate?: string;
   };
   createdAt?: Date;
   updatedAt?: Date;
@@ -71,13 +81,19 @@ export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
   limits: {
     maxLists: 3,
     maxDrillsPerDay: 3,
+    maxKanjiQuestPerDay: 3,
+    maxStoriesPerDay: 1,
     canSync: false,
     canSave: true
   },
   currentUsage: {
     listsCount: 0,
     drillsToday: 0,
-    lastDrillDate: new Date().toISOString()
+    lastDrillDate: new Date().toISOString(),
+    kanjiQuestToday: 0,
+    lastKanjiQuestDate: new Date().toISOString(),
+    storiesToday: 0,
+    lastStoryDate: new Date().toISOString()
   }
 };
 
@@ -89,13 +105,19 @@ export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
   limits: {
     maxLists: -1, // unlimited
     maxDrillsPerDay: -1, // unlimited
+    maxKanjiQuestPerDay: -1, // unlimited
+    maxStoriesPerDay: -1, // unlimited
     canSync: true,
     canSave: true
   },
   currentUsage: {
     listsCount: 0,
     drillsToday: 0,
-    lastDrillDate: new Date().toISOString()
+    lastDrillDate: new Date().toISOString(),
+    kanjiQuestToday: 0,
+    lastKanjiQuestDate: new Date().toISOString(),
+    storiesToday: 0,
+    lastStoryDate: new Date().toISOString()
   }
 };
 
@@ -107,13 +129,19 @@ export const DEFAULT_YEARLY_SUBSCRIPTION: UserSubscription = {
   limits: {
     maxLists: -1, // unlimited
     maxDrillsPerDay: -1, // unlimited
+    maxKanjiQuestPerDay: -1, // unlimited
+    maxStoriesPerDay: -1, // unlimited
     canSync: true,
     canSave: true
   },
   currentUsage: {
     listsCount: 0,
     drillsToday: 0,
-    lastDrillDate: new Date().toISOString()
+    lastDrillDate: new Date().toISOString(),
+    kanjiQuestToday: 0,
+    lastKanjiQuestDate: new Date().toISOString(),
+    storiesToday: 0,
+    lastStoryDate: new Date().toISOString()
   }
 };
 
@@ -146,6 +174,8 @@ export function formatLimit(value: number): string {
 export const GUEST_LIMITS = {
   maxLists: 0,
   maxDrillsPerDay: 3,
+  maxKanjiQuestPerDay: 3,
+  maxStoriesPerDay: 1,
   canSync: false,
   canSave: false
 };
@@ -176,12 +206,14 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     interval: 'month',
     features: [
       'Unlimited drill questions',
+      'Unlimited Kanji Quest games',
       'Unlimited vocabulary searches',
       'All mood boards access',
       'Advanced progress tracking',
       'Priority support',
       'Offline mode',
-      'Custom study lists'
+      'Custom study lists',
+      'Cloud-synced Pokédex'
     ],
     stripePriceId: process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID || 'price_monthly',
     popular: true,
@@ -195,6 +227,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     interval: 'year',
     features: [
       'Unlimited drill questions',
+      'Unlimited Kanji Quest games',
       'Unlimited vocabulary searches',
       'All mood boards access',
       'Advanced progress tracking',

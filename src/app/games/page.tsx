@@ -8,6 +8,9 @@ import TTSManager from '@/utils/tts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import CompanionTrigger from '@/components/CompanionTrigger';
+import KanjiQuest from '@/components/games/KanjiQuest';
+import { getPokedexData } from '@/utils/kanjiUtils';
+import { pokemonManager } from '@/utils/pokemonManager';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -40,6 +43,7 @@ interface GameMode {
   title: string;
   description: string;
   icon: string;
+  iconImage?: string; // Optional image path
   color: string;
   comingSoon?: boolean;
 }
@@ -66,6 +70,14 @@ const FREE_USER_DAILY_LIMIT = 3;
 
 // Available game modes
 const GAME_MODES: GameMode[] = [
+  {
+    id: 'kanji-quest',
+    title: 'Kanji Quest',
+    description: 'Study kanji and battle to catch Pokémon for your Pokédex',
+    icon: '🎮', // Fallback emoji
+    iconImage: '/pokeball.png',
+    color: 'bg-red-500'
+  },
   {
     id: 'listening',
     title: 'Tap What You Hear',
@@ -108,7 +120,7 @@ const GAME_MODES: GameMode[] = [
 
 export default function GamesPage() {
   const { user } = useAuth();
-  const { userSubscription } = useSubscription();
+  const { userSubscription, userType } = useSubscription();
   const [currentGameMode, setCurrentGameMode] = useState<string | null>(null);
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
   const [selectedListIds, setSelectedListIds] = useState<string[]>([]);
@@ -146,16 +158,23 @@ export default function GamesPage() {
     correct: false,
     message: ''
   });
+  
+  // Kanji Quest specific state
+  const [kanjiQuestJlptLevel, setKanjiQuestJlptLevel] = useState<number>(5);
+  const [showKanjiQuestLevelSelect, setShowKanjiQuestLevelSelect] = useState(false);
+  const [completedKanjiIds, setCompletedKanjiIds] = useState<Set<string>>(new Set());
+  const [caughtPokemonIds, setCaughtPokemonIds] = useState<Set<number>>(new Set());
 
   const isPremium = userSubscription?.subscription?.status === 'active';
   const canPlayMore = isPremium || 
     (currentGameMode === 'assembly' ? assemblyStats.gamesToday < FREE_USER_DAILY_LIMIT : quizStats.questionsToday < FREE_USER_DAILY_LIMIT);
 
-  // Load quiz stats on mount
+  // Load quiz stats and Pokémon data on mount
   useEffect(() => {
     loadQuizStats();
+    loadCaughtPokemon();
     setLoading(false); // Set loading to false initially since we're showing game selection
-  }, []);
+  }, [user, userType]);
 
   // Load words when selected lists change
   useEffect(() => {
@@ -424,6 +443,8 @@ export default function GamesPage() {
       setShowListSelection(true);
       loadStudyLists();
       loadAssemblyStats();
+    } else if (gameMode.id === 'kanji-quest') {
+      setShowKanjiQuestLevelSelect(true);
     }
   };
 
@@ -476,6 +497,71 @@ export default function GamesPage() {
     setShowFeedback(false);
     setSelectedListIds([]);
     setSavedWords([]);
+    setShowKanjiQuestLevelSelect(false);
+  };
+
+  const loadCaughtPokemon = async () => {
+    try {
+      // First, migrate any existing localStorage data
+      await pokemonManager.migrateFromLocalStorage(user?.uid);
+      
+      // Then load the caught Pokémon
+      const isPremiumUser = userType === 'monthly' || userType === 'yearly';
+      const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
+      setCaughtPokemonIds(new Set(caughtPokemon));
+    } catch (error) {
+      console.error('Failed to load caught Pokémon:', error);
+    }
+  };
+
+  const handleKanjiQuestStart = (level: number) => {
+    setKanjiQuestJlptLevel(level);
+    setShowKanjiQuestLevelSelect(false);
+    setGameStarted(true);
+  };
+
+  const handlePokemonCaught = async (pokemonId: number, kanjiIds: string[] = []) => {
+    try {
+      // Determine if user is premium
+      const isPremiumUser = userType === 'monthly' || userType === 'yearly';
+      
+      // Save using the new Pokemon manager
+      await pokemonManager.saveCaughtPokemon(
+        pokemonId,
+        kanjiQuestJlptLevel,
+        kanjiIds,
+        user,
+        isPremiumUser
+      );
+      
+      // Update local state to trigger UI updates
+      setCaughtPokemonIds(prev => new Set([...prev, pokemonId]));
+      
+      console.log(`Pokémon ${pokemonId} caught and saved!`);
+    } catch (error) {
+      console.error('Failed to save caught Pokémon:', error);
+      // Fallback to localStorage if needed
+      const storageKey = user ? `pokedex_${user.uid}` : 'pokedex_guest';
+      const existingData = localStorage.getItem(storageKey);
+      const pokedexData = existingData ? JSON.parse(existingData) : { caught: [] };
+      
+      if (!pokedexData.caught.includes(pokemonId)) {
+        pokedexData.caught.push(pokemonId);
+        pokedexData.lastCaught = {
+          id: pokemonId,
+          date: new Date().toISOString()
+        };
+        localStorage.setItem(storageKey, JSON.stringify(pokedexData));
+      }
+    }
+  };
+
+  const handleKanjiCompleted = (kanjiIds: string[]) => {
+    setCompletedKanjiIds(prev => {
+      const newSet = new Set(prev);
+      kanjiIds.forEach(id => newSet.add(id));
+      return newSet;
+    });
   };
 
   const playWordAudio = async (word: string) => {
@@ -621,6 +707,7 @@ export default function GamesPage() {
       return shuffled;
     });
   };
+  
 
   if (loading) {
     return (
@@ -710,8 +797,16 @@ export default function GamesPage() {
                     }`}
                   >
                     <div className="flex items-start space-x-4">
-                      <div className={`w-12 h-12 rounded-lg ${gameMode.color} flex items-center justify-center text-2xl`}>
-                        {gameMode.icon}
+                      <div className={`w-12 h-12 rounded-lg ${gameMode.color} flex items-center justify-center text-2xl p-2`}>
+                        {gameMode.iconImage ? (
+                          <img 
+                            src={gameMode.iconImage} 
+                            alt={gameMode.title} 
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          gameMode.icon
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -880,7 +975,7 @@ export default function GamesPage() {
             </div>
           )}
 
-          {!showGameSelection && !gameStarted && (
+          {!showGameSelection && !gameStarted && currentGameMode === 'listening' && (
             <div className="text-center py-16">
               <div className="text-8xl mb-6">🎧</div>
               <h2 className="text-3xl font-bold text-foreground mb-4">
@@ -1087,6 +1182,103 @@ export default function GamesPage() {
                 </div>
               )}
             </div>
+          )}
+          
+          {/* Kanji Quest Level Selection */}
+          {!showGameSelection && currentGameMode === 'kanji-quest' && showKanjiQuestLevelSelect && (
+            <div className="space-y-6">
+              <div className="text-center py-8">
+                <button
+                  onClick={handleBackToGameSelection}
+                  className="mb-4 text-sm text-primary hover:text-primary/80 underline"
+                >
+                  ← Back to Games
+                </button>
+                <img 
+                  src="/pokeball.png" 
+                  alt="Pokéball" 
+                  className="w-24 h-24 mx-auto mb-6 animate-bounce"
+                />
+                <h2 className="text-3xl font-bold text-foreground mb-4">
+                  Kanji Quest - Wild Battle Mode
+                </h2>
+                <p className="text-muted-foreground mb-8 text-lg">
+                  Choose your trainer level to start your Pokémon journey!
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                {[5, 4, 3, 2, 1].map(level => {
+                  const pokedex = getPokedexData(user?.uid);
+                  const levelColors = {
+                    5: 'from-green-400 to-green-600',
+                    4: 'from-blue-400 to-blue-600',
+                    3: 'from-yellow-400 to-yellow-600',
+                    2: 'from-orange-400 to-orange-600',
+                    1: 'from-red-400 to-red-600'
+                  };
+                  const levelBadges = {
+                    5: '🌱',
+                    4: '💧',
+                    3: '⚡',
+                    2: '🔥',
+                    1: '🏆'
+                  };
+                  return (
+                    <button
+                      key={level}
+                      onClick={() => handleKanjiQuestStart(level)}
+                      className="relative group overflow-hidden rounded-2xl border-2 border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 hover:border-primary hover:shadow-xl transition-all transform hover:scale-105"
+                    >
+                      {/* Pokémon-style gradient background */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${levelColors[level as keyof typeof levelColors]} opacity-20 group-hover:opacity-30 transition-opacity`} />
+                      
+                      {/* Content */}
+                      <div className="relative p-6 text-center">
+                        {/* Badge */}
+                        <div className="text-4xl mb-3">{levelBadges[level as keyof typeof levelBadges]}</div>
+                        
+                        {/* Level */}
+                        <h3 className="text-3xl font-bold mb-2 bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
+                          JLPT N{level}
+                        </h3>
+                        
+                        {/* Difficulty */}
+                        <p className="text-sm font-semibold text-muted-foreground mb-3">
+                          {level === 5 ? 'Rookie Trainer' : 
+                           level === 4 ? 'Pokémon Trainer' : 
+                           level === 3 ? 'Gym Leader' : 
+                           level === 2 ? 'Elite Four' : 
+                           'Champion'}
+                        </p>
+                        
+                        {/* Pokédex count for this level */}
+                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                          <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
+                          <span>{pokedex.caught.length} caught</span>
+                        </div>
+                        
+                        {/* Hover effect pokéball */}
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <img src="/pokeball.png" alt="Pokéball" className="w-8 h-8 animate-spin-slow" />
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          
+          {/* Kanji Quest Game */}
+          {!showGameSelection && currentGameMode === 'kanji-quest' && gameStarted && (
+            <KanjiQuest
+              jlptLevel={kanjiQuestJlptLevel}
+              onBack={handleBackToGameSelection}
+              onPokemonCaught={handlePokemonCaught}
+              completedKanjiIds={completedKanjiIds}
+              onKanjiCompleted={handleKanjiCompleted}
+            />
           )}
         </div>
       </div>

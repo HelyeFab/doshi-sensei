@@ -206,6 +206,14 @@ export interface NavigationPreferences {
   useCustomNavigation: boolean;
 }
 
+export interface TTSSettings {
+  provider?: 'elevenlabs' | 'google' | 'auto';
+  voice?: 'default' | 'male' | 'female';
+  speed?: number;
+  stability?: number;
+  similarityBoost?: number;
+}
+
 export interface AppSettings {
   theme: ThemeMode;
   colorScheme: ColorScheme;
@@ -215,6 +223,7 @@ export interface AppSettings {
   showCompanion: boolean; // Toggle to show/hide virtual companion
   companionHistory: CompanionHistory;
   navigationPreferences?: NavigationPreferences; // Optional for backward compatibility
+  ttsSettings?: TTSSettings; // TTS configuration
 }
 
 // Filter Options

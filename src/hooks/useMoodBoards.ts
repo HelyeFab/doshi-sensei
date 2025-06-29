@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { MoodBoard } from '@/types/moodBoard';
-import moodBoardsData from '@/data/moodBoards.json';
+// import moodBoardsData from '@/data/moodBoards.json'; // Removed - using KanjiManager now
 import { logAdminAction } from '@/utils/adminLogs';
 
 interface UseMoodBoardsReturn {

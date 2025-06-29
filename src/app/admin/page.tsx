@@ -44,6 +44,18 @@ export default function AdminDashboard() {
       case 'articles':
         router.push('/admin/articles');
         break;
+      case 'create-blog':
+        router.push('/admin/resources/new');
+        break;
+      case 'manage-blogs':
+        router.push('/admin/resources');
+        break;
+      case 'create-story':
+        router.push('/admin/stories/new');
+        break;
+      case 'manage-stories':
+        router.push('/admin/stories');
+        break;
       case 'logs':
         // TODO: Implement logs page
         break;
@@ -73,7 +85,7 @@ export default function AdminDashboard() {
         {/* Quick actions */}
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <QuickAction
               title="Manage Users"
               description="Search users and manage premium accounts"
@@ -91,6 +103,30 @@ export default function AdminDashboard() {
               description="View article stats and management"
               icon="📋"
               onClick={() => handleQuickAction('articles')}
+            />
+            <QuickAction
+              title="Create Blog Post"
+              description="Add new blog post to resources"
+              icon="✍️"
+              onClick={() => handleQuickAction('create-blog')}
+            />
+            <QuickAction
+              title="Manage Blogs"
+              description="View and edit blog posts"
+              icon="📚"
+              onClick={() => handleQuickAction('manage-blogs')}
+            />
+            <QuickAction
+              title="Create Story"
+              description="Add new AI-generated story"
+              icon="📖"
+              onClick={() => handleQuickAction('create-story')}
+            />
+            <QuickAction
+              title="Manage Stories"
+              description="View and edit AI stories"
+              icon="📚"
+              onClick={() => handleQuickAction('manage-stories')}
             />
           </div>
         </div>

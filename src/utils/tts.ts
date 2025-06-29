@@ -19,8 +19,15 @@ export class TTSManager {
   private static googleApiKey: string | null = null;
   private static elevenLabsApiKey: string | null = null;
   private static isInitialized = false;
-  private static cache = TTSCache.getInstance();
+  private static _cache: TTSCache | null = null;
   private static currentAudio: HTMLAudioElement | null = null;
+  
+  private static get cache(): TTSCache {
+    if (!this._cache) {
+      this._cache = TTSCache.getInstance();
+    }
+    return this._cache;
+  }
   
   // ElevenLabs configuration
   private static elevenLabsBaseUrl = 'https://api.elevenlabs.io/v1';

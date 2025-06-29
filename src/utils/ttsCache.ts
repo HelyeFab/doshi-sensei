@@ -18,11 +18,14 @@ class TTSCacheManager {
   private currentCacheSize = 0;
 
   private constructor() {
-    // Load cache from localStorage if available
-    this.loadFromLocalStorage();
-    
-    // Clean up expired entries on initialization
-    this.cleanupExpiredEntries();
+    // Only initialize cache on client side
+    if (typeof window !== 'undefined') {
+      // Load cache from localStorage if available
+      this.loadFromLocalStorage();
+      
+      // Clean up expired entries on initialization
+      this.cleanupExpiredEntries();
+    }
   }
 
   static getInstance(): TTSCacheManager {
@@ -166,17 +169,20 @@ class TTSCacheManager {
   clearCache(): void {
     this.cache.clear();
     this.currentCacheSize = 0;
-    localStorage.removeItem('tts_cache_index');
     
-    // Clear individual cache entries from localStorage
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('tts_cache_')) {
-        keysToRemove.push(key);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('tts_cache_index');
+      
+      // Clear individual cache entries from localStorage
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('tts_cache_')) {
+          keysToRemove.push(key);
+        }
       }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
     }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
     
     console.log('[TTS Cache] Cache cleared');
   }
@@ -192,6 +198,8 @@ class TTSCacheManager {
 
   // Save cache index to localStorage
   private saveToLocalStorage(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       // Save index of cache keys
       const index = Array.from(this.cache.keys());
@@ -207,6 +215,8 @@ class TTSCacheManager {
 
   // Load cache from localStorage
   private loadFromLocalStorage(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       const indexStr = localStorage.getItem('tts_cache_index');
       if (!indexStr) return;

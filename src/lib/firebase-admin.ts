@@ -1,7 +1,13 @@
 import admin from 'firebase-admin';
 
-// Initialize Firebase Admin SDK for server-side operations
-if (!admin.apps.length) {
+// Lazy initialization of Firebase Admin SDK
+let isInitialized = false;
+
+function initializeAdmin() {
+  if (isInitialized || admin.apps.length > 0) {
+    return;
+  }
+
   try {
     // Use Application Default Credentials for Netlify deployment
     if (process.env.NETLIFY) {
@@ -42,6 +48,8 @@ if (!admin.apps.length) {
       });
       console.log('Firebase Admin SDK initialized with service account (local)');
     }
+    
+    isInitialized = true;
   } catch (error) {
     console.error('Firebase Admin SDK initialization error:', error);
     
@@ -51,11 +59,18 @@ if (!admin.apps.length) {
         projectId: process.env.FIREBASE_PROJECT_ID || "doshi-sensei",
       });
       console.log('Firebase Admin SDK initialized with fallback configuration');
+      isInitialized = true;
     } catch (fallbackError) {
       console.error('Firebase fallback initialization failed:', fallbackError);
-      throw new Error('Failed to initialize Firebase Admin SDK');
+      // Don't throw here - let individual functions handle the error
     }
   }
 }
 
-export default admin;
+// Export a proxy that initializes on first use
+export default new Proxy(admin, {
+  get(target, prop, receiver) {
+    initializeAdmin();
+    return Reflect.get(target, prop, receiver);
+  }
+});

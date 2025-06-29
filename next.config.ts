@@ -43,7 +43,7 @@ const config = withPWA({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  disable: true, // Temporarily disable PWA to fix SSR issues
   // Additional PWA options for static export
   buildExcludes: [/middleware-manifest\.json$/, /app-build-manifest\.json$/],
   cacheOnFrontEndNav: true,

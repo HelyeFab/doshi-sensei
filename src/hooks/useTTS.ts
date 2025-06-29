@@ -20,6 +20,10 @@ export interface TTSHookReturn {
   clearError: () => void;
   getCacheStats: () => Promise<any>;
   clearCache: () => Promise<void>;
+  // Convenience properties for backwards compatibility
+  isPlaying: boolean;
+  isCacheLoading: boolean;
+  speakSentence: (text: string, options?: TTSOptions) => Promise<void>;
 }
 
 export interface TTSOptions {
@@ -146,7 +150,11 @@ export function useTTS(): TTSHookReturn {
     stop,
     clearError,
     getCacheStats,
-    clearCache
+    clearCache,
+    // Convenience properties for backwards compatibility
+    isPlaying: state.isPlaying,
+    isCacheLoading: state.isLoading,
+    speakSentence: speak // Alias for speak
   };
 }
 

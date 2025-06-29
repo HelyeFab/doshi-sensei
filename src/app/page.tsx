@@ -9,6 +9,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import CompanionTrigger from '@/components/CompanionTrigger';
+import { getPokedexData } from '@/utils/kanjiUtils';
+import PokedexModal from '@/components/games/PokedexModal';
 
 // Structured Data for SEO
 const structuredData = {
@@ -49,6 +51,8 @@ interface UserStats {
   kanjiStudySessions: number;
   kanjiAccuracy: number;
   totalKanjiLearned: number;
+  pokemonCaught: number;
+  storiesRead: number;
 }
 
 export default function Home() {
@@ -62,9 +66,20 @@ export default function Home() {
     totalDaysUsed: 0,
     kanjiStudySessions: 0,
     kanjiAccuracy: 0,
-    totalKanjiLearned: 0
+    totalKanjiLearned: 0,
+    pokemonCaught: 0,
+    storiesRead: 0
   });
   const [loading, setLoading] = useState(true);
+  const [showPokedexModal, setShowPokedexModal] = useState(false);
+
+  // Load Pokédex count separately to ensure it's always available
+  useEffect(() => {
+    const pokedexData = getPokedexData(user?.uid);
+    if (pokedexData.caught.length > 0) {
+      setStats(prev => ({ ...prev, pokemonCaught: pokedexData.caught.length }));
+    }
+  }, [user]);
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {
@@ -116,18 +131,29 @@ export default function Home() {
   const loadStats = async () => {
     try {
       const { default: StatsManager } = await import('@/utils/stats');
+      const { storyManager } = await import('@/utils/storyManager');
       const userStats = await StatsManager.getUserStats();
-      setStats({
+      
+      // Get Pokémon count
+      const pokedexData = getPokedexData(user?.uid);
+      
+      // Get story stats
+      const storyStats = user ? await storyManager.getUserStoryStats(user.uid) : { totalStoriesRead: 0 };
+      
+      setStats(prevStats => ({
         drillsCompleted: userStats.drillsCompleted,
         accuracy: Math.round(userStats.accuracy),
         streak: userStats.currentStreak,
         totalDaysUsed: userStats.totalDaysUsed,
         kanjiStudySessions: userStats.kanjiStudySessions || 0,
         kanjiAccuracy: Math.round(userStats.kanjiAccuracy || 0),
-        totalKanjiLearned: userStats.totalKanjiLearned || 0
-      });
+        totalKanjiLearned: userStats.totalKanjiLearned || 0,
+        pokemonCaught: pokedexData.caught.length || prevStats.pokemonCaught, // Keep previous count if new data is 0
+        storiesRead: storyStats.totalStoriesRead || 0
+      }));
     } catch (err) {
       console.error('Error loading stats:', err);
+      // Don't reset stats on error - keep previous values
     } finally {
       setLoading(false);
     }
@@ -170,6 +196,24 @@ export default function Home() {
 
         {/* Virtual Companion Button positioned within this section */}
         <CompanionTrigger />
+        
+        {/* Pokédex Icon - positioned on the right */}
+        {stats.pokemonCaught > 0 && (
+          <button
+            onClick={() => setShowPokedexModal(true)}
+            className="absolute top-4 right-4 p-3 bg-white backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10"
+            aria-label="Open Pokédex"
+          >
+            <img 
+              src="/flat-icons/188915-pokemon-go/png/smartphone.png" 
+              alt="Pokédex" 
+              className="w-8 h-8 md:w-10 md:h-10"
+            />
+            <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              {stats.pokemonCaught}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Main Content */}
@@ -285,15 +329,6 @@ export default function Home() {
                   description="Customize app"
                 />
 
-                {/* Reading Card */}
-                <FeatureCard
-                  title="Reading"
-                  icon="📰"
-                  href="/reading"
-                  color="orange"
-                  description="Practice reading"
-                />
-
                 {/* News Card */}
                 <FeatureCard
                   title="News"
@@ -319,6 +354,15 @@ export default function Home() {
                   href="/resources"
                   color="purple"
                   description="Articles & tips"
+                />
+
+                {/* Stories Card */}
+                <FeatureCard
+                  title="AI Stories"
+                  icon="📚"
+                  href="/stories"
+                  color="purple"
+                  description="Interactive tales"
                 />
               </div>
             </div>
@@ -399,15 +443,6 @@ export default function Home() {
                 description="Customize app"
               />
 
-              {/* Reading Card (existing future feature) */}
-              <FeatureCard
-                title="Reading"
-                icon="📰"
-                href="/reading"
-                color="orange"
-                description="Practice reading"
-              />
-
               {/* News Card */}
               <FeatureCard
                 title="News"
@@ -433,6 +468,15 @@ export default function Home() {
                 href="/resources"
                 color="purple"
                 description="Articles & tips"
+              />
+
+              {/* Stories Card */}
+              <FeatureCard
+                title="AI Stories"
+                icon="📚"
+                href="/stories"
+                color="purple"
+                description="Interactive tales"
               />
             </div>
           </div>
@@ -483,6 +527,31 @@ export default function Home() {
                     <div className="text-xs text-muted-foreground">Learned</div>
                   </div>
                 </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
+                    <span className="text-sm">🎯</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">{loading ? '...' : stats.pokemonCaught}</div>
+                    <div className="text-xs text-muted-foreground">Pokémon</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="hidden md:block h-8 w-px bg-border" />
+
+              {/* Stories Read */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                    <span className="text-sm">📖</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">{loading ? '...' : stats.storiesRead}</div>
+                    <div className="text-xs text-muted-foreground">Stories</div>
+                  </div>
+                </div>
               </div>
 
               {/* Divider */}
@@ -529,6 +598,13 @@ export default function Home() {
           </div>
         </main>
       </div>
+      
+      {/* Pokédex Modal */}
+      <PokedexModal
+        isOpen={showPokedexModal}
+        onClose={() => setShowPokedexModal(false)}
+        userId={user?.uid}
+      />
     </>
   );
 }
@@ -595,7 +671,15 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
 
         <div className="relative flex flex-col items-center text-center space-y-2 md:space-y-3">
           <div className="text-2xl md:text-3xl drop-shadow-sm">
-            {icon}
+            {icon.startsWith('/') ? (
+              <img 
+                src={icon} 
+                alt={title} 
+                className="w-8 h-8 md:w-10 md:h-10 object-contain"
+              />
+            ) : (
+              icon
+            )}
           </div>
           <div>
             <h3 className="text-sm md:text-base font-bold">

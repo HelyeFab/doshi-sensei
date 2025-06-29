@@ -58,18 +58,18 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
     description: 'Learn verb conjugations step by step'
   },
   {
-    id: 'reading',
-    label: 'Reading',
-    icon: '📰',
-    href: '/reading',
-    description: 'Practice reading Japanese articles'
-  },
-  {
     id: 'news',
     label: 'News',
     icon: '🗞️',
     href: '/news',
     description: 'Read Japanese news articles'
+  },
+  {
+    id: 'stories',
+    label: 'Stories',
+    icon: '📚',
+    href: '/stories',
+    description: 'Interactive AI-generated stories'
   },
   {
     id: 'games',

@@ -49,7 +49,7 @@ export default function BottomNavigation() {
     if (item.href === '/kanji-moods' && pathname.startsWith('/kanji-moods')) return true;
     if (item.href === '/resources' && pathname.startsWith('/resources')) return true;
     if (item.href === '/games' && pathname.startsWith('/games')) return true;
-    if (item.href === '/reading' && pathname.startsWith('/reading')) return true;
+    if (item.href === '/stories' && pathname.startsWith('/stories')) return true;
     if (item.href === '/news' && pathname.startsWith('/news')) return true;
     
     return false;

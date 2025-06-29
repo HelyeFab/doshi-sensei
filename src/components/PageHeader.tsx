@@ -4,10 +4,11 @@ import Link from 'next/link';
 
 interface PageHeaderProps {
   title: string;
+  subtitle?: string;
   showBackButton?: boolean;
 }
 
-export function PageHeader({ title, showBackButton = true }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, showBackButton = true }: PageHeaderProps) {
   return (
     <header className="mb-8">
       <div className="flex items-center mb-4">
@@ -23,9 +24,14 @@ export function PageHeader({ title, showBackButton = true }: PageHeaderProps) {
           </Link>
         )}
 
-        <h1 className="text-3xl font-bold text-foreground">
-          {title}
-        </h1>
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-muted-foreground mt-1">{subtitle}</p>
+          )}
+        </div>
       </div>
     </header>
   );

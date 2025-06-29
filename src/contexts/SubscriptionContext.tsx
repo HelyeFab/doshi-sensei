@@ -21,13 +21,16 @@ interface SubscriptionContextType {
   guestUsage: GuestUsage | null;
   createCheckoutSession: (priceId: string) => Promise<void>;
   cancelSubscription: () => Promise<void>;
-  isFeatureAvailable: (feature: 'lists' | 'drills' | 'sync' | 'save') => boolean;
+  isFeatureAvailable: (feature: 'lists' | 'drills' | 'sync' | 'save' | 'kanjiquest') => boolean;
   canCreateList: () => boolean;
   canDoDrill: () => boolean;
+  canPlayKanjiQuest: () => boolean;
   canSaveProgress: () => boolean;
   incrementListCount: () => Promise<void>;
   incrementDrillCount: () => Promise<void>;
   incrementGuestDrillCount: () => void;
+  incrementKanjiQuestCount: () => Promise<void>;
+  incrementGuestKanjiQuestCount: () => void;
   refreshSubscription: () => Promise<void>;
   showLoginPrompt: (reason: string, feature?: string) => void;
   showUpgradePrompt: (reason: string, feature?: string) => void;
@@ -61,6 +64,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     const FREE_LIMITS = {
       maxLists: 3,
       maxDrillsPerDay: 3,
+      maxKanjiQuestPerDay: 3,
       canSync: false,
       canSave: true,
     };
@@ -133,6 +137,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     const FREE_LIMITS = {
       maxLists: 3,
       maxDrillsPerDay: 3,
+      maxKanjiQuestPerDay: 3,
       canSync: false,
       canSave: true,
     };
@@ -221,6 +226,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         const initialUsage: GuestUsage = {
           drillsToday: 0,
           lastDrillDate: today,
+          kanjiQuestToday: 0,
+          lastKanjiQuestDate: today,
+          storiesToday: 0,
+          lastStoryDate: today,
         };
         setGuestUsage(initialUsage);
         localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify(initialUsage));
@@ -232,19 +241,28 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const userType: UserType = !user ? 'guest' :
     (userSubscription?.subscription.plan === 'monthly' || userSubscription?.subscription.plan === 'yearly') ? 'premium' : 'free';
 
-  const isFeatureAvailable = (feature: 'lists' | 'drills' | 'sync' | 'save'): boolean => {
-    if (!user && feature !== 'drills') {
-      // Guests can only access limited drills
+  const isFeatureAvailable = (feature: 'lists' | 'drills' | 'sync' | 'save' | 'kanjiquest'): boolean => {
+    if (!user && feature !== 'drills' && feature !== 'kanjiquest') {
+      // Guests can only access limited drills and kanji quest
       return false;
     }
 
     if (!user && feature === 'drills') {
-      // Check guest drill limits (hardcoded)
+      // Check guest drill limits
       const GUEST_MAX_DRILLS = 3;
       if (!guestUsage) return false;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
       return !isToday || guestUsage.drillsToday < GUEST_MAX_DRILLS;
+    }
+
+    if (!user && feature === 'kanjiquest') {
+      // Check guest kanji quest limits
+      const GUEST_MAX_KANJI_QUEST = 3;
+      if (!guestUsage) return false;
+      const today = new Date().toISOString().split('T')[0];
+      const isToday = guestUsage.lastKanjiQuestDate === today;
+      return !isToday || guestUsage.kanjiQuestToday < GUEST_MAX_KANJI_QUEST;
     }
 
     if (!userSubscription) return false;
@@ -257,12 +275,20 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       case 'lists':
         return userSubscription.limits.maxLists === -1 ||
                userSubscription.currentUsage.listsCount < userSubscription.limits.maxLists;
-      case 'drills':
+      case 'drills': {
         const today = new Date().toISOString().split('T')[0];
         const isToday = userSubscription.currentUsage.lastDrillDate === today;
         return userSubscription.limits.maxDrillsPerDay === -1 ||
                !isToday ||
                userSubscription.currentUsage.drillsToday < userSubscription.limits.maxDrillsPerDay;
+      }
+      case 'kanjiquest': {
+        const today = new Date().toISOString().split('T')[0];
+        const isToday = userSubscription.currentUsage.lastKanjiQuestDate === today;
+        return userSubscription.limits.maxKanjiQuestPerDay === -1 ||
+               !isToday ||
+               userSubscription.currentUsage.kanjiQuestToday < userSubscription.limits.maxKanjiQuestPerDay;
+      }
       default:
         return false;
     }
@@ -277,8 +303,27 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     const isToday = guestUsage.lastDrillDate === today;
 
     const updatedUsage: GuestUsage = {
+      ...guestUsage,
       drillsToday: isToday ? guestUsage.drillsToday + 1 : 1,
       lastDrillDate: today,
+    };
+
+    setGuestUsage(updatedUsage);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify(updatedUsage));
+    }
+  };
+
+  const incrementGuestKanjiQuestCount = () => {
+    if (!guestUsage) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const isToday = guestUsage.lastKanjiQuestDate === today;
+
+    const updatedUsage: GuestUsage = {
+      ...guestUsage,
+      kanjiQuestToday: isToday ? guestUsage.kanjiQuestToday + 1 : 1,
+      lastKanjiQuestDate: today,
     };
 
     setGuestUsage(updatedUsage);
@@ -301,6 +346,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
   const canCreateList = (): boolean => isFeatureAvailable('lists');
   const canDoDrill = (): boolean => isFeatureAvailable('drills');
+  const canPlayKanjiQuest = (): boolean => isFeatureAvailable('kanjiquest');
 
   const incrementListCount = async () => {
     if (!user) return;
@@ -370,6 +416,46 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  const incrementKanjiQuestCount = async () => {
+    if (!user) {
+      // Handle guest users
+      incrementGuestKanjiQuestCount();
+      return;
+    }
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const today = new Date().toISOString().split('T')[0];
+    
+    try {
+      await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentData = userDoc.data();
+        
+        if (!currentData?.subscription) {
+          throw new Error('No subscription data found');
+        }
+        
+        const currentUsage = currentData.subscription.currentUsage || {};
+        const isToday = currentUsage.lastKanjiQuestDate === today;
+        const currentCount = isToday ? (currentUsage.kanjiQuestToday || 0) : 0;
+        
+        const updatedSubscription = {
+          ...currentData.subscription,
+          currentUsage: {
+            ...currentUsage,
+            kanjiQuestToday: currentCount + 1,
+            lastKanjiQuestDate: today,
+          },
+        };
+        
+        transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+      });
+    } catch (error) {
+      console.error('Failed to increment kanji quest count:', error);
+      throw error;
+    }
+  };
+
   const refreshSubscription = async () => {
     if (!user) return;
 
@@ -392,10 +478,13 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     isFeatureAvailable,
     canCreateList,
     canDoDrill,
+    canPlayKanjiQuest,
     canSaveProgress,
     incrementListCount,
     incrementDrillCount,
     incrementGuestDrillCount,
+    incrementKanjiQuestCount,
+    incrementGuestKanjiQuestCount,
     refreshSubscription,
     showLoginPrompt,
     showUpgradePrompt,

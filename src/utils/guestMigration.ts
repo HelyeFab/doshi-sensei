@@ -102,13 +102,21 @@ export class GuestMigrationManager {
       if (!currentUsage) {
         newUsage = {
           drillsToday: 1,
-          lastDrillDate: today
+          lastDrillDate: today,
+          kanjiQuestToday: 0,
+          lastKanjiQuestDate: today,
+          storiesToday: 0,
+          lastStoryDate: today
         };
       } else {
         const isToday = currentUsage.lastDrillDate === today;
         newUsage = {
           drillsToday: isToday ? currentUsage.drillsToday + 1 : 1,
-          lastDrillDate: today
+          lastDrillDate: today,
+          kanjiQuestToday: currentUsage.kanjiQuestToday || 0,
+          lastKanjiQuestDate: currentUsage.lastKanjiQuestDate || today,
+          storiesToday: currentUsage.storiesToday || 0,
+          lastStoryDate: currentUsage.lastStoryDate || today
         };
       }
 

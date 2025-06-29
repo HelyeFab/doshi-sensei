@@ -619,7 +619,7 @@ export default function FavouritesPage() {
                     {/* Actions */}
                     <div className="flex gap-2 pt-2 border-t border-border">
                       <a
-                        href={`/reading?id=${article.articleId}&source=${article.articleSource}`}
+                        href={`/news?id=${article.articleId}&source=${article.articleSource}`}
                         className="flex-1 px-3 py-2 bg-primary text-primary-foreground rounded text-sm text-center hover:bg-primary/90 transition-colors"
                       >
                         📖 Read Article

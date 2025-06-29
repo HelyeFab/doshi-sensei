@@ -55,6 +55,5 @@ public/workbox-*.js
 
 # Work in progress files
 sensei-feedback/
-netlify/functions/utils/
 src/utils/rate-limiter.ts
 

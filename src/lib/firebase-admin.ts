@@ -1,23 +1,25 @@
-import admin from 'firebase-admin';
+// Firebase Admin SDK - Disabled for Netlify deployment
+// This file exports a stub when running in Netlify to prevent initialization errors
 
-// Lazy initialization of Firebase Admin SDK
-let isInitialized = false;
+const isNetlify = process.env.NETLIFY === 'true';
 
-function initializeAdmin() {
-  if (isInitialized || admin.apps.length > 0) {
-    return;
-  }
+let adminExport: any;
 
-  try {
-    // Use Application Default Credentials for Netlify deployment
-    if (process.env.NETLIFY) {
-      // In Netlify, use minimal config with project ID only
-      admin.initializeApp({
-        projectId: process.env.FIREBASE_PROJECT_ID || "doshi-sensei",
-      });
-      console.log('Firebase Admin SDK initialized with default credentials (Netlify)');
-    } else {
-      // Local development - try individual environment variables
+if (isNetlify) {
+  // Export a stub for Netlify - admin features won't work but the app won't crash
+  adminExport = {
+    apps: [],
+    auth: () => ({ verifyIdToken: () => Promise.reject(new Error('Firebase Admin disabled in Netlify')) }),
+    firestore: () => ({ collection: () => ({ doc: () => ({}) }) }),
+  };
+  
+  console.log('Firebase Admin SDK: Disabled for Netlify deployment');
+} else {
+  // Normal Firebase Admin for local development
+  const admin = require('firebase-admin');
+  
+  if (!admin.apps.length) {
+    try {
       const serviceAccount = {
         type: "service_account",
         project_id: process.env.FIREBASE_PROJECT_ID || "doshi-sensei",
@@ -32,45 +34,24 @@ function initializeAdmin() {
         universe_domain: "googleapis.com"
       };
 
-      // Fallback to JSON string if individual vars not available
       if (!serviceAccount.private_key && process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
         const credentials = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
         Object.assign(serviceAccount, credentials);
       }
 
-      if (!serviceAccount.private_key || !serviceAccount.client_email) {
-        throw new Error('Firebase service account credentials are not properly configured for local development');
+      if (serviceAccount.private_key && serviceAccount.client_email) {
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+          databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+        });
+        console.log('Firebase Admin SDK initialized with service account (local)');
       }
-
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-        databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-      });
-      console.log('Firebase Admin SDK initialized with service account (local)');
-    }
-    
-    isInitialized = true;
-  } catch (error) {
-    console.error('Firebase Admin SDK initialization error:', error);
-    
-    // Fallback: Initialize without credentials (will use default project settings)
-    try {
-      admin.initializeApp({
-        projectId: process.env.FIREBASE_PROJECT_ID || "doshi-sensei",
-      });
-      console.log('Firebase Admin SDK initialized with fallback configuration');
-      isInitialized = true;
-    } catch (fallbackError) {
-      console.error('Firebase fallback initialization failed:', fallbackError);
-      // Don't throw here - let individual functions handle the error
+    } catch (error) {
+      console.error('Firebase Admin SDK initialization error:', error);
     }
   }
+  
+  adminExport = admin;
 }
 
-// Export a proxy that initializes on first use
-export default new Proxy(admin, {
-  get(target, prop, receiver) {
-    initializeAdmin();
-    return Reflect.get(target, prop, receiver);
-  }
-});
+export default adminExport;

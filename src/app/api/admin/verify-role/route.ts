@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import admin from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 
 // Server-side admin role verification using Firebase custom claims
 export async function POST(request: NextRequest) {
@@ -12,6 +12,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Get Firebase Admin instance
+    const admin = await getFirebaseAdmin();
 
     // Verify the Firebase token
     const decodedToken = await admin.auth().verifyIdToken(token);
@@ -46,6 +49,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Get Firebase Admin instance
+    const admin = await getFirebaseAdmin();
+    
     // Verify the requesting user is admin
     const decodedToken = await admin.auth().verifyIdToken(token);
     const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';

@@ -57,13 +57,10 @@ public/workbox-*.js
 sensei-feedback/
 src/utils/rate-limiter.ts
 
-# Large icon files that shouldn't be served
-/public/flat-icons/
+# Large icon source folder (backup)
 /flat-icons/
 flat-icons/
 
-# But allow the specific icons we need
-!/public/flat-icons/8376275-wild-animals-flat-1-of-1/
-!/public/flat-icons/8376275-wild-animals-flat-1-of-1/png/
-!/public/flat-icons/8376275-wild-animals-flat-1-of-1/png/007-giraffe.png
+# Allow the public flat-icons that are actually used
+# These are the minimal set of icons needed for the app
 

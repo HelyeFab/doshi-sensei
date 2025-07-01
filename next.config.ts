@@ -79,6 +79,9 @@ const config = withPWA({
   disable: process.env.NODE_ENV === 'development', // Disable in dev for faster builds
   mode: 'production',
   
+  // Custom worker to handle SKIP_WAITING messages
+  customWorkerDir: 'worker',
+  
   // Scope and SW configuration
   scope: '/',
   sw: 'sw.js',

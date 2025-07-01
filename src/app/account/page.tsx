@@ -5,8 +5,6 @@ import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
-import StatsManager, { UserStats } from '@/utils/stats';
-import CompanionTrigger from '@/components/CompanionTrigger';
 import AuthErrorModal from '@/components/AuthErrorModal';
 import { ADMIN_EMAIL } from '@/types/admin';
 import Link from 'next/link';
@@ -22,59 +20,7 @@ export default function AccountPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [statsLoading, setStatsLoading] = useState(true);
 
-  // Load user stats when logged in
-  useEffect(() => {
-    if (user) {
-      // Initialize StatsManager with user context and cloud sync capability
-      const canSync = userSubscription?.subscription?.status === 'active';
-      StatsManager.setUser(user, canSync);
-
-      loadUserStats();
-    } else {
-      // Clear user context when logged out
-      StatsManager.setUser(null, false);
-    }
-  }, [user, userSubscription]);
-
-  // Reload stats when page becomes visible/focused
-  useEffect(() => {
-    if (!user) return;
-
-    const handleFocus = () => {
-      loadUserStats();
-    };
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        loadUserStats();
-      }
-    };
-
-    // Listen for when user returns to this tab/page
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Cleanup event listeners
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [user]);
-
-  const loadUserStats = async () => {
-    try {
-      setStatsLoading(true);
-      const stats = await StatsManager.getUserStats();
-      setUserStats(stats);
-    } catch (error) {
-      console.error('Error loading stats:', error);
-    } finally {
-      setStatsLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,7 +121,6 @@ export default function AccountPage() {
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
           {/* Virtual Companion Button positioned within this section */}
-          <CompanionTrigger />
         </div>
 
         {/* Main Content */}
@@ -295,84 +240,6 @@ export default function AccountPage() {
               </div>
             )}
 
-            {/* Stats Dashboard */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
-                <span className="text-2xl mr-2">📊</span>
-                Your Progress
-              </h3>
-
-              {statsLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full"></div>
-                </div>
-              ) : userStats ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {userStats.totalDaysUsed}
-                    </div>
-                    <div className="text-sm text-blue-600 dark:text-blue-400">
-                      Days Used
-                    </div>
-                  </div>
-
-                  <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {userStats.drillsCompleted}
-                    </div>
-                    <div className="text-sm text-green-600 dark:text-green-400">
-                      Drills Completed
-                    </div>
-                  </div>
-
-                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                      {Math.round(userStats.accuracy)}%
-                    </div>
-                    <div className="text-sm text-purple-600 dark:text-purple-400">
-                      Accuracy
-                    </div>
-                  </div>
-
-                  <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                      {userStats.currentStreak}
-                    </div>
-                    <div className="text-sm text-orange-600 dark:text-orange-400">
-                      Streak
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <div className="text-4xl mb-2">🎯</div>
-                  <p>Complete your first drill to see stats!</p>
-                </div>
-              )}
-
-              {userStats && userStats.drillsCompleted > 0 && (
-                <div className="mt-6 pt-4 border-t border-border">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Days Active:</span>
-                      <span className="font-medium text-foreground">{userStats.totalDaysUsed}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Best Streak:</span>
-                      <span className="font-medium text-foreground">{userStats.longestStreak} days</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Last Active:</span>
-                      <span className="font-medium text-foreground">
-                        {new Date(userStats.lastActiveDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Subscription Management */}
             {subLoading ? (
               <div className="bg-card border border-border rounded-lg p-6 flex items-center justify-center">
@@ -416,7 +283,6 @@ export default function AccountPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       {/* Main Content */}

@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useSettings } from '@/contexts/SettingsContext';
-import CompanionTrigger from '@/components/CompanionTrigger';
 import { getPokedexData } from '@/utils/kanjiUtils';
 import PokedexModal from '@/components/games/PokedexModal';
 
@@ -55,6 +54,38 @@ interface UserStats {
   storiesRead: number;
 }
 
+// Feature cards data
+const FEATURE_CARDS = [
+  { title: 'Practice', icon: '📚', href: '/practice', description: 'Learn conjugations' },
+  { title: 'Drill', icon: '⚡', href: '/drill', description: 'Quick practice' },
+  { title: 'Vocabulary', icon: '📖', href: '/vocabulary', description: 'Browse words' },
+  { title: 'Kanji', icon: '漢', href: '/kanji-browser', description: 'Study kanji' },
+  { title: 'Mood Boards', icon: '🗺️', href: '/kanji-moods', description: 'Learn by theme' },
+  { title: 'Saved Items', icon: '⭐', href: '/favourites', description: 'Your collection' },
+  { title: 'Account', icon: '👤', href: '/account', description: 'Profile & stats' },
+  { title: 'Settings', icon: '⚙️', href: '/settings', description: 'Customize app' },
+  { title: 'News', icon: '🗞️', href: '/news', description: 'Japanese articles' },
+  { title: 'Games', icon: '🎮', href: '/games', description: 'Listening quiz' },
+  { title: 'Resources', icon: '✨🎌✨', href: '/resources', description: 'Articles & tips' },
+  { title: 'AI Stories', icon: '📖', href: '/stories', description: 'Interactive tales' }
+];
+
+// Predefined color patterns for optimal visual distribution
+const MOBILE_COLOR_PATTERN: CardColor[] = [
+  'blue', 'teal',
+  'green', 'purple',
+  'indigo', 'orange',
+  'pink', 'blue',
+  'purple', 'green',
+  'teal', 'indigo'
+];
+
+const DESKTOP_COLOR_PATTERN: CardColor[] = [
+  'blue', 'orange', 'green', 'purple',
+  'pink', 'teal', 'indigo', 'orange',
+  'purple', 'green', 'blue', 'pink'
+];
+
 export default function Home() {
   const { user } = useAuth();
   const { userSubscription } = useSubscription();
@@ -72,6 +103,10 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(true);
   const [showPokedexModal, setShowPokedexModal] = useState(false);
+  
+  // Use predefined color patterns for better visual distribution
+  const mobileColors = MOBILE_COLOR_PATTERN;
+  const desktopColors = DESKTOP_COLOR_PATTERN;
 
   // Load Pokédex count separately to ensure it's always available
   useEffect(() => {
@@ -203,7 +238,6 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
         
         {/* Pokédex Icon - positioned on the right */}
         {stats.pokemonCaught > 0 && (
@@ -265,232 +299,42 @@ export default function Home() {
             {/* Mobile: 2x2 Grid without scroll container */}
             <div className="md:hidden">
               <div className="grid grid-cols-2 gap-3">
-                {/* Practice Card */}
-                <FeatureCard
-                  title="Practice"
-                  icon="📚"
-                  href="/practice"
-                  color="blue"
-                  description="Learn conjugations"
-                />
-
-                {/* Drill Card */}
-                <FeatureCard
-                  title="Drill"
-                  icon="⚡"
-                  href="/drill"
-                  color="orange"
-                  description="Quick practice"
-                />
-
-                {/* Vocabulary Card */}
-                <FeatureCard
-                  title="Vocabulary"
-                  icon="📖"
-                  href="/vocabulary"
-                  color="green"
-                  description="Browse words"
-                />
-
-                {/* Kanji Card */}
-                <FeatureCard
-                  title="Kanji"
-                  icon="漢"
-                  href="/kanji-browser"
-                  color="purple"
-                  description="Study kanji"
-                />
-
-                {/* Kanji Mood Boards Card */}
-                <FeatureCard
-                  title="Mood Boards"
-                  icon="🗺️"
-                  href="/kanji-moods"
-                  color="green"
-                  description="Learn by theme"
-                />
-
-                {/* Saved Items Card */}
-                <FeatureCard
-                  title="Saved Items"
-                  icon="⭐"
-                  href="/favourites"
-                  color="blue"
-                  description="Your collection"
-                />
-
-                {/* Account Card */}
-                <FeatureCard
-                  title="Account"
-                  icon="👤"
-                  href="/account"
-                  color="gray"
-                  description="Profile & stats"
-                />
-
-                {/* Settings Card */}
-                <FeatureCard
-                  title="Settings"
-                  icon="⚙️"
-                  href="/settings"
-                  color="gray"
-                  description="Customize app"
-                />
-
-                {/* News Card */}
-                <FeatureCard
-                  title="News"
-                  icon="🗞️"
-                  href="/news"
-                  color="purple"
-                  description="Japanese articles"
-                />
-
-                {/* Games Card */}
-                <FeatureCard
-                  title="Games"
-                  icon="🎮"
-                  href="/games"
-                  color="green"
-                  description="Listening quiz"
-                />
-
-                {/* Resources Card */}
-                <FeatureCard
-                  title="Resources"
-                  icon="✨🎌✨"
-                  href="/resources"
-                  color="purple"
-                  description="Articles & tips"
-                />
-
-                {/* Stories Card */}
-                <FeatureCard
-                  title="AI Stories"
-                  icon="📚"
-                  href="/stories"
-                  color="purple"
-                  description="Interactive tales"
-                />
+                {FEATURE_CARDS.map((card, index) => (
+                  <FeatureCard
+                    key={card.href}
+                    title={card.title}
+                    icon={card.icon}
+                    href={card.href}
+                    color={mobileColors[index]}
+                    description={card.description}
+                  />
+                ))}
               </div>
             </div>
 
             {/* Desktop: Grid Layout (no scroll needed) */}
             <div className="hidden md:grid md:grid-cols-4 md:gap-6">
-              {/* First Row */}
-              {/* Practice Card */}
-              <FeatureCard
-                title="Practice"
-                icon="📚"
-                href="/practice"
-                color="blue"
-                description="Learn conjugations"
-              />
-
-              {/* Drill Card */}
-              <FeatureCard
-                title="Drill"
-                icon="⚡"
-                href="/drill"
-                color="orange"
-                description="Quick practice"
-              />
-
-              {/* Vocabulary Card */}
-              <FeatureCard
-                title="Vocabulary"
-                icon="📖"
-                href="/vocabulary"
-                color="green"
-                description="Browse words"
-              />
-
-              {/* Kanji Card */}
-              <FeatureCard
-                title="Kanji"
-                icon="漢"
-                href="/kanji-browser"
-                color="purple"
-                description="Study kanji"
-              />
-
-              {/* Second Row */}
-              {/* Kanji Mood Boards Card */}
-              <FeatureCard
-                title="Mood Boards"
-                icon="🗺️"
-                href="/kanji-moods"
-                color="green"
-                description="Learn by theme"
-              />
-
-              {/* Saved Items Card */}
-              <FeatureCard
-                title="Saved Items"
-                icon="⭐"
-                href="/favourites"
-                color="blue"
-                description="Your collection"
-              />
-
-              {/* Account Card */}
-              <FeatureCard
-                title="Account"
-                icon="👤"
-                href="/account"
-                color="gray"
-                description="Profile & stats"
-              />
-
-              {/* Settings Card */}
-              <FeatureCard
-                title="Settings"
-                icon="⚙️"
-                href="/settings"
-                color="gray"
-                description="Customize app"
-              />
-
-              {/* News Card */}
-              <FeatureCard
-                title="News"
-                icon="🗞️"
-                href="/news"
-                color="purple"
-                description="Japanese articles"
-              />
-
-              {/* Games Card */}
-              <FeatureCard
-                title="Games"
-                icon="🎮"
-                href="/games"
-                color="green"
-                description="Listening quiz"
-              />
-
-              {/* Resources Card */}
-              <FeatureCard
-                title="Resources"
-                icon="✨🎌✨"
-                href="/resources"
-                color="purple"
-                description="Articles & tips"
-              />
-
-              {/* Stories Card */}
-              <FeatureCard
-                title="AI Stories"
-                icon="📚"
-                href="/stories"
-                color="purple"
-                description="Interactive tales"
-              />
+              {FEATURE_CARDS.map((card, index) => (
+                <FeatureCard
+                  key={card.href}
+                  title={card.title}
+                  icon={card.icon}
+                  href={card.href}
+                  color={desktopColors[index]}
+                  description={card.description}
+                />
+              ))}
             </div>
           </div>
 
           {/* Minimal Stats Bar */}
-          <div className="bg-card/50 backdrop-blur rounded-lg p-4 md:p-5 mb-8 relative before:absolute before:inset-0 before:rounded-lg before:p-[1px] before:bg-gradient-to-r before:from-primary/50 before:to-accent/50 before:content-[''] before:-z-10 after:absolute after:inset-0 after:rounded-lg after:p-[3px] after:bg-gradient-to-r after:from-primary/20 after:to-accent/20 after:content-[''] after:-z-20">
+          <div 
+            className="bg-indigo-100/50 dark:bg-indigo-900/20 backdrop-blur-md rounded-lg p-4 md:p-5 mb-8 transition-all duration-300"
+            style={{
+              border: '2px solid white',
+              boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)'
+            }}
+          >
             <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">
               {/* Streak Badge */}
               <div className="flex items-center gap-2">
@@ -520,7 +364,7 @@ export default function Home() {
               {/* Sessions */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
-                  <span className="text-base md:text-sm">🍙</span>
+                  <span className="text-base md:text-sm text-white">漢</span>
                 </div>
                 <div>
                   <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.kanjiStudySessions}</div>
@@ -541,8 +385,12 @@ export default function Home() {
               
               {/* Pokemon */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
-                  <span className="text-base md:text-sm">🎯</span>
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center p-1">
+                  <img 
+                    src="/pokeball.png" 
+                    alt="Pokéball" 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div>
                   <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.pokemonCaught}</div>
@@ -592,7 +440,13 @@ export default function Home() {
                       fill="none"
                       strokeDasharray={`${loading ? 0 : (Math.max(stats.accuracy, stats.kanjiAccuracy) / 100) * 100} 100`}
                       strokeLinecap="round"
-                      className="text-green-600 dark:text-green-400 transition-all duration-500"
+                      className={`transition-all duration-500 ${
+                        loading ? 'text-gray-400' :
+                        Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'text-green-600 dark:text-green-400' :
+                        Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
+                        Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'text-orange-600 dark:text-orange-400' :
+                        'text-red-600 dark:text-red-400'
+                      }`}
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -601,8 +455,19 @@ export default function Home() {
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Avg Accuracy</div>
-                  <div className="text-sm font-semibold text-green-600 dark:text-green-400">
-                    {loading ? '...' : 'Good'}
+                  <div className={`text-sm font-semibold ${
+                    loading ? 'text-muted-foreground' :
+                    Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'text-green-600 dark:text-green-400' :
+                    Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
+                    Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'text-orange-600 dark:text-orange-400' :
+                    'text-red-600 dark:text-red-400'
+                  }`}>
+                    {loading ? '...' : 
+                     Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'Excellent' :
+                     Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'Good' :
+                     Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'Needs practice' :
+                     'Keep trying'
+                    }
                   </div>
                 </div>
               </div>
@@ -621,49 +486,127 @@ export default function Home() {
   );
 }
 
+// Expanded color palette for better variety
+const CARD_COLORS = {
+  blue: {
+    bg: 'bg-blue-100/60 hover:bg-blue-200/70 dark:bg-blue-900/30 dark:hover:bg-blue-800/40',
+    border: 'border-blue-300/60 dark:border-blue-600/60',
+    text: 'text-blue-900 dark:text-blue-100',
+    shadow: 'hover:shadow-blue-200/25 dark:hover:shadow-blue-900/25',
+    inset: 'rgb(59, 130, 246)'
+  },
+  green: {
+    bg: 'bg-emerald-100/60 hover:bg-emerald-200/70 dark:bg-emerald-900/30 dark:hover:bg-emerald-800/40',
+    border: 'border-emerald-300/60 dark:border-emerald-600/60',
+    text: 'text-emerald-900 dark:text-emerald-100',
+    shadow: 'hover:shadow-emerald-200/25 dark:hover:shadow-emerald-900/25',
+    inset: 'rgb(16, 185, 129)'
+  },
+  purple: {
+    bg: 'bg-violet-100/60 hover:bg-violet-200/70 dark:bg-violet-900/30 dark:hover:bg-violet-800/40',
+    border: 'border-violet-300/60 dark:border-violet-600/60',
+    text: 'text-violet-900 dark:text-violet-100',
+    shadow: 'hover:shadow-violet-200/25 dark:hover:shadow-violet-900/25',
+    inset: 'rgb(139, 92, 246)'
+  },
+  pink: {
+    bg: 'bg-pink-100/60 hover:bg-pink-200/70 dark:bg-pink-900/30 dark:hover:bg-pink-800/40',
+    border: 'border-pink-300/60 dark:border-pink-600/60',
+    text: 'text-pink-900 dark:text-pink-100',
+    shadow: 'hover:shadow-pink-200/25 dark:hover:shadow-pink-900/25',
+    inset: 'rgb(236, 72, 153)'
+  },
+  orange: {
+    bg: 'bg-orange-100/60 hover:bg-orange-200/70 dark:bg-orange-900/30 dark:hover:bg-orange-800/40',
+    border: 'border-orange-300/60 dark:border-orange-600/60',
+    text: 'text-orange-900 dark:text-orange-100',
+    shadow: 'hover:shadow-orange-200/25 dark:hover:shadow-orange-900/25',
+    inset: 'rgb(249, 115, 22)'
+  },
+  teal: {
+    bg: 'bg-teal-100/60 hover:bg-teal-200/70 dark:bg-teal-900/30 dark:hover:bg-teal-800/40',
+    border: 'border-teal-300/60 dark:border-teal-600/60',
+    text: 'text-teal-900 dark:text-teal-100',
+    shadow: 'hover:shadow-teal-200/25 dark:hover:shadow-teal-900/25',
+    inset: 'rgb(20, 184, 166)'
+  },
+  indigo: {
+    bg: 'bg-indigo-100/60 hover:bg-indigo-200/70 dark:bg-indigo-900/30 dark:hover:bg-indigo-800/40',
+    border: 'border-indigo-300/60 dark:border-indigo-600/60',
+    text: 'text-indigo-900 dark:text-indigo-100',
+    shadow: 'hover:shadow-indigo-200/25 dark:hover:shadow-indigo-900/25',
+    inset: 'rgb(99, 102, 241)'
+  }
+} as const;
+
+type CardColor = keyof typeof CARD_COLORS;
+
+// Function to assign colors ensuring no adjacent cards have the same color
+function assignCardColors(totalCards: number, columns: number): CardColor[] {
+  const colorKeys = Object.keys(CARD_COLORS) as CardColor[];
+  const colors: CardColor[] = [];
+  
+  // More sophisticated coloring that uses more colors
+  for (let i = 0; i < totalCards; i++) {
+    const row = Math.floor(i / columns);
+    const col = i % columns;
+    
+    // Find colors of adjacent cards
+    const adjacentColors: Set<CardColor> = new Set();
+    
+    // Check left neighbor
+    if (col > 0 && colors[i - 1]) {
+      adjacentColors.add(colors[i - 1]);
+    }
+    
+    // Check top neighbor
+    if (row > 0 && colors[i - columns]) {
+      adjacentColors.add(colors[i - columns]);
+    }
+    
+    // Check right neighbor (for better distribution)
+    if (col < columns - 1 && colors[i + 1]) {
+      adjacentColors.add(colors[i + 1]);
+    }
+    
+    // Check diagonal neighbors to avoid patterns
+    if (row > 0 && col > 0 && colors[i - columns - 1]) {
+      adjacentColors.add(colors[i - columns - 1]);
+    }
+    if (row > 0 && col < columns - 1 && colors[i - columns + 1]) {
+      adjacentColors.add(colors[i - columns + 1]);
+    }
+    
+    // Try to use colors in a rotating pattern for better distribution
+    const startIndex = (row + col) % colorKeys.length;
+    let availableColor: CardColor | undefined;
+    
+    // Look for an available color starting from the rotated position
+    for (let j = 0; j < colorKeys.length; j++) {
+      const colorIndex = (startIndex + j) % colorKeys.length;
+      const color = colorKeys[colorIndex];
+      if (!adjacentColors.has(color)) {
+        availableColor = color;
+        break;
+      }
+    }
+    
+    colors.push(availableColor || colorKeys[0]);
+  }
+  
+  return colors;
+}
+
 interface FeatureCardProps {
   title: string;
   icon: string;
   href: string;
-  color: 'blue' | 'green' | 'purple' | 'gray' | 'orange';
+  color: CardColor;
   description: string;
 }
 
 function FeatureCard({ title, icon, href, color, description }: FeatureCardProps) {
-  const colorClasses = {
-    blue: {
-      bg: 'bg-blue-100/60 hover:bg-blue-200/70 dark:bg-blue-900/30 dark:hover:bg-blue-800/40',
-      border: 'border-blue-300/60 dark:border-blue-600/60',
-      text: 'text-blue-900 dark:text-blue-100',
-      shadow: 'hover:shadow-blue-200/25 dark:hover:shadow-blue-900/25'
-    },
-    green: {
-      bg: 'bg-emerald-100/60 hover:bg-emerald-200/70 dark:bg-emerald-900/30 dark:hover:bg-emerald-800/40',
-      border: 'border-emerald-300/60 dark:border-emerald-600/60',
-      text: 'text-emerald-900 dark:text-emerald-100',
-      shadow: 'hover:shadow-emerald-200/25 dark:hover:shadow-emerald-900/25'
-    },
-    purple: {
-      bg: 'bg-violet-100/60 hover:bg-violet-200/70 dark:bg-violet-900/30 dark:hover:bg-violet-800/40',
-      border: 'border-violet-300/60 dark:border-violet-600/60',
-      text: 'text-violet-900 dark:text-violet-100',
-      shadow: 'hover:shadow-violet-200/25 dark:hover:shadow-violet-900/25'
-    },
-    gray: {
-      bg: 'bg-slate-100/60 hover:bg-slate-200/70 dark:bg-slate-800/30 dark:hover:bg-slate-700/40',
-      border: 'border-slate-300/60 dark:border-slate-600/60',
-      text: 'text-slate-900 dark:text-slate-100',
-      shadow: 'hover:shadow-slate-200/25 dark:hover:shadow-slate-800/25'
-    },
-    orange: {
-      bg: 'bg-orange-100/60 hover:bg-orange-200/70 dark:bg-orange-900/30 dark:hover:bg-orange-800/40',
-      border: 'border-orange-300/60 dark:border-orange-600/60',
-      text: 'text-orange-900 dark:text-orange-100',
-      shadow: 'hover:shadow-orange-200/25 dark:hover:shadow-orange-900/25'
-    }
-  };
-
-  const colors = colorClasses[color];
+  const colors = CARD_COLORS[color];
 
   return (
     <Link href={href}>
@@ -671,11 +614,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
         className={`group relative rounded-2xl p-4 md:p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${colors.bg} ${colors.text} ${colors.shadow}`}
         style={{
           border: '2px solid white',
-          boxShadow: `inset 0 0 0 1px ${color === 'blue' ? 'rgb(59, 130, 246)' :
-                                         color === 'green' ? 'rgb(16, 185, 129)' :
-                                         color === 'purple' ? 'rgb(139, 92, 246)' :
-                                         color === 'gray' ? 'rgb(100, 116, 139)' :
-                                         'rgb(249, 115, 22)'}, 0 4px 12px rgba(0,0,0,0.1)`
+          boxShadow: `inset 0 0 0 1px ${colors.inset}, 0 4px 12px rgba(0,0,0,0.1)`
         }}
       >
         {/* Frosted glass overlay effect */}

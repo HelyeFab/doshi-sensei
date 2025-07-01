@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { ADMIN_EMAIL, AdminContextType, AdminSection } from '@/types/admin';
 import { logAdminAction } from '@/utils/adminLogs';
+import { safeNavigator } from '@/utils/browserCheck';
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
@@ -34,7 +35,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           action: 'admin_login',
           details: {
             loginTime: new Date().toISOString(),
-            userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
+            userAgent: safeNavigator?.userAgent || 'unknown',
           },
         }).then(() => {
           setHasLoggedLogin(true);

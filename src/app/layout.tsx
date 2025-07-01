@@ -12,6 +12,7 @@ import { ToastContainer } from "@/components/ui/Toast";
 import { EnvProvider } from "@/components/EnvProvider";
 import BottomNavigation from "@/components/BottomNavigation";
 import PWAInstaller from "@/components/PWAInstaller";
+import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
@@ -208,6 +209,7 @@ export default function RootLayout({
                             {children}
                             <BottomNavigation />
                             <PWAInstaller />
+                            <PWAUpdateNotification />
                             <FloatingDonateButton />
                             <CompanionTrigger />
                             <ToastContainer />

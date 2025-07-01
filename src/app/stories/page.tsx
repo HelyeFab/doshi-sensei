@@ -11,7 +11,6 @@ import { storyOfflineManager } from '@/utils/storyOfflineManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import Link from 'next/link';
-import CompanionTrigger from '@/components/CompanionTrigger';
 
 export default function StoriesPage() {
   const router = useRouter();
@@ -121,7 +120,6 @@ export default function StoriesPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
         
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       <div className="container mx-auto px-4 pb-20">

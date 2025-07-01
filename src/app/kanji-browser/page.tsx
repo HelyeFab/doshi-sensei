@@ -9,7 +9,6 @@ import KanjiManager from '@/utils/kanjiManager';
 import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
 import KanjiModal from '@/components/kanji/KanjiModal';
-import CompanionTrigger from '@/components/CompanionTrigger';
 import KanjiStudyModal from '@/components/kanji-moods/KanjiStudyModal';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -308,7 +307,6 @@ export default function KanjiBrowserPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       {/* Main Content */}

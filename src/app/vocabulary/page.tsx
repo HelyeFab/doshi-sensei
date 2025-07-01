@@ -8,7 +8,6 @@ import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
-import CompanionTrigger from '@/components/CompanionTrigger';
 import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
 
 export default function VocabularyPage() {
@@ -131,7 +130,6 @@ export default function VocabularyPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       {/* Main Content */}

@@ -12,7 +12,6 @@ import { storyOfflineManager } from '@/utils/storyOfflineManager';
 import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord } from '@/types';
 import { lookupWord } from '@/utils/dictionaryLookup';
-import CompanionTrigger from '@/components/CompanionTrigger';
 
 interface StoryReaderProps {
   story: Story;
@@ -484,7 +483,6 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
         </motion.div>
       </AnimatePresence>
 
-      <CompanionTrigger />
     </div>
   );
 }

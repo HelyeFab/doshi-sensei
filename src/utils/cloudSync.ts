@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { User } from 'firebase/auth';
+import { safeNavigator, runInBrowser } from './browserCheck';
 
 export interface SyncResult {
   success: boolean;
@@ -27,7 +28,7 @@ export interface SyncStatus {
 
 export class CloudSync {
   private static syncStatus: SyncStatus = {
-    isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
+    isOnline: safeNavigator?.onLine ?? true,
     isSyncing: false,
     hasChanges: false
   };
@@ -55,7 +56,7 @@ export class CloudSync {
   ): Promise<SyncResult> {
     try {
       // If offline and queue enabled, add to queue
-      if (typeof navigator !== 'undefined' && !navigator.onLine && useQueue) {
+      if (safeNavigator && !safeNavigator.onLine && useQueue) {
         const { syncQueue } = await import('./syncQueue');
         const operationId = syncQueue.addOperation({
           type: 'upload',
@@ -351,21 +352,19 @@ export class CloudSync {
    * Network status monitoring
    */
   static initNetworkMonitoring(): void {
-    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
-      return;
-    }
-    
-    const updateOnlineStatus = () => {
-      this.setSyncStatus({ isOnline: navigator.onLine });
-      
-      // Try to process queue when going online
-      if (navigator.onLine) {
-        this.processOfflineQueue();
-      }
-    };
+    runInBrowser(() => {
+      const updateOnlineStatus = () => {
+        this.setSyncStatus({ isOnline: safeNavigator?.onLine ?? true });
+        
+        // Try to process queue when going online
+        if (safeNavigator?.onLine) {
+          this.processOfflineQueue();
+        }
+      };
 
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
+    });
   }
 
   /**

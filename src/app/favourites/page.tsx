@@ -9,7 +9,6 @@ import { BookmarkManager, BookmarkedArticle } from '@/utils/bookmarkManager';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
 import Link from 'next/link';
-import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -269,7 +268,6 @@ export default function FavouritesPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
         
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       <div className="container mx-auto px-4 pb-20">

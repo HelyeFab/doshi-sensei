@@ -1,5 +1,6 @@
 import { User } from 'firebase/auth';
 import CloudSync from './cloudSync';
+import { safeNavigator } from './browserCheck';
 
 export interface UserStats {
   drillsCompleted: number;
@@ -518,8 +519,8 @@ export class StatsManager {
     }
 
     try {
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
+      if (safeNavigator && 'serviceWorker' in safeNavigator) {
+        const registrations = await safeNavigator.serviceWorker.getRegistrations();
 
         for (const registration of registrations) {
           if (registration.active) {

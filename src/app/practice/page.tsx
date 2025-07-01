@@ -12,7 +12,6 @@ import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
 import TTSManager from '@/utils/tts';
 import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
-import CompanionTrigger from '@/components/CompanionTrigger';
 import KanaChart from '@/components/kana/KanaChart';
 import KanaStudyModal from '@/components/kana/KanaStudyModal';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -223,7 +222,6 @@ export default function PracticePage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       {/* Main Content */}

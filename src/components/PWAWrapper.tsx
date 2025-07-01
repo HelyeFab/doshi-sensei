@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import SplashScreen from './SplashScreen';
+import { safeNavigator, runInBrowser } from '@/utils/browserCheck';
 
 interface PWAWrapperProps {
   children: React.ReactNode;
@@ -10,17 +11,26 @@ interface PWAWrapperProps {
 export default function PWAWrapper({ children }: PWAWrapperProps) {
   const [showSplashScreen, setShowSplashScreen] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     // Check if this is a PWA launch
     const isPWALaunch = () => {
+      if (!runInBrowser(() => true)) return false;
+      
       // Check URL params for PWA source
       const urlParams = new URLSearchParams(window.location.search);
       const isPWASource = urlParams.get('source') === 'pwa';
 
       // Check if running in standalone mode (PWA)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                          (window.navigator as any).standalone ||
+                          (safeNavigator as any)?.standalone ||
                           document.referrer.includes('android-app://');
 
       // Check session storage to see if we've already shown splash
@@ -33,12 +43,12 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
     const initializeApp = async () => {
       try {
         // Clear any stale caches that might cause hanging
-        if ('serviceWorker' in navigator) {
-          const registrations = await navigator.serviceWorker.getRegistrations();
+        if (safeNavigator && 'serviceWorker' in safeNavigator) {
+          const registrations = await safeNavigator.serviceWorker.getRegistrations();
           
           // Wait for service worker to be ready
           if (registrations.length > 0) {
-            await navigator.serviceWorker.ready;
+            await safeNavigator.serviceWorker.ready;
           }
           
           // Check for stale cache issues
@@ -103,7 +113,7 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [isMounted]);
 
   const handleSplashComplete = () => {
     setShowSplashScreen(false);

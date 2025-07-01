@@ -1,4 +1,6 @@
 // Sync Queue Manager for offline support and error recovery
+import { safeNavigator, runInBrowser } from './browserCheck';
+
 export interface SyncOperation {
   id: string;
   type: 'upload' | 'download' | 'delete';
@@ -55,7 +57,7 @@ class SyncQueueManager {
     this.notifyListeners();
     
     // Auto-start processing if online
-    if (typeof navigator !== 'undefined' && navigator.onLine && !this.isProcessing) {
+    if (safeNavigator?.onLine && !this.isProcessing) {
       this.processQueue();
     }
 
@@ -84,7 +86,7 @@ class SyncQueueManager {
   private async doProcessQueue(): Promise<void> {
     const errors: string[] = [];
 
-    while (this.queue.length > 0 && (typeof navigator === 'undefined' || navigator.onLine)) {
+    while (this.queue.length > 0 && safeNavigator?.onLine !== false) {
       const operation = this.queue[0];
 
       try {
@@ -237,13 +239,15 @@ class SyncQueueManager {
     }
 
     // Start processing if online
-    if (typeof navigator === 'undefined' || navigator.onLine) {
+    if (safeNavigator?.onLine !== false) {
       this.processQueue();
     }
 
     // Listen for online events
-    window.addEventListener('online', () => {
-      this.processQueue();
+    runInBrowser(() => {
+      window.addEventListener('online', () => {
+        this.processQueue();
+      });
     });
   }
 

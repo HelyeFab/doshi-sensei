@@ -5,7 +5,6 @@ import { PageHeader } from '@/components/PageHeader';
 import { NewsArticle } from '@/types/news';
 import { getWatanocArticles, triggerArticleScraping, getArticleStats } from '@/utils/watanocArticles';
 import { ArticleReader } from '@/components/reading/ArticleReader';
-import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Loading skeleton component
 function ArticleCardSkeleton() {
@@ -368,7 +367,6 @@ export default function NewsPage() {
       <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        <CompanionTrigger />
       </div>
 
       {/* Main Content */}

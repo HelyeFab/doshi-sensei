@@ -7,7 +7,6 @@ import { getAllProgress } from '@/utils/moodBoardProgress';
 import { PageHeader } from '@/components/PageHeader';
 import MoodBoardCard from '@/components/kanji-moods/MoodBoardCard';
 import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
-import CompanionTrigger from '@/components/CompanionTrigger';
 
 export default function KanjiMoodsPage() {
   const router = useRouter();
@@ -44,7 +43,6 @@ export default function KanjiMoodsPage() {
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
           
           {/* Virtual Companion Button positioned within this section */}
-          <CompanionTrigger />
         </div>
 
         <div className="container mx-auto px-4 pb-20">
@@ -78,7 +76,6 @@ export default function KanjiMoodsPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
         
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       <div className="container mx-auto px-4 pb-24 md:pb-8">

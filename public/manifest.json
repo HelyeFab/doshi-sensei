@@ -9,10 +9,53 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
+  "dir": "ltr",
   "categories": ["education", "language", "learning"],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "prefer_related_applications": false,
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
+  "shortcuts": [
+    {
+      "name": "Practice Drills",
+      "short_name": "Drills",
+      "description": "Start practicing verb conjugations",
+      "url": "/drills?source=pwa",
+      "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Study Lists",
+      "short_name": "Study",
+      "description": "Review your study lists",
+      "url": "/study-lists?source=pwa",
+      "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Dictionary",
+      "short_name": "Dictionary",
+      "description": "Look up Japanese words",
+      "url": "/dictionary?source=pwa",
+      "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Doshi Sensei home screen"
+    },
+    {
+      "src": "/screenshots/mobile-drills.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Practice drills on mobile"
+    }
+  ],
+  "related_applications": [],
   "icons": [
     {
       "src": "/doshi.png",

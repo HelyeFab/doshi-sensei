@@ -16,7 +16,6 @@ import KanjiListManager from '@/utils/kanjiListManager';
 import StatsManager from '@/utils/stats';
 import flashcardManager, { FlashcardQuestion, FlashcardSessionConfig } from '@/utils/flashcards';
 import FlashcardCard from '@/components/flashcards/FlashcardCard';
-import CompanionTrigger from '@/components/CompanionTrigger';
 
 // Structured Data for Drill Page
 const drillStructuredData = {
@@ -923,7 +922,6 @@ export default function DrillPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       {/* Main Content */}

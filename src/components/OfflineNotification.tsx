@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { safeNavigator, runInBrowser } from '@/utils/browserCheck';
 
 export default function OfflineNotification() {
   const [isOnline, setIsOnline] = useState(true);
@@ -9,7 +10,7 @@ export default function OfflineNotification() {
 
   useEffect(() => {
     const updateOnlineStatus = () => {
-      const online = navigator.onLine;
+      const online = safeNavigator?.onLine ?? true;
       setIsOnline(online);
       
       if (!online) {

@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { safeNavigator, runInBrowser } from '@/utils/browserCheck';
+import { pwaAnalytics } from '@/utils/pwaAnalytics';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -21,8 +23,8 @@ export default function PWAInstaller() {
   useEffect(() => {
     // Check if app is already installed
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isInStandaloneMode = (window.navigator as any).standalone;
+    const isIOS = /iPad|iPhone|iPod/.test(safeNavigator?.userAgent || '');
+    const isInStandaloneMode = (safeNavigator as any)?.standalone;
 
     if (isStandalone || (isIOS && isInStandaloneMode)) {
       setIsInstalled(true);
@@ -33,6 +35,7 @@ export default function PWAInstaller() {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstallButton(true);
+      pwaAnalytics.trackEvent('install_prompt_shown');
     };
 
     // Listen for app installed event
@@ -59,6 +62,9 @@ export default function PWAInstaller() {
 
     if (outcome === 'accepted') {
       setShowInstallButton(false);
+      pwaAnalytics.trackEvent('install_accepted');
+    } else {
+      pwaAnalytics.trackEvent('install_dismissed');
     }
 
     setDeferredPrompt(null);
@@ -66,14 +72,16 @@ export default function PWAInstaller() {
 
   // Register service worker
   useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-        })
-        .catch((registrationError) => {
-        });
-    }
+    runInBrowser(() => {
+      if (safeNavigator && 'serviceWorker' in safeNavigator && process.env.NODE_ENV === 'production') {
+        safeNavigator.serviceWorker
+          .register('/sw.js')
+          .then((registration) => {
+          })
+          .catch((registrationError) => {
+          });
+      }
+    });
   }, []);
 
   if (isInstalled || !showInstallButton) {

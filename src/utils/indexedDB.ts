@@ -11,6 +11,7 @@ import {
   DrillSession,
   JLPTLevel
 } from '@/types';
+import { safeNavigator, runInBrowser } from './browserCheck';
 
 // Database configuration
 const DB_CONFIG: DatabaseConfig = {
@@ -726,8 +727,8 @@ export async function getStorageUsage(): Promise<{
     usage: {}
   };
 
-  if ('storage' in navigator && 'estimate' in navigator.storage) {
-    result.estimate = await navigator.storage.estimate();
+  if (safeNavigator && 'storage' in safeNavigator && 'estimate' in safeNavigator.storage) {
+    result.estimate = await safeNavigator.storage.estimate();
   }
 
   // Get usage per store

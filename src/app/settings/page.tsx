@@ -12,7 +12,6 @@ import EnhancedStorageManager from '@/utils/storage';
 import WordListManager from '@/utils/wordLists';
 import useCloudSync from '@/hooks/useCloudSync';
 import { ThemeSelector } from '@/components/ThemeSelector';
-import CompanionTrigger from '@/components/CompanionTrigger';
 import { AVAILABLE_NAV_ITEMS, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 
 export default function SettingsPage() {
@@ -312,7 +311,6 @@ export default function SettingsPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        <CompanionTrigger />
       </div>
 
       {/* Main Content */}

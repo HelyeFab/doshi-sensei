@@ -20,7 +20,7 @@ export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPro
       await signInWithGoogle();
       onClose();
     } catch (error) {
-      console.error('Login failed:', error);
+      // Login failed
     }
   };
 
@@ -35,20 +35,6 @@ export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPro
           <p className="text-muted-foreground mb-6 text-sm">
             {message}
           </p>
-
-          {feature && (
-            <div className="bg-muted/50 rounded-lg p-3 mb-6">
-              <div className="text-sm text-muted-foreground">
-                <strong>What you'll get:</strong>
-              </div>
-              <div className="text-sm text-foreground mt-1">
-                • Save your progress across devices
-                • Create up to 3 custom study lists
-                • 3 drills per day instead of 2
-                • Track your learning statistics
-              </div>
-            </div>
-          )}
 
           <div className="flex gap-3">
             <button

@@ -9,18 +9,29 @@ interface PageHeaderProps {
   subtitle?: string;
   showBackButton?: boolean;
   helpKey?: string;
+  onBackClick?: () => void;
+  backHref?: string;
 }
 
-export function PageHeader({ title, subtitle, showBackButton = true, helpKey }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, showBackButton = true, helpKey, onBackClick, backHref = "/" }: PageHeaderProps) {
   const helpContent = helpKey ? pageHelpContent[helpKey] : null;
+  
+  const handleBackClick = (e: React.MouseEvent) => {
+    if (onBackClick) {
+      e.preventDefault();
+      onBackClick();
+    }
+  };
+  
   return (
     <header className="mb-8">
       <div className="flex items-center mb-4">
         {showBackButton && (
           <Link
-            href="/"
+            href={backHref}
+            onClick={onBackClick ? handleBackClick : undefined}
             className="mr-4 p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors inline-flex items-center justify-center"
-            aria-label="Go back to home"
+            aria-label="Go back"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

@@ -138,7 +138,7 @@ export default function PokedexModal({ isOpen, onClose, userId }: PokedexModalPr
         }
       }
     } catch (error) {
-      console.error('Failed to load caught Pokémon:', error);
+      // Failed to load caught Pokémon
       // Fallback to localStorage if needed
       const pokedexData = getPokedexData(userId);
       setCaughtPokemonIds(pokedexData.caught);

@@ -44,7 +44,7 @@ export class PracticeCache {
 
       return entry.data;
     } catch (error) {
-      console.error('Error reading from practice cache:', error);
+      // Error reading from practice cache
       this.clear(); // Clear corrupted cache
       return null;
     }
@@ -74,7 +74,7 @@ export class PracticeCache {
             };
           }
         } catch (parseError) {
-          console.warn('Error parsing cache, creating new cache');
+          // Error parsing cache, creating new cache
         }
       }
 
@@ -88,7 +88,7 @@ export class PracticeCache {
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(cache));
 
     } catch (error) {
-      console.error('Error writing to practice cache:', error);
+      // Error writing to practice cache
     }
   }
 
@@ -106,7 +106,7 @@ export class PracticeCache {
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(cache));
       }
     } catch (error) {
-      console.error('Error deleting from practice cache:', error);
+      // Error deleting from practice cache
     }
   }
 
@@ -117,7 +117,7 @@ export class PracticeCache {
     try {
       localStorage.removeItem(this.CACHE_KEY);
     } catch (error) {
-      console.error('Error clearing practice cache:', error);
+      // Error clearing practice cache
     }
   }
 
@@ -148,7 +148,7 @@ export class PracticeCache {
 
       return info;
     } catch (error) {
-      console.error('Error getting cache info:', error);
+      // Error getting cache info
       return null;
     }
   }
@@ -177,8 +177,8 @@ export class PracticeCache {
    * Preload cache in background
    */
   static async preloadCache(): Promise<void> {
-    // Import the API functions dynamically to avoid circular dependencies
-    const { getCommonWordsForPractice } = await import('./api');
+    // Import the JMDict functions dynamically to avoid circular dependencies
+    const { getJMdictPracticeWords } = await import('./jmdictPractice');
 
     try {
 
@@ -187,29 +187,27 @@ export class PracticeCache {
         return;
       }
 
-      // Load fresh data
-      const commonWords = await getCommonWordsForPractice(100); // Get more for better variety
+      // Load fresh data from JMDict
+      const [verbs, adjectives] = await Promise.all([
+        getJMdictPracticeWords('verbs', 200),
+        getJMdictPracticeWords('adjectives', 200)
+      ]);
+
+      // Combine and shuffle
+      const commonWords = [...verbs.slice(0, 100), ...adjectives.slice(0, 100)];
+      commonWords.sort(() => Math.random() - 0.5);
 
       if (commonWords.length > 0) {
-        // Separate into categories for easier filtering
-        const verbs = commonWords.filter(word =>
-          word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular'
-        );
-
-        const adjectives = commonWords.filter(word =>
-          word.type === 'i-adjective' || word.type === 'na-adjective'
-        );
-
         // Cache all categories
         this.set('commonWords', commonWords);
         this.set('verbs', verbs);
         this.set('adjectives', adjectives);
 
       } else {
-        console.warn('⚠️ No words loaded for cache preload');
+        // No words loaded from JMDict for cache preload
       }
     } catch (error) {
-      console.error('❌ Error preloading practice cache:', error);
+      // Error preloading practice cache
     }
   }
 }
@@ -227,10 +225,10 @@ export async function getCachedCommonWordsForPractice(limit: number = 50): Promi
     return shuffled.slice(0, Math.min(limit, cached.length));
   }
 
-  // If no cache, load fresh data
-  const { getCommonWordsForPractice } = await import('./api');
+  // If no cache, load fresh data from JMDict
+  const { getJMdictPracticeWords } = await import('./jmdictPractice');
 
-  const words = await getCommonWordsForPractice(Math.max(limit, 100)); // Get more for caching
+  const words = await getJMdictPracticeWords('all', Math.max(limit, 100)); // Get more for caching
 
   // Cache the results for future use
   if (words.length > 0) {

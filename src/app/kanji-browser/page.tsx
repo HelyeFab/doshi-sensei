@@ -11,6 +11,8 @@ import KanjiListManager from '@/utils/kanjiListManager';
 import KanjiModal from '@/components/kanji/KanjiModal';
 import KanjiStudyModal from '@/components/kanji-moods/KanjiStudyModal';
 import { useNotification } from '@/contexts/NotificationContext';
+import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
+import { useRouter } from 'next/navigation';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -53,10 +55,12 @@ const kanjiStructuredData = {
 export default function KanjiBrowserPage() {
   const { user } = useAuth();
   const { userSubscription } = useSubscription();
+  const { setSelectedKanji } = useKanjiSelection();
+  const router = useRouter();
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
-  const [selectedKanji, setSelectedKanji] = useState<Kanji | null>(null);
+  const [modalKanji, setModalKanji] = useState<Kanji | null>(null);
   const [savedKanjiSet, setSavedKanjiSet] = useState<Set<string>>(new Set());
   const [expandedLevels, setExpandedLevels] = useState<Set<JLPTLevel>>(new Set(['N5']));
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,7 +69,7 @@ export default function KanjiBrowserPage() {
   const [kanjiLists, setKanjiLists] = useState<KanjiList[]>([]);
   const [showSaveKanjiModal, setShowSaveKanjiModal] = useState(false);
   const [kanjiToSave, setKanjiToSave] = useState<Kanji | null>(null);
-  
+
   // Study selection state
   const [studySelection, setStudySelection] = useState<Set<string>>(new Set());
   const [showStudyModal, setShowStudyModal] = useState(false);
@@ -147,7 +151,7 @@ export default function KanjiBrowserPage() {
 
   const toggleStudySelection = (kanji: string) => {
     const newSelection = new Set(studySelection);
-    
+
     if (newSelection.has(kanji)) {
       newSelection.delete(kanji);
     } else {
@@ -161,7 +165,7 @@ export default function KanjiBrowserPage() {
           "That's a full study session! Let's ace these 10 first! 🎯"
         ];
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        
+
         showNotification({
           title: "Study Limit Reached",
           message: randomMessage,
@@ -171,7 +175,7 @@ export default function KanjiBrowserPage() {
       }
       newSelection.add(kanji);
     }
-    
+
     setStudySelection(newSelection);
   };
 
@@ -189,13 +193,13 @@ export default function KanjiBrowserPage() {
   };
 
   const handleKanjiClick = (kanji: Kanji) => {
-    setSelectedKanji(kanji);
+    setModalKanji(kanji);
   };
 
   const handleKanjiSave = (kanji: Kanji) => {
     setKanjiToSave(kanji);
     setShowSaveKanjiModal(true);
-    setSelectedKanji(null); // Close the kanji detail modal
+    setModalKanji(null); // Close the kanji detail modal
   };
 
   const handleKanjiRemove = async (kanjiCharacter: string) => {
@@ -254,33 +258,61 @@ export default function KanjiBrowserPage() {
   const renderKanjiGrid = (kanji: Kanji[]) => (
     <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-2 mt-4">
       {kanji.map((kanjiItem, index) => (
-        <button
+        <div
           key={`${kanjiItem.kanji}-${index}`}
-          onClick={() => handleKanjiClick(kanjiItem)}
-          className={`
-            relative aspect-square flex items-center justify-center text-2xl font-medium rounded-lg border-2 transition-all hover:scale-105
-            ${studySelection.has(kanjiItem.kanji)
-              ? 'bg-accent/20 border-accent text-accent-foreground ring-2 ring-accent/50'
-              : savedKanjiSet.has(kanjiItem.kanji)
-              ? 'bg-primary/10 border-primary text-primary'
-              : 'bg-card border-border text-card-foreground hover:bg-muted'
-            }
-          `}
+          className="relative"
         >
-          {kanjiItem.kanji}
-          {/* Study selection indicator */}
-          {studySelection.has(kanjiItem.kanji) && (
-            <div className="absolute -top-1 -left-1 w-4 h-4 bg-accent rounded-full flex items-center justify-center">
-              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          )}
-          {/* Saved indicator */}
-          {savedKanjiSet.has(kanjiItem.kanji) && !studySelection.has(kanjiItem.kanji) && (
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
-          )}
-        </button>
+          <button
+            onClick={() => handleKanjiClick(kanjiItem)}
+            className={`
+              relative w-full aspect-square flex items-center justify-center text-2xl font-medium rounded-lg border-2 transition-all hover:scale-105 overflow-hidden
+              ${savedKanjiSet.has(kanjiItem.kanji)
+                ? 'bg-primary/10 border-primary text-primary'
+                : 'bg-card border-border text-card-foreground hover:bg-muted'
+              }
+            `}
+          >
+            {kanjiItem.kanji}
+
+            {/* Saved indicator */}
+            {savedKanjiSet.has(kanjiItem.kanji) && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
+            )}
+          </button>
+
+          {/* Purple corner selection indicator for study - Outside the button */}
+          <div
+            className={`absolute top-0 left-0 w-3.5 h-3.5 rounded-tl-md rounded-br-lg transition-all cursor-pointer z-10 ${studySelection.has(kanjiItem.kanji)
+              ? 'bg-purple-500 hover:bg-purple-600'
+              : 'bg-purple-200 hover:bg-purple-300'
+              }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Toggle study selection
+              const newSelection = new Set(studySelection);
+              if (newSelection.has(kanjiItem.kanji)) {
+                newSelection.delete(kanjiItem.kanji);
+              } else if (newSelection.size < 10) {
+                newSelection.add(kanjiItem.kanji);
+              } else {
+                showNotification({
+                  title: 'Study Limit Reached',
+                  message: 'You can select up to 10 kanji for study',
+                  type: 'info'
+                });
+              }
+              setStudySelection(newSelection);
+            }}
+          >
+            {studySelection.has(kanjiItem.kanji) && (
+              <div className="w-full h-full flex items-center justify-center">
+                <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            )}
+          </div>
+        </div>
       ))}
     </div>
   );
@@ -321,25 +353,64 @@ export default function KanjiBrowserPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <div className="relative">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <PageHeader title="漢字 Kanji Browser" helpKey="kanji-browser" />
-            {/* Study Button */}
+            {/* Study Buttons */}
             {studySelection.size > 0 && (
-              <button
-                onClick={() => setShowStudyModal(true)}
-                className="absolute top-0 right-0 flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
-                  />
-                </svg>
-                <span>Study ({studySelection.size}/10)</span>
-              </button>
+              <div className="flex flex-row gap-2 flex-wrap self-start sm:self-auto">
+                <button
+                  onClick={() => setShowStudyModal(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    />
+                  </svg>
+                  <span>Study ({studySelection.size}/10)</span>
+                </button>
+                {studySelection.size >= 5 && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      console.log('Battle button clicked!');
+                      // Store selected kanji in KanjiSelectionContext
+                      const selectedKanjiData = Array.from(studySelection).map((k, index) => {
+                        for (const [level, kanjiList] of Object.entries(kanjiData)) {
+                          const found = kanjiList.find(kanji => kanji.kanji === k);
+                          if (found) {
+                            return {
+                              id: `custom-${index}`,
+                              character: found.kanji,
+                              meanings: found.meaning.split(',').map(m => m.trim()),
+                              on_readings: found.onyomi || [],
+                              kun_readings: found.kunyomi || [],
+                              jlpt: parseInt(level.replace('N', '')),
+                              vocabulary: []
+                            };
+                          }
+                        }
+                        return null;
+                      }).filter(Boolean);
+                      console.log('Transporting kanji to Kanji Quest:', selectedKanjiData);
+                      setSelectedKanji(selectedKanjiData);
+                      
+                      // Add a small delay to ensure context is updated before navigation
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      
+                      router.push('/games?mode=kanji-quest&selection=custom');
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
+                  >
+                    <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
+                    <span>Battle ({studySelection.size} kanji)</span>
+                  </button>
+                )}
+              </div>
             )}
           </div>
           <p className="text-muted-foreground text-center mt-2">
-            Browse Japanese kanji organized by JLPT levels. Click any kanji to see details and save favorites.
+            Browse Japanese kanji by JLPT level. Select kanji to create custom study sessions or battle Pokémon in Kanji Quest!
           </p>
         </div>
 
@@ -455,14 +526,14 @@ export default function KanjiBrowserPage() {
         </div>
 
         {/* Kanji Detail Modal */}
-        {selectedKanji && (
+        {modalKanji && (
           <KanjiModal
-            kanji={selectedKanji}
-            isOpen={!!selectedKanji}
-            onClose={() => setSelectedKanji(null)}
-            onSave={() => handleKanjiSave(selectedKanji)}
-            isSelectedForStudy={studySelection.has(selectedKanji.kanji)}
-            onToggleStudy={() => toggleStudySelection(selectedKanji.kanji)}
+            kanji={modalKanji}
+            isOpen={!!modalKanji}
+            onClose={() => setModalKanji(null)}
+            onSave={() => handleKanjiSave(modalKanji)}
+            isSelectedForStudy={studySelection.has(modalKanji.kanji)}
+            onToggleStudy={() => toggleStudySelection(modalKanji.kanji)}
           />
         )}
 
@@ -508,7 +579,7 @@ export default function KanjiBrowserPage() {
               if (!found) {
                 found = searchResults.find(k => k.kanji === kanjiChar);
               }
-              
+
               // Transform to KanjiItem format
               if (found) {
                 return {
@@ -519,13 +590,13 @@ export default function KanjiBrowserPage() {
                     kun: found.kunyomi || []
                   },
                   examples: [], // No examples in our Kanji type
-                  difficulty: found.jlpt === 'N5' ? 1 : 
-                             found.jlpt === 'N4' ? 2 :
-                             found.jlpt === 'N3' ? 3 :
-                             found.jlpt === 'N2' ? 4 : 5
+                  difficulty: found.jlpt === 'N5' ? 1 :
+                    found.jlpt === 'N4' ? 2 :
+                      found.jlpt === 'N3' ? 3 :
+                        found.jlpt === 'N2' ? 4 : 5
                 };
               }
-              
+
               // Fallback (shouldn't happen)
               return {
                 char: kanjiChar,

@@ -59,7 +59,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               : 'bg-card border-border text-card-foreground hover:bg-muted hover:border-muted-foreground/50'
             }
           `}
-          onClick={() => onToggleKana(kana.id)}
+          onClick={() => handleSpeak(kana)}
         >
           <div className="relative flex flex-col items-center justify-center p-2 aspect-square">
             {/* Main content wrapper */}
@@ -77,35 +77,26 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               )}
             </div>
 
-            {/* Speak button - positioned at bottom */}
-            <button
+            {/* Selection indicator with clickable area */}
+            <div 
+              className={`absolute top-0 left-0 w-3.5 h-3.5 rounded-tl-md rounded-br-lg transition-all ${
+                isSelected 
+                  ? 'bg-purple-500 hover:bg-purple-600' 
+                  : 'bg-purple-200 hover:bg-purple-300'
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
-                handleSpeak(kana);
+                onToggleKana(kana.id);
               }}
-              className="mt-1 p-1 text-purple-400 hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
-              disabled={playingId === kana.id}
             >
-              {playingId === kana.id ? (
-                <svg className="w-3 h-3 sm:w-4 sm:h-4 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                </svg>
-              ) : (
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                </svg>
+              {isSelected && (
+                <div className="w-full h-full flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
               )}
-            </button>
-
-            {/* Selection indicator */}
-            {isSelected && (
-              <div className="absolute -top-1 -left-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            )}
+            </div>
           </div>
         </div>
         

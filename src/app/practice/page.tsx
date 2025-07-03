@@ -269,7 +269,7 @@ export default function PracticePage() {
               {/* Header with controls */}
               <div className="text-center space-y-4">
                 <p className="text-muted-foreground">
-                  Select kana characters to practice. No limit on selection!
+                  Tap any character to hear its pronunciation. Click the purple corner to select for practice.
                 </p>
                 
                 {/* Chart Type Toggle */}

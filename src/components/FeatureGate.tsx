@@ -25,7 +25,7 @@ export function FeatureGate({
   loginMessage,
 }: FeatureGateProps) {
   const { user } = useAuth();
-  const { userType, isFeatureAvailable, showLoginPrompt, showUpgradePrompt: triggerUpgradePrompt } = useSubscription();
+  const { userType, isFeatureAvailable, showLoginPrompt, showUpgradePrompt: triggerUpgradePrompt, loading } = useSubscription();
 
   // Check if user type meets requirement
   const hasRequiredUserType = () => {
@@ -43,6 +43,12 @@ export function FeatureGate({
     if (!feature) return true;
     return isFeatureAvailable(feature);
   };
+
+  // CRITICAL: Allow access while subscription is loading to prevent race conditions
+  if (loading && user) {
+    // Subscription data still loading, temporarily allowing access
+    return <>{children}</>;
+  }
 
   // Determine if access should be granted
   const hasAccess = hasRequiredUserType() && hasFeatureAccess();

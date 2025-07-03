@@ -28,6 +28,8 @@ class PokemonManager {
     user: User | null,
     isPremium: boolean
   ): Promise<void> {
+    // saveCaughtPokemon called with pokemonId and user details
+
     const catchData: PokemonCatch = {
       pokemonId,
       caughtAt: new Date().toISOString(),
@@ -38,31 +40,84 @@ class PokemonManager {
     // Always save to IndexedDB for offline access
     await pokemonStorage.savePokemonLocally(pokemonId, jlptLevel, kanjiIds);
 
+    // Also save to localStorage as a backup (for compatibility)
+    const storageKey = user ? `pokedex_${user.uid}` : 'pokedex_guest';
+    try {
+      const existingData = localStorage.getItem(storageKey);
+      const pokedexData = existingData ? JSON.parse(existingData) : { caught: [] };
+      
+      if (!pokedexData.caught.includes(pokemonId)) {
+        pokedexData.caught.push(pokemonId);
+        pokedexData.lastCaught = {
+          id: pokemonId,
+          date: new Date().toISOString()
+        };
+        localStorage.setItem(storageKey, JSON.stringify(pokedexData));
+        // Saved Pokémon to localStorage backup
+      }
+    } catch (error) {
+      // Failed to save to localStorage backup
+    }
+
     // For premium users, also save to Firebase
     if (user && isPremium) {
+      // User is premium, saving to Firebase...
       await this.savePokemonToCloud(user.uid, pokemonId);
+    } else {
+      // User is not premium or not logged in, skipping Firebase save
     }
   }
 
   // Save Pokémon to Firebase
   private async savePokemonToCloud(userId: string, pokemonId: number): Promise<void> {
+    // savePokemonToCloud called for user
     try {
       const userDocRef = doc(db, 'users', userId);
       const userDoc = await getDoc(userDocRef);
+      // User document exists check
 
       if (userDoc.exists()) {
         // Update existing document
-        await updateDoc(userDocRef, {
-          'pokedex.caught': arrayUnion(pokemonId),
-          'pokedex.lastCaught': {
-            id: pokemonId,
-            date: new Date().toISOString(),
-          },
-          'pokedex.totalCaught': (userDoc.data()?.pokedex?.totalCaught || 0) + 1,
-        });
+        const currentData = userDoc.data();
+        // Current user data and caught Pokémon retrieved
+        
+        // Get current pokedex data or create new structure
+        const currentPokedex = currentData?.pokedex || { caught: [], totalCaught: 0 };
+        const currentCaught = currentPokedex.caught || [];
+        
+        // Only add if not already caught
+        if (!currentCaught.includes(pokemonId)) {
+          currentCaught.push(pokemonId);
+        }
+        
+        const updateData = {
+          pokedex: {
+            caught: currentCaught,
+            lastCaught: {
+              id: pokemonId,
+              date: new Date().toISOString(),
+            },
+            totalCaught: currentCaught.length
+          }
+        };
+        
+        // Updating Firebase with Pokémon data
+        
+        try {
+          await updateDoc(userDocRef, updateData);
+          // Successfully updated Firebase with Pokémon
+          
+          // Verify the update
+          const verifyDoc = await getDoc(userDocRef);
+          // Verification - Document updated with pokedex data
+        } catch (updateError) {
+          // updateDoc failed
+          throw updateError;
+        }
       } else {
         // Create new document
-        await setDoc(userDocRef, {
+        // User document does not exist, creating with merge...
+        const newData = {
           pokedex: {
             caught: [pokemonId],
             lastCaught: {
@@ -71,10 +126,13 @@ class PokemonManager {
             },
             totalCaught: 1,
           },
-        }, { merge: true });
+        };
+        // Creating new document with pokedex data
+        await setDoc(userDocRef, newData, { merge: true });
+        // Successfully created Firebase document with Pokémon
       }
     } catch (error) {
-      console.error('Failed to save Pokémon to cloud:', error);
+      // Failed to save Pokémon to cloud - local storage should still work
       // Don't throw - local storage should still work
     }
   }
@@ -98,7 +156,7 @@ class PokemonManager {
       // Return merged list
       return await pokemonStorage.getMergedPokemonList(cloudPokemon);
     } catch (error) {
-      console.error('Failed to get cloud Pokémon, falling back to local:', error);
+      // Failed to get cloud Pokémon, falling back to local
       return localPokemon;
     }
   }
@@ -115,7 +173,7 @@ class PokemonManager {
 
       return [];
     } catch (error) {
-      console.error('Failed to get Pokémon from cloud:', error);
+      // Failed to get Pokémon from cloud
       return [];
     }
   }
@@ -157,7 +215,7 @@ class PokemonManager {
         };
       }
     } catch (error) {
-      console.error('Failed to get Pokédex stats from cloud:', error);
+      // Failed to get Pokédex stats from cloud
     }
 
     return {
@@ -168,6 +226,52 @@ class PokemonManager {
   // Clear local storage (for logout or data reset)
   async clearLocalStorage(): Promise<void> {
     await pokemonStorage.clearLocalStorage();
+  }
+
+  // Manual sync function to force save all local Pokemon to cloud
+  async forceSyncToCloud(user: User): Promise<void> {
+    // Force sync to cloud started
+    try {
+      // Get all local Pokemon
+      const localPokemon = await pokemonStorage.getAllCaughtPokemonLocally();
+      
+      // Also check localStorage
+      const storageKey = `pokedex_${user.uid}`;
+      const localStorageData = localStorage.getItem(storageKey);
+      let allPokemon = [...localPokemon];
+      
+      if (localStorageData) {
+        const parsed = JSON.parse(localStorageData);
+        if (parsed.caught) {
+          allPokemon = [...new Set([...allPokemon, ...parsed.caught])];
+        }
+      }
+      
+      // Force sync - Pokemon to sync
+      
+      if (allPokemon.length > 0) {
+        const userDocRef = doc(db, 'users', user.uid);
+        const updateData = {
+          pokedex: {
+            caught: allPokemon,
+            lastCaught: {
+              id: allPokemon[allPokemon.length - 1],
+              date: new Date().toISOString(),
+            },
+            totalCaught: allPokemon.length
+          }
+        };
+        
+        // Force sync - Updating Firebase
+        await updateDoc(userDocRef, updateData);
+        // Force sync completed successfully
+      } else {
+        // No Pokemon to sync
+      }
+    } catch (error) {
+      // Force sync failed
+      throw error;
+    }
   }
 
   // Migrate from localStorage to IndexedDB
@@ -186,10 +290,10 @@ class PokemonManager {
 
           // Remove from localStorage after successful migration
           localStorage.removeItem(storageKey);
-          console.log('Successfully migrated Pokédex data to IndexedDB');
+          // Successfully migrated Pokédex data to IndexedDB
         }
       } catch (error) {
-        console.error('Failed to migrate Pokédex data:', error);
+        // Failed to migrate Pokédex data
       }
     }
   }

@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { getPokedexData } from '@/utils/kanjiUtils';
+import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 
 // Structured Data for SEO
@@ -110,11 +111,47 @@ export default function Home() {
 
   // Load Pokédex count separately to ensure it's always available
   useEffect(() => {
-    const pokedexData = getPokedexData(user?.uid);
-    if (pokedexData.caught.length > 0) {
-      setStats(prev => ({ ...prev, pokemonCaught: pokedexData.caught.length }));
-    }
-  }, [user]);
+    const loadPokemonCount = async () => {
+      try {
+        // First, migrate any localStorage data to IndexedDB
+        await pokemonManager.migrateFromLocalStorage(user?.uid);
+        
+        // Get data from both sources
+        const isPremiumUser = userSubscription?.subscription?.status === 'active' && 
+          (userSubscription?.subscription?.plan === 'monthly' || 
+           userSubscription?.subscription?.plan === 'yearly');
+        
+        // Get from pokemonManager (checks IndexedDB and cloud)
+        const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
+        
+        // Also check localStorage as fallback
+        const localStorageData = getPokedexData(user?.uid);
+        
+        // Merge both sources (in case some data is only in localStorage)
+        const allCaughtPokemon = new Set([...caughtPokemon, ...localStorageData.caught]);
+        
+        console.log('🎮 Pokédex count check:', {
+          fromPokemonManager: caughtPokemon.length,
+          fromLocalStorage: localStorageData.caught.length,
+          merged: allCaughtPokemon.size,
+          user: user?.email
+        });
+        
+        if (allCaughtPokemon.size > 0) {
+          setStats(prev => ({ ...prev, pokemonCaught: allCaughtPokemon.size }));
+        }
+      } catch (error) {
+        // Error loading Pokémon count
+        // Fallback to localStorage only
+        const pokedexData = getPokedexData(user?.uid);
+        if (pokedexData.caught.length > 0) {
+          setStats(prev => ({ ...prev, pokemonCaught: pokedexData.caught.length }));
+        }
+      }
+    };
+    
+    loadPokemonCount();
+  }, [user, userSubscription]);
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {
@@ -169,8 +206,23 @@ export default function Home() {
       const { storyManager } = await import('@/utils/storyManager');
       const userStats = await StatsManager.getUserStats();
       
-      // Get Pokémon count
-      const pokedexData = getPokedexData(user?.uid);
+      // Get Pokémon count from both sources
+      let pokemonCount = 0;
+      try {
+        const isPremiumUser = userSubscription?.subscription?.status === 'active' && 
+          (userSubscription?.subscription?.plan === 'monthly' || 
+           userSubscription?.subscription?.plan === 'yearly');
+        
+        const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
+        const localStorageData = getPokedexData(user?.uid);
+        const allCaughtPokemon = new Set([...caughtPokemon, ...localStorageData.caught]);
+        pokemonCount = allCaughtPokemon.size;
+      } catch (error) {
+        // Error loading Pokémon in loadStats
+        // Fallback to localStorage
+        const pokedexData = getPokedexData(user?.uid);
+        pokemonCount = pokedexData.caught.length;
+      }
       
       // Get story stats with error handling
       let storyStats = { totalStoriesRead: 0 };
@@ -191,7 +243,7 @@ export default function Home() {
         kanjiStudySessions: userStats.kanjiStudySessions || 0,
         kanjiAccuracy: Math.round(userStats.kanjiAccuracy || 0),
         totalKanjiLearned: userStats.totalKanjiLearned || 0,
-        pokemonCaught: pokedexData.caught.length || prevStats.pokemonCaught, // Keep previous count if new data is 0
+        pokemonCaught: pokemonCount || prevStats.pokemonCaught, // Keep previous count if new data is 0
         storiesRead: storyStats.totalStoriesRead || 0
       }));
     } catch (err) {
@@ -363,7 +415,7 @@ export default function Home() {
               
               {/* Sessions */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-200 dark:bg-purple-900/40 flex items-center justify-center">
                   <span className="text-base md:text-sm text-white">漢</span>
                 </div>
                 <div>
@@ -404,7 +456,7 @@ export default function Home() {
               {/* Stories Read */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                  <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-200 dark:bg-purple-900/40 flex items-center justify-center">
                     <span className="text-base md:text-sm">📖</span>
                   </div>
                   <div>
@@ -450,25 +502,11 @@ export default function Home() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-semibold">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
+                    <span className="text-[10px] font-semibold">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
                   </div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Avg Accuracy</div>
-                  <div className={`text-sm font-semibold ${
-                    loading ? 'text-muted-foreground' :
-                    Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'text-green-600 dark:text-green-400' :
-                    Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
-                    Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'text-orange-600 dark:text-orange-400' :
-                    'text-red-600 dark:text-red-400'
-                  }`}>
-                    {loading ? '...' : 
-                     Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'Excellent' :
-                     Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'Good' :
-                     Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'Needs practice' :
-                     'Keep trying'
-                    }
-                  </div>
                 </div>
               </div>
             </div>

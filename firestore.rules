@@ -7,18 +7,28 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.email == 'emmanuelfabiani23@gmail.com';
     }
 
+    // Helper function to check if user is premium
+    function isPremiumUser(userId) {
+      let userData = get(/databases/$(database)/documents/users/$(userId)).data;
+      return userData.subscription != null &&
+        userData.subscription.subscription != null &&
+        userData.subscription.subscription.status == 'active' && 
+        userData.subscription.subscription.plan in ['monthly', 'yearly'];
+    }
+
     // Users can only access their own data
     match /users/{userId} {
       // Allow admin to read all user data
       allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
 
-      // Allow admin to write all user data (for upgrades, etc.)
-      allow write: if isAdmin() || (
-        request.auth != null && request.auth.uid == userId
-        && (
-          // Allow if no subscription data in the new document
-          !('subscription' in request.resource.data) ||
-          // Or if subscription data is properly structured
+      // Allow users to update their own data with validation
+      allow create: if request.auth != null && request.auth.uid == userId;
+      
+      allow update: if isAdmin() || (
+        request.auth != null && request.auth.uid == userId &&
+        (
+          // If updating subscription data, validate structure
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription']) ||
           (
             request.resource.data.subscription.keys().hasAll(['subscription', 'limits', 'currentUsage']) &&
             request.resource.data.subscription.subscription.keys().hasAll(['status', 'plan']) &&
@@ -28,10 +38,12 @@ service cloud.firestore {
             request.resource.data.subscription.currentUsage.keys().hasAll(['listsCount', 'drillsToday', 'lastDrillDate']) &&
             request.resource.data.subscription.currentUsage.listsCount >= 0 &&
             request.resource.data.subscription.currentUsage.drillsToday >= 0 &&
-            request.resource.data.subscription.currentUsage.drillsToday <= 1000 // Reasonable limit
+            request.resource.data.subscription.currentUsage.drillsToday <= 1000
           )
         )
       );
+      
+      allow delete: if isAdmin();
 
       // Allow access to user's subcollections (wordLists, savedWords, etc.)
       match /{document=**} {

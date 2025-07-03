@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameKanji, getKanjiByJLPT } from '@/utils/kanjiUtils';
 import { getRandomPokemon, getPokemonSpriteUrl, getPokemonSilhouetteStyle } from '@/data/pokemonData';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { KanjiTTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
+import { subscriptionValidator } from '@/utils/subscriptionValidator';
+import { isPremiumUserType } from '@/types/subscription';
+import { useState, useEffect } from 'react';
 
 // Types
 interface StudySession {
@@ -31,26 +33,40 @@ interface KanjiQuestProps {
   onPokemonCaught?: (pokemonId: number, kanjiIds: string[]) => void;
   completedKanjiIds: Set<string>;
   onKanjiCompleted: (kanjiIds: string[]) => void;
+  customKanji?: GameKanji[]; // Optional custom kanji selection
 }
 
-export default function KanjiQuest({ 
-  jlptLevel, 
-  onBack, 
+export default function KanjiQuest({
+  jlptLevel,
+  onBack,
   onPokemonCaught,
   completedKanjiIds,
-  onKanjiCompleted
+  onKanjiCompleted,
+  customKanji
 }: KanjiQuestProps) {
-  const { user } = useAuth();
-  const { 
-    isFeatureAvailable, 
+  console.log('KanjiQuest rendered with props:', {
+    jlptLevel,
+    onBack,
+    onPokemonCaught,
+    completedKanjiIds,
+    onKanjiCompleted,
+    customKanji
+  });
+
+  const { user, loading: authLoading } = useAuth();
+  const {
+    isFeatureAvailable,
     incrementKanjiQuestCount,
     showLoginPrompt,
     showUpgradePrompt,
     userType,
     guestUsage,
-    userSubscription
+    userSubscription,
+    loading: subscriptionLoading
   } = useSubscription();
-  
+
+  // Component state is now logged centrally in SubscriptionContext
+
   const [phase, setPhase] = useState<'encounter' | 'study' | 'quiz' | 'result'>('encounter');
   const [session, setSession] = useState<StudySession | null>(null);
   const [studiedKanji, setStudiedKanji] = useState<Set<string>>(new Set());
@@ -61,27 +77,75 @@ export default function KanjiQuest({
   const [showQuizFeedback, setShowQuizFeedback] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [showFurigana, setShowFurigana] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [gameLoading, setGameLoading] = useState(true);
   const [showLimitMessage, setShowLimitMessage] = useState(false);
+  const [entitlementCheckComplete, setEntitlementCheckComplete] = useState(false);
 
-  // Initialize session
+  // Initialize session - properly coordinate with auth and subscription loading
   useEffect(() => {
+    // Wait for BOTH auth and subscription to finish loading before proceeding
+    if (authLoading || subscriptionLoading) {
+      // Still loading, do not check access yet
+      return;
+    }
+
+    // Once both auth and subscription are loaded, proceed
     startNewSession();
-  }, [jlptLevel]);
+  }, [jlptLevel, authLoading, subscriptionLoading]); // Depend on both loading states
 
   const startNewSession = async () => {
     try {
-      setLoading(true);
-      
-      // Check if user can play
-      if (!isFeatureAvailable('kanjiquest')) {
-        setLoading(false);
+      setGameLoading(true);
+      setEntitlementCheckComplete(false);
+
+      // Double-check that subscription is fully loaded
+      if (subscriptionLoading) {
+        console.error('🚨 startNewSession called while subscription still loading!');
+        setGameLoading(false);
+        return;
+      }
+
+      // Perform entitlement check using the validator
+      const validation = subscriptionValidator.validate(user, userSubscription, false);
+
+      // Debug the validation state
+      subscriptionValidator.debugSubscriptionState(user, userSubscription, 'KanjiQuest Start');
+
+      const canPlay = isFeatureAvailable('kanjiquest');
+      if (canPlay === undefined) {
+        // Defensive: should never happen, as we wait for loading to finish
+        console.error('❓ isFeatureAvailable returned undefined after loading:', {
+          user,
+          userSubscription,
+          validation
+        });
+        setGameLoading(false);
         setShowLimitMessage(true);
-        
+        return;
+      }
+
+      const isPremiumUser = validation.isPremium;
+
+      setEntitlementCheckComplete(true);
+
+      // CRITICAL: Premium users ALWAYS have access, regardless of what isFeatureAvailable says
+      // This prevents race conditions where isFeatureAvailable might return false temporarily
+      if (!isPremiumUser && !canPlay) {
+        console.log('🎮 KanjiQuest Access Check Failed:', {
+          isPremiumUser,
+          canPlay,
+          validation,
+          userType,
+          userSubscription
+        });
+
+        setGameLoading(false);
+        setShowLimitMessage(true);
+
         // Get usage info for the message
         const today = new Date().toISOString().split('T')[0];
         let playsToday = 0;
-        
+
         if (userType === 'guest' && guestUsage) {
           const isToday = guestUsage.lastKanjiQuestDate === today;
           playsToday = isToday ? guestUsage.kanjiQuestToday : 0;
@@ -89,19 +153,22 @@ export default function KanjiQuest({
           const isToday = userSubscription.currentUsage.lastKanjiQuestDate === today;
           playsToday = isToday ? (userSubscription.currentUsage.kanjiQuestToday || 0) : 0;
         }
-        
+
         // Show Pokémon-themed limit messages
-        const maxEncounters = userType === 'guest' 
+        const maxEncounters = userType === 'guest'
           ? 3 // Guest limit
           : (userSubscription?.limits?.maxKanjiQuestPerDay || 3); // User limit from subscription
-        const encountersUsed = Math.min(playsToday + 1, maxEncounters); // Cap at max to avoid showing 4/3
-        
-        if (userType === 'guest') {
+        const encountersUsed = Math.min(playsToday, maxEncounters); // Cap at max
+
+        // Show appropriate prompt based on user type from validator
+        if (validation.userType === 'guest') {
+          // Guest user (not logged in)
           showLoginPrompt(
             `You've used all ${encountersUsed}/${maxEncounters} daily Pokémon encounters! Team Rocket won't let you pass! 🚫\n\nSign up free to get more encounters and save your Pokédex!`,
             'kanjiquest'
           );
-        } else {
+        } else if (!isPremiumUserType(validation.userType)) {
+          // Logged in but not premium (freemium)
           showUpgradePrompt(
             `You've reached your daily limit of ${encountersUsed}/${maxEncounters} Pokémon encounters! 🎮\n\nUpgrade to Premium for unlimited encounters and become a true Pokémon Master!`,
             'kanjiquest'
@@ -109,26 +176,49 @@ export default function KanjiQuest({
         }
         return;
       }
-      
-      // Get available kanji for the level
-      const allKanji = await getKanjiByJLPT(jlptLevel);
-      
-      // Filter out completed kanji
-      const availableKanji = allKanji.filter(k => !completedKanjiIds.has(k.id));
-      
-      if (availableKanji.length < 5) {
-        alert('Not enough new kanji available for this level!');
-        onBack();
-        return;
-      }
 
-      // Select 5 random kanji
-      const selectedKanji: GameKanji[] = [];
-      const tempAvailable = [...availableKanji];
-      
-      for (let i = 0; i < 5 && tempAvailable.length > 0; i++) {
-        const randomIndex = Math.floor(Math.random() * tempAvailable.length);
-        selectedKanji.push(tempAvailable.splice(randomIndex, 1)[0]);
+      console.log('✅ KanjiQuest Access Granted:', {
+        isPremiumUser,
+        canPlay,
+        validation
+      });
+
+      // User has access, proceeding with game setup
+
+      // Get available kanji for the level
+      let selectedKanji: GameKanji[];
+
+      if (customKanji && customKanji.length > 0) {
+        // Use custom kanji selection from Kanji Browser
+        // Import vocabulary loading function
+        const { getVocabularyForKanji } = await import('@/utils/jmdictVocabulary');
+
+        // Allow all selected kanji, not just 5
+        selectedKanji = customKanji.map(k => ({
+          ...k,
+          vocabulary: getVocabularyForKanji(k.character, 3)
+        }));
+      } else {
+        // Use random selection from JLPT level
+        const allKanji = await getKanjiByJLPT(jlptLevel);
+
+        // Filter out completed kanji
+        const availableKanji = allKanji.filter(k => !completedKanjiIds.has(k.id));
+
+        if (availableKanji.length < 5) {
+          alert('Not enough new kanji available for this level!');
+          onBack();
+          return;
+        }
+
+        // Select 5 random kanji
+        selectedKanji = [];
+        const tempAvailable = [...availableKanji];
+
+        for (let i = 0; i < 5 && tempAvailable.length > 0; i++) {
+          const randomIndex = Math.floor(Math.random() * tempAvailable.length);
+          selectedKanji.push(tempAvailable.splice(randomIndex, 1)[0]);
+        }
       }
 
       // Create new session
@@ -147,15 +237,16 @@ export default function KanjiQuest({
       setQuizQuestions([]);
       setCurrentQuestionIndex(0);
       setUserAnswers([]);
-      
-      // Increment the usage count
-      await incrementKanjiQuestCount();
+
+      // Increment the usage count only for non-premium users
+      if (!isPremiumUser) {
+        await incrementKanjiQuestCount();
+      }
     } catch (error) {
-      console.error('Error starting new session:', error);
       alert('Failed to load kanji data. Please try again.');
       onBack();
     } finally {
-      setLoading(false);
+      setGameLoading(false);
     }
   };
 
@@ -164,22 +255,14 @@ export default function KanjiQuest({
 
     // Generate quiz questions
     const questions = generateQuizQuestions(session.kanji);
-    
-    // Debug logging for generated questions
-    console.log('Generated Quiz Questions:', questions.map((q, idx) => ({
-      index: idx,
-      type: q.type,
-      question: q.question,
-      kanjiCharacter: q.kanjiRef.character,
-      correctAnswer: q.options[q.correctIndex],
-      correctIndex: q.correctIndex,
-      options: q.options
-    })));
-    
+
+    // Questions generated successfully
+
     setQuizQuestions(questions);
     setPhase('quiz');
     setCurrentQuestionIndex(0);
     setUserAnswers([]);
+    setShowQuizFeedback(false); // Ensure feedback is reset
   };
 
   const generateQuizQuestions = (kanji: GameKanji[]): QuizQuestion[] => {
@@ -218,10 +301,10 @@ export default function KanjiQuest({
           .map(k => k.on_readings[0] || k.kun_readings[0])
           .filter(r => r && r !== correctAnswer)
           .slice(0, 3);
-        
+
         const options = [correctAnswer, ...distractors];
         const shuffled = [...options].sort(() => Math.random() - 0.5);
-        
+
         return {
           type: 'reading',
           question: `What is the reading of ${kanji.character}?`,
@@ -230,7 +313,7 @@ export default function KanjiQuest({
           kanjiRef: kanji
         };
       }
-      
+
       case 'meaning': {
         // Show kanji, ask for meaning
         const correctAnswer = kanji.meanings[0];
@@ -239,10 +322,10 @@ export default function KanjiQuest({
           .map(k => k.meanings[0])
           .filter(m => m && m !== correctAnswer)
           .slice(0, 3);
-        
+
         const options = [correctAnswer, ...distractors];
         const shuffled = [...options].sort(() => Math.random() - 0.5);
-        
+
         return {
           type: 'meaning',
           question: `What does ${kanji.character} mean?`,
@@ -251,7 +334,7 @@ export default function KanjiQuest({
           kanjiRef: kanji
         };
       }
-      
+
       case 'kanji': {
         // Show meaning, ask for kanji
         const correctAnswer = kanji.character;
@@ -259,10 +342,10 @@ export default function KanjiQuest({
           .filter(k => k.id !== kanji.id)
           .map(k => k.character)
           .slice(0, 3);
-        
+
         const options = [correctAnswer, ...distractors];
         const shuffled = [...options].sort(() => Math.random() - 0.5);
-        
+
         return {
           type: 'kanji',
           question: `Which kanji means "${kanji.meanings[0]}"?`,
@@ -271,7 +354,7 @@ export default function KanjiQuest({
           kanjiRef: kanji
         };
       }
-      
+
       case 'vocab': {
         // Use vocabulary if available
         if (kanji.vocabulary && kanji.vocabulary.length > 0) {
@@ -281,15 +364,15 @@ export default function KanjiQuest({
             .filter(k => k.id !== kanji.id)
             .map(k => k.character)
             .slice(0, 3);
-          
+
           const options = [correctAnswer, ...distractors];
           const shuffled = [...options].sort(() => Math.random() - 0.5);
-          
+
           // Only show reading in parentheses if it exists
-          const questionText = vocab.reading 
+          const questionText = vocab.reading
             ? `Which kanji is used in "${vocab.word}" (${vocab.reading})?`
             : `Which kanji is used in "${vocab.word}"?`;
-          
+
           return {
             type: 'vocab',
             question: questionText,
@@ -298,7 +381,7 @@ export default function KanjiQuest({
             kanjiRef: kanji
           };
         }
-        
+
         // Fallback to meaning question if no vocab
         return createQuestion(kanji, 1, allKanji);
       }
@@ -307,36 +390,21 @@ export default function KanjiQuest({
 
   const handleQuizAnswer = (answerIndex: number) => {
     if (showQuizFeedback) {
-      console.warn('Quiz feedback already showing, ignoring click');
       return;
     }
-    
+
     const currentQuestion = quizQuestions[currentQuestionIndex];
     if (!currentQuestion) {
-      console.error('No current question found!');
       return;
     }
-    
-    const selectedAnswer = currentQuestion.options[answerIndex];
-    const correctAnswer = currentQuestion.options[currentQuestion.correctIndex];
-    const isCorrect = answerIndex === currentQuestion.correctIndex;
-    
-    // Debug logging
-    console.log('Quiz Answer Debug:', {
-      questionType: currentQuestion.type,
-      question: currentQuestion.question,
-      kanjiCharacter: currentQuestion.kanjiRef.character,
-      selectedAnswer,
-      correctAnswer,
-      selectedIndex: answerIndex,
-      correctIndex: currentQuestion.correctIndex,
-      isCorrect,
-      allOptions: currentQuestion.options,
-      showQuizFeedback,
-      currentQuestionIndex,
-      totalQuestions: quizQuestions.length
-    });
-    
+
+    // These variables are used in development for debugging
+    // const selectedAnswer = currentQuestion.options[answerIndex];
+    // const correctAnswer = currentQuestion.options[currentQuestion.correctIndex];
+    // const isCorrect = answerIndex === currentQuestion.correctIndex;
+
+    // Quiz answer processed
+
     const newAnswers = [...userAnswers, answerIndex];
     setUserAnswers(newAnswers);
     setShowQuizFeedback(true);
@@ -356,22 +424,16 @@ export default function KanjiQuest({
   const completeQuiz = (answers: number[]) => {
     if (!session) return;
 
-    console.log('Completing quiz with answers:', answers);
-    console.log('Quiz questions:', quizQuestions.map((q, i) => ({
-      index: i,
-      correctIndex: q.correctIndex,
-      userAnswer: answers[i],
-      isCorrect: answers[i] === q.correctIndex
-    })));
+    // Completing quiz with collected answers
 
-    const correctCount = answers.filter((answer, index) => 
+    const correctCount = answers.filter((answer, index) =>
       answer === quizQuestions[index].correctIndex
     ).length;
-    
+
     const score = Math.round((correctCount / quizQuestions.length) * 100);
     const passed = score >= 75;
 
-    console.log(`Quiz complete: ${correctCount}/${quizQuestions.length} correct (${score}%)`);
+    // Quiz complete with score calculation
 
     setSession({
       ...session,
@@ -382,7 +444,7 @@ export default function KanjiQuest({
     if (passed) {
       // Mark kanji as completed
       onKanjiCompleted(session.kanji.map(k => k.id));
-      
+
       // Trigger Pokémon capture with kanji IDs
       if (onPokemonCaught) {
         onPokemonCaught(session.pokemonId, session.kanji.map(k => k.id));
@@ -392,20 +454,22 @@ export default function KanjiQuest({
     setPhase('result');
   };
 
-
-  if (loading) {
+  // Show loading state while auth, subscription or game is initializing
+  if (authLoading || subscriptionLoading || gameLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading kanji data...</p>
+          <p className="text-muted-foreground">
+            {authLoading ? 'Checking authentication...' : subscriptionLoading ? 'Checking your subscription...' : 'Loading kanji data...'}
+          </p>
         </div>
       </div>
     );
   }
 
   // Show limit reached message
-  if (showLimitMessage && !session) {
+  if (!authLoading && !subscriptionLoading && showLimitMessage && !session) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center max-w-md">
@@ -415,7 +479,7 @@ export default function KanjiQuest({
             transition={{ type: "spring", duration: 0.8 }}
           >
             <img
-              src="/images/pokeball.png"
+              src="/pokeball.png"
               alt="Pokéball"
               className="w-32 h-32 mx-auto mb-6 opacity-50 grayscale"
             />
@@ -435,6 +499,19 @@ export default function KanjiQuest({
     );
   }
 
+  // Defensive: If customKanji is present but empty, show a message
+  if (customKanji && Array.isArray(customKanji) && customKanji.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-8">
+        <div className="bg-card border border-border rounded-lg p-8 max-w-md w-full text-center">
+          <h2 className="text-2xl font-bold mb-4">No Kanji Provided</h2>
+          <p className="text-muted-foreground mb-6">
+            No kanji were provided for this battle. Please select kanji from the Kanji Browser.
+          </p>
+        </div>
+      </div>
+    );
+  }
   if (!session) {
     return null;
   }
@@ -458,13 +535,13 @@ export default function KanjiQuest({
               className="text-center"
             >
               <h1 className="text-3xl font-bold mb-8">A wild Pokémon appeared!</h1>
-              
+
               <motion.div
-                animate={{ 
+                animate={{
                   y: [0, -10, 0],
                   rotate: [0, 5, -5, 0]
                 }}
-                transition={{ 
+                transition={{
                   duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut"
@@ -496,7 +573,7 @@ export default function KanjiQuest({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="container mx-auto px-4 py-8 max-w-4xl"
+            className="container mx-auto px-4 py-8 max-w-4xl pb-32 md:pb-8"
           >
             <div className="mb-6">
               <div className="flex justify-between items-center mb-4">
@@ -505,10 +582,10 @@ export default function KanjiQuest({
                   {currentKanjiIndex + 1} / {session.kanji.length}
                 </div>
               </div>
-              
+
               {/* Progress bar */}
               <div className="w-full bg-muted rounded-full h-2">
-                <div 
+                <div
                   className="bg-primary h-2 rounded-full transition-all"
                   style={{ width: `${((currentKanjiIndex + 1) / session.kanji.length) * 100}%` }}
                 />
@@ -527,7 +604,7 @@ export default function KanjiQuest({
                 <div className="text-8xl japanese-text mb-4">
                   {session.kanji[currentKanjiIndex].character}
                 </div>
-                
+
                 <KanjiTTSButton
                   kanji={session.kanji[currentKanjiIndex].character}
                   size="lg"
@@ -619,7 +696,7 @@ export default function KanjiQuest({
             </motion.div>
 
             {/* Navigation */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-32 md:mb-8">
               <button
                 onClick={() => setCurrentKanjiIndex(Math.max(0, currentKanjiIndex - 1))}
                 disabled={currentKanjiIndex === 0}
@@ -665,7 +742,7 @@ export default function KanjiQuest({
                 </span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
-                <div 
+                <div
                   className="bg-primary h-2 rounded-full transition-all"
                   style={{ width: `${((currentQuestionIndex + 1) / quizQuestions.length) * 100}%` }}
                 />
@@ -679,46 +756,58 @@ export default function KanjiQuest({
               className="bg-card rounded-lg p-6 border border-border"
             >
               <h3 className="text-xl mb-6">{quizQuestions[currentQuestionIndex].question}</h3>
-              
+
               <div className="space-y-3">
                 {quizQuestions[currentQuestionIndex].options.map((option, idx) => {
                   const isCorrect = idx === quizQuestions[currentQuestionIndex].correctIndex;
                   const isSelected = userAnswers[currentQuestionIndex] === idx;
-                  
+                  const hasAnswered = userAnswers[currentQuestionIndex] !== undefined;
+
                   return (
                     <button
                       key={idx}
                       onClick={() => handleQuizAnswer(idx)}
                       disabled={showQuizFeedback}
-                      className={`w-full p-4 rounded-lg border-2 text-left transition-all text-2xl japanese-text ${
-                        showQuizFeedback
-                          ? isCorrect
-                            ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                            : isSelected
+                      className={`w-full p-4 rounded-lg border-2 text-left transition-all text-2xl japanese-text ${showQuizFeedback && hasAnswered
+                        ? isCorrect
+                          ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                          : isSelected
                             ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                             : 'border-border'
-                          : 'border-border hover:border-primary hover:bg-muted cursor-pointer'
-                      }`}
+                        : 'border-border hover:border-primary hover:bg-muted cursor-pointer'
+                        }`}
                     >
                       {option}
                     </button>
                   );
                 })}
               </div>
-              
+
               {/* Manual continue button as fallback */}
               {showQuizFeedback && (
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => {
+                      // If no answer was recorded for this question, record it as unanswered (-1)
+                      if (userAnswers.length <= currentQuestionIndex) {
+                        const newAnswers = [...userAnswers];
+                        // Fill any gaps with -1 (unanswered)
+                        while (newAnswers.length <= currentQuestionIndex) {
+                          newAnswers.push(-1);
+                        }
+                        setUserAnswers(newAnswers);
+                      }
+
                       if (currentQuestionIndex < quizQuestions.length - 1) {
                         setCurrentQuestionIndex(prev => prev + 1);
                         setShowQuizFeedback(false);
                       } else {
                         // Make sure we have all answers including the current one
-                        const finalAnswers = userAnswers.length === quizQuestions.length 
-                          ? userAnswers 
-                          : [...userAnswers].slice(0, currentQuestionIndex + 1);
+                        const finalAnswers = [...userAnswers];
+                        // Fill any remaining gaps
+                        while (finalAnswers.length < quizQuestions.length) {
+                          finalAnswers.push(-1);
+                        }
                         completeQuiz(finalAnswers);
                       }
                     }}
@@ -750,7 +839,7 @@ export default function KanjiQuest({
                     transition={{ type: "spring", duration: 0.8 }}
                   >
                     <h1 className="text-4xl font-bold mb-8">Pokémon Caught! 🎉</h1>
-                    
+
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, delay: 0.5 }}
@@ -762,7 +851,7 @@ export default function KanjiQuest({
                         className="w-64 h-64 mx-auto"
                       />
                     </motion.div>
-                    
+
                     <p className="text-xl mb-2">Score: {Math.round(session.quizScore || 0)}%</p>
                     <p className="text-muted-foreground mb-8">
                       The Pokémon has been added to your Pokédex!

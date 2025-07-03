@@ -20,6 +20,7 @@ import CompanionTrigger from "@/components/CompanionTrigger";
 import JMdictInitializer from "@/components/JMdictInitializer";
 import OfflineNotification from "@/components/OfflineNotification";
 import { ModalProvider } from "@/contexts/ModalContext";
+import { KanjiSelectionProvider } from '@/contexts/KanjiSelectionContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -193,36 +194,38 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <EnvProvider>
-          <SettingsProvider>
-            <AuthProvider>
-              <NotificationProvider>
-                <SubscriptionProvider>
-                  <AdminProvider>
-                    <ModalProvider>
-                      {/* Use a client component to connect settings to theme */}
-                      <ClientThemeWrapper>
-                      <PWAWrapper>
-                        <OnboardingWrapper>
-                          <div className="min-h-screen bg-background text-foreground">
-                            <OfflineNotification />
-                            <JMdictInitializer />
-                            {children}
-                            <BottomNavigation />
-                            <PWAInstaller />
-                            <PWAUpdateNotification />
-                            <FloatingDonateButton />
-                            <CompanionTrigger />
-                            <ToastContainer />
-                          </div>
-                        </OnboardingWrapper>
-                      </PWAWrapper>
-                      </ClientThemeWrapper>
-                    </ModalProvider>
-                  </AdminProvider>
-                </SubscriptionProvider>
-              </NotificationProvider>
-            </AuthProvider>
-          </SettingsProvider>
+          <KanjiSelectionProvider>
+            <SettingsProvider>
+              <AuthProvider>
+                <NotificationProvider>
+                  <SubscriptionProvider>
+                    <AdminProvider>
+                      <ModalProvider>
+                        {/* Use a client component to connect settings to theme */}
+                        <ClientThemeWrapper>
+                          <PWAWrapper>
+                            <OnboardingWrapper>
+                              <div className="min-h-screen bg-background text-foreground">
+                                <OfflineNotification />
+                                <JMdictInitializer />
+                                {children}
+                                <BottomNavigation />
+                                <PWAInstaller />
+                                <PWAUpdateNotification />
+                                <FloatingDonateButton />
+                                <CompanionTrigger />
+                                <ToastContainer />
+                              </div>
+                            </OnboardingWrapper>
+                          </PWAWrapper>
+                        </ClientThemeWrapper>
+                      </ModalProvider>
+                    </AdminProvider>
+                  </SubscriptionProvider>
+                </NotificationProvider>
+              </AuthProvider>
+            </SettingsProvider>
+          </KanjiSelectionProvider>
         </EnvProvider>
       </body>
     </html>

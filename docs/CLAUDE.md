@@ -153,6 +153,36 @@ The app is configured for static export to Firebase Hosting:
 - Subscription status is validated server-side
 - API keys and secrets are managed through environment variables
 
+## Logging and Debugging
+
+### Centralized Subscription Logger
+The app uses a centralized logging system for subscription state management, located at `src/utils/subscriptionLogger.ts`. This replaces scattered console.log statements throughout the codebase.
+
+**Features:**
+- Single point of logging for all subscription state changes
+- Automatically logs user login events with complete subscription details
+- Structured output using console.table for better readability
+- Only active in development mode by default
+
+**Configuration:**
+- Set `NODE_ENV=development` to enable logging automatically
+- Or set `NEXT_PUBLIC_DEBUG_SUBSCRIPTIONS=true` to force enable in production
+
+**What gets logged:**
+- User authentication state (email, uid, login method)
+- Subscription details (plan, status, Stripe ID, renewal date)
+- User type (guest, free, premium)
+- Usage limits and current usage counters
+- Timestamps for all events
+
+**Usage:**
+The logger is automatically integrated into `SubscriptionContext` and logs:
+- User login events
+- Subscription updates
+- Feature access checks
+
+To view subscription state for any user, simply log in and check the browser console for the structured table output showing complete subscription information.
+
 ## Common Tasks
 
 ### ⚠️ Adding New Pages/Features - NAVIGATION MAINTENANCE REQUIRED

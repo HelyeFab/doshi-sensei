@@ -13,7 +13,8 @@ export function useFreemiumLimits() {
     canDoDrill,
     canSaveProgress,
     showLoginPrompt,
-    showUpgradePrompt
+    showUpgradePrompt,
+    loading
   } = useSubscription();
 
   // Get current usage and limits
@@ -77,6 +78,12 @@ export function useFreemiumLimits() {
 
   // Enforce limits with appropriate prompts
   const enforceLimit = (feature: 'drills' | 'lists' | 'save' | 'sync', context?: string) => {
+    // CRITICAL: Don't enforce limits while subscription data is still loading
+    if (loading) {
+      // Subscription data still loading, allowing action temporarily
+      return true; // Allow action while loading to prevent race conditions
+    }
+    
     if (isFeatureAvailable(feature)) {
       return true; // Feature is available
     }
@@ -185,6 +192,7 @@ export function useFreemiumLimits() {
     canCreateList,
     canDoDrill,
     canSaveProgress,
-    isFeatureAvailable
+    isFeatureAvailable,
+    loading
   };
 }

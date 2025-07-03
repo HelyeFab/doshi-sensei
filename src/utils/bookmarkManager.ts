@@ -67,7 +67,7 @@ export class BookmarkManager {
         remainingBookmarks: bookmarkLimit === -1 ? -1 : Math.max(0, bookmarkLimit - totalBookmarks)
       };
     } catch (error) {
-      console.error('Error getting bookmark stats:', error);
+      // Error getting bookmark stats
       // Important fix: When there's an error, we should still allow bookmarking if user is under limit
       // Default to 0 bookmarks and calculate canBookmark based on that
       const bookmarkLimit = this.getBookmarkLimit(isPremium);
@@ -97,7 +97,7 @@ export class BookmarkManager {
       const snapshot = await getDocs(bookmarkQuery);
       return !snapshot.empty;
     } catch (error) {
-      console.error('Error checking bookmark status:', error);
+      // Error checking bookmark status
       return false;
     }
   }
@@ -151,10 +151,10 @@ export class BookmarkManager {
 
       await setDoc(doc(db, this.COLLECTION_NAME, bookmarkId), bookmarkData);
       
-      console.log(`✅ Article bookmarked: ${article.title}`);
+      // Article bookmarked successfully
       return { success: true };
     } catch (error) {
-      console.error('Error bookmarking article:', error);
+      // Error bookmarking article
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Failed to bookmark article' 
@@ -170,10 +170,10 @@ export class BookmarkManager {
       const bookmarkId = `${userId}_${articleId}`;
       await deleteDoc(doc(db, this.COLLECTION_NAME, bookmarkId));
       
-      console.log(`🗑️ Bookmark removed for article: ${articleId}`);
+      // Bookmark removed successfully
       return { success: true };
     } catch (error) {
-      console.error('Error removing bookmark:', error);
+      // Error removing bookmark
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Failed to remove bookmark' 
@@ -200,7 +200,7 @@ export class BookmarkManager {
         return { ...result, isBookmarked: result.success };
       }
     } catch (error) {
-      console.error('Error toggling bookmark:', error);
+      // Error toggling bookmark
       return { 
         success: false, 
         isBookmarked: false,
@@ -223,7 +223,7 @@ export class BookmarkManager {
       const snapshot = await getDocs(bookmarksQuery);
       return snapshot.docs.map(doc => doc.data() as BookmarkedArticle);
     } catch (error) {
-      console.error('Error getting user bookmarks:', error);
+      // Error getting user bookmarks
       
       // If there's an index error, try without ordering
       if (error instanceof Error && error.message.includes('index')) {
@@ -239,7 +239,7 @@ export class BookmarkManager {
           // Sort manually
           return bookmarks.sort((a, b) => b.bookmarkedAt.toMillis() - a.bookmarkedAt.toMillis());
         } catch (fallbackError) {
-          console.error('Fallback query also failed:', fallbackError);
+          // Fallback query also failed
           return [];
         }
       }
@@ -281,7 +281,7 @@ export class BookmarkManager {
       
       return { bookmarks, hasMore };
     } catch (error) {
-      console.error('Error getting paginated bookmarks:', error);
+      // Error getting paginated bookmarks
       return { bookmarks: [], hasMore: false };
     }
   }
@@ -301,7 +301,7 @@ export class BookmarkManager {
         bookmark.articleCategory.toLowerCase().includes(searchLower)
       );
     } catch (error) {
-      console.error('Error searching bookmarks:', error);
+      // Error searching bookmarks
       return [];
     }
   }
@@ -321,7 +321,7 @@ export class BookmarkManager {
       const snapshot = await getDocs(bookmarksQuery);
       return snapshot.docs.map(doc => doc.data() as BookmarkedArticle);
     } catch (error) {
-      console.error('Error getting bookmarks by category:', error);
+      // Error getting bookmarks by category
       return [];
     }
   }
@@ -339,10 +339,10 @@ export class BookmarkManager {
       
       await Promise.all(deletePromises);
       
-      console.log(`🗑️ Cleared all bookmarks for user: ${userId}`);
+      // Cleared all bookmarks for user
       return { success: true };
     } catch (error) {
-      console.error('Error clearing all bookmarks:', error);
+      // Error clearing all bookmarks
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Failed to clear bookmarks' 
@@ -354,12 +354,12 @@ export class BookmarkManager {
    * Debug bookmark counts across collections
    */
   static async debugBookmarkCounts(userId: string): Promise<void> {
-    console.log(`\n🔍 Debugging bookmarks for user: ${userId}\n`);
+    // Debugging bookmarks for user
     
     try {
       // Check current collection
       const stats = await this.getBookmarkStats(userId, false);
-      console.log(`📚 BookmarkManager stats:`, stats);
+      // BookmarkManager stats retrieved
       
       // Check for bookmarks in old ArticleManager collection
       const oldCollectionQuery = query(
@@ -369,23 +369,19 @@ export class BookmarkManager {
       const oldSnapshot = await getDocs(oldCollectionQuery);
       
       if (oldSnapshot.size > 0) {
-        console.log(`\n⚠️  WARNING: Found ${oldSnapshot.size} bookmarks in old 'userBookmarks' collection!`);
-        console.log('This might be interfering with bookmark limits.');
+        // WARNING: Found bookmarks in old 'userBookmarks' collection
         oldSnapshot.docs.forEach(doc => {
           const data = doc.data();
-          console.log(`  - ${data.articleTitle || 'Unknown'} (ID: ${doc.id})`);
+          // Old bookmark found
         });
       }
       
       // Get actual bookmarks from current system
       const currentBookmarks = await this.getUserBookmarks(userId);
-      console.log(`\n📋 Current bookmarks (${currentBookmarks.length}):`);
-      currentBookmarks.forEach(bookmark => {
-        console.log(`  - ${bookmark.articleTitle} (ID: ${bookmark.articleId})`);
-      });
+      // Current bookmarks retrieved
       
     } catch (error) {
-      console.error('❌ Error debugging bookmarks:', error);
+      // Error debugging bookmarks
     }
   }
 }

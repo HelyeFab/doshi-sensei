@@ -15,7 +15,7 @@ export interface AnalyticsEvent {
  * Track an analytics event
  */
 export async function trackEvent(
-  eventType: AnalyticsEvent['eventType'], 
+  eventType: AnalyticsEvent['eventType'],
   data: Record<string, any> = {},
   userId?: string
 ): Promise<void> {
@@ -68,7 +68,7 @@ export async function getAnalyticsData(options: {
     if (options.eventType) {
       q = query(q, where('eventType', '==', options.eventType));
     }
-    
+
     if (options.userId) {
       q = query(q, where('userId', '==', options.userId));
     }
@@ -87,21 +87,21 @@ export async function getAnalyticsData(options: {
     }
 
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-      timestamp: doc.data().timestamp?.toDate() || new Date(),
+      timestamp: (doc.data().timestamp && typeof doc.data().timestamp.toDate === 'function') ? doc.data().timestamp.toDate() : new Date(doc.data().timestamp || Date.now()),
     } as AnalyticsEvent));
 
   } catch (error) {
     console.error('Error fetching analytics data:', error);
-    
+
     // Handle specific Firestore index errors
     if (error instanceof Error && error.message.includes('requires an index')) {
       throw new Error('Analytics query requires a database index. Please check the Firebase console or contact an administrator.');
     }
-    
+
     throw new Error(error instanceof Error ? error.message : 'Failed to fetch analytics data');
   }
 }
@@ -123,20 +123,20 @@ export async function getTodayAnalytics(): Promise<{
 
     // Use Promise.allSettled to handle individual query failures gracefully
     const [drillResult, searchResult, viewResult] = await Promise.allSettled([
-      getAnalyticsData({ 
-        eventType: 'drill_completed', 
-        startDate: today, 
-        endDate: tomorrow 
+      getAnalyticsData({
+        eventType: 'drill_completed',
+        startDate: today,
+        endDate: tomorrow
       }),
-      getAnalyticsData({ 
-        eventType: 'vocabulary_search', 
-        startDate: today, 
-        endDate: tomorrow 
+      getAnalyticsData({
+        eventType: 'vocabulary_search',
+        startDate: today,
+        endDate: tomorrow
       }),
-      getAnalyticsData({ 
-        eventType: 'mood_board_view', 
-        startDate: today, 
-        endDate: tomorrow 
+      getAnalyticsData({
+        eventType: 'mood_board_view',
+        startDate: today,
+        endDate: tomorrow
       }),
     ]);
 
@@ -194,7 +194,7 @@ export async function getMostPopularMoodBoard(days: number = 7): Promise<string>
 
     // Find most popular
     const mostPopular = Object.entries(moodBoardCounts)
-      .sort(([,a], [,b]) => b - a)[0];
+      .sort(([, a], [, b]) => b - a)[0];
 
     return mostPopular ? mostPopular[0] : 'No data';
 
@@ -239,8 +239,8 @@ export async function getAverageSessionDuration(days: number = 7): Promise<numbe
     const durations: number[] = [];
     sessionStarts.forEach(start => {
       if (start.userId) {
-        const end = sessionEnds.find(e => 
-          e.userId === start.userId && 
+        const end = sessionEnds.find(e =>
+          e.userId === start.userId &&
           e.timestamp > start.timestamp
         );
         if (end) {
@@ -268,22 +268,22 @@ export async function getAverageSessionDuration(days: number = 7): Promise<numbe
 // Helper functions for easy tracking
 export const Analytics = {
   // Track drill completion
-  trackDrillCompleted: (userId?: string, drillData: Record<string, any> = {}) => 
+  trackDrillCompleted: (userId?: string, drillData: Record<string, any> = {}) =>
     trackEvent('drill_completed', drillData, userId),
 
   // Track vocabulary search
-  trackVocabularySearch: (userId?: string, searchData: Record<string, any> = {}) => 
+  trackVocabularySearch: (userId?: string, searchData: Record<string, any> = {}) =>
     trackEvent('vocabulary_search', searchData, userId),
 
   // Track mood board view
-  trackMoodBoardView: (userId?: string, viewData: Record<string, any> = {}) => 
+  trackMoodBoardView: (userId?: string, viewData: Record<string, any> = {}) =>
     trackEvent('mood_board_view', viewData, userId),
 
   // Track session start
-  trackSessionStart: (userId?: string, sessionData: Record<string, any> = {}) => 
+  trackSessionStart: (userId?: string, sessionData: Record<string, any> = {}) =>
     trackEvent('session_start', sessionData, userId),
 
   // Track session end
-  trackSessionEnd: (userId?: string, sessionData: Record<string, any> = {}) => 
+  trackSessionEnd: (userId?: string, sessionData: Record<string, any> = {}) =>
     trackEvent('session_end', sessionData, userId),
 };

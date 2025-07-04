@@ -12,7 +12,7 @@ import {
   getReadingSpeedCategory
 } from '@/utils/readingAnalytics';
 import { generateFuriganaWithCache, checkFuriganaApiHealth } from '@/utils/furigana';
-import { BookmarkManager } from '@/utils/bookmarkManager';
+import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import ArticleAudioPlayer from '@/components/audio/ArticleAudioPlayer';
@@ -25,21 +25,20 @@ function parseWithRubyTags(text: string): string {
 }
 
 // Enhanced text renderer with ruby tag support
-function RubyTextRenderer({ text, settings, onWordClick }: { 
-  text: string; 
+function RubyTextRenderer({ text, settings, onWordClick }: {
+  text: string;
   settings: ReadingSettings;
   onWordClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }) {
   const processedText = parseWithRubyTags(text);
-  
+
   return (
-    <div 
-      className={`${
-        settings.fontSize === 'small' ? 'text-sm' :
-        settings.fontSize === 'medium' ? 'text-base' :
-        settings.fontSize === 'large' ? 'text-lg' :
-        'text-xl'
-      } leading-relaxed [&_ruby]:cursor-pointer [&_ruby]:hover:bg-primary/20 [&_ruby]:transition-colors [&_ruby]:rounded [&_ruby]:px-0.5`}
+    <div
+      className={`${settings.fontSize === 'small' ? 'text-sm' :
+          settings.fontSize === 'medium' ? 'text-base' :
+            settings.fontSize === 'large' ? 'text-lg' :
+              'text-xl'
+        } leading-relaxed [&_ruby]:cursor-pointer [&_ruby]:hover:bg-primary/20 [&_ruby]:transition-colors [&_ruby]:rounded [&_ruby]:px-0.5`}
       dangerouslySetInnerHTML={{ __html: processedText }}
       onClick={onWordClick}
       style={{
@@ -203,11 +202,10 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
               <button
                 key={size}
                 onClick={() => handleFontSizeChange(size)}
-                className={`px-3 py-1 rounded text-sm ${
-                  settings.fontSize === size
+                className={`px-3 py-1 rounded text-sm ${settings.fontSize === size
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
+                  }`}
               >
                 {{
                   small: 'S',
@@ -228,14 +226,12 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
             </span>
             <button
               onClick={handleToggleFurigana}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                settings.showFurigana ? 'bg-primary' : 'bg-muted'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  settings.showFurigana ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </label>
@@ -249,14 +245,12 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
             </span>
             <button
               onClick={handleToggleVocabularyHighlight}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </label>
@@ -275,7 +269,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const { user } = useAuth();
   const { userType } = useSubscription();
   const isPremium = userType === 'monthly' || userType === 'yearly';
-  
+
   const [settings, setSettings] = useState<ReadingSettings>(() => {
     // Load settings from localStorage
     if (typeof window !== 'undefined') {
@@ -343,7 +337,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
     const target = event.target as HTMLElement;
     let word = '';
-    
+
     // Check if clicked element is part of a ruby tag
     if (target.tagName === 'RT') {
       // Clicked on furigana - get the kanji from the parent ruby element
@@ -530,16 +524,15 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         setIsBookmarked(false);
         return;
       }
-      
       try {
-        const bookmarked = await BookmarkManager.isArticleBookmarked(user.uid, article.id);
-        setIsBookmarked(bookmarked);
+        // ArticleManager returns all bookmarks, filter for this article
+        const bookmarks = await ArticleManager.getUserBookmarks(user.uid);
+        setIsBookmarked(bookmarks.some(b => b.contentType === 'article' && b.contentId === article.id));
       } catch (error) {
         console.error('Error checking bookmark status:', error);
         setIsBookmarked(false);
       }
     };
-
     checkBookmarkStatus();
   }, [article.id, user]);
 
@@ -548,21 +541,19 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       setBookmarkError('Please log in to bookmark articles');
       return;
     }
-
     setBookmarkLoading(true);
     setBookmarkError(null);
-
     try {
-      const result = await BookmarkManager.toggleBookmark(user.uid, article, isPremium);
-      
-      if (result.success) {
-        setIsBookmarked(result.isBookmarked);
+      if (isBookmarked) {
+        await ArticleManager.removeBookmark(user.uid, article.id);
+        setIsBookmarked(false);
       } else {
-        setBookmarkError(result.error || 'Failed to update bookmark');
+        await ArticleManager.bookmarkArticle(user.uid, article.id, isPremium);
+        setIsBookmarked(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error toggling bookmark:', error);
-      setBookmarkError('Failed to update bookmark');
+      setBookmarkError(error?.message || 'Failed to update bookmark');
     } finally {
       setBookmarkLoading(false);
     }
@@ -631,11 +622,10 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             {/* Quiz button */}
             <button
               onClick={() => setShowQuiz(true)}
-              className={`p-2 rounded-lg transition-colors ${
-                showQuiz
+              className={`p-2 rounded-lg transition-colors ${showQuiz
                   ? 'text-green-500 bg-green-50 dark:bg-green-900/20'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              }`}
+                }`}
               title="Take Comprehension Quiz"
               disabled={quizCompleted}
             >
@@ -646,11 +636,10 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             <button
               onClick={handleBookmarkToggle}
               disabled={bookmarkLoading}
-              className={`p-2 rounded-lg transition-colors ${
-                isBookmarked
+              className={`p-2 rounded-lg transition-colors ${isBookmarked
                   ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               title={user ? (isBookmarked ? 'Remove bookmark' : 'Bookmark article') : 'Login to bookmark'}
             >
               {bookmarkLoading ? '⏳' : (isBookmarked ? '★' : '☆')}
@@ -691,11 +680,10 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         >
           {/* Article header */}
           <header className="mb-8">
-            <h1 className={`font-bold text-foreground mb-4 ${
-              settings.fontSize === 'xlarge' ? 'text-3xl' :
-              settings.fontSize === 'large' ? 'text-2xl' :
-              settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
-            }`}>
+            <h1 className={`font-bold text-foreground mb-4 ${settings.fontSize === 'xlarge' ? 'text-3xl' :
+                settings.fontSize === 'large' ? 'text-2xl' :
+                  settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
+              }`}>
               {article.title}
             </h1>
 
@@ -737,15 +725,15 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             ) : (
               processedContent.map((paragraph, index) => (
                 <div key={index} className="mb-6">
-                  <RubyTextRenderer 
-                    text={paragraph} 
+                  <RubyTextRenderer
+                    text={paragraph}
                     settings={settings}
                     onWordClick={(e) => {
                       const target = e.target as HTMLElement;
-                      if (target.classList.contains('vocabulary-highlight') || 
-                          target.tagName === 'RUBY' || 
-                          target.tagName === 'RT' ||
-                          target.closest('ruby')) {
+                      if (target.classList.contains('vocabulary-highlight') ||
+                        target.tagName === 'RUBY' ||
+                        target.tagName === 'RT' ||
+                        target.closest('ruby')) {
                         handleWordClick(e);
                       }
                     }}
@@ -882,7 +870,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         {quizCompleted && comprehensionScore !== null && (
           <div className="fixed top-4 right-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 shadow-lg max-w-sm">
             <div className="flex items-start gap-3">
-              <span className="text-2xl">�</span>
+              <span className="text-2xl">🎯</span>
               <div>
                 <h4 className="font-medium text-green-800 dark:text-green-200 mb-1">
                   記事読了完了！

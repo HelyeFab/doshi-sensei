@@ -229,10 +229,10 @@ export async function getResourcePost(id: string): Promise<ResourcePost | null> 
       return {
         id: docSnap.id,
         ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
-        publishedAt: data.publishedAt?.toDate() || undefined,
-        scheduledFor: data.scheduledFor?.toDate() || undefined,
+        createdAt: (data.createdAt && typeof data.createdAt.toDate === 'function') ? data.createdAt.toDate() : new Date(data.createdAt || Date.now()),
+        updatedAt: (data.updatedAt && typeof data.updatedAt.toDate === 'function') ? data.updatedAt.toDate() : new Date(data.updatedAt || Date.now()),
+        publishedAt: (data.publishedAt && typeof data.publishedAt.toDate === 'function') ? data.publishedAt.toDate() : (data.publishedAt ? new Date(data.publishedAt) : undefined),
+        scheduledFor: (data.scheduledFor && typeof data.scheduledFor.toDate === 'function') ? data.scheduledFor.toDate() : (data.scheduledFor ? new Date(data.scheduledFor) : undefined),
       } as ResourcePost;
     }
 
@@ -262,10 +262,10 @@ export async function getResourcePostBySlug(slug: string): Promise<ResourcePost 
       return {
         id: doc.id,
         ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
-        publishedAt: data.publishedAt?.toDate() || undefined,
-        scheduledFor: data.scheduledFor?.toDate() || undefined,
+        createdAt: (data.createdAt && typeof data.createdAt.toDate === 'function') ? data.createdAt.toDate() : new Date(data.createdAt || Date.now()),
+        updatedAt: (data.updatedAt && typeof data.updatedAt.toDate === 'function') ? data.updatedAt.toDate() : new Date(data.updatedAt || Date.now()),
+        publishedAt: (data.publishedAt && typeof data.publishedAt.toDate === 'function') ? data.publishedAt.toDate() : (data.publishedAt ? new Date(data.publishedAt) : undefined),
+        scheduledFor: (data.scheduledFor && typeof data.scheduledFor.toDate === 'function') ? data.scheduledFor.toDate() : (data.scheduledFor ? new Date(data.scheduledFor) : undefined),
       } as ResourcePost;
     }
 
@@ -326,10 +326,10 @@ export async function getPublishedResourcePosts(
       allPosts.push({
         id: doc.id,
         ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
-        publishedAt: data.publishedAt?.toDate() || undefined,
-        scheduledFor: data.scheduledFor?.toDate() || undefined,
+        createdAt: (data.createdAt && typeof data.createdAt.toDate === 'function') ? data.createdAt.toDate() : new Date(data.createdAt || Date.now()),
+        updatedAt: (data.updatedAt && typeof data.updatedAt.toDate === 'function') ? data.updatedAt.toDate() : new Date(data.updatedAt || Date.now()),
+        publishedAt: (data.publishedAt && typeof data.publishedAt.toDate === 'function') ? data.publishedAt.toDate() : (data.publishedAt ? new Date(data.publishedAt) : undefined),
+        scheduledFor: (data.scheduledFor && typeof data.scheduledFor.toDate === 'function') ? data.scheduledFor.toDate() : (data.scheduledFor ? new Date(data.scheduledFor) : undefined),
       } as ResourcePost);
     });
 

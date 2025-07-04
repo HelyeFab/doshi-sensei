@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 import BookmarkSystemTester from '@/utils/testBookmarkSystem';
+import { BookmarkDebugger } from '@/utils/debugBookmarks';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function TestBookmarksPage() {
     const [testResults, setTestResults] = useState<string[]>([]);
     const [isRunning, setIsRunning] = useState(false);
+    const { user } = useAuth();
 
     const addLog = (message: string) => {
         setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
@@ -70,7 +73,10 @@ export default function TestBookmarksPage() {
                         </button>
 
                         <button
-                            onClick={() => runIndividualTest('Article Bookmark Creation', () => BookmarkSystemTester.testArticleBookmarkCreation())}
+                            onClick={async () => {
+                                const userId = await BookmarkSystemTester.ensureAuthenticated();
+                                runIndividualTest('Article Bookmark Creation', () => BookmarkSystemTester.testArticleBookmarkCreation(userId));
+                            }}
                             disabled={isRunning}
                             className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
                         >
@@ -78,7 +84,10 @@ export default function TestBookmarksPage() {
                         </button>
 
                         <button
-                            onClick={() => runIndividualTest('Story Bookmark Creation', () => BookmarkSystemTester.testStoryBookmarkCreation())}
+                            onClick={async () => {
+                                const userId = await BookmarkSystemTester.ensureAuthenticated();
+                                runIndividualTest('Story Bookmark Creation', () => BookmarkSystemTester.testStoryBookmarkCreation(userId));
+                            }}
                             disabled={isRunning}
                             className="w-full bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50"
                         >
@@ -86,7 +95,10 @@ export default function TestBookmarksPage() {
                         </button>
 
                         <button
-                            onClick={() => runIndividualTest('Reading Progress', () => BookmarkSystemTester.testReadingProgressUpdates())}
+                            onClick={async () => {
+                                const userId = await BookmarkSystemTester.ensureAuthenticated();
+                                runIndividualTest('Reading Progress', () => BookmarkSystemTester.testReadingProgressUpdates(userId));
+                            }}
                             disabled={isRunning}
                             className="w-full bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 disabled:opacity-50"
                         >
@@ -94,7 +106,10 @@ export default function TestBookmarksPage() {
                         </button>
 
                         <button
-                            onClick={() => runIndividualTest('Bookmark Retrieval', () => BookmarkSystemTester.testBookmarkRetrieval())}
+                            onClick={async () => {
+                                const userId = await BookmarkSystemTester.ensureAuthenticated();
+                                runIndividualTest('Bookmark Retrieval', () => BookmarkSystemTester.testBookmarkRetrieval(userId));
+                            }}
                             disabled={isRunning}
                             className="w-full bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 disabled:opacity-50"
                         >
@@ -102,7 +117,10 @@ export default function TestBookmarksPage() {
                         </button>
 
                         <button
-                            onClick={() => runIndividualTest('Bookmark Statistics', () => BookmarkSystemTester.testBookmarkStatistics())}
+                            onClick={async () => {
+                                const userId = await BookmarkSystemTester.ensureAuthenticated();
+                                runIndividualTest('Bookmark Statistics', () => BookmarkSystemTester.testBookmarkStatistics(userId));
+                            }}
                             disabled={isRunning}
                             className="w-full bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 disabled:opacity-50"
                         >
@@ -110,11 +128,56 @@ export default function TestBookmarksPage() {
                         </button>
 
                         <button
-                            onClick={() => runIndividualTest('Bookmark Removal', () => BookmarkSystemTester.testBookmarkRemoval())}
+                            onClick={async () => {
+                                const userId = await BookmarkSystemTester.ensureAuthenticated();
+                                runIndividualTest('Bookmark Removal', () => BookmarkSystemTester.testBookmarkRemoval(userId));
+                            }}
                             disabled={isRunning}
                             className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
                         >
                             Test Bookmark Removal
+                        </button>
+
+                        <button
+                            onClick={async () => {
+                                if (!user) {
+                                    addLog('❌ No authenticated user found');
+                                    return;
+                                }
+                                runIndividualTest('Debug Article Bookmark', async () => {
+                                    const result = await BookmarkDebugger.testBookmarkCreation(user.uid);
+                                    if (result.success) {
+                                        addLog(`✅ Debug test passed: ${result.data?.bookmarkId}`);
+                                    } else {
+                                        addLog(`❌ Debug test failed: ${result.error}`);
+                                    }
+                                });
+                            }}
+                            disabled={isRunning}
+                            className="w-full bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 disabled:opacity-50"
+                        >
+                            Debug Article Permissions
+                        </button>
+
+                        <button
+                            onClick={async () => {
+                                if (!user) {
+                                    addLog('❌ No authenticated user found');
+                                    return;
+                                }
+                                runIndividualTest('Debug Story Bookmark', async () => {
+                                    const result = await BookmarkDebugger.testStoryBookmarkCreation(user.uid);
+                                    if (result.success) {
+                                        addLog(`✅ Debug test passed: ${result.data?.bookmarkId}`);
+                                    } else {
+                                        addLog(`❌ Debug test failed: ${result.error}`);
+                                    }
+                                });
+                            }}
+                            disabled={isRunning}
+                            className="w-full bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 disabled:opacity-50"
+                        >
+                            Debug Story Permissions
                         </button>
                     </div>
                 </div>

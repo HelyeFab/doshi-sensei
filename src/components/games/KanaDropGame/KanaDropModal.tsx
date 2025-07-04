@@ -64,7 +64,9 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
           startTime: Date.now()
         }));
         // Play start sound
-        getGameAudioManager().playSound('start');
+        getGameAudioManager().playSound('start').catch(() => {
+          console.warn('[KanaDrop] Failed to play start sound');
+        });
       } else {
         setCountdown(countdown - 1);
       }
@@ -100,7 +102,9 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
       setShowVictory(true);
       // Play victory sound
-      getGameAudioManager().playSound('victory');
+      getGameAudioManager().playSound('victory').catch(() => {
+        console.warn('[KanaDrop] Failed to play victory sound');
+      });
     }
   }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks]);
 
@@ -115,11 +119,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   // Update game state
   const handleGameStateUpdate = useCallback((updates: Partial<GameState> | ((prev: GameState) => Partial<GameState>)) => {
     if (typeof updates === 'function') {
-      setGameState(prev => {
-        const newUpdates = updates(prev);
-        console.log('[KanaDrop] State update:', newUpdates);
-        return { ...prev, ...newUpdates };
-      });
+      setGameState(updates);
     } else {
       setGameState(prev => ({ ...prev, ...updates }));
     }

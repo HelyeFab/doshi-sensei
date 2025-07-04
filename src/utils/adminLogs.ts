@@ -77,11 +77,11 @@ export async function fetchAdminLogs(options: {
     if (options.action) {
       q = query(q, where('action', '==', options.action));
     }
-    
+
     if (options.targetUserId) {
       q = query(q, where('targetUserId', '==', options.targetUserId));
     }
-    
+
     if (options.adminEmail) {
       q = query(q, where('adminEmail', '==', options.adminEmail));
     }
@@ -100,11 +100,11 @@ export async function fetchAdminLogs(options: {
     }
 
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-      timestamp: doc.data().timestamp?.toDate() || new Date(),
+      timestamp: (doc.data().timestamp && typeof doc.data().timestamp.toDate === 'function') ? doc.data().timestamp.toDate() : new Date(doc.data().timestamp || Date.now()),
     } as AdminLog));
 
   } catch (error) {
@@ -125,9 +125,9 @@ export async function getRecentAdminActivity(days: number = 7): Promise<{
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    const logs = await fetchAdminLogs({ 
+    const logs = await fetchAdminLogs({
       startDate,
-      limitCount: 100 
+      limitCount: 100
     });
 
     const actionsByType: Record<AdminLogAction, number> = {

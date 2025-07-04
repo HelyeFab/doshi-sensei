@@ -13,6 +13,8 @@ import {
   formatScrapingResult
 } from '@/utils/newsSources';
 
+export const dynamic = 'force-dynamic';
+
 export default function ArticlesManagementPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string>('');

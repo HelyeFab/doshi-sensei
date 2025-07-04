@@ -9,21 +9,19 @@ import StoryReader from '@/components/story/StoryReader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 
-interface StoryPageProps {
-  params: {
-    slug: string;
-  };
-}
-
-export default function StoryPage({ params }: StoryPageProps) {
+export default function StoryPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { userType, showLoginPrompt, showUpgradePrompt } = useSubscription();
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
   const [canRead, setCanRead] = useState(true);
-  const nextParams = useParams();
-  const slug = typeof params?.slug === 'string' ? params.slug : (Array.isArray(params?.slug) ? params.slug[0] : nextParams?.slug);
+  const params = useParams();
+  const slug = typeof params?.slug === 'string'
+    ? params.slug
+    : Array.isArray(params?.slug)
+      ? params.slug[0]
+      : undefined;
 
   const isPremium = userType === 'monthly' || userType === 'yearly';
 

@@ -228,10 +228,14 @@ export class ArticleManager {
       where('contentId', '==', articleId)
     );
 
+    console.log('[removeBookmark] userId:', userId, 'articleId:', articleId);
+
     const snapshot = await getDocs(q);
+    console.log('[removeBookmark] Found', snapshot.docs.length, 'docs to delete');
     const batch = writeBatch(db);
 
     snapshot.docs.forEach(doc => {
+      console.log('[removeBookmark] Deleting doc id:', doc.id, doc.data());
       batch.delete(doc.ref);
     });
 

@@ -120,6 +120,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
 
     console.log('[KanaDrop] Spawning object:', newObject);
     onGameStateUpdate(prev => ({
+      ...prev,
       fallingObjects: [...prev.fallingObjects, newObject]
     }));
   }, [gameState.selectedKana, gameState.gameSpeed, activeRomaji, onGameStateUpdate]);
@@ -135,8 +136,11 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
       // Clicked distractor
       console.log('[KanaDrop] Distractor clicked!');
       setShowFeedback({ type: 'distractor', ...clickPosition });
-      audioManager.playSound('thud');
+      audioManager.playSound('thud').catch(() => {
+        console.warn('[KanaDrop] Failed to play thud sound');
+      });
       onGameStateUpdate(prev => ({
+        ...prev,
         score: Math.max(0, prev.score + GAME_CONSTANTS.POINTS_DISTRACTOR),
         clicks: {
           ...prev.clicks,
@@ -157,24 +161,24 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
           console.error('TTS error:', error);
         }
 
-        onGameStateUpdate(prev => {
-          const newScore = prev.score + GAME_CONSTANTS.POINTS_CORRECT;
-          console.log(`[KanaDrop] Score update: ${prev.score} -> ${newScore}`);
-          return {
-            score: newScore,
-            clicks: {
-              ...prev.clicks,
-              correct: prev.clicks.correct + 1
-            },
-            fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
-          };
-        });
+        onGameStateUpdate(prev => ({
+          ...prev,
+          score: prev.score + GAME_CONSTANTS.POINTS_CORRECT,
+          clicks: {
+            ...prev.clicks,
+            correct: prev.clicks.correct + 1
+          },
+          fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
+        }));
       } else {
         // Wrong kana clicked
         console.log(`[KanaDrop] Wrong kana clicked! Expected: ${activeRomaji}, Got: ${object.kanaData.romaji}`);
         setShowFeedback({ type: 'wrong', ...clickPosition });
-        audioManager.playSound('error');
+        audioManager.playSound('error').catch(() => {
+          console.warn('[KanaDrop] Failed to play error sound');
+        });
         onGameStateUpdate(prev => ({
+          ...prev,
           score: Math.max(0, prev.score + GAME_CONSTANTS.POINTS_WRONG_KANA),
           clicks: {
             ...prev.clicks,
@@ -195,12 +199,14 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
     if (object.type === 'kana' && object.kanaData && activeRomaji === object.kanaData.romaji) {
       // Missed target kana - penalty
       onGameStateUpdate(prev => ({
+        ...prev,
         score: Math.max(0, prev.score + GAME_CONSTANTS.POINTS_MISSED),
         fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
       }));
     } else {
       // Just remove the object
       onGameStateUpdate(prev => ({
+        ...prev,
         fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
       }));
     }

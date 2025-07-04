@@ -17,6 +17,10 @@ export class GameAudioManager {
     if (!this.enabled || !this.audioContext) return;
 
     try {
+      // Resume audio context if it's suspended (browser autoplay policy)
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
       

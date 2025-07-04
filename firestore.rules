@@ -18,11 +18,11 @@ service cloud.firestore {
 
     // Helper function to validate bookmark structure
     function isValidBookmark(data) {
-      return data.keys().hasAll(['userId', 'contentId', 'contentType', 'createdAt', 'updatedAt']) &&
+      return data.keys().hasAll(['userId', 'contentId', 'contentType', 'bookmarkedAt', 'updatedAt']) &&
         data.contentType in ['article', 'story'] &&
         data.userId is string &&
         data.contentId is string &&
-        data.createdAt is timestamp &&
+        data.bookmarkedAt is timestamp &&
         data.updatedAt is timestamp;
     }
 

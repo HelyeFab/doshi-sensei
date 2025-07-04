@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import { JapaneseWord, ConjugationForms, WordList } from '@/types';
 import { searchWords } from '@/utils/api';
@@ -211,7 +211,7 @@ export default function PracticePage() {
     localStorage.removeItem('kana-study-selection-katakana');
   };
 
-  const getSelectedKanaData = (): KanaChar[] => {
+  const getSelectedKanaData = useMemo((): KanaChar[] => {
     const selectedData: KanaChar[] = [];
     
     // Get hiragana selections
@@ -241,11 +241,10 @@ export default function PracticePage() {
     });
     
     return selectedData;
-  };
+  }, [selectedHiragana, selectedKatakana]);
 
   const handleStartKanaDrop = () => {
-    const selectedData = getSelectedKanaData();
-    if (selectedData.length === 0) {
+    if (getSelectedKanaData.length === 0) {
       showNotification({
         title: 'No Characters Selected',
         message: 'Please select some kana characters to play Kana Drop!',
@@ -253,7 +252,7 @@ export default function PracticePage() {
       });
       return;
     }
-    if (selectedData.length > 5) {
+    if (getSelectedKanaData.length > 5) {
       showNotification({
         title: 'Too Many Characters',
         message: 'Please select up to 5 characters for Kana Drop.',
@@ -450,7 +449,7 @@ export default function PracticePage() {
                 <KanaDropModal
                   isOpen={showKanaDropModal}
                   onClose={() => setShowKanaDropModal(false)}
-                  selectedKana={getSelectedKanaData()}
+                  selectedKana={getSelectedKanaData}
                 />
               )}
             </div>

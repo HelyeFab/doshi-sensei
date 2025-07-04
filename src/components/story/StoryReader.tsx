@@ -12,6 +12,7 @@ import { storyOfflineManager } from '@/utils/storyOfflineManager';
 import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord } from '@/types';
 import { lookupWord } from '@/utils/dictionaryLookup';
+import { StoryBookmarkManager } from '@/utils/storyBookmarkManager';
 
 interface StoryReaderProps {
   story: Story;
@@ -40,6 +41,8 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [wordLookupLoading, setWordLookupLoading] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
 
   const textContainerRef = useRef<HTMLDivElement>(null);
   const isPremium = userType === 'monthly' || userType === 'yearly';
@@ -57,6 +60,22 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       });
     }
   }, [story.id]);
+
+  // Check if story is bookmarked
+  useEffect(() => {
+    const checkBookmarkStatus = async () => {
+      if (user && story.id) {
+        try {
+          const bookmarked = await StoryBookmarkManager.isStoryBookmarked(user.uid, story.id);
+          setIsBookmarked(bookmarked);
+        } catch (error) {
+          console.error('Error checking bookmark status:', error);
+        }
+      }
+    };
+
+    checkBookmarkStatus();
+  }, [user, story.id]);
 
   // Save progress
   useEffect(() => {
@@ -160,6 +179,29 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       setSelectedWord(null);
     } catch (error) {
       console.error('Error saving word:', error);
+    }
+  };
+
+  const handleBookmarkToggle = async () => {
+    if (!user || !story.id) return;
+
+    setBookmarkLoading(true);
+    try {
+      if (isBookmarked) {
+        await StoryBookmarkManager.removeBookmark(user.uid, story.id);
+        setIsBookmarked(false);
+        console.log('📖 Story bookmark removed');
+      } else {
+        const success = await StoryBookmarkManager.bookmarkStory(user.uid, story.id, isPremium);
+        if (success) {
+          setIsBookmarked(true);
+          console.log('📖 Story bookmarked successfully');
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    } finally {
+      setBookmarkLoading(false);
     }
   };
 
@@ -371,6 +413,17 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                 🔊
               </button>
               <button
+                onClick={handleBookmarkToggle}
+                disabled={bookmarkLoading}
+                className={`p-2 rounded-lg transition-colors ${isBookmarked
+                  ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                title={user ? (isBookmarked ? 'Remove bookmark' : 'Bookmark story') : 'Login to bookmark'}
+              >
+                {bookmarkLoading ? '⏳' : (isBookmarked ? '★' : '☆')}
+              </button>
+              <button
                 onClick={onExit}
                 className="p-2 rounded-lg bg-secondary text-secondary-foreground"
               >
@@ -468,9 +521,8 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
               {story.pages.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full ${
-                    index === currentPageIndex ? 'bg-primary' : 'bg-muted'
-                  }`}
+                  className={`w-2 h-2 rounded-full ${index === currentPageIndex ? 'bg-primary' : 'bg-muted'
+                    }`}
                 />
               ))}
             </div>

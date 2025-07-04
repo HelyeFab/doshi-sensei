@@ -1,5 +1,55 @@
 # Enhanced Bookmarks and Storage Implementation Plan
 
+---
+
+## 🚦 Progress Update (July 4, 2024)
+
+### ✅ What Has Been Completed
+- Unified bookmark system (`user_bookmarks` collection) is implemented and used in the UI.
+- UI for article and story bookmarks is integrated in the Favourites page, with robust confirmation modals for single and bulk deletes.
+- Firestore security rules and bookmark structure have been updated and tested.
+- Legacy bookmark migration script has been created and run (no legacy bookmarks found).
+- Error handling and user feedback for bookmark actions are robust and user-friendly.
+- Debug logging has been added to the bookmark deletion logic to help diagnose backend issues.
+
+### 🟡 What Remains To Be Done
+- Complete debugging and fix for bookmark deletion: currently, UI calls deletion logic, but some bookmarks are not deleted from Firestore (likely due to query mismatch or legacy/corrupt data).
+- (Optional) Add a migration or cleanup script to fix any legacy/corrupt bookmarks in Firestore.
+- Finalize and test unified reading progress tracking for both articles and stories.
+- Add any missing API endpoints for bookmarks and reading progress (if needed for mobile or external clients).
+- Polish and document the new bookmark and progress system for maintainers.
+
+### ❌ Where We Are Stuck
+- **Critical:** Some bookmarks (especially legacy or malformed ones) cannot be deleted from Firestore via the app, even though the UI updates locally. Manual deletion in Firestore works. Debug logging is now in place to help diagnose the exact cause (likely a mismatch in `contentId` or missing fields).
+- Next step: Use debug logs to identify why the Firestore query does not match the problematic bookmark(s), then fix the data or update the query/migration as needed.
+
+---
+
+## 🚦 Current Status, Blockers, and Next Steps
+
+### ✅ What's Working
+- Unified bookmark system (`user_bookmarks` collection) is implemented in code.
+- UI for article bookmarks has been refactored to use the new system.
+- Date handling is robust throughout the codebase.
+- Test data exists in Firestore for testing.
+
+### ❌ What's Missing / Needs Fixing
+- **Critical: Users cannot save bookmarks (articles or stories) due to Firestore permission errors.**
+- Story bookmarks UI is not yet integrated in `/favourites` or story reader.
+- Migration script for legacy bookmarks is not yet run.
+- Dev/test UI for simulating user entitlements is not yet implemented.
+- User-facing error messages and stats need review.
+
+### 🛠️ Immediate Next Steps
+- [ ] Debug and fix Firestore permissions for bookmarks:
+    - Log the exact bookmark object being sent to Firestore for both articles and stories.
+    - Review and, if needed, relax or fix Firestore rules for `user_bookmarks` to match the actual data structure.
+    - Confirm with a test user that `userId` matches `request.auth.uid`.
+    - Ensure all required fields for `isValidBookmark` are present in the client data.
+- [ ] Once permissions are fixed, proceed with story bookmarks UI and migration.
+
+---
+
 ## 🎯 Overview
 
 This document outlines the step-by-step implementation of the enhanced bookmark and storage system for Doshi Sensei, based on the decisions made in the Firebase Storage Audit.

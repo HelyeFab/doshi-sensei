@@ -12,6 +12,13 @@ const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_F
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
 const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID;
 
+console.log('--- SCRAPE-TODAIINEWS FUNCTION START ---');
+console.log('Firebase Admin SDK initialization check...');
+console.log('projectId:', projectId);
+console.log('privateKeyId:', privateKeyId ? '[set]' : '[missing]');
+console.log('clientEmail:', clientEmail);
+console.log('clientId:', clientId);
+
 if (!admin.apps.length && projectId) {
   try {
     const serviceAccount = {
@@ -30,13 +37,14 @@ if (!admin.apps.length && projectId) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
-
+    console.log('✅ Firebase Admin SDK initialized successfully');
     firebaseInitialized = true;
     db = admin.firestore();
-    console.log('✅ Firebase Admin SDK initialized');
   } catch (error) {
-    console.error('❌ Failed to initialize Firebase:', error.message);
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
   }
+} else {
+  console.log('Firebase Admin SDK already initialized or missing projectId');
 }
 
 console.log('--- SCRAPE-TODAIINEWS FUNCTION START ---');
@@ -705,22 +713,8 @@ async function saveArticlesToFirebase(articles, metadata) {
 }
 
 // Handler
-exports.handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Content-Type': 'application/json',
-  };
-
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ message: 'CORS preflight successful' }),
-    };
-  }
-
+exports.handler = async (event, context) => {
+  console.log('--- Netlify handler START ---');
   try {
     console.log('🚀 ====== TODAII NEWS SCRAPER ACTIVATED ======');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
@@ -730,7 +724,6 @@ exports.handler = async (event) => {
       console.error('❌ Firebase not initialized');
       return {
         statusCode: 500,
-        headers,
         body: JSON.stringify({
           success: false,
           error: 'Firebase Admin SDK not configured',
@@ -755,7 +748,6 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers,
       body: JSON.stringify({
         success: scrapingResult.success,
         message: scrapingResult.success
@@ -780,7 +772,6 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 500,
-      headers,
       body: JSON.stringify({
         success: false,
         error: 'Internal server error',
@@ -788,5 +779,7 @@ exports.handler = async (event) => {
         timestamp: new Date().toISOString()
       }),
     };
+  } finally {
+    console.log('--- Netlify handler END ---');
   }
 };

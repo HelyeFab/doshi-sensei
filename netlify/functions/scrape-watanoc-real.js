@@ -12,7 +12,14 @@ const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_F
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
 const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID;
 
-if (!admin.apps.length) {
+console.log('--- SCRAPE-WATANOC-REAL FUNCTION START ---');
+console.log('Firebase Admin SDK initialization check...');
+console.log('projectId:', projectId);
+console.log('privateKeyId:', privateKeyId ? '[set]' : '[missing]');
+console.log('clientEmail:', clientEmail);
+console.log('clientId:', clientId);
+
+if (!admin.apps.length && projectId) {
   try {
     const serviceAccount = {
       type: "service_account",
@@ -30,15 +37,14 @@ if (!admin.apps.length) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
-
+    console.log('✅ Firebase Admin SDK initialized successfully');
     firebaseInitialized = true;
     db = admin.firestore();
-    console.log('✅ Firebase Admin SDK initialized successfully');
   } catch (error) {
     console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
-    firebaseInitialized = false;
   }
 } else {
+  console.log('Firebase Admin SDK already initialized or missing projectId');
   firebaseInitialized = true;
   db = admin.firestore();
 }
@@ -566,6 +572,7 @@ async function saveArticlesToFirebase(articles, metadata) {
 
 // Main handler function
 exports.handler = async (event, context) => {
+  console.log('--- Netlify handler START ---');
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -660,5 +667,7 @@ exports.handler = async (event, context) => {
         timestamp: new Date().toISOString()
       }),
     };
+  } finally {
+    console.log('--- Netlify handler END ---');
   }
 };

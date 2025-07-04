@@ -39,7 +39,7 @@ function initializeFirebaseIfNeeded() {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
-      
+
       firebaseInitialized = true;
       db = admin.firestore();
       console.log('✅ Firebase Admin SDK initialized successfully');
@@ -192,7 +192,7 @@ function cleanText(text) {
 // Main handler
 exports.handler = async (event, context) => {
   console.log('🚀 Starting NHK Easy News scraper...');
-  
+
   // Initialize Firebase at runtime
   initializeFirebaseIfNeeded();
 
@@ -299,15 +299,20 @@ exports.handler = async (event, context) => {
         };
 
         // Save to Firestore with article ID as document ID
-        await db.collection('articles')
-          .doc(`nhk_easy_${article.news_id}`)
-          .set(articleDoc, { merge: true });
-
-        processedArticles.push({
-          id: article.news_id,
-          title: articleDoc.title
-        });
-        successCount++;
+        try {
+          await db.collection('articles')
+            .doc(`nhk_easy_${article.news_id}`)
+            .set(articleDoc, { merge: true });
+          console.log('Article written:', article.news_id);
+          processedArticles.push({
+            id: article.news_id,
+            title: articleDoc.title
+          });
+          successCount++;
+        } catch (err) {
+          console.error('Failed to write article:', article.news_id, err);
+          throw err;
+        }
 
       } catch (articleError) {
         console.error(`Error processing article ${article.news_id}:`, articleError.message);

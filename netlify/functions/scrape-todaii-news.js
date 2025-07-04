@@ -702,18 +702,30 @@ async function saveArticlesToFirebase(articles, metadata) {
     };
 
     const docRef = db.collection('articles').doc(article.id);
-    batch.set(docRef, articleWithExpiration);
+    try {
+      await docRef.set(articleWithExpiration);
+      console.log('Article written:', article.id);
+    } catch (err) {
+      console.error('Failed to write article:', article.id, err);
+      throw err;
+    }
   }
 
   // Save metadata
   const metadataRef = db.collection('articlesMetadata').doc('todaii-news-stats');
-  batch.set(metadataRef, {
-    ...metadata,
-    lastUpdated: admin.firestore.Timestamp.fromDate(new Date()),
-    uniqueArticlesSaved: uniqueArticles.length,
-    duplicatesSkipped: articles.length - uniqueArticles.length,
-    expiresAt: admin.firestore.Timestamp.fromDate(expiresAt)
-  });
+  try {
+    await metadataRef.set({
+      ...metadata,
+      lastUpdated: admin.firestore.Timestamp.fromDate(new Date()),
+      uniqueArticlesSaved: uniqueArticles.length,
+      duplicatesSkipped: articles.length - uniqueArticles.length,
+      expiresAt: admin.firestore.Timestamp.fromDate(expiresAt)
+    });
+    console.log('Metadata written');
+  } catch (err) {
+    console.error('Failed to write metadata:', err);
+    throw err;
+  }
 
   await batch.commit();
   console.log(`✅ Saved ${uniqueArticles.length} unique articles with expiration management`);
@@ -726,7 +738,7 @@ exports.handler = async (event, context) => {
     console.log('🚀 ====== TODAII NEWS SCRAPER ACTIVATED ======');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
     console.log('🎯 Scraping from Todaii Japanese News');
-    
+
     // Initialize Firebase at runtime
     initializeFirebaseIfNeeded();
 

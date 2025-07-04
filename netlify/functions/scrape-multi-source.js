@@ -39,7 +39,7 @@ function initializeFirebaseIfNeeded() {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
-      
+
       firebaseInitialized = true;
       db = admin.firestore();
       console.log('✅ Firebase Admin SDK initialized successfully');
@@ -71,7 +71,7 @@ function makeRequest(url, maxRedirects = 3) {
       }
 
       const parsedUrl = new URL(currentUrl);
-      
+
       const options = {
         hostname: parsedUrl.hostname,
         path: parsedUrl.pathname + parsedUrl.search,
@@ -102,7 +102,7 @@ function makeRequest(url, maxRedirects = 3) {
 
         let data = '';
         res.setEncoding('utf8');
-        
+
         res.on('data', (chunk) => data += chunk);
         res.on('end', () => resolve({
           statusCode: res.statusCode,
@@ -154,7 +154,7 @@ function cleanTextAdvanced(html) {
 function estimateJLPTLevel(text) {
   const kanjiCount = (text.match(/[\u4e00-\u9faf]/g) || []).length;
   const kanjiRatio = kanjiCount / text.length;
-  
+
   if (kanjiRatio < 0.15) return 'N5';
   if (kanjiRatio < 0.25) return 'N4';
   if (kanjiRatio < 0.35) return 'N3';
@@ -177,39 +177,39 @@ function extractKanji(text) {
 // NHK Easy News scraper
 async function scrapeNHKEasy() {
   console.log('📰 Scraping NHK Easy News...');
-  
+
   try {
     const response = await makeRequest('https://www3.nhk.or.jp/news/easy/');
-    
+
     // Extract article links
     const articleLinks = [];
     const linkPattern = /href="(\/news\/easy\/k\d+\/[^"]+)"/g;
     let match;
-    
+
     while ((match = linkPattern.exec(response.body)) !== null) {
       const url = 'https://www3.nhk.or.jp' + match[1];
       articleLinks.push({ url, title: `NHK Easy Article` });
     }
-    
+
     console.log(`  Found ${articleLinks.length} NHK Easy links`);
-    
+
     const articles = [];
-    
+
     // Scrape up to 5 articles
     for (const link of articleLinks.slice(0, 5)) {
       try {
         const articleResponse = await makeRequest(link.url);
-        
+
         // Extract title
         const titleMatch = articleResponse.body.match(/<h1[^>]*>([^<]+)<\/h1>/i);
         const title = titleMatch ? cleanText(titleMatch[1]) : 'NHK Easy Article';
-        
+
         // Extract content
         const contentPatterns = [
           /<div[^>]*id="js-article-body"[^>]*>(.*?)<\/div>/is,
           /<div[^>]*class="[^"]*article-body[^"]*"[^>]*>(.*?)<\/div>/is
         ];
-        
+
         let content = null;
         for (const pattern of contentPatterns) {
           const contentMatch = articleResponse.body.match(pattern);
@@ -218,7 +218,7 @@ async function scrapeNHKEasy() {
             break;
           }
         }
-        
+
         if (content && content.length > 100) {
           articles.push({
             id: `nhk_easy_${Date.now()}_${articles.length}`,
@@ -241,19 +241,19 @@ async function scrapeNHKEasy() {
             kanji: extractKanji(content),
             learnerFriendly: true
           });
-          
+
           console.log(`  ✅ NHK Easy: ${title.substring(0, 50)}...`);
         }
-        
+
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
       } catch (error) {
         console.log(`  ❌ Failed to scrape ${link.url}: ${error.message}`);
       }
     }
-    
+
     return articles;
-    
+
   } catch (error) {
     console.error('❌ NHK Easy scraping error:', error.message);
     return [];
@@ -263,48 +263,48 @@ async function scrapeNHKEasy() {
 // Watanoc scraper
 async function scrapeWatanoc() {
   console.log('🏯 Scraping Watanoc...');
-  
+
   const articles = [];
   const testUrls = [
     'https://watanoc.com/category/simplejapanese',
     'https://watanoc.com/category/japan-fun/culture'
   ];
-  
+
   for (const categoryUrl of testUrls) {
     try {
       const response = await makeRequest(categoryUrl);
-      
+
       // Extract article links
       const linkPattern = /href="(https:\/\/watanoc\.com\/[^"#?]+)"/g;
       const articleLinks = [];
       let match;
-      
+
       while ((match = linkPattern.exec(response.body)) !== null) {
         const url = match[1];
         if (!url.includes('/category/') && !url.includes('/tag/') && !url.includes('/page/')) {
           articleLinks.push({ url, title: url.split('/').pop() });
         }
       }
-      
+
       console.log(`  Found ${articleLinks.length} Watanoc links in ${categoryUrl}`);
-      
+
       // Try to scrape first 2 articles from this category
       for (const link of articleLinks.slice(0, 2)) {
         try {
           const articleResponse = await makeRequest(link.url);
-          
+
           // Extract title
           const titleMatch = articleResponse.body.match(/<h1[^>]*>([^<]+)<\/h1>/i) ||
-                            articleResponse.body.match(/<title[^>]*>([^<]+)<\/title>/i);
+            articleResponse.body.match(/<title[^>]*>([^<]+)<\/title>/i);
           const title = titleMatch ? cleanText(titleMatch[1]) : link.title;
-          
+
           // Extract content from paragraphs
           const paragraphs = articleResponse.body.match(/<p[^>]*>([^<]+)<\/p>/gi) || [];
           const content = paragraphs
             .map(p => cleanText(p))
             .filter(text => text.length > 20)
             .join('\n\n');
-          
+
           if (content.length > 200) {
             articles.push({
               id: `watanoc_${Date.now()}_${articles.length}`,
@@ -326,22 +326,22 @@ async function scrapeWatanoc() {
               vocabulary: extractVocabulary(content),
               kanji: extractKanji(content)
             });
-            
+
             console.log(`  ✅ Watanoc: ${title.substring(0, 50)}...`);
           }
-          
+
           await new Promise(resolve => setTimeout(resolve, 1000));
-          
+
         } catch (error) {
           console.log(`  ❌ Failed to scrape ${link.url}: ${error.message}`);
         }
       }
-      
+
     } catch (error) {
       console.error(`❌ Watanoc category error for ${categoryUrl}:`, error.message);
     }
   }
-  
+
   return articles;
 }
 
@@ -389,35 +389,35 @@ function generateFallbackArticles() {
       kanji: ['電', '車', '新', '幹', '線', '高', '速', '鉄', '道']
     }
   ];
-  
+
   return fallbackArticles;
 }
 
 // Main multi-source scraping function
 async function scrapeMultiSource() {
   console.log('🚀 Starting multi-source Japanese content scraping...');
-  
+
   const allArticles = [];
-  
+
   // Try NHK Easy News first (more reliable)
   const nhkArticles = await scrapeNHKEasy();
   allArticles.push(...nhkArticles);
-  
+
   // Try Watanoc if we need more articles
   if (allArticles.length < 5) {
     const watanocArticles = await scrapeWatanoc();
     allArticles.push(...watanocArticles);
   }
-  
+
   // Add fallback articles if we still don't have enough
   if (allArticles.length < 3) {
     console.log('⚠️ Adding fallback articles');
     const fallbackArticles = generateFallbackArticles();
     allArticles.push(...fallbackArticles);
   }
-  
+
   console.log(`✅ Total articles collected: ${allArticles.length}`);
-  
+
   return {
     success: true,
     articles: allArticles,
@@ -441,7 +441,7 @@ async function saveArticlesToFirebase(articles, metadata) {
   }
 
   const batch = db.batch();
-  
+
   for (const article of articles) {
     const docRef = db.collection('articles').doc(article.id);
     batch.set(docRef, {
@@ -450,22 +450,27 @@ async function saveArticlesToFirebase(articles, metadata) {
       scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt)
     });
   }
-  
+
   const metadataRef = db.collection('articlesMetadata').doc('multi-source-stats');
   batch.set(metadataRef, {
     ...metadata,
     lastUpdated: admin.firestore.Timestamp.fromDate(new Date())
   });
-  
-  await batch.commit();
-  console.log(`✅ Saved ${articles.length} articles to Firebase`);
+
+  try {
+    await batch.commit();
+    console.log(`✅ Saved ${articles.length} articles to Firebase`);
+  } catch (err) {
+    console.error('Failed to save articles to Firebase:', err);
+    throw err;
+  }
 }
 
 // Handler
 exports.handler = async (event) => {
   // Initialize Firebase at runtime
   initializeFirebaseIfNeeded();
-  
+
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -483,7 +488,7 @@ exports.handler = async (event) => {
 
   try {
     console.log('🚀 Multi-source scraping function triggered');
-    
+
     // Enhanced Firebase debugging
     console.log('🔍 Checking Firebase configuration...');
     console.log('  - Project ID:', projectId || 'MISSING');
@@ -491,7 +496,7 @@ exports.handler = async (event) => {
     console.log('  - Private Key:', process.env.FIREBASE_PRIVATE_KEY ? 'SET' : 'MISSING');
     console.log('  - Firebase Initialized:', firebaseInitialized);
     console.log('  - Database object:', !!db);
-    
+
     if (!firebaseInitialized) {
       console.error('❌ Firebase not initialized - returning error');
       return {
@@ -508,11 +513,11 @@ exports.handler = async (event) => {
         }),
       };
     }
-    
+
     console.log('✅ Starting multi-source scraping...');
     const scrapingResult = await scrapeMultiSource();
     console.log('✅ Scraping completed:', scrapingResult.success, scrapingResult.articles.length);
-    
+
     if (scrapingResult.success && scrapingResult.articles.length > 0) {
       console.log('💾 Saving articles to Firebase...');
       await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
@@ -520,7 +525,7 @@ exports.handler = async (event) => {
     } else {
       console.log('⚠️ No articles to save');
     }
-    
+
     const response = {
       success: scrapingResult.success,
       message: `Successfully scraped ${scrapingResult.articles.length} articles from multiple sources`,
@@ -535,22 +540,22 @@ exports.handler = async (event) => {
       })),
       metadata: scrapingResult.metadata
     };
-    
+
     console.log('📤 Returning response:', JSON.stringify(response, null, 2));
-    
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify(response),
     };
-    
+
   } catch (error) {
     console.error('💥 DETAILED ERROR in multi-source scraping:');
     console.error('  - Error message:', error.message);
     console.error('  - Error stack:', error.stack);
     console.error('  - Error name:', error.name);
     console.error('  - Error code:', error.code);
-    
+
     return {
       statusCode: 500,
       headers,

@@ -493,7 +493,7 @@ exports.handler = async (event) => {
 
     // Enhanced Firebase debugging
     console.log('🔍 Checking Firebase configuration...');
-    console.log('  - Project ID:', projectId || 'MISSING');
+    console.log('  - Project ID:', process.env.FIREBASE_PROJECT_ID ? 'SET' : 'MISSING');
     console.log('  - Client Email:', process.env.FIREBASE_CLIENT_EMAIL ? 'SET' : 'MISSING');
     console.log('  - Private Key:', process.env.FIREBASE_PRIVATE_KEY ? 'SET' : 'MISSING');
     console.log('  - Firebase Initialized:', firebaseInitialized);
@@ -508,7 +508,7 @@ exports.handler = async (event) => {
           success: false,
           error: 'Firebase Admin SDK not configured',
           debug: {
-            projectId: !!projectId,
+            projectId: !!process.env.FIREBASE_PROJECT_ID,
             clientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
             privateKey: !!process.env.FIREBASE_PRIVATE_KEY
           }
@@ -563,7 +563,7 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({
         success: false,
-        error: error.message,
+        error: 'Internal error: see logs for details',
         errorType: error.name,
         errorCode: error.code,
         stack: error.stack,

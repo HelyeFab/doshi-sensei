@@ -44,7 +44,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       setCountdown(GAME_CONSTANTS.COUNTDOWN_DURATION);
     }
   }, [isOpen, gameState.isPlaying, showVictory]);
-  
+
   // Update audio manager mute state
   useEffect(() => {
     audioManager.setEnabled(!isMuted);
@@ -82,7 +82,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       const endTime = Date.now();
       const timeTaken = Math.round((endTime - gameState.startTime) / 1000);
       const totalClicks = gameState.clicks.correct + gameState.clicks.wrong + gameState.clicks.distractor;
-      const accuracy = totalClicks > 0 
+      const accuracy = totalClicks > 0
         ? Math.round((gameState.clicks.correct / totalClicks) * 100)
         : 0;
 
@@ -119,7 +119,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   // Update game state
   const handleGameStateUpdate = useCallback((updates: Partial<GameState> | ((prev: GameState) => Partial<GameState>)) => {
     if (typeof updates === 'function') {
-      setGameState(updates);
+      setGameState(prev => ({ ...prev, ...updates(prev) }));
     } else {
       setGameState(prev => ({ ...prev, ...updates }));
     }
@@ -195,7 +195,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                   </svg>
                 )}
               </button>
-              
+
               {/* Close/Pause button */}
               <button
                 onClick={() => {
@@ -210,17 +210,17 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                 className="p-2 rounded-lg bg-background/80 hover:bg-background border border-border transition-colors"
                 title={gameState.isPlaying ? "Pause Game" : "Close"}
               >
-              {gameState.isPlaying ? (
-                // Pause icon
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              ) : (
-                // Close icon
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
+                {gameState.isPlaying ? (
+                  // Pause icon
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ) : (
+                  // Close icon
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
               </button>
             </div>
           )}
@@ -271,7 +271,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                 onGameStateUpdate={handleGameStateUpdate}
                 activeRomaji={gameState.activeRomaji}
               />
-              
+
               {/* Romaji Controls */}
               <RomajiControls
                 selectedKana={selectedKana}
@@ -290,11 +290,11 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                   {gameState.isPaused ? 'Game Paused' : 'Kana Drop'}
                 </h2>
                 <p className="text-muted-foreground mb-6 max-w-md">
-                  {gameState.isPaused 
+                  {gameState.isPaused
                     ? 'Click Resume to continue playing or Close to exit the game.'
                     : 'Click the romaji buttons below to catch falling kana characters. Avoid clicking distractors and wrong kana!'}
                 </p>
-                
+
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-3">Selected Kana:</h3>
                   <div className="flex justify-center gap-3 flex-wrap">
@@ -343,7 +343,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                   >
                     {gameState.isPaused ? 'Resume Game' : 'Start Game'}
                   </motion.button>
-                  
+
                   {gameState.isPaused && (
                     <motion.button
                       initial={{ opacity: 0, scale: 0.8 }}

@@ -1,6 +1,7 @@
 const https = require('https');
 const { URL } = require('url');
 const admin = require('firebase-admin');
+const fetch = require('node-fetch');
 
 // Module-level variables for Firebase
 let firebaseInitialized = false;
@@ -191,164 +192,172 @@ function cleanText(text) {
     .trim();
 }
 
-// Main handler
-exports.handler = async function (event, context) {
-  try {
-    console.log('🚀 Starting NHK Easy News scraper...');
-
-    // Initialize Firebase at runtime
-    initializeFirebaseIfNeeded();
-
-    if (!firebaseInitialized || !db) {
-      console.error('Firebase initialization failed');
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: 'Failed to initialize database connection',
-          details: 'Database not initialized'
-        })
-      };
-    }
-
-    // Fetch NHK Easy News
-    console.log('📰 Fetching articles from NHK Easy News...');
-    const newsData = await makeRequest('https://www3.nhk.or.jp/news/easy/news-list.json');
-
-    let articles;
+let handler;
+try {
+  handler = async function (event, context) {
     try {
-      // Remove BOM if present
-      const cleanData = newsData.replace(/^\uFEFF/, '');
-      const parsed = JSON.parse(cleanData);
+      console.log('🚀 Starting NHK Easy News scraper...');
 
-      // Extract articles from the nested structure
-      articles = [];
-      Object.values(parsed).forEach(dateData => {
-        if (Array.isArray(dateData)) {
-          articles.push(...dateData);
+      // Initialize Firebase at runtime
+      initializeFirebaseIfNeeded();
+
+      if (!firebaseInitialized || !db) {
+        console.error('Firebase initialization failed');
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            error: 'Failed to initialize database connection',
+            details: 'Database not initialized'
+          })
+        };
+      }
+
+      // Fetch NHK Easy News
+      console.log('📰 Fetching articles from NHK Easy News...');
+      const newsData = await makeRequest('https://www3.nhk.or.jp/news/easy/news-list.json');
+
+      let articles;
+      try {
+        // Remove BOM if present
+        const cleanData = newsData.replace(/^\uFEFF/, '');
+        const parsed = JSON.parse(cleanData);
+
+        // Extract articles from the nested structure
+        articles = [];
+        Object.values(parsed).forEach(dateData => {
+          if (Array.isArray(dateData)) {
+            articles.push(...dateData);
+          }
+        });
+      } catch (parseError) {
+        console.error('Failed to parse NHK news data:', parseError);
+        throw new Error('Invalid response format from NHK');
+      }
+
+      if (!articles || articles.length === 0) {
+        console.log('No articles found');
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: 'No articles found',
+            articlesProcessed: 0
+          })
+        };
+      }
+
+      console.log(`📊 Found ${articles.length} articles to process`);
+
+      // Process articles
+      let successCount = 0;
+      let errorCount = 0;
+      const processedArticles = [];
+
+      for (const article of articles) {
+        try {
+          if (!article.news_id) {
+            console.warn('Article missing ID, skipping');
+            errorCount++;
+            continue;
+          }
+
+          // Fetch full article content
+          const articleUrl = `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.html`;
+          console.log(`Fetching article: ${article.news_id}`);
+
+          const articleHtml = await makeRequest(articleUrl);
+
+          // Extract content from HTML
+          const contentMatch = articleHtml.match(/<div class="article-body"[^>]*>([\s\S]*?)<\/div>/);
+          const content = contentMatch ? cleanText(contentMatch[1]) : '';
+
+          if (!content) {
+            console.warn(`No content found for article ${article.news_id}`);
+            errorCount++;
+            continue;
+          }
+
+          // Create article document
+          const articleDoc = {
+            articleId: article.news_id,
+            url: articleUrl,
+            imageUrl: article.news_web_image_uri || article.news_prearranged_time || null,
+            title: cleanText(article.title || article.news_prearranged_time || ''),
+            content: content,
+            date: parseDate(article.news_prearranged_time || article.news_publication_time),
+            category: 'nhk_easy',
+            source: 'NHK Easy News',
+            difficulty: 'beginner',
+            readTime: Math.ceil(content.length / 300), // Estimate based on reading speed
+            tags: ['news', 'nhk', 'easy'],
+            metadata: {
+              originalId: article.news_id,
+              hasVideo: article.has_news_web_movie || false,
+              hasVoice: article.has_news_easy_voice || false,
+              publicationTime: article.news_publication_time || null,
+              prearrangedTime: article.news_prearranged_time || null
+            },
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            views: 0,
+            bookmarks: 0
+          };
+
+          // Save to Firestore with article ID as document ID
+          try {
+            await db.collection('articles')
+              .doc(`nhk_easy_${article.news_id}`)
+              .set(articleDoc, { merge: true });
+            console.log('Article written:', article.news_id);
+            processedArticles.push({
+              id: article.news_id,
+              title: articleDoc.title
+            });
+            successCount++;
+          } catch (err) {
+            console.error('Failed to write article:', article.news_id, err);
+            throw err;
+          }
+
+        } catch (articleError) {
+          console.error(`Error processing article ${article.news_id}:`, articleError.message);
+          errorCount++;
         }
-      });
-    } catch (parseError) {
-      console.error('Failed to parse NHK news data:', parseError);
-      throw new Error('Invalid response format from NHK');
-    }
+      }
 
-    if (!articles || articles.length === 0) {
-      console.log('No articles found');
+      // Update metadata
+      await db.collection('articlesMetadata').doc('stats').set({
+        lastNHKEasyScrape: admin.firestore.FieldValue.serverTimestamp(),
+        nhkEasyArticleCount: admin.firestore.FieldValue.increment(successCount),
+        lastScrapeResults: {
+          source: 'nhk_easy',
+          processed: successCount,
+          errors: errorCount,
+          timestamp: new Date().toISOString()
+        }
+      }, { merge: true });
+
+      console.log(`✅ Scraping completed: ${successCount} articles saved, ${errorCount} errors`);
+
       return {
         statusCode: 200,
         body: JSON.stringify({
-          message: 'No articles found',
-          articlesProcessed: 0
+          message: 'NHK Easy News scraping completed',
+          articlesProcessed: successCount,
+          errors: errorCount,
+          articles: processedArticles
         })
       };
+    } catch (err) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ success: false, error: err.message, stack: err.stack })
+      };
     }
-
-    console.log(`📊 Found ${articles.length} articles to process`);
-
-    // Process articles
-    let successCount = 0;
-    let errorCount = 0;
-    const processedArticles = [];
-
-    for (const article of articles) {
-      try {
-        if (!article.news_id) {
-          console.warn('Article missing ID, skipping');
-          errorCount++;
-          continue;
-        }
-
-        // Fetch full article content
-        const articleUrl = `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.html`;
-        console.log(`Fetching article: ${article.news_id}`);
-
-        const articleHtml = await makeRequest(articleUrl);
-
-        // Extract content from HTML
-        const contentMatch = articleHtml.match(/<div class="article-body"[^>]*>([\s\S]*?)<\/div>/);
-        const content = contentMatch ? cleanText(contentMatch[1]) : '';
-
-        if (!content) {
-          console.warn(`No content found for article ${article.news_id}`);
-          errorCount++;
-          continue;
-        }
-
-        // Create article document
-        const articleDoc = {
-          articleId: article.news_id,
-          url: articleUrl,
-          imageUrl: article.news_web_image_uri || article.news_prearranged_time || null,
-          title: cleanText(article.title || article.news_prearranged_time || ''),
-          content: content,
-          date: parseDate(article.news_prearranged_time || article.news_publication_time),
-          category: 'nhk_easy',
-          source: 'NHK Easy News',
-          difficulty: 'beginner',
-          readTime: Math.ceil(content.length / 300), // Estimate based on reading speed
-          tags: ['news', 'nhk', 'easy'],
-          metadata: {
-            originalId: article.news_id,
-            hasVideo: article.has_news_web_movie || false,
-            hasVoice: article.has_news_easy_voice || false,
-            publicationTime: article.news_publication_time || null,
-            prearrangedTime: article.news_prearranged_time || null
-          },
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          views: 0,
-          bookmarks: 0
-        };
-
-        // Save to Firestore with article ID as document ID
-        try {
-          await db.collection('articles')
-            .doc(`nhk_easy_${article.news_id}`)
-            .set(articleDoc, { merge: true });
-          console.log('Article written:', article.news_id);
-          processedArticles.push({
-            id: article.news_id,
-            title: articleDoc.title
-          });
-          successCount++;
-        } catch (err) {
-          console.error('Failed to write article:', article.news_id, err);
-          throw err;
-        }
-
-      } catch (articleError) {
-        console.error(`Error processing article ${article.news_id}:`, articleError.message);
-        errorCount++;
-      }
-    }
-
-    // Update metadata
-    await db.collection('articlesMetadata').doc('stats').set({
-      lastNHKEasyScrape: admin.firestore.FieldValue.serverTimestamp(),
-      nhkEasyArticleCount: admin.firestore.FieldValue.increment(successCount),
-      lastScrapeResults: {
-        source: 'nhk_easy',
-        processed: successCount,
-        errors: errorCount,
-        timestamp: new Date().toISOString()
-      }
-    }, { merge: true });
-
-    console.log(`✅ Scraping completed: ${successCount} articles saved, ${errorCount} errors`);
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'NHK Easy News scraping completed',
-        articlesProcessed: successCount,
-        errors: errorCount,
-        articles: processedArticles
-      })
-    };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, error: err.message, stack: err.stack })
-    };
-  }
-};
+  };
+} catch (topLevelError) {
+  handler = async () => ({
+    statusCode: 500,
+    body: JSON.stringify({ success: false, error: 'Top-level error', details: topLevelError.message, stack: topLevelError.stack })
+  });
+}
+exports.handler = handler;

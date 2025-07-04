@@ -1,6 +1,7 @@
 const https = require('https');
 const { URL } = require('url');
 const admin = require('firebase-admin');
+const fetch = require('node-fetch');
 
 // Module-level variables for Firebase
 let firebaseInitialized = false;
@@ -733,78 +734,86 @@ async function saveArticlesToFirebase(articles, metadata) {
   console.log(`✅ Saved ${uniqueArticles.length} unique articles with expiration management`);
 }
 
-// Handler
-exports.handler = async function (event, context) {
-  try {
-    console.log('--- Netlify handler START ---');
-    console.log('🚀 ====== TODAII NEWS SCRAPER ACTIVATED ======');
-    console.log('📅 Event type:', event.httpMethod || 'scheduled');
-    console.log('🎯 Scraping from Todaii Japanese News');
+let handler;
+try {
+  handler = async function (event, context) {
+    try {
+      console.log('--- Netlify handler START ---');
+      console.log('🚀 ====== TODAII NEWS SCRAPER ACTIVATED ======');
+      console.log('📅 Event type:', event.httpMethod || 'scheduled');
+      console.log('🎯 Scraping from Todaii Japanese News');
 
-    // Initialize Firebase at runtime
-    initializeFirebaseIfNeeded();
+      // Initialize Firebase at runtime
+      initializeFirebaseIfNeeded();
 
-    if (!firebaseInitialized) {
-      console.error('❌ Firebase not initialized');
+      if (!firebaseInitialized) {
+        console.error('❌ Firebase not initialized');
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            success: false,
+            error: 'Firebase Admin SDK not configured',
+            timestamp: new Date().toISOString()
+          }),
+        };
+      }
+
+      console.log('✅ Firebase initialized, starting Todaii scraping...');
+      const scrapingResult = await scrapeTodaiiNews();
+
+      console.log('📊 Todaii scraping result:', {
+        success: scrapingResult.success,
+        articleCount: scrapingResult.articles.length
+      });
+
+      if (scrapingResult.success && scrapingResult.articles.length > 0) {
+        console.log('💾 Saving Todaii articles to Firebase...');
+        await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
+        console.log('🎉 SUCCESS! Todaii articles saved');
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: scrapingResult.success,
+          message: scrapingResult.success
+            ? `Successfully scraped and saved ${scrapingResult.articles.length} Todaii articles`
+            : 'Scraping failed',
+          articlesCount: scrapingResult.articles.length,
+          source: 'Todaii Japanese News',
+          articles: scrapingResult.articles.map(a => ({
+            id: a.id,
+            title: a.title,
+            difficulty: a.difficulty,
+            vocabularyCount: a.vocabulary?.length || 0,
+            kanjiCount: a.kanji?.length || 0
+          })),
+          metadata: scrapingResult.metadata,
+          timestamp: new Date().toISOString()
+        }),
+      };
+
+    } catch (err) {
+      console.error('💥 Error in Todaii scraping function:', err);
+
       return {
         statusCode: 500,
         body: JSON.stringify({
           success: false,
-          error: 'Firebase Admin SDK not configured',
+          error: 'Internal server error',
+          details: err.message,
+          stack: err.stack,
           timestamp: new Date().toISOString()
         }),
       };
+    } finally {
+      console.log('--- Netlify handler END ---');
     }
-
-    console.log('✅ Firebase initialized, starting Todaii scraping...');
-    const scrapingResult = await scrapeTodaiiNews();
-
-    console.log('📊 Todaii scraping result:', {
-      success: scrapingResult.success,
-      articleCount: scrapingResult.articles.length
-    });
-
-    if (scrapingResult.success && scrapingResult.articles.length > 0) {
-      console.log('💾 Saving Todaii articles to Firebase...');
-      await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
-      console.log('🎉 SUCCESS! Todaii articles saved');
-    }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: scrapingResult.success,
-        message: scrapingResult.success
-          ? `Successfully scraped and saved ${scrapingResult.articles.length} Todaii articles`
-          : 'Scraping failed',
-        articlesCount: scrapingResult.articles.length,
-        source: 'Todaii Japanese News',
-        articles: scrapingResult.articles.map(a => ({
-          id: a.id,
-          title: a.title,
-          difficulty: a.difficulty,
-          vocabularyCount: a.vocabulary?.length || 0,
-          kanjiCount: a.kanji?.length || 0
-        })),
-        metadata: scrapingResult.metadata,
-        timestamp: new Date().toISOString()
-      }),
-    };
-
-  } catch (err) {
-    console.error('💥 Error in Todaii scraping function:', err);
-
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        success: false,
-        error: 'Internal server error',
-        details: err.message,
-        stack: err.stack,
-        timestamp: new Date().toISOString()
-      }),
-    };
-  } finally {
-    console.log('--- Netlify handler END ---');
-  }
-};
+  };
+} catch (topLevelError) {
+  handler = async () => ({
+    statusCode: 500,
+    body: JSON.stringify({ success: false, error: 'Top-level error', details: topLevelError.message, stack: topLevelError.stack })
+  });
+}
+exports.handler = handler;

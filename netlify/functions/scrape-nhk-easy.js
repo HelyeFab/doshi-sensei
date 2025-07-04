@@ -133,10 +133,15 @@ function cleanText(text) {
 // Main handler
 exports.handler = async (event, context) => {
   console.log('--- SCRAPE-NHK-EASY FUNCTION START ---');
-  console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
-  console.log('FIREBASE_PRIVATE_KEY_ID:', process.env.FIREBASE_PRIVATE_KEY_ID);
-  console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
-  console.log('FIREBASE_CLIENT_ID:', process.env.FIREBASE_CLIENT_ID);
+  const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY_ID;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
+  const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID;
+  console.log('FIREBASE_PROJECT_ID:', projectId);
+  console.log('FIREBASE_PRIVATE_KEY_ID:', privateKeyId);
+  console.log('FIREBASE_CLIENT_EMAIL:', clientEmail);
+  console.log('FIREBASE_CLIENT_ID:', clientId);
   console.log('🚀 Starting NHK Easy News scraper...');
 
   // Initialize Firebase

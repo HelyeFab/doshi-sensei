@@ -4,9 +4,15 @@ import { PageHeader } from '@/components/PageHeader';
 
 export default function OfflinePage() {
   return (
-    <div className="min-h-screen bg-background">
-      <PageHeader title="Offline" />
-      <div className="container mx-auto px-4 py-8">
+    <>
+      {/* Top Gradient Section */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+      </div>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        <PageHeader title="Offline" />
         <div className="max-w-md mx-auto text-center">
           <div className="mb-8">
             <div className="w-24 h-24 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
@@ -31,7 +37,6 @@ export default function OfflinePage() {
               It looks like you're not connected to the internet. Some features may not be available.
             </p>
           </div>
-
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
@@ -44,7 +49,6 @@ export default function OfflinePage() {
                 <li>• View your progress</li>
               </ul>
             </div>
-
             <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
               <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
                 Requires Internet:
@@ -56,20 +60,18 @@ export default function OfflinePage() {
                 <li>• Data synchronization</li>
               </ul>
             </div>
-
             <button
               onClick={() => window.location.reload()}
               className="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
             >
               Try Again
             </button>
-
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Once you're back online, refresh this page or navigate to any section.
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

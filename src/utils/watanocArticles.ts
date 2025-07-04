@@ -1,20 +1,20 @@
 // Watanoc Articles Manager for Doshi Sensei
 import { NewsArticle, NewsSource, ScrapingResult } from '@/types/news';
 import { JLPTLevel } from '@/types';
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  query, 
-  orderBy, 
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  orderBy,
   limit,
   where,
   Timestamp,
   deleteDoc,
   writeBatch,
   documentId,
-  setDoc 
+  setDoc
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -45,14 +45,18 @@ cacheTimestamp = 0;
 /**
  * Fetch articles from Firebase Firestore
  * Articles are stored by the Netlify function
+ * Supports pagination: pass page (1-based) and pageSize for paginated results
  */
-export async function getWatanocArticles(forceRefresh: boolean = false): Promise<NewsArticle[]> {
+export async function getWatanocArticles(forceRefresh: boolean = false, page?: number, pageSize?: number): Promise<NewsArticle[]> {
   try {
     // Check cache first (unless force refresh)
     if (!forceRefresh && articlesCache && (Date.now() - cacheTimestamp) < CACHE_DURATION) {
+      if (page && pageSize) {
+        const start = (page - 1) * pageSize;
+        return articlesCache.slice(start, start + pageSize);
+      }
       return articlesCache;
     }
-
 
     if (!db) {
       throw new Error('Firebase not initialized');
@@ -60,14 +64,24 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
 
     // Query articles from Firestore, ordered by scrapedAt descending
     const articlesCollection = collection(db, 'articles');
-    const articlesQuery = query(
-      articlesCollection,
-      orderBy('scrapedAt', 'desc'),
-      limit(50) // Limit to 50 most recent articles
-    );
-    
+    let articlesQuery;
+    if (page && pageSize) {
+      // Paginated query
+      articlesQuery = query(
+        articlesCollection,
+        orderBy('scrapedAt', 'desc'),
+        limit(page * pageSize)
+      );
+    } else {
+      // No limit: fetch all articles
+      articlesQuery = query(
+        articlesCollection,
+        orderBy('scrapedAt', 'desc')
+      );
+    }
+
     const querySnapshot = await getDocs(articlesQuery);
-    
+
     if (querySnapshot.empty) {
       return [];
     }
@@ -91,11 +105,14 @@ export async function getWatanocArticles(forceRefresh: boolean = false): Promise
     articlesCache = processedArticles;
     cacheTimestamp = Date.now();
 
+    if (page && pageSize) {
+      const start = (page - 1) * pageSize;
+      return processedArticles.slice(start, start + pageSize);
+    }
     return processedArticles;
 
   } catch (error) {
     console.error('❌ Error fetching Watanoc articles from Firebase:', error);
-    
     // Return empty array if main fetch fails
     return [];
   }
@@ -155,7 +172,7 @@ export async function triggerArticleScraping(): Promise<ScrapingResult> {
 
   } catch (error) {
     console.error('❌ Error triggering article scraping:', error);
-    
+
     return {
       success: false,
       articlesScraped: 0,
@@ -177,7 +194,7 @@ export async function triggerArticleScraping(): Promise<ScrapingResult> {
 export async function getArticlesByJLPTLevel(level: JLPTLevel, limit?: number): Promise<NewsArticle[]> {
   const articles = await getWatanocArticles();
   const filtered = articles.filter(article => article.difficulty === level);
-  
+
   return limit ? filtered.slice(0, limit) : filtered;
 }
 
@@ -187,7 +204,7 @@ export async function getArticlesByJLPTLevel(level: JLPTLevel, limit?: number): 
 export async function getArticlesByCategory(category: string, limit?: number): Promise<NewsArticle[]> {
   const articles = await getWatanocArticles();
   const filtered = articles.filter(article => article.category === category);
-  
+
   return limit ? filtered.slice(0, limit) : filtered;
 }
 
@@ -197,8 +214,8 @@ export async function getArticlesByCategory(category: string, limit?: number): P
 export async function searchWatanocArticles(query: string): Promise<NewsArticle[]> {
   const articles = await getWatanocArticles();
   const searchTerm = query.toLowerCase();
-  
-  return articles.filter(article => 
+
+  return articles.filter(article =>
     article.title.toLowerCase().includes(searchTerm) ||
     article.content.toLowerCase().includes(searchTerm) ||
     article.summary?.toLowerCase().includes(searchTerm) ||
@@ -230,7 +247,7 @@ export function getCacheInfo(): {
 export function clearCache(): void {
   articlesCache = null;
   cacheTimestamp = 0;
-  
+
   // Also clear any potential browser storage
   if (typeof window !== 'undefined') {
     try {
@@ -242,7 +259,7 @@ export function clearCache(): void {
       // Ignore storage errors
     }
   }
-  
+
 }
 
 /**
@@ -262,7 +279,7 @@ export async function getArticleStats(): Promise<{
     // Always calculate fresh stats from articles (skip cached stats)
     // Note: Previously cached stats can be stale after manual deletions
     const articles = await getWatanocArticles();
-    
+
     const articlesByLevel: Record<JLPTLevel, number> = {
       'N5': 0,
       'N4': 0,
@@ -270,19 +287,19 @@ export async function getArticleStats(): Promise<{
       'N2': 0,
       'N1': 0
     };
-    
+
     const articlesByCategory: Record<string, number> = {};
-    
+
     articles.forEach(article => {
       // Count by JLPT level
       if (article.difficulty in articlesByLevel) {
         articlesByLevel[article.difficulty as JLPTLevel]++;
       }
-      
+
       // Count by category
       articlesByCategory[article.category] = (articlesByCategory[article.category] || 0) + 1;
     });
-    
+
     return {
       totalArticles: articles.length,
       articlesByLevel,
@@ -292,7 +309,7 @@ export async function getArticleStats(): Promise<{
 
   } catch (error) {
     console.error('❌ Error fetching article stats:', error);
-    
+
     // Return default stats on error
     return {
       totalArticles: 0,
@@ -327,9 +344,9 @@ export async function deleteArticle(articleId: string): Promise<{ success: boole
 
   } catch (error) {
     console.error('❌ Error deleting article:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }
@@ -337,11 +354,11 @@ export async function deleteArticle(articleId: string): Promise<{ success: boole
 /**
  * Delete multiple articles by IDs
  */
-export async function deleteArticles(articleIds: string[]): Promise<{ 
-  success: boolean; 
-  deletedCount: number; 
-  failedCount: number; 
-  errors: string[] 
+export async function deleteArticles(articleIds: string[]): Promise<{
+  success: boolean;
+  deletedCount: number;
+  failedCount: number;
+  errors: string[]
 }> {
   try {
     if (!db) {
@@ -385,20 +402,20 @@ export async function deleteArticles(articleIds: string[]): Promise<{
     const failedCount = articleIds.length - deletedCount;
 
 
-    return { 
-      success: failedCount === 0, 
-      deletedCount, 
-      failedCount, 
-      errors 
+    return {
+      success: failedCount === 0,
+      deletedCount,
+      failedCount,
+      errors
     };
 
   } catch (error) {
     console.error('❌ Error in bulk deletion:', error);
-    return { 
-      success: false, 
-      deletedCount: 0, 
-      failedCount: articleIds.length, 
-      errors: [error instanceof Error ? error.message : 'Unknown error'] 
+    return {
+      success: false,
+      deletedCount: 0,
+      failedCount: articleIds.length,
+      errors: [error instanceof Error ? error.message : 'Unknown error']
     };
   }
 }
@@ -406,10 +423,10 @@ export async function deleteArticles(articleIds: string[]): Promise<{
 /**
  * Delete all articles (with confirmation)
  */
-export async function deleteAllArticles(): Promise<{ 
-  success: boolean; 
-  deletedCount: number; 
-  error?: string 
+export async function deleteAllArticles(): Promise<{
+  success: boolean;
+  deletedCount: number;
+  error?: string
 }> {
   try {
     if (!db) {
@@ -420,32 +437,32 @@ export async function deleteAllArticles(): Promise<{
     // Get all article IDs
     const articlesQuery = query(collection(db, 'articles'));
     const querySnapshot = await getDocs(articlesQuery);
-    
+
     if (querySnapshot.empty) {
       return { success: true, deletedCount: 0 };
     }
 
     const articleIds = querySnapshot.docs.map(doc => doc.id);
-    
+
     // Use bulk deletion
     const result = await deleteArticles(articleIds);
-    
+
     if (result.success) {
       return { success: true, deletedCount: result.deletedCount };
     } else {
-      return { 
-        success: false, 
+      return {
+        success: false,
         deletedCount: result.deletedCount,
-        error: `Failed to delete ${result.failedCount} articles` 
+        error: `Failed to delete ${result.failedCount} articles`
       };
     }
 
   } catch (error) {
     console.error('❌ Error deleting all articles:', error);
-    return { 
-      success: false, 
-      deletedCount: 0, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: false,
+      deletedCount: 0,
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }
@@ -459,10 +476,10 @@ async function updateArticleStatistics(): Promise<void> {
 
     // Get current articles
     const articles = await getWatanocArticles(true); // Force refresh
-    
+
     // Calculate new stats
     const stats = calculateArticleStats(articles);
-    
+
     // Update metadata document
     const metadataRef = doc(db, 'articlesMetadata', 'stats');
     await setDoc(metadataRef, {
@@ -486,16 +503,16 @@ function calculateArticleStats(articles: NewsArticle[]) {
     articlesByLevel: { N5: 0, N4: 0, N3: 0, N2: 0, N1: 0 } as Record<JLPTLevel, number>,
     articlesByCategory: {} as Record<string, number>
   };
-  
+
   articles.forEach(article => {
     // Count by JLPT level
     if (article.difficulty in stats.articlesByLevel) {
       stats.articlesByLevel[article.difficulty as JLPTLevel]++;
     }
-    
+
     // Count by category
     stats.articlesByCategory[article.category] = (stats.articlesByCategory[article.category] || 0) + 1;
   });
-  
+
   return stats;
 }

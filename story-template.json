@@ -1,0 +1,37 @@
+{
+  "title": "Your English Title Here",
+  "titleJa": "<ruby>日本語<rt>にほんご</rt></ruby>のタイトル",
+  "description": "A brief description of your story in English",
+  "jlptLevel": "N5",
+  "theme": "Slice of Life",
+  "tags": ["Beginner Friendly", "Daily Life"],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "text": "<ruby>昔<rt>むかし</rt></ruby>、<ruby>昔<rt>むかし</rt></ruby>、ある<ruby>所<rt>ところ</rt></ruby>に<ruby>小<rt>ちい</rt></ruby>さな<ruby>村<rt>むら</rt></ruby>がありました。",
+      "translation": "Once upon a time, in a certain place, there was a small village.",
+      "imageAlt": "A peaceful village scene"
+    },
+    {
+      "pageNumber": 2,
+      "text": "その<ruby>村<rt>むら</rt></ruby>には<ruby>優<rt>やさ</rt></ruby>しい<ruby>人々<rt>ひとびと</rt></ruby>が<ruby>住<rt>す</rt></ruby>んでいました。",
+      "translation": "In that village lived kind people.",
+      "imageAlt": "Villagers greeting each other"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Where does the story take place?",
+      "options": [
+        "In a big city",
+        "In a small village",
+        "In the mountains",
+        "By the ocean"
+      ],
+      "correctIndex": 1,
+      "explanation": "The story mentions 小さな村 (small village) in the first page."
+    }
+  ],
+  "seoTitle": "Optional: Custom SEO title for search engines",
+  "seoDescription": "Optional: Custom SEO description for search engines"
+}

@@ -16,6 +16,8 @@ import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { Analytics } from '@/utils/analytics';
 import { getDefaultSubscription } from '@/types/subscription';
+import { pokemonManager } from '@/utils/pokemonManager';
+import { pokemonStorage } from '@/utils/pokemonStorage';
 
 interface AuthContextType {
   user: User | null;
@@ -42,11 +44,11 @@ const createOrUpdateUserDocument = async (user: User) => {
   if (!db || !user) return;
 
   const userRef = doc(db, 'users', user.uid);
-  
+
   try {
     // Check if user document already exists
     const userSnap = await getDoc(userRef);
-    
+
     if (!userSnap.exists()) {
       // Create new user document
       await setDoc(userRef, {
@@ -77,16 +79,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let previousUser: User | null = null;
-    
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setLoading(false);
-      
+
       // Create/update user document in Firestore
       if (currentUser) {
         await createOrUpdateUserDocument(currentUser);
       }
-      
+
       // Track session start when user logs in
       if (currentUser && !previousUser) {
         try {
@@ -98,10 +100,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.warn('Failed to track session start:', error);
         }
       }
-      
+
       // Note: Session end tracking is now handled in the logout function
       // to avoid permission errors when the user is already signed out
-      
+
       previousUser = currentUser;
     });
 
@@ -129,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    
+
     // Create/update user document in Firestore
     if (result.user) {
       await createOrUpdateUserDocument(result.user);
@@ -144,15 +146,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           logoutMethod: 'manual_logout',
           timestamp: new Date().toISOString(),
         });
-        
         // Brief delay to ensure analytics event is sent before signing out
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
         console.warn('Failed to track session end on logout:', error);
         // Don't prevent logout if analytics fails
       }
+      // No longer clear any Pokémon data on logout
     }
-    
     await signOut(auth);
   };
 

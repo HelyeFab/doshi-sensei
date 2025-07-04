@@ -1,6 +1,6 @@
 /**
  * Centralized Subscription State Logger
- * 
+ *
  * This utility provides a single point for logging subscription state changes
  * and can be easily toggled on/off for production environments.
  */
@@ -23,8 +23,8 @@ class SubscriptionLogger {
 
   constructor() {
     // Only enable logging in development or if explicitly enabled
-    this.enabled = process.env.NODE_ENV === 'development' || 
-                  process.env.NEXT_PUBLIC_DEBUG_SUBSCRIPTIONS === 'true';
+    this.enabled = process.env.NODE_ENV === 'development' ||
+      process.env.NEXT_PUBLIC_DEBUG_SUBSCRIPTIONS === 'true';
   }
 
   /**
@@ -65,8 +65,8 @@ class SubscriptionLogger {
    * Log user login event with subscription state
    */
   logUserLogin(
-    user: User | null, 
-    userSubscription: UserSubscription | null, 
+    user: User | null,
+    userSubscription: UserSubscription | null,
     userType: UserType,
     loading: boolean
   ): void {
@@ -79,9 +79,9 @@ class SubscriptionLogger {
       event: 'login',
       details: {
         loginMethod: user?.providerData?.[0]?.providerId || 'unknown',
-        isPremium: userType === 'premium' || 
-                  (userSubscription?.subscription?.status === 'active' &&
-                   ['monthly', 'yearly'].includes(userSubscription?.subscription?.plan || ''))
+        isPremium: userType === 'premium' ||
+          (userSubscription?.subscription?.status === 'active' &&
+            ['monthly', 'yearly'].includes(userSubscription?.subscription?.plan || ''))
       }
     });
   }
@@ -152,3 +152,95 @@ export const subscriptionLogger = new SubscriptionLogger();
 
 // Export type for use in components
 export type { SubscriptionLogData };
+
+/**
+ * Pretty, all-in-one debug log for user, subscription, limits, usage, and KanjiQuest info
+ * Prints a single, emoji-rich, user-friendly log for quick debugging
+ */
+export function logFullUserDebugInfo({
+  user,
+  userSubscription,
+  userType,
+  loading,
+  kanjiQuest,
+  context = 'Debug Info',
+  extra = {}
+}: {
+  user: User | null,
+  userSubscription: UserSubscription | null,
+  userType: UserType,
+  loading: boolean,
+  kanjiQuest?: any,
+  context?: string,
+  extra?: Record<string, any>
+}) {
+  // Helper for checkmark/cross
+  const yes = '✅';
+  const no = '❌';
+  const dash = '—';
+  const get = (v: any, fallback = dash) => v !== undefined && v !== null ? v : fallback;
+
+  // User Info
+  const userInfo = [
+    `👤  Email: ${get(user?.email, 'Not logged in')}`,
+    `🆔  UID: ${get(user?.uid, 'N/A')}`,
+    `🔑  Authenticated: ${user ? yes : no}`
+  ].join('\n');
+
+  // Subscription Info
+  const sub = userSubscription?.subscription;
+  const subInfo = [
+    `💳  Plan: ${get(sub?.plan, 'N/A')}${userType === 'premium' ? ' 🌟' : ''}`,
+    `📅  Status: ${get(sub?.status, 'N/A')}`,
+    `♾️  Unlimited: ${userSubscription?.hasUnlimited ? yes : no}`,
+    `🆔  Stripe ID: ${get(sub?.stripeSubscriptionId, 'N/A')}`,
+    `⏳  Cancel At: ${get(sub?.cancelAtPeriodEnd, dash)}`,
+    `🔁  Renewal: ${get(sub?.renewalDate, dash)}`
+  ].join('\n');
+
+  // Limits
+  const limits = userSubscription?.limits || {};
+  const limitsInfo = [
+    `🈚  Max Kanji: ${get(limits.maxKanji)}`,
+    `📝  Max Drills: ${get(limits.maxDrill)}`,
+    `📚  Max Stories: ${get(limits.maxStories)}`,
+    `📰  Max Articles: ${get(limits.maxArticles)}`,
+    `📋  Max Lists: ${get(limits.maxLists)}`,
+    `💾  Can Save: ${limits.canSave ? yes : no}`,
+    `🔄  Can Sync: ${limits.canSync ? yes : no}`
+  ].join('\n');
+
+  // Usage
+  const usage = userSubscription?.currentUsage || {};
+  const usageInfo = [
+    `🈴  Kanji Used: ${get(usage.kanji, 0)}`,
+    `📝  Drills Used: ${get(usage.drills, 0)}`,
+    `📚  Stories Used: ${get(usage.stories, 0)}`,
+    `📰  Articles Used: ${get(usage.articles, 0)}`,
+    `📋  Lists Used: ${get(usage.lists, 0)}`
+  ].join('\n');
+
+  // KanjiQuest
+  const kq = kanjiQuest || {};
+  const kqInfo = [
+    `🏆  Battles Today: ${get(kq.battles, dash)}`,
+    `🕒  Last Play: ${get(kq.lastPlayDate, dash)}`
+  ].join('\n');
+
+  // All Checks
+  const allChecks = [
+    `🟢  All Checks Passed: ${userSubscription?.allChecksPassed ? yes : no}`,
+    `🌟  Is Premium: ${userType === 'premium' ? yes : no}`,
+    `🔄  Loading: ${loading ? yes : no}`
+  ].join('\n');
+
+  // Extra (if any)
+  const extraInfo = Object.keys(extra).length
+    ? '\n' + Object.entries(extra).map(([k, v]) => `🔸 ${k}: ${v}`).join('\n')
+    : '';
+
+  // Print all in a single, pretty log
+  console.group(`🚦 Doshi Sensei User Debug - ${context}`);
+  console.log(`\n${userInfo}\n\n${subInfo}\n\n${limitsInfo}\n\n${usageInfo}\n\n${kqInfo}\n\n${allChecks}${extraInfo}\n`);
+  console.groupEnd();
+}

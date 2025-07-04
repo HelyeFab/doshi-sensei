@@ -50,7 +50,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   useEffect(() => {
     if (story.id) {
       storyManager.trackStoryView(story.id);
-      
+
       // Cache story for offline reading
       storyOfflineManager.cacheStory(story).catch(error => {
         console.error('Failed to cache story:', error);
@@ -70,7 +70,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
         quizAttempts: 0,
         lastReadAt: new Date()
       });
-      
+
       // Also save locally for offline access
       storyOfflineManager.saveLocalProgress(
         user.uid,
@@ -86,18 +86,18 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     const target = event.currentTarget;
     const word = target.getAttribute('data-word');
     const reading = target.getAttribute('data-reading');
-    
+
     if (!word) return;
 
     const rect = target.getBoundingClientRect();
     const containerRect = textContainerRef.current?.getBoundingClientRect();
-    
+
     if (!containerRect) return;
 
     setWordLookupLoading(true);
     try {
       const lookupResult = await lookupWord(word);
-      
+
       setSelectedWord({
         word,
         reading: reading || lookupResult?.reading,
@@ -142,7 +142,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       // Create a "Story Words" list if it doesn't exist
       const lists = await StudyListManager.getAllStudyLists();
       let storyList = lists.find(l => l.name === 'Story Words');
-      
+
       if (!storyList) {
         storyList = await StudyListManager.createStudyList(
           'Story Words',
@@ -155,7 +155,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       if (storyList) {
         await StudyListManager.addItemToLists(wordToSave, 'word', [storyList.id], user);
       }
-      
+
       setSavedWords(prev => new Set(prev).add(selectedWord.word));
       setSelectedWord(null);
     } catch (error) {
@@ -204,11 +204,11 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   const renderJapaneseText = (html: string) => {
     // Process text with furigana if needed
     const processedHtml = showFurigana ? html : html.replace(/<rt>.*?<\/rt>/g, '');
-    
+
     // Parse the HTML and add click handlers
     const parser = new DOMParser();
     const doc = parser.parseFromString(processedHtml, 'text/html');
-    
+
     // Add data attributes to ruby elements for word lookup
     const rubyElements = doc.querySelectorAll('ruby');
     rubyElements.forEach(ruby => {
@@ -219,7 +219,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     });
 
     return (
-      <div 
+      <div
         ref={textContainerRef}
         className="japanese-text text-lg leading-relaxed relative"
         dangerouslySetInnerHTML={{ __html: doc.body.innerHTML }}
@@ -251,7 +251,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       <div className="max-w-4xl mx-auto p-4">
         <div className="bg-card rounded-lg p-6 border border-border">
           <h2 className="text-2xl font-bold mb-6">Story Quiz</h2>
-          
+
           {quizScore === null ? (
             <div className="space-y-6">
               {story.quiz.map((question, qIndex) => (
@@ -273,7 +273,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                   </div>
                 </div>
               ))}
-              
+
               <div className="flex justify-between mt-8">
                 <button
                   onClick={() => setShowQuiz(false)}
@@ -299,7 +299,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                 {quizScore >= 80 ? 'Excellent!' : quizScore >= 60 ? 'Good job!' : 'Keep practicing!'}
               </h3>
               <p className="text-xl">Your score: {quizScore}%</p>
-              
+
               <div className="space-y-3 mt-6">
                 {story.quiz.map((question, index) => (
                   <div key={question.id} className="text-left p-4 rounded-lg bg-muted/50">
@@ -318,7 +318,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                   </div>
                 ))}
               </div>
-              
+
               <button
                 onClick={onExit}
                 className="px-6 py-2 bg-primary text-primary-foreground rounded-lg mt-6"
@@ -383,17 +383,19 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Image */}
             <div className="relative">
-              <img
-                src={currentPage.imageUrl}
-                alt={currentPage.imageAlt || `Page ${currentPage.pageNumber}`}
-                className="w-full rounded-lg shadow-lg"
-              />
+              {currentPage.imageUrl && currentPage.imageUrl.trim() !== '' && (
+                <img
+                  src={currentPage.imageUrl}
+                  alt={currentPage.imageAlt || `Page ${currentPage.pageNumber}`}
+                  className="w-full rounded-lg shadow-lg"
+                />
+              )}
             </div>
 
             {/* Text */}
             <div className="space-y-4 relative">
               {renderJapaneseText(currentPage.text)}
-              
+
               {showTranslation && (
                 <div className="p-4 bg-muted/50 rounded-lg border border-border">
                   <p className="text-sm text-muted-foreground">Translation:</p>
@@ -461,7 +463,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
             >
               Previous
             </button>
-            
+
             <div className="flex gap-2">
               {story.pages.map((_, index) => (
                 <div

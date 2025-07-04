@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getPokemonSpriteUrl, getPokemonSilhouetteStyle } from '@/data/pokemonData';
-import { getPokedexData, PokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -138,13 +137,8 @@ export default function PokedexModal({ isOpen, onClose, userId }: PokedexModalPr
         }
       }
     } catch (error) {
-      // Failed to load caught Pokémon
-      // Fallback to localStorage if needed
-      const pokedexData = getPokedexData(userId);
-      setCaughtPokemonIds(pokedexData.caught);
-      if (pokedexData.lastCaught) {
-        setLastCaught(pokedexData.lastCaught);
-      }
+      console.error('Failed to load caught Pokémon:', error);
+      setCaughtPokemonIds([]);
     } finally {
       setLoading(false);
     }

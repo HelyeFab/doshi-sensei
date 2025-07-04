@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useSettings } from '@/contexts/SettingsContext';
-import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 
@@ -113,40 +112,25 @@ export default function Home() {
   useEffect(() => {
     const loadPokemonCount = async () => {
       try {
-        // First, migrate any localStorage data to IndexedDB
-        await pokemonManager.migrateFromLocalStorage(user?.uid);
-        
-        // Get data from both sources
+        // Get user premium status
         const isPremiumUser = userSubscription?.subscription?.status === 'active' && 
           (userSubscription?.subscription?.plan === 'monthly' || 
            userSubscription?.subscription?.plan === 'yearly');
         
-        // Get from pokemonManager (checks IndexedDB and cloud)
+        // Get caught Pokemon from IndexedDB and cloud if premium
         const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
         
-        // Also check localStorage as fallback
-        const localStorageData = getPokedexData(user?.uid);
-        
-        // Merge both sources (in case some data is only in localStorage)
-        const allCaughtPokemon = new Set([...caughtPokemon, ...localStorageData.caught]);
-        
         console.log('🎮 Pokédex count check:', {
-          fromPokemonManager: caughtPokemon.length,
-          fromLocalStorage: localStorageData.caught.length,
-          merged: allCaughtPokemon.size,
+          pokemonCount: caughtPokemon.length,
           user: user?.email
         });
         
-        if (allCaughtPokemon.size > 0) {
-          setStats(prev => ({ ...prev, pokemonCaught: allCaughtPokemon.size }));
+        if (caughtPokemon.length > 0) {
+          setStats(prev => ({ ...prev, pokemonCaught: caughtPokemon.length }));
         }
       } catch (error) {
-        // Error loading Pokémon count
-        // Fallback to localStorage only
-        const pokedexData = getPokedexData(user?.uid);
-        if (pokedexData.caught.length > 0) {
-          setStats(prev => ({ ...prev, pokemonCaught: pokedexData.caught.length }));
-        }
+        console.error('Error loading Pokémon count:', error);
+        // No fallback needed, will display 0
       }
     };
     
@@ -214,14 +198,10 @@ export default function Home() {
            userSubscription?.subscription?.plan === 'yearly');
         
         const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
-        const localStorageData = getPokedexData(user?.uid);
-        const allCaughtPokemon = new Set([...caughtPokemon, ...localStorageData.caught]);
-        pokemonCount = allCaughtPokemon.size;
+        pokemonCount = caughtPokemon.length;
       } catch (error) {
         // Error loading Pokémon in loadStats
-        // Fallback to localStorage
-        const pokedexData = getPokedexData(user?.uid);
-        pokemonCount = pokedexData.caught.length;
+        console.error('Error loading Pokémon in loadStats:', error);
       }
       
       // Get story stats with error handling

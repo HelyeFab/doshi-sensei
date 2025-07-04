@@ -37,39 +37,24 @@ class PokemonManager {
       kanjiIds,
     };
 
-    // Always save to IndexedDB for offline access
-    await pokemonStorage.savePokemonLocally(pokemonId, jlptLevel, kanjiIds);
+    // Get user identification for double-check auth
+    const userId = user?.uid || null;
+    const userEmail = user?.email || null;
 
-    // Also save to localStorage as a backup (for compatibility)
-    const storageKey = user ? `pokedex_${user.uid}` : 'pokedex_guest';
-    try {
-      const existingData = localStorage.getItem(storageKey);
-      const pokedexData = existingData ? JSON.parse(existingData) : { caught: [] };
-      
-      if (!pokedexData.caught.includes(pokemonId)) {
-        pokedexData.caught.push(pokemonId);
-        pokedexData.lastCaught = {
-          id: pokemonId,
-          date: new Date().toISOString()
-        };
-        localStorage.setItem(storageKey, JSON.stringify(pokedexData));
-        // Saved Pokémon to localStorage backup
-      }
-    } catch (error) {
-      // Failed to save to localStorage backup
-    }
+    // Always save to IndexedDB for offline access with user identification
+    await pokemonStorage.savePokemonLocally(pokemonId, jlptLevel, kanjiIds, userId, userEmail);
 
     // For premium users, also save to Firebase
     if (user && isPremium) {
       // User is premium, saving to Firebase...
-      await this.savePokemonToCloud(user.uid, pokemonId);
+      await this.savePokemonToCloud(user.uid, userEmail, pokemonId);
     } else {
       // User is not premium or not logged in, skipping Firebase save
     }
   }
 
   // Save Pokémon to Firebase
-  private async savePokemonToCloud(userId: string, pokemonId: number): Promise<void> {
+  private async savePokemonToCloud(userId: string, userEmail: string | null, pokemonId: number): Promise<void> {
     // savePokemonToCloud called for user
     try {
       const userDocRef = doc(db, 'users', userId);
@@ -80,16 +65,16 @@ class PokemonManager {
         // Update existing document
         const currentData = userDoc.data();
         // Current user data and caught Pokémon retrieved
-        
+
         // Get current pokedex data or create new structure
         const currentPokedex = currentData?.pokedex || { caught: [], totalCaught: 0 };
         const currentCaught = currentPokedex.caught || [];
-        
+
         // Only add if not already caught
         if (!currentCaught.includes(pokemonId)) {
           currentCaught.push(pokemonId);
         }
-        
+
         const updateData = {
           pokedex: {
             caught: currentCaught,
@@ -100,13 +85,13 @@ class PokemonManager {
             totalCaught: currentCaught.length
           }
         };
-        
+
         // Updating Firebase with Pokémon data
-        
+
         try {
           await updateDoc(userDocRef, updateData);
           // Successfully updated Firebase with Pokémon
-          
+
           // Verify the update
           const verifyDoc = await getDoc(userDocRef);
           // Verification - Document updated with pokedex data
@@ -139,30 +124,34 @@ class PokemonManager {
 
   // Get all caught Pokémon (merge local and cloud data)
   async getCaughtPokemon(user: User | null, isPremium: boolean): Promise<number[]> {
-    const localPokemon = await pokemonStorage.getAllCaughtPokemonLocally();
-
-    if (!user || !isPremium) {
-      // Free users only get local data
-      return localPokemon;
-    }
-
-    // Premium users get merged data from cloud and local
+    // getCaughtPokemon called
     try {
-      const cloudPokemon = await this.getPokemonFromCloud(user.uid);
-      
-      // Sync cloud data to local storage
-      await pokemonStorage.syncFromCloud(cloudPokemon);
-      
-      // Return merged list
-      return await pokemonStorage.getMergedPokemonList(cloudPokemon);
+      // Always return empty for no user (new/guest)
+      if (!user) return [];
+      const userId = user.uid;
+      const userEmail = user.email;
+      if (isPremium && userId) {
+        // Always fetch from cloud first
+        const cloudPokemonIds = await this.getPokemonFromCloud(userId, userEmail || '');
+        if (cloudPokemonIds.length > 0) {
+          // Always sync to local for offline use
+          await pokemonStorage.syncFromCloud(cloudPokemonIds, userId, userEmail || '');
+          return cloudPokemonIds;
+        }
+        // Fallback to local if cloud is empty
+        return await pokemonStorage.getAllCaughtPokemonLocally(userId, userEmail);
+      } else {
+        // Free users: only use local
+        return await pokemonStorage.getAllCaughtPokemonLocally(userId, userEmail);
+      }
     } catch (error) {
-      // Failed to get cloud Pokémon, falling back to local
-      return localPokemon;
+      console.error('Error getting caught Pokémon:', error);
+      return [];
     }
   }
 
   // Get Pokémon from Firebase
-  private async getPokemonFromCloud(userId: string): Promise<number[]> {
+  private async getPokemonFromCloud(userId: string, userEmail: string): Promise<number[]> {
     try {
       const userDocRef = doc(db, 'users', userId);
       const userDoc = await getDoc(userDocRef);
@@ -232,69 +221,41 @@ class PokemonManager {
   async forceSyncToCloud(user: User): Promise<void> {
     // Force sync to cloud started
     try {
-      // Get all local Pokemon
-      const localPokemon = await pokemonStorage.getAllCaughtPokemonLocally();
-      
-      // Also check localStorage
-      const storageKey = `pokedex_${user.uid}`;
-      const localStorageData = localStorage.getItem(storageKey);
-      let allPokemon = [...localPokemon];
-      
-      if (localStorageData) {
-        const parsed = JSON.parse(localStorageData);
-        if (parsed.caught) {
-          allPokemon = [...new Set([...allPokemon, ...parsed.caught])];
-        }
+      // Get user identification for double-check auth
+      const userId = user.uid;
+      const userEmail = user.email;
+
+      if (!userId || !userEmail) {
+        console.error('Cannot sync without complete user identification');
+        return;
       }
-      
+
+      // Get all local Pokemon with user auth
+      const localPokemon = await pokemonStorage.getAllCaughtPokemonLocally(userId, userEmail);
+
       // Force sync - Pokemon to sync
-      
-      if (allPokemon.length > 0) {
-        const userDocRef = doc(db, 'users', user.uid);
+      if (localPokemon.length > 0) {
+        const userDocRef = doc(db, 'users', userId);
         const updateData = {
           pokedex: {
-            caught: allPokemon,
+            caught: localPokemon,
             lastCaught: {
-              id: allPokemon[allPokemon.length - 1],
+              id: localPokemon[localPokemon.length - 1],
               date: new Date().toISOString(),
             },
-            totalCaught: allPokemon.length
+            totalCaught: localPokemon.length
           }
         };
-        
+
         // Force sync - Updating Firebase
         await updateDoc(userDocRef, updateData);
-        // Force sync completed successfully
+        console.log(`Successfully synced ${localPokemon.length} Pokemon to cloud for ${userEmail}`);
       } else {
-        // No Pokemon to sync
+        console.log('No Pokemon to sync to cloud');
       }
     } catch (error) {
-      // Force sync failed
+      console.error('Force sync failed:', error);
       throw error;
-    }
-  }
-
-  // Migrate from localStorage to IndexedDB
-  async migrateFromLocalStorage(userId?: string): Promise<void> {
-    const storageKey = userId ? `pokedex_${userId}` : 'pokedex_guest';
-    const existingData = localStorage.getItem(storageKey);
-
-    if (existingData) {
-      try {
-        const parsed = JSON.parse(existingData);
-        if (parsed.caught && Array.isArray(parsed.caught)) {
-          // Save each Pokémon to IndexedDB
-          for (const pokemonId of parsed.caught) {
-            await pokemonStorage.savePokemonLocally(pokemonId, 0, []);
-          }
-
-          // Remove from localStorage after successful migration
-          localStorage.removeItem(storageKey);
-          // Successfully migrated Pokédex data to IndexedDB
-        }
-      } catch (error) {
-        // Failed to migrate Pokédex data
-      }
     }
   }
 }

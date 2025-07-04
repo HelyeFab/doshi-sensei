@@ -14,7 +14,10 @@ import TTSManager from '@/utils/tts';
 import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
 import KanaChart from '@/components/kana/KanaChart';
 import KanaStudyModal from '@/components/kana/KanaStudyModal';
+import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
 import { useNotification } from '@/contexts/NotificationContext';
+import { kanaData } from '@/data/kanaData';
+import { KanaChar } from '@/components/games/KanaDropGame/types';
 
 // Structured Data for Practice Page
 const practiceStructuredData = {
@@ -79,6 +82,7 @@ export default function PracticePage() {
   const [showKanaStudyModal, setShowKanaStudyModal] = useState(false);
   const [kanaStudyType, setKanaStudyType] = useState<'hiragana' | 'katakana' | 'both'>('both');
   const [showRomaji, setShowRomaji] = useState(true);
+  const [showKanaDropModal, setShowKanaDropModal] = useState(false);
   const { showNotification } = useNotification();
 
   useEffect(() => {
@@ -205,6 +209,59 @@ export default function PracticePage() {
     setSelectedKatakana(new Set());
     localStorage.removeItem('kana-study-selection-hiragana');
     localStorage.removeItem('kana-study-selection-katakana');
+  };
+
+  const getSelectedKanaData = (): KanaChar[] => {
+    const selectedData: KanaChar[] = [];
+    
+    // Get hiragana selections
+    selectedHiragana.forEach(id => {
+      const kana = kanaData.find(k => k.id === id);
+      if (kana) {
+        selectedData.push({
+          id: `${id}-hiragana`,
+          kana: kana.hiragana,
+          romaji: kana.romaji,
+          type: 'hiragana'
+        });
+      }
+    });
+    
+    // Get katakana selections
+    selectedKatakana.forEach(id => {
+      const kana = kanaData.find(k => k.id === id);
+      if (kana) {
+        selectedData.push({
+          id: `${id}-katakana`,
+          kana: kana.katakana,
+          romaji: kana.romaji,
+          type: 'katakana'
+        });
+      }
+    });
+    
+    return selectedData;
+  };
+
+  const handleStartKanaDrop = () => {
+    const selectedData = getSelectedKanaData();
+    if (selectedData.length === 0) {
+      showNotification({
+        title: 'No Characters Selected',
+        message: 'Please select some kana characters to play Kana Drop!',
+        type: 'info'
+      });
+      return;
+    }
+    if (selectedData.length > 5) {
+      showNotification({
+        title: 'Too Many Characters',
+        message: 'Please select up to 5 characters for Kana Drop.',
+        type: 'info'
+      });
+      return;
+    }
+    setShowKanaDropModal(true);
   };
 
   if (selectedWord) {
@@ -339,6 +396,20 @@ export default function PracticePage() {
                           </svg>
                           <span>Start Study ({selectedHiragana.size + selectedKatakana.size} selected)</span>
                         </button>
+                        
+                        {(selectedHiragana.size + selectedKatakana.size) <= 5 && (selectedHiragana.size + selectedKatakana.size) > 0 && (
+                          <button
+                            onClick={handleStartKanaDrop}
+                            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors flex items-center gap-2"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                d="M19 14l-7 7m0 0l-7-7m7 7V3" 
+                              />
+                            </svg>
+                            <span>Kana Drop</span>
+                          </button>
+                        )}
                       </div>
                     </>
                   )}
@@ -371,6 +442,15 @@ export default function PracticePage() {
                   }}
                   selectedKanaIds={[...selectedHiragana, ...selectedKatakana]}
                   studyType={kanaStudyType}
+                />
+              )}
+              
+              {/* Kana Drop Modal */}
+              {showKanaDropModal && (
+                <KanaDropModal
+                  isOpen={showKanaDropModal}
+                  onClose={() => setShowKanaDropModal(false)}
+                  selectedKana={getSelectedKanaData()}
                 />
               )}
             </div>

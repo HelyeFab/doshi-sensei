@@ -130,7 +130,7 @@ function ArticleCard({ article, onClick }: ArticleCardProps) {
           {article.tags && article.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {article.tags.slice(0, 3).map((tag, index) => (
-                <span 
+                <span
                   key={index}
                   className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground"
                 >
@@ -202,11 +202,10 @@ function FilterBar({
               <button
                 key={level.id}
                 onClick={() => onLevelChange(level.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  selectedLevel === level.id
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === level.id
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
+                  }`}
               >
                 {level.name}
                 {level.count > 0 && (
@@ -227,11 +226,10 @@ function FilterBar({
               <button
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${
-                  selectedCategory === category.id
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${selectedCategory === category.id
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
+                  }`}
               >
                 {category.icon && <span>{category.icon}</span>}
                 {category.name}
@@ -274,24 +272,25 @@ export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
   const [stats, setStats] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
-  // Load articles on mount
+  // Load articles on mount and when page changes
   useEffect(() => {
-    loadArticles();
+    loadArticles(false, page);
     loadStats();
-  }, []);
+  }, [page]);
 
   // Filter articles when filters change
   useEffect(() => {
     filterArticles();
   }, [articles, selectedLevel, selectedCategory]);
 
-  const loadArticles = async (forceRefresh = false) => {
+  const loadArticles = async (forceRefresh = false, pageNum = 1) => {
     try {
       setLoading(true);
       setError(null);
-
-      const fetchedArticles = await getWatanocArticles(forceRefresh);
+      const fetchedArticles = await getWatanocArticles(forceRefresh, pageNum, pageSize);
       setArticles(fetchedArticles);
     } catch (err) {
       console.error('Failed to load articles:', err);
@@ -337,16 +336,19 @@ export default function NewsPage() {
       if (scrapingResult.success) {
         // Wait a bit for the function to complete, then refresh
         setTimeout(() => {
-          loadArticles(true);
+          setPage(1);
+          loadArticles(true, 1);
           loadStats();
         }, 2000);
       } else {
         // Just refresh current data
-        loadArticles(true);
+        setPage(1);
+        loadArticles(true, 1);
       }
     } catch (error) {
       // Fallback to just refreshing current data
-      loadArticles(true);
+      setPage(1);
+      loadArticles(true, 1);
     }
   };
 
@@ -377,7 +379,7 @@ export default function NewsPage() {
           {/* Description */}
           <div className="mb-8">
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Read curated Japanese articles from <strong>Watanoc, Todaii News, and NHK Easy</strong> to improve your reading comprehension. 
+              Read curated Japanese articles from <strong>Watanoc, Todaii News, and NHK Easy</strong> to improve your reading comprehension.
               Articles are organized by JLPT level and updated daily with fresh content.
             </p>
             {stats && (
@@ -451,7 +453,7 @@ export default function NewsPage() {
                     No articles found
                   </h3>
                   <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                    No articles match your current filters. Try adjusting the JLPT level or category, 
+                    No articles match your current filters. Try adjusting the JLPT level or category,
                     or refresh to get the latest articles.
                   </p>
                   <button
@@ -464,6 +466,25 @@ export default function NewsPage() {
               )}
             </>
           )}
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center gap-4 my-8">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 rounded bg-muted text-muted-foreground disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">Page {page}</span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={articles.length < pageSize}
+              className="px-4 py-2 rounded bg-muted text-muted-foreground disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </>

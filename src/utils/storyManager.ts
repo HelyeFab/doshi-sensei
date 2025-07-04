@@ -1,14 +1,14 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  updateDoc, 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  updateDoc,
   increment,
   serverTimestamp,
   Timestamp
@@ -27,7 +27,7 @@ class StoryManager {
     try {
       const storyId = story.slug || doc(collection(db, this.STORIES_COLLECTION)).id;
       const storyRef = doc(db, this.STORIES_COLLECTION, storyId);
-      
+
       const storyData = {
         ...story,
         id: storyId,
@@ -50,18 +50,19 @@ class StoryManager {
     try {
       const storyRef = doc(db, this.STORIES_COLLECTION, storyId);
       const storyDoc = await getDoc(storyRef);
-      
+
       if (!storyDoc.exists()) {
         return null;
       }
 
       const data = storyDoc.data();
+      const safeDate = (d: any) => d ? (typeof d.toDate === 'function' ? d.toDate() : new Date(d)) : undefined;
       return {
         ...data,
         id: storyDoc.id,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
-        publishedAt: data.publishedAt?.toDate()
+        createdAt: safeDate(data.createdAt) || new Date(),
+        updatedAt: safeDate(data.updatedAt) || new Date(),
+        publishedAt: safeDate(data.publishedAt)
       } as Story;
     } catch (error) {
       console.error('Error getting story:', error);
@@ -169,7 +170,7 @@ class StoryManager {
     try {
       const progressId = `${userId}_${progress.storyId}`;
       const progressRef = doc(db, this.PROGRESS_COLLECTION, progressId);
-      
+
       await setDoc(progressRef, {
         ...progress,
         userId,
@@ -187,7 +188,7 @@ class StoryManager {
       const progressId = `${userId}_${storyId}`;
       const progressRef = doc(db, this.PROGRESS_COLLECTION, progressId);
       const progressDoc = await getDoc(progressRef);
-      
+
       if (!progressDoc.exists()) {
         return null;
       }
@@ -209,7 +210,7 @@ class StoryManager {
     try {
       const progressId = `${userId}_${storyId}`;
       const progressRef = doc(db, this.PROGRESS_COLLECTION, progressId);
-      
+
       await setDoc(progressRef, {
         storyId,
         userId,
@@ -238,13 +239,13 @@ class StoryManager {
     try {
       const statsRef = doc(db, this.STATS_COLLECTION, userId);
       const today = new Date().toISOString().split('T')[0];
-      
+
       const statsDoc = await getDoc(statsRef);
       const currentStats = statsDoc.exists() ? statsDoc.data() : {};
-      
+
       const lastStoryDate = currentStats.storyStats?.lastStoryDate || '';
       const isToday = lastStoryDate === today;
-      
+
       await setDoc(statsRef, {
         storyStats: {
           totalStoriesRead: increment(1),
@@ -263,7 +264,7 @@ class StoryManager {
     try {
       const statsRef = doc(db, this.STATS_COLLECTION, userId);
       const statsDoc = await getDoc(statsRef);
-      
+
       if (!statsDoc.exists() || !statsDoc.data().storyStats) {
         return {
           totalStoriesRead: 0,
@@ -278,7 +279,7 @@ class StoryManager {
       const stats = statsDoc.data().storyStats;
       const today = new Date().toISOString().split('T')[0];
       const isToday = stats.lastStoryDate === today;
-      
+
       return {
         totalStoriesRead: stats.totalStoriesRead || 0,
         storiesReadToday: isToday ? (stats.storiesReadToday || 0) : 0,
@@ -304,7 +305,7 @@ class StoryManager {
   async canReadStory(userId: string | null, isPremium: boolean): Promise<boolean> {
     if (isPremium) return true;
     if (!userId) return true; // Guest users can read 1 story
-    
+
     const stats = await this.getUserStoryStats(userId);
     return stats.storiesReadToday < 1;
   }
@@ -317,6 +318,33 @@ class StoryManager {
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/--+/g, '-') // Replace multiple hyphens with single hyphen
       .trim();
+  }
+
+  // Get all stories (admin: includes drafts and published)
+  async getAllStoriesAdmin(limitCount: number = 100): Promise<Story[]> {
+    try {
+      const q = query(
+        collection(db, this.STORIES_COLLECTION),
+        orderBy('updatedAt', 'desc'),
+        limit(limitCount)
+      );
+
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        const safeDate = (d: any) => d ? (typeof d.toDate === 'function' ? d.toDate() : new Date(d)) : undefined;
+        return {
+          ...data,
+          id: doc.id,
+          createdAt: safeDate(data.createdAt) || new Date(),
+          updatedAt: safeDate(data.updatedAt) || new Date(),
+          publishedAt: safeDate(data.publishedAt)
+        } as Story;
+      });
+    } catch (error) {
+      console.error('Error getting all stories (admin):', error);
+      throw error;
+    }
   }
 }
 

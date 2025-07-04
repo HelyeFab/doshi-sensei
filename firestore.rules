@@ -12,8 +12,30 @@ service cloud.firestore {
       let userData = get(/databases/$(database)/documents/users/$(userId)).data;
       return userData.subscription != null &&
         userData.subscription.subscription != null &&
-        userData.subscription.subscription.status == 'active' && 
+        userData.subscription.subscription.status == 'active' &&
         userData.subscription.subscription.plan in ['monthly', 'yearly'];
+    }
+
+    // Helper function to validate bookmark structure
+    function isValidBookmark(data) {
+      return data.keys().hasAll(['userId', 'contentId', 'contentType', 'createdAt', 'updatedAt']) &&
+        data.contentType in ['article', 'story'] &&
+        data.userId is string &&
+        data.contentId is string &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // Helper function to validate reading progress structure
+    function isValidReadingProgress(data) {
+      return data.keys().hasAll(['userId', 'contentId', 'contentType', 'progress', 'updatedAt']) &&
+        data.contentType in ['article', 'story'] &&
+        data.userId is string &&
+        data.contentId is string &&
+        data.progress is number &&
+        data.progress >= 0 &&
+        data.progress <= 100 &&
+        data.updatedAt is timestamp;
     }
 
     // Users can only access their own data
@@ -23,7 +45,7 @@ service cloud.firestore {
 
       // Allow users to update their own data with validation
       allow create: if request.auth != null && request.auth.uid == userId;
-      
+
       allow update: if isAdmin() || (
         request.auth != null && request.auth.uid == userId &&
         (
@@ -42,7 +64,7 @@ service cloud.firestore {
           )
         )
       );
-      
+
       allow delete: if isAdmin();
 
       // Allow access to user's subcollections (wordLists, savedWords, etc.)
@@ -95,7 +117,7 @@ service cloud.firestore {
 
       // Only admin can write articles
       allow write: if isAdmin();
-      
+
       // Allow reading subcollections
       match /{document=**} {
         allow read: if true;
@@ -121,18 +143,67 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
-    // User bookmarks collection for articles
+    // Enhanced user bookmarks collection for articles and stories
     match /user_bookmarks/{bookmarkId} {
       // Users can read their own bookmarks
-      allow read: if request.auth != null && 
+      allow read: if request.auth != null &&
         (isAdmin() || resource.data.userId == request.auth.uid);
-      
-      // Users can create bookmarks for themselves
-      allow create: if request.auth != null && 
-        request.resource.data.userId == request.auth.uid;
-      
+
+      // Users can create bookmarks for themselves with validation
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidBookmark(request.resource.data);
+
       // Users can update/delete their own bookmarks
-      allow update, delete: if request.auth != null && 
+      allow update: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid) &&
+        isValidBookmark(request.resource.data);
+
+      allow delete: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // Story bookmarks collection (separate from article bookmarks for organization)
+    match /story_bookmarks/{bookmarkId} {
+      // Users can read their own story bookmarks
+      allow read: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+
+      // Users can create story bookmarks for themselves with validation
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidBookmark(request.resource.data) &&
+        request.resource.data.contentType == 'story';
+
+      // Users can update their own story bookmarks
+      allow update: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid) &&
+        isValidBookmark(request.resource.data) &&
+        request.resource.data.contentType == 'story';
+
+      // Users can delete their own story bookmarks
+      allow delete: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // Reading progress collection for both articles and stories
+    match /reading_progress/{progressId} {
+      // Users can read their own reading progress
+      allow read: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+
+      // Users can create reading progress for themselves with validation
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidReadingProgress(request.resource.data);
+
+      // Users can update their own reading progress
+      allow update: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid) &&
+        isValidReadingProgress(request.resource.data);
+
+      // Users can delete their own reading progress
+      allow delete: if request.auth != null &&
         (isAdmin() || resource.data.userId == request.auth.uid);
     }
 
@@ -140,36 +211,36 @@ service cloud.firestore {
     match /stories/{storyId} {
       // Allow anyone to read published stories
       allow read: if resource == null || resource.data.status == 'published' || isAdmin();
-      
+
       // Only admin can write stories
       allow write: if isAdmin();
     }
 
-    // Story progress tracking
+    // Story progress tracking (legacy - keeping for backward compatibility)
     match /storyProgress/{progressId} {
       // Users can read their own progress
-      allow read: if request.auth != null && 
+      allow read: if request.auth != null &&
         (isAdmin() || resource.data.userId == request.auth.uid);
-      
+
       // Users can create/update their own progress
-      allow create, update: if request.auth != null && 
+      allow create, update: if request.auth != null &&
         request.resource.data.userId == request.auth.uid;
-      
+
       // Users can delete their own progress
-      allow delete: if request.auth != null && 
+      allow delete: if request.auth != null &&
         (isAdmin() || resource.data.userId == request.auth.uid);
     }
 
     // User stats collection (for stories and other features)
     match /userStats/{userId} {
       // Users can read their own stats
-      allow read: if request.auth != null && 
+      allow read: if request.auth != null &&
         (isAdmin() || request.auth.uid == userId);
-      
+
       // Users can create/update their own stats
-      allow create, update: if request.auth != null && 
+      allow create, update: if request.auth != null &&
         request.auth.uid == userId;
-      
+
       // Only admin can delete stats
       allow delete: if isAdmin();
     }

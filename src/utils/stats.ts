@@ -201,13 +201,14 @@ export class StatsManager {
           await this.saveStatsToCloud(localStats);
           return { success: true, message: 'Local data was newer, uploaded to cloud' };
         } else {
-          // Merge data (take the higher values for cumulative stats)
+          // Merge data with intelligent streak handling
           const mergedStats: UserStats = {
             drillsCompleted: Math.max(localStats.drillsCompleted, cloudStats.drillsCompleted),
             totalQuestions: Math.max(localStats.totalQuestions, cloudStats.totalQuestions),
             correctAnswers: Math.max(localStats.correctAnswers, cloudStats.correctAnswers),
             accuracy: Math.max(localStats.accuracy, cloudStats.accuracy),
-            currentStreak: Math.max(localStats.currentStreak, cloudStats.currentStreak),
+            // Intelligent streak merging: prefer the one with more recent activity
+            currentStreak: this.mergeStreaksIntelligently(localStats, cloudStats),
             longestStreak: Math.max(localStats.longestStreak, cloudStats.longestStreak),
             lastActiveDate: localStats.lastActiveDate > cloudStats.lastActiveDate ? localStats.lastActiveDate : cloudStats.lastActiveDate,
             firstUseDate: localStats.firstUseDate < cloudStats.firstUseDate ? localStats.firstUseDate : cloudStats.firstUseDate,
@@ -353,7 +354,7 @@ export class StatsManager {
   static async recordDrillSession(questionsAnswered: number, correctAnswers: number, wordsStudied: string[]): Promise<void> {
     try {
       const stats = await this.getUserStats();
-      const today = new Date().toDateString();
+      const today = new Date().toISOString().split('T')[0]; // Use ISO format consistently
 
       // Update drill statistics
       stats.drillsCompleted += 1;
@@ -385,7 +386,7 @@ export class StatsManager {
   static async recordWordStudied(_wordId: string): Promise<void> {
     try {
       const stats = await this.getUserStats();
-      const today = new Date().toDateString();
+      const today = new Date().toISOString().split('T')[0]; // Use ISO format consistently
 
       // Update usage tracking and streak
       await this.updateDailyUsageAndStreak(stats, today);
@@ -402,16 +403,16 @@ export class StatsManager {
   static async recordKanjiStudySession(questionsAnswered: number, correctAnswers: number, kanjiLearned: number = 0): Promise<void> {
     try {
       const stats = await this.getUserStats();
-      const today = new Date().toDateString();
+      const today = new Date().toISOString().split('T')[0]; // Use ISO format consistently
 
       // Update kanji study statistics
       stats.kanjiStudySessions += 1;
       stats.kanjiStudyQuestions += questionsAnswered;
       stats.kanjiCorrectAnswers += correctAnswers;
-      stats.kanjiAccuracy = stats.kanjiStudyQuestions > 0 
-        ? Math.round((stats.kanjiCorrectAnswers / stats.kanjiStudyQuestions) * 100) 
+      stats.kanjiAccuracy = stats.kanjiStudyQuestions > 0
+        ? Math.round((stats.kanjiCorrectAnswers / stats.kanjiStudyQuestions) * 100)
         : 0;
-      
+
       // Update total kanji learned (if any new kanji were marked as learned)
       if (kanjiLearned > 0) {
         stats.totalKanjiLearned += kanjiLearned;
@@ -510,6 +511,73 @@ export class StatsManager {
   }
 
   /**
+   * Recalculate streak from actual activity data (for debugging/fixing)
+   */
+  static async recalculateStreak(): Promise<{ success: boolean; oldStreak: number; newStreak: number; message: string }> {
+    try {
+      const stats = await this.getUserStats();
+      const sessions = await this.getDrillHistory();
+
+      if (sessions.length === 0) {
+        return { success: false, oldStreak: stats.currentStreak, newStreak: 0, message: 'No activity data found' };
+      }
+
+      // Group sessions by date
+      const sessionsByDate = new Map<string, number>();
+      sessions.forEach(session => {
+        const normalizedDate = new Date(session.date).toISOString().split('T')[0];
+        sessionsByDate.set(normalizedDate, (sessionsByDate.get(normalizedDate) || 0) + 1);
+      });
+
+      // Calculate actual streak by counting backwards from today
+      let actualStreak = 0;
+      const today = new Date();
+
+      for (let i = 0; i < 365; i++) { // Check up to 1 year back
+        const checkDate = new Date(today);
+        checkDate.setDate(checkDate.getDate() - i);
+        const normalizedCheckDate = checkDate.toISOString().split('T')[0];
+
+        if (sessionsByDate.has(normalizedCheckDate)) {
+          actualStreak++;
+        } else {
+          break; // Streak broken
+        }
+      }
+
+      const oldStreak = stats.currentStreak;
+
+      if (actualStreak !== oldStreak) {
+        stats.currentStreak = actualStreak;
+        stats.longestStreak = Math.max(stats.longestStreak, actualStreak);
+        await this.saveStats(stats);
+
+        return {
+          success: true,
+          oldStreak,
+          newStreak: actualStreak,
+          message: `Streak corrected from ${oldStreak} to ${actualStreak} based on actual activity`
+        };
+      } else {
+        return {
+          success: true,
+          oldStreak,
+          newStreak: actualStreak,
+          message: 'Streak is already correct'
+        };
+      }
+    } catch (error) {
+      console.error('Error recalculating streak:', error);
+      return {
+        success: false,
+        oldStreak: 0,
+        newStreak: 0,
+        message: 'Error recalculating streak: ' + (error instanceof Error ? error.message : 'Unknown error')
+      };
+    }
+  }
+
+  /**
    * Clear service worker cache to fix sync issues
    */
   static async clearServiceWorkerCache(): Promise<void> {
@@ -583,12 +651,7 @@ export class StatsManager {
   private static async updateDailyUsageAndStreak(stats: UserStats, today: string): Promise<void> {
     const lastActiveDate = stats.lastActiveDate;
 
-    // If it's the same day, no changes needed
-    if (lastActiveDate === today) {
-      return;
-    }
-
-    // Use more reliable date comparison (normalize to YYYY-MM-DD format)
+    // Normalize both dates to ISO format for consistent comparison
     const normalizeDate = (dateStr: string): string => {
       const date = new Date(dateStr);
       return date.toISOString().split('T')[0]; // YYYY-MM-DD format
@@ -597,14 +660,19 @@ export class StatsManager {
     const normalizedLastActive = normalizeDate(lastActiveDate);
     const normalizedToday = normalizeDate(today);
 
+    // If it's the same day, no changes needed
+    if (normalizedLastActive === normalizedToday) {
+      return;
+    }
+
     // Calculate days difference using normalized dates
     const lastActiveDate_obj = new Date(normalizedLastActive + 'T00:00:00.000Z');
     const todayDate_obj = new Date(normalizedToday + 'T00:00:00.000Z');
     const diffTime = todayDate_obj.getTime() - lastActiveDate_obj.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    // Update last active date
-    stats.lastActiveDate = today;
+    // Update last active date to normalized format
+    stats.lastActiveDate = normalizedToday;
 
     // Only increment totalDaysUsed for actual new days (not same day activities)
     if (diffDays > 0) {
@@ -623,6 +691,106 @@ export class StatsManager {
       // Same day - maintain current streak
     } else {
       // Negative difference (clock moved backwards) - maintain streak but don't increment
+      console.warn('Negative day difference detected, maintaining current streak');
+    }
+
+    // Validate streak against actual activity data
+    await this.validateStreak(stats);
+  }
+
+  /**
+   * Private: Intelligently merge streaks from different devices
+   */
+  private static mergeStreaksIntelligently(localStats: UserStats, cloudStats: UserStats): number {
+    // If one device has no activity, use the other
+    if (localStats.currentStreak === 0) return cloudStats.currentStreak;
+    if (cloudStats.currentStreak === 0) return localStats.currentStreak;
+
+    // If both have streaks, prefer the one with more recent activity
+    const localLastActive = new Date(localStats.lastActiveDate);
+    const cloudLastActive = new Date(cloudStats.lastActiveDate);
+
+    // If one is significantly more recent (within 1 day), use that streak
+    const timeDiff = Math.abs(localLastActive.getTime() - cloudLastActive.getTime());
+    const oneDayMs = 24 * 60 * 60 * 1000;
+
+    if (timeDiff <= oneDayMs) {
+      // Both are recent, use the higher streak but log for monitoring
+      const maxStreak = Math.max(localStats.currentStreak, cloudStats.currentStreak);
+      console.warn('Streak merge: Both devices have recent activity, using higher streak', {
+        localStreak: localStats.currentStreak,
+        cloudStreak: cloudStats.currentStreak,
+        chosenStreak: maxStreak,
+        localLastActive: localStats.lastActiveDate,
+        cloudLastActive: cloudStats.lastActiveDate
+      });
+      return maxStreak;
+    } else {
+      // Use the streak from the more recent device
+      const chosenStreak = localLastActive > cloudLastActive ? localStats.currentStreak : cloudStats.currentStreak;
+      console.info('Streak merge: Using streak from more recent device', {
+        localStreak: localStats.currentStreak,
+        cloudStreak: cloudStats.currentStreak,
+        chosenStreak,
+        localLastActive: localStats.lastActiveDate,
+        cloudLastActive: cloudStats.lastActiveDate
+      });
+      return chosenStreak;
+    }
+  }
+
+  /**
+   * Private: Validate streak against actual activity data
+   */
+  private static async validateStreak(stats: UserStats): Promise<void> {
+    try {
+      const sessions = await this.getDrillHistory();
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - Math.max(stats.currentStreak, 30)); // Check last 30 days or streak length
+
+      const recentSessions = sessions.filter(session =>
+        new Date(session.date) >= cutoffDate
+      );
+
+      // Group sessions by date
+      const sessionsByDate = new Map<string, number>();
+      recentSessions.forEach(session => {
+        const normalizedDate = new Date(session.date).toISOString().split('T')[0];
+        sessionsByDate.set(normalizedDate, (sessionsByDate.get(normalizedDate) || 0) + 1);
+      });
+
+      // Check if streak matches actual consecutive days with activity
+      const sortedDates = Array.from(sessionsByDate.keys()).sort();
+      let actualStreak = 0;
+      let currentDate = new Date();
+
+      // Count backwards from today to find actual consecutive days
+      for (let i = 0; i < 30; i++) {
+        const checkDate = new Date(currentDate);
+        checkDate.setDate(checkDate.getDate() - i);
+        const normalizedCheckDate = checkDate.toISOString().split('T')[0];
+
+        if (sessionsByDate.has(normalizedCheckDate)) {
+          actualStreak++;
+        } else {
+          break; // Streak broken
+        }
+      }
+
+      // If actual streak is significantly different from stored streak, log warning
+      if (Math.abs(actualStreak - stats.currentStreak) > 1) {
+        console.warn('Streak validation mismatch:', {
+          storedStreak: stats.currentStreak,
+          actualStreak,
+          lastActiveDate: stats.lastActiveDate,
+          recentSessionsCount: recentSessions.length
+        });
+
+        // Optionally correct the streak (uncomment if you want auto-correction)
+        // stats.currentStreak = actualStreak;
+      }
+    } catch (error) {
+      console.error('Error validating streak:', error);
     }
   }
 

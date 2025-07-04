@@ -196,9 +196,11 @@ export class JapaneseNewsScraper {
   // Call Netlify Functions for balanced multi-source scraping
   private static async callNetlifyScrapingFunction(maxArticles: number): Promise<NewsArticle[]> {
     try {
-      const baseUrl = typeof window !== 'undefined'
-        ? window.location.origin
-        : 'https://doshi-sensei.netlify.app'; // Fallback for SSR
+      // Always use the production Netlify URL for scraping functions
+      // These functions only exist on Netlify, not on localhost
+      const baseUrl = 'https://doshisensei.com';
+      
+      console.log(`🔗 Using Netlify functions at: ${baseUrl}`);
 
       // Split articles evenly between three sources
       const articlesPerSource = Math.ceil(maxArticles / 3);
@@ -228,7 +230,9 @@ export class JapaneseNewsScraper {
           });
 
           if (!response.ok) {
+            const errorText = await response.text();
             console.warn(`⚠️ ${func.name} scraper failed: HTTP ${response.status}`);
+            console.warn(`Response: ${errorText.substring(0, 200)}...`);
             continue;
           }
 
@@ -274,13 +278,20 @@ export class JapaneseNewsScraper {
       console.log(`📊 Source distribution:`, sourceDistribution);
       console.log(`📊 JLPT distribution:`, jlptDistribution);
 
+      // If no articles were scraped, fall back to mock data
+      if (allArticles.length === 0) {
+        console.warn('⚠️ No articles from scraping functions, using mock data');
+        return this.mockScrapeNHKEasy(maxArticles);
+      }
+
       // Shuffle to mix sources and return requested amount
       const shuffledArticles = allArticles.sort(() => Math.random() - 0.5);
       return shuffledArticles.slice(0, maxArticles);
 
     } catch (error) {
       console.error('❌ Failed to call Netlify scraping functions:', error);
-      throw error;
+      console.warn('📋 Falling back to mock data');
+      return this.mockScrapeNHKEasy(maxArticles);
     }
   }
 

@@ -1,92 +1,21 @@
 // const { schedule } = require('@netlify/functions'); // Commented out for now
 const https = require('https');
 const { URL } = require('url');
-
-// Firebase Admin SDK setup
+const { initializeFirebase, getFirestore, isInitialized, getInitializationError } = require('./utils/firebase-init');
 const admin = require('firebase-admin');
 
-// Initialize Firebase Admin SDK
-let firebaseInitialized = false;
-let db = null;
-
-// Check Firebase credentials availability first
-const checkFirebaseCredentials = () => {
-  const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY_ID;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
-  const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID;
-
-  const requiredEnvVars = [
-    'FIREBASE_PRIVATE_KEY_ID',
-    'FIREBASE_PRIVATE_KEY',
-    'FIREBASE_CLIENT_EMAIL',
-    'FIREBASE_CLIENT_ID'
-  ];
-
-  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-
-  if (!projectId) {
-    missingVars.push('FIREBASE_PROJECT_ID (or NEXT_PUBLIC_FIREBASE_PROJECT_ID)');
-  }
-
-  return {
-    hasAllCredentials: missingVars.length === 0,
-    missingVars,
-    projectId,
-    privateKeyId,
-    privateKey,
-    clientEmail,
-    clientId
-  };
-};
-
-const credentialCheck = checkFirebaseCredentials();
-
-if (credentialCheck.hasAllCredentials) {
-  try {
-    if (!admin.apps.length) {
-      const serviceAccount = {
-        type: "service_account",
-        project_id: credentialCheck.projectId,
-        private_key_id: credentialCheck.privateKeyId,
-        private_key: credentialCheck.privateKey?.replace(/\\n/g, '\n'),
-        client_email: credentialCheck.clientEmail,
-        client_id: credentialCheck.clientId,
-        auth_uri: "https://accounts.google.com/o/oauth2/auth",
-        token_uri: "https://oauth2.googleapis.com/token",
-        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${credentialCheck.clientEmail}`
-      };
-
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-
-      firebaseInitialized = true;
-      db = admin.firestore();
-      console.log('✅ Firebase Admin SDK initialized successfully');
-    } else {
-      firebaseInitialized = true;
-      db = admin.firestore();
-    }
-  } catch (error) {
-    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
-    firebaseInitialized = false;
-  }
-} else {
-  console.error('❌ Missing Firebase Admin environment variables:', credentialCheck.missingVars.join(', '));
-  console.error('💡 These are required for the Netlify function to write to Firestore');
-  console.error('📝 Available env vars:', Object.keys(process.env).filter(key => key.includes('FIREBASE')));
-  firebaseInitialized = false;
-}
+// Initialize Firebase Admin SDK using the unified initialization
+const app = initializeFirebase();
+const db = getFirestore();
+const firebaseInitialized = isInitialized();
 
 console.log('--- SCRAPE-WATANOC-ARTICLES FUNCTION START ---');
-console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
-console.log('FIREBASE_PRIVATE_KEY_ID:', process.env.FIREBASE_PRIVATE_KEY_ID);
-console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
-console.log('FIREBASE_CLIENT_ID:', process.env.FIREBASE_CLIENT_ID);
-console.log('Firebase initialized:', firebaseInitialized);
+console.log('Firebase initialization status:', firebaseInitialized ? '✅ Initialized' : '❌ Failed');
+if (!firebaseInitialized) {
+  const error = getInitializationError();
+  console.error('Firebase initialization error:', error ? error.message : 'Unknown error');
+}
+
 
 // JLPT Level mapping based on article complexity and vocabulary
 const JLPT_DIFFICULTY_MAP = {

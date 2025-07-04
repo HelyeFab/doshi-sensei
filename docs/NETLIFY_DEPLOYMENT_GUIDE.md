@@ -1,10 +1,14 @@
-# Netlify Deployment Guide for Watanoc Article Scraping
+# Netlify Deployment Guide for Article Scraping Functions
+
+## Overview
+
+This guide covers the deployment and configuration of the article scraping functions for Doshi Sensei on Netlify. The app includes multiple scraping functions (Watanoc, Todaii, NHK Easy) that fetch Japanese learning content.
 
 ## Required Environment Variables for Netlify Functions
 
-To enable the Watanoc article scraping functionality, you need to configure the following environment variables in your Netlify deployment settings:
+The scraping functions use a unified Firebase initialization system that supports multiple configuration methods. You need to configure ONE of the following approaches in your Netlify deployment settings:
 
-### Firebase Admin SDK Configuration
+### Option 1: Individual Firebase Environment Variables (Recommended)
 
 1. **FIREBASE_PROJECT_ID**
    - Your Firebase project ID
@@ -27,6 +31,23 @@ To enable the Watanoc article scraping functionality, you need to configure the 
    - The client_id from your Firebase service account JSON
    - Example: `123456789012345678901`
 
+### Option 2: Single JSON Service Account (Alternative)
+
+Instead of individual variables, you can provide the entire service account JSON:
+
+1. **FIREBASE_SERVICE_ACCOUNT** or **FIREBASE_SERVICE_ACCOUNT_KEY**
+   - The complete service account JSON as a string
+   - Example: `{"type":"service_account","project_id":"doshi-sensei","private_key":"-----BEGIN PRIVATE KEY-----\n...","client_email":"..."}`
+
+### Option 3: Using NEXT_PUBLIC_ Variables (Fallback)
+
+If you already have these variables set for the main app, the scraping functions will automatically fall back to:
+- NEXT_PUBLIC_FIREBASE_PROJECT_ID
+- NEXT_PUBLIC_FIREBASE_PRIVATE_KEY_ID
+- NEXT_PUBLIC_FIREBASE_PRIVATE_KEY
+- NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL
+- NEXT_PUBLIC_FIREBASE_CLIENT_ID
+
 ## Getting Firebase Service Account Credentials
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
@@ -36,13 +57,38 @@ To enable the Watanoc article scraping functionality, you need to configure the 
 5. Download the JSON file
 6. Extract the required values from the JSON and add them to Netlify environment variables
 
+## Available Scraping Functions
+
+The following scraping functions are available:
+
+1. **scrape-watanoc-real** - Scrapes realistic Japanese learning content
+   - Endpoint: `/.netlify/functions/scrape-watanoc-real`
+   - Method: GET or POST
+   
+2. **scrape-todaii-news** - Scrapes Todaii Japanese news
+   - Endpoint: `/.netlify/functions/scrape-todaii-news`
+   - Method: GET or POST
+   
+3. **scrape-nhk-easy** - Scrapes NHK Easy News
+   - Endpoint: `/.netlify/functions/scrape-nhk-easy`
+   - Method: GET or POST
+   
+4. **scrape-multi-source** - Scrapes from multiple sources
+   - Endpoint: `/.netlify/functions/scrape-multi-source`
+   - Method: GET or POST
+
+5. **test-scraper-init** - Tests Firebase initialization
+   - Endpoint: `/.netlify/functions/test-scraper-init`
+   - Method: GET
+   - Use this to verify your Firebase configuration is working
+
 ## Netlify Function Configuration
 
-The scraping function is configured to:
-- Run daily at 6 AM UTC (3 PM JST) automatically
-- Can be triggered manually via POST request to `/.netlify/functions/scrape-watanoc-articles`
-- Stores articles in Firebase Firestore `articles` collection
-- Updates article statistics in `articlesMetadata/stats` document
+The scraping functions are configured to:
+- Can be triggered manually via GET/POST requests
+- Store articles in Firebase Firestore `articles` collection
+- Update article statistics in `articlesMetadata` collection
+- Include proper CORS headers for browser access
 
 ## Firestore Security Rules
 
@@ -61,28 +107,48 @@ The `firestore.indexes.json` file includes indexes for:
 ## Testing the Deployment
 
 1. Deploy to Netlify with environment variables configured
-2. Check Netlify function logs for any errors
-3. Manually trigger scraping: `POST /.netlify/functions/scrape-watanoc-articles`
-4. Verify articles appear in Firebase Firestore
-5. Check the `/news` page loads articles correctly
+2. Test Firebase initialization:
+   ```bash
+   curl https://your-site.netlify.app/.netlify/functions/test-scraper-init
+   ```
+3. Check the response for initialization status and any missing variables
+4. Manually trigger scraping functions:
+   ```bash
+   curl https://your-site.netlify.app/.netlify/functions/scrape-watanoc-real
+   curl https://your-site.netlify.app/.netlify/functions/scrape-todaii-news
+   curl https://your-site.netlify.app/.netlify/functions/scrape-nhk-easy
+   ```
+5. Verify articles appear in Firebase Firestore
+6. Check the articles page loads content correctly
 
 ## Troubleshooting
 
 ### Common Issues:
 
-1. **"Firebase environment variables not configured"**
-   - Ensure all 5 Firebase environment variables are set in Netlify
+1. **"Firebase Admin accessed before initialization - operations may fail"**
+   - This warning appears during build but is normal
+   - The unified initialization handles this at runtime
 
-2. **"Firebase not initialized"**
+2. **"Firebase environment variables not configured"**
+   - Run the test-scraper-init function to see which variables are missing
+   - Ensure you've configured at least ONE of the three options (individual vars, JSON, or NEXT_PUBLIC_)
+
+3. **"Firebase not initialized" or "The default Firebase app does not exist"**
    - Check the private key format (newlines must be properly handled)
+   - In Netlify UI, use the multi-line input for FIREBASE_PRIVATE_KEY
    - Verify the service account has Firestore read/write permissions
 
-3. **"Permission denied" errors**
+4. **"Permission denied" errors**
    - Deploy the updated `firestore.rules` to Firebase
    - Ensure the service account has proper IAM roles
+   - Check that the service account email matches your Firebase project
 
-4. **Index errors**
+5. **Index errors**
    - Deploy the Firestore indexes: `firebase deploy --only firestore:indexes`
+
+6. **CORS errors in browser console**
+   - The functions include CORS headers, but check browser network tab
+   - Ensure you're calling the correct function URLs
 
 ### Monitoring:
 

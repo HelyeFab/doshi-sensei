@@ -34,7 +34,7 @@ async function fixPremiumSubscription(userEmail) {
     const usersSnapshot = await db.collection('users')
       .where('email', '==', userEmail)
       .get();
-    
+
     if (usersSnapshot.empty) {
       // Try finding by auth email
       const user = await admin.auth().getUserByEmail(userEmail);
@@ -42,15 +42,15 @@ async function fixPremiumSubscription(userEmail) {
         console.error('User not found with email:', userEmail);
         return;
       }
-      
+
       // Get user document by UID
       const userDoc = await db.collection('users').doc(user.uid).get();
-      
+
       if (!userDoc.exists) {
         console.error('User document not found for UID:', user.uid);
         return;
       }
-      
+
       await updateUserSubscription(user.uid, userDoc.data());
     } else {
       const userDoc = usersSnapshot.docs[0];
@@ -63,13 +63,13 @@ async function fixPremiumSubscription(userEmail) {
 
 async function updateUserSubscription(userId, userData) {
   const today = new Date().toISOString().split('T')[0];
-  
+
   // Get current subscription or create default
   const currentSubscription = userData?.subscription || {};
-  
+
   // Determine plan type
   const plan = currentSubscription.subscription?.plan || 'yearly';
-  
+
   // Create proper subscription structure
   const updatedSubscription = {
     subscription: {
@@ -103,15 +103,15 @@ async function updateUserSubscription(userId, userData) {
     createdAt: currentSubscription.createdAt || admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   };
-  
+
   // Dry run option for safety
   const isDryRun = process.argv.includes('--dry-run');
-  
+
   if (isDryRun) {
     console.log('🔍 DRY RUN - Would update subscription to:', JSON.stringify(updatedSubscription, null, 2));
     return;
   }
-  
+
   // Create backup before updating
   const backupDoc = {
     userId,
@@ -119,14 +119,14 @@ async function updateUserSubscription(userId, userData) {
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     reason: 'fix-premium-subscription script'
   };
-  
+
   await db.collection('subscription_backups').add(backupDoc);
-  
+
   // Update the user document
   await db.collection('users').doc(userId).update({
     subscription: updatedSubscription
   });
-  
+
   console.log('✅ Successfully updated subscription for user:', userId);
   console.log('📊 Updated subscription:', JSON.stringify(updatedSubscription, null, 2));
 }

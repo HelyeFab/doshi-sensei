@@ -1,6 +1,6 @@
 # Doshi Sensei - Japanese Learning Application
 
-A comprehensive Japanese language learning app built with Next.js, featuring conjugation practice, vocabulary search, and interactive learning tools.
+A comprehensive Japanese language learning app built with Next.js featuring conjugation practice, vocabulary search, and interactive learning tools.
 
 ## Features
 

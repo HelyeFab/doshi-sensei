@@ -47,9 +47,6 @@ next-env.d.ts
 # Firebase service account key (DO NOT COMMIT)
 firebase-service-account.json
 
-
-backup
-
 # Generated PWA files
 public/sw.js
 public/workbox-*.js
@@ -64,4 +61,6 @@ flat-icons/
 
 # Allow the public flat-icons that are actually used
 # These are the minimal set of icons needed for the app
+
+netlify/functions-backup/
 

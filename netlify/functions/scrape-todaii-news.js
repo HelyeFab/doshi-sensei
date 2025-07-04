@@ -26,7 +26,7 @@ if (!admin.apps.length && projectId) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
-    
+
     firebaseInitialized = true;
     db = admin.firestore();
     console.log('✅ Firebase Admin SDK initialized');
@@ -34,6 +34,13 @@ if (!admin.apps.length && projectId) {
     console.error('❌ Failed to initialize Firebase:', error.message);
   }
 }
+
+console.log('--- SCRAPE-TODAIINEWS FUNCTION START ---');
+console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+console.log('FIREBASE_PRIVATE_KEY_ID:', process.env.FIREBASE_PRIVATE_KEY_ID);
+console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
+console.log('FIREBASE_CLIENT_ID:', process.env.FIREBASE_CLIENT_ID);
+console.log('Firebase initialized:', firebaseInitialized);
 
 // HTTP request function
 function makeRequest(url, maxRedirects = 3) {
@@ -45,7 +52,7 @@ function makeRequest(url, maxRedirects = 3) {
       }
 
       const parsedUrl = new URL(currentUrl);
-      
+
       const options = {
         hostname: parsedUrl.hostname,
         path: parsedUrl.pathname + parsedUrl.search,
@@ -80,11 +87,11 @@ function makeRequest(url, maxRedirects = 3) {
 
         let data = '';
         res.setEncoding('utf8');
-        
+
         res.on('data', (chunk) => {
           data += chunk;
         });
-        
+
         res.on('end', () => {
           console.log(`✅ Response: ${data.length} characters`);
           resolve({
@@ -170,74 +177,74 @@ function estimateJLPTLevelAdvanced(text) {
   const totalChars = text.length;
   const kanjiRatio = kanjiCount / totalChars;
   const kanaRatio = (hiraganaCount + katakanaCount) / totalChars;
-  
+
   // Expanded vocabulary analysis for better level detection
   const vocabularyIndicators = {
     // N5 vocabulary patterns (very basic)
     n5Words: /(?:です|ます|これ|それ|あれ|どれ|ここ|そこ|あそこ|どこ|今日|明日|昨日|家|学校|会社|友達|食べる|飲む|見る|聞く|話す|読む|書く|行く|来る|帰る|いい|悪い|大きい|小さい|新しい|古い|高い|安い|おいしい|とても|少し)/g,
-    
+
     // N4 vocabulary patterns (basic conversational)
     n4Words: /(?:知っている|思う|言う|作る|買う|売る|始める|終わる|起きる|寝る|歩く|走る|泳ぐ|勉強|仕事|電話|手紙|写真|映画|音楽|料理|天気|季節|春|夏|秋|冬|朝|昼|夜|年|月|週|日|時間|分|秒|お金|病院|駅|空港|ホテル|レストラン)/g,
-    
+
     // N3 vocabulary patterns (intermediate)
     n3Words: /(?:経験|機会|意見|問題|解決|説明|紹介|連絡|準備|計画|予定|約束|相談|注意|心配|安心|便利|不便|簡単|複雑|重要|必要|特別|普通|自然|環境|社会|文化|伝統|科学|技術|政治|経済)/g,
-    
+
     // Complex grammar patterns (N2/N1)
     complexGrammar: /(?:によって|について|に関して|に対して|に比べて|にとって|において|ということ|というのは|のみならず|したがって|そのため|その結果|一方|他方|ただし|なお|また|さらに|特に|例えば|つまり|要するに)/g,
-    
+
     // Simple polite patterns (beginner friendly)
     politePatterns: /(?:です|ます|でした|ました|ください|お願いします|ありがとうございます|すみません|失礼します)/g
   };
-  
+
   // Count vocabulary matches
   const n5Count = (text.match(vocabularyIndicators.n5Words) || []).length;
   const n4Count = (text.match(vocabularyIndicators.n4Words) || []).length;
   const n3Count = (text.match(vocabularyIndicators.n3Words) || []).length;
   const complexGrammarCount = (text.match(vocabularyIndicators.complexGrammar) || []).length;
   const politePatternCount = (text.match(vocabularyIndicators.politePatterns) || []).length;
-  
+
   // Calculate sentence complexity
   const sentences = text.split(/[。！？]/).filter(s => s.trim().length > 0);
   const avgSentenceLength = sentences.reduce((acc, s) => acc + s.length, 0) / sentences.length || 0;
   const shortSentences = sentences.filter(s => s.length < 25).length;
   const longSentences = sentences.filter(s => s.length > 50).length;
-  
+
   // Start with scoring system (higher score = more beginner friendly)
   let beginnerScore = 0;
-  
+
   // Kanji ratio scoring (less kanji = more beginner friendly)
   if (kanjiRatio < 0.1) beginnerScore += 40;
   else if (kanjiRatio < 0.2) beginnerScore += 30;
   else if (kanjiRatio < 0.3) beginnerScore += 20;
   else if (kanjiRatio < 0.4) beginnerScore += 10;
-  
+
   // Kana ratio scoring (more kana = more beginner friendly)
   if (kanaRatio > 0.7) beginnerScore += 30;
   else if (kanaRatio > 0.6) beginnerScore += 20;
   else if (kanaRatio > 0.5) beginnerScore += 10;
-  
+
   // Vocabulary scoring
   beginnerScore += n5Count * 5; // N5 words heavily favor beginner
   beginnerScore += n4Count * 3; // N4 words moderately favor beginner
   beginnerScore += politePatternCount * 2; // Polite patterns favor beginner
   beginnerScore -= n3Count * 2; // N3 words slightly against beginner
   beginnerScore -= complexGrammarCount * 10; // Complex grammar strongly against beginner
-  
+
   // Sentence length scoring
   beginnerScore += shortSentences * 3;
   beginnerScore -= longSentences * 5;
   if (avgSentenceLength < 20) beginnerScore += 20;
   else if (avgSentenceLength < 30) beginnerScore += 10;
   else if (avgSentenceLength > 50) beginnerScore -= 20;
-  
+
   // Text length adjustment (shorter = often simpler)
   if (totalChars < 200) beginnerScore += 15;
   else if (totalChars < 400) beginnerScore += 10;
   else if (totalChars > 800) beginnerScore -= 10;
-  
+
   // Determine level based on score with bias toward N4/N5
   let level = 'N3'; // Default to intermediate
-  
+
   if (beginnerScore >= 80) {
     level = 'N5';
   } else if (beginnerScore >= 50) {
@@ -249,7 +256,7 @@ function estimateJLPTLevelAdvanced(text) {
   } else {
     level = 'N1';
   }
-  
+
   // Apply random variation to increase N4/N5 distribution
   const random = Math.random();
   if (random < 0.25) { // 25% chance to bump down difficulty
@@ -259,40 +266,40 @@ function estimateJLPTLevelAdvanced(text) {
   } else if (random < 0.35) { // 10% chance to bump up N3 to N2 for better N2 distribution
     if (level === 'N3') level = 'N2';
   }
-  
+
   // Special case: if text has lots of basic patterns, bias toward beginner
   const basicPatternRatio = (n5Count + n4Count + politePatternCount) / (totalChars / 50);
   if (basicPatternRatio > 2 && level !== 'N5') {
     if (level === 'N3') level = 'N4';
     if (level === 'N2') level = 'N3';
   }
-  
+
   console.log(`📊 JLPT Level: ${level} | Score: ${beginnerScore} | Kanji: ${kanjiRatio.toFixed(2)} | N5: ${n5Count} | N4: ${n4Count} | Complex: ${complexGrammarCount} | AvgSent: ${avgSentenceLength.toFixed(1)}`);
-  
+
   return level;
 }
 
 // Extract article links from Todaii News
 function extractTodaiiArticleLinks(html) {
   const links = [];
-  
+
   // Look for article links - Todaii seems to use specific patterns
   const linkPatterns = [
     /href="(\/article\/[^"]+)"/g,
     /href="(\/news\/[^"]+)"/g,
     /<a[^>]+href="([^"]*article[^"]*)"[^>]*>/g
   ];
-  
+
   for (const pattern of linkPatterns) {
     let match;
     while ((match = pattern.exec(html)) !== null) {
       let url = match[1];
-      
+
       // Convert relative URLs to absolute
       if (url.startsWith('/')) {
         url = 'https://japanese.todaiinews.com' + url;
       }
-      
+
       // Avoid duplicates
       if (!links.some(link => link.url === url)) {
         links.push({
@@ -302,7 +309,7 @@ function extractTodaiiArticleLinks(html) {
       }
     }
   }
-  
+
   console.log(`📄 Found ${links.length} Todaii article links`);
   return links.slice(0, 8); // Limit to 8 articles
 }
@@ -316,7 +323,7 @@ function extractTodaiiContent(html) {
     /<article[^>]*>(.*?)<\/article>/is,
     /<div[^>]*class="[^"]*news-body[^"]*"[^>]*>(.*?)<\/div>/is
   ];
-  
+
   for (const pattern of contentPatterns) {
     const match = html.match(pattern);
     if (match && match[1]) {
@@ -327,7 +334,7 @@ function extractTodaiiContent(html) {
       }
     }
   }
-  
+
   // Fallback: extract paragraphs
   const paragraphs = html.match(/<p[^>]*>([^<]+)<\/p>/gi) || [];
   if (paragraphs.length > 2) {
@@ -335,13 +342,13 @@ function extractTodaiiContent(html) {
       .map(p => cleanText(p))
       .filter(text => text.length > 20)
       .join('\n\n');
-    
+
     if (content.length > 200) {
       console.log('✓ Content extracted from paragraphs');
       return content;
     }
   }
-  
+
   console.log('⚠️ No content found');
   return null;
 }
@@ -354,7 +361,7 @@ function extractTodaiiTitle(html) {
     /<title[^>]*>([^<]+)<\/title>/i,
     /<meta[^>]+property=["]og:title["][^>]+content=["]([^"]+)["]/i
   ];
-  
+
   for (const pattern of titlePatterns) {
     const match = html.match(pattern);
     if (match) {
@@ -364,7 +371,7 @@ function extractTodaiiTitle(html) {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -376,7 +383,7 @@ function extractJLPTLevel(html) {
     /レベル[:\s]*(N[1-5])/i,
     /<span[^>]*class="[^"]*level[^"]*"[^>]*>([^<]*N[1-5][^<]*)<\/span>/i
   ];
-  
+
   for (const pattern of levelPatterns) {
     const match = html.match(pattern);
     if (match && match[1]) {
@@ -386,7 +393,7 @@ function extractJLPTLevel(html) {
       }
     }
   }
-  
+
   return 'N4'; // Default for learner content
 }
 
@@ -395,18 +402,18 @@ async function scrapeTodaiiArticle(link, index = 0) {
   try {
     console.log(`📖 Scraping: ${link.url}`);
     const response = await makeRequest(link.url);
-    
+
     const title = extractTodaiiTitle(response.body) || link.title;
     const content = extractTodaiiContent(response.body);
     const difficulty = extractJLPTLevel(response.body);
-    
+
     if (!content || content.length < 100) {
       throw new Error('Insufficient content');
     }
-    
+
     const vocabulary = extractVocabulary(content);
     const kanji = extractKanji(content);
-    
+
     return {
       id: `todaii_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       title: title.substring(0, 200),
@@ -439,21 +446,21 @@ async function scrapeTodaiiArticle(link, index = 0) {
 // Main Todaii News scraping function
 async function scrapeTodaiiNews() {
   console.log('🔍 Starting Todaii Japanese News scraping...');
-  
+
   const articles = [];
   const targetCount = 6;
-  
+
   try {
     // Get main Todaii News page
     console.log('📖 Fetching Todaii News main page...');
     const mainPageResponse = await makeRequest('https://japanese.todaiinews.com/');
-    
+
     // Extract article links
     const articleLinks = extractTodaiiArticleLinks(mainPageResponse.body);
-    
+
     if (articleLinks.length === 0) {
       console.log('⚠️ No article links found, using fallback content');
-      
+
       // Create comprehensive fallback articles for Japanese learners
       const fallbackArticles = [
         {
@@ -477,7 +484,7 @@ async function scrapeTodaiiNews() {
           difficulty: 'N1'
         }
       ];
-      
+
       for (let i = 0; i < fallbackArticles.length; i++) {
         const articleData = fallbackArticles[i];
         const article = {
@@ -503,7 +510,7 @@ async function scrapeTodaiiNews() {
           sourceLanguage: 'japanese',
           learnerFriendly: true
         };
-        
+
         articles.push(article);
       }
     } else {
@@ -515,14 +522,14 @@ async function scrapeTodaiiNews() {
           articles.push(article);
           console.log(`✅ Scraped: ${article.title}`);
         }
-        
+
         // Be respectful - wait between requests
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
     }
-    
+
     console.log(`✅ Successfully prepared ${articles.length} Todaii articles`);
-    
+
     return {
       success: true,
       articles: articles,
@@ -533,7 +540,7 @@ async function scrapeTodaiiNews() {
         targetUrl: 'https://japanese.todaiinews.com/'
       }
     };
-    
+
   } catch (error) {
     console.error('❌ Error in Todaii scraping:', error);
     return {
@@ -556,32 +563,32 @@ async function checkForDuplicates(newArticles) {
 
   try {
     console.log('🔍 Checking for duplicate articles...');
-    
+
     const existingSnapshot = await db.collection('articles').get();
     const existingArticles = existingSnapshot.docs.map(doc => doc.data());
-    
+
     console.log(`📊 Found ${existingArticles.length} existing articles in database`);
-    
+
     const uniqueArticles = newArticles.filter(newArticle => {
       const isDuplicate = existingArticles.some(existingArticle => {
         const newTitle = newArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
         const existingTitle = existingArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
-        
+
         const similarity = calculateSimilarity(newTitle, existingTitle);
         return similarity > 0.8;
       });
-      
+
       if (isDuplicate) {
         console.log(`⚠️ Duplicate detected: "${newArticle.title}" - skipping`);
       }
-      
+
       return !isDuplicate;
     });
-    
+
     console.log(`✅ Filtered ${newArticles.length - uniqueArticles.length} duplicates, ${uniqueArticles.length} unique articles remaining`);
-    
+
     return uniqueArticles;
-    
+
   } catch (error) {
     console.error('❌ Error checking duplicates:', error.message);
     return newArticles;
@@ -592,9 +599,9 @@ async function checkForDuplicates(newArticles) {
 function calculateSimilarity(str1, str2) {
   const longer = str1.length > str2.length ? str1 : str2;
   const shorter = str1.length > str2.length ? str2 : str1;
-  
+
   if (longer.length === 0) return 1.0;
-  
+
   const editDistance = levenshteinDistance(longer, shorter);
   return (longer.length - editDistance) / longer.length;
 }
@@ -602,15 +609,15 @@ function calculateSimilarity(str1, str2) {
 // Levenshtein distance calculation
 function levenshteinDistance(str1, str2) {
   const matrix = [];
-  
+
   for (let i = 0; i <= str2.length; i++) {
     matrix[i] = [i];
   }
-  
+
   for (let j = 0; j <= str1.length; j++) {
     matrix[0][j] = j;
   }
-  
+
   for (let i = 1; i <= str2.length; i++) {
     for (let j = 1; j <= str1.length; j++) {
       if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
@@ -624,7 +631,7 @@ function levenshteinDistance(str1, str2) {
       }
     }
   }
-  
+
   return matrix[str2.length][str1.length];
 }
 
@@ -642,7 +649,7 @@ function generateTodaiiImageUrl(index) {
     'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400', // tech
     'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400'  // japanese art
   ];
-  
+
   return todaiiImages[index % todaiiImages.length];
 }
 
@@ -654,7 +661,7 @@ async function saveArticlesToFirebase(articles, metadata) {
 
   // Check for duplicates before saving
   const uniqueArticles = await checkForDuplicates(articles);
-  
+
   if (uniqueArticles.length === 0) {
     console.log('⚠️ No new unique articles to save - all were duplicates');
     return true;
@@ -663,7 +670,7 @@ async function saveArticlesToFirebase(articles, metadata) {
   // Use ArticleManager for saving with expiration management
   const batch = db.batch();
   const expiresAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
-  
+
   for (const article of uniqueArticles) {
     const articleWithExpiration = {
       ...article,
@@ -674,11 +681,11 @@ async function saveArticlesToFirebase(articles, metadata) {
       bookmarkedBy: [],
       isArchived: false
     };
-    
+
     const docRef = db.collection('articles').doc(article.id);
     batch.set(docRef, articleWithExpiration);
   }
-  
+
   // Save metadata
   const metadataRef = db.collection('articlesMetadata').doc('todaii-news-stats');
   batch.set(metadataRef, {
@@ -688,7 +695,7 @@ async function saveArticlesToFirebase(articles, metadata) {
     duplicatesSkipped: articles.length - uniqueArticles.length,
     expiresAt: admin.firestore.Timestamp.fromDate(expiresAt)
   });
-  
+
   await batch.commit();
   console.log(`✅ Saved ${uniqueArticles.length} unique articles with expiration management`);
 }
@@ -714,7 +721,7 @@ exports.handler = async (event) => {
     console.log('🚀 ====== TODAII NEWS SCRAPER ACTIVATED ======');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
     console.log('🎯 Scraping from Todaii Japanese News');
-    
+
     if (!firebaseInitialized) {
       console.error('❌ Firebase not initialized');
       return {
@@ -727,27 +734,27 @@ exports.handler = async (event) => {
         }),
       };
     }
-    
+
     console.log('✅ Firebase initialized, starting Todaii scraping...');
     const scrapingResult = await scrapeTodaiiNews();
-    
+
     console.log('📊 Todaii scraping result:', {
       success: scrapingResult.success,
       articleCount: scrapingResult.articles.length
     });
-    
+
     if (scrapingResult.success && scrapingResult.articles.length > 0) {
       console.log('💾 Saving Todaii articles to Firebase...');
       await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
       console.log('🎉 SUCCESS! Todaii articles saved');
     }
-    
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: scrapingResult.success,
-        message: scrapingResult.success 
+        message: scrapingResult.success
           ? `Successfully scraped and saved ${scrapingResult.articles.length} Todaii articles`
           : 'Scraping failed',
         articlesCount: scrapingResult.articles.length,
@@ -763,10 +770,10 @@ exports.handler = async (event) => {
         timestamp: new Date().toISOString()
       }),
     };
-    
+
   } catch (error) {
     console.error('💥 Error in Todaii scraping function:', error);
-    
+
     return {
       statusCode: 500,
       headers,

@@ -26,7 +26,7 @@ if (!admin.apps.length) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
-    
+
     firebaseInitialized = true;
     db = admin.firestore();
     console.log('✅ Firebase Admin SDK initialized successfully');
@@ -38,6 +38,13 @@ if (!admin.apps.length) {
   firebaseInitialized = true;
   db = admin.firestore();
 }
+
+console.log('--- SCRAPE-WATANOC-REAL FUNCTION START ---');
+console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+console.log('FIREBASE_PRIVATE_KEY_ID:', process.env.FIREBASE_PRIVATE_KEY_ID);
+console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
+console.log('FIREBASE_CLIENT_ID:', process.env.FIREBASE_CLIENT_ID);
+console.log('Firebase initialized:', firebaseInitialized);
 
 // Function to make HTTP requests
 function makeRequest(url, options = {}) {
@@ -59,11 +66,11 @@ function makeRequest(url, options = {}) {
 
     const req = https.request(requestOptions, (res) => {
       let data = '';
-      
+
       res.on('data', (chunk) => {
         data += chunk;
       });
-      
+
       res.on('end', () => {
         resolve({
           statusCode: res.statusCode,
@@ -89,7 +96,7 @@ function makeRequest(url, options = {}) {
 // Function to clean HTML text
 function cleanText(html) {
   if (!html) return '';
-  
+
   return html
     .replace(/<script[^>]*>.*?<\/script>/gi, '')
     .replace(/<style[^>]*>.*?<\/style>/gi, '')
@@ -112,74 +119,74 @@ function estimateJLPTLevel(text) {
   const totalChars = text.length;
   const kanjiRatio = kanjiCount / totalChars;
   const kanaRatio = (hiraganaCount + katakanaCount) / totalChars;
-  
+
   // Expanded vocabulary analysis for better level detection
   const vocabularyIndicators = {
     // N5 vocabulary patterns (very basic)
     n5Words: /(?:です|ます|これ|それ|あれ|どれ|ここ|そこ|あそこ|どこ|今日|明日|昨日|家|学校|会社|友達|食べる|飲む|見る|聞く|話す|読む|書く|行く|来る|帰る|いい|悪い|大きい|小さい|新しい|古い|高い|安い|おいしい|とても|少し)/g,
-    
+
     // N4 vocabulary patterns (basic conversational)
     n4Words: /(?:知っている|思う|言う|作る|買う|売る|始める|終わる|起きる|寝る|歩く|走る|泳ぐ|勉強|仕事|電話|手紙|写真|映画|音楽|料理|天気|季節|春|夏|秋|冬|朝|昼|夜|年|月|週|日|時間|分|秒|お金|病院|駅|空港|ホテル|レストラン)/g,
-    
+
     // N3 vocabulary patterns (intermediate)
     n3Words: /(?:経験|機会|意見|問題|解決|説明|紹介|連絡|準備|計画|予定|約束|相談|注意|心配|安心|便利|不便|簡単|複雑|重要|必要|特別|普通|自然|環境|社会|文化|伝統|科学|技術|政治|経済)/g,
-    
+
     // Complex grammar patterns (N2/N1)
     complexGrammar: /(?:によって|について|に関して|に対して|に比べて|にとって|において|ということ|というのは|のみならず|したがって|そのため|その結果|一方|他方|ただし|なお|また|さらに|特に|例えば|つまり|要するに)/g,
-    
+
     // Simple polite patterns (beginner friendly)
     politePatterns: /(?:です|ます|でした|ました|ください|お願いします|ありがとうございます|すみません|失礼します)/g
   };
-  
+
   // Count vocabulary matches
   const n5Count = (text.match(vocabularyIndicators.n5Words) || []).length;
   const n4Count = (text.match(vocabularyIndicators.n4Words) || []).length;
   const n3Count = (text.match(vocabularyIndicators.n3Words) || []).length;
   const complexGrammarCount = (text.match(vocabularyIndicators.complexGrammar) || []).length;
   const politePatternCount = (text.match(vocabularyIndicators.politePatterns) || []).length;
-  
+
   // Calculate sentence complexity
   const sentences = text.split(/[。！？]/).filter(s => s.trim().length > 0);
   const avgSentenceLength = sentences.reduce((acc, s) => acc + s.length, 0) / sentences.length || 0;
   const shortSentences = sentences.filter(s => s.length < 25).length;
   const longSentences = sentences.filter(s => s.length > 50).length;
-  
+
   // Start with scoring system (higher score = more beginner friendly)
   let beginnerScore = 0;
-  
+
   // Kanji ratio scoring (less kanji = more beginner friendly)
   if (kanjiRatio < 0.1) beginnerScore += 40;
   else if (kanjiRatio < 0.2) beginnerScore += 30;
   else if (kanjiRatio < 0.3) beginnerScore += 20;
   else if (kanjiRatio < 0.4) beginnerScore += 10;
-  
+
   // Kana ratio scoring (more kana = more beginner friendly)
   if (kanaRatio > 0.7) beginnerScore += 30;
   else if (kanaRatio > 0.6) beginnerScore += 20;
   else if (kanaRatio > 0.5) beginnerScore += 10;
-  
+
   // Vocabulary scoring
   beginnerScore += n5Count * 5; // N5 words heavily favor beginner
   beginnerScore += n4Count * 3; // N4 words moderately favor beginner
   beginnerScore += politePatternCount * 2; // Polite patterns favor beginner
   beginnerScore -= n3Count * 2; // N3 words slightly against beginner
   beginnerScore -= complexGrammarCount * 10; // Complex grammar strongly against beginner
-  
+
   // Sentence length scoring
   beginnerScore += shortSentences * 3;
   beginnerScore -= longSentences * 5;
   if (avgSentenceLength < 20) beginnerScore += 20;
   else if (avgSentenceLength < 30) beginnerScore += 10;
   else if (avgSentenceLength > 50) beginnerScore -= 20;
-  
+
   // Text length adjustment (shorter = often simpler)
   if (totalChars < 200) beginnerScore += 15;
   else if (totalChars < 400) beginnerScore += 10;
   else if (totalChars > 800) beginnerScore -= 10;
-  
+
   // Determine level based on score with bias toward N4/N5
   let level = 'N3'; // Default to intermediate
-  
+
   if (beginnerScore >= 80) {
     level = 'N5';
   } else if (beginnerScore >= 50) {
@@ -191,7 +198,7 @@ function estimateJLPTLevel(text) {
   } else {
     level = 'N1';
   }
-  
+
   // Apply random variation to increase N4/N5 distribution
   const random = Math.random();
   if (random < 0.25) { // 25% chance to bump down difficulty
@@ -199,16 +206,16 @@ function estimateJLPTLevel(text) {
     if (level === 'N2') level = 'N3';
     if (level === 'N1') level = 'N2';
   }
-  
+
   // Special case: if text has lots of basic patterns, bias toward beginner
   const basicPatternRatio = (n5Count + n4Count + politePatternCount) / (totalChars / 50);
   if (basicPatternRatio > 2 && level !== 'N5') {
     if (level === 'N3') level = 'N4';
     if (level === 'N2') level = 'N3';
   }
-  
+
   console.log(`📊 JLPT Level: ${level} | Score: ${beginnerScore} | Kanji: ${kanjiRatio.toFixed(2)} | N5: ${n5Count} | N4: ${n4Count} | Complex: ${complexGrammarCount} | AvgSent: ${avgSentenceLength.toFixed(1)}`);
-  
+
   return level;
 }
 
@@ -222,15 +229,15 @@ function estimateReadingTime(text) {
 // Function to scrape NHK Easy News (reliable Japanese learner news source)
 async function scrapeRealArticles() {
   console.log('🔍 Starting real Japanese article scraping from NHK Easy...');
-  
+
   try {
     // NHK Easy News - reliable and designed for Japanese learners
     const nhkEasyUrl = 'https://www3.nhk.or.jp/news/easy/';
-    
+
     console.log(`📖 Fetching articles from: ${nhkEasyUrl}`);
-    
+
     const response = await makeRequest(nhkEasyUrl);
-    
+
     if (response.statusCode !== 200) {
       console.log(`⚠️ Failed to fetch NHK Easy: ${response.statusCode}`);
       throw new Error(`HTTP ${response.statusCode}`);
@@ -239,10 +246,10 @@ async function scrapeRealArticles() {
     // Extract article links from NHK Easy listing
     const html = response.body;
     const articleUrls = [];
-    
+
     // Simple regex to find article links (NHK Easy structure)
     const linkMatches = html.match(/href="[^"]*\/k\d+\/[^"]*"/g) || [];
-    
+
     for (const match of linkMatches.slice(0, 5)) { // Limit to 5 articles
       const url = match.replace(/href="|"/g, '');
       if (url.startsWith('/')) {
@@ -257,7 +264,7 @@ async function scrapeRealArticles() {
     // If we can't find specific articles, create some realistic ones
     if (articleUrls.length === 0) {
       console.log('📰 Creating realistic Japanese news articles...');
-      
+
       const realisticArticles = [
         // N5 Level Articles (Very Basic)
         {
@@ -292,7 +299,7 @@ async function scrapeRealArticles() {
         {
           title: '新幹線の新型車両が運行を開始',
           content: 'JR東海は、東海道新幹線の新型車両「N700S」の営業運転を開始しました。この新しい車両は、従来の車両より約10％の省エネを実現し、環境に優しい設計になっています。最高時速は320キロメートルで、東京と大阪間を最短2時間27分で結びます。車内には、全席にコンセントが設置され、Wi-Fiも完備されているため、乗客は快適に過ごすことができます。また、車体には地震検知システムが搭載されており、緊急時には自動的に停止する安全機能も備えています。新幹線は1964年の東京オリンピックに合わせて開業し、日本の高速鉄道技術の象徴として世界に知られています。現在では、年間約3億人が利用し、日本の重要な交通手段となっています。この新型車両の導入により、さらに安全で快適な旅行が可能になりました。今後も技術革新を続け、世界一の高速鉄道を目指していきます。',
-          category: 'transportation', 
+          category: 'transportation',
           tags: ['新幹線', '交通', '技術', '旅行', '環境']
         },
         {
@@ -358,7 +365,7 @@ async function scrapeRealArticles() {
 
   } catch (error) {
     console.error('❌ Error during article scraping:', error);
-    
+
     return {
       success: false,
       articles: [],
@@ -380,36 +387,36 @@ async function checkForDuplicates(newArticles) {
 
   try {
     console.log('🔍 Checking for duplicate articles...');
-    
+
     // Get existing articles
     const existingSnapshot = await db.collection('articles').get();
     const existingArticles = existingSnapshot.docs.map(doc => doc.data());
-    
+
     console.log(`📊 Found ${existingArticles.length} existing articles in database`);
-    
+
     // Filter out duplicates based on title similarity
     const uniqueArticles = newArticles.filter(newArticle => {
       const isDuplicate = existingArticles.some(existingArticle => {
         // Check title similarity (normalize and compare)
         const newTitle = newArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
         const existingTitle = existingArticle.title.toLowerCase().replace(/[^\w\s]/g, '').trim();
-        
+
         // If titles are very similar (80% match), consider it a duplicate
         const similarity = calculateSimilarity(newTitle, existingTitle);
         return similarity > 0.8;
       });
-      
+
       if (isDuplicate) {
         console.log(`⚠️ Duplicate detected: "${newArticle.title}" - skipping`);
       }
-      
+
       return !isDuplicate;
     });
-    
+
     console.log(`✅ Filtered ${newArticles.length - uniqueArticles.length} duplicates, ${uniqueArticles.length} unique articles remaining`);
-    
+
     return uniqueArticles;
-    
+
   } catch (error) {
     console.error('❌ Error checking duplicates:', error.message);
     return newArticles; // Return all articles if duplicate check fails
@@ -420,9 +427,9 @@ async function checkForDuplicates(newArticles) {
 function calculateSimilarity(str1, str2) {
   const longer = str1.length > str2.length ? str1 : str2;
   const shorter = str1.length > str2.length ? str2 : str1;
-  
+
   if (longer.length === 0) return 1.0;
-  
+
   const editDistance = levenshteinDistance(longer, shorter);
   return (longer.length - editDistance) / longer.length;
 }
@@ -430,15 +437,15 @@ function calculateSimilarity(str1, str2) {
 // Levenshtein distance calculation
 function levenshteinDistance(str1, str2) {
   const matrix = [];
-  
+
   for (let i = 0; i <= str2.length; i++) {
     matrix[i] = [i];
   }
-  
+
   for (let j = 0; j <= str1.length; j++) {
     matrix[0][j] = j;
   }
-  
+
   for (let i = 1; i <= str2.length; i++) {
     for (let j = 1; j <= str1.length; j++) {
       if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
@@ -452,7 +459,7 @@ function levenshteinDistance(str1, str2) {
       }
     }
   }
-  
+
   return matrix[str2.length][str1.length];
 }
 
@@ -490,7 +497,7 @@ function generateImageUrl(category, index) {
       'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400', // modern tech
     ]
   };
-  
+
   const fallbackImages = [
     'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
     'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400',
@@ -498,7 +505,7 @@ function generateImageUrl(category, index) {
     'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400',
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400'
   ];
-  
+
   const categoryImages = imageCollections[category] || fallbackImages;
   return categoryImages[index % categoryImages.length];
 }
@@ -511,7 +518,7 @@ async function saveArticlesToFirebase(articles, metadata) {
 
   // Check for duplicates before saving
   const uniqueArticles = await checkForDuplicates(articles);
-  
+
   if (uniqueArticles.length === 0) {
     console.log('⚠️ No new unique articles to save - all were duplicates');
     return true;
@@ -521,7 +528,7 @@ async function saveArticlesToFirebase(articles, metadata) {
   const batch = db.batch();
   const articlesRef = db.collection('articles');
   const expiresAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
-  
+
   for (const article of uniqueArticles) {
     const articleWithExpiration = {
       ...article,
@@ -532,11 +539,11 @@ async function saveArticlesToFirebase(articles, metadata) {
       bookmarkedBy: [],
       isArchived: false
     };
-    
+
     const docRef = articlesRef.doc(article.id);
     batch.set(docRef, articleWithExpiration);
   }
-  
+
   // Save metadata
   const metadataRef = db.collection('articlesMetadata').doc('watanoc-real-stats');
   batch.set(metadataRef, {
@@ -546,10 +553,10 @@ async function saveArticlesToFirebase(articles, metadata) {
     duplicatesSkipped: articles.length - uniqueArticles.length,
     expiresAt: admin.firestore.Timestamp.fromDate(expiresAt)
   });
-  
+
   await batch.commit();
   console.log(`✅ Successfully saved ${uniqueArticles.length} unique articles with expiration management`);
-  
+
   return true;
 }
 
@@ -591,16 +598,16 @@ exports.handler = async (event, context) => {
     }
 
     console.log('✅ Firebase is initialized, starting article scraping...');
-    
+
     // Scrape real articles
     const scrapingResult = await scrapeRealArticles();
-    
+
     console.log('📊 Scraping result:', {
       success: scrapingResult.success,
       articleCount: scrapingResult.articles.length,
       source: scrapingResult.metadata.source
     });
-    
+
     if (!scrapingResult.success || scrapingResult.articles.length === 0) {
       console.error('❌ Scraping failed - no articles found');
       return {
@@ -614,13 +621,13 @@ exports.handler = async (event, context) => {
         }),
       };
     }
-    
+
     // Save articles to Firebase
     console.log('💾 Saving articles to Firebase...');
     await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
-    
+
     console.log('🎉 SUCCESS! Articles saved to Firebase');
-    
+
     // Return success response
     return {
       statusCode: 200,
@@ -634,11 +641,11 @@ exports.handler = async (event, context) => {
         timestamp: new Date().toISOString()
       }),
     };
-    
+
   } catch (error) {
     console.error('💥 CRITICAL ERROR in watanoc-real scraping function:', error);
     console.error('Stack trace:', error.stack);
-    
+
     return {
       statusCode: 500,
       headers,

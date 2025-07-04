@@ -13,18 +13,18 @@ let db = null;
 const checkFirebaseCredentials = () => {
   const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   const requiredEnvVars = [
-    'FIREBASE_PRIVATE_KEY_ID', 
+    'FIREBASE_PRIVATE_KEY_ID',
     'FIREBASE_PRIVATE_KEY',
     'FIREBASE_CLIENT_EMAIL',
     'FIREBASE_CLIENT_ID'
   ];
 
   const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-  
+
   if (!projectId) {
     missingVars.push('FIREBASE_PROJECT_ID (or NEXT_PUBLIC_FIREBASE_PROJECT_ID)');
   }
-  
+
   return {
     hasAllCredentials: missingVars.length === 0,
     missingVars,
@@ -53,7 +53,7 @@ if (credentialCheck.hasAllCredentials) {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
-      
+
       firebaseInitialized = true;
       db = admin.firestore();
       console.log('✅ Firebase Admin SDK initialized successfully');
@@ -72,10 +72,17 @@ if (credentialCheck.hasAllCredentials) {
   firebaseInitialized = false;
 }
 
+console.log('--- SCRAPE-WATANOC-ARTICLES FUNCTION START ---');
+console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+console.log('FIREBASE_PRIVATE_KEY_ID:', process.env.FIREBASE_PRIVATE_KEY_ID);
+console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
+console.log('FIREBASE_CLIENT_ID:', process.env.FIREBASE_CLIENT_ID);
+console.log('Firebase initialized:', firebaseInitialized);
+
 // JLPT Level mapping based on article complexity and vocabulary
 const JLPT_DIFFICULTY_MAP = {
   'very_easy': 'N5',
-  'easy': 'N4', 
+  'easy': 'N4',
   'medium': 'N3',
   'hard': 'N2',
   'very_hard': 'N1'
@@ -113,7 +120,7 @@ function makeRequest(url, options = {}) {
 
     const req = https.request(requestOptions, (res) => {
       console.log(`  Response status: ${res.statusCode} for ${url}`);
-      
+
       // Handle redirects
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         console.log(`  Redirect to: ${res.headers.location}`);
@@ -121,15 +128,15 @@ function makeRequest(url, options = {}) {
         makeRequest(res.headers.location, options).then(resolve).catch(reject);
         return;
       }
-      
+
       let data = '';
-      
+
       res.setEncoding('utf8');
-      
+
       res.on('data', (chunk) => {
         data += chunk;
       });
-      
+
       res.on('end', () => {
         console.log(`  Response length: ${data.length} characters`);
         resolve({
@@ -179,11 +186,11 @@ function estimateJLPTLevel(text) {
   const kanjiCount = (text.match(/[\u4e00-\u9faf]/g) || []).length;
   const hiraganaCount = (text.match(/[\u3040-\u309f]/g) || []).length;
   const katakanaCount = (text.match(/[\u30a0-\u30ff]/g) || []).length;
-  
+
   const totalChars = text.length;
   const kanjiRatio = kanjiCount / totalChars;
   const complexityScore = kanjiCount * 2 + katakanaCount * 1.5 + hiraganaCount;
-  
+
   // Simple heuristic based on character complexity
   if (complexityScore < 50 && kanjiRatio < 0.15) return 'N5';
   if (complexityScore < 120 && kanjiRatio < 0.25) return 'N4';
@@ -218,7 +225,7 @@ function extractKanji(text) {
 // Real Watanoc scraping function
 async function scrapeWatanocArticles() {
   console.log('🔍 Starting real Watanoc article scraping...');
-  
+
   try {
     // Use actual Watanoc category and tag URLs
     const categoryUrls = [
@@ -234,15 +241,15 @@ async function scrapeWatanocArticles() {
 
     const scrapedArticles = [];
     const targetArticleCount = 10; // Aim for 10 articles
-    
+
     for (const categoryUrl of categoryUrls) {
       if (scrapedArticles.length >= targetArticleCount) break;
-      
+
       try {
         console.log(`📖 Scraping category: ${categoryUrl}`);
-        
+
         const response = await makeRequest(categoryUrl);
-        
+
         if (response.statusCode !== 200) {
           console.log(`⚠️ Failed to fetch ${categoryUrl}: ${response.statusCode}`);
           continue;
@@ -250,38 +257,38 @@ async function scrapeWatanocArticles() {
 
         // Parse article links from the listing page
         console.log(`📝 HTML response length: ${response.body.length} characters`);
-        
+
         // Log a sample of the HTML to understand the structure
         if (response.body.includes('watanoc')) {
           console.log(`✓ Found 'watanoc' in HTML`);
         }
-        
+
         const articleLinks = extractArticleLinks(response.body, categoryUrl);
-        
+
         if (articleLinks.length === 0) {
           console.log(`⚠️ No article links found on ${categoryUrl}`);
-          
+
           // Log some diagnostic info
           const hasArticleTags = response.body.includes('<article') ? 'Yes' : 'No';
           const hasHrefLinks = response.body.includes('href=') ? 'Yes' : 'No';
           console.log(`  Diagnostic: Has <article> tags: ${hasArticleTags}, Has href links: ${hasHrefLinks}`);
-          
+
           // Try to find any links in the page for debugging
           const anyLinks = response.body.match(/href=["']([^"']+)["']/gi) || [];
           console.log(`  Total links found in page: ${anyLinks.length}`);
           if (anyLinks.length > 0 && anyLinks.length < 10) {
             console.log(`  Sample links:`, anyLinks.slice(0, 5).map(l => l.replace(/href=["']|["']/g, '')));
           }
-          
+
           continue;
         }
-        
+
         // Scrape individual articles - increase limit per category
         const articlesPerCategory = Math.min(5, targetArticleCount - scrapedArticles.length);
-        
+
         for (const link of articleLinks.slice(0, articlesPerCategory)) {
           if (scrapedArticles.length >= targetArticleCount) break;
-          
+
           try {
             console.log(`  📄 Attempting to scrape: ${link.url}`);
             const article = await scrapeIndividualArticle(link);
@@ -292,11 +299,11 @@ async function scrapeWatanocArticles() {
           } catch (error) {
             console.log(`  ❌ Failed to scrape article ${link.url}:`, error.message);
           }
-          
+
           // Be respectful - wait between requests
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
-        
+
       } catch (error) {
         console.log(`❌ Error scraping category ${categoryUrl}:`, error.message);
         continue;
@@ -311,7 +318,7 @@ async function scrapeWatanocArticles() {
     }
 
     console.log(`✅ Successfully prepared ${scrapedArticles.length} articles`);
-    
+
     return {
       success: true,
       articles: scrapedArticles,
@@ -322,13 +329,13 @@ async function scrapeWatanocArticles() {
         nextScrapeTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       }
     };
-    
+
   } catch (error) {
     console.error('❌ Error in scrapeWatanocArticles:', error);
-    
+
     // Fallback to mock articles if scraping fails
     const mockArticles = generateMockArticles(3);
-    
+
     return {
       success: true, // Still return success with mock data
       articles: mockArticles,
@@ -347,9 +354,9 @@ async function scrapeWatanocArticles() {
 function extractArticleLinks(html, baseUrl) {
   const links = [];
   const seenUrls = new Set();
-  
+
   console.log(`🔎 Extracting article links from ${baseUrl}`);
-  
+
   // Multiple strategies to find article links
   // Strategy 1: Look for common article link patterns
   const patterns = [
@@ -358,45 +365,45 @@ function extractArticleLinks(html, baseUrl) {
     /<article[^>]*>.*?<a[^>]+href=["']([^"']+)["'][^>]*>/gi,
     /<h[1-6][^>]*>.*?<a[^>]+href=["']([^"']+)["'][^>]*>/gi
   ];
-  
+
   for (const pattern of patterns) {
     const matches = html.matchAll(pattern);
     for (const match of matches) {
       let url = match[1] || match[0].match(/href=["']([^"']+)["']/)?.[1];
       if (!url) continue;
-      
+
       // Convert relative URLs to absolute
       if (url.startsWith('/')) {
         url = 'https://watanoc.com' + url;
       } else if (!url.startsWith('http')) {
         url = new URL(url, baseUrl).href;
       }
-      
+
       // Filter for valid article URLs
       // Note: Don't exclude category/tag pages themselves, only exclude them as article links
       const isListingPage = url.includes('/category/') || url.includes('/tag/') || url.includes('/page/');
-      
-      if (url.includes('watanoc.com') && 
-          !url.includes('#') && 
-          !url.includes('/author/') &&
-          !url.includes('/wp-') &&
-          !url.includes('/feed') &&
-          !url.includes('.jpg') &&
-          !url.includes('.png') &&
-          !url.includes('.css') &&
-          !url.includes('.js') &&
-          !url.includes('.xml') &&
-          url !== 'https://watanoc.com/' &&
-          url !== 'https://watanoc.com' &&
-          !isListingPage &&  // Exclude category/tag listing pages as articles
-          !seenUrls.has(url)) {
-        
+
+      if (url.includes('watanoc.com') &&
+        !url.includes('#') &&
+        !url.includes('/author/') &&
+        !url.includes('/wp-') &&
+        !url.includes('/feed') &&
+        !url.includes('.jpg') &&
+        !url.includes('.png') &&
+        !url.includes('.css') &&
+        !url.includes('.js') &&
+        !url.includes('.xml') &&
+        url !== 'https://watanoc.com/' &&
+        url !== 'https://watanoc.com' &&
+        !isListingPage &&  // Exclude category/tag listing pages as articles
+        !seenUrls.has(url)) {
+
         seenUrls.add(url);
-        
+
         // Try to extract a title
         const titleMatch = html.match(new RegExp(`<a[^>]*href=["']${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>([^<]+)<\/a>`, 'i'));
         let title = titleMatch ? extractTextFromHTML(titleMatch[1]) : '';
-        
+
         // If no title found in link, look for nearby heading
         if (!title || title.length < 10) {
           const headingPattern = new RegExp(`<h[1-6][^>]*>([^<]+)<\/h[1-6]>.*?href=["']${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`, 'si');
@@ -405,7 +412,7 @@ function extractArticleLinks(html, baseUrl) {
             title = extractTextFromHTML(headingMatch[1]);
           }
         }
-        
+
         if (title && title.length > 5) {
           links.push({ url, title: title.substring(0, 200) });
           console.log(`  ✓ Found article: ${title.substring(0, 50)}...`);
@@ -413,28 +420,28 @@ function extractArticleLinks(html, baseUrl) {
       }
     }
   }
-  
+
   console.log(`📊 Extracted ${links.length} unique article links`);
-  
+
   return links.slice(0, 10); // Return max 10 links per category
 }
 
 // Function to scrape an individual article
 async function scrapeIndividualArticle(link) {
   const response = await makeRequest(link.url);
-  
+
   if (response.statusCode !== 200) {
     throw new Error(`HTTP ${response.statusCode}`);
   }
 
   const html = response.body;
-  
+
   // Extract article content (this would need to be customized for Watanoc's HTML structure)
   const title = extractTitle(html) || link.title;
   const content = extractContent(html);
   const summary = extractSummary(html, content);
   const imageUrl = extractImageUrl(html);
-  
+
   if (!content || content.length < 100) {
     throw new Error('Insufficient content');
   }
@@ -447,12 +454,12 @@ async function scrapeIndividualArticle(link) {
   else if (link.url.includes('/tag/n3')) difficulty = 'N3';
   else if (link.url.includes('/tag/n2')) difficulty = 'N2';
   else if (link.url.includes('/tag/n1')) difficulty = 'N1';
-  
+
   // If not found in URL, estimate from content
   if (!difficulty) {
     difficulty = estimateJLPTLevel(content);
   }
-  
+
   const estimatedReadingTime = estimateReadingTime(content);
   const vocabulary = extractVocabulary(content);
   const kanji = extractKanji(content);
@@ -485,7 +492,7 @@ async function scrapeIndividualArticle(link) {
 // Helper functions for content extraction
 function extractTitle(html) {
   const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i) ||
-                    html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+    html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
   return titleMatch ? extractTextFromHTML(titleMatch[1]) : null;
 }
 
@@ -501,9 +508,9 @@ function extractContent(html) {
     /<div[^>]*class="[^"]*text[^"]*"[^>]*>(.*?)<\/div>/is,
     /<div[^>]*id="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/is
   ];
-  
+
   let bestContent = '';
-  
+
   for (const selector of contentSelectors) {
     const match = html.match(selector);
     if (match) {
@@ -513,25 +520,25 @@ function extractContent(html) {
       }
     }
   }
-  
+
   // If we found good content, return it
   if (bestContent.length > 200) {
     return bestContent;
   }
-  
+
   // Fallback: extract all paragraph content
   const paragraphs = html.match(/<p[^>]*>.*?<\/p>/gi) || [];
   const paragraphContent = paragraphs.map(p => extractTextFromHTML(p)).filter(p => p.length > 20).join('\n\n');
-  
+
   // Also try to get content from divs with Japanese text
   if (paragraphContent.length < 200) {
     const japanesePattern = /<div[^>]*>[^<]*[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf][^<]*<\/div>/gi;
     const japaneseDivs = html.match(japanesePattern) || [];
     const japaneseContent = japaneseDivs.map(div => extractTextFromHTML(div)).filter(text => text.length > 50).join('\n\n');
-    
+
     return japaneseContent.length > paragraphContent.length ? japaneseContent : paragraphContent;
   }
-  
+
   return paragraphContent.length > 100 ? paragraphContent : null;
 }
 
@@ -541,7 +548,7 @@ function extractSummary(html, content) {
   if (metaMatch) {
     return extractTextFromHTML(metaMatch[1]);
   }
-  
+
   // Fallback to first paragraph of content
   const firstParagraph = content.split('\n\n')[0];
   return firstParagraph.length > 20 ? firstParagraph.substring(0, 200) + '...' : null;
@@ -553,19 +560,19 @@ function extractImageUrl(html) {
   if (ogImageMatch) {
     return ogImageMatch[1];
   }
-  
+
   // Look for featured images
   const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
   if (imgMatch && !imgMatch[1].includes('logo') && !imgMatch[1].includes('icon')) {
     return imgMatch[1];
   }
-  
+
   return null;
 }
 
 function determineCategoryFromUrl(url) {
   const urlLower = url.toLowerCase();
-  
+
   // Map Watanoc's actual categories
   if (urlLower.includes('/meal') || urlLower.includes('food')) return 'food';
   if (urlLower.includes('/sightseeing') || urlLower.includes('travel')) return 'sightseeing';
@@ -574,7 +581,7 @@ function determineCategoryFromUrl(url) {
   if (urlLower.includes('business') || urlLower.includes('economy')) return 'business';
   if (urlLower.includes('technology') || urlLower.includes('tech')) return 'technology';
   if (urlLower.includes('transport') || urlLower.includes('train')) return 'transportation';
-  
+
   return 'general';
 }
 
@@ -589,18 +596,18 @@ function generateTags(title, content, category) {
     transportation: ['transportation', 'travel', 'infrastructure'],
     general: ['japan', 'japanese', 'learning']
   };
-  
+
   const baseTags = commonTags[category] || commonTags.general;
-  
+
   // Add topic-specific tags based on content
   const topicTags = [];
   const contentLower = (title + ' ' + content).toLowerCase();
-  
+
   if (contentLower.includes('sakura') || contentLower.includes('桜')) topicTags.push('sakura');
   if (contentLower.includes('train') || contentLower.includes('電車')) topicTags.push('trains');
   if (contentLower.includes('food') || contentLower.includes('食べ物')) topicTags.push('food');
   if (contentLower.includes('work') || contentLower.includes('仕事')) topicTags.push('work');
-  
+
   return [...baseTags, ...topicTags].slice(0, 5);
 }
 
@@ -622,7 +629,7 @@ function generateMockArticles(count) {
     {
       title: '日本のビジネス文化における「おもてなし」',
       content: '「おもてなし」は日本独特の概念で、お客様に対する心からのサービス精神を表現しています。この理念は日本のビジネス文化の根幹を成しており、多くの企業で実践されています。\n\nおもてなしの特徴は、相手のニーズを先読みし、期待を上回るサービスを提供することです。これは単なる接客技術ではなく、相手を思いやる心から生まれる行動です。\n\n国際ビジネスにおいても、この「おもてなし」の精神は日本企業の競争優位性となっています。顧客満足度を最優先に考える企業文化は、長期的な信頼関係の構築に貢献しています。',
-      category: 'business', 
+      category: 'business',
       difficulty: 'N3'
     }
   ];
@@ -654,9 +661,9 @@ function generateMockArticles(count) {
 async function saveArticlesToFirebase(articles, metadata) {
   try {
     console.log('💾 Saving articles to Firebase...');
-    
+
     const batch = db.batch();
-    
+
     // Save each article
     for (const article of articles) {
       const articleRef = db.collection('articles').doc(article.id);
@@ -666,7 +673,7 @@ async function saveArticlesToFirebase(articles, metadata) {
         scrapedAt: admin.firestore.Timestamp.fromDate(new Date(article.scrapedAt))
       });
     }
-    
+
     // Save metadata
     const metadataRef = db.collection('articlesMetadata').doc('stats');
     const stats = calculateArticleStats(articles);
@@ -675,12 +682,12 @@ async function saveArticlesToFirebase(articles, metadata) {
       lastUpdated: admin.firestore.Timestamp.fromDate(new Date()),
       scrapingMetadata: metadata
     });
-    
+
     // Execute batch
     await batch.commit();
-    
+
     console.log(`✅ Successfully saved ${articles.length} articles to Firebase`);
-    
+
     return true;
   } catch (error) {
     console.error('❌ Error saving articles to Firebase:', error);
@@ -695,17 +702,17 @@ function calculateArticleStats(articles) {
     articlesByLevel: { N5: 0, N4: 0, N3: 0, N2: 0, N1: 0 },
     articlesByCategory: {}
   };
-  
+
   articles.forEach(article => {
     // Count by JLPT level
     if (article.difficulty in stats.articlesByLevel) {
       stats.articlesByLevel[article.difficulty]++;
     }
-    
+
     // Count by category
     stats.articlesByCategory[article.category] = (stats.articlesByCategory[article.category] || 0) + 1;
   });
-  
+
   return stats;
 }
 
@@ -732,7 +739,7 @@ const scrapeWatanocHandler = async (event) => {
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
     console.log('🔧 Firebase initialized:', firebaseInitialized);
     console.log('🔧 Database instance:', !!db);
-    
+
     // Check if Firebase is properly initialized
     if (!firebaseInitialized) {
       console.error('❌ Firebase Admin SDK not initialized');
@@ -749,7 +756,7 @@ const scrapeWatanocHandler = async (event) => {
         }),
       };
     }
-    
+
     // Check if this is a test call
     if (event.body && JSON.parse(event.body || '{}').test === true) {
       return {
@@ -767,7 +774,7 @@ const scrapeWatanocHandler = async (event) => {
 
     // Scrape articles from Watanoc
     const scrapingResult = await scrapeWatanocArticles();
-    
+
     if (!scrapingResult.success) {
       return {
         statusCode: 500,
@@ -779,10 +786,10 @@ const scrapeWatanocHandler = async (event) => {
         }),
       };
     }
-    
+
     // Save articles to Firebase
     await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
-    
+
     // Return success response
     return {
       statusCode: 200,
@@ -795,10 +802,10 @@ const scrapeWatanocHandler = async (event) => {
         timestamp: new Date().toISOString()
       }),
     };
-    
+
   } catch (error) {
     console.error('💥 Unexpected error in Watanoc scraping function:', error);
-    
+
     return {
       statusCode: 500,
       headers,

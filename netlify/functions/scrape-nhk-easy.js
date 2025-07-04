@@ -6,7 +6,7 @@ const { URL } = require('url');
 function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
   return new Promise((resolve, reject) => {
     let retryCount = 0;
-    
+
     const attemptRequest = () => {
       const performRequest = (currentUrl, redirectCount) => {
         if (redirectCount > maxRedirects) {
@@ -15,7 +15,7 @@ function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
         }
 
         const parsedUrl = new URL(currentUrl);
-        
+
         const options = {
           hostname: parsedUrl.hostname,
           path: parsedUrl.pathname + parsedUrl.search,
@@ -43,7 +43,7 @@ function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
 
           let data = '';
           res.setEncoding('utf8');
-          
+
           res.on('data', (chunk) => {
             data += chunk;
           });
@@ -79,7 +79,7 @@ function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
 
       performRequest(url, 0);
     };
-    
+
     attemptRequest();
   });
 }
@@ -87,12 +87,12 @@ function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
 // Parse date from various formats
 function parseDate(dateStr) {
   if (!dateStr) return new Date();
-  
+
   try {
     // Try parsing ISO format
     const date = new Date(dateStr);
     if (!isNaN(date.getTime())) return date;
-    
+
     // Try parsing Japanese date format (令和6年6月29日)
     const japaneseMatch = dateStr.match(/令和(\d+)年(\d+)月(\d+)日/);
     if (japaneseMatch) {
@@ -102,13 +102,13 @@ function parseDate(dateStr) {
       const day = parseInt(japaneseMatch[3]);
       return new Date(year, month, day);
     }
-    
+
     // Try parsing yyyy年mm月dd日 format
     const match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
     if (match) {
       return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
     }
-    
+
     return new Date();
   } catch (error) {
     console.error('Date parsing error:', error);
@@ -119,7 +119,7 @@ function parseDate(dateStr) {
 // Clean and sanitize text
 function cleanText(text) {
   if (!text) return '';
-  
+
   return text
     .replace(/<ruby>.*?<\/ruby>/g, (match) => {
       const base = match.match(/<ruby>(.*?)<rt>/);
@@ -132,11 +132,16 @@ function cleanText(text) {
 
 // Main handler
 exports.handler = async (event, context) => {
+  console.log('--- SCRAPE-NHK-EASY FUNCTION START ---');
+  console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+  console.log('FIREBASE_PRIVATE_KEY_ID:', process.env.FIREBASE_PRIVATE_KEY_ID);
+  console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
+  console.log('FIREBASE_CLIENT_ID:', process.env.FIREBASE_CLIENT_ID);
   console.log('🚀 Starting NHK Easy News scraper...');
-  
+
   // Initialize Firebase
   const { admin, db, error: initError } = initializeFirebase();
-  
+
   if (initError || !db) {
     console.error('Firebase initialization failed:', initError);
     return {
@@ -152,13 +157,13 @@ exports.handler = async (event, context) => {
     // Fetch NHK Easy News
     console.log('📰 Fetching articles from NHK Easy News...');
     const newsData = await makeRequest('https://www3.nhk.or.jp/news/easy/news-list.json');
-    
+
     let articles;
     try {
       // Remove BOM if present
       const cleanData = newsData.replace(/^\uFEFF/, '');
       const parsed = JSON.parse(cleanData);
-      
+
       // Extract articles from the nested structure
       articles = [];
       Object.values(parsed).forEach(dateData => {
@@ -200,13 +205,13 @@ exports.handler = async (event, context) => {
         // Fetch full article content
         const articleUrl = `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.html`;
         console.log(`Fetching article: ${article.news_id}`);
-        
+
         const articleHtml = await makeRequest(articleUrl);
-        
+
         // Extract content from HTML
         const contentMatch = articleHtml.match(/<div class="article-body"[^>]*>([\s\S]*?)<\/div>/);
         const content = contentMatch ? cleanText(contentMatch[1]) : '';
-        
+
         if (!content) {
           console.warn(`No content found for article ${article.news_id}`);
           errorCount++;
@@ -249,7 +254,7 @@ exports.handler = async (event, context) => {
           title: articleDoc.title
         });
         successCount++;
-        
+
       } catch (articleError) {
         console.error(`Error processing article ${article.news_id}:`, articleError.message);
         errorCount++;
@@ -282,7 +287,7 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('❌ Scraping error:', error);
-    
+
     // Log error to metadata
     if (db) {
       try {

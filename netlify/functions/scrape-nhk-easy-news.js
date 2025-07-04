@@ -26,7 +26,7 @@ if (!admin.apps.length && projectId) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
-    
+
     firebaseInitialized = true;
     db = admin.firestore();
     console.log('✅ Firebase Admin SDK initialized');
@@ -34,6 +34,13 @@ if (!admin.apps.length && projectId) {
     console.error('❌ Failed to initialize Firebase:', error.message);
   }
 }
+
+console.log('--- SCRAPE-NHK-EASY-NEWS FUNCTION START ---');
+console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+console.log('FIREBASE_PRIVATE_KEY_ID:', process.env.FIREBASE_PRIVATE_KEY_ID);
+console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
+console.log('FIREBASE_CLIENT_ID:', process.env.FIREBASE_CLIENT_ID);
+console.log('Firebase initialized:', firebaseInitialized);
 
 // HTTP request function optimized for NHK Easy News
 function makeRequest(url, maxRedirects = 3) {
@@ -45,7 +52,7 @@ function makeRequest(url, maxRedirects = 3) {
       }
 
       const parsedUrl = new URL(currentUrl);
-      
+
       // Headers optimized for NHK Easy News (based on nhkore)
       const options = {
         hostname: parsedUrl.hostname,
@@ -84,11 +91,11 @@ function makeRequest(url, maxRedirects = 3) {
 
         let data = '';
         res.setEncoding('utf8');
-        
+
         res.on('data', (chunk) => {
           data += chunk;
         });
-        
+
         res.on('end', () => {
           console.log(`✅ Response: ${data.length} characters`);
           resolve({
@@ -116,7 +123,7 @@ function makeRequest(url, maxRedirects = 3) {
 // Extract article links from NHK Easy News main page
 function extractNHKArticleLinks(html) {
   const links = [];
-  
+
   // NHK Easy News uses specific patterns for article links
   const linkPatterns = [
     // Standard article links with date pattern
@@ -124,17 +131,17 @@ function extractNHKArticleLinks(html) {
     // Alternative pattern
     /href="([^"]*k\d{10}[^"]*)"/g
   ];
-  
+
   for (const pattern of linkPatterns) {
     let match;
     while ((match = pattern.exec(html)) !== null) {
       let url = match[1];
-      
+
       // Convert relative URLs to absolute
       if (url.startsWith('/')) {
         url = 'https://www3.nhk.or.jp' + url;
       }
-      
+
       // Avoid duplicates
       if (!links.some(link => link.url === url)) {
         links.push({
@@ -144,7 +151,7 @@ function extractNHKArticleLinks(html) {
       }
     }
   }
-  
+
   console.log(`📄 Found ${links.length} NHK Easy article links`);
   return links.slice(0, 10); // Limit to 10 articles
 }
@@ -159,7 +166,7 @@ function extractNHKTitle(html) {
     /<h1[^>]*>([^<]+)<\/h1>/i,
     /<title[^>]*>([^<]+)<\/title>/i
   ];
-  
+
   for (const pattern of titlePatterns) {
     const match = html.match(pattern);
     if (match) {
@@ -169,7 +176,7 @@ function extractNHKTitle(html) {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -184,14 +191,14 @@ function extractNHKContent(html) {
     'div[class*="article-body"]',
     'div[class*="article-main"]'
   ];
-  
+
   for (const selector of contentSelectors) {
     // Simple selector matching
     const patterns = [
       new RegExp(`<div[^>]*id="${selector.replace('#', '').replace('js-', 'js-')}"[^>]*>(.*?)</div>`, 'is'),
       new RegExp(`<div[^>]*class="[^"]*${selector.replace('.', '').replace('-', '[-_]')}[^"]*"[^>]*>(.*?)</div>`, 'is')
     ];
-    
+
     for (const pattern of patterns) {
       const match = html.match(pattern);
       if (match && match[1]) {
@@ -203,7 +210,7 @@ function extractNHKContent(html) {
       }
     }
   }
-  
+
   // Fallback: extract paragraphs within the article area
   const articleMatch = html.match(/<article[^>]*>(.*?)<\/article>/is);
   if (articleMatch) {
@@ -213,14 +220,14 @@ function extractNHKContent(html) {
         .map(p => cleanText(p))
         .filter(text => text.length > 20)
         .join('\n\n');
-      
+
       if (content.length > 200) {
         console.log('✓ Content extracted from article paragraphs');
         return content;
       }
     }
   }
-  
+
   console.log('⚠️ No content found');
   return null;
 }
@@ -231,14 +238,14 @@ function cleanTextAdvanced(html) {
     // Remove scripts and styles
     .replace(/<script[^>]*>.*?<\/script>/gis, '')
     .replace(/<style[^>]*>.*?<\/style>/gis, '')
-    
+
     // Handle ruby tags (furigana) - preserve both kanji and reading
     .replace(/<ruby[^>]*>([^<]*)<rt[^>]*>([^<]*)<\/rt><\/ruby>/gi, '$1($2)')
     .replace(/<ruby[^>]*>([^<]*)<rp[^>]*>[^<]*<\/rp><rt[^>]*>([^<]*)<\/rt><rp[^>]*>[^<]*<\/rp><\/ruby>/gi, '$1($2)')
-    
+
     // Remove all other HTML tags
     .replace(/<[^>]*>/g, ' ')
-    
+
     // Handle HTML entities
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
@@ -247,7 +254,7 @@ function cleanTextAdvanced(html) {
     .replace(/&quot;/g, '"')
     .replace(/&#x27;/g, "'")
     .replace(/&#39;/g, "'")
-    
+
     // Normalize whitespace (including Japanese full-width spaces)
     .replace(/[\s\u3000]+/g, ' ')
     .trim();
@@ -267,7 +274,7 @@ function estimateJLPTLevel(text) {
   const kanjiCount = (text.match(/[\u4e00-\u9faf]/g) || []).length;
   const totalChars = text.length;
   const kanjiRatio = kanjiCount / totalChars;
-  
+
   // NHK Easy is designed for learners, so most content is N4-N5
   if (kanjiRatio < 0.15) return 'N5';
   if (kanjiRatio < 0.25) return 'N4';
@@ -293,18 +300,18 @@ function extractKanji(text) {
 async function scrapeNHKArticle(link) {
   try {
     const response = await makeRequest(link.url);
-    
+
     const title = extractNHKTitle(response.body) || link.title;
     const content = extractNHKContent(response.body);
-    
+
     if (!content || content.length < 100) {
       throw new Error('Insufficient content');
     }
-    
+
     const difficulty = estimateJLPTLevel(content);
     const vocabulary = extractVocabulary(content);
     const kanji = extractKanji(content);
-    
+
     return {
       id: `nhk_easy_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       title: title.substring(0, 200),
@@ -336,18 +343,18 @@ async function scrapeNHKArticle(link) {
 // Main NHK Easy News scraping function
 async function scrapeNHKEasyNews() {
   console.log('🔍 Starting NHK Easy News scraping...');
-  
+
   const articles = [];
   const targetCount = 8;
-  
+
   try {
     // Get main NHK Easy News page
     console.log('📖 Fetching NHK Easy News main page...');
     const mainPageResponse = await makeRequest('https://www3.nhk.or.jp/news/easy/');
-    
+
     // Extract article links
     const articleLinks = extractNHKArticleLinks(mainPageResponse.body);
-    
+
     if (articleLinks.length === 0) {
       console.log('⚠️ No article links found on main page');
       return {
@@ -360,7 +367,7 @@ async function scrapeNHKEasyNews() {
         }
       };
     }
-    
+
     // Scrape individual articles
     for (const link of articleLinks.slice(0, targetCount)) {
       const article = await scrapeNHKArticle(link);
@@ -368,13 +375,13 @@ async function scrapeNHKEasyNews() {
         articles.push(article);
         console.log(`✅ Scraped: ${article.title}`);
       }
-      
+
       // Be respectful - wait between requests
       await new Promise(resolve => setTimeout(resolve, 1500));
     }
-    
+
     console.log(`✅ Successfully scraped ${articles.length} NHK Easy articles`);
-    
+
     return {
       success: true,
       articles: articles,
@@ -385,7 +392,7 @@ async function scrapeNHKEasyNews() {
         targetUrl: 'https://www3.nhk.or.jp/news/easy/'
       }
     };
-    
+
   } catch (error) {
     console.error('❌ Error in NHK Easy scraping:', error);
     return {
@@ -407,7 +414,7 @@ async function saveArticlesToFirebase(articles, metadata) {
   }
 
   const batch = db.batch();
-  
+
   for (const article of articles) {
     const docRef = db.collection('articles').doc(article.id);
     batch.set(docRef, {
@@ -416,14 +423,14 @@ async function saveArticlesToFirebase(articles, metadata) {
       scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt)
     });
   }
-  
+
   // Save metadata
   const metadataRef = db.collection('articlesMetadata').doc('nhk-easy-stats');
   batch.set(metadataRef, {
     ...metadata,
     lastUpdated: admin.firestore.Timestamp.fromDate(new Date())
   });
-  
+
   await batch.commit();
   console.log(`✅ Saved ${articles.length} articles to Firebase`);
 }
@@ -447,7 +454,7 @@ exports.handler = async (event) => {
 
   try {
     console.log('🚀 NHK Easy News scraping function triggered');
-    
+
     if (!firebaseInitialized) {
       return {
         statusCode: 500,
@@ -459,19 +466,19 @@ exports.handler = async (event) => {
         }),
       };
     }
-    
+
     const scrapingResult = await scrapeNHKEasyNews();
-    
+
     if (scrapingResult.success && scrapingResult.articles.length > 0) {
       await saveArticlesToFirebase(scrapingResult.articles, scrapingResult.metadata);
     }
-    
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: scrapingResult.success,
-        message: scrapingResult.success 
+        message: scrapingResult.success
           ? `Successfully scraped and saved ${scrapingResult.articles.length} NHK Easy articles`
           : 'Scraping failed',
         articlesCount: scrapingResult.articles.length,
@@ -486,10 +493,10 @@ exports.handler = async (event) => {
         timestamp: new Date().toISOString()
       }),
     };
-    
+
   } catch (error) {
     console.error('💥 Error in NHK Easy scraping function:', error);
-    
+
     return {
       statusCode: 500,
       headers,

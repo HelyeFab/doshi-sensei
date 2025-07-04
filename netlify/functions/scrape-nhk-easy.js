@@ -192,24 +192,24 @@ function cleanText(text) {
 }
 
 // Main handler
-exports.handler = async (event, context) => {
-  console.log('🚀 Starting NHK Easy News scraper...');
-
-  // Initialize Firebase at runtime
-  initializeFirebaseIfNeeded();
-
-  if (!firebaseInitialized || !db) {
-    console.error('Firebase initialization failed');
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: 'Failed to initialize database connection',
-        details: 'Database not initialized'
-      })
-    };
-  }
-
+exports.handler = async function (event, context) {
   try {
+    console.log('🚀 Starting NHK Easy News scraper...');
+
+    // Initialize Firebase at runtime
+    initializeFirebaseIfNeeded();
+
+    if (!firebaseInitialized || !db) {
+      console.error('Firebase initialization failed');
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: 'Failed to initialize database connection',
+          details: 'Database not initialized'
+        })
+      };
+    }
+
     // Fetch NHK Easy News
     console.log('📰 Fetching articles from NHK Easy News...');
     const newsData = await makeRequest('https://www3.nhk.or.jp/news/easy/news-list.json');
@@ -345,31 +345,10 @@ exports.handler = async (event, context) => {
         articles: processedArticles
       })
     };
-
-  } catch (error) {
-    console.error('❌ Scraping error:', error);
-
-    // Log error to metadata
-    if (db) {
-      try {
-        await db.collection('articlesMetadata').doc('errors').set({
-          lastError: {
-            source: 'nhk_easy',
-            error: error.message,
-            timestamp: new Date().toISOString()
-          }
-        }, { merge: true });
-      } catch (logError) {
-        console.error('Failed to log error:', logError);
-      }
-    }
-
+  } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        error: 'Scraping failed',
-        details: error.message
-      })
+      body: JSON.stringify({ success: false, error: err.message, stack: err.stack })
     };
   }
 };

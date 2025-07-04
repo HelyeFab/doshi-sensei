@@ -734,9 +734,9 @@ async function saveArticlesToFirebase(articles, metadata) {
 }
 
 // Handler
-exports.handler = async (event, context) => {
-  console.log('--- Netlify handler START ---');
+exports.handler = async function (event, context) {
   try {
+    console.log('--- Netlify handler START ---');
     console.log('🚀 ====== TODAII NEWS SCRAPER ACTIVATED ======');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
     console.log('🎯 Scraping from Todaii Japanese News');
@@ -791,15 +791,16 @@ exports.handler = async (event, context) => {
       }),
     };
 
-  } catch (error) {
-    console.error('💥 Error in Todaii scraping function:', error);
+  } catch (err) {
+    console.error('💥 Error in Todaii scraping function:', err);
 
     return {
       statusCode: 500,
       body: JSON.stringify({
         success: false,
         error: 'Internal server error',
-        details: error.message,
+        details: err.message,
+        stack: err.stack,
         timestamp: new Date().toISOString()
       }),
     };

@@ -27,25 +27,26 @@ export interface Story {
   coverImageUrl: string;
   pages: StoryPage[];
   quiz: StoryQuizQuestion[];
-  
+
   // Metadata
   authorId: string;
   createdAt: Date;
   updatedAt: Date;
   publishedAt?: Date;
   status: 'draft' | 'published' | 'archived';
-  
+
   // Stats
   viewCount: number;
   completionCount: number;
   averageQuizScore?: number;
-  
+
   // SEO
   slug: string;
   seoTitle?: string;
   seoDescription?: string;
 }
 
+// Enhanced Story Progress (extends unified ReadingProgress)
 export interface StoryProgress {
   storyId: string;
   userId: string;
@@ -56,6 +57,29 @@ export interface StoryProgress {
   quizAttempts: number;
   savedWords: string[];
   lastReadAt: Date;
+  progress: number; // 0-100 percentage
+  timeSpent: number; // Total time spent reading in seconds
+  quizScores?: number[]; // Multiple quiz attempts
+  vocabularyLearned?: string[];
+  updatedAt: Date;
+}
+
+// Story Bookmark interface (extends unified UserBookmark)
+export interface StoryBookmark {
+  id: string;
+  userId: string;
+  storyId: string;
+  storyTitle: string;
+  storyDifficulty: JLPTLevel;
+  bookmarkedAt: Date;
+  lastReadAt?: Date;
+  readingProgress: number; // 0-100 progress
+  notes?: string;
+  tags?: string[];
+  isFavorite: boolean;
+  syncStatus: 'local' | 'synced' | 'pending';
+  originalContent?: any; // Story snapshot for offline access
+  updatedAt: Date;
 }
 
 export interface StoryStats {

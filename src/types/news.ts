@@ -20,7 +20,7 @@ export interface NewsArticle {
   kanji: ExtractedKanji[];
   isBookmarked?: boolean;
   readingProgress?: number; // 0-100 percentage
-  
+
   // Article Management Fields
   expiresAt?: Date; // Auto-delete after 60 days
   isArchived?: boolean; // Moved to cold storage
@@ -94,11 +94,29 @@ export interface ExtractedKanji {
   isKnown?: boolean;
 }
 
-// Reading Progress Tracking
+// Unified Reading Progress Tracking for both articles and stories
 export interface ReadingProgress {
   id: string;
-  articleId: string;
+  contentId: string; // articleId or storyId
+  contentType: 'article' | 'story';
   userId: string;
+  progress: number; // 0-100 percentage
+  lastReadAt: Date;
+  timeSpent: number; // Total time spent reading in seconds
+  completedAt?: Date;
+  quizScores?: number[]; // Multiple quiz attempts
+  vocabularyLearned?: string[];
+  kanjiEncountered?: string[];
+  wordsLookedUp?: string[];
+  completed: boolean;
+  comprehensionScore?: number; // If quiz taken
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Legacy interface for backward compatibility
+export interface ArticleReadingProgress extends Omit<ReadingProgress, 'contentId' | 'contentType' | 'progress' | 'lastReadAt' | 'timeSpent' | 'completedAt' | 'quizScores' | 'vocabularyLearned' | 'kanjiEncountered' | 'wordsLookedUp'> {
+  articleId: string;
   startTime: Date;
   endTime?: Date;
   scrollProgress: number; // 0-100 percentage
@@ -106,10 +124,6 @@ export interface ReadingProgress {
   vocabularyEncountered: string[];
   kanjiEncountered: string[];
   wordsLookedUp: string[];
-  completed: boolean;
-  comprehensionScore?: number; // If quiz taken
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 // Article Bookmarks
@@ -332,15 +346,30 @@ export type NewsCategoryId = typeof NEWS_CATEGORIES[keyof typeof NEWS_CATEGORIES
 export type DifficultyLevel = typeof DIFFICULTY_LEVELS[keyof typeof DIFFICULTY_LEVELS];
 
 // User Bookmark System
+// Enhanced UserBookmark interface for both articles and stories
 export interface UserBookmark {
   id: string;
   userId: string;
+  contentType: 'article' | 'story'; // Distinguish content types
+  contentId: string; // articleId or storyId
+  contentTitle: string;
+  contentDifficulty?: JLPTLevel;
+  bookmarkedAt: Date;
+  lastReadAt?: Date; // Track reading activity
+  readingProgress: number; // 0-100 progress
+  notes?: string; // User notes
+  tags?: string[]; // User tags
+  isFavorite: boolean; // Favorite flag
+  syncStatus: 'local' | 'synced' | 'pending'; // Sync tracking
+  originalContent?: any; // Content snapshot for offline access
+  updatedAt: Date;
+}
+
+// Legacy interface for backward compatibility
+export interface ArticleBookmark extends Omit<UserBookmark, 'contentType' | 'contentId' | 'contentTitle' | 'contentDifficulty' | 'lastReadAt' | 'tags' | 'isFavorite' | 'syncStatus' | 'originalContent' | 'updatedAt'> {
   articleId: string;
   articleTitle: string;
   articleDifficulty: JLPTLevel;
-  bookmarkedAt: Date;
-  readingProgress?: number;
-  notes?: string;
 }
 
 // Article Pagination
@@ -382,4 +411,46 @@ export interface ArticleStats {
   averageReadingTime: number;
   totalBookmarks: number;
   expiringSoon: number; // Articles expiring in next 7 days
+}
+
+// Bookmark management types
+export interface BookmarkCreateRequest {
+  contentType: 'article' | 'story';
+  contentId: string;
+  contentTitle: string;
+  contentDifficulty?: JLPTLevel;
+  notes?: string;
+  tags?: string[];
+  isFavorite?: boolean;
+}
+
+export interface BookmarkUpdateRequest {
+  id: string;
+  notes?: string;
+  tags?: string[];
+  isFavorite?: boolean;
+  readingProgress?: number;
+}
+
+export interface BookmarkFilters {
+  contentType?: 'article' | 'story';
+  tags?: string[];
+  isFavorite?: boolean;
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+  search?: string;
+  sortBy?: 'bookmarkedAt' | 'lastReadAt' | 'readingProgress' | 'title';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface BookmarkStats {
+  totalBookmarks: number;
+  articlesBookmarked: number;
+  storiesBookmarked: number;
+  favoriteBookmarks: number;
+  averageReadingProgress: number;
+  recentlyAdded: number; // Last 7 days
+  tagsUsed: Record<string, number>;
 }

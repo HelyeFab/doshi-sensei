@@ -1,67 +1,39 @@
 const https = require('https');
 const { URL } = require('url');
-const admin = require('firebase-admin');
-const fetch = require('node-fetch');
 
-// Module-level variables for Firebase
 let firebaseInitialized = false;
 let db = null;
 
 console.log('--- scrape-nhk-easy function loaded ---');
 
-// Function to initialize Firebase Admin SDK when needed
 function initializeFirebaseIfNeeded() {
-  if (firebaseInitialized) {
-    return true;
-  }
-
-  console.log('--- SCRAPE-NHK-EASY FUNCTION START ---');
+  if (firebaseInitialized) return true;
   console.log('Initializing Firebase Admin SDK...');
-
+  const admin = require('firebase-admin');
   const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY_ID;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
   const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID;
-
-  if (!admin.apps.length && projectId && privateKey && clientEmail) {
-    try {
-      const serviceAccount = {
-        type: "service_account",
-        project_id: projectId,
-        private_key_id: privateKeyId,
-        private_key: privateKey?.replace(/\\n/g, '\n'),
-        client_email: clientEmail,
-        client_id: clientId,
-        auth_uri: "https://accounts.google.com/o/oauth2/auth",
-        token_uri: "https://oauth2.googleapis.com/token",
-        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${clientEmail}`
-      };
-
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-
-      firebaseInitialized = true;
-      db = admin.firestore();
-      console.log('✅ Firebase Admin SDK initialized successfully');
-      return true;
-    } catch (error) {
-      console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
-      firebaseInitialized = false;
-      return false;
-    }
-  } else if (admin.apps.length > 0) {
+  if (admin.apps.length === 0 && projectId && privateKey && clientEmail) {
+    const serviceAccount = {
+      type: 'service_account',
+      project_id: projectId,
+      private_key_id: privateKeyId,
+      private_key: privateKey.replace(/\\n/g, '\n'),
+      client_email: clientEmail,
+      client_id: clientId,
+      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+      token_uri: 'https://oauth2.googleapis.com/token',
+      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${encodeURIComponent(clientEmail)}`
+    };
+    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
     firebaseInitialized = true;
     db = admin.firestore();
-    console.log('✅ Firebase Admin SDK already initialized');
-    return true;
-  } else {
-    console.error('❌ Missing required Firebase credentials');
-    firebaseInitialized = false;
-    return false;
+    console.log('✅ Firebase Admin SDK initialized successfully');
   }
+  return firebaseInitialized;
 }
 
 // HTTP request function with retry logic
@@ -196,6 +168,7 @@ let handler;
 try {
   handler = async function (event, context) {
     try {
+      const fetch = require('node-fetch');
       console.log('🚀 Starting NHK Easy News scraper...');
 
       // Initialize Firebase at runtime

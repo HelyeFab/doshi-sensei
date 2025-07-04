@@ -1,9 +1,10 @@
 import ArticleManager from './articleManager';
 import StoryBookmarkManager from './storyBookmarkManager';
 import { UserBookmark } from '@/types/news';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { db } from '@/lib/firebase';
 
 // Test configuration
-const TEST_USER_ID = 'test-user-123';
 const TEST_ARTICLE_ID = 'test-article-123';
 const TEST_STORY_ID = 'test-story-123';
 
@@ -13,23 +14,27 @@ export class BookmarkSystemTester {
         console.log('🧪 Starting Bookmark System Tests...\n');
 
         try {
+            // Ensure user is authenticated
+            const userId = await this.ensureAuthenticated();
+            console.log('✅ User authenticated:', userId);
+
             // Test 1: Article Bookmark Creation
-            await this.testArticleBookmarkCreation();
+            await this.testArticleBookmarkCreation(userId);
 
             // Test 2: Story Bookmark Creation
-            await this.testStoryBookmarkCreation();
+            await this.testStoryBookmarkCreation(userId);
 
             // Test 3: Reading Progress Updates
-            await this.testReadingProgressUpdates();
+            await this.testReadingProgressUpdates(userId);
 
             // Test 4: Bookmark Retrieval
-            await this.testBookmarkRetrieval();
+            await this.testBookmarkRetrieval(userId);
 
             // Test 5: Bookmark Statistics
-            await this.testBookmarkStatistics();
+            await this.testBookmarkStatistics(userId);
 
             // Test 6: Bookmark Removal
-            await this.testBookmarkRemoval();
+            await this.testBookmarkRemoval(userId);
 
             console.log('✅ All tests completed successfully!');
 
@@ -38,16 +43,48 @@ export class BookmarkSystemTester {
         }
     }
 
-    static async testArticleBookmarkCreation() {
+    static async ensureAuthenticated(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const auth = getAuth();
+
+            // Check if user is already authenticated
+            if (auth.currentUser) {
+                console.log('✅ User already authenticated:', auth.currentUser.uid);
+                resolve(auth.currentUser.uid);
+                return;
+            }
+
+            // Listen for auth state changes
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    console.log('✅ User authenticated:', user.uid);
+                    unsubscribe();
+                    resolve(user.uid);
+                }
+            }, (error) => {
+                console.error('❌ Authentication error:', error);
+                unsubscribe();
+                reject(error);
+            });
+
+            // Try to sign in anonymously
+            signInAnonymously(auth).catch((error) => {
+                console.error('❌ Anonymous sign-in failed:', error);
+                reject(error);
+            });
+        });
+    }
+
+    static async testArticleBookmarkCreation(userId: string) {
         console.log('📝 Test 1: Article Bookmark Creation');
 
         try {
             // Test premium user (should succeed)
-            const result = await ArticleManager.bookmarkArticle(TEST_USER_ID, TEST_ARTICLE_ID, true);
+            const result = await ArticleManager.bookmarkArticle(userId, TEST_ARTICLE_ID, true);
             console.log('  ✅ Premium user bookmark creation:', result);
 
             // Test free user (should also succeed for first bookmark)
-            const result2 = await ArticleManager.bookmarkArticle(TEST_USER_ID, 'test-article-456', false);
+            const result2 = await ArticleManager.bookmarkArticle(userId, 'test-article-456', false);
             console.log('  ✅ Free user bookmark creation:', result2);
 
         } catch (error) {
@@ -55,16 +92,16 @@ export class BookmarkSystemTester {
         }
     }
 
-    static async testStoryBookmarkCreation() {
+    static async testStoryBookmarkCreation(userId: string) {
         console.log('📝 Test 2: Story Bookmark Creation');
 
         try {
             // Test premium user (should succeed)
-            const result = await StoryBookmarkManager.bookmarkStory(TEST_USER_ID, TEST_STORY_ID, true);
+            const result = await StoryBookmarkManager.bookmarkStory(userId, TEST_STORY_ID, true);
             console.log('  ✅ Premium user story bookmark creation:', result);
 
             // Test free user (should also succeed for first bookmark)
-            const result2 = await StoryBookmarkManager.bookmarkStory(TEST_USER_ID, 'test-story-456', false);
+            const result2 = await StoryBookmarkManager.bookmarkStory(userId, 'test-story-456', false);
             console.log('  ✅ Free user story bookmark creation:', result2);
 
         } catch (error) {
@@ -72,16 +109,16 @@ export class BookmarkSystemTester {
         }
     }
 
-    static async testReadingProgressUpdates() {
+    static async testReadingProgressUpdates(userId: string) {
         console.log('📝 Test 3: Reading Progress Updates');
 
         try {
             // Update article reading progress
-            await ArticleManager.updateBookmarkProgress(TEST_USER_ID, TEST_ARTICLE_ID, 50, 'Halfway through!');
+            await ArticleManager.updateBookmarkProgress(userId, TEST_ARTICLE_ID, 50, 'Halfway through!');
             console.log('  ✅ Article reading progress updated');
 
             // Update story reading progress
-            await StoryBookmarkManager.updateBookmarkProgress(TEST_USER_ID, TEST_STORY_ID, 75, 'Almost done!');
+            await StoryBookmarkManager.updateBookmarkProgress(userId, TEST_STORY_ID, 75, 'Almost done!');
             console.log('  ✅ Story reading progress updated');
 
         } catch (error) {
@@ -89,24 +126,24 @@ export class BookmarkSystemTester {
         }
     }
 
-    static async testBookmarkRetrieval() {
+    static async testBookmarkRetrieval(userId: string) {
         console.log('📝 Test 4: Bookmark Retrieval');
 
         try {
             // Get all user bookmarks
-            const allBookmarks = await ArticleManager.getUserBookmarks(TEST_USER_ID);
+            const allBookmarks = await ArticleManager.getUserBookmarks(userId);
             console.log('  ✅ Retrieved all bookmarks:', allBookmarks.length);
 
             // Get story bookmarks only
-            const storyBookmarks = await StoryBookmarkManager.getUserStoryBookmarks(TEST_USER_ID);
+            const storyBookmarks = await StoryBookmarkManager.getUserStoryBookmarks(userId);
             console.log('  ✅ Retrieved story bookmarks:', storyBookmarks.length);
 
             // Check if specific items are bookmarked
-            const isArticleBookmarked = await ArticleManager.getUserBookmarks(TEST_USER_ID)
+            const isArticleBookmarked = await ArticleManager.getUserBookmarks(userId)
                 .then(bookmarks => bookmarks.some(b => b.contentId === TEST_ARTICLE_ID));
             console.log('  ✅ Article bookmark check:', isArticleBookmarked);
 
-            const isStoryBookmarked = await StoryBookmarkManager.isStoryBookmarked(TEST_USER_ID, TEST_STORY_ID);
+            const isStoryBookmarked = await StoryBookmarkManager.isStoryBookmarked(userId, TEST_STORY_ID);
             console.log('  ✅ Story bookmark check:', isStoryBookmarked);
 
         } catch (error) {
@@ -114,11 +151,11 @@ export class BookmarkSystemTester {
         }
     }
 
-    static async testBookmarkStatistics() {
+    static async testBookmarkStatistics(userId: string) {
         console.log('📝 Test 5: Bookmark Statistics');
 
         try {
-            const stats = await StoryBookmarkManager.getBookmarkStats(TEST_USER_ID);
+            const stats = await StoryBookmarkManager.getBookmarkStats(userId);
             console.log('  ✅ Bookmark statistics:', {
                 totalBookmarks: stats.totalBookmarks,
                 articlesBookmarked: stats.articlesBookmarked,
@@ -133,16 +170,16 @@ export class BookmarkSystemTester {
         }
     }
 
-    static async testBookmarkRemoval() {
+    static async testBookmarkRemoval(userId: string) {
         console.log('📝 Test 6: Bookmark Removal');
 
         try {
             // Remove article bookmark
-            await ArticleManager.removeBookmark(TEST_USER_ID, TEST_ARTICLE_ID);
+            await ArticleManager.removeBookmark(userId, TEST_ARTICLE_ID);
             console.log('  ✅ Article bookmark removed');
 
             // Remove story bookmark
-            await StoryBookmarkManager.removeBookmark(TEST_USER_ID, TEST_STORY_ID);
+            await StoryBookmarkManager.removeBookmark(userId, TEST_STORY_ID);
             console.log('  ✅ Story bookmark removed');
 
         } catch (error) {
@@ -153,13 +190,14 @@ export class BookmarkSystemTester {
     // Manual test functions for browser console
     static async testInBrowser() {
         console.log('🧪 Browser Test Functions Available:');
-        console.log('- BookmarkSystemTester.testArticleBookmarkCreation()');
-        console.log('- BookmarkSystemTester.testStoryBookmarkCreation()');
-        console.log('- BookmarkSystemTester.testReadingProgressUpdates()');
-        console.log('- BookmarkSystemTester.testBookmarkRetrieval()');
-        console.log('- BookmarkSystemTester.testBookmarkStatistics()');
-        console.log('- BookmarkSystemTester.testBookmarkRemoval()');
+        console.log('- BookmarkSystemTester.testArticleBookmarkCreation(userId)');
+        console.log('- BookmarkSystemTester.testStoryBookmarkCreation(userId)');
+        console.log('- BookmarkSystemTester.testReadingProgressUpdates(userId)');
+        console.log('- BookmarkSystemTester.testBookmarkRetrieval(userId)');
+        console.log('- BookmarkSystemTester.testBookmarkStatistics(userId)');
+        console.log('- BookmarkSystemTester.testBookmarkRemoval(userId)');
         console.log('- BookmarkSystemTester.runAllTests()');
+        console.log('- BookmarkSystemTester.ensureAuthenticated()');
     }
 }
 

@@ -48,7 +48,7 @@ export class StoryBookmarkManager {
                 }
             }
 
-            const bookmarksRef = collection(db, 'userBookmarks');
+            const bookmarksRef = collection(db, 'user_bookmarks');
             const storyRef = doc(db, 'stories', storyId);
 
             // Get story details
@@ -109,7 +109,7 @@ export class StoryBookmarkManager {
     static async removeBookmark(userId: string, storyId: string): Promise<void> {
         if (!db) throw new Error('Firebase not initialized');
 
-        const bookmarksRef = collection(db, 'userBookmarks');
+        const bookmarksRef = collection(db, 'user_bookmarks');
         const q = query(
             bookmarksRef,
             where('userId', '==', userId),
@@ -132,7 +132,7 @@ export class StoryBookmarkManager {
     static async getUserStoryBookmarks(userId: string): Promise<UserBookmark[]> {
         if (!db) throw new Error('Firebase not initialized');
 
-        const bookmarksRef = collection(db, 'userBookmarks');
+        const bookmarksRef = collection(db, 'user_bookmarks');
         const q = query(
             bookmarksRef,
             where('userId', '==', userId),
@@ -162,7 +162,7 @@ export class StoryBookmarkManager {
     ): Promise<void> {
         if (!db) throw new Error('Firebase not initialized');
 
-        const bookmarksRef = collection(db, 'userBookmarks');
+        const bookmarksRef = collection(db, 'user_bookmarks');
         const q = query(
             bookmarksRef,
             where('userId', '==', userId),
@@ -198,7 +198,7 @@ export class StoryBookmarkManager {
     ): Promise<void> {
         if (!db) throw new Error('Firebase not initialized');
 
-        const bookmarksRef = collection(db, 'userBookmarks');
+        const bookmarksRef = collection(db, 'user_bookmarks');
         const q = query(
             bookmarksRef,
             where('userId', '==', userId),
@@ -240,7 +240,7 @@ export class StoryBookmarkManager {
     static async getBookmarkStats(userId: string): Promise<BookmarkStats> {
         if (!db) throw new Error('Firebase not initialized');
 
-        const bookmarksRef = collection(db, 'userBookmarks');
+        const bookmarksRef = collection(db, 'user_bookmarks');
         const q = query(bookmarksRef, where('userId', '==', userId));
 
         const snapshot = await getDocs(q);
@@ -282,7 +282,7 @@ export class StoryBookmarkManager {
     static async isStoryBookmarked(userId: string, storyId: string): Promise<boolean> {
         if (!db) throw new Error('Firebase not initialized');
 
-        const bookmarksRef = collection(db, 'userBookmarks');
+        const bookmarksRef = collection(db, 'user_bookmarks');
         const q = query(
             bookmarksRef,
             where('userId', '==', userId),
@@ -298,7 +298,7 @@ export class StoryBookmarkManager {
     static async getBookmarkById(bookmarkId: string): Promise<UserBookmark | null> {
         if (!db) throw new Error('Firebase not initialized');
 
-        const bookmarkRef = doc(db, 'userBookmarks', bookmarkId);
+        const bookmarkRef = doc(db, 'user_bookmarks', bookmarkId);
         const bookmarkDoc = await getDoc(bookmarkRef);
 
         if (!bookmarkDoc.exists()) {

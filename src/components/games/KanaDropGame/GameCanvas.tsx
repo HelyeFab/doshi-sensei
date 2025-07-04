@@ -157,14 +157,18 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
           console.error('TTS error:', error);
         }
 
-        onGameStateUpdate(prev => ({
-          score: prev.score + GAME_CONSTANTS.POINTS_CORRECT,
-          clicks: {
-            ...prev.clicks,
-            correct: prev.clicks.correct + 1
-          },
-          fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
-        }));
+        onGameStateUpdate(prev => {
+          const newScore = prev.score + GAME_CONSTANTS.POINTS_CORRECT;
+          console.log(`[KanaDrop] Score update: ${prev.score} -> ${newScore}`);
+          return {
+            score: newScore,
+            clicks: {
+              ...prev.clicks,
+              correct: prev.clicks.correct + 1
+            },
+            fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
+          };
+        });
       } else {
         // Wrong kana clicked
         console.log(`[KanaDrop] Wrong kana clicked! Expected: ${activeRomaji}, Got: ${object.kanaData.romaji}`);

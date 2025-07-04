@@ -177,16 +177,38 @@ export class ArticleManagerServer {
     return deletedCount;
   }
   
-  // Refresh articles (placeholder - implement based on your scraping logic)
+  // Refresh articles by calling the scraping functions
   static async refreshArticles(): Promise<{ success: boolean; message: string; stats?: ArticleStats }> {
     try {
-      // Here you would trigger your scraping functions
-      // For now, just return the current stats
+      console.log('🔄 Starting article refresh...');
+      
+      // Call the Netlify scraping functions
+      const scrapingFunctions = [
+        'https://doshisensei.com/.netlify/functions/scrape-watanoc-real',
+        'https://doshisensei.com/.netlify/functions/scrape-todaii-news',
+        'https://doshisensei.com/.netlify/functions/scrape-nhk-easy'
+      ];
+      
+      const results = await Promise.allSettled(
+        scrapingFunctions.map(async (url) => {
+          const response = await fetch(url, { method: 'GET' });
+          if (!response.ok) {
+            throw new Error(`Scraper returned ${response.status}`);
+          }
+          return response.json();
+        })
+      );
+      
+      // Count successes
+      const successCount = results.filter(r => r.status === 'fulfilled').length;
+      console.log(`✅ Scraping complete: ${successCount}/${scrapingFunctions.length} scrapers succeeded`);
+      
+      // Get updated stats
       const stats = await this.getArticleStats();
       
       return {
         success: true,
-        message: 'Articles refreshed successfully',
+        message: `Triggered ${successCount} scrapers. Found ${stats.totalArticles} articles total.`,
         stats
       };
     } catch (error) {

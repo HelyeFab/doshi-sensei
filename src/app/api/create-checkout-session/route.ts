@@ -23,6 +23,10 @@ export async function POST(request: NextRequest) {
 
     if (existingCustomers.data.length > 0) {
       customer = existingCustomers.data[0];
+      // Always update customer metadata!
+      await stripe.customers.update(customer.id, {
+        metadata: { firebaseUID: userId }
+      });
     } else {
       customer = await stripe.customers.create({
         email: userEmail,

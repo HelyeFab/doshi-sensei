@@ -119,9 +119,21 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   // Update game state
   const handleGameStateUpdate = useCallback((updates: Partial<GameState> | ((prev: GameState) => Partial<GameState>)) => {
     if (typeof updates === 'function') {
-      setGameState(prev => ({ ...prev, ...updates(prev) }));
+      setGameState(prev => {
+        const newState = { ...prev, ...updates(prev) };
+        if (prev.score !== newState.score) {
+          console.log('[KanaDrop] Score updated:', { from: prev.score, to: newState.score, update: updates(prev) });
+        }
+        return newState;
+      });
     } else {
-      setGameState(prev => ({ ...prev, ...updates }));
+      setGameState(prev => {
+        const newState = { ...prev, ...updates };
+        if (prev.score !== newState.score) {
+          console.log('[KanaDrop] Score updated:', { from: prev.score, to: newState.score, update: updates });
+        }
+        return newState;
+      });
     }
   }, []);
 

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   // Check for idempotency - prevent duplicate processing
   const idempotencyKey = event.id;
   const processedEventRef = doc(db, 'webhook_events', idempotencyKey);
-  
+
   try {
     const existingEvent = await getDoc(processedEventRef);
     if (existingEvent.exists()) {
@@ -74,10 +74,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing webhook:', error);
-    
+
     // Log failed processing
     await logWebhookEvent(event, 'error', error instanceof Error ? error.message : 'Unknown error');
-    
+
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -115,7 +115,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   const firebaseUID = subscription.metadata?.firebaseUID;
 
   if (!firebaseUID) {
-    console.error('No Firebase UID found in subscription metadata');
+    console.error('No Firebase UID found in subscription metadata. Full subscription object:', JSON.stringify(subscription, null, 2));
     return;
   }
 
@@ -129,7 +129,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
   // Use transaction to prevent race conditions
   const userDocRef = doc(db, 'users', firebaseUID);
-  
+
   await runTransaction(db, async (transaction) => {
     const userDoc = await transaction.get(userDocRef);
     const currentData = userDoc.data();
@@ -178,13 +178,13 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const firebaseUID = subscription.metadata?.firebaseUID;
 
   if (!firebaseUID) {
-    console.error('No Firebase UID found in subscription metadata');
+    console.error('No Firebase UID found in subscription metadata (deleted event). Full subscription object:', JSON.stringify(subscription, null, 2));
     return;
   }
 
   // Use transaction to prevent race conditions
   const userDocRef = doc(db, 'users', firebaseUID);
-  
+
   await runTransaction(db, async (transaction) => {
     const userDoc = await transaction.get(userDocRef);
     const currentData = userDoc.data();
@@ -228,7 +228,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     // Handle payment failure - could send notification to user
     const subscriptionId = (invoice as any).subscription;
     console.error(`Payment failed for subscription: ${subscriptionId}`);
-    
+
     // Log payment failure for monitoring
     await logWebhookEvent({
       id: invoice.id,

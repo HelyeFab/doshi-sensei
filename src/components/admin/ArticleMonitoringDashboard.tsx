@@ -22,12 +22,14 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCleaningUp, setIsCleaningUp] = useState(false);
 
-  const fetchStats = async () => {
+  const fetchStats = async (retryCount = 0) => {
     if (!user) return;
     
     try {
-      setLoading(true);
-      setError(null);
+      if (retryCount === 0) {
+        setLoading(true);
+        setError(null);
+      }
       
       const token = await user.getIdToken();
       const response = await fetch('/api/admin/articles/stats', {
@@ -38,12 +40,19 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
       });
 
       if (!response.ok) {
+        // If it's a 500 error and we haven't retried yet, try again
+        if (response.status === 500 && retryCount < 2) {
+          console.log(`Retrying stats fetch (attempt ${retryCount + 2})...`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return fetchStats(retryCount + 1);
+        }
         throw new Error(`Failed to fetch stats: ${response.status}`);
       }
 
       const data = await response.json();
       if (data.success) {
         setStats(data.data);
+        setError(null);
       } else {
         setError(data.error || 'Failed to fetch stats');
       }

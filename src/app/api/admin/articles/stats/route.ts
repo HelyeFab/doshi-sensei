@@ -27,9 +27,24 @@ export async function GET(request: NextRequest) {
   try {
     await verifyAdmin(request);
     
-    // Initialize Firebase Admin if needed
+    // Ensure Firebase Admin is initialized
+    // The proxy pattern might need a moment to initialize
+    let retries = 0;
+    while (!admin.apps.length && retries < 3) {
+      console.log(`Waiting for Firebase Admin initialization... (attempt ${retries + 1})`);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // Try to access admin to trigger initialization
+      try {
+        const apps = admin.apps;
+      } catch (e) {
+        // Ignore errors during initialization
+      }
+      retries++;
+    }
+    
+    // Initialize Firebase Admin if still not ready
     if (!admin.apps.length) {
-      console.error('Firebase Admin not initialized in stats route');
+      console.error('Firebase Admin not initialized after retries');
       
       // Return empty stats instead of erroring
       return NextResponse.json({

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ArticleManagerServer } from '@/utils/articleManagerServer';
-import admin from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 
 // Verify admin access
 async function verifyAdmin(request: NextRequest) {
@@ -8,17 +8,18 @@ async function verifyAdmin(request: NextRequest) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new Error('No authorization token provided');
   }
-  
+
   const token = authHeader.substring(7);
+  const admin = await getFirebaseAdmin();
   const decodedToken = await admin.auth().verifyIdToken(token);
-  
+
   // Check if user has admin custom claim or is the admin email
   const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
-  
+
   if (!isAdmin) {
     throw new Error('Insufficient permissions');
   }
-  
+
   return decodedToken;
 }
 
@@ -26,26 +27,13 @@ async function verifyAdmin(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     await verifyAdmin(request);
-    
+
     // Ensure Firebase Admin is initialized
-    // The proxy pattern might need a moment to initialize
-    let retries = 0;
-    while (!admin.apps.length && retries < 3) {
-      console.log(`Waiting for Firebase Admin initialization... (attempt ${retries + 1})`);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      // Try to access admin to trigger initialization
-      try {
-        const apps = admin.apps;
-      } catch (e) {
-        // Ignore errors during initialization
-      }
-      retries++;
-    }
-    
-    // Initialize Firebase Admin if still not ready
+    const admin = await getFirebaseAdmin();
+
     if (!admin.apps.length) {
-      console.error('Firebase Admin not initialized after retries');
-      
+      console.error('Firebase Admin not initialized after async call');
+
       // Return empty stats instead of erroring
       return NextResponse.json({
         success: true,
@@ -64,21 +52,21 @@ export async function GET(request: NextRequest) {
         warning: 'Firebase Admin not properly initialized'
       });
     }
-    
-    const stats = await ArticleManagerServer.getArticleStats();
-    
+
+    const stats = await ArticleManagerServer.getArticleStats(admin);
+
     return NextResponse.json({
       success: true,
       data: stats,
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('Error fetching article stats:', error);
-    
+
     // If it's a Firebase initialization error, return empty stats
-    if (error instanceof Error && 
-        (error.message.includes('Firebase Admin not initialized') || 
+    if (error instanceof Error &&
+        (error.message.includes('Firebase Admin not initialized') ||
          error.message.includes('Failed to get Firestore'))) {
       return NextResponse.json({
         success: true,
@@ -97,10 +85,10 @@ export async function GET(request: NextRequest) {
         warning: 'Firebase connection issue - showing empty stats'
       });
     }
-    
+
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch stats';
     const statusCode = errorMessage.includes('authorization') || errorMessage.includes('permissions') ? 403 : 500;
-    
+
     return NextResponse.json(
       { success: false, error: errorMessage },
       { status: statusCode }
@@ -112,13 +100,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await verifyAdmin(request);
-    
+
     const { action } = await request.json();
-    
+    const admin = await getFirebaseAdmin();
+
     if (action === 'cleanup') {
-      const deletedCount = await ArticleManagerServer.cleanupExpiredArticles();
-      const stats = await ArticleManagerServer.getArticleStats();
-      
+      const deletedCount = await ArticleManagerServer.cleanupExpiredArticles(admin);
+      const stats = await ArticleManagerServer.getArticleStats(admin);
+
       return NextResponse.json({
         success: true,
         message: `Cleanup completed: ${deletedCount} articles processed`,
@@ -126,28 +115,28 @@ export async function POST(request: NextRequest) {
         stats
       });
     }
-    
+
     if (action === 'refresh') {
-      const result = await ArticleManagerServer.refreshArticles();
-      
+      const result = await ArticleManagerServer.refreshArticles(admin);
+
       return NextResponse.json({
         success: result.success,
         message: result.message,
         stats: result.stats
       });
     }
-    
+
     return NextResponse.json(
       { success: false, error: 'Invalid action. Use "cleanup" or "refresh"' },
       { status: 400 }
     );
-    
+
   } catch (error) {
     console.error('Error in admin article action:', error);
-    
+
     const errorMessage = error instanceof Error ? error.message : 'Action failed';
     const statusCode = errorMessage.includes('authorization') || errorMessage.includes('permissions') ? 403 : 500;
-    
+
     return NextResponse.json(
       { success: false, error: errorMessage },
       { status: statusCode }

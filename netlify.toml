@@ -1,6 +1,7 @@
 [build]
   command = "npm install && CI=false SKIP_TYPE_CHECK=true npm run build"
   publish = ".next"
+  functions = "netlify/functions"
   environment = { NODE_VERSION = "20" }
 
 # PWA Headers

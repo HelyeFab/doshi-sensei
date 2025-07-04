@@ -4,6 +4,14 @@
   functions = "netlify/functions"
   environment = { NODE_VERSION = "20" }
 
+# Pass Firebase env vars to the build process
+[build.environment]
+  FIREBASE_PROJECT_ID = "${FIREBASE_PROJECT_ID}"
+  FIREBASE_PRIVATE_KEY_ID = "${FIREBASE_PRIVATE_KEY_ID}"
+  FIREBASE_PRIVATE_KEY = "${FIREBASE_PRIVATE_KEY}"
+  FIREBASE_CLIENT_EMAIL = "${FIREBASE_CLIENT_EMAIL}"
+  FIREBASE_CLIENT_ID = "${FIREBASE_CLIENT_ID}"
+
 # PWA Headers
 [[headers]]
   for = "/sw.js"

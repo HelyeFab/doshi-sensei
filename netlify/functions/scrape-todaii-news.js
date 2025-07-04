@@ -6,6 +6,8 @@ const admin = require('firebase-admin');
 let firebaseInitialized = false;
 let db = null;
 
+console.log('--- scrape-todaii-news function loaded ---');
+
 // Function to initialize Firebase Admin SDK when needed
 function initializeFirebaseIfNeeded() {
   if (firebaseInitialized) {

@@ -79,13 +79,20 @@ async function initializeAdmin(): Promise<void> {
         }
       }
 
-      // Method 2: Individual environment variables
-      if (!initialized && (process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY) && (process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL)) {
+      // Method 2: Individual environment variables (check non-prefixed first for Netlify)
+      if (!initialized) {
         const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY;
         const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
         const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID || "";
         const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY_ID || "";
-        const serviceAccount: ServiceAccount = {
+        
+        if (privateKey && clientEmail) {
+          console.log('Attempting Firebase Admin initialization with individual env vars');
+          console.log('Found private key:', privateKey ? 'Yes' : 'No');
+          console.log('Found client email:', clientEmail ? 'Yes' : 'No');
+          console.log('Project ID:', projectId);
+          
+          const serviceAccount: ServiceAccount = {
           type: "service_account",
           project_id: projectId,
           private_key_id: privateKeyId,
@@ -106,6 +113,7 @@ async function initializeAdmin(): Promise<void> {
           initialized = true;
         } catch (credError) {
           console.error('Failed to initialize with individual env vars:', credError);
+        }
         }
       }
 

@@ -1,18 +1,28 @@
 const https = require('https');
 const { URL } = require('url');
-const { initializeFirebase, getFirestore, isInitialized, getInitializationError } = require('./utils/firebase-init');
-const admin = require('firebase-admin');
 
-// Initialize Firebase Admin SDK using the unified initialization
-const app = initializeFirebase();
-const db = getFirestore();
-const firebaseInitialized = isInitialized();
-
-console.log('--- SCRAPE-WATANOC-REAL FUNCTION START ---');
-console.log('Firebase initialization status:', firebaseInitialized ? '✅ Initialized' : '❌ Failed');
-if (!firebaseInitialized) {
-  const error = getInitializationError();
-  console.error('Firebase initialization error:', error ? error.message : 'Unknown error');
+// Wrap initialization in try-catch
+let admin, app, db, firebaseInitialized;
+try {
+  console.log('Loading Firebase utilities...');
+  const { initializeFirebase, getFirestore, isInitialized, getInitializationError } = require('./utils/firebase-init');
+  admin = require('firebase-admin');
+  
+  // Initialize Firebase Admin SDK using the unified initialization
+  console.log('Initializing Firebase...');
+  app = initializeFirebase();
+  db = getFirestore();
+  firebaseInitialized = isInitialized();
+  
+  console.log('--- SCRAPE-WATANOC-REAL FUNCTION START ---');
+  console.log('Firebase initialization status:', firebaseInitialized ? '✅ Initialized' : '❌ Failed');
+  if (!firebaseInitialized) {
+    const error = getInitializationError();
+    console.error('Firebase initialization error:', error ? error.message : 'Unknown error');
+  }
+} catch (initError) {
+  console.error('CRITICAL: Failed to initialize dependencies:', initError);
+  firebaseInitialized = false;
 }
 
 // Function to make HTTP requests
@@ -531,7 +541,12 @@ async function saveArticlesToFirebase(articles, metadata) {
 
 // Main handler function
 exports.handler = async (event, context) => {
-  console.log('--- Netlify handler START ---');
+  // Immediate logging to ensure function is running
+  console.log('=== WATANOC-REAL HANDLER INVOKED ===');
+  console.log('Time:', new Date().toISOString());
+  console.log('Event method:', event.httpMethod);
+  console.log('Event path:', event.path);
+  
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',

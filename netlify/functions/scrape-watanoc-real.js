@@ -1,27 +1,52 @@
 const https = require('https');
 const { URL } = require('url');
+const admin = require('firebase-admin');
 
-// Wrap initialization in try-catch
-let admin, app, db, firebaseInitialized;
-try {
-  console.log('Loading Firebase utilities...');
-  const { initializeFirebase, getFirestore, isInitialized, getInitializationError } = require('./utils/firebase-init');
-  admin = require('firebase-admin');
-  
-  // Initialize Firebase Admin SDK using the unified initialization
-  console.log('Initializing Firebase...');
-  app = initializeFirebase();
-  db = getFirestore();
-  firebaseInitialized = isInitialized();
-  
-  console.log('--- SCRAPE-WATANOC-REAL FUNCTION START ---');
-  console.log('Firebase initialization status:', firebaseInitialized ? '✅ Initialized' : '❌ Failed');
-  if (!firebaseInitialized) {
-    const error = getInitializationError();
-    console.error('Firebase initialization error:', error ? error.message : 'Unknown error');
+// Initialize Firebase Admin SDK directly (like scrape-watanoc-working.js)
+let firebaseInitialized = false;
+let db = null;
+
+console.log('--- SCRAPE-WATANOC-REAL FUNCTION START ---');
+console.log('Initializing Firebase Admin SDK...');
+
+const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY_ID;
+const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY;
+const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
+const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID;
+
+if (!admin.apps.length && projectId && privateKey && clientEmail) {
+  try {
+    const serviceAccount = {
+      type: "service_account",
+      project_id: projectId,
+      private_key_id: privateKeyId,
+      private_key: privateKey?.replace(/\\n/g, '\n'),
+      client_email: clientEmail,
+      client_id: clientId,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${clientEmail}`
+    };
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    
+    firebaseInitialized = true;
+    db = admin.firestore();
+    console.log('✅ Firebase Admin SDK initialized successfully');
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
+    firebaseInitialized = false;
   }
-} catch (initError) {
-  console.error('CRITICAL: Failed to initialize dependencies:', initError);
+} else if (admin.apps.length > 0) {
+  firebaseInitialized = true;
+  db = admin.firestore();
+  console.log('✅ Firebase Admin SDK already initialized');
+} else {
+  console.error('❌ Missing required Firebase credentials');
   firebaseInitialized = false;
 }
 

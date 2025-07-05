@@ -152,15 +152,31 @@ export function useEntitlements(): UseEntitlementsReturn {
     const today = new Date().toISOString().split('T')[0];
     
     if (userType === 'guest' && guestUsage) {
-      const isToday = guestUsage.lastKanjiQuestDate === today;
-      return {
-        daily: isToday ? guestUsage.kanjiQuestToday : 0
-      };
+      if (gameType === 'kanaDrop') {
+        const isToday = guestUsage.lastKanaDropDate === today;
+        return {
+          daily: isToday ? guestUsage.kanaDropToday : 0
+        };
+      } else {
+        // Default to KanjiQuest for other games
+        const isToday = guestUsage.lastKanjiQuestDate === today;
+        return {
+          daily: isToday ? guestUsage.kanjiQuestToday : 0
+        };
+      }
     } else if (userSubscription) {
-      const isToday = userSubscription.currentUsage.lastKanjiQuestDate === today;
-      return {
-        daily: isToday ? (userSubscription.currentUsage.kanjiQuestToday || 0) : 0
-      };
+      if (gameType === 'kanaDrop') {
+        const isToday = userSubscription.currentUsage.lastKanaDropDate === today;
+        return {
+          daily: isToday ? (userSubscription.currentUsage.kanaDropToday || 0) : 0
+        };
+      } else {
+        // Default to KanjiQuest for other games
+        const isToday = userSubscription.currentUsage.lastKanjiQuestDate === today;
+        return {
+          daily: isToday ? (userSubscription.currentUsage.kanjiQuestToday || 0) : 0
+        };
+      }
     }
     
     return { daily: 0 };

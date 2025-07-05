@@ -19,8 +19,8 @@ interface KanaDropModalProps {
 export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDropModalProps) {
   const { user } = useAuth();
   const { 
-    incrementKanjiQuestCount, 
-    incrementGuestKanjiQuestCount,
+    incrementKanaDropCount, 
+    incrementGuestKanaDropCount,
     userType 
   } = useSubscription();
   
@@ -128,13 +128,13 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
       setShowVictory(true);
       
-      // Increment usage count (using KanjiQuest count since games share limits)
+      // Increment usage count for KanaDrop
       setHasIncrementedUsage(true);
       if (userType === 'guest') {
-        incrementGuestKanjiQuestCount();
+        incrementGuestKanaDropCount();
       } else if (user) {
-        incrementKanjiQuestCount().catch(err => {
-          console.error('Failed to increment game count:', err);
+        incrementKanaDropCount().catch(err => {
+          console.error('Failed to increment KanaDrop count:', err);
         });
       }
       

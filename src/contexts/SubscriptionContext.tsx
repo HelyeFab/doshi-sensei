@@ -38,6 +38,8 @@ interface SubscriptionContextType {
   incrementGuestDrillCount: () => void;
   incrementKanjiQuestCount: () => Promise<void>;
   incrementGuestKanjiQuestCount: () => void;
+  incrementKanaDropCount: () => Promise<void>;
+  incrementGuestKanaDropCount: () => void;
   incrementStoryCount: () => Promise<void>;
   incrementGuestStoryCount: () => void;
   incrementArticleCount: () => Promise<void>;
@@ -173,6 +175,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         lastDrillDate: today,
         kanjiQuestToday: 0,
         lastKanjiQuestDate: today,
+        kanaDropToday: 0,
+        lastKanaDropDate: today,
         storiesToday: 0,
         lastStoryDate: today,
         articlesToday: 0,
@@ -250,6 +254,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           lastDrillDate: today,
           kanjiQuestToday: 0,
           lastKanjiQuestDate: today,
+          kanaDropToday: 0,
+          lastKanaDropDate: today,
           storiesToday: 0,
           lastStoryDate: today,
           articlesToday: 0,
@@ -411,6 +417,24 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       ...guestUsage,
       kanjiQuestToday: isToday ? guestUsage.kanjiQuestToday + 1 : 1,
       lastKanjiQuestDate: today,
+    };
+
+    setGuestUsage(updatedUsage);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify(updatedUsage));
+    }
+  };
+
+  const incrementGuestKanaDropCount = () => {
+    if (!guestUsage) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const isToday = guestUsage.lastKanaDropDate === today;
+
+    const updatedUsage: GuestUsage = {
+      ...guestUsage,
+      kanaDropToday: isToday ? guestUsage.kanaDropToday + 1 : 1,
+      lastKanaDropDate: today,
     };
 
     setGuestUsage(updatedUsage);
@@ -605,6 +629,45 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  const incrementKanaDropCount = async () => {
+    if (!user) {
+      // Handle guest users
+      incrementGuestKanaDropCount();
+      return;
+    }
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const today = new Date().toISOString().split('T')[0];
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentData = userDoc.data();
+
+        if (!currentData?.subscription) {
+          throw new Error('No subscription data found');
+        }
+
+        const currentUsage = currentData.subscription.currentUsage || {};
+        const isToday = currentUsage.lastKanaDropDate === today;
+        const currentCount = isToday ? (currentUsage.kanaDropToday || 0) : 0;
+
+        const updatedSubscription = {
+          ...currentData.subscription,
+          currentUsage: {
+            ...currentUsage,
+            kanaDropToday: currentCount + 1,
+            lastKanaDropDate: today,
+          },
+        };
+
+        transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const incrementStoryCount = async () => {
     if (!user) {
       // Handle guest users
@@ -712,6 +775,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     incrementGuestDrillCount,
     incrementKanjiQuestCount,
     incrementGuestKanjiQuestCount,
+    incrementKanaDropCount,
+    incrementGuestKanaDropCount,
     incrementStoryCount,
     incrementGuestStoryCount,
     incrementArticleCount,

@@ -7,6 +7,8 @@ export interface GuestUsage {
   lastDrillDate: string;
   kanjiQuestToday: number;
   lastKanjiQuestDate: string;
+  kanaDropToday: number;
+  lastKanaDropDate: string;
   storiesToday: number;
   lastStoryDate: string;
   articlesToday: number;
@@ -42,6 +44,8 @@ export interface UserSubscription {
     lastDrillDate: string;
     kanjiQuestToday?: number;
     lastKanjiQuestDate?: string;
+    kanaDropToday?: number;
+    lastKanaDropDate?: string;
     storiesToday?: number;
     lastStoryDate?: string;
     articlesToday?: number;
@@ -101,6 +105,8 @@ export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
     lastDrillDate: new Date().toISOString(),
     kanjiQuestToday: 0,
     lastKanjiQuestDate: new Date().toISOString(),
+    kanaDropToday: 0,
+    lastKanaDropDate: new Date().toISOString(),
     storiesToday: 0,
     lastStoryDate: new Date().toISOString(),
     articlesToday: 0,
@@ -129,6 +135,8 @@ export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
     lastDrillDate: new Date().toISOString(),
     kanjiQuestToday: 0,
     lastKanjiQuestDate: new Date().toISOString(),
+    kanaDropToday: 0,
+    lastKanaDropDate: new Date().toISOString(),
     storiesToday: 0,
     lastStoryDate: new Date().toISOString(),
     articlesToday: 0,
@@ -157,6 +165,8 @@ export const DEFAULT_YEARLY_SUBSCRIPTION: UserSubscription = {
     lastDrillDate: new Date().toISOString(),
     kanjiQuestToday: 0,
     lastKanjiQuestDate: new Date().toISOString(),
+    kanaDropToday: 0,
+    lastKanaDropDate: new Date().toISOString(),
     storiesToday: 0,
     lastStoryDate: new Date().toISOString(),
     articlesToday: 0,

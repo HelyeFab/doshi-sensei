@@ -16,12 +16,18 @@
 
 ### 🧑 Guest User Tests
 
-#### 1. Games (KanjiQuest & KanaDrop)
+#### 1. Games (Separate limits for each game)
+##### KanjiQuest
 - [ ] Start KanjiQuest game
 - [ ] Complete 3 games successfully
 - [ ] On 4th game attempt, should see login prompt: "You've reached your daily game limit (3/3)! Sign up to play more games and save your progress."
-- [ ] Verify game counter shows "3 games remaining today" initially
-- [ ] Test KanaDrop - should share same counter with KanjiQuest
+- [ ] Verify KanjiQuest counter shows "3 games remaining today" initially
+
+##### KanaDrop
+- [ ] Start KanaDrop game (separate from KanjiQuest limit)
+- [ ] Complete 3 games successfully
+- [ ] On 4th game attempt, should see login prompt
+- [ ] Verify KanaDrop has its own counter (3 games per day)
 
 #### 2. Drills
 - [ ] Navigate to /drill
@@ -47,10 +53,11 @@
 
 ### 👤 Free User Tests
 
-#### 1. Games (Same limits as guest)
-- [ ] Complete 3 games
-- [ ] On 4th attempt, should see upgrade prompt: "You've reached your daily game limit (3/3)! Upgrade to Premium for unlimited games."
-- [ ] Verify usage persists across sessions
+#### 1. Games (Separate limits for each game)
+- [ ] KanjiQuest: Complete 3 games, see upgrade prompt on 4th
+- [ ] KanaDrop: Complete 3 games separately, see upgrade prompt on 4th
+- [ ] Verify each game tracks its own usage
+- [ ] Verify usage persists across sessions for both games
 
 #### 2. Drills (Same limits as guest)
 - [ ] Complete 3 drills
@@ -155,7 +162,8 @@ If you find any issues, document them with:
 
 | Feature | Guest | Free | Premium | Notes |
 |---------|-------|------|---------|-------|
-| Games | ⬜ | ⬜ | ⬜ | |
+| KanjiQuest | ⬜ | ⬜ | ⬜ | 3/day limit |
+| KanaDrop | ⬜ | ⬜ | ⬜ | 3/day limit (separate) |
 | Drills | ⬜ | ⬜ | ⬜ | |
 | Stories | ⬜ | ⬜ | ⬜ | |
 | Articles | ⬜ | ⬜ | ⬜ | |

@@ -153,13 +153,13 @@ return (
 ## Feature Limits by User Type
 
 ### Guest Users
-- **Games**: 3 per day (KanjiQuest, KanaDrop, others)
+- **Games**: 3 per day each (KanjiQuest: 3/day, KanaDrop: 3/day - separate limits)
 - **Learning**: 3 drills/stories/articles per day, unlimited vocabulary search
 - **Storage**: Cannot create lists or bookmarks
 - **System**: No cloud sync, offline mode, or progress tracking
 
 ### Free Users
-- **Games**: 3 per day (all games)
+- **Games**: 3 per day each (KanjiQuest: 3/day, KanaDrop: 3/day - separate limits)
 - **Learning**: 3 drills/stories/articles per day, unlimited vocabulary search
 - **Storage**: 3 lists max, 5 bookmarks max
 - **System**: Local progress tracking only, no cloud sync

@@ -747,16 +747,21 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           <footer className="mt-8 pt-6 border-t border-border">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="text-sm text-muted-foreground">
-                読了時間: {Math.ceil((new Date().getTime() - readingStartTime.getTime()) / 60000)}分
+                Reading time: {Math.ceil((new Date().getTime() - readingStartTime.getTime()) / 60000)} min
               </div>
 
               <a
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 text-sm font-medium"
+                className="inline-flex items-center gap-2 text-primary hover:text-primary/80 text-sm font-medium bg-primary/5 px-3 py-1.5 rounded-md transition-colors"
               >
-                元の記事を見る →
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                  />
+                </svg>
+                View original article
               </a>
             </div>
           </footer>

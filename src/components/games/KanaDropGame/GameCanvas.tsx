@@ -62,7 +62,12 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
   // Start background music when game starts
   useEffect(() => {
     if (gameState.isPlaying && !gameState.isPaused && soundEnabled) {
-      audioManager.playBackgroundMusic();
+      // Add a small delay to ensure all sounds have stopped
+      const musicDelay = setTimeout(() => {
+        audioManager.playBackgroundMusic();
+      }, 200);
+
+      return () => clearTimeout(musicDelay);
     } else {
       audioManager.stopBackgroundMusic();
     }

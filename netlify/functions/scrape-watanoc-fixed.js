@@ -147,6 +147,8 @@ function cleanText(html) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#8230;/g, '...')
+    // Remove URLs from content
+    .replace(/https?:\/\/[^\s]+/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }

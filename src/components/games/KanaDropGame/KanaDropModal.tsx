@@ -51,12 +51,24 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     audioManager.setEnabled(!isMuted);
   }, [isMuted, audioManager]);
 
+  // Cleanup audio when modal closes
+  useEffect(() => {
+    return () => {
+      // Stop all sounds when component unmounts
+      audioManager.stopAllSounds();
+    };
+  }, [audioManager]);
+
   // Countdown timer
   useEffect(() => {
     if (countdown === null || countdown <= 0) return;
 
     const timer = setTimeout(() => {
       if (countdown === 1) {
+        // Stop ALL sounds before starting game
+        const audioManager = getGameAudioManager();
+        audioManager.stopAllSounds();
+
         // Start game
         setCountdown(null);
         setGameState(prev => ({
@@ -65,7 +77,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
           startTime: Date.now()
         }));
         // Play start sound
-        getGameAudioManager().playSound('start').catch(() => {
+        audioManager.playSound('start').catch(() => {
           console.warn('[KanaDrop] Failed to play start sound');
         });
       } else {
@@ -215,19 +227,13 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     const audioManager = getGameAudioManager();
     audioManager.playSound('countdown');
 
-    // Set a timeout to stop countdown sound after 4 seconds (just in case)
-    const countdownTimeout = setTimeout(() => {
-      audioManager.stopCountdownSound();
-    }, 4000);
-
     const countdownInterval = setInterval(() => {
       setCountdown(prev => {
         if (prev === null || prev <= 1) {
           clearInterval(countdownInterval);
-          clearTimeout(countdownTimeout);
 
-          // Stop countdown sound before starting game
-          audioManager.stopCountdownSound();
+          // Stop ALL sounds before starting game
+          audioManager.stopAllSounds();
 
           // Start the game
           audioManager.playSound('start');

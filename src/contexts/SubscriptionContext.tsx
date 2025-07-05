@@ -280,7 +280,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     if (userSubscription.subscription.status === 'active' &&
       (userSubscription.subscription.plan === 'monthly' ||
         userSubscription.subscription.plan === 'yearly')) {
-      return 'premium';
+      // Return the actual plan type instead of generic 'premium'
+      return userSubscription.subscription.plan;
     }
 
     // Otherwise they're free

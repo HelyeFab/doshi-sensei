@@ -72,31 +72,61 @@ export function useEntitlements(): UseEntitlementsReturn {
     userType: contextUserType
   } = useSubscription();
   
-  const [userType, setUserType] = useState<UserType>('guest');
-  const [entitlements, setEntitlements] = useState<UserEntitlements>(
-    getEntitlementsForUserType('guest')
+  // Initialize with context user type if available
+  const [userType, setUserType] = useState<UserType>(() => {
+    if (!authLoading && !subscriptionLoading && contextUserType) {
+      return contextUserType;
+    }
+    return 'guest';
+  });
+  const [entitlements, setEntitlements] = useState<UserEntitlements>(() => 
+    getEntitlementsForUserType(userType)
   );
   
   // Update user type and entitlements when auth/subscription changes
   useEffect(() => {
-    if (!authLoading && !subscriptionLoading) {
+    // First check if we should use the context's userType directly
+    if (!authLoading && !subscriptionLoading && contextUserType) {
+      // The SubscriptionContext already determines userType correctly
+      // It returns 'monthly', 'yearly', 'free', or 'guest'
+      const normalizedType = contextUserType === 'premium' ? 'yearly' : contextUserType;
+      
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('useEntitlements - using context userType:', {
+          contextUserType,
+          normalizedType,
+          previousUserType: userType
+        });
+      }
+      
+      if (normalizedType !== userType) {
+        setUserType(normalizedType);
+        setEntitlements(getEntitlementsForUserType(normalizedType));
+      }
+    } else if (!authLoading && !subscriptionLoading) {
+      // Fallback to validator if context doesn't provide userType
       const validation = subscriptionValidator.validate(user, userSubscription, false);
       const currentUserType = validation.userType;
       
       // Debug logging
       if (process.env.NODE_ENV === 'development') {
-        console.log('useEntitlements - userType determination:', {
+        console.log('useEntitlements - fallback to validator:', {
           user: user?.email,
           subscription: userSubscription?.subscription,
           validatorUserType: currentUserType,
-          isPremium: validation.isPremium
+          isPremium: validation.isPremium,
+          previousUserType: userType
         });
       }
       
-      setUserType(currentUserType);
-      setEntitlements(getEntitlementsForUserType(currentUserType));
+      // Only update if changed
+      if (currentUserType !== userType) {
+        setUserType(currentUserType);
+        setEntitlements(getEntitlementsForUserType(currentUserType));
+      }
     }
-  }, [user, userSubscription, authLoading, subscriptionLoading]);
+  }, [user, userSubscription, authLoading, subscriptionLoading, userType, contextUserType]);
   
   // Check if a feature is enabled
   const isEnabled = useCallback((featurePath: string): boolean => {

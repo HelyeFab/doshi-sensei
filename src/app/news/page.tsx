@@ -268,7 +268,7 @@ function FilterBar({
 export default function NewsPage() {
   const { user } = useAuth();
   const { showLoginPrompt, showUpgradePrompt, incrementArticleCount } = useSubscription();
-  const { canReadArticle, isPremium } = useEntitlements();
+  const { canReadArticle, isPremium, loading: entitlementsLoading, userType } = useEntitlements();
 
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
@@ -349,8 +349,23 @@ export default function NewsPage() {
       user: user?.email,
       isPremium,
       articleCheck,
-      userType: user ? (isPremium ? 'premium' : 'free') : 'guest'
+      userType,
+      entitlementsLoading
     });
+    
+    // Don't enforce limits while entitlements are still loading
+    if (entitlementsLoading) {
+      console.log('Entitlements still loading, allowing access...');
+      // Track and navigate anyway during loading
+      try {
+        await incrementArticleCount();
+        checkArticleStatus();
+      } catch (error) {
+        console.error('Error tracking article read:', error);
+      }
+      window.location.href = `/news/${article.id}`;
+      return;
+    }
     
     if (!articleCheck.allowed) {
       if (!user) {

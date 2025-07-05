@@ -215,12 +215,21 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     const audioManager = getGameAudioManager();
     audioManager.playSound('countdown');
 
+    // Set a timeout to stop countdown sound after 4 seconds (just in case)
+    const countdownTimeout = setTimeout(() => {
+      audioManager.stopCountdownSound();
+    }, 4000);
+
     const countdownInterval = setInterval(() => {
       setCountdown(prev => {
         if (prev === null || prev <= 1) {
           clearInterval(countdownInterval);
+          clearTimeout(countdownTimeout);
+
+          // Stop countdown sound before starting game
+          audioManager.stopCountdownSound();
+
           // Start the game
-          const audioManager = getGameAudioManager();
           audioManager.playSound('start');
           setGameState(prev => ({
             ...prev,

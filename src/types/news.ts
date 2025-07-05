@@ -9,6 +9,7 @@ export interface NewsArticle {
   summary?: string;
   url: string;
   imageUrl?: string;
+  audioUrl?: string | null; // Original audio file URL
   publishDate: Date;
   scrapedAt: Date;
   source: ArticleSource;

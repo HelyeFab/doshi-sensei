@@ -30,9 +30,13 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
   });
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState<Record<number, number>>({});
+  const [audioMode, setAudioMode] = useState<'original' | 'tts'>('tts');
+  const [originalAudioProgress, setOriginalAudioProgress] = useState(0);
+  const [originalAudioDuration, setOriginalAudioDuration] = useState(0);
   
   const autoAdvanceRef = useRef<boolean>(true);
   const audioTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const MAX_RETRIES_PER_SENTENCE = 2;
   
   // Keep ref synchronized with controls state
@@ -57,10 +61,37 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
       if (audioTimeoutRef.current) {
         clearTimeout(audioTimeoutRef.current);
       }
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     };
   }, []);
 
-  // Play a specific sentence
+  // Handle original audio playback
+  const playOriginalAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setControls(prev => ({ ...prev, isPlaying: true, isPaused: false }));
+    }
+  };
+
+  const pauseOriginalAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setControls(prev => ({ ...prev, isPlaying: false, isPaused: true }));
+    }
+  };
+
+  const stopOriginalAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setControls(prev => ({ ...prev, isPlaying: false, isPaused: false }));
+      setOriginalAudioProgress(0);
+    }
+  };
+
+  // Play a specific sentence (TTS mode)
   const playCurrentSentence = async (index?: number) => {
     const sentenceIndex = index !== undefined ? index : controls.currentSentence;
     
@@ -130,46 +161,71 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
 
   // Play all from beginning
   const playAll = () => {
-    setControls(prev => ({
-      ...prev,
-      currentSentence: 0,
-      isPlaying: true,
-      isPaused: false
-    }));
-    playCurrentSentence(0);
+    if (audioMode === 'original' && article.audioUrl) {
+      playOriginalAudio();
+    } else {
+      setControls(prev => ({
+        ...prev,
+        currentSentence: 0,
+        isPlaying: true,
+        isPaused: false
+      }));
+      playCurrentSentence(0);
+    }
   };
 
   // Pause/Resume
   const togglePause = () => {
-    if (controls.isPlaying) {
-      TTSManager.stop();
-      setControls(prev => ({
-        ...prev,
-        isPlaying: false,
-        isPaused: true
-      }));
-    } else if (controls.isPaused) {
-      playCurrentSentence();
+    if (audioMode === 'original' && article.audioUrl) {
+      if (controls.isPlaying) {
+        pauseOriginalAudio();
+      } else if (controls.isPaused) {
+        playOriginalAudio();
+      }
+    } else {
+      if (controls.isPlaying) {
+        TTSManager.stop();
+        setControls(prev => ({
+          ...prev,
+          isPlaying: false,
+          isPaused: true
+        }));
+      } else if (controls.isPaused) {
+        playCurrentSentence();
+      }
     }
   };
 
   // Stop playback
   const stopPlayback = () => {
-    TTSManager.stop();
-    if (audioTimeoutRef.current) {
-      clearTimeout(audioTimeoutRef.current);
+    if (audioMode === 'original' && article.audioUrl) {
+      stopOriginalAudio();
+    } else {
+      TTSManager.stop();
+      if (audioTimeoutRef.current) {
+        clearTimeout(audioTimeoutRef.current);
+      }
+      setControls(prev => ({
+        ...prev,
+        isPlaying: false,
+        isPaused: false,
+        currentSentence: 0
+      }));
     }
-    setControls(prev => ({
-      ...prev,
-      isPlaying: false,
-      isPaused: false,
-      currentSentence: 0
-    }));
   };
 
-  const progress = sentences.length > 0 
-    ? ((controls.currentSentence + 1) / sentences.length) * 100 
-    : 0;
+  // Switch audio mode
+  const switchAudioMode = (mode: 'original' | 'tts') => {
+    // Stop current playback
+    stopPlayback();
+    setAudioMode(mode);
+  };
+
+  const progress = audioMode === 'original' 
+    ? originalAudioProgress
+    : sentences.length > 0 
+      ? ((controls.currentSentence + 1) / sentences.length) * 100 
+      : 0;
 
   return (
     <div className="bg-card rounded-lg border border-border p-6 mb-6">
@@ -184,10 +240,38 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
             </svg>
             <h3 className="font-medium text-foreground">Listen to Article</h3>
           </div>
-          <span className="text-sm text-muted-foreground">
-            {controls.currentSentence + 1} / {sentences.length} sentences
-          </span>
+          {audioMode === 'tts' && (
+            <span className="text-sm text-muted-foreground">
+              {controls.currentSentence + 1} / {sentences.length} sentences
+            </span>
+          )}
         </div>
+
+        {/* Audio Mode Toggle */}
+        {article.audioUrl && (
+          <div className="flex gap-2 p-1 bg-muted rounded-lg">
+            <button
+              onClick={() => switchAudioMode('original')}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                audioMode === 'original' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              🎵 Original Audio
+            </button>
+            <button
+              onClick={() => switchAudioMode('tts')}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                audioMode === 'tts' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              🗣️ AI Voice
+            </button>
+          </div>
+        )}
 
         {/* Main Controls */}
         <div className="flex items-center gap-3">
@@ -260,6 +344,30 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
             </div>
           </div>
         </div>
+
+        {/* Hidden audio element for original audio */}
+        {article.audioUrl && (
+          <audio
+            ref={audioRef}
+            src={article.audioUrl}
+            onTimeUpdate={() => {
+              if (audioRef.current) {
+                const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+                setOriginalAudioProgress(progress);
+              }
+            }}
+            onLoadedMetadata={() => {
+              if (audioRef.current) {
+                setOriginalAudioDuration(audioRef.current.duration);
+              }
+            }}
+            onEnded={() => {
+              setControls(prev => ({ ...prev, isPlaying: false, isPaused: false }));
+              setOriginalAudioProgress(0);
+            }}
+            className="hidden"
+          />
+        )}
 
       </div>
     </div>

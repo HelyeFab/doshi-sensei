@@ -228,7 +228,8 @@ async function scrapeWatanocArticles() {
         difficulty: jlptLevel,
         estimatedReadingTime: 3,
         vocabulary: [],
-        kanji: []
+        kanji: [],
+        audioUrl: null // Will be filled if audio is found
       };
       
       articles.push(article);
@@ -288,6 +289,20 @@ async function scrapeWatanocArticles() {
               .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '');
             content = cleanedArticle;
           }
+        }
+        
+        // Extract audio URL if present
+        const audioMatch = articleHtml.match(/<audio[^>]*>[\s\S]*?<source[^>]*src="([^"]+\.mp3[^"]*)"[^>]*>/i);
+        if (!audioMatch) {
+          // Try alternative audio patterns
+          const altAudioMatch = articleHtml.match(/src="([^"]+\/[^"]+\.mp3[^"]*)"/i);
+          if (altAudioMatch) {
+            article.audioUrl = altAudioMatch[1].replace(/\?.*$/, ''); // Remove query params
+            console.log(`🎵 Found audio for article ${i + 1}: ${article.audioUrl}`);
+          }
+        } else {
+          article.audioUrl = audioMatch[1].replace(/\?.*$/, ''); // Remove query params
+          console.log(`🎵 Found audio for article ${i + 1}: ${article.audioUrl}`);
         }
         
         // Clean and process the content

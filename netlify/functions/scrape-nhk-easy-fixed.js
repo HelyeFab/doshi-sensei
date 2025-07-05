@@ -192,6 +192,7 @@ async function scrapeNHKEasyArticles() {
       summary: (article.title || '').substring(0, 100) + '...',
       url: article.news_web_url || `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.html`,
       imageUrl: article.news_web_image_uri || article.news_easy_image_uri || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400',
+      audioUrl: article.has_news_easy_voice ? `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.mp3` : null,
       publishDate: article.news_prearranged_time ? new Date(article.news_prearranged_time) : new Date(),
       scrapedAt: new Date(),
       source: {

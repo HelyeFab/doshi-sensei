@@ -3,6 +3,7 @@ export class GameAudioManager {
   private sounds: { [key: string]: HTMLAudioElement } = {};
   private backgroundMusic: HTMLAudioElement | null = null;
   private enabled: boolean = true;
+  private currentCountdownSound: HTMLAudioElement | null = null; // Track countdown sound
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -37,11 +38,35 @@ export class GameAudioManager {
     this.enabled = enabled;
     if (!enabled) {
       this.stopBackgroundMusic();
+      this.stopCountdownSound();
     }
   }
 
   isEnabled(): boolean {
     return this.enabled;
+  }
+
+  // Stop the countdown sound specifically
+  stopCountdownSound() {
+    if (this.currentCountdownSound) {
+      this.currentCountdownSound.pause();
+      this.currentCountdownSound.currentTime = 0;
+      this.currentCountdownSound = null;
+    }
+  }
+
+  // Stop a specific sound type
+  stopSound(soundType: 'error' | 'thud' | 'victory' | 'gameOver' | 'countdown' | 'start') {
+    if (!this.sounds[soundType]) return;
+
+    const sound = this.sounds[soundType];
+    sound.pause();
+    sound.currentTime = 0;
+
+    // Clear countdown tracking if stopping countdown
+    if (soundType === 'countdown') {
+      this.currentCountdownSound = null;
+    }
   }
 
   async playSound(soundType: 'error' | 'thud' | 'victory' | 'gameOver' | 'countdown' | 'start') {
@@ -59,6 +84,11 @@ export class GameAudioManager {
       const sound = this.sounds[type];
       sound.currentTime = 0;
       await sound.play();
+
+      // Track countdown sound for stopping later
+      if (type === 'countdown') {
+        this.currentCountdownSound = sound;
+      }
     } catch (error) {
       console.error('Error playing sound:', error);
     }
@@ -66,6 +96,10 @@ export class GameAudioManager {
 
   async playBackgroundMusic() {
     if (!this.enabled || !this.backgroundMusic) return;
+
+    // Stop countdown sound before starting background music
+    this.stopCountdownSound();
+
     try {
       if (this.audioContext && this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
@@ -88,6 +122,7 @@ export class GameAudioManager {
 
   dispose() {
     this.stopBackgroundMusic();
+    this.stopCountdownSound();
     if (this.audioContext && this.audioContext.state !== 'closed') {
       this.audioContext.close();
     }

@@ -230,6 +230,7 @@ async function scrapeTodaiiArticles() {
               summary: cleanContent.substring(0, 250) + '...',
               url: data.url,
               imageUrl: data.imageUrl || `https://images.unsplash.com/photo-${1600000000000 + i}?w=400`,
+              audioUrl: null, // Todaii doesn't typically have audio files
               publishDate: data.publishDate,
               scrapedAt: new Date(),
               source: {

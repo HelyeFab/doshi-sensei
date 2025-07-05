@@ -194,23 +194,135 @@ function generateTodaiiImageUrl(index) {
   return todaiiImages[index % todaiiImages.length];
 }
 
-// Generate mock articles for Todaii News
+// Extract JLPT level from HTML
+function extractJLPTLevelFromHTML(html) {
+  const match = html.match(/data-level="(\d+)">N\d+/);
+  if (match) {
+    return `N${match[1]}`;
+  }
+  return estimateJLPTLevel(html);
+}
+
+// Parse date from Todaii format
+function parseTodaiiDate(dateStr) {
+  // Format: "Jul 5, 2025 07:07"
+  try {
+    return new Date(dateStr);
+  } catch (error) {
+    return new Date();
+  }
+}
+
+// Extract article ID from URL
+function extractArticleId(url) {
+  const match = url.match(/detail\/([a-f0-9]+)/);
+  return match ? match[1] : null;
+}
+
+// Scrape articles from Todaii News
+async function scrapeTodaiiArticles() {
+  try {
+    console.log('📖 Fetching Todaii News page...');
+    const response = await makeRequest('https://japanese.todaiinews.com/news/0/all');
+    const html = response.body;
+
+    // Extract article links and metadata
+    const articlePattern = /<a[^>]+class="first-item"[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+data-src="([^"]+)"[^>]*>[\s\S]*?<div[^>]+class="source">([^<]+)<\/div>[\s\S]*?<div[^>]+class="title">([^<]+(?:<[^>]+>[^<]+)*)<\/div>[\s\S]*?data-level="(\d+)">N\d+<\/span>[\s\S]*?<span[^>]+class="time-up">([^<]+)<\/span>/gi;
+
+    const articles = [];
+    let match;
+    let count = 0;
+
+    while ((match = articlePattern.exec(html)) !== null && count < 10) {
+      const [fullMatch, url, imageUrl, source, titleHtml, jlptLevel, dateStr] = match;
+
+      // Clean title by removing ruby tags but keeping the text
+      const title = cleanTextAdvanced(titleHtml);
+
+      // Extract article ID
+      const articleId = extractArticleId(url);
+      if (!articleId) continue;
+
+      articles.push({
+        id: articleId,
+        url: url.replace(/&amp;/g, '&').split('?')[0], // Clean URL
+        imageUrl: imageUrl,
+        source: source,
+        title: title,
+        jlptLevel: `N${jlptLevel}`,
+        date: parseTodaiiDate(dateStr.trim())
+      });
+
+      count++;
+    }
+
+    console.log(`✅ Found ${articles.length} articles on news page`);
+
+    // Fetch full content for each article
+    const fullArticles = [];
+    for (const article of articles.slice(0, 5)) { // Limit to 5 for performance
+      try {
+        console.log(`📄 Fetching article: ${article.title}`);
+        const articleUrl = article.url.includes('https://') ? article.url : `https://japanese.todaiinews.com${article.url}`;
+        const articleResponse = await makeRequest(articleUrl);
+        const articleHtml = articleResponse.body;
+
+        // Extract content from article page
+        const contentMatch = articleHtml.match(/<div[^>]+class="[^"]*article-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+        const content = contentMatch ? cleanTextAdvanced(contentMatch[1]).substring(0, 2000) : article.title;
+
+        // Extract vocabulary and kanji
+        const vocabulary = extractVocabulary(content);
+        const kanji = extractKanji(content);
+
+        fullArticles.push({
+          id: `todaii_${article.id}`,
+          title: article.title,
+          content: content,
+          summary: content.substring(0, 150) + '...',
+          url: articleUrl,
+          imageUrl: article.imageUrl || generateTodaiiImageUrl(fullArticles.length),
+          publishDate: article.date,
+          scrapedAt: new Date(),
+          source: {
+            id: 'todaii-news',
+            name: article.source,
+            displayName: 'Todaii Japanese News - Learning Platform'
+          },
+          category: 'news',
+          tags: ['news', 'japanese', 'learning', 'todaii', article.jlptLevel.toLowerCase()],
+          difficulty: article.jlptLevel,
+          estimatedReadingTime: estimateReadingTime(content),
+          vocabulary: vocabulary,
+          kanji: kanji,
+          sourceLanguage: 'japanese',
+          learnerFriendly: true
+        });
+
+        // Be respectful - wait between requests
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+      } catch (error) {
+        console.error(`❌ Failed to fetch article ${article.title}:`, error.message);
+      }
+    }
+
+    return fullArticles;
+
+  } catch (error) {
+    console.error('❌ Error scraping Todaii:', error);
+    // Return mock data as fallback
+    return generateMockArticles();
+  }
+}
+
+// Generate mock articles for fallback
 function generateMockArticles() {
   const articles = [
     {
       title: '日本の伝統的な祭りが今年も開催されます',
       content: '日本には四季を通じて様々な伝統的な祭りがあります。春には桜祭り、夏には盆踊りや花火大会、秋には収穫祭、冬には雪祭りなどが各地で開催されます。これらの祭りは、地域の文化を次の世代に伝える重要な役割を果たしています。',
       difficulty: 'N4'
-    },
-    {
-      title: '日本の少子高齢化社会への対応策',
-      content: '日本は世界で最も高齢化が進んだ国の一つです。総人口に占める65歳以上の割合は約30％に達し、出生率は1.3程度と低い水準が続いています。政府は、働き方改革や子育て支援の充実、外国人労働者の受け入れ拡大などの対策を進めています。',
-      difficulty: 'N3'
-    },
-    {
-      title: '持続可能な社会を目指す日本の環境政策',
-      content: '地球温暖化が深刻な問題となる中、日本政府は2050年までにカーボンニュートラルを達成する目標を掲げています。再生可能エネルギーの普及拡大、エネルギー効率の向上、新技術の開発など、包括的な政策が実施されています。',
-      difficulty: 'N2'
     }
   ];
 
@@ -230,7 +342,7 @@ function generateMockArticles() {
     },
     category: 'news',
     tags: ['news', 'japanese', 'learning', 'todaii'],
-    difficulty: estimateJLPTLevel(article.content),
+    difficulty: article.difficulty,
     estimatedReadingTime: estimateReadingTime(article.content),
     vocabulary: extractVocabulary(article.content),
     kanji: extractKanji(article.content),
@@ -275,11 +387,10 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // For now, use mock articles
-    // In production, this would fetch from actual Todaii News site
-    const articles = generateMockArticles();
+    // Scrape real articles from Todaii News
+    const articles = await scrapeTodaiiArticles();
 
-    console.log(`📊 Generated ${articles.length} mock articles`);
+    console.log(`📊 Scraped ${articles.length} articles from Todaii News`);
 
     // Save articles to Firebase
     const batch = db.batch();

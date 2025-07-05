@@ -69,7 +69,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
   const playTTSAudio = async () => {
     setIsLoading(true);
     setError(null);
-    setLoadingStatus('Preparing audio...');
+    setLoadingStatus('Connecting to audio service...');
 
     try {
       const audio = await ArticleTTSManager.playArticle(
@@ -78,7 +78,10 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
         {
           voice,
           provider,
-          onProgress: setLoadingStatus
+          onProgress: (status) => {
+            setLoadingStatus(status);
+            console.log(`[Audio Player] ${status}`);
+          }
         }
       );
 
@@ -137,12 +140,16 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
       audio.addEventListener('timeupdate', () => {
         setControls(prev => ({ ...prev, progress: audio.currentTime }));
       });
+      
+      // Immediately set playing state since playArticle auto-plays
+      setControls(prev => ({ ...prev, isPlaying: true, isPaused: false }));
+      setIsLoading(false);
+      setLoadingStatus('');
 
     } catch (error) {
       console.error('TTS Error:', error);
       setError(error instanceof Error ? error.message : 'Failed to generate audio');
       setControls(prev => ({ ...prev, isPlaying: false, isPaused: false }));
-    } finally {
       setIsLoading(false);
       setLoadingStatus('');
     }
@@ -401,14 +408,16 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
               </svg>
             </button>
 
-            {(controls.isPlaying || controls.isPaused) && !isLoading ? (
+            {(controls.isPlaying || controls.isPaused || isLoading) ? (
               <button
                 onClick={togglePause}
                 disabled={isLoading}
                 className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-xl min-w-[60px] flex items-center justify-center disabled:opacity-50"
-                title={controls.isPlaying ? 'Pause' : 'Resume'}
+                title={isLoading ? 'Loading...' : controls.isPlaying ? 'Pause' : 'Resume'}
               >
-                {controls.isPlaying ? (
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                ) : controls.isPlaying ? (
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
                   </svg>
@@ -423,14 +432,11 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
                 onClick={play}
                 disabled={isLoading}
                 className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-xl min-w-[60px] flex items-center justify-center disabled:opacity-50"
+                title="Play"
               >
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                )}
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               </button>
             )}
 

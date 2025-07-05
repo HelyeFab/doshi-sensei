@@ -179,29 +179,9 @@ async function scrapeTodaiiArticles() {
   }
 }
 
-// Fallback articles
+// Fallback articles - return empty array instead of test data
 function getFallbackArticles() {
-  return [{
-    id: `todaii_${Date.now()}_fallback`,
-    title: 'Todaii Scraping Test',
-    content: 'This is a fallback article for Todaii scraping.',
-    summary: 'Test article for Todaii',
-    url: 'https://todaijapanese.com',
-    imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',
-    publishDate: new Date(),
-    scrapedAt: new Date(),
-    source: {
-      id: 'todaii',
-      name: 'Todaii',
-      displayName: 'Todaii - Fallback Mode'
-    },
-    category: 'test',
-    tags: ['fallback'],
-    difficulty: 'N3',
-    estimatedReadingTime: 1,
-    vocabulary: [],
-    grammarPoints: []
-  }];
+  return [];
 }
 
 // Save to Firebase

@@ -28,28 +28,8 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// Mock articles for testing
-const getMockArticles = () => [{
-  id: `watanoc_${Date.now()}_001`,
-  title: 'Test Article - Netlify Functions Working',
-  content: 'This is a test article to verify that Netlify functions are working correctly in the local development environment.',
-  summary: 'Test article for debugging Netlify functions.',
-  url: 'https://watanoc.com/test-article',
-  imageUrl: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400',
-  publishDate: new Date(),
-  scrapedAt: new Date(),
-  source: {
-    id: 'watanoc',
-    name: 'Watanoc',
-    displayName: 'Watanoc - Test Mode'
-  },
-  category: 'test',
-  tags: ['test', 'debug'],
-  difficulty: 'N5',
-  estimatedReadingTime: 1,
-  vocabulary: ['テスト', '記事'],
-  kanji: ['記', '事']
-}];
+// Mock articles - return empty array to avoid test data
+const getMockArticles = () => [];
 
 exports.handler = async (event, context) => {
   const headers = {

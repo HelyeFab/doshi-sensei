@@ -229,28 +229,8 @@ async function scrapeWatanocArticles() {
 
   } catch (error) {
     console.error('❌ Error scraping Watanoc:', error.message);
-    // Return one fallback article
-    return [{
-      id: `watanoc_${Date.now()}_fallback`,
-      title: 'Watanoc Scraping Test',
-      content: 'This is a fallback article. The scraping encountered an error: ' + error.message,
-      summary: 'Fallback article for testing',
-      url: 'https://watanoc.com',
-      imageUrl: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400',
-      publishDate: new Date(),
-      scrapedAt: new Date(),
-      source: {
-        id: 'watanoc',
-        name: 'Watanoc',
-        displayName: 'Watanoc - Error Mode'
-      },
-      category: 'test',
-      tags: ['fallback'],
-      difficulty: 'N5',
-      estimatedReadingTime: 1,
-      vocabulary: [],
-      kanji: []
-    }];
+    // Return empty array instead of test articles
+    return [];
   }
 }
 

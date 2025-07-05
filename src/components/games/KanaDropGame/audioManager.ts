@@ -70,7 +70,10 @@ export class GameAudioManager {
       if (this.audioContext && this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
       }
-      await this.backgroundMusic.play();
+      // Fire-and-forget: do not await play()
+      this.backgroundMusic.play().catch((error) => {
+        console.error('Error playing background music:', error);
+      });
     } catch (error) {
       console.error('Error playing background music:', error);
     }

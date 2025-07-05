@@ -171,31 +171,9 @@ async function scrapeNHKEasyArticles() {
   }
 }
 
-// Fallback articles
+// Fallback articles - return empty array instead of test data
 function getFallbackArticles() {
-  return [{
-    id: `nhk_easy_${Date.now()}_fallback`,
-    title: 'NHK Easy Scraping Test',
-    content: 'This is a fallback article for NHK Easy.',
-    summary: 'Test article for NHK Easy',
-    url: 'https://www3.nhk.or.jp/news/easy/',
-    imageUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400',
-    publishDate: new Date(),
-    scrapedAt: new Date(),
-    source: {
-      id: 'nhk-easy',
-      name: 'NHK Easy',
-      displayName: 'NHK Easy - Fallback Mode'
-    },
-    category: 'test',
-    tags: ['fallback'],
-    difficulty: 'N5',
-    estimatedReadingTime: 1,
-    hasVideo: false,
-    hasAudio: false,
-    vocabulary: [],
-    furigana: ''
-  }];
+  return [];
 }
 
 // Save to Firebase

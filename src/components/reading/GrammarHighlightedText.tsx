@@ -116,13 +116,15 @@ export function GrammarHighlightedText({
               style={{
                 ...(isHighlighted ? { backgroundColor: `${token.color}20` } : {}),
                 rubyAlign: 'start' as any,
-                WebkitRubyAlign: 'start' as any
+                WebkitRubyAlign: 'start' as any,
+                textAlign: 'left' as any,
+                display: 'inline-block' as any
               }}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
             >
               {token.surface_form}
-              <rt className="text-xs" style={{ textAlign: 'left' }}>{token.reading}</rt>
+              <rt className="text-xs" style={{ textAlign: 'left', display: 'block', transform: 'translateX(0)' }}>{token.reading}</rt>
             </ruby>
           );
         } else {

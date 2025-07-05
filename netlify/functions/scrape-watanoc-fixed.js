@@ -147,8 +147,10 @@ function cleanText(html) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#8230;/g, '...')
-    // Remove URLs from content
-    .replace(/https?:\/\/[^\s]+/g, '')
+    // Remove URLs from content - more comprehensive patterns
+    .replace(/https?:\/\/[^\s<>]+/g, '')
+    .replace(/www\.[^\s<>]+/g, '')
+    .replace(/[a-zA-Z0-9][a-zA-Z0-9-]+\.(com|org|net|jp|co\.jp)[^\s<>]*/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -311,6 +313,11 @@ async function scrapeWatanocArticles() {
         if (content) {
           // Remove nested divs that might be ads or unrelated
           content = content.replace(/<div[^>]*class="[^"]*(?:ad|banner|widget|sidebar)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '');
+          
+          // Remove any URLs from the content BEFORE cleaning - more comprehensive
+          content = content.replace(/https?:\/\/[^\s<>]+/g, '');
+          content = content.replace(/www\.[^\s<>]+/g, '');
+          content = content.replace(/<a[^>]*href=[^>]*>.*?<\/a>/gi, ''); // Remove entire link tags
           
           const cleanContent = cleanText(content);
           

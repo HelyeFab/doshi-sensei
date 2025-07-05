@@ -253,7 +253,10 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
             <h3 className="font-medium text-foreground">Listen to Article</h3>
           </div>
           {isLoading && (
-            <span className="text-sm text-muted-foreground">{loadingStatus}</span>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm text-muted-foreground">{loadingStatus}</span>
+            </div>
           )}
         </div>
 

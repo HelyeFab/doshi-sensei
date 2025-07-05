@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import FirebaseTTSCache from '@/utils/ttsFirebaseCache';
+import ServerFirebaseCache from '@/utils/serverFirebaseCache';
 
 interface ElevenLabsSettings {
   stability: number;
@@ -9,6 +9,8 @@ interface ElevenLabsSettings {
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  
   try {
     const { articleId, content, voice = 'male', provider = 'elevenlabs' } = await request.json();
 
@@ -16,22 +18,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Article ID and content are required' }, { status: 400 });
     }
 
-    // Initialize cache
-    const cache = FirebaseTTSCache.getInstance();
+    console.log(`[TTS API] Request for article ${articleId}, voice: ${voice}, provider: ${provider}`);
 
-    // Check cache first
-    const cachedUrl = await cache.getCachedAudioUrl(articleId, content, voice, provider);
-    if (cachedUrl) {
-      console.log(`✅ Returning cached audio for article ${articleId}`);
-      return NextResponse.json({
-        audioUrl: cachedUrl,
-        success: true,
-        cached: true,
-        provider
-      });
+    // Initialize server-side cache
+    const cache = ServerFirebaseCache.getInstance();
+
+    // Check cache first (server-side)
+    try {
+      const cachedUrl = await cache.getCachedAudioUrl(articleId, content, voice, provider);
+      if (cachedUrl) {
+        const cacheTime = Date.now() - startTime;
+        console.log(`✅ Returning cached audio for article ${articleId} (${cacheTime}ms)`);
+        return NextResponse.json({
+          audioUrl: cachedUrl,
+          success: true,
+          cached: true,
+          provider,
+          responseTime: cacheTime
+        });
+      }
+    } catch (cacheError) {
+      console.warn(`⚠️ Cache check failed for article ${articleId}:`, cacheError);
+      // Continue to generate new audio
     }
 
     console.log(`🎤 Generating new audio for article ${articleId} using ${provider}...`);
+    console.log(`[TTS API] Content length: ${content.length} characters`);
 
     // Generate audio for the entire content
     let audioBlob: Blob | null = null;
@@ -73,6 +85,7 @@ export async function POST(request: NextRequest) {
           if (response.ok) {
             const audioBuffer = await response.arrayBuffer();
             audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+            console.log(`✅ ElevenLabs generated ${audioBuffer.byteLength} bytes`);
           } else {
             const errorText = await response.text();
             console.error('❌ ElevenLabs error:', response.status, errorText);
@@ -156,15 +169,23 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Cache the audio in Firebase Storage
+    // Cache the audio in Firebase Storage (server-side)
     try {
-      const audioUrl = await cache.cacheAudio(articleId, content, voice, provider, audioBlob);
+      // Convert Blob to Buffer for server-side storage
+      const arrayBuffer = await audioBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      
+      const audioUrl = await cache.cacheAudio(articleId, content, voice, provider, buffer);
+      
+      const totalTime = Date.now() - startTime;
+      console.log(`✅ Audio generated and cached in ${totalTime}ms`);
       
       return NextResponse.json({
         audioUrl,
         success: true,
         cached: false,
-        provider
+        provider,
+        responseTime: totalTime
       });
     } catch (cacheError) {
       console.error('❌ Failed to cache audio:', cacheError);
@@ -173,12 +194,16 @@ export async function POST(request: NextRequest) {
       const arrayBuffer = await audioBlob.arrayBuffer();
       const base64Audio = Buffer.from(arrayBuffer).toString('base64');
       
+      const totalTime = Date.now() - startTime;
+      console.log(`⚠️ Audio generated but not cached, using base64 fallback (${totalTime}ms)`);
+      
       return NextResponse.json({
         audioContent: base64Audio,
         success: true,
         cached: false,
         provider,
-        warning: 'Failed to cache audio'
+        warning: 'Failed to cache audio, using base64 fallback',
+        responseTime: totalTime
       });
     }
 

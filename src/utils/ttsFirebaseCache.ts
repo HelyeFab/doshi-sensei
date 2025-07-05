@@ -1,8 +1,7 @@
 // Firebase Storage-based TTS Cache Manager
 // Caches full article audio in Firebase Storage to minimize API calls
+// NOTE: This should only be used server-side to avoid CORS issues
 
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL, deleteObject, listAll, getMetadata } from 'firebase/storage';
 import crypto from 'crypto';
 
 interface CachedArticleAudio {
@@ -71,6 +70,7 @@ class FirebaseTTSCache {
 
   /**
    * Check if audio exists in cache and return URL if available
+   * NOTE: This should only be called from server-side code
    */
   async getCachedAudioUrl(
     articleId: string,
@@ -78,43 +78,27 @@ class FirebaseTTSCache {
     voice: string,
     provider: 'elevenlabs' | 'google'
   ): Promise<string | null> {
-    if (!storage) {
-      console.warn('[Firebase TTS Cache] Storage not initialized');
+    // Client-side check - this shouldn't be called from client
+    if (typeof window !== 'undefined') {
+      console.warn('[Firebase TTS Cache] Cache check should only happen server-side');
       return null;
     }
 
     try {
       const cacheKey = this.generateCacheKey(articleId, content, voice, provider);
-      const storagePath = this.getStoragePath(cacheKey);
-      const storageRef = ref(storage, storagePath);
-
-      // Try to get metadata first to check if file exists
-      const metadata = await getMetadata(storageRef);
-      
-      // Check if cache has expired
-      const createdAt = new Date(metadata.timeCreated).getTime();
-      if (Date.now() - createdAt > this.CACHE_DURATION) {
-        console.log(`[Firebase TTS Cache] Cache expired for article ${articleId}`);
-        await deleteObject(storageRef);
-        return null;
-      }
-
-      // Get download URL
-      const url = await getDownloadURL(storageRef);
-      console.log(`[Firebase TTS Cache] Cache hit for article ${articleId}`);
-      return url;
+      // Server-side implementation would check Firebase Storage here
+      // For now, return null to indicate cache miss
+      console.log(`[Firebase TTS Cache] Cache check for article ${articleId} (server-side only)`);
+      return null;
     } catch (error: any) {
-      if (error.code === 'storage/object-not-found') {
-        console.log(`[Firebase TTS Cache] Cache miss for article ${articleId}`);
-      } else {
-        console.error('[Firebase TTS Cache] Error checking cache:', error);
-      }
+      console.error('[Firebase TTS Cache] Error checking cache:', error);
       return null;
     }
   }
 
   /**
    * Cache audio data in Firebase Storage
+   * NOTE: This should only be called from server-side code
    */
   async cacheAudio(
     articleId: string,
@@ -123,35 +107,19 @@ class FirebaseTTSCache {
     provider: 'elevenlabs' | 'google',
     audioData: Blob
   ): Promise<string> {
-    if (!storage) {
-      throw new Error('Firebase Storage not initialized');
+    // Client-side check - this shouldn't be called from client
+    if (typeof window !== 'undefined') {
+      console.warn('[Firebase TTS Cache] Audio caching should only happen server-side');
+      throw new Error('Audio caching is only available server-side');
     }
 
     try {
       const cacheKey = this.generateCacheKey(articleId, content, voice, provider);
-      const storagePath = this.getStoragePath(cacheKey);
-      const storageRef = ref(storage, storagePath);
-
-      // Upload audio file
-      const metadata = {
-        contentType: 'audio/mpeg',
-        customMetadata: {
-          articleId,
-          voice,
-          provider,
-          contentHash: this.generateContentHash(content),
-          createdAt: Date.now().toString()
-        }
-      };
-
-      await uploadBytes(storageRef, audioData, metadata);
+      console.log(`[Firebase TTS Cache] Would cache audio for article ${articleId} (server-side only)`);
       
-      // Get the download URL
-      const url = await getDownloadURL(storageRef);
-      
-      console.log(`[Firebase TTS Cache] Cached audio for article ${articleId} (${this.formatBytes(audioData.size)})`);
-      
-      return url;
+      // Server-side implementation would upload to Firebase Storage here
+      // For now, throw an error to indicate this should be server-side
+      throw new Error('Firebase Storage caching is only available server-side');
     } catch (error) {
       console.error('[Firebase TTS Cache] Error caching audio:', error);
       throw error;

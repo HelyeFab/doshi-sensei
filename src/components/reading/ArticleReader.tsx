@@ -312,6 +312,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [stableWPM, setStableWPM] = useState(0);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
   const articleRef = useRef<HTMLDivElement>(null);
   const timeUpdateInterval = useRef<NodeJS.Timeout | null>(null);
@@ -602,66 +603,111 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-all transform hover:scale-105 active:scale-95"
           >
-            <span>←</span>
-            Back to Articles
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                d="M15 19l-7-7 7-7" 
+              />
+            </svg>
+            <span>Back to Articles</span>
           </button>
 
-          <div className="flex items-center gap-2">
-            {/* Audio Player button */}
+          <div className="relative">
+            {/* Options Menu Button */}
             <button
-              onClick={() => window.location.href = `/reading/audio?id=${article.id}&source=news`}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Open Audio Reader"
+              onClick={() => setShowOptionsMenu(!showOptionsMenu)}
+              className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg font-medium transition-colors"
             >
-              📚
-            </button>
-
-
-            {/* Quiz button */}
-            <button
-              onClick={() => setShowQuiz(true)}
-              className={`p-2 rounded-lg transition-colors ${showQuiz
-                  ? 'text-green-500 bg-green-50 dark:bg-green-900/20'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              title="Take Comprehension Quiz"
-              disabled={quizCompleted}
-            >
-              🎯
-            </button>
-
-            {/* Bookmark button */}
-            <button
-              onClick={handleBookmarkToggle}
-              disabled={bookmarkLoading}
-              className={`p-2 rounded-lg transition-colors ${isBookmarked
-                  ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-              title={user ? (isBookmarked ? 'Remove bookmark' : 'Bookmark article') : 'Login to bookmark'}
-            >
-              {bookmarkLoading ? '⏳' : (isBookmarked ? '★' : '☆')}
-            </button>
-
-            {/* Settings button */}
-            <div className="relative">
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                ⚙️
-              </button>
-
-              {showSettings && (
-                <SettingsPanel
-                  settings={settings}
-                  onSettingsChange={setSettings}
-                  onClose={() => setShowSettings(false)}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" 
                 />
-              )}
-            </div>
+              </svg>
+              <span>Options</span>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showOptionsMenu && (
+              <div className="absolute top-12 right-0 z-50 bg-card border border-border rounded-lg shadow-lg p-1 w-64">
+                {/* Audio Reader */}
+                <button
+                  onClick={() => {
+                    window.location.href = `/reading/audio?id=${article.id}&source=news`;
+                    setShowOptionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left"
+                >
+                  <span className="text-xl">📚</span>
+                  <div>
+                    <div className="font-medium">Audio Reader</div>
+                    <div className="text-sm text-muted-foreground">Open immersive reading mode</div>
+                  </div>
+                </button>
+
+                {/* Quiz */}
+                <button
+                  onClick={() => {
+                    setShowQuiz(true);
+                    setShowOptionsMenu(false);
+                  }}
+                  disabled={quizCompleted}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="text-xl">🎯</span>
+                  <div>
+                    <div className="font-medium">Comprehension Quiz</div>
+                    <div className="text-sm text-muted-foreground">
+                      {quizCompleted ? 'Already completed' : 'Test your understanding'}
+                    </div>
+                  </div>
+                </button>
+
+                {/* Bookmark */}
+                <button
+                  onClick={() => {
+                    handleBookmarkToggle();
+                    setShowOptionsMenu(false);
+                  }}
+                  disabled={bookmarkLoading || !user}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="text-xl">{isBookmarked ? '★' : '☆'}</span>
+                  <div>
+                    <div className="font-medium">{isBookmarked ? 'Remove Bookmark' : 'Bookmark Article'}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {!user ? 'Login required' : 'Save for later'}
+                    </div>
+                  </div>
+                </button>
+
+                <div className="border-t border-border my-1"></div>
+
+                {/* Settings */}
+                <button
+                  onClick={() => {
+                    setShowSettings(true);
+                    setShowOptionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left"
+                >
+                  <span className="text-xl">⚙️</span>
+                  <div>
+                    <div className="font-medium">Reading Settings</div>
+                    <div className="text-sm text-muted-foreground">Font size, furigana, etc.</div>
+                  </div>
+                </button>
+              </div>
+            )}
+
+            {/* Settings Panel (separate from menu) */}
+            {showSettings && (
+              <SettingsPanel
+                settings={settings}
+                onSettingsChange={setSettings}
+                onClose={() => setShowSettings(false)}
+              />
+            )}
           </div>
         </div>
 
@@ -899,12 +945,13 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         )}
 
         {/* Click outside to close popups */}
-        {(selectedWord || showSettings) && (
+        {(selectedWord || showSettings || showOptionsMenu) && (
           <div
             className="fixed inset-0 z-30"
             onClick={() => {
               setSelectedWord(null);
               setShowSettings(false);
+              setShowOptionsMenu(false);
             }}
           />
         )}

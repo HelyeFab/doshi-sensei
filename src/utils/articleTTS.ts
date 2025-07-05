@@ -51,20 +51,13 @@ export class ArticleTTSManager {
 
     try {
       // Update progress
-      onProgress?.('Checking cache...');
+      onProgress?.('Preparing audio...');
+      console.log(`🎤 Requesting audio for article ${articleId}`);
 
-      // Check cache first
-      const cachedUrl = await this.cache.getCachedAudioUrl(articleId, content, voice, provider);
-      if (cachedUrl) {
-        console.log(`✅ Using cached audio for article ${articleId}`);
-        onProgress?.('Loading cached audio...');
-        return cachedUrl;
-      }
-
-      // Generate new audio
-      onProgress?.('Generating audio...');
-      console.log(`🎤 Generating new audio for article ${articleId}`);
-
+      // Add timeout for long requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+      
       const response = await fetch('/api/tts/article', {
         method: 'POST',
         headers: {
@@ -75,13 +68,20 @@ export class ArticleTTSManager {
           content,
           voice,
           provider
-        })
+        }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate audio');
+      }
+
+      if (data.cached) {
+        onProgress?.('Loading cached audio...');
       }
 
       if (data.audioUrl) {

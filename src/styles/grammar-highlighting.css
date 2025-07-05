@@ -1,5 +1,10 @@
 /* Grammar Highlighting Styles */
 
+/* Minimal ruby styles - let browser handle most of it */
+ruby {
+  display: inline-block;
+}
+
 /* Base styles for all grammar elements */
 .grammar-noun,
 .grammar-verb,
@@ -10,48 +15,12 @@
   display: inline-block;
 }
 
-/* Ruby text alignment - cross-browser solution */
-ruby {
-  /* Standard property (Chrome 128+, Firefox 38+) */
-  ruby-align: start;
-  /* Webkit browsers */
-  -webkit-ruby-align: start;
-  /* Display as inline-block to control alignment */
-  display: inline-block;
-  /* Ensure left alignment of the whole ruby element */
-  text-align: left;
-}
-
 rt {
-  /* Force left alignment of ruby text */
-  text-align: left;
   font-size: 0.6em;
-  /* Remove default browser styling */
-  font-feature-settings: normal;
-  /* Ensure the rt element doesn't center */
-  display: block;
-  /* Use transform for browsers that don't support ruby-align */
-  transform: translateX(0);
-  /* Reset any browser defaults */
-  margin: 0;
-  padding: 0;
-}
-
-/* Fallback for browsers without ruby-align support */
-@supports not (ruby-align: start) {
-  ruby {
-    /* Use relative positioning as fallback */
-    position: relative;
-    display: inline-block;
-  }
-  
-  rt {
-    /* Position absolutely to control alignment */
-    position: absolute;
-    top: -0.8em;
-    left: 0;
-    white-space: nowrap;
-  }
+  /* Try to force left alignment */
+  text-align: start;
+  text-align: left;
+  text-align: -webkit-left;
 }
 
 /* Override any Tailwind or other reset styles with higher specificity */

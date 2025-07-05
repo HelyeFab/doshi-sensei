@@ -8,6 +8,43 @@ import SubscriptionPlans from '@/components/SubscriptionPlans';
 import AuthErrorModal from '@/components/AuthErrorModal';
 import { ADMIN_EMAIL } from '@/types/admin';
 import Link from 'next/link';
+import { db } from '@/lib/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+
+// List of available SVGs for user thumbnails
+const THUMBNAIL_OPTIONS = [
+  // Animals
+  '/flat-icons/4193242-animals/svg/026-squirrel.svg',
+  '/flat-icons/4193242-animals/svg/020-goat.svg',
+  '/flat-icons/4193242-animals/svg/019-llama.svg',
+  '/flat-icons/4193242-animals/svg/015-alpaca.svg',
+  '/flat-icons/4193242-animals/svg/010-rabbit.svg',
+  '/flat-icons/4193242-animals/svg/008-hedgehog.svg',
+  '/flat-icons/4193242-animals/svg/007-pig.svg',
+  '/flat-icons/4193242-animals/svg/006-cow.svg',
+  '/flat-icons/4193242-animals/svg/005-horse.svg',
+  '/flat-icons/4193242-animals/svg/004-sheep.svg',
+  '/flat-icons/4193242-animals/svg/003-flamingo.svg',
+  '/flat-icons/4193242-animals/svg/002-buffalo.svg',
+  // Summer Watermelon
+  '/flat-icons/17517790-summer-watermelon/svg/020-ok.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/018-valentin day.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/014-angel.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/013-wow.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/011-laugh emoji.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/002-love.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/001-happy.svg',
+  // Alphabet and Numbers (just a few for demo)
+  '/flat-icons/4019664-alphabet-and-numbers/svg/050-alphabet.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/047-hashtag.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/048-asterisk.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/049-exclamation mark.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/045-10.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/046-infinity.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/042-8.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/043-9.svg',
+  '/flat-icons/4019664-alphabet-and-numbers/svg/044-0.svg',
+];
 
 export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
@@ -20,7 +57,8 @@ export default function AccountPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
-
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [updatingAvatar, setUpdatingAvatar] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,6 +139,22 @@ export default function AccountPage() {
     }
   };
 
+  // Helper to update avatar in Firestore
+  async function handleAvatarSelect(img: string) {
+    if (!user) return;
+    setUpdatingAvatar(true);
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, { avatar: img });
+      setShowAvatarModal(false);
+      window.location.reload(); // Or trigger a re-fetch of user data
+    } catch (e) {
+      alert('Failed to update avatar.');
+    } finally {
+      setUpdatingAvatar(false);
+    }
+  }
+
   if (authLoading) {
     return (
       <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
@@ -128,146 +182,209 @@ export default function AccountPage() {
           <PageHeader title="Account" helpKey="account" />
 
           <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
-          <div className="space-y-6">
-            {/* User Info Card */}
-            <div
-              className="bg-card rounded-lg p-6"
-              style={{
-                border: '2px solid white',
-                boxShadow: 'inset 0 0 0 1px var(--primary), 0 4px 12px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div className="flex items-center space-x-4 mb-6">
-                {/* User Avatar */}
-                {user.photoURL ? (
-                  <img
-                    src={user.photoURL}
-                    alt={`${user.displayName || user.email}'s profile`}
-                    className="w-16 h-16 rounded-full"
-                    style={{
-                      boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)'
-                    }}
-                  />
-                ) : (
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">👤</span>
-                  </div>
-                )}
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground">{user.displayName}</h2>
-                  <p className="text-muted-foreground">{user.email}</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between py-2 border-b border-border">
-                  <span className="text-sm text-muted-foreground">Account Status</span>
-                  <span className="text-sm text-green-500 font-medium">Active</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-muted-foreground">Member Since</span>
-                  <span className="text-sm text-muted-foreground">
-                    {user.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'Today'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Admin Access Section - Only show for admin user */}
-            {user.email === ADMIN_EMAIL && (
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">🛡️</span>
+            <div className="space-y-6">
+              {/* User Info Card */}
+              <div
+                className="bg-card rounded-lg p-6"
+                style={{
+                  border: '2px solid white',
+                  boxShadow: 'inset 0 0 0 1px var(--primary), 0 4px 12px rgba(0,0,0,0.1)'
+                }}
+              >
+                <div className="flex items-center space-x-4 mb-6">
+                  {/* User Avatar */}
+                  <div className="relative w-16 h-16">
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt="Profile avatar"
+                        className="w-16 h-16 rounded-full"
+                        style={{ boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">👤</span>
+                      </div>
+                    )}
+                    <button
+                      className="absolute bottom-0 right-0 bg-primary text-white rounded-full p-1 shadow hover:bg-primary/80 transition"
+                      aria-label="Edit avatar"
+                      onClick={() => setShowAvatarModal(true)}
+                      style={{ zIndex: 2 }}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 00-4-4l-8 8v3z" />
+                      </svg>
+                    </button>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">
-                      Administrator Access
-                    </h3>
-                    <p className="text-sm text-red-600 dark:text-red-300">
-                      Manage users, content, and system settings
-                    </p>
+                    <h2 className="text-xl font-semibold text-foreground">{user.displayName}</h2>
+                    <p className="text-muted-foreground">{user.email}</p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/admin"
-                    className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium text-sm"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Admin Dashboard
-                  </Link>
-
-                  <Link
-                    href="/admin/users"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-                    </svg>
-                    User Management
-                  </Link>
-
-                  <Link
-                    href="/admin/mood-boards"
-                    className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium text-sm"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
-                    Mood Boards
-                  </Link>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-2 border-b border-border">
+                    <span className="text-sm text-muted-foreground">Account Status</span>
+                    <span className="text-sm text-green-500 font-medium">Active</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm text-muted-foreground">Member Since</span>
+                    <span className="text-sm text-muted-foreground">
+                      {user.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'Today'}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                  <div className="flex items-start space-x-2">
-                    <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.866-.833-2.5 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold mb-2 text-foreground">Choose your profile thumbnail</h3>
+                  <div className="grid grid-cols-5 gap-2 md:grid-cols-8">
+                    {THUMBNAIL_OPTIONS.map((img) => (
+                      <button
+                        key={img}
+                        onClick={async () => {
+                          if (user.avatar !== img) {
+                            // Update Firebase profile
+                            await handleAvatarSelect(img);
+                          }
+                        }}
+                        className={`border-2 rounded-lg p-1 transition-all ${user.avatar === img ? 'border-primary ring-2 ring-primary' : 'border-transparent hover:border-muted'}`}
+                        aria-label="Choose avatar"
+                      >
+                        <img src={img} alt="avatar option" className="w-10 h-10 object-contain" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Admin Access Section - Only show for admin user */}
+              {user.email === ADMIN_EMAIL && (
+                <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                      <span className="text-2xl">🛡️</span>
+                    </div>
                     <div>
-                      <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                        Admin Privileges Active
-                      </p>
-                      <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">
-                        You have full access to system administration features. Use these tools responsibly.
+                      <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">
+                        Administrator Access
+                      </h3>
+                      <p className="text-sm text-red-600 dark:text-red-300">
+                        Manage users, content, and system settings
                       </p>
                     </div>
                   </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href="/admin"
+                      className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium text-sm"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      Admin Dashboard
+                    </Link>
+
+                    <Link
+                      href="/admin/users"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                      </svg>
+                      User Management
+                    </Link>
+
+                    <Link
+                      href="/admin/mood-boards"
+                      className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium text-sm"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                      </svg>
+                      Mood Boards
+                    </Link>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.866-.833-2.5 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <div>
+                        <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                          Admin Privileges Active
+                        </p>
+                        <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">
+                          You have full access to system administration features. Use these tools responsibly.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Subscription Management */}
-            {subLoading ? (
-              <div className="bg-card border border-border rounded-lg p-6 flex items-center justify-center">
-                <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full"></div>
-              </div>
-            ) : (
-              <SubscriptionPlans />
-            )}
+              {/* Subscription Management */}
+              {subLoading ? (
+                <div className="bg-card border border-border rounded-lg p-6 flex items-center justify-center">
+                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full"></div>
+                </div>
+              ) : (
+                <SubscriptionPlans />
+              )}
 
-            {/* Logout */}
-            <div className="bg-card border border-border rounded-lg p-4">
+              {/* Logout */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <button
+                  onClick={handleLogout}
+                  className="w-full px-4 py-3 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors font-medium"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        {/* Error Modal */}
+        <AuthErrorModal
+          isOpen={showErrorModal}
+          error={error}
+          onClose={() => setShowErrorModal(false)}
+        />
+
+        {/* Avatar selection modal */}
+        {showAvatarModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-card rounded-lg p-6 max-w-lg w-full mx-2 relative">
               <button
-                onClick={handleLogout}
-                className="w-full px-4 py-3 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors font-medium"
+                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowAvatarModal(false)}
+                aria-label="Close avatar picker"
               >
-                Sign Out
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
+              <h3 className="text-lg font-semibold mb-4 text-center">Choose your profile thumbnail</h3>
+              <div className="grid grid-cols-4 gap-3 md:grid-cols-6">
+                {THUMBNAIL_OPTIONS.map((img) => (
+                  <button
+                    key={img}
+                    onClick={() => handleAvatarSelect(img)}
+                    className={`border-2 rounded-lg p-1 transition-all ${user.avatar === img ? 'border-primary ring-2 ring-primary' : 'border-transparent hover:border-muted'} ${updatingAvatar ? 'opacity-50 pointer-events-none' : ''}`}
+                    aria-label="Choose avatar"
+                    disabled={updatingAvatar}
+                  >
+                    <img src={img} alt="avatar option" className="w-12 h-12 object-contain" />
+                  </button>
+                ))}
+              </div>
+              {updatingAvatar && <div className="mt-4 text-center text-sm text-muted-foreground">Updating...</div>}
             </div>
           </div>
-        </main>
-      </div>
-
-      {/* Error Modal */}
-      <AuthErrorModal
-        isOpen={showErrorModal}
-        error={error}
-        onClose={() => setShowErrorModal(false)}
-      />
+        )}
       </>
     );
   }
@@ -290,167 +407,167 @@ export default function AccountPage() {
         <PageHeader title="Account" helpKey="account" />
 
         <main className="max-w-md mx-auto mb-32 md:mb-8 pb-safe">
-        <div className="bg-card border border-border rounded-lg p-6">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <div className="text-4xl mb-4">🏮</div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h1>
-            <p className="text-muted-foreground">
-              {isLogin
-                ? 'Sign in to sync your progress across devices'
-                : 'Join Doshi Sensei to save your progress'
-              }
-            </p>
-          </div>
-
-
-          {/* Google Sign In */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center space-x-3 px-4 py-3 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            <span className="text-foreground font-medium">
-              {isLogin ? 'Sign in with Google' : 'Sign up with Google'}
-            </span>
-          </button>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
+          <div className="bg-card border border-border rounded-lg p-6">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-4">🏮</div>
+              <h1 className="text-2xl font-bold text-foreground mb-2">
+                {isLogin ? 'Welcome Back' : 'Create Account'}
+              </h1>
+              <p className="text-muted-foreground">
+                {isLogin
+                  ? 'Sign in to sync your progress across devices'
+                  : 'Join Doshi Sensei to save your progress'
+                }
+              </p>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
-            </div>
-          </div>
 
-          {/* Email/Password Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-foreground mb-2">
-                  Display Name
-                </label>
-                <input
-                  id="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Your name"
-                />
+
+            {/* Google Sign In */}
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+              className="w-full flex items-center justify-center space-x-3 px-4 py-3 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+              </svg>
+              <span className="text-foreground font-medium">
+                {isLogin ? 'Sign in with Google' : 'Sign up with Google'}
+              </span>
+            </button>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
               </div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="your.email@example.com"
-                required
-              />
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+            {/* Email/Password Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <div>
+                  <label htmlFor="displayName" className="block text-sm font-medium text-foreground mb-2">
+                    Display Name
+                  </label>
+                  <input
+                    id="displayName"
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Your name"
+                  />
+                </div>
+              )}
 
-            {!isLogin && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
-                  Confirm Password
+                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                  Email Address
                 </label>
                 <input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Confirm your password"
+                  placeholder="your.email@example.com"
                   required
                 />
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
-                  <span>{isLogin ? 'Signing in...' : 'Creating account...'}</span>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+
+              {!isLogin && (
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Confirm your password"
+                    required
+                  />
                 </div>
-              ) : (
-                isLogin ? 'Sign In' : 'Create Account'
               )}
-            </button>
-          </form>
 
-          {/* Toggle Login/Register */}
-          <div className="text-center mt-6">
-            <button
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError('');
-              }}
-              className="text-primary hover:text-primary/80 transition-colors text-sm"
-            >
-              {isLogin
-                ? "Don't have an account? Sign up"
-                : 'Already have an account? Sign in'
-              }
-            </button>
-          </div>
-
-          {/* Forgot Password Link (only show on login) */}
-          {isLogin && (
-            <div className="text-center mt-3">
               <button
-                onClick={handleForgotPassword}
-                className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                type="submit"
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
-                Forgot your password?
+                {isLoading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
+                    <span>{isLogin ? 'Signing in...' : 'Creating account...'}</span>
+                  </div>
+                ) : (
+                  isLogin ? 'Sign In' : 'Create Account'
+                )}
+              </button>
+            </form>
+
+            {/* Toggle Login/Register */}
+            <div className="text-center mt-6">
+              <button
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setError('');
+                }}
+                className="text-primary hover:text-primary/80 transition-colors text-sm"
+              >
+                {isLogin
+                  ? "Don't have an account? Sign up"
+                  : 'Already have an account? Sign in'
+                }
               </button>
             </div>
-          )}
-        </div>
-      </main>
-    </div>
 
-    {/* Error Modal */}
-    <AuthErrorModal
-      isOpen={showErrorModal}
-      error={error}
-      onClose={() => setShowErrorModal(false)}
-    />
+            {/* Forgot Password Link (only show on login) */}
+            {isLogin && (
+              <div className="text-center mt-3">
+                <button
+                  onClick={handleForgotPassword}
+                  className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
+
+      {/* Error Modal */}
+      <AuthErrorModal
+        isOpen={showErrorModal}
+        error={error}
+        onClose={() => setShowErrorModal(false)}
+      />
     </>
   );
 }

@@ -108,24 +108,31 @@ export function GrammarHighlightedText({
         if (showFurigana && token.reading && token.surface_form !== token.reading && hasKanji) {
           // Render with furigana only for words containing kanji
           return (
-            <ruby
+            <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 md:px-0.5 md:py-0 inline-block mx-0.5 my-0.5 md:mx-0 md:my-0 ${
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 md:px-0.5 md:py-0 inline-block mx-0.5 my-0.5 md:mx-0 md:my-0 relative ${
                 isHighlighted ? `grammar-${posType}` : ''
               }`}
               style={{
                 ...(isHighlighted ? { backgroundColor: `${token.color}20` } : {}),
-                rubyAlign: 'start' as any,
-                WebkitRubyAlign: 'start' as any,
-                textAlign: 'left' as any,
-                display: 'inline-block' as any
+                paddingTop: showFurigana ? '1em' : undefined
               }}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
             >
+              <span
+                className="absolute text-xs"
+                style={{
+                  top: '-0.2em',
+                  left: '0',
+                  fontSize: '0.6em',
+                  lineHeight: 1
+                }}
+              >
+                {token.reading}
+              </span>
               {token.surface_form}
-              <rt className="text-xs" style={{ textAlign: 'left', display: 'block', transform: 'translateX(0)' }}>{token.reading}</rt>
-            </ruby>
+            </span>
           );
         } else {
           // Render without furigana

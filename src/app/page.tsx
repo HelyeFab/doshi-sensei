@@ -397,47 +397,47 @@ export default function Home() {
               {/* Streak Badge */}
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 md:w-8 md:h-8 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm">🔥</span>
+                  <span className="text-base md:text-sm text-gray-800">🔥</span>
                 </div>
                 <div>
-                  <div className="text-sm md:text-xs text-gray-100">Streak</div>
-                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : `${stats.streak} days`}</div>
+                  <div className="text-sm md:text-xs text-gray-700">Streak</div>
+                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : `${stats.streak} days`}</div>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-white/30" />
+              <div className="hidden md:block h-8 w-px bg-gray-400/30" />
 
               {/* Drills */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm">⚡</span>
+                  <span className="text-base md:text-sm text-gray-800">⚡</span>
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.drillsCompleted}</div>
-                  <div className="text-sm md:text-xs text-gray-100">Drills</div>
+                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.drillsCompleted}</div>
+                  <div className="text-sm md:text-xs text-gray-700">Drills</div>
                 </div>
               </div>
 
               {/* Sessions */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm">漢</span>
+                  <span className="text-base md:text-sm text-gray-800">漢</span>
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.kanjiStudySessions}</div>
-                  <div className="text-sm md:text-xs text-gray-100">Sessions</div>
+                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.kanjiStudySessions}</div>
+                  <div className="text-sm md:text-xs text-gray-700">Sessions</div>
                 </div>
               </div>
 
               {/* Learned */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm">📚</span>
+                  <span className="text-base md:text-sm text-gray-800">📚</span>
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.totalKanjiLearned}</div>
-                  <div className="text-sm md:text-xs text-gray-100">Learned</div>
+                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.totalKanjiLearned}</div>
+                  <div className="text-sm md:text-xs text-gray-700">Learned</div>
                 </div>
               </div>
 
@@ -451,29 +451,29 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.pokemonCaught}</div>
-                  <div className="text-sm md:text-xs text-gray-100">Pokémon</div>
+                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.pokemonCaught}</div>
+                  <div className="text-sm md:text-xs text-gray-700">Pokémon</div>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-white/30" />
+              <div className="hidden md:block h-8 w-px bg-gray-400/30" />
 
               {/* Stories Read */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                    <span className="text-base md:text-sm">📖</span>
+                    <span className="text-base md:text-sm text-gray-800">📖</span>
                   </div>
                   <div>
-                    <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.storiesRead}</div>
-                    <div className="text-sm md:text-xs text-gray-100">Stories</div>
+                    <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.storiesRead}</div>
+                    <div className="text-sm md:text-xs text-gray-700">Stories</div>
                   </div>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-white/30" />
+              <div className="hidden md:block h-8 w-px bg-gray-400/30" />
 
               {/* Overall Accuracy */}
               <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
@@ -483,7 +483,7 @@ export default function Home() {
                       cx="20"
                       cy="20"
                       r="16"
-                      stroke="white"
+                      stroke="gray"
                       strokeWidth="3"
                       fill="none"
                       opacity="0.2"
@@ -492,7 +492,7 @@ export default function Home() {
                       cx="20"
                       cy="20"
                       r="16"
-                      stroke="white"
+                      stroke="gray"
                       strokeWidth="3"
                       fill="none"
                       strokeDasharray={`${loading ? 0 : (Math.max(stats.accuracy, stats.kanjiAccuracy) / 100) * 100} 100`}
@@ -501,11 +501,11 @@ export default function Home() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-semibold text-white">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
+                    <span className="text-[10px] font-semibold text-gray-800">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-100">Avg Accuracy</div>
+                  <div className="text-xs text-gray-700">Avg Accuracy</div>
                 </div>
               </div>
             </div>

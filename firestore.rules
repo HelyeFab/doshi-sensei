@@ -49,6 +49,8 @@ service cloud.firestore {
       allow update: if isAdmin() || (
         request.auth != null && request.auth.uid == userId &&
         (
+          // Allow updating only the avatar field
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avatar']) ||
           // If updating subscription data, validate structure
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription']) ||
           (

@@ -21,8 +21,8 @@ export default function FallingObject({
   isPaused = false
 }: FallingObjectProps) {
   const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation();
-    e.preventDefault(); // Prevent touch scroll on mobile
+    // e.stopPropagation();
+    // e.preventDefault(); // Prevent touch scroll on mobile
     console.log(`[KanaDrop] Clicked object: ${object.type} - ${object.content}`);
     if (isClickable) {
       onClick(object);

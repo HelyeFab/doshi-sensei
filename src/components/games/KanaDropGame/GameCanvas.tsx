@@ -226,30 +226,12 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
 
   // Handle object reaching bottom
   const handleObjectReachBottom = useCallback((object: FallingObjectType) => {
-    // Check if it was a target kana that was missed
-    if (object.type === 'kana' && object.kanaData && activeRomaji === object.kanaData.romaji) {
-      // Missed target kana - penalty
-      onGameStateUpdate(prev => {
-        const newScore = Math.max(0, prev.score + GAME_CONSTANTS.POINTS_MISSED);
-        console.log('[KanaDrop] Missed target kana penalty:', {
-          currentScore: prev.score,
-          pointsToAdd: GAME_CONSTANTS.POINTS_MISSED,
-          newScore: newScore
-        });
-        return {
-          ...prev,
-          score: newScore,
-          fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
-        };
-      });
-    } else {
-      // Just remove the object
-      onGameStateUpdate(prev => ({
-        ...prev,
-        fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
-      }));
-    }
-  }, [activeRomaji, onGameStateUpdate]);
+    // Remove the object without any penalty
+    onGameStateUpdate(prev => ({
+      ...prev,
+      fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
+    }));
+  }, [onGameStateUpdate]);
 
   // Update game speed based on score
   useEffect(() => {

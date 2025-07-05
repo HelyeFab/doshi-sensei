@@ -26,6 +26,16 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     progress: 0,
     duration: 0
   });
+  
+  // Debug state changes
+  useEffect(() => {
+    console.log('[Audio Player] State changed:', {
+      isPlaying: controls.isPlaying,
+      isPaused: controls.isPaused,
+      isLoading,
+      hasAudio: !!audioRef.current
+    });
+  }, [controls.isPlaying, controls.isPaused, isLoading]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -39,37 +49,21 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
   // Clean up on unmount
   useEffect(() => {
     return () => {
-      ArticleTTSManager.stop();
+      stop();
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
       }
     };
   }, []);
 
-  // Update progress periodically
+  // Remove the progress interval - we're using timeupdate event instead
   useEffect(() => {
-    if (controls.isPlaying && audioRef.current) {
-      progressIntervalRef.current = setInterval(() => {
-        if (audioRef.current) {
-          setControls(prev => ({
-            ...prev,
-            progress: audioRef.current!.currentTime,
-            duration: audioRef.current!.duration || 0
-          }));
-        }
-      }, 100);
-    } else {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
-    }
-
     return () => {
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
       }
     };
-  }, [controls.isPlaying]);
+  }, []);
 
   // Play TTS audio
   const playTTSAudio = async () => {
@@ -88,6 +82,12 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
         }
       );
 
+      // Clean up any existing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      
       audioRef.current = audio;
 
       // Set up event listeners
@@ -122,6 +122,21 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
       // Apply settings
       audio.playbackRate = controls.playbackSpeed;
       audio.volume = controls.volume;
+      
+      // Ensure state is properly set when audio starts
+      audio.addEventListener('playing', () => {
+        console.log('[Audio Player] Playing event triggered');
+        setControls(prev => ({ ...prev, isPlaying: true, isPaused: false }));
+      });
+      
+      audio.addEventListener('loadedmetadata', () => {
+        console.log('[Audio Player] Metadata loaded, duration:', audio.duration);
+        setControls(prev => ({ ...prev, duration: audio.duration || 0 }));
+      });
+      
+      audio.addEventListener('timeupdate', () => {
+        setControls(prev => ({ ...prev, progress: audio.currentTime }));
+      });
 
     } catch (error) {
       console.error('TTS Error:', error);
@@ -162,8 +177,22 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     // Apply settings
     audio.playbackRate = controls.playbackSpeed;
     audio.volume = controls.volume;
+    
+    // Add metadata and timeupdate listeners
+    audio.addEventListener('loadedmetadata', () => {
+      console.log('[Audio Player] Original audio metadata loaded, duration:', audio.duration);
+      setControls(prev => ({ ...prev, duration: audio.duration || 0 }));
+    });
+    
+    audio.addEventListener('timeupdate', () => {
+      setControls(prev => ({ ...prev, progress: audio.currentTime }));
+    });
 
-    audio.play();
+    audio.play().catch(err => {
+      console.error('Failed to play original audio:', err);
+      setError('Failed to play original audio');
+      setControls(prev => ({ ...prev, isPlaying: false, isPaused: false }));
+    });
   };
 
   // Play audio
@@ -177,15 +206,30 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
   // Pause/Resume
   const togglePause = () => {
+    if (!audioRef.current) return;
+    
     if (controls.isPlaying) {
-      ArticleTTSManager.pause();
+      audioRef.current.pause();
     } else if (controls.isPaused) {
-      ArticleTTSManager.resume();
+      audioRef.current.play().catch(err => {
+        console.error('Failed to resume playback:', err);
+        setError('Failed to resume playback');
+      });
     }
   };
 
   // Stop playback
   const stop = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      
+      // Clean up blob URL if it exists
+      if (audioRef.current.src.startsWith('blob:')) {
+        URL.revokeObjectURL(audioRef.current.src);
+      }
+    }
+    
     ArticleTTSManager.stop();
     setControls(prev => ({
       ...prev,
@@ -357,11 +401,12 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
               </svg>
             </button>
 
-            {controls.isPlaying || controls.isPaused ? (
+            {(controls.isPlaying || controls.isPaused) && !isLoading ? (
               <button
                 onClick={togglePause}
                 disabled={isLoading}
                 className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-xl min-w-[60px] flex items-center justify-center disabled:opacity-50"
+                title={controls.isPlaying ? 'Pause' : 'Resume'}
               >
                 {controls.isPlaying ? (
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">

@@ -36,9 +36,9 @@ function RubyTextRenderer({ text, settings, onWordClick }: {
   return (
     <div
       className={`${settings.fontSize === 'small' ? 'text-sm' :
-          settings.fontSize === 'medium' ? 'text-base' :
-            settings.fontSize === 'large' ? 'text-lg' :
-              'text-xl'
+        settings.fontSize === 'medium' ? 'text-base' :
+          settings.fontSize === 'large' ? 'text-lg' :
+            'text-xl'
         } leading-relaxed [&_ruby]:cursor-pointer [&_ruby]:hover:bg-primary/20 [&_ruby]:transition-colors [&_ruby]:rounded [&_ruby]:px-0.5`}
       dangerouslySetInnerHTML={{ __html: processedText }}
       onClick={onWordClick}
@@ -180,7 +180,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
   const handleToggleVocabularyHighlight = () => {
     onSettingsChange({ ...settings, highlightVocabulary: !settings.highlightVocabulary });
   };
-  
+
   const handleHighlightModeChange = (mode: ReadingSettings['highlightMode']) => {
     onSettingsChange({ ...settings, highlightMode: mode });
   };
@@ -209,8 +209,8 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
                 key={size}
                 onClick={() => handleFontSizeChange(size)}
                 className={`px-3 py-1 rounded text-sm ${settings.fontSize === size
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
               >
                 {{
@@ -251,16 +251,17 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
             </span>
             <button
               onClick={handleToggleVocabularyHighlight}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'
-                }`}
+              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors px-1 ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'}`}
+              style={{ minWidth: 56 }}
+              aria-pressed={settings.highlightVocabulary}
+              tabIndex={0}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-0'}`}
               />
             </button>
           </label>
-          
+
           {/* Grammar Highlighting Mode */}
           {settings.highlightVocabulary && (
             <div className="mt-2 space-y-2">
@@ -268,41 +269,37 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
               <div className="grid grid-cols-2 gap-1">
                 <button
                   onClick={() => handleHighlightModeChange('all')}
-                  className={`px-2 py-1 rounded text-xs ${
-                    settings.highlightMode === 'all'
+                  className={`px-2 py-1 rounded text-xs ${settings.highlightMode === 'all'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
+                    }`}
                 >
                   All Words
                 </button>
                 <button
                   onClick={() => handleHighlightModeChange('content')}
-                  className={`px-2 py-1 rounded text-xs ${
-                    settings.highlightMode === 'content'
+                  className={`px-2 py-1 rounded text-xs ${settings.highlightMode === 'content'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
+                    }`}
                 >
                   Content Words
                 </button>
                 <button
                   onClick={() => handleHighlightModeChange('grammar')}
-                  className={`px-2 py-1 rounded text-xs ${
-                    settings.highlightMode === 'grammar'
+                  className={`px-2 py-1 rounded text-xs ${settings.highlightMode === 'grammar'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
+                    }`}
                 >
                   Grammar
                 </button>
                 <button
                   onClick={() => handleHighlightModeChange('none')}
-                  className={`px-2 py-1 rounded text-xs ${
-                    settings.highlightMode === 'none'
+                  className={`px-2 py-1 rounded text-xs ${settings.highlightMode === 'none'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
+                    }`}
                 >
                   None
                 </button>
@@ -526,7 +523,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       setContentLoading(true);
       try {
         const paragraphs = article.content.split('\n');
-        
+
         // Only process with old method if not using grammar highlighting
         if (!settings.highlightVocabulary || settings.highlightMode === 'none') {
           const processedParagraphs = await Promise.all(
@@ -669,8 +666,8 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-all transform hover:scale-105 active:scale-95"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M15 19l-7-7 7-7" 
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M15 19l-7-7 7-7"
               />
             </svg>
             <span>Back to Articles</span>
@@ -683,8 +680,8 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg font-medium transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" 
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
                 />
               </svg>
               <span>Options</span>
@@ -785,13 +782,13 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         {/* Article content */}
         <article
           ref={articleRef}
-          className="bg-card rounded-lg p-6 md:p-8 border border-border"
+          className="bg-card rounded-lg p-4 md:p-8 border border-border"
         >
           {/* Article header */}
           <header className="mb-8">
             <h1 className={`font-bold text-foreground mb-4 ${settings.fontSize === 'xlarge' ? 'text-3xl' :
-                settings.fontSize === 'large' ? 'text-2xl' :
-                  settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
+              settings.fontSize === 'large' ? 'text-2xl' :
+                settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
               }`}>
               {article.title}
             </h1>
@@ -821,7 +818,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
           {/* Audio Player */}
           <ImprovedArticleAudioPlayer article={article} />
-          
+
           {/* Grammar Legend */}
           {settings.highlightVocabulary && settings.highlightMode !== 'none' && (
             <div className="mb-6 p-4 bg-muted/30 rounded-lg">
@@ -832,7 +829,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
           {/* Article body */}
           <div
-            className={`prose prose-lg max-w-none leading-relaxed ${getFontSizeClass()}`}
+            className={`prose prose-lg max-w-none leading-relaxed md:leading-relaxed ${getFontSizeClass()}`}
           >
             {contentLoading ? (
               <div className="text-center py-8">
@@ -841,7 +838,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               </div>
             ) : (
               processedContent.map((paragraph, index) => (
-                <div key={index} className="mb-6">
+                <div key={index} className="mb-6 md:mb-6 px-2 md:px-0">
                   {settings.highlightVocabulary && settings.highlightMode !== 'none' ? (
                     <GrammarHighlightedText
                       text={paragraph}
@@ -858,7 +855,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                           }
                         });
                       }}
-                      className={getFontSizeClass()}
+                      className={`${getFontSizeClass()} leading-loose md:leading-relaxed`}
                     />
                   ) : (
                     <RubyTextRenderer
@@ -894,8 +891,8 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                 className="inline-flex items-center gap-2 text-primary hover:text-primary/80 text-sm font-medium bg-primary/5 px-3 py-1.5 rounded-md transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   />
                 </svg>
                 View original article

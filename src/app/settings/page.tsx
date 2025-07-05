@@ -320,454 +320,453 @@ export default function SettingsPage() {
 
         {/* Main Content */}
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
-        <div className="space-y-8">
-          {/* Virtual Companion Settings */}
-          <SettingsSection title="Virtual Companion">
-            <div className="space-y-4">
-              <ToggleSetting
-                label="Show Virtual Companion"
-                description="Display the friendly companion character across the app for encouragement"
-                checked={settings.showCompanion ?? true}
-                onChange={(checked) => updateSetting('showCompanion', checked)}
-              />
-              <div className="pt-2 border-t border-border">
-                <p className="text-xs text-muted-foreground">
-                  The virtual companion provides motivational messages and adds a friendly touch to your learning experience.
-                </p>
-              </div>
-            </div>
-          </SettingsSection>
-
-          {/* Theme Settings */}
-          <SettingsSection title="Appearance">
-            <ThemeSelector
-              currentTheme={settings.theme}
-              currentColorScheme={settings.colorScheme}
-              onThemeChange={(theme, colorScheme) => {
-                updateSetting('theme', theme);
-                updateSetting('colorScheme', colorScheme);
-              }}
-            />
-          </SettingsSection>
-
-          {/* Navigation Settings */}
-          <SettingsSection title="Mobile Navigation">
-            <div className="space-y-4">
-              <ToggleSetting
-                label="Custom Navigation"
-                description="Customize which features appear in your mobile bottom navigation"
-                checked={settings.navigationPreferences?.useCustomNavigation || false}
-                onChange={(checked) =>
-                  updateSetting('navigationPreferences', {
-                    customNavItems: settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS,
-                    useCustomNavigation: checked
-                  })
-                }
-              />
-
-              {settings.navigationPreferences?.useCustomNavigation && (
-                <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-                  <h4 className="text-sm font-medium text-foreground mb-3">
-                    Choose 3 navigation items (Home is always included)
-                  </h4>
-                  <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
-                    {AVAILABLE_NAV_ITEMS.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          id={`nav-${item.id}`}
-                          checked={(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id)}
-                          onChange={(e) => {
-                            const currentItems = settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS;
-                            const newItems = e.target.checked
-                              ? [...currentItems, item.id].slice(0, 3) // Limit to 3 items
-                              : currentItems.filter(id => id !== item.id);
-
-                            updateSetting('navigationPreferences', {
-                              useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
-                              customNavItems: newItems
-                            });
-                          }}
-                          disabled={
-                            !(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id) &&
-                            (settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).length >= 3
-                          }
-                          className="rounded"
-                        />
-                        <label htmlFor={`nav-${item.id}`} className="flex-1 cursor-pointer">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg">{item.icon}</span>
-                            <div>
-                              <div className="text-sm font-medium text-foreground">{item.label}</div>
-                              <div className="text-xs text-muted-foreground">{item.description}</div>
-                            </div>
-                          </div>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-border">
-                    <button
-                      onClick={() =>
-                        updateSetting('navigationPreferences', {
-                          useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
-                          customNavItems: DEFAULT_NAV_ITEMS
-                        })
-                      }
-                      className="text-sm text-primary hover:text-primary/80 transition-colors"
-                    >
-                      Reset to defaults
-                    </button>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Selected: {(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).length}/3 items
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div className="pt-2 border-t border-border">
-                <p className="text-xs text-muted-foreground">
-                  <strong>Note:</strong> When new features are added to the app, remember to check back here to add them to your navigation if desired.
-                </p>
-              </div>
-            </div>
-          </SettingsSection>
-
-          {/* Tutorial & Learning */}
-          <SettingsSection title="Tutorial & Learning">
-            <div className="space-y-4">
-              <LinkButton
-                label="Replay Tutorial"
-                description="Watch the onboarding tutorial again to refresh your knowledge"
-                onClick={handleReplayTutorial}
-              />
-              <div className="pt-2 border-t border-border">
-                <p className="text-xs text-muted-foreground">
-                  The tutorial covers conjugation engine, vocabulary lists, practice modes, and more.
-                </p>
-              </div>
-            </div>
-          </SettingsSection>
-
-          {/* Goals & Progress */}
-          <SettingsSection title="Goals & Progress">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Daily Goal (words)
-                </label>
-                <div className="flex items-center space-x-4">
-                  <input
-                    type="range"
-                    min="5"
-                    max="50"
-                    step="5"
-                    value={settings.dailyGoal}
-                    onChange={(e) => updateSetting('dailyGoal', parseInt(e.target.value))}
-                    className="flex-1"
-                  />
-                  <span className="text-foreground font-medium w-8 text-center">
-                    {settings.dailyGoal}
-                  </span>
-                </div>
-              </div>
-
-
-              <div className="pt-2">
-                <div>
-                  <button
-                    onClick={() => setShowResetModal(true)}
-                    className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
-                  >
-                    Reset All Data
-                  </button>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    This will reset all your progress, statistics, word lists, and settings.
+          <div className="space-y-8">
+            {/* Virtual Companion Settings */}
+            <SettingsSection title="Virtual Companion">
+              <div className="space-y-4">
+                <ToggleSetting
+                  label="Show Virtual Companion"
+                  description="Display the friendly companion character across the app for encouragement"
+                  checked={settings.showCompanion ?? true}
+                  onChange={(checked) => updateSetting('showCompanion', checked)}
+                />
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
+                    The virtual companion provides motivational messages and adds a friendly touch to your learning experience.
                   </p>
                 </div>
               </div>
-            </div>
-          </SettingsSection>
+            </SettingsSection>
 
-          {/* Data Management */}
-          <SettingsSection title="Data Management">
-            <div className="space-y-4">
-              <LinkButton
-                label="Export Data"
-                description="Download your progress and word lists"
-                onClick={handleExportData}
+            {/* Theme Settings */}
+            <SettingsSection title="Appearance">
+              <ThemeSelector
+                currentTheme={settings.theme}
+                currentColorScheme={settings.colorScheme}
+                onThemeChange={(theme, colorScheme) => {
+                  updateSetting('theme', theme);
+                  updateSetting('colorScheme', colorScheme);
+                }}
               />
-              <LinkButton
-                label="Import Data"
-                description="Restore from a previously exported file"
-                onClick={handleImportData}
-              />
-              <div className="pt-2 border-t border-border">
-                <p className="text-xs text-muted-foreground">
-                  Keep your data safe by regularly exporting your progress and word lists.
-                </p>
-              </div>
-            </div>
-          </SettingsSection>
+            </SettingsSection>
 
-          {/* Cloud Sync */}
-          <SettingsSection title="Cloud Sync">
-            <div className="space-y-4">
-              {canSync ? (
-                <>
-                  {/* Sync Status */}
-                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        syncStatus.isSyncing
-                          ? 'bg-yellow-500 animate-pulse'
-                          : syncStatus.isOnline
-                          ? 'bg-green-500'
-                          : 'bg-red-500'
-                      }`}></div>
-                      <div>
-                        <div className="text-sm font-medium text-foreground">
-                          {syncStatus.isSyncing
-                            ? 'Syncing...'
-                            : syncStatus.isOnline
-                            ? 'Connected'
-                            : 'Offline'}
+            {/* Navigation Settings */}
+            <SettingsSection title="Mobile Navigation">
+              <div className="space-y-4">
+                <ToggleSetting
+                  label="Custom Navigation"
+                  description="Customize which features appear in your mobile bottom navigation"
+                  checked={settings.navigationPreferences?.useCustomNavigation || false}
+                  onChange={(checked) =>
+                    updateSetting('navigationPreferences', {
+                      customNavItems: settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS,
+                      useCustomNavigation: checked
+                    })
+                  }
+                />
+
+                {settings.navigationPreferences?.useCustomNavigation && (
+                  <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="text-sm font-medium text-foreground mb-3">
+                      Choose 3 navigation items (Home is always included)
+                    </h4>
+                    <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
+                      {AVAILABLE_NAV_ITEMS.map((item) => (
+                        <div key={item.id} className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            id={`nav-${item.id}`}
+                            checked={(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id)}
+                            onChange={(e) => {
+                              const currentItems = settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS;
+                              const newItems = e.target.checked
+                                ? [...currentItems, item.id].slice(0, 3) // Limit to 3 items
+                                : currentItems.filter(id => id !== item.id);
+
+                              updateSetting('navigationPreferences', {
+                                useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
+                                customNavItems: newItems
+                              });
+                            }}
+                            disabled={
+                              !(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).includes(item.id) &&
+                              (settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).length >= 3
+                            }
+                            className="rounded"
+                          />
+                          <label htmlFor={`nav-${item.id}`} className="flex-1 cursor-pointer">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-lg">{item.icon}</span>
+                              <div>
+                                <div className="text-sm font-medium text-foreground">{item.label}</div>
+                                <div className="text-xs text-muted-foreground">{item.description}</div>
+                              </div>
+                            </div>
+                          </label>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {syncStatus.lastSyncTime
-                            ? `Last synced: ${syncStatus.lastSyncTime.toLocaleTimeString()}`
-                            : 'Never synced'}
+                      ))}
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-border">
+                      <button
+                        onClick={() =>
+                          updateSetting('navigationPreferences', {
+                            useCustomNavigation: settings.navigationPreferences?.useCustomNavigation || false,
+                            customNavItems: DEFAULT_NAV_ITEMS
+                          })
+                        }
+                        className="text-sm text-primary hover:text-primary/80 transition-colors"
+                      >
+                        Reset to defaults
+                      </button>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Selected: {(settings.navigationPreferences?.customNavItems || DEFAULT_NAV_ITEMS).length}/3 items
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Note:</strong> When new features are added to the app, remember to check back here to add them to your navigation if desired.
+                  </p>
+                </div>
+              </div>
+            </SettingsSection>
+
+            {/* Tutorial & Learning */}
+            <SettingsSection title="Tutorial & Learning">
+              <div className="space-y-4">
+                <LinkButton
+                  label="Replay Tutorial"
+                  description="Watch the onboarding tutorial again to refresh your knowledge"
+                  onClick={handleReplayTutorial}
+                />
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
+                    The tutorial covers conjugation engine, vocabulary lists, practice modes, and more.
+                  </p>
+                </div>
+              </div>
+            </SettingsSection>
+
+            {/* Goals & Progress */}
+            <SettingsSection title="Goals & Progress">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-foreground">
+                    Daily Goal (words)
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="range"
+                      min="5"
+                      max="50"
+                      step="5"
+                      value={settings.dailyGoal}
+                      onChange={(e) => updateSetting('dailyGoal', parseInt(e.target.value))}
+                      className="flex-1"
+                    />
+                    <span className="text-foreground font-medium w-8 text-center">
+                      {settings.dailyGoal}
+                    </span>
+                  </div>
+                </div>
+
+
+                <div className="pt-2">
+                  <div>
+                    <button
+                      onClick={() => setShowResetModal(true)}
+                      className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
+                    >
+                      Reset All Data
+                    </button>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      This will reset all your progress, statistics, word lists, and settings.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </SettingsSection>
+
+            {/* Data Management */}
+            <SettingsSection title="Data Management">
+              <div className="space-y-4">
+                <LinkButton
+                  label="Export Data"
+                  description="Download your progress and word lists"
+                  onClick={handleExportData}
+                />
+                <LinkButton
+                  label="Import Data"
+                  description="Restore from a previously exported file"
+                  onClick={handleImportData}
+                />
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
+                    Keep your data safe by regularly exporting your progress and word lists.
+                  </p>
+                </div>
+              </div>
+            </SettingsSection>
+
+            {/* Cloud Sync */}
+            <SettingsSection title="Cloud Sync">
+              <div className="space-y-4">
+                {canSync ? (
+                  <>
+                    {/* Sync Status */}
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-3 h-3 rounded-full ${syncStatus.isSyncing
+                            ? 'bg-yellow-500 animate-pulse'
+                            : syncStatus.isOnline
+                              ? 'bg-green-500'
+                              : 'bg-red-500'
+                          }`}></div>
+                        <div>
+                          <div className="text-sm font-medium text-foreground">
+                            {syncStatus.isSyncing
+                              ? 'Syncing...'
+                              : syncStatus.isOnline
+                                ? 'Connected'
+                                : 'Offline'}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {syncStatus.lastSyncTime
+                              ? `Last synced: ${syncStatus.lastSyncTime.toLocaleTimeString()}`
+                              : 'Never synced'}
+                          </div>
                         </div>
                       </div>
+                      <div className="text-xs text-muted-foreground">
+                        Auto-sync enabled
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      Auto-sync enabled
-                    </div>
-                  </div>
 
-                  {/* Manual Sync Button */}
-                  <button
-                    onClick={handleManualSync}
-                    disabled={!syncStatus.isOnline || isSyncing || syncStatus.isSyncing}
-                    className="w-full flex items-center justify-center space-x-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {(isSyncing || syncStatus.isSyncing) ? (
-                      <>
-                        <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
-                        <span>Syncing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span>Sync Now</span>
-                      </>
-                    )}
-                  </button>
-
-                  {/* Sync Info */}
-                  <div className="pt-2 border-t border-border">
-                    <p className="text-xs text-muted-foreground">
-                      Your vocabulary lists and progress are automatically synced across all your devices.
-                      Click "Sync Now" to manually trigger a sync.
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Premium Required */}
-                  <div className="text-center p-6 border border-border rounded-lg">
-                    <div className="text-3xl mb-3">☁️</div>
-                    <h3 className="text-lg font-medium text-foreground mb-2">
-                      Cloud Sync Available
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Sync your vocabulary lists and progress across all your devices with a premium subscription.
-                    </p>
+                    {/* Manual Sync Button */}
                     <button
-                      onClick={handleUpgradeForSync}
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                      onClick={handleManualSync}
+                      disabled={!syncStatus.isOnline || isSyncing || syncStatus.isSyncing}
+                      className="w-full flex items-center justify-center space-x-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Upgrade to Premium
+                      {(isSyncing || syncStatus.isSyncing) ? (
+                        <>
+                          <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
+                          <span>Syncing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          <span>Sync Now</span>
+                        </>
+                      )}
                     </button>
-                  </div>
 
-                  <div className="pt-2">
-                    <p className="text-xs text-muted-foreground">
-                      Premium users get unlimited cloud sync, vocabulary lists, and daily drills.
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-          </SettingsSection>
+                    {/* Sync Info */}
+                    <div className="pt-2 border-t border-border">
+                      <p className="text-xs text-muted-foreground">
+                        Your vocabulary lists and progress are automatically synced across all your devices.
+                        Click "Sync Now" to manually trigger a sync.
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Premium Required */}
+                    <div className="text-center p-6 border border-border rounded-lg">
+                      <div className="text-3xl mb-3">☁️</div>
+                      <h3 className="text-lg font-medium text-foreground mb-2">
+                        Cloud Sync Available
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Sync your vocabulary lists and progress across all your devices with a premium subscription.
+                      </p>
+                      <button
+                        onClick={handleUpgradeForSync}
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                      >
+                        Upgrade to Premium
+                      </button>
+                    </div>
 
-          {/* Support & Feedback */}
-          <SettingsSection title="Support & Feedback">
-            <div className="space-y-4">
-              <LinkButton
-                label="Contact Us"
-                description="Get in touch with our support team"
-                onClick={handleContactUs}
-              />
-              <LinkButton
-                label="Report a Bug"
-                description="Help us improve by reporting issues"
-                onClick={handleReportBug}
-              />
-              <LinkButton
-                label="Send Feedback"
-                description="Share your thoughts and suggestions"
-                onClick={handleSendFeedback}
-              />
-              <LinkButton
-                label="Help & FAQ"
-                description="Find answers to common questions"
-                onClick={handleHelpFAQ}
-              />
-            </div>
-          </SettingsSection>
-
-          {/* Legal & Privacy */}
-          <SettingsSection title="Legal & Privacy">
-            <div className="space-y-4">
-              <LinkButton
-                label="Privacy Policy"
-                description="How we handle your data"
-                onClick={handlePrivacyPolicy}
-              />
-              <LinkButton
-                label="Terms of Service"
-                description="Terms and conditions of use"
-                onClick={handleTermsOfService}
-              />
-              <LinkButton
-                label="Data Usage"
-                description="What data we collect and why"
-                onClick={handleDataUsage}
-              />
-            </div>
-          </SettingsSection>
-
-          {/* About */}
-          <SettingsSection title="About">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Version</span>
-                <span className="text-sm text-foreground">1.0.0</span>
+                    <div className="pt-2">
+                      <p className="text-xs text-muted-foreground">
+                        Premium users get unlimited cloud sync, vocabulary lists, and daily drills.
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Build</span>
-                <span className="text-sm text-foreground">2025.06.12</span>
+            </SettingsSection>
+
+            {/* Support & Feedback */}
+            <SettingsSection title="Support & Feedback">
+              <div className="space-y-4">
+                <LinkButton
+                  label="Contact Us"
+                  description="Get in touch with our support team"
+                  onClick={handleContactUs}
+                />
+                <LinkButton
+                  label="Report a Bug"
+                  description="Help us improve by reporting issues"
+                  onClick={handleReportBug}
+                />
+                <LinkButton
+                  label="Send Feedback"
+                  description="Share your thoughts and suggestions"
+                  onClick={handleSendFeedback}
+                />
+                <LinkButton
+                  label="Help & FAQ"
+                  description="Find answers to common questions"
+                  onClick={handleHelpFAQ}
+                />
               </div>
-              <div className="pt-2 mb-4">
-                <p className="text-sm text-muted-foreground">
-                  Doshi Sensei is a Japanese verb and adjective conjugation practice app.
-                  Built with Next.js and designed to help you master Japanese conjugations.
+            </SettingsSection>
+
+            {/* Legal & Privacy */}
+            <SettingsSection title="Legal & Privacy">
+              <div className="space-y-4">
+                <LinkButton
+                  label="Privacy Policy"
+                  description="How we handle your data"
+                  onClick={handlePrivacyPolicy}
+                />
+                <LinkButton
+                  label="Terms of Service"
+                  description="Terms and conditions of use"
+                  onClick={handleTermsOfService}
+                />
+                <LinkButton
+                  label="Data Usage"
+                  description="What data we collect and why"
+                  onClick={handleDataUsage}
+                />
+              </div>
+            </SettingsSection>
+
+            {/* About */}
+            <SettingsSection title="About">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Version</span>
+                  <span className="text-sm text-foreground">1.0.0</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Build</span>
+                  <span className="text-sm text-foreground">2025.06.12</span>
+                </div>
+                <div className="pt-2 mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    Doshi Sensei is a Japanese verb and adjective conjugation practice app.
+                    Built with Next.js and designed to help you master Japanese conjugations.
+                  </p>
+                </div>
+                <div className="space-y-3 border-t border-border pt-4">
+                  <LinkButton
+                    label="Rate the App"
+                    description="Help others discover Doshi Sensei"
+                    onClick={handleRateApp}
+                  />
+                  <LinkButton
+                    label="Share with Friends"
+                    description="Spread the word about learning Japanese"
+                    onClick={handleShareApp}
+                  />
+                  <LinkButton
+                    label="Acknowledgments"
+                    description="Credits and open source libraries"
+                    onClick={handleAcknowledgments}
+                  />
+                </div>
+              </div>
+            </SettingsSection>
+          </div>
+        </main>
+
+        {/* Sync Modal */}
+        {syncModal.show && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-4">
+                  {syncModal.type === 'success' ? '✅' : '❌'}
+                </div>
+                <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                  {syncModal.title}
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  {syncModal.message}
                 </p>
               </div>
-              <div className="space-y-3 border-t border-border pt-4">
-                <LinkButton
-                  label="Rate the App"
-                  description="Help others discover Doshi Sensei"
-                  onClick={handleRateApp}
-                />
-                <LinkButton
-                  label="Share with Friends"
-                  description="Spread the word about learning Japanese"
-                  onClick={handleShareApp}
-                />
-                <LinkButton
-                  label="Acknowledgments"
-                  description="Credits and open source libraries"
-                  onClick={handleAcknowledgments}
-                />
+
+              <div className="flex justify-center">
+                <button
+                  onClick={closeSyncModal}
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                >
+                  OK
+                </button>
               </div>
             </div>
-          </SettingsSection>
-        </div>
-      </main>
+          </div>
+        )}
 
-      {/* Sync Modal */}
-      {syncModal.show && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">
-                {syncModal.type === 'success' ? '✅' : '❌'}
+        {/* Reset Confirmation Modal */}
+        {showResetModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                  Reset All Data?
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  This action will permanently delete:
+                </p>
+                <ul className="text-muted-foreground text-sm mt-2 space-y-1">
+                  <li>• All your word lists and saved words</li>
+                  <li>• Practice progress and statistics</li>
+                  <li>• Settings and preferences</li>
+                  <li>• Recently viewed words</li>
+                </ul>
+                <p className="text-red-400 font-medium text-sm mt-4">
+                  This action cannot be undone!
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                {syncModal.title}
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                {syncModal.message}
-              </p>
-            </div>
 
-            <div className="flex justify-center">
-              <button
-                onClick={closeSyncModal}
-                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-              >
-                OK
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowResetModal(false)}
+                  disabled={isResetting}
+                  className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleResetAllData}
+                  disabled={isResetting}
+                  className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isResetting ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="animate-spin w-4 h-4 border-2 border-destructive-foreground border-t-transparent rounded-full"></div>
+                      Resetting...
+                    </div>
+                  ) : (
+                    'Reset All Data'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Reset Confirmation Modal */}
-      {showResetModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">⚠️</div>
-              <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                Reset All Data?
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                This action will permanently delete:
-              </p>
-              <ul className="text-muted-foreground text-sm mt-2 space-y-1">
-                <li>• All your word lists and saved words</li>
-                <li>• Practice progress and statistics</li>
-                <li>• Settings and preferences</li>
-                <li>• Recently viewed words</li>
-              </ul>
-              <p className="text-red-400 font-medium text-sm mt-4">
-                This action cannot be undone!
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowResetModal(false)}
-                disabled={isResetting}
-                className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleResetAllData}
-                disabled={isResetting}
-                className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isResetting ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="animate-spin w-4 h-4 border-2 border-destructive-foreground border-t-transparent rounded-full"></div>
-                    Resetting...
-                  </div>
-                ) : (
-                  'Reset All Data'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </>
   );
 }
@@ -799,7 +798,7 @@ interface ToggleSettingProps {
 
 function ToggleSetting({ label, description, checked, onChange }: ToggleSettingProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between py-2">
       <div>
         <label className="block text-sm font-medium text-foreground">
           {label}
@@ -812,14 +811,15 @@ function ToggleSetting({ label, description, checked, onChange }: ToggleSettingP
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-          checked ? 'bg-primary' : 'bg-muted'
-        }`}
+        className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors px-1 ${checked ? 'bg-primary' : 'bg-muted'
+          }`}
+        style={{ minWidth: 56 }}
+        aria-pressed={checked}
+        tabIndex={0}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
-            checked ? 'translate-x-6' : 'translate-x-1'
-          }`}
+          className={`inline-block h-6 w-6 transform rounded-full bg-background shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'
+            }`}
         />
       </button>
     </div>

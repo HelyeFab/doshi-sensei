@@ -97,7 +97,7 @@ export function GrammarHighlightedText({
   }
 
   return (
-    <span className={className}>
+    <span className={`${className} block md:inline`}>
       {tokens.map((token, index) => {
         const isHighlighted = shouldHighlight(token);
         const posType = KuromojiService.getInstance().getPartOfSpeech(token);
@@ -107,7 +107,7 @@ export function GrammarHighlightedText({
           return (
             <ruby
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-0.5 ${
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 md:px-0.5 md:py-0 inline-block mx-0.5 my-0.5 md:mx-0 md:my-0 ${
                 isHighlighted ? `grammar-${posType}` : ''
               }`}
               style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
@@ -123,7 +123,7 @@ export function GrammarHighlightedText({
           return (
             <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-0.5 ${
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 md:px-0.5 md:py-0 inline-block mx-0.5 my-0.5 md:mx-0 md:my-0 ${
                 isHighlighted ? `grammar-${posType}` : ''
               }`}
               style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
@@ -151,11 +151,11 @@ export function GrammarLegend() {
   ];
 
   return (
-    <div className="flex flex-wrap gap-3 text-sm">
+    <div className="flex flex-wrap gap-3 md:gap-3 text-xs md:text-sm">
       {categories.map(cat => (
-        <div key={cat.type} className="flex items-center gap-1">
+        <div key={cat.type} className="flex items-center gap-1 px-2 py-1 md:px-0 md:py-0 bg-background/50 md:bg-transparent rounded-md">
           <div
-            className="w-4 h-4 rounded"
+            className="w-3 h-3 md:w-4 md:h-4 rounded"
             style={{ backgroundColor: cat.color }}
           />
           <span className="text-muted-foreground">{cat.label}</span>

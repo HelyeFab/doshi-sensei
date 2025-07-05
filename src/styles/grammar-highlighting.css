@@ -1,5 +1,15 @@
 /* Grammar Highlighting Styles */
 
+/* Base styles for all grammar elements */
+.grammar-noun,
+.grammar-verb,
+.grammar-adjective,
+.grammar-particle,
+.grammar-adverb {
+  position: relative;
+  display: inline-block;
+}
+
 /* Noun */
 .grammar-noun {
   border-bottom: 2px solid #3b82f6;
@@ -17,7 +27,7 @@
 
 /* Particle */
 .grammar-particle {
-  border-bottom: 2px dotted #8b5cf6;
+  border-bottom: 1px dotted #8b5cf6;
 }
 
 /* Adverb */
@@ -25,15 +35,40 @@
   border-bottom: 2px dashed #f59e0b;
 }
 
-/* Hover states */
-.grammar-noun:hover,
-.grammar-verb:hover,
-.grammar-adjective:hover,
-.grammar-particle:hover,
-.grammar-adverb:hover {
-  opacity: 0.8;
-  transform: scale(1.05);
-  transition: all 0.2s ease;
+/* Mobile-specific spacing */
+@media (max-width: 768px) {
+  .grammar-noun,
+  .grammar-verb,
+  .grammar-adjective,
+  .grammar-particle,
+  .grammar-adverb {
+    line-height: 1.8;
+    margin: 2px 1px;
+  }
+}
+
+/* Hover states - desktop only */
+@media (min-width: 768px) {
+  .grammar-noun:hover,
+  .grammar-verb:hover,
+  .grammar-adjective:hover,
+  .grammar-particle:hover,
+  .grammar-adverb:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+  }
+}
+
+/* Touch states for mobile */
+@media (max-width: 768px) {
+  .grammar-noun:active,
+  .grammar-verb:active,
+  .grammar-adjective:active,
+  .grammar-particle:active,
+  .grammar-adverb:active {
+    opacity: 0.7;
+  }
 }
 
 /* Dark mode adjustments */

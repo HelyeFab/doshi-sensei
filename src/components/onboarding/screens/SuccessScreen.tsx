@@ -121,11 +121,10 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
                 <button
                   key={theme.name}
                   onClick={() => setSelectedTheme(theme.name)}
-                  className={`p-3 border rounded-lg transition-all text-center ${
-                    selectedTheme === theme.name
+                  className={`p-3 border rounded-lg transition-all text-center ${selectedTheme === theme.name
                       ? 'border-primary bg-primary/10'
                       : 'border-border hover:border-primary/50'
-                  }`}
+                    }`}
                   style={{
                     backgroundColor: selectedTheme === theme.name ? `${theme.color}10` : undefined,
                     borderColor: selectedTheme === theme.name ? theme.color : undefined
@@ -159,14 +158,13 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
                   className="sr-only"
                 />
                 <div
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    showRomaji ? 'bg-primary' : 'bg-muted'
-                  }`}
+                  className={`w-14 h-8 rounded-full transition-colors px-1 ${showRomaji ? 'bg-primary' : 'bg-muted'}`}
+                  style={{ minWidth: 56 }}
+                  aria-pressed={showRomaji}
+                  tabIndex={0}
                 >
                   <div
-                    className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                      showRomaji ? 'translate-x-6' : 'translate-x-0.5'
-                    } mt-0.5`}
+                    className={`w-6 h-6 bg-white rounded-full shadow transition-transform ${showRomaji ? 'translate-x-6' : 'translate-x-0'}`}
                   ></div>
                 </div>
               </div>

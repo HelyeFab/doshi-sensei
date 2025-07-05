@@ -27,7 +27,7 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     id: 'todaii',
     name: 'Todaii',
     displayName: 'Todaii Japanese News - Learning Platform',
-    netlifyFunction: 'scrape-todaii-news-fixed',
+    netlifyFunction: 'scrape-todaii-news',
     emoji: '📚',
     description: 'Japanese learning content with vocabulary focus'
   },
@@ -35,7 +35,7 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     id: 'nhk-easy',
     name: 'NHK Easy',
     displayName: 'NHK NEWS WEB EASY - Simplified Japanese News',
-    netlifyFunction: 'scrape-nhk-easy-fixed',
+    netlifyFunction: 'scrape-nhk-easy',
     emoji: '📺',
     description: 'Simplified Japanese news for learners'
   }

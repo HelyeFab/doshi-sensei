@@ -314,3 +314,112 @@ To view subscription state for any user, simply log in and check the browser con
 - ✅ Full offline support with intelligent caching
 - ✅ Seamless app updates without user friction
 - ✅ Production-ready with analytics and monitoring
+
+## Entitlements System Migration Plan - January 2025
+
+### Overview
+We're migrating from scattered hardcoded user limits to a centralized entitlements system. The new system (`src/utils/userEntitlements.ts`) provides a single source of truth for all feature access controls.
+
+### Current Status
+- ✅ Core entitlements system created
+- ✅ React hook (`useEntitlements`) implemented
+- ✅ Documentation completed
+- ✅ KanaDrop game migrated as proof of concept
+- 🚧 Other features still using hardcoded limits
+
+### Migration Phases
+
+#### Phase 1: Fix Critical Issues (Priority: HIGH)
+**Files to update:**
+1. `src/components/UsageLimitDisplay.tsx` - Fix incorrect drill limit (shows 50, should be 3)
+2. `src/contexts/SubscriptionContext.tsx` - Replace hardcoded FREE_LIMITS and GUEST limits
+
+**Instructions:**
+```typescript
+// Replace hardcoded limits with:
+import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
+
+// Get limits dynamically:
+const drillLimit = getFeatureLimit(userType, 'learning.drills', 'daily');
+```
+
+#### Phase 2: Update Core Features (Priority: HIGH)
+**Features to migrate:**
+
+1. **KanjiQuest** (`src/components/games/KanjiQuest.tsx`)
+   - Replace lines 195-196 hardcoded limits
+   - Use `useEntitlements().canPlayGame('kanjiQuest')`
+
+2. **Drill System** (`src/app/drill/page.tsx`)
+   - Replace line 886 hardcoded display
+   - Use `useEntitlements().canDoDrill()`
+
+3. **Story System** 
+   - Find and update story limit checks
+   - Use `useEntitlements().canReadStory()`
+
+4. **Article System**
+   - Find and update article limit checks  
+   - Use `useEntitlements().canReadArticle()`
+
+5. **List Creation** (`src/app/practice/page.tsx` line 713)
+   - Replace hardcoded alert
+   - Use `useEntitlements().canCreateList()`
+
+#### Phase 3: Update Backend/API (Priority: MEDIUM)
+**Files to update:**
+1. `src/app/api/stripe-webhook/route.ts` - Lines 161-164, 204-207
+2. `src/types/subscription.ts` - DEFAULT constants
+
+**Instructions:**
+- Import entitlements system in API routes
+- Replace hardcoded limit objects with calls to `getEntitlementsForUserType()`
+
+#### Phase 4: Update Documentation & Types (Priority: LOW)
+**Files to update:**
+1. `src/types/subscription.ts` - SUBSCRIPTION_PLANS descriptions
+2. Any remaining documentation references
+
+### Implementation Guidelines
+
+1. **Always use the entitlements hook in components:**
+```typescript
+const { canAccess, promptForAccess } = useEntitlements();
+
+// Check access
+const check = canAccess('feature.path');
+if (!check.allowed) {
+  promptForAccess('Feature Name', check.reason);
+  return;
+}
+```
+
+2. **For non-React code, use the utility directly:**
+```typescript
+import { getFeatureLimit, isFeatureEnabled } from '@/utils/userEntitlements';
+
+const limit = getFeatureLimit(userType, 'games.kanjiQuest', 'daily');
+```
+
+3. **Test each migration:**
+- Test as guest user
+- Test as free user  
+- Test as premium user
+- Verify limits are enforced correctly
+
+### Testing Checklist
+- [ ] Guest users see correct limits (3/day for games, drills, etc.)
+- [ ] Free users see correct limits (3 lists max, 5 bookmarks max)
+- [ ] Premium users have unlimited access
+- [ ] Upgrade prompts show correct messages
+- [ ] Usage tracking increments properly
+
+### Common Pitfalls to Avoid
+1. Don't forget to handle the loading state from `useEntitlements`
+2. Remember that KanaDrop shares the KanjiQuest counter (all games share limits)
+3. Always reset usage tracking when appropriate (game restart, etc.)
+4. Test date-based resets for daily limits
+
+### Branch Information
+Working branch: `feature/entitlements-migration`
+Main tracking issue: Consolidate all hardcoded user limits into centralized entitlements system

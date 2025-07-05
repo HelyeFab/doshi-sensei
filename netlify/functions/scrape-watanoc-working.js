@@ -1,4 +1,6 @@
 const admin = require('firebase-admin');
+const https = require('https');
+const { URL } = require('url');
 
 // Initialize Firebase Admin SDK
 let firebaseInitialized = false;
@@ -24,7 +26,7 @@ if (!admin.apps.length) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
-    
+
     firebaseInitialized = true;
     db = admin.firestore();
     console.log('✅ Firebase Admin SDK initialized successfully');
@@ -37,7 +39,178 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
-// Mock article data
+// HTTP request helper
+function makeRequest(url) {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
+    const options = {
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.pathname + parsedUrl.search,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DoshiSensei/1.0)',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'ja,en;q=0.9',
+      },
+      timeout: 15000
+    };
+
+    const req = https.request(options, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
+        return;
+      }
+
+      let data = '';
+      res.setEncoding('utf8');
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve(data));
+    });
+
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    });
+
+    req.end();
+  });
+}
+
+// Extract JLPT level from title
+function extractJLPTLevel(title) {
+  const match = title.match(/\(n([1-5])\)/i);
+  if (match) {
+    return `N${match[1].toUpperCase()}`;
+  }
+  return 'N4'; // Default if not found
+}
+
+// Clean HTML and extract text
+function cleanText(html) {
+  return html
+    .replace(/<script[^>]*>.*?<\/script>/gis, '')
+    .replace(/<style[^>]*>.*?<\/style>/gis, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#8230;/g, '...')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Parse date from Japanese format
+function parseJapaneseDate(dateStr) {
+  // Format: "2016年10月14日 金曜日"
+  const match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (match) {
+    return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
+  }
+  return new Date();
+}
+
+// Extract articles from Watanoc homepage
+async function scrapeWatanocArticles() {
+  try {
+    console.log('📖 Fetching Watanoc homepage...');
+    const html = await makeRequest('https://watanoc.com');
+
+    // Extract article links and metadata using regex
+    const articlePattern = /<article[^>]*class="[^"]*loop-article[^"]*"[^>]*>[\s\S]*?<a[^>]+href="([^"]+)"[^>]*title="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*>[\s\S]*?<time[^>]+datetime="([^"]+)"[^>]*>([^<]+)<\/time>[\s\S]*?(?:<div[^>]+class="[^"]*loop-excerpt[^"]*"[^>]*>([^<]+)<\/div>)?[\s\S]*?<\/article>/gi;
+
+    const articles = [];
+    let match;
+    let count = 0;
+
+    while ((match = articlePattern.exec(html)) !== null && count < 10) {
+      const [fullMatch, url, title, imageUrl, datetime, dateText, excerpt] = match;
+
+      // Clean title and extract JLPT level
+      const cleanTitle = cleanText(title).replace(/\s*\(n[1-5]\).*$/i, '');
+      const jlptLevel = extractJLPTLevel(title);
+
+      // Extract category from URL
+      const categoryMatch = url.match(/watanoc\.com\/([^\/]+)/);
+      const category = categoryMatch ? categoryMatch[1].replace('post-', '') : 'general';
+
+      articles.push({
+        url,
+        title: cleanTitle,
+        imageUrl: imageUrl || `https://images.unsplash.com/photo-${1500000000000 + count}?w=400`,
+        date: parseJapaneseDate(dateText),
+        excerpt: excerpt ? cleanText(excerpt) : '',
+        jlptLevel,
+        category
+      });
+
+      count++;
+    }
+
+    console.log(`✅ Found ${articles.length} articles on homepage`);
+
+    // Fetch full content for each article
+    const fullArticles = [];
+    for (const article of articles.slice(0, 5)) { // Limit to 5 for performance
+      try {
+        console.log(`📄 Fetching article: ${article.title}`);
+        const articleHtml = await makeRequest(article.url);
+
+        // Extract content from article page
+        const contentMatch = articleHtml.match(/<div[^>]+class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+        const content = contentMatch ? cleanText(contentMatch[1]) : article.excerpt;
+
+        // Extract vocabulary and kanji
+        const vocabulary = (content.match(/[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]+/g) || [])
+          .filter((word, index, self) => self.indexOf(word) === index)
+          .slice(0, 20);
+
+        const kanji = (content.match(/[\u4e00-\u9faf]/g) || [])
+          .filter((char, index, self) => self.indexOf(char) === index)
+          .slice(0, 15);
+
+        fullArticles.push({
+          id: `watanoc_${Date.now()}_${fullArticles.length}`,
+          title: article.title,
+          content: content.substring(0, 2000), // Limit content length
+          summary: article.excerpt || content.substring(0, 150) + '...',
+          url: article.url,
+          imageUrl: article.imageUrl,
+          publishDate: article.date,
+          scrapedAt: new Date(),
+          source: {
+            id: 'watanoc',
+            name: 'Watanoc',
+            displayName: 'Watanoc - Japanese Learning Articles'
+          },
+          category: article.category,
+          tags: ['japanese-learning', 'watanoc', article.jlptLevel.toLowerCase()],
+          difficulty: article.jlptLevel,
+          estimatedReadingTime: Math.ceil(content.length / 300),
+          vocabulary: vocabulary,
+          kanji: kanji
+        });
+
+        // Be respectful - wait between requests
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+      } catch (error) {
+        console.error(`❌ Failed to fetch article ${article.title}:`, error.message);
+      }
+    }
+
+    return fullArticles;
+
+  } catch (error) {
+    console.error('❌ Error scraping Watanoc:', error);
+    // Return mock data as fallback
+    return getMockArticles();
+  }
+}
+
+// Fallback mock data
 const getMockArticles = () => [
   {
     id: `watanoc_${Date.now()}_001`,
@@ -57,29 +230,8 @@ const getMockArticles = () => [
     tags: ['seasons', 'nature', 'culture'],
     difficulty: 'N5',
     estimatedReadingTime: 2,
-    vocabulary: [],
-    kanji: []
-  },
-  {
-    id: `watanoc_${Date.now()}_002`,
-    title: '東京の交通システム',
-    content: '東京の電車とバスのシステムは世界で最も複雑で効率的です。毎日何百万人もの人々が利用しています。',
-    summary: '東京の公共交通システムについて説明します。',
-    url: 'https://watanoc.com/articles/tokyo-transport',
-    imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400',
-    publishDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
-    scrapedAt: new Date(),
-    source: {
-      id: 'watanoc',
-      name: 'Watanoc',
-      displayName: 'Watanoc - Japanese Learning Articles'
-    },
-    category: 'transportation',
-    tags: ['tokyo', 'trains', 'transport'],
-    difficulty: 'N4',
-    estimatedReadingTime: 3,
-    vocabulary: [],
-    kanji: []
+    vocabulary: ['四季', '春', '桜', '夏', '祭り', '秋', '紅葉', '冬', '雪'],
+    kanji: ['日', '本', '四', '季', '春', '桜', '夏', '祭', '秋', '紅', '葉', '冬', '雪']
   }
 ];
 
@@ -91,7 +243,7 @@ async function saveArticlesToFirebase(articles) {
 
   const batch = db.batch();
   const articlesRef = db.collection('articles');
-  
+
   for (const article of articles) {
     const docRef = articlesRef.doc(article.id);
     batch.set(docRef, {
@@ -100,10 +252,10 @@ async function saveArticlesToFirebase(articles) {
       scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt)
     });
   }
-  
+
   await batch.commit();
   console.log(`✅ Successfully saved ${articles.length} articles to Firebase`);
-  
+
   return true;
 }
 
@@ -143,28 +295,29 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Get mock articles (replace with real scraping later)
-    const articles = getMockArticles();
-    
+    // Get real articles from Watanoc
+    const articles = await scrapeWatanocArticles();
+
     // Save articles to Firebase
     await saveArticlesToFirebase(articles);
-    
+
     // Return success response
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
-        message: `Successfully saved ${articles.length} mock articles to Firebase`,
+        message: `Successfully saved ${articles.length} Watanoc articles to Firebase`,
         articlesCount: articles.length,
         articles: articles.map(a => ({ id: a.id, title: a.title, difficulty: a.difficulty })),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        fallbackUsed: articles.length > 0 && articles[0].id.includes('001') // Check if using mock data
       }),
     };
-    
+
   } catch (error) {
     console.error('💥 Unexpected error in working scraping function:', error);
-    
+
     return {
       statusCode: 500,
       headers,

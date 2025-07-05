@@ -10,6 +10,7 @@ import { subscriptionValidator } from '@/utils/subscriptionValidator';
 import { isPremiumUserType } from '@/types/subscription';
 import { subscriptionLogger } from '@/utils/subscriptionLogger';
 import { useState, useEffect } from 'react';
+import { useEntitlements } from '@/hooks/useEntitlements';
 
 // Types
 interface StudySession {
@@ -65,6 +66,8 @@ export default function KanjiQuest({
     userSubscription,
     loading: subscriptionLoading
   } = useSubscription();
+  
+  const { canPlayGame, promptForAccess } = useEntitlements();
 
   // Component state is now logged centrally in SubscriptionContext
 
@@ -190,10 +193,9 @@ export default function KanjiQuest({
           playsToday = isToday ? (userSubscription.currentUsage.kanjiQuestToday || 0) : 0;
         }
 
-        // Show Pokémon-themed limit messages
-        const maxEncounters = userType === 'guest'
-          ? 3 // Guest limit
-          : (userSubscription?.limits?.maxKanjiQuestPerDay || 3); // User limit from subscription
+        // Get game limits from entitlements system
+        const gameCheck = canPlayGame('kanjiQuest');
+        const maxEncounters = gameCheck.limit || 3;
         const encountersUsed = Math.min(playsToday, maxEncounters); // Cap at max
         
         console.log('🚫 Pokemon Battle BLOCKED - Limit reached:', {
@@ -206,18 +208,18 @@ export default function KanjiQuest({
           todayDate: today
         });
 
-        // Show appropriate prompt based on user type from validator
+        // Show appropriate prompt based on user type
         if (validation.userType === 'guest') {
           // Guest user (not logged in)
-          showLoginPrompt(
-            `You've used all ${encountersUsed}/${maxEncounters} daily Pokémon encounters! Team Rocket won't let you pass! 🚫\n\nSign up free to get more encounters and save your Pokédex!`,
-            'kanjiquest'
+          promptForAccess(
+            'Pokémon encounters',
+            `You've used all ${encountersUsed}/${maxEncounters} daily Pokémon encounters! Team Rocket won't let you pass! 🚫\n\nSign up free to get more encounters and save your Pokédex!`
           );
         } else if (!isPremiumUserType(validation.userType)) {
           // Logged in but not premium (freemium)
-          showUpgradePrompt(
-            `You've reached your daily limit of ${encountersUsed}/${maxEncounters} Pokémon encounters! 🎮\n\nUpgrade to Premium for unlimited encounters and become a true Pokémon Master!`,
-            'kanjiquest'
+          promptForAccess(
+            'Pokémon encounters',
+            `You've reached your daily limit of ${encountersUsed}/${maxEncounters} Pokémon encounters! 🎮\n\nUpgrade to Premium for unlimited encounters and become a true Pokémon Master!`
           );
         }
         return;

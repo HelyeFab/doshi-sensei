@@ -5,6 +5,9 @@ import { PageHeader } from '@/components/PageHeader';
 import { NewsArticle } from '@/types/news';
 import { getWatanocArticles, triggerArticleScraping, getArticleStats } from '@/utils/watanocArticles';
 import { ArticleReader } from '@/components/reading/ArticleReader';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useEntitlements } from '@/hooks/useEntitlements';
 
 // Loading skeleton component
 function ArticleCardSkeleton() {
@@ -264,6 +267,10 @@ function FilterBar({
 
 // Main news page component
 export default function NewsPage() {
+  const { user } = useAuth();
+  const { showLoginPrompt, showUpgradePrompt, incrementArticleCount } = useSubscription();
+  const { canReadArticle, isPremium } = useEntitlements();
+  
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -272,6 +279,8 @@ export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
   const [stats, setStats] = useState<any>(null);
+  const [articlesReadToday, setArticlesReadToday] = useState(0);
+  const [articleLimit, setArticleLimit] = useState(0);
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
@@ -279,12 +288,19 @@ export default function NewsPage() {
   useEffect(() => {
     loadArticles(false, page);
     loadStats();
+    checkArticleStatus();
   }, [page]);
 
   // Filter articles when filters change
   useEffect(() => {
     filterArticles();
   }, [articles, selectedLevel, selectedCategory]);
+  
+  const checkArticleStatus = () => {
+    const articleCheck = canReadArticle();
+    setArticlesReadToday(articleCheck.used || 0);
+    setArticleLimit(articleCheck.limit || 0);
+  };
 
   const loadArticles = async (forceRefresh = false, pageNum = 1) => {
     try {
@@ -325,8 +341,34 @@ export default function NewsPage() {
     setFilteredArticles(filtered);
   };
 
-  const handleArticleClick = (article: NewsArticle) => {
+  const handleArticleClick = async (article: NewsArticle) => {
+    // Check if user can read more articles today using entitlements
+    const articleCheck = canReadArticle();
+    if (!articleCheck.allowed) {
+      if (!user) {
+        showLoginPrompt(
+          `You've reached your daily article limit (${articleCheck.used}/${articleCheck.limit})! Sign up to read more articles and track your progress.`,
+          'articles'
+        );
+      } else {
+        showUpgradePrompt(
+          `You've read your daily article limit (${articleCheck.used}/${articleCheck.limit})! Upgrade to Premium for unlimited articles.`,
+          'articles'
+        );
+      }
+      return;
+    }
+    
     setSelectedArticle(article);
+    
+    // Track article read after successfully opening
+    try {
+      await incrementArticleCount();
+      checkArticleStatus(); // Update the displayed counts
+    } catch (error) {
+      console.error('Error tracking article read:', error);
+      // Don't fail the whole article open if tracking fails
+    }
   };
 
   const handleRefresh = async () => {
@@ -386,6 +428,14 @@ export default function NewsPage() {
               <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                 <span>📚 {stats.totalArticles} articles available</span>
                 <span>📅 Updated: {new Date(stats.lastUpdated).toLocaleDateString()}</span>
+                {!isPremium && articleLimit > 0 && (
+                  <span className="text-primary">
+                    📖 {articlesReadToday < articleLimit 
+                      ? `${articleLimit - articlesReadToday} ${articleLimit - articlesReadToday === 1 ? 'article' : 'articles'} remaining today`
+                      : 'Daily limit reached'
+                    }
+                  </span>
+                )}
               </div>
             )}
           </div>

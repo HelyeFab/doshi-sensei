@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEntitlements } from '@/hooks/useEntitlements';
 import { Analytics } from '@/utils/analytics';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
@@ -69,6 +70,7 @@ export default function DrillPage() {
     showUpgradePrompt
   } = useSubscription();
   const { user } = useAuth();
+  const { canDoDrill: canDoDrillEntitlements, getLimit } = useEntitlements();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'conjugation' | 'flashcards'>('conjugation');
@@ -883,7 +885,7 @@ export default function DrillPage() {
             Daily Drill Limit Reached
           </h3>
           <p className="text-muted-foreground mb-6">
-            You've completed {userSubscription?.currentUsage.drillsToday || 0} out of {userSubscription?.limits.maxDrillsPerDay || 3} drills today.
+            You've completed {userSubscription?.currentUsage.drillsToday || guestUsage?.drillsToday || 0} out of {getLimit('learning.drills', 'daily') || 3} drills today.
           </p>
           <button
             onClick={() => window.location.href = '/account'}

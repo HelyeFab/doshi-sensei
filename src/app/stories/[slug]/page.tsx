@@ -8,11 +8,13 @@ import { storyOfflineManager } from '@/utils/storyOfflineManager';
 import StoryReader from '@/components/story/StoryReader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useEntitlements } from '@/hooks/useEntitlements';
 
 export default function StoryPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { userType, showLoginPrompt, showUpgradePrompt } = useSubscription();
+  const { userType, showLoginPrompt, showUpgradePrompt, incrementStoryCount } = useSubscription();
+  const { canReadStory, promptForAccess } = useEntitlements();
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
   const [canRead, setCanRead] = useState(true);
@@ -33,22 +35,17 @@ export default function StoryPage() {
     try {
       setLoading(true);
 
-      // Check if user can read stories today
-      const canReadToday = await storyManager.canReadStory(user?.uid || null, isPremium);
-      setCanRead(canReadToday);
+      // Check if user can read stories today using entitlements
+      const storyCheck = canReadStory();
+      setCanRead(storyCheck.allowed);
 
-      if (!canReadToday) {
-        if (!user) {
-          showLoginPrompt(
-            'You\'ve reached your daily story limit! Sign up to read more stories and save your progress.',
-            'stories'
-          );
-        } else {
-          showUpgradePrompt(
-            'You\'ve read your daily story! Upgrade to Premium for unlimited stories.',
-            'stories'
-          );
-        }
+      if (!storyCheck.allowed) {
+        promptForAccess(
+          'stories',
+          !user 
+            ? `You've reached your daily story limit (${storyCheck.used}/${storyCheck.limit})! Sign up to read more stories and save your progress.`
+            : `You've read your daily story limit (${storyCheck.used}/${storyCheck.limit})! Upgrade to Premium for unlimited stories.`
+        );
         router.push('/stories');
         return;
       }
@@ -73,6 +70,14 @@ export default function StoryPage() {
       }
 
       setStory(loadedStory);
+      
+      // Track story read after successfully loading
+      try {
+        await incrementStoryCount();
+      } catch (error) {
+        console.error('Error tracking story read:', error);
+        // Don't fail the whole story load if tracking fails
+      }
     } catch (error) {
       console.error('Error loading story:', error);
       router.push('/stories');

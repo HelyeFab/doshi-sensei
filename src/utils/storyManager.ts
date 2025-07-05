@@ -301,13 +301,15 @@ class StoryManager {
     }
   }
 
-  // Check if user can read more stories today (for free users)
+  /**
+   * @deprecated Use useEntitlements hook instead
+   * This function is kept for backward compatibility but should not be used
+   * in new code. Use the entitlements system for checking story access.
+   */
   async canReadStory(userId: string | null, isPremium: boolean): Promise<boolean> {
-    if (isPremium) return true;
-    if (!userId) return true; // Guest users can read 1 story
-
-    const stats = await this.getUserStoryStats(userId);
-    return stats.storiesReadToday < 1;
+    // Always return true - actual checking is done via entitlements system
+    console.warn('canReadStory is deprecated. Use useEntitlements hook instead.');
+    return true;
   }
 
   // Generate slug from title

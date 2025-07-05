@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { doc, setDoc, getDoc, runTransaction, collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
+import { UserType } from '@/types/subscription';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -152,17 +154,25 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
         stripePriceId: priceId,
         updatedAt: new Date().toISOString(),
       },
-      limits: (plan === 'monthly' || plan === 'yearly') && subscription.status === 'active' ? {
-        maxLists: -1,
-        maxDrillsPerDay: -1,
-        canSync: true,
-        canSave: true,
-      } : {
-        maxLists: 3,
-        maxDrillsPerDay: 3,
-        canSync: false,
-        canSave: true,
-      },
+      limits: (() => {
+        // Determine user type based on plan and subscription status
+        let userType: UserType = 'free';
+        if ((plan === 'monthly' || plan === 'yearly') && subscription.status === 'active') {
+          userType = plan as 'monthly' | 'yearly';
+        }
+        
+        // Get entitlements from centralized system
+        const entitlements = getEntitlementsForUserType(userType);
+        return {
+          maxLists: getFeatureLimit(userType, 'storage.lists', 'total') || 3,
+          maxDrillsPerDay: getFeatureLimit(userType, 'learning.drills', 'daily') || 3,
+          maxKanjiQuestPerDay: getFeatureLimit(userType, 'games.kanjiQuest', 'daily') || 3,
+          maxStoriesPerDay: getFeatureLimit(userType, 'learning.stories', 'daily') || 3,
+          maxArticlesPerDay: getFeatureLimit(userType, 'learning.articles', 'daily') || 3,
+          canSync: entitlements.system.cloudSync.enabled,
+          canSave: entitlements.system.progressTracking.enabled,
+        };
+      })(),
       currentUsage: currentData?.subscription?.currentUsage || {
         listsCount: 0,
         drillsToday: 0,
@@ -200,12 +210,20 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
         canceledAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
-      limits: {
-        maxLists: 3,
-        maxDrillsPerDay: 3,
-        canSync: false,
-        canSave: true,
-      },
+      limits: (() => {
+        // User reverted to free plan
+        const userType: UserType = 'free';
+        const entitlements = getEntitlementsForUserType(userType);
+        return {
+          maxLists: getFeatureLimit(userType, 'storage.lists', 'total') || 3,
+          maxDrillsPerDay: getFeatureLimit(userType, 'learning.drills', 'daily') || 3,
+          maxKanjiQuestPerDay: getFeatureLimit(userType, 'games.kanjiQuest', 'daily') || 3,
+          maxStoriesPerDay: getFeatureLimit(userType, 'learning.stories', 'daily') || 3,
+          maxArticlesPerDay: getFeatureLimit(userType, 'learning.articles', 'daily') || 3,
+          canSync: entitlements.system.cloudSync.enabled,
+          canSave: entitlements.system.progressTracking.enabled,
+        };
+      })(),
       currentUsage: currentData?.subscription?.currentUsage || {
         listsCount: 0,
         drillsToday: 0,

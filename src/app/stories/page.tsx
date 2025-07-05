@@ -10,25 +10,26 @@ import { storyManager } from '@/utils/storyManager';
 import { storyOfflineManager } from '@/utils/storyOfflineManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useEntitlements } from '@/hooks/useEntitlements';
 import Link from 'next/link';
 
 export default function StoriesPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { userType, isFeatureAvailable, showLoginPrompt, showUpgradePrompt } = useSubscription();
+  const { canReadStory, getLimit, isPremium } = useEntitlements();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState<JLPTLevel | 'all'>('all');
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
-  const [canReadToday, setCanReadToday] = useState(true);
+  const [storiesReadToday, setStoriesReadToday] = useState(0);
+  const [storyLimit, setStoryLimit] = useState(0);
   const [cachedStoryIds, setCachedStoryIds] = useState<Set<string>>(new Set());
   const [showOfflineOnly, setShowOfflineOnly] = useState(false);
 
-  const isPremium = userType === 'monthly' || userType === 'yearly';
-
   useEffect(() => {
     loadStories();
-    checkReadLimit();
+    checkReadStatus();
     loadCachedStories();
   }, [selectedLevel, selectedTheme, showOfflineOnly]);
 
@@ -68,9 +69,10 @@ export default function StoriesPage() {
     }
   };
 
-  const checkReadLimit = async () => {
-    const canRead = await storyManager.canReadStory(user?.uid || null, isPremium);
-    setCanReadToday(canRead);
+  const checkReadStatus = () => {
+    const storyCheck = canReadStory();
+    setStoriesReadToday(storyCheck.used || 0);
+    setStoryLimit(storyCheck.limit || 0);
   };
 
   const loadCachedStories = async () => {
@@ -84,16 +86,17 @@ export default function StoriesPage() {
   };
 
   const handleStoryClick = async (story: Story) => {
-    // Check if user can read more stories today
-    if (!canReadToday) {
+    // Check if user can read more stories today using entitlements
+    const storyCheck = canReadStory();
+    if (!storyCheck.allowed) {
       if (!user) {
         showLoginPrompt(
-          'You\'ve reached your daily story limit! Sign up to read more stories and save your progress.',
+          `You've reached your daily story limit (${storyCheck.used}/${storyCheck.limit})! Sign up to read more stories and save your progress.`,
           'stories'
         );
       } else {
         showUpgradePrompt(
-          'You\'ve read your daily story! Upgrade to Premium for unlimited stories.',
+          `You've read your daily story limit (${storyCheck.used}/${storyCheck.limit})! Upgrade to Premium for unlimited stories.`,
           'stories'
         );
       }
@@ -172,9 +175,12 @@ export default function StoriesPage() {
               {showOfflineOnly ? '📵 Offline' : '🌐 All Stories'}
             </button>
             
-            {!isPremium && (
+            {!isPremium && storyLimit > 0 && (
               <div className="px-4 py-2 bg-primary/10 text-primary rounded-lg">
-                {canReadToday ? '1 story remaining today' : 'Daily limit reached'}
+                {storiesReadToday < storyLimit 
+                  ? `${storyLimit - storiesReadToday} ${storyLimit - storiesReadToday === 1 ? 'story' : 'stories'} remaining today`
+                  : 'Daily limit reached'
+                }
               </div>
             )}
           </div>

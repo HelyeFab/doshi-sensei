@@ -5,6 +5,7 @@ import { JapaneseWord, WordList, StudyList, StudyListType, Kanji } from '@/types
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useEntitlements } from '@/hooks/useEntitlements';
 import ArticleManager from '@/utils/articleManager';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
@@ -51,7 +52,8 @@ type TabType = 'lists' | 'articles' | 'stories';
 
 export default function FavouritesPage() {
   const { user } = useAuth();
-  const { userSubscription, isPremium } = useSubscription();
+  const { userSubscription, isPremium, showLoginPrompt, showUpgradePrompt, incrementListCount } = useSubscription();
+  const { canCreateList, isPremium: isPremiumEntitlement } = useEntitlements();
 
   // Tab management
   const [activeTab, setActiveTab] = useState<TabType>('lists');
@@ -142,6 +144,27 @@ export default function FavouritesPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCreateListClick = () => {
+    // Check if user can create more lists using entitlements
+    const listCheck = canCreateList();
+    if (!listCheck.allowed) {
+      if (!user) {
+        showLoginPrompt(
+          `Sign up to create vocabulary lists and save your learning progress!`,
+          'lists'
+        );
+      } else {
+        showUpgradePrompt(
+          `You've reached your list limit (${listCheck.used}/${listCheck.limit})! Upgrade to Premium for unlimited vocabulary lists.`,
+          'lists'
+        );
+      }
+      return;
+    }
+    
+    setShowCreateListModal(true);
   };
 
   const loadBookmarkedArticles = async () => {
@@ -473,7 +496,7 @@ export default function FavouritesPage() {
                   Create your first list to start organizing your Japanese vocabulary.
                 </p>
                 <button
-                  onClick={() => setShowCreateListModal(true)}
+                  onClick={() => handleCreateListClick()}
                   className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -489,7 +512,7 @@ export default function FavouritesPage() {
                   <h2 className="text-xl font-semibold text-foreground">My Word Lists</h2>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setShowCreateListModal(true)}
+                      onClick={() => handleCreateListClick()}
                       className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
                     >
                       + Create List
@@ -999,6 +1022,7 @@ export default function FavouritesPage() {
           <CreateListModal
             onClose={() => setShowCreateListModal(false)}
             onCreated={loadWordLists}
+            onListCreated={incrementListCount}
           />
         )}
 
@@ -1236,9 +1260,10 @@ function WordModal({ word, onClose }: WordModalProps) {
 interface CreateListModalProps {
   onClose: () => void;
   onCreated: () => void;
+  onListCreated?: () => Promise<void>;
 }
 
-function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
+function CreateListModal({ onClose, onCreated, onListCreated }: CreateListModalProps) {
   const { user } = useAuth();
   const { userSubscription } = useSubscription();
   const [listName, setListName] = useState('');
@@ -1257,6 +1282,17 @@ function CreateListModal({ onClose, onCreated }: CreateListModalProps) {
         user,
         userSubscription?.subscription?.status
       );
+      
+      // Track list creation
+      if (onListCreated) {
+        try {
+          await onListCreated();
+        } catch (error) {
+          console.error('Error tracking list creation:', error);
+          // Don't fail the whole list creation if tracking fails
+        }
+      }
+      
       onCreated();
       onClose();
     } catch (err) {

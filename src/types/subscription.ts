@@ -1,3 +1,5 @@
+import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
+
 export type UserType = 'guest' | 'free' | 'monthly' | 'yearly' | 'premium';
 
 export interface GuestUsage {
@@ -77,20 +79,21 @@ export interface SubscriptionFeature {
   };
 }
 
-// Default subscription values
+// Default subscription values - using entitlements system
+const freeEntitlements = getEntitlementsForUserType('free');
 export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
   subscription: {
     plan: 'free',
     status: 'active'
   },
   limits: {
-    maxLists: 3,
-    maxDrillsPerDay: 3,
-    maxKanjiQuestPerDay: 3,
-    maxStoriesPerDay: 3,
-    maxArticlesPerDay: 3,
-    canSync: false,
-    canSave: true
+    maxLists: getFeatureLimit('free', 'storage.lists', 'total') || 3,
+    maxDrillsPerDay: getFeatureLimit('free', 'learning.drills', 'daily') || 3,
+    maxKanjiQuestPerDay: getFeatureLimit('free', 'games.kanjiQuest', 'daily') || 3,
+    maxStoriesPerDay: getFeatureLimit('free', 'learning.stories', 'daily') || 3,
+    maxArticlesPerDay: getFeatureLimit('free', 'learning.articles', 'daily') || 3,
+    canSync: freeEntitlements.system.cloudSync.enabled,
+    canSave: freeEntitlements.system.progressTracking.enabled
   },
   currentUsage: {
     listsCount: 0,
@@ -105,19 +108,20 @@ export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
   }
 };
 
+const monthlyEntitlements = getEntitlementsForUserType('monthly');
 export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
   subscription: {
     plan: 'monthly',
     status: 'active'
   },
   limits: {
-    maxLists: -1, // unlimited
-    maxDrillsPerDay: -1, // unlimited
-    maxKanjiQuestPerDay: -1, // unlimited
-    maxStoriesPerDay: -1, // unlimited
-    maxArticlesPerDay: -1, // unlimited
-    canSync: true,
-    canSave: true
+    maxLists: getFeatureLimit('monthly', 'storage.lists', 'total') || -1,
+    maxDrillsPerDay: getFeatureLimit('monthly', 'learning.drills', 'daily') || -1,
+    maxKanjiQuestPerDay: getFeatureLimit('monthly', 'games.kanjiQuest', 'daily') || -1,
+    maxStoriesPerDay: getFeatureLimit('monthly', 'learning.stories', 'daily') || -1,
+    maxArticlesPerDay: getFeatureLimit('monthly', 'learning.articles', 'daily') || -1,
+    canSync: monthlyEntitlements.system.cloudSync.enabled,
+    canSave: monthlyEntitlements.system.progressTracking.enabled
   },
   currentUsage: {
     listsCount: 0,
@@ -132,19 +136,20 @@ export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
   }
 };
 
+const yearlyEntitlements = getEntitlementsForUserType('yearly');
 export const DEFAULT_YEARLY_SUBSCRIPTION: UserSubscription = {
   subscription: {
     plan: 'yearly',
     status: 'active'
   },
   limits: {
-    maxLists: -1, // unlimited
-    maxDrillsPerDay: -1, // unlimited
-    maxKanjiQuestPerDay: -1, // unlimited
-    maxStoriesPerDay: -1, // unlimited
-    maxArticlesPerDay: -1, // unlimited
-    canSync: true,
-    canSave: true
+    maxLists: getFeatureLimit('yearly', 'storage.lists', 'total') || -1,
+    maxDrillsPerDay: getFeatureLimit('yearly', 'learning.drills', 'daily') || -1,
+    maxKanjiQuestPerDay: getFeatureLimit('yearly', 'games.kanjiQuest', 'daily') || -1,
+    maxStoriesPerDay: getFeatureLimit('yearly', 'learning.stories', 'daily') || -1,
+    maxArticlesPerDay: getFeatureLimit('yearly', 'learning.articles', 'daily') || -1,
+    canSync: yearlyEntitlements.system.cloudSync.enabled,
+    canSave: yearlyEntitlements.system.progressTracking.enabled
   },
   currentUsage: {
     listsCount: 0,
@@ -184,15 +189,16 @@ export function formatLimit(value: number): string {
   return isUnlimited(value) ? '∞' : value.toString();
 }
 
-// Legacy support for guest users (non-registered users)
+// Legacy support for guest users (non-registered users) - using entitlements system
+const guestEntitlements = getEntitlementsForUserType('guest');
 export const GUEST_LIMITS = {
-  maxLists: 0,
-  maxDrillsPerDay: 3,
-  maxKanjiQuestPerDay: 3,
-  maxStoriesPerDay: 3,
-  maxArticlesPerDay: 3,
-  canSync: false,
-  canSave: false
+  maxLists: getFeatureLimit('guest', 'storage.lists', 'total') || 0,
+  maxDrillsPerDay: getFeatureLimit('guest', 'learning.drills', 'daily') || 3,
+  maxKanjiQuestPerDay: getFeatureLimit('guest', 'games.kanjiQuest', 'daily') || 3,
+  maxStoriesPerDay: getFeatureLimit('guest', 'learning.stories', 'daily') || 3,
+  maxArticlesPerDay: getFeatureLimit('guest', 'learning.articles', 'daily') || 3,
+  canSync: guestEntitlements.system.cloudSync.enabled,
+  canSave: guestEntitlements.system.progressTracking.enabled
 };
 
 // Default subscription plans as array

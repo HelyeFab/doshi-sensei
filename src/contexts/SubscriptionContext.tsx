@@ -38,6 +38,10 @@ interface SubscriptionContextType {
   incrementGuestDrillCount: () => void;
   incrementKanjiQuestCount: () => Promise<void>;
   incrementGuestKanjiQuestCount: () => void;
+  incrementStoryCount: () => Promise<void>;
+  incrementGuestStoryCount: () => void;
+  incrementArticleCount: () => Promise<void>;
+  incrementGuestArticleCount: () => void;
   refreshSubscription: () => Promise<void>;
   showLoginPrompt: (reason: string, feature?: string) => void;
   showUpgradePrompt: (reason: string, feature?: string) => void;
@@ -415,6 +419,42 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  const incrementGuestStoryCount = () => {
+    if (!guestUsage) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const isToday = guestUsage.lastStoryDate === today;
+
+    const updatedUsage: GuestUsage = {
+      ...guestUsage,
+      storiesToday: isToday ? guestUsage.storiesToday + 1 : 1,
+      lastStoryDate: today,
+    };
+
+    setGuestUsage(updatedUsage);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify(updatedUsage));
+    }
+  };
+
+  const incrementGuestArticleCount = () => {
+    if (!guestUsage) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const isToday = guestUsage.lastArticleDate === today;
+
+    const updatedUsage: GuestUsage = {
+      ...guestUsage,
+      articlesToday: isToday ? guestUsage.articlesToday + 1 : 1,
+      lastArticleDate: today,
+    };
+
+    setGuestUsage(updatedUsage);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('doshi_sensei_guest_usage', JSON.stringify(updatedUsage));
+    }
+  };
+
   const showLoginPrompt = (reason: string, feature?: string) => {
     // Use subscription validator for consistent premium check
     const validation = subscriptionValidator.validate(user, userSubscription, loading);
@@ -565,6 +605,84 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  const incrementStoryCount = async () => {
+    if (!user) {
+      // Handle guest users
+      incrementGuestStoryCount();
+      return;
+    }
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const today = new Date().toISOString().split('T')[0];
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentData = userDoc.data();
+
+        if (!currentData?.subscription) {
+          throw new Error('No subscription data found');
+        }
+
+        const currentUsage = currentData.subscription.currentUsage || {};
+        const isToday = currentUsage.lastStoryDate === today;
+        const currentCount = isToday ? (currentUsage.storiesToday || 0) : 0;
+
+        const updatedSubscription = {
+          ...currentData.subscription,
+          currentUsage: {
+            ...currentUsage,
+            storiesToday: currentCount + 1,
+            lastStoryDate: today,
+          },
+        };
+
+        transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const incrementArticleCount = async () => {
+    if (!user) {
+      // Handle guest users
+      incrementGuestArticleCount();
+      return;
+    }
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const today = new Date().toISOString().split('T')[0];
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentData = userDoc.data();
+
+        if (!currentData?.subscription) {
+          throw new Error('No subscription data found');
+        }
+
+        const currentUsage = currentData.subscription.currentUsage || {};
+        const isToday = currentUsage.lastArticleDate === today;
+        const currentCount = isToday ? (currentUsage.articlesToday || 0) : 0;
+
+        const updatedSubscription = {
+          ...currentData.subscription,
+          currentUsage: {
+            ...currentUsage,
+            articlesToday: currentCount + 1,
+            lastArticleDate: today,
+          },
+        };
+
+        transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const refreshSubscription = async () => {
     if (!user) return;
 
@@ -594,6 +712,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     incrementGuestDrillCount,
     incrementKanjiQuestCount,
     incrementGuestKanjiQuestCount,
+    incrementStoryCount,
+    incrementGuestStoryCount,
+    incrementArticleCount,
+    incrementGuestArticleCount,
     refreshSubscription,
     showLoginPrompt,
     showUpgradePrompt,

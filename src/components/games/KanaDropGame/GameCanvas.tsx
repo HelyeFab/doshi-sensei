@@ -25,6 +25,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
     x: number;
     y: number;
   } | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   const gameLoopRef = useRef<number>();
   const lastSpawnRef = useRef<number>(Date.now());
@@ -37,6 +38,32 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
+
+  // Check for game over condition
+  useEffect(() => {
+    if (gameState.score <= -50 && gameState.isPlaying) {
+      console.log('[KanaDrop] Game Over! Score too low');
+      audioManager.playSound('gameOver');
+      audioManager.stopBackgroundMusic();
+      onGameStateUpdate({ isPlaying: false });
+    }
+  }, [gameState.score, gameState.isPlaying, onGameStateUpdate, audioManager]);
+
+  // Handle sound toggle
+  const toggleSound = () => {
+    const newEnabled = !soundEnabled;
+    setSoundEnabled(newEnabled);
+    audioManager.setEnabled(newEnabled);
+  };
+
+  // Start background music when game starts
+  useEffect(() => {
+    if (gameState.isPlaying && !gameState.isPaused && soundEnabled) {
+      audioManager.playBackgroundMusic();
+    } else {
+      audioManager.stopBackgroundMusic();
+    }
+  }, [gameState.isPlaying, gameState.isPaused, soundEnabled, audioManager]);
 
   // Reset spawn counts when game starts
   useEffect(() => {
@@ -147,6 +174,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
       const isTargetKana = gameState.selectedKana.some(k => k.romaji === object.kanaData.romaji);
       if (isTargetKana) {
         setShowFeedback({ type: 'correct', ...clickPosition });
+        audioManager.playSound('start').catch(() => { }); // Use start sound for correct clicks
         onGameStateUpdate(prev => {
           const newScore = prev.score + GAME_CONSTANTS.POINTS_CORRECT;
           return {
@@ -205,6 +233,58 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
     }));
   }, [onGameStateUpdate]);
 
+  // Game loop
+  const gameLoop = useCallback(() => {
+    if (!gameState.isPlaying || gameState.isPaused) return;
+
+    const now = Date.now();
+    const currentGameState = gameStateRef.current;
+
+    // Spawn new objects
+    if (now - lastSpawnRef.current > GAME_CONSTANTS.SPAWN_INTERVAL) {
+      if (spawnObjectRef.current) {
+        spawnObjectRef.current();
+      }
+      lastSpawnRef.current = now;
+    }
+
+    // Update falling objects
+    onGameStateUpdate(prev => {
+      const updatedObjects = prev.fallingObjects.map(obj => {
+        const newY = obj.y + (obj.speed * GAME_CONSTANTS.FALL_SPEED);
+
+        // Check if object reached bottom
+        if (newY >= 100) {
+          handleObjectReachBottom(obj);
+          return null;
+        }
+
+        return { ...obj, y: newY };
+      }).filter(Boolean) as FallingObjectType[];
+
+      return { ...prev, fallingObjects: updatedObjects };
+    });
+
+    gameLoopRef.current = requestAnimationFrame(gameLoop);
+  }, [gameState.isPlaying, gameState.isPaused, onGameStateUpdate, handleObjectReachBottom]);
+
+  // Start/stop game loop
+  useEffect(() => {
+    if (gameState.isPlaying && !gameState.isPaused) {
+      gameLoopRef.current = requestAnimationFrame(gameLoop);
+    } else {
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
+    }
+
+    return () => {
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
+    };
+  }, [gameState.isPlaying, gameState.isPaused, gameLoop]);
+
   // Update game speed based on score
   useEffect(() => {
     const speedLevel = Math.floor(gameState.score / GAME_CONSTANTS.SPEED_INCREMENT_INTERVAL);
@@ -217,59 +297,102 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
       console.log('[KanaDrop] Updating game speed:', {
         currentSpeed: gameState.gameSpeed,
         newSpeed: newSpeed,
-        score: gameState.score,
-        speedLevel: speedLevel
+        score: gameState.score
       });
-      onGameStateUpdate(prev => ({
-        ...prev,
-        gameSpeed: newSpeed
-      }));
+      onGameStateUpdate({ gameSpeed: newSpeed });
     }
   }, [gameState.score, gameState.gameSpeed, onGameStateUpdate]);
 
-  // Game loop with interval-based spawning
+  // Cleanup on unmount
   useEffect(() => {
-    console.log('[KanaDrop] Game loop effect triggered', { isPlaying: gameState.isPlaying, isPaused: gameState.isPaused });
-    if (!gameState.isPlaying || gameState.isPaused) return;
-
-    // Spawn objects on interval instead of every frame
-    const spawnInterval = setInterval(() => {
-      if (spawnObjectRef.current) {
-        spawnObjectRef.current();
-      }
-    }, 750); // Spawn every 750ms on average
-
     return () => {
-      clearInterval(spawnInterval);
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
+      audioManager.stopBackgroundMusic();
     };
-  }, [gameState.isPlaying, gameState.isPaused]);
+  }, [audioManager]);
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-background via-background/95 to-background/90">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)`,
-        }} />
+    <div className="relative w-full h-full bg-gradient-to-b from-blue-50 to-blue-100 overflow-hidden">
+      {/* Sound Toggle Button */}
+      <button
+        onClick={toggleSound}
+        className="absolute top-4 left-4 z-30 p-2 rounded-lg bg-background/80 hover:bg-background border border-border transition-colors"
+        title={soundEnabled ? "Disable Sound" : "Enable Sound"}
+      >
+        {soundEnabled ? "🔊" : "🔇"}
+      </button>
+
+      {/* Score Display */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="text-2xl font-bold text-foreground bg-background/80 px-4 py-2 rounded-lg">
+          Score: {gameState.score}
+        </div>
       </div>
 
-      {/* Game Stats */}
-      <GameStats gameState={gameState} showFeedback={showFeedback} />
+      {/* Game Over Screen */}
+      {gameState.score <= -50 && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/90 z-40">
+          <div className="text-center p-8">
+            <h2 className="text-4xl font-bold text-red-600 mb-4">Game Over!</h2>
+            <p className="text-muted-foreground mb-6">
+              Your score dropped too low. Better luck next time!
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => onGameStateUpdate({
+                  score: 0,
+                  isPlaying: false,
+                  fallingObjects: [],
+                  clicks: { correct: 0, wrong: 0, distractor: 0 }
+                })}
+                className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-xl hover:bg-primary/90 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Falling Objects */}
-      {console.log('[KanaDrop] Rendering falling objects:', gameState.fallingObjects.length)}
       <AnimatePresence>
         {gameState.fallingObjects.map((object) => (
           <FallingObject
             key={object.id}
             object={object}
-            fallDuration={getFallDuration()}
-            onReachBottom={handleObjectReachBottom}
             onClick={handleObjectClick}
-            isClickable={true}
-            isPaused={gameState.isPaused}
+            isClickable={object.type === 'kana' || object.type === 'wrong-kana'}
           />
         ))}
+      </AnimatePresence>
+
+      {/* Feedback Animation */}
+      <AnimatePresence>
+        {showFeedback && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.5 }}
+            className="absolute pointer-events-none z-30"
+            style={{
+              left: `${showFeedback.x}%`,
+              top: `${showFeedback.y}%`,
+              transform: 'translate(-50%, -50%)'
+            }}
+          >
+            <div className={`text-2xl font-bold ${
+              showFeedback.type === 'correct' ? 'text-green-600' :
+              showFeedback.type === 'wrong' ? 'text-red-600' :
+              'text-orange-600'
+            }`}>
+              {showFeedback.type === 'correct' ? '+5 ✨' :
+               showFeedback.type === 'wrong' ? '-10 ❌' :
+               '-5 💥'}
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

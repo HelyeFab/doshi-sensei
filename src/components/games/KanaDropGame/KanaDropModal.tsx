@@ -202,9 +202,51 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
   // Start game from how-to-play screen
   const handleStartGame = () => {
-    setShowHowToPlay(false);
-    setCountdown(GAME_CONSTANTS.COUNTDOWN_DURATION);
+    startCountdown();
   };
+
+  // Start countdown
+  const startCountdown = useCallback(() => {
+    setShowHowToPlay(false);
+    setCountdown(3);
+    const audioManager = getGameAudioManager();
+    audioManager.playSound('countdown');
+
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev === null || prev <= 1) {
+          clearInterval(countdownInterval);
+          // Start the game
+          const audioManager = getGameAudioManager();
+          audioManager.playSound('start');
+          setGameState(prev => ({
+            ...prev,
+            isPlaying: true,
+            startTime: Date.now()
+          }));
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  // Check for victory
+  useEffect(() => {
+    if (gameState.score >= 100 && gameState.isPlaying) {
+      console.log('[KanaDrop] Victory! Score reached 100');
+      const audioManager = getGameAudioManager();
+      audioManager.playSound('victory');
+      audioManager.stopBackgroundMusic();
+      setGameState(prev => ({ ...prev, isPlaying: false }));
+      setShowVictory(true);
+      setGameStats({
+        score: gameState.score,
+        time: Date.now() - gameState.startTime,
+        clicks: gameState.clicks
+      });
+    }
+  }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks]);
 
   if (!isOpen) return null;
 
@@ -290,26 +332,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
           {/* Game controls - Close/Pause and Mute buttons */}
           {!showVictory && (
             <div className="absolute top-4 right-4 z-30 flex gap-2">
-              {/* Mute button */}
-              <button
-                onClick={() => setIsMuted(!isMuted)}
-                className="p-2 rounded-lg bg-background/80 hover:bg-background border border-border transition-colors"
-                title={isMuted ? "Unmute" : "Mute"}
-              >
-                {isMuted ? (
-                  // Muted icon
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-                  </svg>
-                ) : (
-                  // Sound on icon
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                  </svg>
-                )}
-              </button>
-
               {/* Close/Pause button */}
               <button
                 onClick={() => {

@@ -30,6 +30,9 @@ if (!admin.apps.length) {
   } catch (error) {
     console.error('Failed to initialize Firebase Admin SDK:', error.message);
   }
+} else {
+  firebaseInitialized = true;
+  db = admin.firestore();
 }
 
 exports.handler = async (event, context) => {
@@ -90,17 +93,19 @@ exports.handler = async (event, context) => {
       }
     });
     
-    // Delete test articles
-    const batch = db.batch();
+    // Delete test articles one by one to avoid batch issues
     let deleteCount = 0;
+    const deletedArticles = [];
     
     for (const article of articlesToDelete) {
-      batch.delete(articlesRef.doc(article.id));
-      deleteCount++;
-    }
-    
-    if (deleteCount > 0) {
-      await batch.commit();
+      try {
+        await articlesRef.doc(article.id).delete();
+        deleteCount++;
+        deletedArticles.push(article);
+        console.log(`Deleted: ${article.title}`);
+      } catch (error) {
+        console.error(`Failed to delete ${article.id}:`, error.message);
+      }
     }
     
     return {
@@ -109,7 +114,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         success: true,
         message: `Deleted ${deleteCount} test articles`,
-        deletedArticles: articlesToDelete,
+        deletedArticles: deletedArticles,
         timestamp: new Date().toISOString()
       }),
     };

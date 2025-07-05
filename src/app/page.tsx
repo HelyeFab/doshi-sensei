@@ -10,6 +10,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
+import { colorPalettes } from '@/utils/themes';
 
 // Structured Data for SEO
 const structuredData = {
@@ -114,6 +115,10 @@ export default function Home() {
       ? { ...card, icon: '🎌' }
       : card
   );
+
+  // Get theme colors for gradient
+  const colorScheme = settings.colorScheme || 'default';
+  const palette = colorPalettes[colorScheme]?.colors || colorPalettes['default'].colors;
 
   // Load Pokédex count separately to ensure it's always available
   useEffect(() => {
@@ -368,63 +373,64 @@ export default function Home() {
 
           {/* Minimal Stats Bar */}
           <div
-            className="bg-indigo-100/50 dark:bg-indigo-900/20 backdrop-blur-md rounded-lg p-4 md:p-5 mb-8 transition-all duration-300"
+            className="backdrop-blur-md rounded-lg p-4 md:p-5 mb-8 transition-all duration-300"
             style={{
               border: '2px solid white',
-              boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)'
+              boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
+              background: `linear-gradient(90deg, ${palette.primary} 0%, ${palette.accent} 60%, ${palette.secondary} 100%)`,
             }}
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">
               {/* Streak Badge */}
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 md:w-8 md:h-8 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                <div className="w-10 h-10 md:w-8 md:h-8 rounded-full bg-white shadow-sm flex items-center justify-center">
                   <span className="text-base md:text-sm">🔥</span>
                 </div>
                 <div>
-                  <div className="text-sm md:text-xs text-muted-foreground">Streak</div>
-                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : `${stats.streak} days`}</div>
+                  <div className="text-sm md:text-xs text-gray-100">Streak</div>
+                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : `${stats.streak} days`}</div>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-border" />
+              <div className="hidden md:block h-8 w-px bg-white/30" />
 
               {/* Drills */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
                   <span className="text-base md:text-sm">⚡</span>
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.drillsCompleted}</div>
-                  <div className="text-sm md:text-xs text-muted-foreground">Drills</div>
+                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.drillsCompleted}</div>
+                  <div className="text-sm md:text-xs text-gray-100">Drills</div>
                 </div>
               </div>
 
               {/* Sessions */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-200 dark:bg-purple-900/40 flex items-center justify-center">
-                  <span className="text-base md:text-sm text-white">漢</span>
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
+                  <span className="text-base md:text-sm">漢</span>
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.kanjiStudySessions}</div>
-                  <div className="text-sm md:text-xs text-muted-foreground">Sessions</div>
+                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.kanjiStudySessions}</div>
+                  <div className="text-sm md:text-xs text-gray-100">Sessions</div>
                 </div>
               </div>
 
               {/* Learned */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
                   <span className="text-base md:text-sm">📚</span>
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.totalKanjiLearned}</div>
-                  <div className="text-sm md:text-xs text-muted-foreground">Learned</div>
+                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.totalKanjiLearned}</div>
+                  <div className="text-sm md:text-xs text-gray-100">Learned</div>
                 </div>
               </div>
 
               {/* Pokemon */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center p-1">
+                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center p-1">
                   <img
                     src="/pokeball.png"
                     alt="Pokéball"
@@ -432,29 +438,29 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.pokemonCaught}</div>
-                  <div className="text-sm md:text-xs text-muted-foreground">Pokémon</div>
+                  <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.pokemonCaught}</div>
+                  <div className="text-sm md:text-xs text-gray-100">Pokémon</div>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-border" />
+              <div className="hidden md:block h-8 w-px bg-white/30" />
 
               {/* Stories Read */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-200 dark:bg-purple-900/40 flex items-center justify-center">
+                  <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
                     <span className="text-base md:text-sm">📖</span>
                   </div>
                   <div>
-                    <div className="text-base md:text-sm font-semibold">{loading ? '...' : stats.storiesRead}</div>
-                    <div className="text-sm md:text-xs text-muted-foreground">Stories</div>
+                    <div className="text-base md:text-sm font-semibold text-white">{loading ? '...' : stats.storiesRead}</div>
+                    <div className="text-sm md:text-xs text-gray-100">Stories</div>
                   </div>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-border" />
+              <div className="hidden md:block h-8 w-px bg-white/30" />
 
               {/* Overall Accuracy */}
               <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
@@ -464,35 +470,29 @@ export default function Home() {
                       cx="20"
                       cy="20"
                       r="16"
-                      stroke="currentColor"
+                      stroke="white"
                       strokeWidth="3"
                       fill="none"
-                      className="text-muted"
                       opacity="0.2"
                     />
                     <circle
                       cx="20"
                       cy="20"
                       r="16"
-                      stroke="currentColor"
+                      stroke="white"
                       strokeWidth="3"
                       fill="none"
                       strokeDasharray={`${loading ? 0 : (Math.max(stats.accuracy, stats.kanjiAccuracy) / 100) * 100} 100`}
                       strokeLinecap="round"
-                      className={`transition-all duration-500 ${loading ? 'text-gray-400' :
-                          Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'text-green-600 dark:text-green-400' :
-                            Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
-                              Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'text-orange-600 dark:text-orange-400' :
-                                'text-red-600 dark:text-red-400'
-                        }`}
+                      className={`transition-all duration-500`}
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-semibold">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
+                    <span className="text-[10px] font-semibold text-white">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground">Avg Accuracy</div>
+                  <div className="text-xs text-gray-100">Avg Accuracy</div>
                 </div>
               </div>
             </div>

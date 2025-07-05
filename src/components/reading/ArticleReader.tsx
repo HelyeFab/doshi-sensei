@@ -526,10 +526,17 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       setContentLoading(true);
       try {
         const paragraphs = article.content.split('\n');
-        const processedParagraphs = await Promise.all(
-          paragraphs.map(paragraph => renderTextWithHighlighting(paragraph))
-        );
-        setProcessedContent(processedParagraphs);
+        
+        // Only process with old method if not using grammar highlighting
+        if (!settings.highlightVocabulary || settings.highlightMode === 'none') {
+          const processedParagraphs = await Promise.all(
+            paragraphs.map(paragraph => renderTextWithHighlighting(paragraph))
+          );
+          setProcessedContent(processedParagraphs);
+        } else {
+          // For grammar highlighting, keep paragraphs as plain text
+          setProcessedContent(paragraphs);
+        }
       } catch (error) {
         console.error('Error processing article content:', error);
         // Fallback to unprocessed content
@@ -540,7 +547,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     };
 
     processContent();
-  }, [article.content, settings.showFurigana, settings.highlightVocabulary]);
+  }, [article.content, settings.showFurigana, settings.highlightVocabulary, settings.highlightMode]);
 
   // Initialize reading session
   useEffect(() => {

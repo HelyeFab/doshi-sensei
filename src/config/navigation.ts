@@ -39,7 +39,7 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
   {
     id: 'resources',
     label: 'Resources',
-    icon: '✨🎌✨',
+    icon: '🎌',
     href: '/resources',
     description: 'Articles, tips, and learning resources'
   },

@@ -30,7 +30,7 @@ export default function BottomNavigation() {
       // Use default navigation
       const defaultItems = getNavItemsByIds(DEFAULT_NAV_ITEMS);
       navItems.push(...defaultItems);
-      
+
       // Add account as the 5th item by default
       const accountItem = getNavItemsByIds(['account'])[0];
       if (accountItem) {
@@ -46,14 +46,14 @@ export default function BottomNavigation() {
   // Helper function to check if a navigation item is active
   const isNavItemActive = (item: NavItem): boolean => {
     if (pathname === item.href) return true;
-    
+
     // Special cases for nested routes
     if (item.href === '/kanji-moods' && pathname.startsWith('/kanji-moods')) return true;
     if (item.href === '/resources' && pathname.startsWith('/resources')) return true;
     if (item.href === '/games' && pathname.startsWith('/games')) return true;
     if (item.href === '/stories' && pathname.startsWith('/stories')) return true;
     if (item.href === '/news' && pathname.startsWith('/news')) return true;
-    
+
     return false;
   };
 
@@ -72,11 +72,10 @@ export default function BottomNavigation() {
               <Link
                 key={item.id}
                 href={item.href}
-                className={`flex items-center justify-center p-3 rounded-full transition-colors ${
-                  isActive
-                    ? 'text-primary bg-primary/10'
+                className={`flex items-center justify-center p-3 rounded-full transition-colors ${isActive
+                    ? 'text-primary'
                     : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
                 title={item.label}
               >
                 <span className="text-xl">{item.icon}</span>

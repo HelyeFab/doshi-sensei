@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import KuromojiService, { TokenWithHighlight, POS_COLORS } from '@/utils/kuromojiService';
 
 interface GrammarHighlightedTextProps {
@@ -21,10 +21,27 @@ export function GrammarHighlightedText({
   const [tokens, setTokens] = useState<TokenWithHighlight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isKuromojiReady, setIsKuromojiReady] = useState(false);
+
+  // Initialize Kuromoji once
+  useEffect(() => {
+    const initKuromoji = async () => {
+      try {
+        const kuromojiService = KuromojiService.getInstance();
+        await kuromojiService.initialize();
+        setIsKuromojiReady(true);
+      } catch (err) {
+        console.error('Failed to initialize Kuromoji:', err);
+        setError('Failed to initialize grammar analyzer');
+      }
+    };
+    
+    initKuromoji();
+  }, []);
 
   useEffect(() => {
     const analyzeText = async () => {
-      if (highlightMode === 'none' || !text) {
+      if (!isKuromojiReady || highlightMode === 'none' || !text) {
         setTokens([]);
         setLoading(false);
         return;
@@ -46,7 +63,7 @@ export function GrammarHighlightedText({
     };
 
     analyzeText();
-  }, [text, highlightMode]);
+  }, [text, highlightMode, isKuromojiReady]);
 
   const shouldHighlight = (token: TokenWithHighlight): boolean => {
     if (highlightMode === 'none') return false;
@@ -71,7 +88,7 @@ export function GrammarHighlightedText({
     }
   };
 
-  if (loading) {
+  if (loading || !isKuromojiReady) {
     return <span className={className}>{text}</span>;
   }
 

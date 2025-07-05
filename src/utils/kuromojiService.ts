@@ -1,5 +1,6 @@
 // Kuromoji service for Japanese morphological analysis
 import kuromoji from '@sglkc/kuromoji';
+import FallbackTokenizer from './fallbackTokenizer';
 
 export interface TokenFeatures {
   word_id: number;
@@ -60,9 +61,13 @@ export const POS_COLORS: Record<string, string> = {
 class KuromojiService {
   private static instance: KuromojiService;
   private tokenizer: any = null;
+  private fallbackTokenizer: FallbackTokenizer | null = null;
   private initPromise: Promise<void> | null = null;
+  private useFallback = false;
 
-  private constructor() {}
+  private constructor() {
+    this.fallbackTokenizer = new FallbackTokenizer();
+  }
 
   static getInstance(): KuromojiService {
     if (!KuromojiService.instance) {
@@ -80,15 +85,16 @@ class KuromojiService {
       return this.initPromise;
     }
 
-    this.initPromise = new Promise((resolve, reject) => {
+    this.initPromise = new Promise((resolve) => {
       const builder = kuromoji.builder({
         dicPath: '/dict/', // We'll need to serve dictionary files
       });
 
       builder.build((err: any, tokenizer: any) => {
         if (err) {
-          console.error('Failed to initialize Kuromoji:', err);
-          reject(err);
+          console.error('Failed to initialize Kuromoji, using fallback:', err);
+          this.useFallback = true;
+          resolve(); // Resolve anyway, we'll use fallback
         } else {
           this.tokenizer = tokenizer;
           console.log('Kuromoji initialized successfully');
@@ -101,11 +107,35 @@ class KuromojiService {
   }
 
   async tokenize(text: string): Promise<TokenWithHighlight[]> {
-    if (!this.tokenizer) {
+    if (!this.tokenizer && !this.useFallback) {
       await this.initialize();
     }
 
-    const tokens: TokenFeatures[] = this.tokenizer.tokenize(text);
+    let tokens: TokenFeatures[];
+    
+    if (this.useFallback && this.fallbackTokenizer) {
+      // Use fallback tokenizer
+      const fallbackTokens = this.fallbackTokenizer.tokenize(text);
+      tokens = fallbackTokens.map(token => ({
+        word_id: 0,
+        word_type: 'KNOWN',
+        word_position: 0,
+        surface_form: token.surface_form,
+        pos: token.pos,
+        pos_detail_1: '*',
+        pos_detail_2: '*',
+        pos_detail_3: '*',
+        conjugated_type: '*',
+        conjugated_form: '*',
+        basic_form: token.basic_form,
+        reading: token.reading,
+        pronunciation: token.reading
+      }));
+    } else if (this.tokenizer) {
+      tokens = this.tokenizer.tokenize(text);
+    } else {
+      return [];
+    }
     
     // Map tokens with highlight information
     return tokens.map(token => {

@@ -51,6 +51,9 @@ firebase-service-account.json
 public/sw.js
 public/workbox-*.js
 
+# Kuromoji dictionary files (large binary files)
+public/dict/
+
 # Work in progress files
 sensei-feedback/
 src/utils/rate-limiter.ts

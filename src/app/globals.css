@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+@import '../styles/grammar-highlighting.css';
 
 /* Configure Tailwind v4 dark mode to use class strategy */
 @utility dark {

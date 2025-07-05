@@ -11,18 +11,19 @@ interface PageHeaderProps {
   helpKey?: string;
   onBackClick?: () => void;
   backHref?: string;
+  rightAction?: JSX.Element;
 }
 
-export function PageHeader({ title, subtitle, showBackButton = true, helpKey, onBackClick, backHref = "/" }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, showBackButton = true, helpKey, onBackClick, backHref = "/", rightAction }: PageHeaderProps) {
   const helpContent = helpKey ? pageHelpContent[helpKey] : null;
-  
+
   const handleBackClick = (e: React.MouseEvent) => {
     if (onBackClick) {
       e.preventDefault();
       onBackClick();
     }
   };
-  
+
   return (
     <header className="mb-8">
       <div className="flex items-center mb-4">
@@ -39,24 +40,25 @@ export function PageHeader({ title, subtitle, showBackButton = true, helpKey, on
           </Link>
         )}
 
-        <div className="flex-1">
-          <div className="flex items-center">
-            <h1 className="text-3xl font-bold text-foreground">
-              {title}
-            </h1>
-            {helpContent && (
-              <PageHelpIcon
-                title={helpContent.title}
-                description={helpContent.description}
-                tips={helpContent.tips}
-              />
-            )}
-          </div>
-          {subtitle && (
-            <p className="text-muted-foreground mt-1">{subtitle}</p>
+        <div className="flex-1 flex items-center">
+          <h1 className="text-3xl font-bold text-foreground">
+            {title}
+          </h1>
+          {helpContent && (
+            <PageHelpIcon
+              title={helpContent.title}
+              description={helpContent.description}
+              tips={helpContent.tips}
+            />
           )}
         </div>
+        {rightAction && (
+          <div className="ml-4 flex-shrink-0 flex items-center">{rightAction}</div>
+        )}
       </div>
+      {subtitle && (
+        <p className="text-muted-foreground mt-1">{subtitle}</p>
+      )}
     </header>
   );
 }

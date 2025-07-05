@@ -1,0 +1,149 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import KuromojiService, { TokenWithHighlight, POS_COLORS } from '@/utils/kuromojiService';
+
+interface GrammarHighlightedTextProps {
+  text: string;
+  highlightMode: 'none' | 'all' | 'content' | 'grammar';
+  onWordClick?: (word: string, event: React.MouseEvent) => void;
+  showFurigana?: boolean;
+  className?: string;
+}
+
+export function GrammarHighlightedText({
+  text,
+  highlightMode,
+  onWordClick,
+  showFurigana = false,
+  className = ''
+}: GrammarHighlightedTextProps) {
+  const [tokens, setTokens] = useState<TokenWithHighlight[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const analyzeText = async () => {
+      if (highlightMode === 'none' || !text) {
+        setTokens([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const kuromojiService = KuromojiService.getInstance();
+        const analyzedTokens = await kuromojiService.tokenize(text);
+        setTokens(analyzedTokens);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to analyze text:', err);
+        setError('Failed to analyze text');
+        setTokens([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    analyzeText();
+  }, [text, highlightMode]);
+
+  const shouldHighlight = (token: TokenWithHighlight): boolean => {
+    if (highlightMode === 'none') return false;
+    if (highlightMode === 'all') return true;
+    
+    const kuromojiService = KuromojiService.getInstance();
+    
+    if (highlightMode === 'content') {
+      return kuromojiService.isContentWord(token);
+    }
+    
+    if (highlightMode === 'grammar') {
+      return kuromojiService.isGrammarWord(token);
+    }
+    
+    return false;
+  };
+
+  const handleWordClick = (token: TokenWithHighlight, event: React.MouseEvent) => {
+    if (onWordClick && token.basic_form) {
+      onWordClick(token.basic_form, event);
+    }
+  };
+
+  if (loading) {
+    return <span className={className}>{text}</span>;
+  }
+
+  if (error || tokens.length === 0) {
+    return <span className={className}>{text}</span>;
+  }
+
+  return (
+    <span className={className}>
+      {tokens.map((token, index) => {
+        const isHighlighted = shouldHighlight(token);
+        const posType = KuromojiService.getInstance().getPartOfSpeech(token);
+        
+        if (showFurigana && token.reading && token.surface_form !== token.reading) {
+          // Render with furigana
+          return (
+            <ruby
+              key={index}
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-0.5 ${
+                isHighlighted ? `grammar-${posType}` : ''
+              }`}
+              style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
+              onClick={(e) => handleWordClick(token, e)}
+              data-pos={posType}
+            >
+              {token.surface_form}
+              <rt className="text-xs">{token.reading}</rt>
+            </ruby>
+          );
+        } else {
+          // Render without furigana
+          return (
+            <span
+              key={index}
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-0.5 ${
+                isHighlighted ? `grammar-${posType}` : ''
+              }`}
+              style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
+              onClick={(e) => handleWordClick(token, e)}
+              data-pos={posType}
+              title={token.reading || token.surface_form}
+            >
+              {token.surface_form}
+            </span>
+          );
+        }
+      })}
+    </span>
+  );
+}
+
+// Legend component to show color coding
+export function GrammarLegend() {
+  const categories = [
+    { type: 'noun', label: 'Nouns', color: POS_COLORS.noun },
+    { type: 'verb', label: 'Verbs', color: POS_COLORS.verb },
+    { type: 'adjective', label: 'Adjectives', color: POS_COLORS.adjective },
+    { type: 'particle', label: 'Particles', color: POS_COLORS.particle },
+    { type: 'adverb', label: 'Adverbs', color: POS_COLORS.adverb },
+  ];
+
+  return (
+    <div className="flex flex-wrap gap-3 text-sm">
+      {categories.map(cat => (
+        <div key={cat.type} className="flex items-center gap-1">
+          <div
+            className="w-4 h-4 rounded"
+            style={{ backgroundColor: cat.color }}
+          />
+          <span className="text-muted-foreground">{cat.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}

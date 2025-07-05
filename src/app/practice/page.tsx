@@ -265,6 +265,19 @@ export default function PracticePage() {
 
   const allKanaSelected = selectedHiragana.size + selectedKatakana.size === getBasicKana().length;
 
+  // Add this rightAction for the header
+  const kanaDropHeaderButton = (selectedHiragana.size + selectedKatakana.size) <= 5 && (selectedHiragana.size + selectedKatakana.size) > 0 && (
+    <button
+      onClick={handleStartKanaDrop}
+      className="ml-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+      <span>Kana Drop</span>
+    </button>
+  );
+
   if (selectedWord) {
     return <WordPractice word={selectedWord} onBack={handleBackToList} />;
   }
@@ -292,7 +305,7 @@ export default function PracticePage() {
           }}
         />
 
-        <PageHeader title={strings.practice.title} helpKey="practice" />
+        <PageHeader title={strings.practice.title} helpKey="practice" rightAction={kanaDropHeaderButton} />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Tab Navigation */}
@@ -301,8 +314,8 @@ export default function PracticePage() {
               <button
                 onClick={() => setActiveTab('kana')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'kana'
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
                   }`}
               >
                 Kana Charts
@@ -310,8 +323,8 @@ export default function PracticePage() {
               <button
                 onClick={() => setActiveTab('conjugation')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'conjugation'
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
                   }`}
               >
                 Conjugation Practice
@@ -333,8 +346,8 @@ export default function PracticePage() {
                   <button
                     onClick={() => setKanaChartType('hiragana')}
                     className={`px-4 py-2 rounded-lg border transition-colors ${kanaChartType === 'hiragana'
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background text-foreground border-input hover:bg-muted'
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-background text-foreground border-input hover:bg-muted'
                       }`}
                   >
                     ひらがな Hiragana
@@ -342,8 +355,8 @@ export default function PracticePage() {
                   <button
                     onClick={() => setKanaChartType('katakana')}
                     className={`px-4 py-2 rounded-lg border transition-colors ${kanaChartType === 'katakana'
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background text-foreground border-input hover:bg-muted'
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-background text-foreground border-input hover:bg-muted'
                       }`}
                   >
                     カタカナ Katakana
@@ -393,20 +406,6 @@ export default function PracticePage() {
                           </svg>
                           <span>Start Study ({selectedHiragana.size + selectedKatakana.size} selected)</span>
                         </button>
-
-                        {(selectedHiragana.size + selectedKatakana.size) <= 5 && (selectedHiragana.size + selectedKatakana.size) > 0 && (
-                          <button
-                            onClick={handleStartKanaDrop}
-                            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                              />
-                            </svg>
-                            <span>Kana Drop</span>
-                          </button>
-                        )}
                       </div>
                     </>
                   )}
@@ -548,8 +547,8 @@ function WordSelector({
               key={filter}
               onClick={() => onWordTypeFilterChange(filter)}
               className={`px-4 py-2 rounded-lg border transition-colors ${wordTypeFilter === filter
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background text-foreground border-input hover:bg-muted'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-foreground border-input hover:bg-muted'
                 }`}
             >
               {filter === 'all' ? 'All Types' :
@@ -897,529 +896,4 @@ function VerbEssentials({ word, conjugations }: VerbEssentialsProps) {
       return word.kanji;
     }
   };
-
-  const getInfinitive = () => {
-    if (word.type === 'Ichidan') {
-      return word.kanji.slice(0, -1); // Remove る for stem
-    } else if (word.type === 'Godan') {
-      return conjugations.masuStem; // The i-stem for godan verbs
-    } else {
-      return conjugations.masuStem;
-    }
-  };
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div className="bg-background/30 rounded-lg p-4 border border-border/30">
-        <div className="text-sm text-muted-foreground mb-1">Verb Class</div>
-        <div className="text-lg font-medium text-foreground">
-          {word.type === 'Godan' ? '1 ~ Godan ~ 五段' :
-            word.type === 'Ichidan' ? '2 ~ Ichidan ~ 一段' :
-              '3 ~ Irregular ~ 不規則'}
-        </div>
-      </div>
-
-      <div className="bg-background/30 rounded-lg p-4 border border-border/30">
-        <div className="text-sm text-muted-foreground mb-1">Stem</div>
-        <div className="text-lg japanese-text font-medium text-foreground">
-          {getStem()}
-        </div>
-      </div>
-
-      <div className="bg-background/30 rounded-lg p-4 border border-border/30">
-        <div className="text-sm text-muted-foreground mb-1">Te form</div>
-        <div className="text-lg japanese-text font-medium text-foreground">
-          {conjugations.teForm}
-        </div>
-      </div>
-
-      <div className="bg-background/30 rounded-lg p-4 border border-border/30">
-        <div className="text-sm text-muted-foreground mb-1">Infinitive</div>
-        <div className="text-lg japanese-text font-medium text-foreground">
-          {getInfinitive()}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Conjugation Section Component
-interface ConjugationSectionProps {
-  title: string;
-  forms: Array<{
-    label: string;
-    value: string | undefined;
-  }>;
-  showFurigana: boolean;
-  generateFurigana: (conjugation: string, form: keyof ConjugationForms) => string;
-}
-
-function ConjugationSection({ title, forms, showFurigana, generateFurigana }: ConjugationSectionProps) {
-  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
-
-  const handleSpeak = async (text: string, index: number) => {
-    try {
-      setPlayingIndex(index);
-      await TTSManager.speak(text);
-      setPlayingIndex(null);
-    } catch (error) {
-      console.error('Error speaking text:', error);
-      setPlayingIndex(null);
-    }
-  };
-
-  return (
-    <div className="border border-border/50 rounded-lg p-4">
-      <h4 className="text-lg font-semibold mb-4 text-card-foreground">
-        {title}
-      </h4>
-      <div className="space-y-3">
-        {forms.map((form, index) => {
-          if (!form.value) return null;
-
-          return (
-            <div key={index} className="p-3 bg-background/30 rounded border border-border/30">
-              {/* Label on first row */}
-              <div className="text-sm text-muted-foreground mb-2">
-                {form.label}
-              </div>
-              {/* Verb + icon on second row */}
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="text-lg japanese-text font-medium text-foreground">
-                    {form.value}
-                  </div>
-                  {showFurigana && (
-                    <div className="text-xs japanese-text text-muted-foreground">
-                      {generateFurigana(form.value, 'present' as keyof ConjugationForms)}
-                    </div>
-                  )}
-                </div>
-                <button
-                  onClick={() => handleSpeak(form.value!, index)}
-                  disabled={playingIndex === index}
-                  className="p-1 rounded-full hover:bg-primary/10 text-primary transition-colors disabled:opacity-50 ml-3"
-                  title={`Speak: ${form.value}`}
-                >
-                  {playingIndex === index ? (
-                    // Playing animation
-                    <svg className="w-4 h-4 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                    </svg>
-                  ) : (
-                    // Speaker icon
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// Word Practice Component
-interface WordPracticeProps {
-  word: JapaneseWord;
-  onBack: () => void;
-}
-
-function WordPractice({ word, onBack }: WordPracticeProps) {
-  const [showRules, setShowRules] = useState(false);
-  const [showFurigana, setShowFurigana] = useState(false);
-
-  const conjugations = ConjugationEngine.conjugate(word);
-
-  // Track word study when component mounts
-  useEffect(() => {
-    const recordWordStudy = async () => {
-      try {
-        await StatsManager.recordWordStudied(word.id);
-      } catch (err) {
-        console.error('Error recording word study:', err);
-      }
-    };
-
-    recordWordStudy();
-  }, [word.id]);
-
-  const getFormDisplayName = (form: keyof ConjugationForms): string => {
-    return (strings.conjugation?.forms as Record<string, string>)?.[form] || form;
-  };
-
-  // Generate furigana for conjugated forms
-  const generateConjugationFurigana = (conjugation: string, form: keyof ConjugationForms): string => {
-    // For now, we'll use a simple approach based on the word's kana
-    // This could be enhanced with more sophisticated logic
-
-    // If the conjugation contains the word's kanji, replace it with kana
-    let furigana = conjugation;
-
-    // Simple mapping for common patterns
-    if (word.kanji && word.kana) {
-      // Replace kanji characters with their kana equivalents where possible
-      const wordStem = word.kanji.slice(0, -1); // Remove last character for verbs
-      const kanaStem = word.kana.slice(0, -1);
-
-      if (conjugation.includes(wordStem)) {
-        furigana = conjugation.replace(wordStem, kanaStem);
-      }
-    }
-
-    return furigana;
-  };
-
-  const handleDrill = () => {
-    // Store the word in sessionStorage to be picked up by the drill page
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('drillWord', JSON.stringify(word));
-      window.location.href = '/drill';
-    }
-  };
-
-  return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15,18 9,12 15,6"></polyline>
-          </svg>
-          {strings.common.back}
-        </button>
-
-        <button
-          onClick={handleDrill}
-          className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="5,3 19,12 5,21 5,3"></polygon>
-          </svg>
-          {strings.drill.title}
-        </button>
-      </div>
-
-      {/* Word Info */}
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="relative inline-block">
-            {showFurigana && (
-              <div className="text-lg japanese-text text-muted-foreground mb-1">
-                {word.kana}
-              </div>
-            )}
-            <div className="text-6xl japanese-text font-medium text-foreground mb-4">
-              {word.kanji}
-            </div>
-          </div>
-          {!showFurigana && (
-            <div className="text-2xl japanese-text text-muted-foreground mb-2">
-              {word.kana}
-            </div>
-          )}
-          <div className="text-lg text-muted-foreground mb-4">
-            {word.romaji}
-          </div>
-          <div className="text-xl text-foreground mb-6">
-            {word.meaning}
-          </div>
-          <div className="flex items-center justify-center gap-4">
-            <span className={`px-3 py-1 rounded-lg border text-sm ${word.type === 'Ichidan' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                word.type === 'Godan' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                  word.type === 'Irregular' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                    word.type === 'i-adjective' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                      word.type === 'na-adjective' ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' :
-                        'bg-gray-500/10 text-gray-400 border-gray-500/20'
-              }`}>
-              {word.type}
-            </span>
-            <span className="px-3 py-1 rounded-lg border bg-secondary/10 text-secondary border-secondary/20 text-sm">
-              {word.jlpt}
-            </span>
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="flex justify-center gap-4 mb-8">
-          <button
-            onClick={() => setShowRules(!showRules)}
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
-          >
-            {showRules ? strings.drill.hideRules : strings.drill.showRules}
-          </button>
-          <button
-            onClick={() => setShowFurigana(!showFurigana)}
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
-          >
-            {showFurigana ? "Hide Furigana" : "Show Furigana"}
-          </button>
-        </div>
-
-        {/* Rules */}
-        {showRules && (
-          <div className="bg-card border border-border rounded-lg p-6 mb-8">
-            <h3 className="text-lg font-semibold mb-4 text-card-foreground">
-              {strings.verbTypes[word.type.toLowerCase().replace('-', '') as keyof typeof strings.verbTypes]} Rules
-            </h3>
-            <div className="text-muted-foreground">
-              {/* Add conjugation rules here based on word type */}
-              <p>Conjugation rules for {word.type} will be displayed here.</p>
-            </div>
-          </div>
-        )}
-
-        {/* Verb Essentials */}
-        {(word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular') && (
-          <div className="bg-card border border-border rounded-lg p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-6 text-card-foreground">
-              Verb Essentials
-            </h3>
-            <VerbEssentials word={word} conjugations={conjugations} />
-          </div>
-        )}
-
-        {/* Conjugations */}
-        <div className="bg-card border border-border rounded-lg p-6 mb-20">
-          <h3 className="text-xl font-semibold mb-6 text-card-foreground">
-            Conjugation Forms
-          </h3>
-
-          <div className="space-y-6">
-            {/* Non Past */}
-            <ConjugationSection
-              title="Non Past 🏃"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.present },
-                { label: "Negative Plain", value: conjugations.negative },
-                { label: "Affirmative Polite", value: conjugations.polite },
-                { label: "Negative Polite", value: conjugations.politeNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Past */}
-            <ConjugationSection
-              title="Past 📅"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.past },
-                { label: "Negative Plain", value: conjugations.pastNegative },
-                { label: "Affirmative Polite", value: conjugations.politePast },
-                { label: "Negative Polite", value: conjugations.politePastNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Te Form */}
-            <ConjugationSection
-              title="Te Form 🔗"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.teForm },
-                { label: "Negative Plain", value: conjugations.negativeTeForm },
-                { label: "Naide Form", value: conjugations.naiDeForm }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Progressive */}
-            <ConjugationSection
-              title="Progressive 🏃‍♂️"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.progressive },
-                { label: "Negative Plain", value: conjugations.progressiveNegative },
-                { label: "Affirmative Polite", value: conjugations.progressivePolite },
-                { label: "Negative Polite", value: conjugations.progressivePoliteNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Past Progressive */}
-            <ConjugationSection
-              title="Past Progressive 🏃‍♂️📅"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.progressive ? conjugations.progressive.replace('いる', 'いた') : '' },
-                { label: "Negative Plain", value: conjugations.progressiveNegative ? conjugations.progressiveNegative.replace('いない', 'いなかった') : '' },
-                { label: "Affirmative Polite", value: conjugations.progressivePolite ? conjugations.progressivePolite.replace('います', 'いました') : '' },
-                { label: "Negative Polite", value: conjugations.progressivePoliteNegative ? conjugations.progressivePoliteNegative.replace('いません', 'いませんでした') : '' }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Desire Form */}
-            <ConjugationSection
-              title="Desire Form 😍"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.taiForm ?? '' },
-                { label: "Negative Plain", value: conjugations.taiFormNegative ?? '' },
-                { label: "Affirmative Polite", value: (conjugations.taiForm ?? '') ? (conjugations.taiForm ?? '') + 'です' : '' },
-                { label: "Negative Polite", value: (conjugations.taiFormNegative ?? '') ? (conjugations.taiFormNegative ?? '') + 'です' : '' }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Past Desire Form */}
-            <ConjugationSection
-              title="Past Desire Form 😍"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.taiFormPast ?? '' },
-                { label: "Negative Plain", value: conjugations.taiFormPastNegative ?? '' },
-                { label: "Affirmative Polite", value: (conjugations.taiFormPast ?? '') ? (conjugations.taiFormPast ?? '') + 'です' : '' },
-                { label: "Negative Polite", value: (conjugations.taiFormPastNegative ?? '') ? (conjugations.taiFormPastNegative ?? '') + 'です' : '' }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Volitional */}
-            <ConjugationSection
-              title="Volitional 😤"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.volitional ?? '' },
-                { label: "Negative Plain", value: conjugations.volitionalNegative ?? '' },
-                { label: "Affirmative Polite", value: conjugations.politeVolitional ?? '' }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Imperative */}
-            <ConjugationSection
-              title="Imperative 🔺"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.imperativePlain ?? '' },
-                { label: "Negative Plain", value: conjugations.requestNegative ?? '' },
-                { label: "Affirmative Polite", value: conjugations.imperativePolite ?? '' },
-                { label: "Negative Polite", value: conjugations.requestNegative ?? '' }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Passive */}
-            <ConjugationSection
-              title="Passive 📘"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.passive },
-                { label: "Negative Plain", value: conjugations.passiveNegative },
-                { label: "Affirmative Polite", value: conjugations.passivePolite },
-                { label: "Negative Polite", value: conjugations.passivePoliteNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Past Passive */}
-            <ConjugationSection
-              title="Past Passive 📘📅"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.passivePast },
-                { label: "Negative Plain", value: conjugations.passivePastNegative },
-                { label: "Affirmative Polite", value: conjugations.passivePolitePast },
-                { label: "Negative Polite", value: conjugations.passivePolitePastNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Causative */}
-            <ConjugationSection
-              title="Causative 👉"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.causative },
-                { label: "Negative Plain", value: conjugations.causativeNegative },
-                { label: "Affirmative Polite", value: conjugations.causativePolite },
-                { label: "Negative Polite", value: conjugations.causativePoliteNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Causative Passive */}
-            <ConjugationSection
-              title="Causative Passive 👉"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.causativePassive },
-                { label: "Negative Plain", value: conjugations.causativePassiveNegative },
-                { label: "Affirmative Polite", value: conjugations.causativePassivePolite },
-                { label: "Negative Polite", value: conjugations.causativePassivePoliteNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Potential */}
-            <ConjugationSection
-              title="Potential ✨"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.potential },
-                { label: "Negative Plain", value: conjugations.potentialNegative },
-                { label: "Affirmative Polite", value: conjugations.potentialPolite },
-                { label: "Negative Polite", value: conjugations.potentialPoliteNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Past Potential */}
-            <ConjugationSection
-              title="Past Potential ✨📅"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.potentialPast },
-                { label: "Negative Plain", value: conjugations.potentialPastNegative },
-                { label: "Affirmative Polite", value: conjugations.potentialPolitePast },
-                { label: "Negative Polite", value: conjugations.potentialPolitePastNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Provisional Ba */}
-            <ConjugationSection
-              title="Provisional Ba ❓"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.provisional },
-                { label: "Negative Plain", value: conjugations.provisionalNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Conditional Tara */}
-            <ConjugationSection
-              title="Conditional Tara ⭕"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.conditional },
-                { label: "Negative Plain", value: conjugations.conditionalNegative }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-
-            {/* Tari Form */}
-            <ConjugationSection
-              title="Tari Form 📊"
-              forms={[
-                { label: "Affirmative Plain", value: conjugations.alternativeForm }
-              ]}
-              showFurigana={showFurigana}
-              generateFurigana={generateConjugationFurigana}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }

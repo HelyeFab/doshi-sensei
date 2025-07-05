@@ -16,6 +16,7 @@ import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import ImprovedArticleAudioPlayer from '@/components/audio/ImprovedArticleAudioPlayer';
+import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -54,6 +55,7 @@ interface ReadingSettings {
   fontSize: 'small' | 'medium' | 'large' | 'xlarge';
   showFurigana: boolean;
   highlightVocabulary: boolean;
+  highlightMode: 'none' | 'all' | 'content' | 'grammar';
   darkMode: boolean;
 }
 
@@ -178,6 +180,10 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
   const handleToggleVocabularyHighlight = () => {
     onSettingsChange({ ...settings, highlightVocabulary: !settings.highlightVocabulary });
   };
+  
+  const handleHighlightModeChange = (mode: ReadingSettings['highlightMode']) => {
+    onSettingsChange({ ...settings, highlightMode: mode });
+  };
 
   return (
     <div className="absolute top-12 right-0 z-40 bg-card border border-border rounded-lg shadow-lg p-4 w-64">
@@ -239,7 +245,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
 
         {/* Vocabulary Highlighting */}
         <div>
-          <label className="flex items-center justify-between">
+          <label className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-foreground">
               Highlight Vocabulary
             </span>
@@ -254,6 +260,55 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
               />
             </button>
           </label>
+          
+          {/* Grammar Highlighting Mode */}
+          {settings.highlightVocabulary && (
+            <div className="mt-2 space-y-2">
+              <label className="text-xs text-muted-foreground">Highlight Mode:</label>
+              <div className="grid grid-cols-2 gap-1">
+                <button
+                  onClick={() => handleHighlightModeChange('all')}
+                  className={`px-2 py-1 rounded text-xs ${
+                    settings.highlightMode === 'all'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  All Words
+                </button>
+                <button
+                  onClick={() => handleHighlightModeChange('content')}
+                  className={`px-2 py-1 rounded text-xs ${
+                    settings.highlightMode === 'content'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Content Words
+                </button>
+                <button
+                  onClick={() => handleHighlightModeChange('grammar')}
+                  className={`px-2 py-1 rounded text-xs ${
+                    settings.highlightMode === 'grammar'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Grammar
+                </button>
+                <button
+                  onClick={() => handleHighlightModeChange('none')}
+                  className={`px-2 py-1 rounded text-xs ${
+                    settings.highlightMode === 'none'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  None
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -286,6 +341,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       fontSize: 'medium',
       showFurigana: true,
       highlightVocabulary: true,
+      highlightMode: 'content',
       darkMode: false
     };
   });
@@ -758,6 +814,14 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
           {/* Audio Player */}
           <ImprovedArticleAudioPlayer article={article} />
+          
+          {/* Grammar Legend */}
+          {settings.highlightVocabulary && settings.highlightMode !== 'none' && (
+            <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+              <h4 className="text-sm font-medium mb-2">Grammar Color Guide:</h4>
+              <GrammarLegend />
+            </div>
+          )}
 
           {/* Article body */}
           <div
@@ -771,19 +835,39 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             ) : (
               processedContent.map((paragraph, index) => (
                 <div key={index} className="mb-6">
-                  <RubyTextRenderer
-                    text={paragraph}
-                    settings={settings}
-                    onWordClick={(e) => {
-                      const target = e.target as HTMLElement;
-                      if (target.classList.contains('vocabulary-highlight') ||
-                        target.tagName === 'RUBY' ||
-                        target.tagName === 'RT' ||
-                        target.closest('ruby')) {
-                        handleWordClick(e);
-                      }
-                    }}
-                  />
+                  {settings.highlightVocabulary && settings.highlightMode !== 'none' ? (
+                    <GrammarHighlightedText
+                      text={paragraph}
+                      highlightMode={settings.highlightMode}
+                      showFurigana={settings.showFurigana}
+                      onWordClick={(word, e) => {
+                        const target = e.target as HTMLElement;
+                        const rect = target.getBoundingClientRect();
+                        setSelectedWord({
+                          word,
+                          position: {
+                            x: rect.left,
+                            y: rect.top + window.scrollY
+                          }
+                        });
+                      }}
+                      className={getFontSizeClass()}
+                    />
+                  ) : (
+                    <RubyTextRenderer
+                      text={paragraph}
+                      settings={settings}
+                      onWordClick={(e) => {
+                        const target = e.target as HTMLElement;
+                        if (target.classList.contains('vocabulary-highlight') ||
+                          target.tagName === 'RUBY' ||
+                          target.tagName === 'RT' ||
+                          target.closest('ruby')) {
+                          handleWordClick(e);
+                        }
+                      }}
+                    />
+                  )}
                 </div>
               ))
             )}

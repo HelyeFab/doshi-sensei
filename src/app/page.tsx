@@ -103,28 +103,35 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(true);
   const [showPokedexModal, setShowPokedexModal] = useState(false);
-  
+
   // Use predefined color patterns for better visual distribution
   const mobileColors = MOBILE_COLOR_PATTERN;
   const desktopColors = DESKTOP_COLOR_PATTERN;
+
+  // For mobile, override the Resources card icon to only show the flag
+  const mobileFeatureCards = FEATURE_CARDS.map(card =>
+    card.title === 'Resources'
+      ? { ...card, icon: '🎌' }
+      : card
+  );
 
   // Load Pokédex count separately to ensure it's always available
   useEffect(() => {
     const loadPokemonCount = async () => {
       try {
         // Get user premium status
-        const isPremiumUser = userSubscription?.subscription?.status === 'active' && 
-          (userSubscription?.subscription?.plan === 'monthly' || 
-           userSubscription?.subscription?.plan === 'yearly');
-        
+        const isPremiumUser = userSubscription?.subscription?.status === 'active' &&
+          (userSubscription?.subscription?.plan === 'monthly' ||
+            userSubscription?.subscription?.plan === 'yearly');
+
         // Get caught Pokemon from IndexedDB and cloud if premium
         const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
-        
+
         console.log('🎮 Pokédex count check:', {
           pokemonCount: caughtPokemon.length,
           user: user?.email
         });
-        
+
         if (caughtPokemon.length > 0) {
           setStats(prev => ({ ...prev, pokemonCaught: caughtPokemon.length }));
         }
@@ -133,7 +140,7 @@ export default function Home() {
         // No fallback needed, will display 0
       }
     };
-    
+
     loadPokemonCount();
   }, [user, userSubscription]);
 
@@ -189,21 +196,21 @@ export default function Home() {
       const { default: StatsManager } = await import('@/utils/stats');
       const { storyManager } = await import('@/utils/storyManager');
       const userStats = await StatsManager.getUserStats();
-      
+
       // Get Pokémon count from both sources
       let pokemonCount = 0;
       try {
-        const isPremiumUser = userSubscription?.subscription?.status === 'active' && 
-          (userSubscription?.subscription?.plan === 'monthly' || 
-           userSubscription?.subscription?.plan === 'yearly');
-        
+        const isPremiumUser = userSubscription?.subscription?.status === 'active' &&
+          (userSubscription?.subscription?.plan === 'monthly' ||
+            userSubscription?.subscription?.plan === 'yearly');
+
         const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
         pokemonCount = caughtPokemon.length;
       } catch (error) {
         // Error loading Pokémon in loadStats
         console.error('Error loading Pokémon in loadStats:', error);
       }
-      
+
       // Get story stats with error handling
       let storyStats = { totalStoriesRead: 0 };
       if (user) {
@@ -214,7 +221,7 @@ export default function Home() {
           console.warn('Could not fetch story stats:', error);
         }
       }
-      
+
       setStats(prevStats => ({
         drillsCompleted: userStats.drillsCompleted,
         accuracy: Math.round(userStats.accuracy),
@@ -270,7 +277,7 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
 
         {/* Virtual Companion Button positioned within this section */}
-        
+
         {/* Pokédex Icon - positioned on the right */}
         {stats.pokemonCaught > 0 && (
           <button
@@ -278,9 +285,9 @@ export default function Home() {
             className="absolute top-4 right-4 p-3 bg-white backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10"
             aria-label="Open Pokédex"
           >
-            <img 
-              src="/flat-icons/188915-pokemon-go/png/smartphone.png" 
-              alt="Pokédex" 
+            <img
+              src="/flat-icons/188915-pokemon-go/png/smartphone.png"
+              alt="Pokédex"
               className="w-8 h-8 md:w-10 md:h-10"
             />
             <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
@@ -331,7 +338,7 @@ export default function Home() {
             {/* Mobile: 2x2 Grid without scroll container */}
             <div className="md:hidden">
               <div className="grid grid-cols-2 gap-3">
-                {FEATURE_CARDS.map((card, index) => (
+                {mobileFeatureCards.map((card, index) => (
                   <FeatureCard
                     key={card.href}
                     title={card.title}
@@ -360,7 +367,7 @@ export default function Home() {
           </div>
 
           {/* Minimal Stats Bar */}
-          <div 
+          <div
             className="bg-indigo-100/50 dark:bg-indigo-900/20 backdrop-blur-md rounded-lg p-4 md:p-5 mb-8 transition-all duration-300"
             style={{
               border: '2px solid white',
@@ -392,7 +399,7 @@ export default function Home() {
                   <div className="text-sm md:text-xs text-muted-foreground">Drills</div>
                 </div>
               </div>
-              
+
               {/* Sessions */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-purple-200 dark:bg-purple-900/40 flex items-center justify-center">
@@ -403,7 +410,7 @@ export default function Home() {
                   <div className="text-sm md:text-xs text-muted-foreground">Sessions</div>
                 </div>
               </div>
-              
+
               {/* Learned */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
@@ -414,13 +421,13 @@ export default function Home() {
                   <div className="text-sm md:text-xs text-muted-foreground">Learned</div>
                 </div>
               </div>
-              
+
               {/* Pokemon */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center p-1">
-                  <img 
-                    src="/pokeball.png" 
-                    alt="Pokéball" 
+                  <img
+                    src="/pokeball.png"
+                    alt="Pokéball"
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -472,13 +479,12 @@ export default function Home() {
                       fill="none"
                       strokeDasharray={`${loading ? 0 : (Math.max(stats.accuracy, stats.kanjiAccuracy) / 100) * 100} 100`}
                       strokeLinecap="round"
-                      className={`transition-all duration-500 ${
-                        loading ? 'text-gray-400' :
-                        Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'text-green-600 dark:text-green-400' :
-                        Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
-                        Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'text-orange-600 dark:text-orange-400' :
-                        'text-red-600 dark:text-red-400'
-                      }`}
+                      className={`transition-all duration-500 ${loading ? 'text-gray-400' :
+                          Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 80 ? 'text-green-600 dark:text-green-400' :
+                            Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
+                              Math.round((stats.accuracy + stats.kanjiAccuracy) / 2) >= 40 ? 'text-orange-600 dark:text-orange-400' :
+                                'text-red-600 dark:text-red-400'
+                        }`}
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -493,7 +499,7 @@ export default function Home() {
           </div>
         </main>
       </div>
-      
+
       {/* Pokédex Modal */}
       <PokedexModal
         isOpen={showPokedexModal}
@@ -563,30 +569,30 @@ type CardColor = keyof typeof CARD_COLORS;
 function assignCardColors(totalCards: number, columns: number): CardColor[] {
   const colorKeys = Object.keys(CARD_COLORS) as CardColor[];
   const colors: CardColor[] = [];
-  
+
   // More sophisticated coloring that uses more colors
   for (let i = 0; i < totalCards; i++) {
     const row = Math.floor(i / columns);
     const col = i % columns;
-    
+
     // Find colors of adjacent cards
     const adjacentColors: Set<CardColor> = new Set();
-    
+
     // Check left neighbor
     if (col > 0 && colors[i - 1]) {
       adjacentColors.add(colors[i - 1]);
     }
-    
+
     // Check top neighbor
     if (row > 0 && colors[i - columns]) {
       adjacentColors.add(colors[i - columns]);
     }
-    
+
     // Check right neighbor (for better distribution)
     if (col < columns - 1 && colors[i + 1]) {
       adjacentColors.add(colors[i + 1]);
     }
-    
+
     // Check diagonal neighbors to avoid patterns
     if (row > 0 && col > 0 && colors[i - columns - 1]) {
       adjacentColors.add(colors[i - columns - 1]);
@@ -594,11 +600,11 @@ function assignCardColors(totalCards: number, columns: number): CardColor[] {
     if (row > 0 && col < columns - 1 && colors[i - columns + 1]) {
       adjacentColors.add(colors[i - columns + 1]);
     }
-    
+
     // Try to use colors in a rotating pattern for better distribution
     const startIndex = (row + col) % colorKeys.length;
     let availableColor: CardColor | undefined;
-    
+
     // Look for an available color starting from the rotated position
     for (let j = 0; j < colorKeys.length; j++) {
       const colorIndex = (startIndex + j) % colorKeys.length;
@@ -608,10 +614,10 @@ function assignCardColors(totalCards: number, columns: number): CardColor[] {
         break;
       }
     }
-    
+
     colors.push(availableColor || colorKeys[0]);
   }
-  
+
   return colors;
 }
 
@@ -641,9 +647,9 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
         <div className="relative flex flex-col items-center text-center space-y-2 md:space-y-3">
           <div className="text-2xl md:text-3xl drop-shadow-sm">
             {icon.startsWith('/') ? (
-              <img 
-                src={icon} 
-                alt={title} 
+              <img
+                src={icon}
+                alt={title}
                 className="w-8 h-8 md:w-10 md:h-10 object-contain"
               />
             ) : (

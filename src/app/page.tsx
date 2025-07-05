@@ -87,6 +87,16 @@ const DESKTOP_COLOR_PATTERN: CardColor[] = [
   'purple', 'green', 'blue', 'pink'
 ];
 
+// Utility to convert hsl string to moderate pastel
+function pastelizeHSL(hsl: string) {
+  // Match hsl(hue, saturation%, lightness%)
+  const match = hsl.match(/hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)/);
+  if (!match) return hsl;
+  const [_, h, s, l] = match;
+  // Use 60% saturation, 85% lightness for moderate pastel
+  return `hsl(${h}, 60%, 85%)`;
+}
+
 export default function Home() {
   const { user } = useAuth();
   const { userSubscription } = useSubscription();
@@ -116,9 +126,12 @@ export default function Home() {
       : card
   );
 
-  // Get theme colors for gradient
+  // Get theme colors for gradient (moderate pastel)
   const colorScheme = settings.colorScheme || 'default';
   const palette = colorPalettes[colorScheme]?.colors || colorPalettes['default'].colors;
+  const pastelPrimary = pastelizeHSL(palette.primary);
+  const pastelAccent = pastelizeHSL(palette.accent);
+  const pastelSecondary = pastelizeHSL(palette.secondary);
 
   // Load Pokédex count separately to ensure it's always available
   useEffect(() => {
@@ -377,7 +390,7 @@ export default function Home() {
             style={{
               border: '2px solid white',
               boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
-              background: `linear-gradient(90deg, ${palette.primary} 0%, ${palette.accent} 60%, ${palette.secondary} 100%)`,
+              background: `linear-gradient(90deg, ${pastelPrimary} 0%, ${pastelAccent} 60%, ${pastelSecondary} 100%)`,
             }}
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">

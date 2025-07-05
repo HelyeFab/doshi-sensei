@@ -102,8 +102,11 @@ export function GrammarHighlightedText({
         const isHighlighted = shouldHighlight(token);
         const posType = KuromojiService.getInstance().getPartOfSpeech(token);
         
-        if (showFurigana && token.reading && token.surface_form !== token.reading) {
-          // Render with furigana
+        // Check if the token contains kanji
+        const hasKanji = /[\u4E00-\u9FAF]/.test(token.surface_form);
+        
+        if (showFurigana && token.reading && token.surface_form !== token.reading && hasKanji) {
+          // Render with furigana only for words containing kanji
           return (
             <ruby
               key={index}

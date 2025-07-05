@@ -48,6 +48,8 @@ function makeRequest(url, redirectCount = 0) {
     }
 
     const parsedUrl = new URL(url);
+    const zlib = require('zlib');
+    
     const options = {
       hostname: parsedUrl.hostname,
       path: parsedUrl.pathname + parsedUrl.search,
@@ -56,6 +58,7 @@ function makeRequest(url, redirectCount = 0) {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'ja,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate',
       },
       timeout: 30000
     };
@@ -78,20 +81,40 @@ function makeRequest(url, redirectCount = 0) {
         return;
       }
 
-      res.setEncoding('utf8');
-      res.on('data', chunk => {
-        data += chunk;
-        // Prevent memory issues
-        if (data.length > 1000000) { // 1MB limit
-          req.destroy();
-          reject(new Error('Response too large'));
-        }
-      });
-      
-      res.on('end', () => {
-        console.log(`Received ${data.length} bytes`);
-        resolve(data);
-      });
+      // Handle gzip compression
+      if (res.headers['content-encoding'] === 'gzip') {
+        const gunzip = zlib.createGunzip();
+        res.pipe(gunzip);
+        
+        gunzip.on('data', chunk => {
+          data += chunk.toString();
+          if (data.length > 1000000) { // 1MB limit
+            gunzip.destroy();
+            reject(new Error('Response too large'));
+          }
+        });
+        
+        gunzip.on('end', () => {
+          console.log(`Decompressed ${data.length} bytes`);
+          resolve(data);
+        });
+        
+        gunzip.on('error', reject);
+      } else {
+        res.setEncoding('utf8');
+        res.on('data', chunk => {
+          data += chunk;
+          if (data.length > 1000000) { // 1MB limit
+            req.destroy();
+            reject(new Error('Response too large'));
+          }
+        });
+        
+        res.on('end', () => {
+          console.log(`Received ${data.length} bytes`);
+          resolve(data);
+        });
+      }
     });
 
     req.on('error', reject);
@@ -126,7 +149,7 @@ async function scrapeTodaiiArticles() {
   
   try {
     console.log('📖 Fetching Todaii Japanese homepage...');
-    const html = await makeRequest('https://todaijapanese.com');
+    const html = await makeRequest('https://japanese.todaiinews.com');
     console.log(`✅ Fetched homepage: ${html.length} bytes`);
 
     // Extract article links - simplified pattern
@@ -135,7 +158,7 @@ async function scrapeTodaiiArticles() {
     
     for (const match of linkMatches) {
       if (articleUrls.size >= 20) break; // Limit to 20 articles
-      const fullUrl = `https://todaijapanese.com${match[1]}`;
+      const fullUrl = `https://japanese.todaiinews.com${match[1]}`;
       articleUrls.add(fullUrl);
     }
 

@@ -81,7 +81,10 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     if (gameState.score >= GAME_CONSTANTS.WINNING_SCORE && gameState.isPlaying) {
       // Victory!
       const endTime = Date.now();
-      const timeTaken = Math.round((endTime - gameState.startTime) / 1000);
+      let timeTaken = 0;
+      if (gameState.startTime && gameState.startTime > 0) {
+        timeTaken = Math.round((endTime - gameState.startTime) / 1000);
+      }
       const totalClicks = gameState.clicks.correct + gameState.clicks.wrong + gameState.clicks.distractor;
       const accuracy = totalClicks > 0
         ? Math.round((gameState.clicks.correct / totalClicks) * 100)

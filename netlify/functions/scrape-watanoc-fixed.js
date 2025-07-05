@@ -39,10 +39,12 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
-// HTTP request helper with better error handling
+// HTTP request helper with gzip support
 function makeRequest(url) {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(url);
+    const zlib = require('zlib');
+    
     const options = {
       hostname: parsedUrl.hostname,
       path: parsedUrl.pathname + parsedUrl.search,
@@ -51,34 +53,59 @@ function makeRequest(url) {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'ja,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Encoding': 'gzip, deflate',
       },
-      timeout: 30000 // Increase timeout to 30 seconds
+      timeout: 30000
     };
 
-    let data = '';
     const req = https.request(options, (res) => {
       console.log(`Response status: ${res.statusCode}`);
+      console.log('Content-Encoding:', res.headers['content-encoding']);
       
       if (res.statusCode !== 200) {
         reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
         return;
       }
 
-      res.setEncoding('utf8');
-      res.on('data', chunk => {
-        data += chunk;
-        // Prevent memory issues - stop if data is too large
-        if (data.length > 1000000) { // 1MB limit
-          req.destroy();
-          reject(new Error('Response too large'));
-        }
-      });
+      let data = '';
       
-      res.on('end', () => {
-        console.log(`Received ${data.length} bytes`);
-        resolve(data);
-      });
+      // Handle gzip compression
+      if (res.headers['content-encoding'] === 'gzip') {
+        const gunzip = zlib.createGunzip();
+        res.pipe(gunzip);
+        
+        gunzip.on('data', chunk => {
+          data += chunk.toString();
+          if (data.length > 1000000) { // 1MB limit
+            gunzip.destroy();
+            reject(new Error('Response too large'));
+          }
+        });
+        
+        gunzip.on('end', () => {
+          console.log(`Decompressed ${data.length} bytes`);
+          resolve(data);
+        });
+        
+        gunzip.on('error', err => {
+          console.error('Gunzip error:', err);
+          reject(err);
+        });
+      } else {
+        res.setEncoding('utf8');
+        res.on('data', chunk => {
+          data += chunk;
+          if (data.length > 1000000) { // 1MB limit
+            req.destroy();
+            reject(new Error('Response too large'));
+          }
+        });
+        
+        res.on('end', () => {
+          console.log(`Received ${data.length} bytes`);
+          resolve(data);
+        });
+      }
     });
 
     req.on('error', (err) => {

@@ -51,10 +51,15 @@ async function triggerSourceScraping(source: NewsSourceConfig): Promise<Scraping
     console.log(`🚀 Triggering ${source.name} scraping...`);
 
     const response = await fetch(`/.netlify/functions/${source.netlifyFunction}`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      body: JSON.stringify({
+        trigger: 'manual',
+        timestamp: new Date().toISOString(),
+        source: source.id
+      })
     });
 
     if (!response.ok) {

@@ -216,11 +216,24 @@ exports.handler = async (event, context) => {
 
       // Extract articles from the nested structure
       articles = [];
-      Object.values(parsed).forEach(dateData => {
-        if (Array.isArray(dateData)) {
-          articles.push(...dateData);
-        }
-      });
+
+      // Handle new array format: [{"2025-07-04": [articles]}, ...]
+      if (Array.isArray(parsed)) {
+        parsed.forEach(dateObject => {
+          Object.values(dateObject).forEach(dateData => {
+            if (Array.isArray(dateData)) {
+              articles.push(...dateData);
+            }
+          });
+        });
+      } else {
+        // Handle old object format (backward compatibility)
+        Object.values(parsed).forEach(dateData => {
+          if (Array.isArray(dateData)) {
+            articles.push(...dateData);
+          }
+        });
+      }
     } catch (parseError) {
       console.error('Failed to parse NHK news data:', parseError);
       throw new Error('Invalid response format from NHK');

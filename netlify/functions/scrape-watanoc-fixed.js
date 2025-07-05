@@ -53,7 +53,7 @@ function makeRequest(url) {
         'Accept-Language': 'ja,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
       },
-      timeout: 20000 // Increase timeout to 20 seconds
+      timeout: 30000 // Increase timeout to 30 seconds
     };
 
     let data = '';
@@ -69,7 +69,7 @@ function makeRequest(url) {
       res.on('data', chunk => {
         data += chunk;
         // Prevent memory issues - stop if data is too large
-        if (data.length > 500000) { // 500KB limit
+        if (data.length > 1000000) { // 1MB limit
           req.destroy();
           reject(new Error('Response too large'));
         }
@@ -143,7 +143,7 @@ async function scrapeWatanocArticles() {
     let count = 0;
 
     for (const match of articleMatches) {
-      if (count >= 3) break; // Limit to 3 articles for performance
+      if (count >= 10) break; // Limit to 10 articles
       
       const articleHtml = match[0];
       
@@ -160,15 +160,23 @@ async function scrapeWatanocArticles() {
       const cleanTitle = cleanText(rawTitle).replace(/\s*\(n[1-5]\).*$/i, '');
       const jlptLevel = extractJLPTLevel(rawTitle);
       
-      // Create article object with minimal data
-      articles.push({
+      // Try to extract image URL
+      const imgMatch = articleHtml.match(/src="([^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i);
+      const imageUrl = imgMatch ? imgMatch[1] : `https://images.unsplash.com/photo-${1500000000000 + count}?w=400`;
+      
+      // Extract date if available
+      const dateMatch = articleHtml.match(/<time[^>]*datetime="([^"]+)"|>(\d{4}年\d{1,2}月\d{1,2}日)</);
+      const publishDate = dateMatch ? parseJapaneseDate(dateMatch[1] || dateMatch[2]) : new Date();
+      
+      // Create article object
+      const article = {
         id: `watanoc_${Date.now()}_${count}`,
         title: cleanTitle,
-        content: `Content for: ${cleanTitle}`, // Placeholder
-        summary: cleanTitle.substring(0, 100) + '...',
+        content: '', // Will be filled later
+        summary: cleanTitle.substring(0, 150) + '...',
         url: url,
-        imageUrl: `https://images.unsplash.com/photo-${1500000000000 + count}?w=400`,
-        publishDate: new Date(),
+        imageUrl: imageUrl,
+        publishDate: publishDate,
         scrapedAt: new Date(),
         source: {
           id: 'watanoc',
@@ -181,10 +189,40 @@ async function scrapeWatanocArticles() {
         estimatedReadingTime: 3,
         vocabulary: [],
         kanji: []
-      });
+      };
+      
+      articles.push(article);
       
       count++;
       console.log(`✅ Extracted article ${count}: ${cleanTitle}`);
+    }
+
+    // Fetch content for first 3 articles (to avoid timeout)
+    console.log('📄 Fetching article content...');
+    for (let i = 0; i < Math.min(3, articles.length); i++) {
+      try {
+        const articleHtml = await makeRequest(articles[i].url);
+        const contentMatch = articleHtml.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+        if (contentMatch) {
+          articles[i].content = cleanText(contentMatch[1]).substring(0, 2000); // Limit content length
+          articles[i].summary = articles[i].content.substring(0, 200) + '...';
+          
+          // Extract vocabulary
+          const vocabulary = (articles[i].content.match(/[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]+/g) || [])
+            .filter((word, index, self) => self.indexOf(word) === index && word.length > 1)
+            .slice(0, 20);
+          articles[i].vocabulary = vocabulary;
+          
+          // Extract kanji
+          const kanji = (articles[i].content.match(/[\u4e00-\u9faf]/g) || [])
+            .filter((char, index, self) => self.indexOf(char) === index)
+            .slice(0, 15);
+          articles[i].kanji = kanji;
+        }
+        await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between requests
+      } catch (error) {
+        console.warn(`⚠️ Could not fetch content for article ${i + 1}: ${error.message}`);
+      }
     }
 
     return articles;
@@ -283,7 +321,7 @@ exports.handler = async (event, context) => {
 
     // Get articles from Watanoc with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 25000)
+      setTimeout(() => reject(new Error('Scraping timeout')), 50000) // 50 seconds timeout
     );
     
     const articles = await Promise.race([

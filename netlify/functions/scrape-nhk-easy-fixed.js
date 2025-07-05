@@ -48,7 +48,7 @@ function makeRequestWithRetry(url, retries = 3) {
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': 'ja,en;q=0.9',
         },
-        timeout: 15000
+        timeout: 30000
       }, (res) => {
         let data = '';
         
@@ -57,7 +57,7 @@ function makeRequestWithRetry(url, retries = 3) {
         res.on('data', chunk => {
           data += chunk;
           // Prevent memory issues
-          if (data.length > 500000) { // 500KB limit
+          if (data.length > 1000000) { // 1MB limit
             req.destroy();
             reject(new Error('Response too large'));
           }
@@ -138,8 +138,8 @@ async function scrapeNHKEasyArticles() {
     
     console.log(`Found ${allArticles.length} total articles`);
     
-    // Convert to our format (limit to 5 articles)
-    const articles = allArticles.slice(0, 5).map((article, index) => ({
+    // Convert to our format (limit to 15 articles)
+    const articles = allArticles.slice(0, 15).map((article, index) => ({
       id: `nhk_easy_${article.news_id || Date.now()}_${index}`,
       title: article.title || 'NHK Easy News Article',
       content: article.title_with_ruby || article.title || '',
@@ -260,7 +260,7 @@ exports.handler = async (event, context) => {
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 25000)
+      setTimeout(() => reject(new Error('Scraping timeout')), 50000) // 50 seconds timeout
     );
     
     const articles = await Promise.race([

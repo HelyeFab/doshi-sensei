@@ -9,16 +9,17 @@ interface VictoryScreenProps {
   stats: GameStats;
   onPlayAgain: () => void;
   onSelectNewKana: () => void;
+  onClose: () => void;
 }
 
-export default function VictoryScreen({ stats, onPlayAgain, onSelectNewKana }: VictoryScreenProps) {
+export default function VictoryScreen({ stats, onPlayAgain, onSelectNewKana, onClose }: VictoryScreenProps) {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const updateWindowSize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     };
-    
+
     updateWindowSize();
     window.addEventListener('resize', updateWindowSize);
     return () => window.removeEventListener('resize', updateWindowSize);
@@ -37,7 +38,7 @@ export default function VictoryScreen({ stats, onPlayAgain, onSelectNewKana }: V
         numberOfPieces={200}
         gravity={0.2}
       />
-      
+
       <motion.div
         initial={{ y: 50 }}
         animate={{ y: 0 }}
@@ -99,6 +100,14 @@ export default function VictoryScreen({ stats, onPlayAgain, onSelectNewKana }: V
               className="w-full px-6 py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/90 transition-colors"
             >
               Select New Kana
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onClose}
+              className="w-full px-6 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/90 transition-colors"
+            >
+              Close
             </motion.button>
           </div>
         </div>

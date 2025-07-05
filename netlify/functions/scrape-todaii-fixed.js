@@ -57,7 +57,7 @@ function makeRequest(url, redirectCount = 0) {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'ja,en;q=0.9',
       },
-      timeout: 20000
+      timeout: 30000
     };
 
     let data = '';
@@ -82,7 +82,7 @@ function makeRequest(url, redirectCount = 0) {
       res.on('data', chunk => {
         data += chunk;
         // Prevent memory issues
-        if (data.length > 500000) { // 500KB limit
+        if (data.length > 1000000) { // 1MB limit
           req.destroy();
           reject(new Error('Response too large'));
         }
@@ -134,7 +134,7 @@ async function scrapeTodaiiArticles() {
     const articleUrls = new Set();
     
     for (const match of linkMatches) {
-      if (articleUrls.size >= 3) break; // Limit to 3 articles
+      if (articleUrls.size >= 10) break; // Limit to 10 articles
       const fullUrl = `https://todaijapanese.com${match[1]}`;
       articleUrls.add(fullUrl);
     }
@@ -266,7 +266,7 @@ exports.handler = async (event, context) => {
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 25000)
+      setTimeout(() => reject(new Error('Scraping timeout')), 50000) // 50 seconds timeout
     );
     
     const articles = await Promise.race([

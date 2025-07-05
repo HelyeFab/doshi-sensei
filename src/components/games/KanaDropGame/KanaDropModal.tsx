@@ -221,21 +221,29 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
               {/* Close/Pause button */}
               <button
                 onClick={() => {
-                  if (gameState.isPlaying) {
+                  if (gameState.isPlaying && !gameState.isPaused) {
                     // Pause the game
-                    handleGameStateUpdate({ isPaused: true, isPlaying: false });
+                    handleGameStateUpdate({ isPaused: true });
+                  } else if (gameState.isPaused) {
+                    // Resume the game
+                    handleGameStateUpdate({ isPaused: false });
                   } else {
                     // Close the modal
                     onClose();
                   }
                 }}
                 className="p-2 rounded-lg bg-background/80 hover:bg-background border border-border transition-colors"
-                title={gameState.isPlaying ? "Pause Game" : "Close"}
+                title={gameState.isPlaying && !gameState.isPaused ? "Pause Game" : gameState.isPaused ? "Resume Game" : "Close"}
               >
-                {gameState.isPlaying ? (
+                {gameState.isPlaying && !gameState.isPaused ? (
                   // Pause icon
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ) : gameState.isPaused ? (
+                  // Play/Resume icon
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
                   </svg>
                 ) : (
                   // Close icon
@@ -243,6 +251,18 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 )}
+              </button>
+
+              {/* Close button (always visible) */}
+              <button
+                onClick={onClose}
+                className="p-2 rounded-lg bg-background/80 hover:bg-background border border-border transition-colors"
+                title="Close Game"
+              >
+                {/* Close icon */}
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
           )}
@@ -282,6 +302,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
               stats={gameStats}
               onPlayAgain={handlePlayAgain}
               onSelectNewKana={handleSelectNewKana}
+              onClose={onClose}
             />
           )}
 
@@ -378,6 +399,32 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                       End Game
                     </motion.button>
                   )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pause overlay logic */}
+          {gameState.isPaused && !showVictory && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/90 z-30">
+              <div className="text-center p-8">
+                <h2 className="text-4xl font-bold text-foreground mb-4">Game Paused</h2>
+                <p className="text-muted-foreground mb-6 max-w-md">
+                  Click Resume to continue playing or Close to exit the game.
+                </p>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => handleGameStateUpdate({ isPaused: false })}
+                    className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-xl hover:bg-primary/90 transition-colors"
+                  >
+                    Resume Game
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="px-8 py-4 bg-destructive text-destructive-foreground rounded-lg font-semibold text-xl hover:bg-destructive/90 transition-colors"
+                  >
+                    End Game
+                  </button>
                 </div>
               </div>
             </div>

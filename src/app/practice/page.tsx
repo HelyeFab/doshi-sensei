@@ -243,7 +243,7 @@ export default function PracticePage() {
     return selectedData;
   }, [selectedHiragana, selectedKatakana]);
 
-  const handleStartKanaDrop = () => {
+  const handleStartKanaDrop = async () => {
     if (getSelectedKanaData.length === 0) {
       showNotification({
         title: 'No Characters Selected',
@@ -260,6 +260,41 @@ export default function PracticePage() {
       });
       return;
     }
+    
+    // Check if user can play KanaDrop using entitlements
+    // For now, we'll check KanjiQuest limits since games share the same daily limit
+    const canPlay = isFeatureAvailable('kanjiquest');
+    
+    if (canPlay === false) {
+      // Get usage info for the message
+      const today = new Date().toISOString().split('T')[0];
+      let gamesPlayed = 0;
+      
+      if (userType === 'guest' && guestUsage) {
+        const isToday = guestUsage.lastKanjiQuestDate === today;
+        gamesPlayed = isToday ? guestUsage.kanjiQuestToday : 0;
+      } else if (userSubscription) {
+        const isToday = userSubscription.currentUsage.lastKanjiQuestDate === today;
+        gamesPlayed = isToday ? (userSubscription.currentUsage.kanjiQuestToday || 0) : 0;
+      }
+      
+      const maxGames = 3; // Daily limit for non-premium users
+      
+      // Show appropriate prompt based on user type
+      if (userType === 'guest') {
+        showLoginPrompt(
+          `You've played ${gamesPlayed}/${maxGames} games today! 🎮\n\nSign up free to track your progress and get more daily games!`,
+          'kanadrop'
+        );
+      } else if (userType === 'free') {
+        showUpgradePrompt(
+          `You've reached your daily limit of ${gamesPlayed}/${maxGames} games! 🎮\n\nUpgrade to Premium for unlimited games and become a kana master!`,
+          'kanadrop'
+        );
+      }
+      return;
+    }
+    
     setShowKanaDropModal(true);
   };
 

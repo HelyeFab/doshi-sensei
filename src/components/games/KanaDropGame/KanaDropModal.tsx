@@ -7,6 +7,8 @@ import RomajiControls from './RomajiControls';
 import VictoryScreen from './VictoryScreen';
 import { GameState, GameStats as GameStatsType, KanaChar, GAME_CONSTANTS } from './types';
 import { getGameAudioManager } from './audioManager';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface KanaDropModalProps {
   isOpen: boolean;
@@ -15,8 +17,16 @@ interface KanaDropModalProps {
 }
 
 export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDropModalProps) {
+  const { user } = useAuth();
+  const { 
+    incrementKanjiQuestCount, 
+    incrementGuestKanjiQuestCount,
+    userType 
+  } = useSubscription();
+  
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [hasIncrementedUsage, setHasIncrementedUsage] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     score: 0,
     selectedKana,
@@ -90,7 +100,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
   // Check for victory
   useEffect(() => {
-    if (gameState.score >= GAME_CONSTANTS.WINNING_SCORE && gameState.isPlaying) {
+    if (gameState.score >= GAME_CONSTANTS.WINNING_SCORE && gameState.isPlaying && !hasIncrementedUsage) {
       // Victory!
       const endTime = Date.now();
       let timeTaken = 0;
@@ -117,12 +127,23 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       }));
 
       setShowVictory(true);
+      
+      // Increment usage count (using KanjiQuest count since games share limits)
+      setHasIncrementedUsage(true);
+      if (userType === 'guest') {
+        incrementGuestKanjiQuestCount();
+      } else if (user) {
+        incrementKanjiQuestCount().catch(err => {
+          console.error('Failed to increment game count:', err);
+        });
+      }
+      
       // Play victory sound
       getGameAudioManager().playSound('victory').catch(() => {
         console.warn('[KanaDrop] Failed to play victory sound');
       });
     }
-  }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks]);
+  }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks, hasIncrementedUsage, userType, user, incrementKanjiQuestCount, incrementGuestKanjiQuestCount]);
 
   // Handle romaji button click
   const handleRomajiClick = useCallback((romaji: string) => {
@@ -167,6 +188,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   const handlePlayAgain = () => {
     setShowVictory(false);
     setGameStats(null);
+    setHasIncrementedUsage(false); // Reset usage tracking
     setGameState({
       score: 0,
       selectedKana,
@@ -197,6 +219,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       setCountdown(null);
       setShowVictory(false);
       setGameStats(null);
+      setHasIncrementedUsage(false); // Reset usage tracking
       setGameState({
         score: 0,
         selectedKana,
@@ -249,22 +272,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     }, 1000);
   }, []);
 
-  // Check for victory
-  useEffect(() => {
-    if (gameState.score >= 100 && gameState.isPlaying) {
-      console.log('[KanaDrop] Victory! Score reached 100');
-      const audioManager = getGameAudioManager();
-      audioManager.playSound('victory');
-      audioManager.stopBackgroundMusic();
-      setGameState(prev => ({ ...prev, isPlaying: false }));
-      setShowVictory(true);
-      setGameStats({
-        score: gameState.score,
-        time: Date.now() - gameState.startTime,
-        clicks: gameState.clicks
-      });
-    }
-  }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks]);
 
   if (!isOpen) return null;
 

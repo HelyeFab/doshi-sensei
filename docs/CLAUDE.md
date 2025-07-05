@@ -315,6 +315,36 @@ To view subscription state for any user, simply log in and check the browser con
 - ✅ Seamless app updates without user friction
 - ✅ Production-ready with analytics and monitoring
 
+## Key Background Files for Development
+
+### Files to Review Before Making Changes
+When working on features related to user limits, subscriptions, or game access, review these files:
+
+1. **Subscription System**
+   - `/src/utils/subscriptionValidator.ts` - Single source of truth for subscription validation
+   - `/src/types/subscription.ts` - User types and subscription interfaces
+   - `/src/contexts/SubscriptionContext.tsx` - Main subscription state management
+   - `/docs/FREEMIUM_SYSTEM_DOCUMENTATION.md` - Comprehensive freemium system docs
+   - `/docs/USER_ENTITLEMENTS.md` - Visual guide to user entitlements
+
+2. **Games**
+   - `/src/components/games/KanaDropGame/` - KanaDrop game implementation
+     - `KanaDropModal.tsx` - Main game container
+     - `GameCanvas.tsx` - Game play area
+     - `FallingObject.tsx` - Individual falling items
+     - `types.ts` - Game types and constants
+   - `/src/components/games/KanjiQuest.tsx` - Pokémon-style kanji learning game
+
+3. **Admin System**
+   - `/src/types/admin.ts` - Admin user types
+   - `/docs/CLAUDE.md` - Section on admin dashboard implementation status
+
+### Understanding User Types
+- **Guest**: Non-registered users (3 games/drills per day, no saving)
+- **Free**: Registered users (3 games/drills per day, 3 lists max, 5 bookmarks)
+- **Monthly/Yearly**: Premium users ($3.99/mo or $39.99/yr, unlimited everything)
+- **Admin**: Special role with dashboard access
+
 ## Entitlements System Migration Plan - January 2025
 
 ### Overview

@@ -93,18 +93,60 @@ exports.handler = async (event, context) => {
       }
     });
     
-    // Delete test articles one by one to avoid batch issues
+    // Get delete mode from request body
+    const body = event.body ? JSON.parse(event.body) : {};
+    const deleteMode = body.mode || 'batch'; // 'batch' or 'individual'
+    const articleIds = body.articleIds || null; // For deleting specific articles
+    
     let deleteCount = 0;
     const deletedArticles = [];
     
-    for (const article of articlesToDelete) {
-      try {
-        await articlesRef.doc(article.id).delete();
-        deleteCount++;
+    // If specific article IDs provided, filter to only those
+    const finalArticlesToDelete = articleIds 
+      ? articlesToDelete.filter(a => articleIds.includes(a.id))
+      : articlesToDelete;
+    
+    if (deleteMode === 'batch' && finalArticlesToDelete.length > 0) {
+      // Batch delete - more efficient for multiple articles
+      const batch = db.batch();
+      
+      for (const article of finalArticlesToDelete) {
+        batch.delete(articlesRef.doc(article.id));
         deletedArticles.push(article);
-        console.log(`Deleted: ${article.title}`);
+        deleteCount++;
+      }
+      
+      try {
+        await batch.commit();
+        console.log(`Batch deleted ${deleteCount} articles`);
       } catch (error) {
-        console.error(`Failed to delete ${article.id}:`, error.message);
+        console.error('Batch delete error:', error);
+        // Fallback to individual deletes if batch fails
+        deleteCount = 0;
+        deletedArticles.length = 0;
+        
+        for (const article of finalArticlesToDelete) {
+          try {
+            await articlesRef.doc(article.id).delete();
+            deleteCount++;
+            deletedArticles.push(article);
+            console.log(`Individually deleted: ${article.title}`);
+          } catch (err) {
+            console.error(`Failed to delete ${article.id}:`, err.message);
+          }
+        }
+      }
+    } else {
+      // Individual delete mode
+      for (const article of finalArticlesToDelete) {
+        try {
+          await articlesRef.doc(article.id).delete();
+          deleteCount++;
+          deletedArticles.push(article);
+          console.log(`Deleted: ${article.title}`);
+        } catch (error) {
+          console.error(`Failed to delete ${article.id}:`, error.message);
+        }
       }
     }
     

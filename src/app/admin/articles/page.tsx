@@ -143,14 +143,15 @@ export default function ArticlesManagementPage() {
     setStatus('🗑️ Cache cleared');
   };
 
-  const handleDeleteTestArticles = async () => {
+  const handleDeleteTestArticles = async (mode: 'batch' | 'individual' = 'batch', articleIds?: string[]) => {
     setLoading(true);
-    setStatus('🗑️ Deleting test articles...');
+    setStatus(`🗑️ Deleting test articles (${mode} mode)...`);
     
     try {
       const response = await fetch('/.netlify/functions/delete-test-articles', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode, articleIds })
       });
       
       const result = await response.json();
@@ -253,11 +254,11 @@ export default function ArticlesManagementPage() {
               </button>
               
               <button
-                onClick={handleDeleteTestArticles}
+                onClick={() => handleDeleteTestArticles('batch')}
                 disabled={loading}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                🗑️ Delete Test Articles
+                🗑️ Delete All Test Articles
               </button>
               
               <button

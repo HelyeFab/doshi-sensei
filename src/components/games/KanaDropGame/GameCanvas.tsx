@@ -19,6 +19,9 @@ interface GameCanvasProps {
   onGameStateUpdate: (updates: Partial<GameState> | ((prev: GameState) => Partial<GameState>)) => void;
 }
 
+// Define SPAWN_INTERVAL using the average of SPAWN_RATE_MIN and SPAWN_RATE_MAX
+const SPAWN_INTERVAL = (GAME_CONSTANTS.SPAWN_RATE_MIN + GAME_CONSTANTS.SPAWN_RATE_MAX) / 2;
+
 export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasProps) {
   const [showFeedback, setShowFeedback] = useState<{
     type: 'correct' | 'wrong' | 'distractor';
@@ -241,7 +244,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
     const currentGameState = gameStateRef.current;
 
     // Spawn new objects
-    if (now - lastSpawnRef.current > GAME_CONSTANTS.SPAWN_INTERVAL) {
+    if (now - lastSpawnRef.current > SPAWN_INTERVAL) {
       if (spawnObjectRef.current) {
         spawnObjectRef.current();
       }
@@ -382,14 +385,13 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
               transform: 'translate(-50%, -50%)'
             }}
           >
-            <div className={`text-2xl font-bold ${
-              showFeedback.type === 'correct' ? 'text-green-600' :
+            <div className={`text-2xl font-bold ${showFeedback.type === 'correct' ? 'text-green-600' :
               showFeedback.type === 'wrong' ? 'text-red-600' :
-              'text-orange-600'
-            }`}>
+                'text-orange-600'
+              }`}>
               {showFeedback.type === 'correct' ? '+5 ✨' :
-               showFeedback.type === 'wrong' ? '-10 ❌' :
-               '-5 💥'}
+                showFeedback.type === 'wrong' ? '-10 ❌' :
+                  '-5 💥'}
             </div>
           </motion.div>
         )}

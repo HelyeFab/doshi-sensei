@@ -201,6 +201,13 @@ export default function AccountPage() {
                         className="w-16 h-16 rounded-full"
                         style={{ boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' }}
                       />
+                    ) : user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt={`${user.displayName || user.email}'s profile`}
+                        className="w-16 h-16 rounded-full"
+                        style={{ boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' }}
+                      />
                     ) : (
                       <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                         <span className="text-2xl">👤</span>

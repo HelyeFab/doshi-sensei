@@ -11,6 +11,14 @@ interface GrammarHighlightedTextProps {
   className?: string;
 }
 
+// Convert katakana to hiragana
+function convertKatakanaToHiragana(str: string): string {
+  return str.replace(/[\u30A1-\u30FA]/g, function(match) {
+    const chr = match.charCodeAt(0) - 0x60;
+    return String.fromCharCode(chr);
+  });
+}
+
 export function GrammarHighlightedText({
   text,
   highlightMode,
@@ -105,7 +113,10 @@ export function GrammarHighlightedText({
         // Check if the token contains kanji
         const hasKanji = /[\u4E00-\u9FAF]/.test(token.surface_form);
         
-        if (showFurigana && token.reading && token.surface_form !== token.reading && hasKanji) {
+        // Convert katakana reading to hiragana
+        const hiraganaReading = token.reading ? convertKatakanaToHiragana(token.reading) : '';
+        
+        if (showFurigana && hiraganaReading && token.surface_form !== hiraganaReading && hasKanji) {
           // Render with furigana only for words containing kanji
           return (
             <span
@@ -129,7 +140,7 @@ export function GrammarHighlightedText({
                   lineHeight: 1
                 }}
               >
-                {token.reading}
+                {hiraganaReading}
               </span>
               {token.surface_form}
             </span>
@@ -145,7 +156,7 @@ export function GrammarHighlightedText({
               style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
-              title={token.reading || token.surface_form}
+              title={hiraganaReading || token.surface_form}
             >
               {token.surface_form}
             </span>

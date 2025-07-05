@@ -15,6 +15,7 @@ import { LoginPromptModal } from '@/components/LoginPromptModal';
 import { UpgradePromptModal } from '@/components/UpgradePromptModal';
 import { subscriptionLogger } from '@/utils/subscriptionLogger';
 import { subscriptionValidator } from '@/utils/subscriptionValidator';
+import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
 
 interface SubscriptionContextType {
   userSubscription: UserSubscription | null;
@@ -66,15 +67,16 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
   // Initialize default subscription for new users
   const initializeDefaultSubscription = async (userId: string) => {
-    // Free plan limits (hardcoded)
+    // Get free plan limits from entitlements system
+    const freeEntitlements = getEntitlementsForUserType('free');
     const FREE_LIMITS = {
-      maxLists: 3,
-      maxDrillsPerDay: 3,
-      maxKanjiQuestPerDay: 3,
-      maxStoriesPerDay: 3,
-      maxArticlesPerDay: 3,
-      canSync: false,
-      canSave: true,
+      maxLists: getFeatureLimit('free', 'storage.lists', 'total') || 3,
+      maxDrillsPerDay: getFeatureLimit('free', 'learning.drills', 'daily') || 3,
+      maxKanjiQuestPerDay: getFeatureLimit('free', 'games.kanjiQuest', 'daily') || 3,
+      maxStoriesPerDay: getFeatureLimit('free', 'learning.stories', 'daily') || 3,
+      maxArticlesPerDay: getFeatureLimit('free', 'learning.articles', 'daily') || 3,
+      canSync: freeEntitlements.system.cloudSync.enabled,
+      canSave: freeEntitlements.system.progressTracking.enabled,
     };
 
     const defaultSubscription: UserSubscription = {
@@ -142,15 +144,16 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
   // Create offline default subscription (doesn't require Firebase)
   const createOfflineDefaultSubscription = (): UserSubscription => {
-    // Free plan limits (hardcoded)
+    // Get free plan limits from entitlements system
+    const freeEntitlements = getEntitlementsForUserType('free');
     const FREE_LIMITS = {
-      maxLists: 3,
-      maxDrillsPerDay: 3,
-      maxKanjiQuestPerDay: 3,
-      maxStoriesPerDay: 3,
-      maxArticlesPerDay: 3,
-      canSync: false,
-      canSave: true,
+      maxLists: getFeatureLimit('free', 'storage.lists', 'total') || 3,
+      maxDrillsPerDay: getFeatureLimit('free', 'learning.drills', 'daily') || 3,
+      maxKanjiQuestPerDay: getFeatureLimit('free', 'games.kanjiQuest', 'daily') || 3,
+      maxStoriesPerDay: getFeatureLimit('free', 'learning.stories', 'daily') || 3,
+      maxArticlesPerDay: getFeatureLimit('free', 'learning.articles', 'daily') || 3,
+      canSync: freeEntitlements.system.cloudSync.enabled,
+      canSave: freeEntitlements.system.progressTracking.enabled,
     };
 
     const today = new Date().toISOString().split('T')[0];
@@ -326,8 +329,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
 
     if (!user && feature === 'drills') {
-      // Check guest drill limits
-      const GUEST_MAX_DRILLS = 3;
+      // Check guest drill limits from entitlements system
+      const GUEST_MAX_DRILLS = getFeatureLimit('guest', 'learning.drills', 'daily') || 3;
       if (!guestUsage) return false;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
@@ -335,8 +338,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
 
     if (!user && feature === 'kanjiquest') {
-      // Check guest kanji quest limits
-      const GUEST_MAX_KANJI_QUEST = 3;
+      // Check guest kanji quest limits from entitlements system
+      const GUEST_MAX_KANJI_QUEST = getFeatureLimit('guest', 'games.kanjiQuest', 'daily') || 3;
       if (!guestUsage) return false;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastKanjiQuestDate === today;

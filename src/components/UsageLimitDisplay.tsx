@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { SUBSCRIPTION_PLANS } from '@/types/subscription';
+import { useEntitlements } from '@/hooks/useEntitlements';
 
 interface UsageLimitDisplayProps {
   type: 'drills' | 'lists';
@@ -11,16 +11,15 @@ interface UsageLimitDisplayProps {
 
 export function UsageLimitDisplay({ type, className = '' }: UsageLimitDisplayProps) {
   const { userSubscription, userType, guestUsage } = useSubscription();
+  const { getLimit } = useEntitlements();
 
-  // Guest/free plan limits (hardcoded)
-  const FREE_LIMITS = {
-    maxDrillsPerDay: 50,
-    maxLists: 3
-  };
+  // Get limits from entitlements system
+  const drillLimit = getLimit('learning.drills', 'daily') || 3;
+  const listLimit = getLimit('storage.lists', 'total') || 3;
 
   if (userType === 'guest') {
     if (type === 'drills' && guestUsage) {
-      const maxDrills = FREE_LIMITS.maxDrillsPerDay;
+      const maxDrills = drillLimit;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
       const currentUsage = isToday ? guestUsage.drillsToday : 0;
@@ -103,12 +102,11 @@ interface UsageProgressBarProps {
 
 export function UsageProgressBar({ type, className = '' }: UsageProgressBarProps) {
   const { userSubscription, userType, guestUsage } = useSubscription();
+  const { getLimit } = useEntitlements();
 
-  // Guest/free plan limits (hardcoded)
-  const FREE_LIMITS = {
-    maxDrillsPerDay: 50,
-    maxLists: 3
-  };
+  // Get limits from entitlements system
+  const drillLimit = getLimit('learning.drills', 'daily') || 3;
+  const listLimit = getLimit('storage.lists', 'total') || 3;
 
   let current = 0;
   let max = 0;
@@ -116,7 +114,7 @@ export function UsageProgressBar({ type, className = '' }: UsageProgressBarProps
 
   if (userType === 'guest') {
     if (type === 'drills' && guestUsage) {
-      max = FREE_LIMITS.maxDrillsPerDay;
+      max = drillLimit;
       const today = new Date().toISOString().split('T')[0];
       const isToday = guestUsage.lastDrillDate === today;
       current = isToday ? guestUsage.drillsToday : 0;

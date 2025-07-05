@@ -13,7 +13,7 @@ interface GrammarHighlightedTextProps {
 
 // Convert katakana to hiragana
 function convertKatakanaToHiragana(str: string): string {
-  return str.replace(/[\u30A1-\u30FA]/g, function(match) {
+  return str.replace(/[\u30A1-\u30FA]/g, function (match) {
     const chr = match.charCodeAt(0) - 0x60;
     return String.fromCharCode(chr);
   });
@@ -43,7 +43,7 @@ export function GrammarHighlightedText({
         setError('Failed to initialize grammar analyzer');
       }
     };
-    
+
     initKuromoji();
   }, []);
 
@@ -76,17 +76,17 @@ export function GrammarHighlightedText({
   const shouldHighlight = (token: TokenWithHighlight): boolean => {
     if (highlightMode === 'none') return false;
     if (highlightMode === 'all') return true;
-    
+
     const kuromojiService = KuromojiService.getInstance();
-    
+
     if (highlightMode === 'content') {
       return kuromojiService.isContentWord(token);
     }
-    
+
     if (highlightMode === 'grammar') {
       return kuromojiService.isGrammarWord(token);
     }
-    
+
     return false;
   };
 
@@ -109,24 +109,28 @@ export function GrammarHighlightedText({
       {tokens.map((token, index) => {
         const isHighlighted = shouldHighlight(token);
         const posType = KuromojiService.getInstance().getPartOfSpeech(token);
-        
+
+        // Skip symbols (e.g., '・', punctuation)
+        if (posType === 'symbol') {
+          return null;
+        }
+
         // Check if the token contains kanji
         const hasKanji = /[\u4E00-\u9FAF]/.test(token.surface_form);
-        
+
         // Convert katakana reading to hiragana
         const hiraganaReading = token.reading ? convertKatakanaToHiragana(token.reading) : '';
-        
+
         if (showFurigana && hiraganaReading && token.surface_form !== hiraganaReading && hasKanji) {
           // Render with furigana only for words containing kanji
           return (
             <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 md:px-0.5 md:py-0 inline-block mx-0.5 my-0.5 md:mx-0 md:my-0 relative ${
-                isHighlighted ? `grammar-${posType}` : ''
-              }`}
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1.5 my-3 md:mx-0.5 md:my-0 inline-block relative ${isHighlighted ? `grammar-${posType}` : ''
+                }`}
               style={{
                 ...(isHighlighted ? { backgroundColor: `${token.color}20` } : {}),
-                paddingTop: showFurigana ? '1em' : undefined
+                paddingTop: showFurigana ? '1.2em' : undefined
               }}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
@@ -134,7 +138,7 @@ export function GrammarHighlightedText({
               <span
                 className="absolute text-xs"
                 style={{
-                  top: '-0.2em',
+                  top: '-0.3em',
                   left: '0',
                   fontSize: '0.6em',
                   lineHeight: 1
@@ -150,9 +154,7 @@ export function GrammarHighlightedText({
           return (
             <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 md:px-0.5 md:py-0 inline-block mx-0.5 my-0.5 md:mx-0 md:my-0 ${
-                isHighlighted ? `grammar-${posType}` : ''
-              }`}
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1.5 my-3 md:mx-0.5 md:my-0 ${isHighlighted ? `grammar-${posType}` : ''}`}
               style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}

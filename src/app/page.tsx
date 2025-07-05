@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { pokemonManager } from '@/utils/pokemonManager';
@@ -98,7 +98,7 @@ function pastelizeHSL(hsl: string) {
 }
 
 export default function Home() {
-  const { user } = useAuth();
+  const { profile } = useUserProfile();
   const { userSubscription } = useSubscription();
   const { settings } = useSettings();
   const [stats, setStats] = useState<UserStats>({
@@ -143,11 +143,11 @@ export default function Home() {
             userSubscription?.subscription?.plan === 'yearly');
 
         // Get caught Pokemon from IndexedDB and cloud if premium
-        const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
+        const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
 
         console.log('🎮 Pokédex count check:', {
           pokemonCount: caughtPokemon.length,
-          user: user?.email
+          user: profile?.email
         });
 
         if (caughtPokemon.length > 0) {
@@ -160,7 +160,7 @@ export default function Home() {
     };
 
     loadPokemonCount();
-  }, [user, userSubscription]);
+  }, [profile, userSubscription]);
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {
@@ -168,9 +168,9 @@ export default function Home() {
       try {
         const { default: StatsManager } = await import('@/utils/stats');
 
-        if (user) {
+        if (profile) {
           const canSync = userSubscription?.subscription?.status === 'active';
-          StatsManager.setUser(user, canSync);
+          StatsManager.setUser(profile, canSync);
         } else {
           StatsManager.setUser(null, false);
         }
@@ -184,7 +184,7 @@ export default function Home() {
     };
 
     loadStatsManager();
-  }, [user, userSubscription]);
+  }, [profile, userSubscription]);
 
   useEffect(() => {
     // Reload stats when page becomes visible/focused
@@ -222,7 +222,7 @@ export default function Home() {
           (userSubscription?.subscription?.plan === 'monthly' ||
             userSubscription?.subscription?.plan === 'yearly');
 
-        const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
+        const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
         pokemonCount = caughtPokemon.length;
       } catch (error) {
         // Error loading Pokémon in loadStats
@@ -231,9 +231,9 @@ export default function Home() {
 
       // Get story stats with error handling
       let storyStats = { totalStoriesRead: 0 };
-      if (user) {
+      if (profile) {
         try {
-          storyStats = await storyManager.getUserStoryStats(user.uid);
+          storyStats = await storyManager.getUserStoryStats(profile.uid);
         } catch (error) {
           // Silently fail if Firebase permissions are not set up
           console.warn('Could not fetch story stats:', error);
@@ -261,13 +261,13 @@ export default function Home() {
 
   // Get user's first name only
   const getUserDisplayName = () => {
-    if (user?.displayName) {
+    if (profile?.displayName) {
       // Extract first name from display name (split by space and take first part)
-      return user.displayName.split(' ')[0];
+      return profile.displayName.split(' ')[0];
     }
-    if (user?.email) {
+    if (profile?.email) {
       // For email-based names, take the part before @ and split by common separators
-      const emailName = user.email.split('@')[0];
+      const emailName = profile.email.split('@')[0];
       // Handle cases like "john.doe" or "john_doe" or "john-doe"
       return emailName.split(/[._-]/)[0];
     }
@@ -321,16 +321,25 @@ export default function Home() {
         <header className="mb-8 md:mb-12 text-center">
           {/* Welcome Text with Inline Avatar */}
           <div className="flex items-center justify-center gap-3 mb-2">
-            {user?.photoURL && (
+            {profile?.avatar ? (
               <img
-                src={user.photoURL}
-                alt={`${getUserDisplayName()}'s profile`}
+                src={profile.avatar}
+                alt={`${profile.displayName || profile.email}'s profile`}
                 className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg"
                 style={{
                   boxShadow: '0 0 0 2px white, 0 0 0 3px var(--primary), 0 2px 8px rgba(0,0,0,0.1)'
                 }}
               />
-            )}
+            ) : profile?.photoURL ? (
+              <img
+                src={profile.photoURL}
+                alt={`${profile.displayName || profile.email}'s profile`}
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg"
+                style={{
+                  boxShadow: '0 0 0 2px white, 0 0 0 3px var(--primary), 0 2px 8px rgba(0,0,0,0.1)'
+                }}
+              />
+            ) : null}
             <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
               Hello {getUserDisplayName()}!
               <span
@@ -517,7 +526,7 @@ export default function Home() {
       <PokedexModal
         isOpen={showPokedexModal}
         onClose={() => setShowPokedexModal(false)}
-        userId={user?.uid}
+        userId={profile?.uid}
       />
     </>
   );

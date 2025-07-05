@@ -134,7 +134,7 @@ async function scrapeTodaiiArticles() {
     const articleUrls = new Set();
     
     for (const match of linkMatches) {
-      if (articleUrls.size >= 10) break; // Limit to 10 articles
+      if (articleUrls.size >= 20) break; // Limit to 20 articles
       const fullUrl = `https://todaijapanese.com${match[1]}`;
       articleUrls.add(fullUrl);
     }
@@ -266,7 +266,7 @@ exports.handler = async (event, context) => {
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 50000) // 50 seconds timeout
+      setTimeout(() => reject(new Error('Scraping timeout')), 90000) // 90 seconds timeout
     );
     
     const articles = await Promise.race([

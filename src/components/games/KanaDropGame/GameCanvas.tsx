@@ -12,14 +12,14 @@ import {
   DISTRACTOR_IMAGES
 } from './types';
 import { getGameAudioManager } from './audioManager';
+import { kanaData, getBasicKana } from '@/data/kanaData';
 
 interface GameCanvasProps {
   gameState: GameState;
   onGameStateUpdate: (updates: Partial<GameState> | ((prev: GameState) => Partial<GameState>)) => void;
-  activeRomaji: string | null;
 }
 
-export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji }: GameCanvasProps) {
+export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasProps) {
   const [showFeedback, setShowFeedback] = useState<{
     type: 'correct' | 'wrong' | 'distractor';
     x: number;
@@ -55,82 +55,67 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
   // Spawn new falling object
   const spawnObject = useCallback(() => {
     const currentGameState = gameStateRef.current;
-    console.log('[KanaDrop] Spawning object, selectedKana:', currentGameState.selectedKana.length);
-
-    // Improved spawning logic with weighted distribution
     let newObject: FallingObjectType;
 
-    // 40% chance for kana (increased from 30%)
-    const isKana = Math.random() < 0.4;
-
-    if (isKana && currentGameState.selectedKana.length > 0) {
-      // Initialize spawn counts if needed
-      currentGameState.selectedKana.forEach(kana => {
-        if (!kanaSpawnCountRef.current[kana.romaji]) {
-          kanaSpawnCountRef.current[kana.romaji] = 0;
-        }
-      });
-
-      // Find the least spawned kana
-      let selectedKana;
-
-      // If there's an active romaji, 50% chance to spawn that specific one
-      if (activeRomaji && Math.random() < 0.5) {
-        selectedKana = currentGameState.selectedKana.find(k => k.romaji === activeRomaji);
-      }
-
-      // Otherwise, choose the least spawned kana
-      if (!selectedKana) {
-        const sortedKana = [...currentGameState.selectedKana].sort((a, b) =>
-          (kanaSpawnCountRef.current[a.romaji] || 0) - (kanaSpawnCountRef.current[b.romaji] || 0)
-        );
-        selectedKana = sortedKana[0];
-      }
-
-      if (selectedKana) {
-        kanaSpawnCountRef.current[selectedKana.romaji]++;
-
+    // 40% target kana, 30% wrong kana, 30% distractor
+    const rand = Math.random();
+    if (rand < 0.4 && currentGameState.selectedKana.length > 0) {
+      // Target kana
+      const randomKana = currentGameState.selectedKana[Math.floor(Math.random() * currentGameState.selectedKana.length)];
+      newObject = {
+        id: `kana-${Date.now()}-${Math.random()}`,
+        type: 'kana',
+        content: randomKana.kana,
+        kanaData: randomKana,
+        x: Math.random() * 60 + 20,
+        y: 0,
+        speed: currentGameState.gameSpeed
+      };
+    } else if (rand < 0.7) {
+      // Wrong kana (not in selectedKana)
+      const selectedIds = currentGameState.selectedKana.map(k => k.id);
+      const wrongKanaList = getBasicKana().filter(k => !selectedIds.includes(k.id));
+      console.log('[KanaDrop] Wrong kana pool size:', wrongKanaList.length);
+      if (wrongKanaList.length > 0) {
+        const randomWrongKana = wrongKanaList[Math.floor(Math.random() * wrongKanaList.length)];
         newObject = {
-          id: `kana-${Date.now()}-${Math.random()}`,
-          type: 'kana',
-          content: selectedKana.kana,
-          kanaData: selectedKana,
-          x: Math.random() * 60 + 20, // 20-80% to keep objects well within bounds
+          id: `wrong-kana-${Date.now()}-${Math.random()}`,
+          type: 'wrong-kana',
+          content: randomWrongKana.hiragana,
+          kanaData: randomWrongKana,
+          x: Math.random() * 60 + 20,
           y: 0,
           speed: currentGameState.gameSpeed
         };
       } else {
-        // Fallback to random kana
-        const randomKana = currentGameState.selectedKana[Math.floor(Math.random() * currentGameState.selectedKana.length)];
+        // fallback to distractor
+        const randomImage = DISTRACTOR_IMAGES[Math.floor(Math.random() * DISTRACTOR_IMAGES.length)];
         newObject = {
-          id: `kana-${Date.now()}-${Math.random()}`,
-          type: 'kana',
-          content: randomKana.kana,
-          kanaData: randomKana,
+          id: `distractor-${Date.now()}-${Math.random()}`,
+          type: 'distractor',
+          content: randomImage,
           x: Math.random() * 60 + 20,
           y: 0,
           speed: currentGameState.gameSpeed
         };
       }
     } else {
-      // Spawn a distractor
+      // Distractor
       const randomImage = DISTRACTOR_IMAGES[Math.floor(Math.random() * DISTRACTOR_IMAGES.length)];
       newObject = {
         id: `distractor-${Date.now()}-${Math.random()}`,
         type: 'distractor',
         content: randomImage,
-        x: Math.random() * 60 + 20, // 20-80% to keep objects well within bounds
+        x: Math.random() * 60 + 20,
         y: 0,
         speed: currentGameState.gameSpeed
       };
     }
-
-    console.log('[KanaDrop] Spawning object:', newObject);
     onGameStateUpdate(prev => ({
       ...prev,
       fallingObjects: [...prev.fallingObjects, newObject]
     }));
-  }, [activeRomaji, onGameStateUpdate]);
+  }, [onGameStateUpdate]);
 
   // Store spawnObject in ref to avoid dependency issues
   useEffect(() => {
@@ -141,24 +126,13 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
   const handleObjectClick = useCallback(async (object: FallingObjectType) => {
     const clickPosition = {
       x: object.x,
-      y: 50 // Approximate middle of screen for feedback
+      y: 50
     };
-
     if (object.type === 'distractor') {
-      // Clicked distractor
-      console.log('[KanaDrop] Distractor clicked!');
       setShowFeedback({ type: 'distractor', ...clickPosition });
-      audioManager.playSound('thud').catch(() => {
-        console.warn('[KanaDrop] Failed to play thud sound');
-      });
-
+      audioManager.playSound('thud').catch(() => { });
       onGameStateUpdate(prev => {
         const newScore = Math.max(0, prev.score + GAME_CONSTANTS.POINTS_DISTRACTOR);
-        console.log('[KanaDrop] Updating score for distractor click:', {
-          currentScore: prev.score,
-          pointsToAdd: GAME_CONSTANTS.POINTS_DISTRACTOR,
-          newScore: newScore
-        });
         return {
           ...prev,
           score: newScore,
@@ -170,18 +144,11 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
         };
       });
     } else if (object.type === 'kana' && object.kanaData) {
-      if (activeRomaji === object.kanaData.romaji) {
-        // Correct kana clicked
-        console.log(`[KanaDrop] Correct kana clicked! ${object.kanaData.kana} (${object.kanaData.romaji})`);
+      const isTargetKana = gameState.selectedKana.some(k => k.romaji === object.kanaData.romaji);
+      if (isTargetKana) {
         setShowFeedback({ type: 'correct', ...clickPosition });
-
         onGameStateUpdate(prev => {
           const newScore = prev.score + GAME_CONSTANTS.POINTS_CORRECT;
-          console.log('[KanaDrop] Updating score for correct click:', {
-            currentScore: prev.score,
-            pointsToAdd: GAME_CONSTANTS.POINTS_CORRECT,
-            newScore: newScore
-          });
           return {
             ...prev,
             score: newScore,
@@ -193,20 +160,11 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
           };
         });
       } else {
-        // Wrong kana clicked
-        console.log(`[KanaDrop] Wrong kana clicked! Expected: ${activeRomaji}, Got: ${object.kanaData.romaji}`);
+        // Should not happen, but treat as wrong kana
         setShowFeedback({ type: 'wrong', ...clickPosition });
-        audioManager.playSound('error').catch(() => {
-          console.warn('[KanaDrop] Failed to play error sound');
-        });
-
+        audioManager.playSound('error').catch(() => { });
         onGameStateUpdate(prev => {
           const newScore = Math.max(0, prev.score + GAME_CONSTANTS.POINTS_WRONG_KANA);
-          console.log('[KanaDrop] Updating score for wrong kana click:', {
-            currentScore: prev.score,
-            pointsToAdd: GAME_CONSTANTS.POINTS_WRONG_KANA,
-            newScore: newScore
-          });
           return {
             ...prev,
             score: newScore,
@@ -218,11 +176,25 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
           };
         });
       }
+    } else if (object.type === 'wrong-kana' && object.kanaData) {
+      // Wrong kana clicked
+      setShowFeedback({ type: 'wrong', ...clickPosition });
+      audioManager.playSound('error').catch(() => { });
+      onGameStateUpdate(prev => {
+        const newScore = Math.max(0, prev.score + GAME_CONSTANTS.POINTS_WRONG_KANA);
+        return {
+          ...prev,
+          score: newScore,
+          clicks: {
+            ...prev.clicks,
+            wrong: prev.clicks.wrong + 1
+          },
+          fallingObjects: prev.fallingObjects.filter(o => o.id !== object.id)
+        };
+      });
     }
-
-    // Clear feedback after animation
     setTimeout(() => setShowFeedback(null), 800);
-  }, [activeRomaji, onGameStateUpdate]);
+  }, [gameState.selectedKana, onGameStateUpdate, audioManager]);
 
   // Handle object reaching bottom
   const handleObjectReachBottom = useCallback((object: FallingObjectType) => {
@@ -294,27 +266,11 @@ export default function GameCanvas({ gameState, onGameStateUpdate, activeRomaji 
             fallDuration={getFallDuration()}
             onReachBottom={handleObjectReachBottom}
             onClick={handleObjectClick}
-            isClickable={
-              object.type === 'distractor' ||
-              (object.type === 'kana' && !!activeRomaji)
-            }
+            isClickable={true}
             isPaused={gameState.isPaused}
           />
         ))}
       </AnimatePresence>
-
-      {/* Active romaji indicator - moved to top center */}
-      {activeRomaji && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-primary/20 px-4 py-2 rounded-lg z-20"
-        >
-          <div className="text-sm text-primary font-semibold">
-            Catching: {activeRomaji}
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 }

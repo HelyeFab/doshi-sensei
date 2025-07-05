@@ -143,7 +143,7 @@ async function scrapeWatanocArticles() {
     let count = 0;
 
     for (const match of articleMatches) {
-      if (count >= 10) break; // Limit to 10 articles
+      if (count >= 20) break; // Limit to 20 articles
       
       const articleHtml = match[0];
       
@@ -197,9 +197,9 @@ async function scrapeWatanocArticles() {
       console.log(`✅ Extracted article ${count}: ${cleanTitle}`);
     }
 
-    // Fetch content for first 3 articles (to avoid timeout)
+    // Fetch content for first 5 articles (to avoid timeout)
     console.log('📄 Fetching article content...');
-    for (let i = 0; i < Math.min(3, articles.length); i++) {
+    for (let i = 0; i < Math.min(5, articles.length); i++) {
       try {
         const articleHtml = await makeRequest(articles[i].url);
         const contentMatch = articleHtml.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
@@ -321,7 +321,7 @@ exports.handler = async (event, context) => {
 
     // Get articles from Watanoc with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 50000) // 50 seconds timeout
+      setTimeout(() => reject(new Error('Scraping timeout')), 90000) // 90 seconds timeout
     );
     
     const articles = await Promise.race([

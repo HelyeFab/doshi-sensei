@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { ArticleManagement } from '@/components/admin/ArticleManagement';
+import { ArticleCleanup } from '@/components/admin/ArticleCleanup';
 import { getArticleStats, clearCache } from '@/utils/watanocArticles';
 import { 
   triggerWatanocScraping, 
@@ -142,6 +143,31 @@ export default function ArticlesManagementPage() {
     setStatus('🗑️ Cache cleared');
   };
 
+  const handleDeleteTestArticles = async () => {
+    setLoading(true);
+    setStatus('🗑️ Deleting test articles...');
+    
+    try {
+      const response = await fetch('/.netlify/functions/delete-test-articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setStatus(`✅ ${result.message}`);
+        setTimeout(loadStats, 1000);
+      } else {
+        setStatus(`❌ Error: ${result.error || 'Failed to delete test articles'}`);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load stats on component mount
   useEffect(() => {
     loadStats();
@@ -224,6 +250,14 @@ export default function ArticlesManagementPage() {
                 className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80"
               >
                 🗑️ Clear Cache
+              </button>
+              
+              <button
+                onClick={handleDeleteTestArticles}
+                disabled={loading}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                🗑️ Delete Test Articles
               </button>
               
               <button
@@ -318,6 +352,9 @@ export default function ArticlesManagementPage() {
 
         {/* Article Management */}
         <ArticleManagement onRefresh={loadStats} />
+
+        {/* Article Cleanup */}
+        <ArticleCleanup onRefresh={loadStats} />
 
         {/* Instructions */}
         <div className="bg-card rounded-lg p-6 border border-border">

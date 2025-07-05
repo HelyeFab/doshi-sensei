@@ -40,9 +40,10 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
-// HTTP request function with retry logic
+// HTTP request function with retry logic and gzip support
 function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
   return new Promise((resolve, reject) => {
+    const zlib = require('zlib');
     let retryCount = 0;
 
     const attemptRequest = () => {
@@ -62,11 +63,15 @@ function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
             'User-Agent': 'Mozilla/5.0 (compatible; DoshiSensei/1.0)',
             'Accept': 'application/json, text/html',
             'Accept-Language': 'ja,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate',
           },
-          timeout: 10000 // 10 second timeout
+          timeout: 30000 // 30 second timeout
         };
 
         const req = https.request(options, (res) => {
+          console.log(`Response status: ${res.statusCode}`);
+          console.log('Content-Encoding:', res.headers['content-encoding']);
+          
           // Handle redirects
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
             const newUrl = new URL(res.headers.location, currentUrl);
@@ -80,15 +85,45 @@ function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
           }
 
           let data = '';
-          res.setEncoding('utf8');
+          
+          // Handle gzip compression
+          if (res.headers['content-encoding'] === 'gzip') {
+            const gunzip = zlib.createGunzip();
+            res.pipe(gunzip);
+            
+            gunzip.on('data', chunk => {
+              data += chunk.toString();
+              if (data.length > 2000000) { // 2MB limit for NHK Easy JSON
+                gunzip.destroy();
+                reject(new Error('Response too large'));
+              }
+            });
+            
+            gunzip.on('end', () => {
+              console.log(`✅ Decompressed ${data.length} bytes`);
+              resolve(data);
+            });
+            
+            gunzip.on('error', err => {
+              console.error('Gunzip error:', err);
+              reject(err);
+            });
+          } else {
+            res.setEncoding('utf8');
 
-          res.on('data', (chunk) => {
-            data += chunk;
-          });
+            res.on('data', (chunk) => {
+              data += chunk;
+              if (data.length > 2000000) { // 2MB limit
+                req.destroy();
+                reject(new Error('Response too large'));
+              }
+            });
 
-          res.on('end', () => {
-            resolve(data);
-          });
+            res.on('end', () => {
+              console.log(`✅ Received ${data.length} bytes`);
+              resolve(data);
+            });
+          }
         });
 
         req.on('error', (error) => {

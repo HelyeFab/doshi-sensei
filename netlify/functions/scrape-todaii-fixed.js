@@ -143,7 +143,7 @@ function cleanText(html) {
     .trim();
 }
 
-// Simplified Todaii scraping
+// Improved Todaii scraping with content extraction
 async function scrapeTodaiiArticles() {
   const articles = [];
   
@@ -152,48 +152,111 @@ async function scrapeTodaiiArticles() {
     const html = await makeRequest('https://japanese.todaiinews.com');
     console.log(`✅ Fetched homepage: ${html.length} bytes`);
 
-    // Extract article links - simplified pattern
-    const linkMatches = html.matchAll(/href="(\/news\/[^"]+)"/g);
-    const articleUrls = new Set();
+    // Extract article data from the page
+    const articleMatches = html.matchAll(/<article[^>]*class="[^"]*post[^"]*"[^>]*>([\s\S]*?)<\/article>/gi);
+    const articleData = [];
     
-    for (const match of linkMatches) {
-      if (articleUrls.size >= 20) break; // Limit to 20 articles
-      const fullUrl = `https://japanese.todaiinews.com${match[1]}`;
-      articleUrls.add(fullUrl);
-    }
-
-    console.log(`Found ${articleUrls.size} article URLs`);
-
-    // Create articles from URLs
-    let count = 0;
-    for (const url of articleUrls) {
-      const title = `Todaii Article ${count + 1}`;
+    for (const match of articleMatches) {
+      if (articleData.length >= 20) break;
       
-      articles.push({
-        id: `todaii_${Date.now()}_${count}`,
-        title: title,
-        content: `Content from: ${url}`,
-        summary: `Summary of ${title}`,
-        url: url,
-        imageUrl: `https://images.unsplash.com/photo-${1600000000000 + count}?w=400`,
-        publishDate: new Date(),
-        scrapedAt: new Date(),
-        source: {
-          id: 'todaii',
-          name: 'Todaii',
-          displayName: 'Todaii Japanese - Learning Platform'
-        },
-        category: 'news',
-        tags: ['todaii', 'japanese-learning', 'news'],
-        difficulty: 'N3',
-        estimatedReadingTime: 5,
-        vocabulary: [],
-        grammarPoints: []
+      const articleHtml = match[1];
+      
+      // Extract URL
+      const urlMatch = articleHtml.match(/href="(https:\/\/japanese\.todaiinews\.com\/news\/[^"]+)"/);
+      if (!urlMatch) continue;
+      
+      // Extract title
+      const titleMatch = articleHtml.match(/<h[23][^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/h[23]>/i);
+      if (!titleMatch) continue;
+      
+      // Extract image
+      const imgMatch = articleHtml.match(/src="([^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i);
+      
+      // Extract date
+      const dateMatch = articleHtml.match(/<time[^>]*datetime="([^"]+)"|<span[^>]*class="[^"]*date[^"]*"[^>]*>([^<]+)</);
+      
+      articleData.push({
+        url: urlMatch[1],
+        title: cleanText(titleMatch[1]),
+        imageUrl: imgMatch ? imgMatch[1] : null,
+        publishDate: dateMatch ? new Date(dateMatch[1] || dateMatch[2]) : new Date()
       });
-      
-      count++;
     }
 
+    console.log(`Found ${articleData.length} articles on homepage`);
+
+    // Fetch content for each article
+    const contentPromises = articleData.map(async (data, i) => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, i * 300)); // Stagger requests
+        
+        console.log(`📄 Fetching article ${i + 1}: ${data.title}`);
+        const articleHtml = await makeRequest(data.url);
+        
+        // Extract content - Todaii specific selectors
+        let content = '';
+        
+        // Try multiple selectors
+        const contentSelectors = [
+          /<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<div[^>]*class="[^"]*(?:share|related|tags|comment))/i,
+          /<div[^>]*class="[^"]*post-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+          /<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)(?:<footer|<div[^>]*class="[^"]*share)/i,
+          /<main[^>]*>([\s\S]*?)<\/main>/i
+        ];
+        
+        for (const selector of contentSelectors) {
+          const match = articleHtml.match(selector);
+          if (match && match[1]) {
+            content = match[1];
+            break;
+          }
+        }
+        
+        // Clean the content
+        if (content) {
+          // Remove ads, social media, etc
+          content = content.replace(/<div[^>]*class="[^"]*(?:ad|banner|social|share|related)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '');
+          const cleanContent = cleanText(content);
+          
+          if (cleanContent.length > 100) {
+            // Extract difficulty from content or title
+            const difficultyMatch = data.title.match(/N[1-5]/i) || cleanContent.match(/N[1-5]/i);
+            const difficulty = difficultyMatch ? difficultyMatch[0].toUpperCase() : 'N3';
+            
+            articles.push({
+              id: `todaii_${Date.now()}_${i}`,
+              title: data.title,
+              content: cleanContent.substring(0, 3000),
+              summary: cleanContent.substring(0, 250) + '...',
+              url: data.url,
+              imageUrl: data.imageUrl || `https://images.unsplash.com/photo-${1600000000000 + i}?w=400`,
+              publishDate: data.publishDate,
+              scrapedAt: new Date(),
+              source: {
+                id: 'todaii',
+                name: 'Todaii',
+                displayName: 'Todaii Japanese - Learning Platform'
+              },
+              category: 'news',
+              tags: ['todaii', 'japanese-learning', difficulty.toLowerCase()],
+              difficulty: difficulty,
+              estimatedReadingTime: Math.ceil(cleanContent.length / 500),
+              vocabulary: (cleanContent.match(/[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]+/g) || [])
+                .filter((word, index, self) => self.indexOf(word) === index && word.length > 1)
+                .slice(0, 30),
+              grammarPoints: []
+            });
+            
+            console.log(`✅ Extracted ${cleanContent.length} chars for: ${data.title}`);
+          }
+        }
+      } catch (error) {
+        console.warn(`⚠️ Could not fetch article ${i + 1}: ${error.message}`);
+      }
+    });
+    
+    await Promise.all(contentPromises);
+    
     return articles.length > 0 ? articles : getFallbackArticles();
 
   } catch (error) {

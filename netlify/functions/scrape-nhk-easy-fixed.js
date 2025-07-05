@@ -38,45 +38,89 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
-// HTTP request with retry logic
+// HTTP request with retry logic and gzip support
 function makeRequestWithRetry(url, retries = 3) {
   return new Promise((resolve, reject) => {
+    const zlib = require('zlib');
+    const { URL } = require('url');
+    const parsedUrl = new URL(url);
+    
     const attemptRequest = (retriesLeft) => {
-      const req = https.get(url, {
+      const options = {
+        hostname: parsedUrl.hostname,
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: 'GET',
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; DoshiSensei/1.0)',
           'Accept': 'application/json, text/plain, */*',
           'Accept-Language': 'ja,en;q=0.9',
+          'Accept-Encoding': 'gzip, deflate',
         },
         timeout: 30000
-      }, (res) => {
-        let data = '';
+      };
+      
+      const req = https.request(options, (res) => {
+        console.log(`Response status: ${res.statusCode}`);
+        console.log('Content-Encoding:', res.headers['content-encoding']);
         
-        res.setEncoding('utf8');
-        
-        res.on('data', chunk => {
-          data += chunk;
-          // Prevent memory issues
-          if (data.length > 1000000) { // 1MB limit
-            req.destroy();
-            reject(new Error('Response too large'));
-          }
-        });
-        
-        res.on('end', () => {
-          if (res.statusCode === 200) {
-            console.log(`✅ Successfully fetched ${url} (${data.length} bytes)`);
-            resolve(data);
-          } else if (retriesLeft > 0) {
+        if (res.statusCode !== 200) {
+          if (retriesLeft > 0) {
             console.log(`⚠️ HTTP ${res.statusCode}, retrying... (${retriesLeft} attempts left)`);
             setTimeout(() => attemptRequest(retriesLeft - 1), 1000 * (4 - retriesLeft));
           } else {
             reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
           }
-        });
+          return;
+        }
+        
+        let data = '';
+        
+        // Handle gzip compression
+        if (res.headers['content-encoding'] === 'gzip') {
+          const gunzip = zlib.createGunzip();
+          res.pipe(gunzip);
+          
+          gunzip.on('data', chunk => {
+            data += chunk.toString();
+            if (data.length > 2000000) { // 2MB limit for NHK Easy JSON
+              gunzip.destroy();
+              reject(new Error('Response too large'));
+            }
+          });
+          
+          gunzip.on('end', () => {
+            console.log(`✅ Decompressed ${data.length} bytes from ${url}`);
+            resolve(data);
+          });
+          
+          gunzip.on('error', err => {
+            console.error('Gunzip error:', err);
+            if (retriesLeft > 0) {
+              console.log(`⚠️ Decompression error, retrying... (${retriesLeft} attempts left)`);
+              setTimeout(() => attemptRequest(retriesLeft - 1), 1000 * (4 - retriesLeft));
+            } else {
+              reject(err);
+            }
+          });
+        } else {
+          res.setEncoding('utf8');
+          res.on('data', chunk => {
+            data += chunk;
+            if (data.length > 2000000) { // 2MB limit for NHK Easy JSON
+              req.destroy();
+              reject(new Error('Response too large'));
+            }
+          });
+          
+          res.on('end', () => {
+            console.log(`✅ Received ${data.length} bytes from ${url}`);
+            resolve(data);
+          });
+        }
       });
       
       req.on('error', (err) => {
+        console.error('Request error:', err);
         if (retriesLeft > 0) {
           console.log(`⚠️ Request error, retrying... (${retriesLeft} attempts left)`);
           setTimeout(() => attemptRequest(retriesLeft - 1), 1000 * (4 - retriesLeft));
@@ -94,6 +138,8 @@ function makeRequestWithRetry(url, retries = 3) {
           reject(new Error('Request timeout after all retries'));
         }
       });
+      
+      req.end();
     };
     
     attemptRequest(retries);

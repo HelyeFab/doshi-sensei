@@ -224,33 +224,89 @@ async function scrapeWatanocArticles() {
       console.log(`✅ Extracted article ${count}: ${cleanTitle}`);
     }
 
-    // Fetch content for first 5 articles (to avoid timeout)
+    // Fetch content for all articles with improved extraction
     console.log('📄 Fetching article content...');
-    for (let i = 0; i < Math.min(5, articles.length); i++) {
+    const contentPromises = articles.map(async (article, i) => {
       try {
-        const articleHtml = await makeRequest(articles[i].url);
-        const contentMatch = articleHtml.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
-        if (contentMatch) {
-          articles[i].content = cleanText(contentMatch[1]).substring(0, 2000); // Limit content length
-          articles[i].summary = articles[i].content.substring(0, 200) + '...';
-          
-          // Extract vocabulary
-          const vocabulary = (articles[i].content.match(/[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]+/g) || [])
-            .filter((word, index, self) => self.indexOf(word) === index && word.length > 1)
-            .slice(0, 20);
-          articles[i].vocabulary = vocabulary;
-          
-          // Extract kanji
-          const kanji = (articles[i].content.match(/[\u4e00-\u9faf]/g) || [])
-            .filter((char, index, self) => self.indexOf(char) === index)
-            .slice(0, 15);
-          articles[i].kanji = kanji;
+        await new Promise(resolve => setTimeout(resolve, i * 200)); // Stagger requests
+        
+        const articleHtml = await makeRequest(article.url);
+        
+        // Try multiple selectors to find the content
+        let content = '';
+        
+        // First try: Look for post-body content (common in Watanoc)
+        const postBodyMatch = articleHtml.match(/<div[^>]*class="[^"]*post-body[^"]*"[^>]*>([\s\S]*?)(?:<footer|<div[^>]*class="[^"]*(?:share|related|comment))/i);
+        if (postBodyMatch && postBodyMatch[1]) {
+          content = postBodyMatch[1];
         }
-        await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between requests
+        
+        // Second try: entry-content
+        if (!content) {
+          const entryContentMatch = articleHtml.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<footer|<div[^>]*class="[^"]*share)/i);
+          if (entryContentMatch && entryContentMatch[1]) {
+            content = entryContentMatch[1];
+          }
+        }
+        
+        // Third try: Look for Japanese content sections
+        if (!content) {
+          const japaneseMatch = articleHtml.match(/<div[^>]*class="[^"]*japanese[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+          if (japaneseMatch && japaneseMatch[1]) {
+            content = japaneseMatch[1];
+          }
+        }
+        
+        // Fourth try: article content
+        if (!content) {
+          const articleMatch = articleHtml.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
+          if (articleMatch && articleMatch[1]) {
+            // Extract main content, avoiding header/footer
+            const mainContent = articleMatch[1].match(/<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+            if (mainContent && mainContent[1]) {
+              content = mainContent[1];
+            }
+          }
+        }
+        
+        // Clean and process the content
+        if (content) {
+          // Remove nested divs that might be ads or unrelated
+          content = content.replace(/<div[^>]*class="[^"]*(?:ad|banner|widget|sidebar)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '');
+          
+          const cleanContent = cleanText(content);
+          
+          // Only update if we found substantial content
+          if (cleanContent.length > 100) {
+            article.content = cleanContent.substring(0, 3000); // Increased limit
+            article.summary = cleanContent.substring(0, 250) + '...';
+            
+            // Extract vocabulary (Japanese words)
+            const vocabulary = (cleanContent.match(/[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]+/g) || [])
+              .filter((word, index, self) => self.indexOf(word) === index && word.length > 1)
+              .slice(0, 30);
+            article.vocabulary = vocabulary;
+            
+            // Extract kanji
+            const kanji = (cleanContent.match(/[\u4e00-\u9faf]/g) || [])
+              .filter((char, index, self) => self.indexOf(char) === index)
+              .slice(0, 20);
+            article.kanji = kanji;
+            
+            console.log(`✅ Extracted ${cleanContent.length} chars for article ${i + 1}: ${article.title}`);
+          } else {
+            console.log(`⚠️ Insufficient content (${cleanContent.length} chars) for article ${i + 1}`);
+          }
+        } else {
+          console.log(`⚠️ No content found for article ${i + 1}`);
+        }
       } catch (error) {
         console.warn(`⚠️ Could not fetch content for article ${i + 1}: ${error.message}`);
       }
-    }
+    });
+    
+    // Wait for all content fetching to complete
+    await Promise.all(contentPromises);
 
     return articles;
 

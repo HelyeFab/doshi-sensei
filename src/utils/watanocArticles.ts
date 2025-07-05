@@ -199,6 +199,50 @@ export async function getArticlesByJLPTLevel(level: JLPTLevel, limit?: number): 
 }
 
 /**
+ * Get a single article by ID
+ */
+export async function getArticleById(articleId: string): Promise<NewsArticle | null> {
+  try {
+    if (!db) {
+      throw new Error('Firebase not initialized');
+    }
+
+    // Try to get from cache first
+    if (articlesCache) {
+      const cachedArticle = articlesCache.find(article => article.id === articleId);
+      if (cachedArticle) {
+        return cachedArticle;
+      }
+    }
+
+    // If not in cache, fetch from Firestore
+    const articleDoc = await getDoc(doc(db, 'articles', articleId));
+
+    if (!articleDoc.exists()) {
+      return null;
+    }
+
+    const data = articleDoc.data();
+    const article: NewsArticle = {
+      ...data,
+      id: articleDoc.id,
+      publishDate: data.publishDate instanceof Timestamp ? data.publishDate.toDate() : new Date(data.publishDate),
+      scrapedAt: data.scrapedAt instanceof Timestamp ? data.scrapedAt.toDate() : new Date(data.scrapedAt),
+      vocabulary: data.vocabulary || [],
+      kanji: data.kanji || [],
+      isBookmarked: false,
+      readingProgress: 0
+    } as NewsArticle;
+
+    return article;
+
+  } catch (error) {
+    console.error('❌ Error fetching article by ID:', error);
+    return null;
+  }
+}
+
+/**
  * Get articles by category
  */
 export async function getArticlesByCategory(category: string, limit?: number): Promise<NewsArticle[]> {

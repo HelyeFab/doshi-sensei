@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/PageHeader';
 import { NewsArticle } from '@/types/news';
 import { getWatanocArticles, triggerArticleScraping, getArticleStats } from '@/utils/watanocArticles';
-import { ArticleReader } from '@/components/reading/ArticleReader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useEntitlements } from '@/hooks/useEntitlements';
@@ -206,8 +205,8 @@ function FilterBar({
                 key={level.id}
                 onClick={() => onLevelChange(level.id)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === level.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
               >
                 {level.name}
@@ -230,8 +229,8 @@ function FilterBar({
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${selectedCategory === category.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
               >
                 {category.icon && <span>{category.icon}</span>}
@@ -270,14 +269,14 @@ export default function NewsPage() {
   const { user } = useAuth();
   const { showLoginPrompt, showUpgradePrompt, incrementArticleCount } = useSubscription();
   const { canReadArticle, isPremium } = useEntitlements();
-  
+
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
+
   const [stats, setStats] = useState<any>(null);
   const [articlesReadToday, setArticlesReadToday] = useState(0);
   const [articleLimit, setArticleLimit] = useState(0);
@@ -295,7 +294,7 @@ export default function NewsPage() {
   useEffect(() => {
     filterArticles();
   }, [articles, selectedLevel, selectedCategory]);
-  
+
   const checkArticleStatus = () => {
     const articleCheck = canReadArticle();
     setArticlesReadToday(articleCheck.used || 0);
@@ -358,17 +357,9 @@ export default function NewsPage() {
       }
       return;
     }
-    
-    setSelectedArticle(article);
-    
-    // Track article read after successfully opening
-    try {
-      await incrementArticleCount();
-      checkArticleStatus(); // Update the displayed counts
-    } catch (error) {
-      console.error('Error tracking article read:', error);
-      // Don't fail the whole article open if tracking fails
-    }
+
+    // Navigate to individual article page instead of using modal
+    window.location.href = `/news/${article.id}`;
   };
 
   const handleRefresh = async () => {
@@ -394,15 +385,7 @@ export default function NewsPage() {
     }
   };
 
-  // If an article is selected, show the article reader
-  if (selectedArticle) {
-    return (
-      <ArticleReader
-        article={selectedArticle}
-        onBack={() => setSelectedArticle(null)}
-      />
-    );
-  }
+
 
   // Main article list view
   return (
@@ -421,8 +404,8 @@ export default function NewsPage() {
           {/* Description */}
           <div className="mb-8">
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Read curated Japanese articles from <strong>Watanoc, Todaii News, and NHK Easy</strong> to improve your reading comprehension.
-              Articles are organized by JLPT level and updated daily with fresh content.
+              Read curated Japanese articles from <strong>Watanoc</strong> 🌐, <strong>Todaii</strong> 📚, and <strong>NHK Easy</strong> 📺 to improve your reading comprehension.
+              Articles are organized by JLPT level and updated daily with fresh content from multiple sources.
             </p>
             {stats && (
               <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
@@ -430,7 +413,7 @@ export default function NewsPage() {
                 <span>📅 Updated: {new Date(stats.lastUpdated).toLocaleDateString()}</span>
                 {!isPremium && articleLimit > 0 && (
                   <span className="text-primary">
-                    📖 {articlesReadToday < articleLimit 
+                    📖 {articlesReadToday < articleLimit
                       ? `${articleLimit - articlesReadToday} ${articleLimit - articlesReadToday === 1 ? 'article' : 'articles'} remaining today`
                       : 'Daily limit reached'
                     }

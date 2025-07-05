@@ -122,7 +122,12 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       setGameState(prev => {
         const newState = { ...prev, ...updates(prev) };
         if (prev.score !== newState.score) {
-          console.log('[KanaDrop] Score updated:', { from: prev.score, to: newState.score, update: updates(prev) });
+          console.log('[KanaDrop] Score updated in modal:', {
+            from: prev.score,
+            to: newState.score,
+            update: updates(prev),
+            timestamp: new Date().toISOString()
+          });
         }
         return newState;
       });
@@ -130,7 +135,12 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       setGameState(prev => {
         const newState = { ...prev, ...updates };
         if (prev.score !== newState.score) {
-          console.log('[KanaDrop] Score updated:', { from: prev.score, to: newState.score, update: updates });
+          console.log('[KanaDrop] Score updated in modal:', {
+            from: prev.score,
+            to: newState.score,
+            update: updates,
+            timestamp: new Date().toISOString()
+          });
         }
         return newState;
       });

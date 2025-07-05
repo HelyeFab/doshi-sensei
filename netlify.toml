@@ -43,19 +43,20 @@
   status = 200
 
 # Scheduled Functions
-# Article cleanup runs every day at 2 AM UTC
+# Article cleanup runs every day at 2 AM UTC (disabled - function doesn't exist)
+# [functions]
+#   [functions."article-cleanup"]
+#     schedule = "0 2 * * *"
+
 [functions]
-  [functions."article-cleanup"]
-    schedule = "0 2 * * *"
-  
   # Scrape NHK Easy articles every morning at 6 AM UTC (3 PM JST)
-  [functions."scrape-nhk-easy"]
+  [functions."scrape-nhk-easy-fixed"]
     schedule = "0 6 * * *"
-  
+
   # Scrape Todaii News articles every morning at 6:30 AM UTC
-  [functions."scrape-todaii-news"]
+  [functions."scrape-todaii-news-fixed"]
     schedule = "30 6 * * *"
-  
+
   # Scrape Watanoc articles every morning at 7 AM UTC
-  [functions."scrape-watanoc-real"]
+  [functions."scrape-watanoc-working"]
     schedule = "0 7 * * *"

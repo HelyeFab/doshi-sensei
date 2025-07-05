@@ -50,7 +50,12 @@ async function triggerSourceScraping(source: NewsSourceConfig): Promise<Scraping
   try {
     console.log(`🚀 Triggering ${source.name} scraping...`);
 
-    const response = await fetch(`/.netlify/functions/${source.netlifyFunction}`, {
+    // Use relative URL - Netlify Dev will proxy it correctly
+    const functionsUrl = `/.netlify/functions/${source.netlifyFunction}`;
+
+    console.log(`📡 Triggering ${source.name} scraping via: ${functionsUrl}`);
+
+    const response = await fetch(functionsUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

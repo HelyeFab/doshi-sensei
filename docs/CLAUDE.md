@@ -345,6 +345,8 @@ When working on features related to user limits, subscriptions, or game access, 
 - **Monthly/Yearly**: Premium users ($3.99/mo or $39.99/yr, unlimited everything)
 - **Admin**: Special role with dashboard access
 
+**Note**: The system currently uses 'monthly' and 'yearly' as distinct user types rather than a generic 'premium'. See `/docs/PREMIUM_TYPE_REFERENCES.md` for all locations that depend on this distinction.
+
 ## Entitlements System Migration Plan - January 2025
 
 ### Overview

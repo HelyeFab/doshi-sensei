@@ -124,7 +124,20 @@ function makeRequest(url) {
 
 // Clean HTML and extract text
 function cleanText(html) {
-  return html
+  // First, extract text from tipso/tooltip spans which contain vocabulary
+  let processedHtml = html;
+  
+  // Extract content from tipso spans (Watanoc's vocabulary tooltips)
+  processedHtml = processedHtml.replace(/<span[^>]*class=['"]tipso['"][^>]*data-tipso=['"]([^'"]*?)['"][^>]*>([^<]*)<\/span>/gi, (match, tooltip, word) => {
+    return word + ' ';
+  });
+  
+  // Extract content from other tooltip spans
+  processedHtml = processedHtml.replace(/<span[^>]*class=['"][^'"]*tooltips[^'"]*['"][^>]*title=['"]([^'"]*?)['"][^>]*>([^<]*)<\/span>/gi, (match, tooltip, content) => {
+    return content + ' ';
+  });
+  
+  return processedHtml
     .replace(/<script[^>]*>.*?<\/script>/gis, '')
     .replace(/<style[^>]*>.*?<\/style>/gis, '')
     .replace(/<[^>]*>/g, '')
@@ -235,25 +248,33 @@ async function scrapeWatanocArticles() {
         // Try multiple selectors to find the content
         let content = '';
         
-        // First try: Look for post-body content (common in Watanoc)
-        const postBodyMatch = articleHtml.match(/<div[^>]*class="[^"]*post-body[^"]*"[^>]*>([\s\S]*?)(?:<footer|<div[^>]*class="[^"]*(?:share|related|comment))/i);
-        if (postBodyMatch && postBodyMatch[1]) {
-          content = postBodyMatch[1];
+        // First try: Watanoc's actual structure - entry entry-content
+        const entryMatch = articleHtml.match(/<div[^>]*class="[^"]*entry\s+entry-content[^"]*"[^>]*>([\s\S]*?)(?:<footer|<aside|<div[^>]*class="[^"]*(?:share|comment|related))/i);
+        if (entryMatch && entryMatch[1]) {
+          content = entryMatch[1];
         }
         
-        // Second try: entry-content
+        // Second try: just entry-content
         if (!content) {
-          const entryContentMatch = articleHtml.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<footer|<div[^>]*class="[^"]*share)/i);
+          const entryContentMatch = articleHtml.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<footer|<\/article|<div[^>]*class="[^"]*(?:share|comment))/i);
           if (entryContentMatch && entryContentMatch[1]) {
             content = entryContentMatch[1];
           }
         }
         
-        // Third try: Look for Japanese content sections
+        // Third try: Look for the content area with Japanese text
         if (!content) {
-          const japaneseMatch = articleHtml.match(/<div[^>]*class="[^"]*japanese[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
-          if (japaneseMatch && japaneseMatch[1]) {
-            content = japaneseMatch[1];
+          // Find divs containing substantial Japanese text
+          const divMatches = articleHtml.matchAll(/<div[^>]*>([\s\S]*?)<\/div>/gi);
+          for (const match of divMatches) {
+            const divContent = match[1];
+            // Count Japanese characters
+            const japaneseChars = (divContent.match(/[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]/g) || []).length;
+            // If this div has more than 200 Japanese characters, it's likely the main content
+            if (japaneseChars > 200 && !divContent.includes('class="menu') && !divContent.includes('class="header')) {
+              content = divContent;
+              break;
+            }
           }
         }
         
@@ -261,11 +282,11 @@ async function scrapeWatanocArticles() {
         if (!content) {
           const articleMatch = articleHtml.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
           if (articleMatch && articleMatch[1]) {
-            // Extract main content, avoiding header/footer
-            const mainContent = articleMatch[1].match(/<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
-            if (mainContent && mainContent[1]) {
-              content = mainContent[1];
-            }
+            // Remove header and footer sections
+            const cleanedArticle = articleMatch[1]
+              .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, '')
+              .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '');
+            content = cleanedArticle;
           }
         }
         

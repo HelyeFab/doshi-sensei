@@ -16,7 +16,7 @@ import KanaChart from '@/components/kana/KanaChart';
 import KanaStudyModal from '@/components/kana/KanaStudyModal';
 import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
 import { useNotification } from '@/contexts/NotificationContext';
-import { kanaData } from '@/data/kanaData';
+import { kanaData, getBasicKana } from '@/data/kanaData';
 import { KanaChar } from '@/components/games/KanaDropGame/types';
 
 // Structured Data for Practice Page
@@ -74,7 +74,7 @@ export default function PracticePage() {
   const [showRules, setShowRules] = useState(false);
   const [showFurigana, setShowFurigana] = useState(false);
   const [wordTypeFilter, setWordTypeFilter] = useState<'all' | 'verbs' | 'adjectives'>('all');
-  
+
   // Kana chart states
   const [kanaChartType, setKanaChartType] = useState<'hiragana' | 'katakana'>('hiragana');
   const [selectedHiragana, setSelectedHiragana] = useState<Set<string>>(new Set());
@@ -213,7 +213,7 @@ export default function PracticePage() {
 
   const getSelectedKanaData = useMemo((): KanaChar[] => {
     const selectedData: KanaChar[] = [];
-    
+
     // Get hiragana selections
     selectedHiragana.forEach(id => {
       const kana = kanaData.find(k => k.id === id);
@@ -226,7 +226,7 @@ export default function PracticePage() {
         });
       }
     });
-    
+
     // Get katakana selections
     selectedKatakana.forEach(id => {
       const kana = kanaData.find(k => k.id === id);
@@ -239,7 +239,7 @@ export default function PracticePage() {
         });
       }
     });
-    
+
     return selectedData;
   }, [selectedHiragana, selectedKatakana]);
 
@@ -262,6 +262,8 @@ export default function PracticePage() {
     }
     setShowKanaDropModal(true);
   };
+
+  const allKanaSelected = selectedHiragana.size + selectedKatakana.size === getBasicKana().length;
 
   if (selectedWord) {
     return <WordPractice word={selectedWord} onBack={handleBackToList} />;
@@ -298,21 +300,19 @@ export default function PracticePage() {
             <div className="inline-flex bg-muted rounded-lg p-1">
               <button
                 onClick={() => setActiveTab('kana')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'kana'
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'kana'
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 Kana Charts
               </button>
               <button
                 onClick={() => setActiveTab('conjugation')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'conjugation'
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'conjugation'
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 Conjugation Practice
               </button>
@@ -327,26 +327,24 @@ export default function PracticePage() {
                 <p className="text-muted-foreground">
                   Tap any character to hear its pronunciation. Click the purple corner to select for practice.
                 </p>
-                
+
                 {/* Chart Type Toggle */}
                 <div className="flex justify-center gap-2">
                   <button
                     onClick={() => setKanaChartType('hiragana')}
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      kanaChartType === 'hiragana'
+                    className={`px-4 py-2 rounded-lg border transition-colors ${kanaChartType === 'hiragana'
                         ? 'bg-primary text-primary-foreground border-primary'
                         : 'bg-background text-foreground border-input hover:bg-muted'
-                    }`}
+                      }`}
                   >
                     ひらがな Hiragana
                   </button>
                   <button
                     onClick={() => setKanaChartType('katakana')}
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      kanaChartType === 'katakana'
+                    className={`px-4 py-2 rounded-lg border transition-colors ${kanaChartType === 'katakana'
                         ? 'bg-primary text-primary-foreground border-primary'
                         : 'bg-background text-foreground border-input hover:bg-muted'
-                    }`}
+                      }`}
                   >
                     カタカナ Katakana
                   </button>
@@ -372,7 +370,7 @@ export default function PracticePage() {
                       >
                         Clear Selection ({selectedHiragana.size + selectedKatakana.size})
                       </button>
-                      
+
                       <div className="flex items-center gap-2">
                         <select
                           value={kanaStudyType}
@@ -383,27 +381,27 @@ export default function PracticePage() {
                           <option value="katakana">Study Katakana</option>
                           <option value="both">Study Both</option>
                         </select>
-                        
+
                         <button
                           onClick={handleStartKanaStudy}
                           className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                             />
                           </svg>
                           <span>Start Study ({selectedHiragana.size + selectedKatakana.size} selected)</span>
                         </button>
-                        
+
                         {(selectedHiragana.size + selectedKatakana.size) <= 5 && (selectedHiragana.size + selectedKatakana.size) > 0 && (
                           <button
                             onClick={handleStartKanaDrop}
                             className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors flex items-center gap-2"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                d="M19 14l-7 7m0 0l-7-7m7 7V3" 
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M19 14l-7 7m0 0l-7-7m7 7V3"
                               />
                             </svg>
                             <span>Kana Drop</span>
@@ -443,7 +441,7 @@ export default function PracticePage() {
                   studyType={kanaStudyType}
                 />
               )}
-              
+
               {/* Kana Drop Modal */}
               {showKanaDropModal && (
                 <KanaDropModal
@@ -451,6 +449,12 @@ export default function PracticePage() {
                   onClose={() => setShowKanaDropModal(false)}
                   selectedKana={getSelectedKanaData}
                 />
+              )}
+
+              {allKanaSelected && (
+                <div className="my-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-lg text-center">
+                  <strong>Warning:</strong> You have selected all kana. No "wrong kana" will spawn in the game—only distractors and your selected kana will appear.
+                </div>
               )}
             </div>
           ) : (
@@ -543,14 +547,13 @@ function WordSelector({
             <button
               key={filter}
               onClick={() => onWordTypeFilterChange(filter)}
-              className={`px-4 py-2 rounded-lg border transition-colors ${
-                wordTypeFilter === filter
+              className={`px-4 py-2 rounded-lg border transition-colors ${wordTypeFilter === filter
                   ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-background text-foreground border-input hover:bg-muted'
-              }`}
+                }`}
             >
               {filter === 'all' ? 'All Types' :
-               filter === 'verbs' ? 'Verbs Only' : 'Adjectives Only'}
+                filter === 'verbs' ? 'Verbs Only' : 'Adjectives Only'}
             </button>
           ))}
         </div>
@@ -603,10 +606,10 @@ function WordSelector({
 // Helper function to determine if a word can be conjugated
 function isConjugableWord(word: JapaneseWord): boolean {
   return word.type === 'Ichidan' ||
-         word.type === 'Godan' ||
-         word.type === 'Irregular' ||
-         word.type === 'i-adjective' ||
-         word.type === 'na-adjective';
+    word.type === 'Godan' ||
+    word.type === 'Irregular' ||
+    word.type === 'i-adjective' ||
+    word.type === 'na-adjective';
 }
 
 // Word Card Component
@@ -718,7 +721,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
           title="Save to List"
         >
           <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
           </svg>
         </button>
 
@@ -756,7 +759,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
           {!isConjugable && (
             <div className="flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/20 rounded text-xs text-orange-400">
               <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+                <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
               </svg>
               <span>Cannot be conjugated - {word.type}s don't have verb forms</span>
             </div>
@@ -765,7 +768,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
           {isConjugable && (
             <div className="flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/20 rounded text-xs text-green-400">
               <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>Click to view conjugations</span>
             </div>
@@ -911,8 +914,8 @@ function VerbEssentials({ word, conjugations }: VerbEssentialsProps) {
         <div className="text-sm text-muted-foreground mb-1">Verb Class</div>
         <div className="text-lg font-medium text-foreground">
           {word.type === 'Godan' ? '1 ~ Godan ~ 五段' :
-           word.type === 'Ichidan' ? '2 ~ Ichidan ~ 一段' :
-           '3 ~ Irregular ~ 不規則'}
+            word.type === 'Ichidan' ? '2 ~ Ichidan ~ 一段' :
+              '3 ~ Irregular ~ 不規則'}
         </div>
       </div>
 
@@ -1001,7 +1004,7 @@ function ConjugationSection({ title, forms, showFurigana, generateFurigana }: Co
                   {playingIndex === index ? (
                     // Playing animation
                     <svg className="w-4 h-4 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
                     </svg>
                   ) : (
                     // Speaker icon
@@ -1129,14 +1132,13 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
             {word.meaning}
           </div>
           <div className="flex items-center justify-center gap-4">
-            <span className={`px-3 py-1 rounded-lg border text-sm ${
-              word.type === 'Ichidan' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-              word.type === 'Godan' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-              word.type === 'Irregular' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-              word.type === 'i-adjective' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-              word.type === 'na-adjective' ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' :
-              'bg-gray-500/10 text-gray-400 border-gray-500/20'
-            }`}>
+            <span className={`px-3 py-1 rounded-lg border text-sm ${word.type === 'Ichidan' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                word.type === 'Godan' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                  word.type === 'Irregular' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                    word.type === 'i-adjective' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                      word.type === 'na-adjective' ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' :
+                        'bg-gray-500/10 text-gray-400 border-gray-500/20'
+              }`}>
               {word.type}
             </span>
             <span className="px-3 py-1 rounded-lg border bg-secondary/10 text-secondary border-secondary/20 text-sm">

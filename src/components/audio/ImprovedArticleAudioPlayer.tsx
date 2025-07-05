@@ -26,6 +26,15 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     progress: 0,
     duration: 0
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [audioMode, setAudioMode] = useState<'original' | 'tts'>('tts');
+  const [voice, setVoice] = useState<'male' | 'female'>('male');
+  const [provider, setProvider] = useState<'elevenlabs' | 'google'>('elevenlabs');
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Debug state changes
   useEffect(() => {
@@ -36,15 +45,6 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
       hasAudio: !!audioRef.current
     });
   }, [controls.isPlaying, controls.isPaused, isLoading]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [audioMode, setAudioMode] = useState<'original' | 'tts'>('tts');
-  const [voice, setVoice] = useState<'male' | 'female'>('male');
-  const [provider, setProvider] = useState<'elevenlabs' | 'google'>('elevenlabs');
-  
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Clean up on unmount
   useEffect(() => {

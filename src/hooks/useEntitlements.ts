@@ -56,6 +56,9 @@ export interface UseEntitlementsReturn {
   
   // Loading state
   loading: boolean;
+  
+  // Helper to check if user is premium
+  isPremium: boolean;
 }
 
 export function useEntitlements(): UseEntitlementsReturn {
@@ -79,6 +82,17 @@ export function useEntitlements(): UseEntitlementsReturn {
     if (!authLoading && !subscriptionLoading) {
       const validation = subscriptionValidator.validate(user, userSubscription, false);
       const currentUserType = validation.userType;
+      
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('useEntitlements - userType determination:', {
+          user: user?.email,
+          subscription: userSubscription?.subscription,
+          validatorUserType: currentUserType,
+          isPremium: validation.isPremium
+        });
+      }
+      
       setUserType(currentUserType);
       setEntitlements(getEntitlementsForUserType(currentUserType));
     }
@@ -121,6 +135,17 @@ export function useEntitlements(): UseEntitlementsReturn {
     // Check daily limit
     if (dailyLimit !== undefined) {
       result.unlimited = isUnlimited(dailyLimit);
+      
+      // Debug logging
+      if (process.env.NODE_ENV === 'development' && featurePath.includes('articles')) {
+        console.log('canAccess - limit check:', {
+          featurePath,
+          dailyLimit,
+          isUnlimited: result.unlimited,
+          currentUsage,
+          userType
+        });
+      }
       
       if (!result.unlimited && currentUsage?.daily !== undefined) {
         result.used = currentUsage.daily;
@@ -240,7 +265,19 @@ export function useEntitlements(): UseEntitlementsReturn {
       dailyUsage = isToday ? (userSubscription.currentUsage.articlesToday || 0) : 0;
     }
     
-    return canAccess('learning.articles', { daily: dailyUsage });
+    const result = canAccess('learning.articles', { daily: dailyUsage });
+    
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('canReadArticle check:', {
+        userType,
+        dailyUsage,
+        result,
+        subscription: userSubscription?.subscription
+      });
+    }
+    
+    return result;
   }, [canAccess, userType, guestUsage, userSubscription]);
   
   // Prompt for access based on user type
@@ -256,6 +293,9 @@ export function useEntitlements(): UseEntitlementsReturn {
     }
   }, [userType, showLoginPrompt, showUpgradePrompt]);
   
+  // Helper to check if user is premium
+  const isPremium = userType === 'monthly' || userType === 'yearly' || userType === 'premium';
+  
   return {
     userType,
     entitlements,
@@ -269,6 +309,7 @@ export function useEntitlements(): UseEntitlementsReturn {
     canReadStory,
     canReadArticle,
     promptForAccess,
-    loading: authLoading || subscriptionLoading
+    loading: authLoading || subscriptionLoading,
+    isPremium
   };
 }

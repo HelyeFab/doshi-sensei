@@ -343,6 +343,15 @@ export default function NewsPage() {
   const handleArticleClick = async (article: NewsArticle) => {
     // Check if user can read more articles today using entitlements
     const articleCheck = canReadArticle();
+    
+    // Debug logging
+    console.log('Article access check:', {
+      user: user?.email,
+      isPremium,
+      articleCheck,
+      userType: user ? (isPremium ? 'premium' : 'free') : 'guest'
+    });
+    
     if (!articleCheck.allowed) {
       if (!user) {
         showLoginPrompt(
@@ -358,7 +367,16 @@ export default function NewsPage() {
       return;
     }
 
-    // Navigate to individual article page instead of using modal
+    // Track article read BEFORE navigating
+    try {
+      await incrementArticleCount();
+      checkArticleStatus(); // Update the displayed counts
+    } catch (error) {
+      console.error('Error tracking article read:', error);
+      // Don't fail the navigation if tracking fails
+    }
+    
+    // Navigate to individual article page
     window.location.href = `/news/${article.id}`;
   };
 

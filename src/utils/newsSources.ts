@@ -19,7 +19,7 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     id: 'watanoc',
     name: 'Watanoc',
     displayName: 'Watanoc Real Japanese News',
-    netlifyFunction: 'scrape-watanoc-real',
+    netlifyFunction: 'scrape-watanoc-working',
     emoji: '🌐',
     description: 'Real Japanese news with JLPT level estimation'
   },
@@ -27,7 +27,7 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     id: 'todaii',
     name: 'Todaii',
     displayName: 'Todaii Japanese News - Learning Platform',
-    netlifyFunction: 'scrape-todaii-news',
+    netlifyFunction: 'scrape-todaii-news-fixed',
     emoji: '📚',
     description: 'Japanese learning content with vocabulary focus'
   },
@@ -35,7 +35,7 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     id: 'nhk-easy',
     name: 'NHK Easy',
     displayName: 'NHK NEWS WEB EASY - Simplified Japanese News',
-    netlifyFunction: 'scrape-nhk-easy',
+    netlifyFunction: 'scrape-nhk-easy-fixed',
     emoji: '📺',
     description: 'Simplified Japanese news for learners'
   }
@@ -46,20 +46,15 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
  */
 async function triggerSourceScraping(source: NewsSourceConfig): Promise<ScrapingResult> {
   const startTime = Date.now();
-  
+
   try {
     console.log(`🚀 Triggering ${source.name} scraping...`);
-    
+
     const response = await fetch(`/.netlify/functions/${source.netlifyFunction}`, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        trigger: 'manual',
-        timestamp: new Date().toISOString(),
-        source: source.id
-      })
+      }
     });
 
     if (!response.ok) {
@@ -78,17 +73,17 @@ async function triggerSourceScraping(source: NewsSourceConfig): Promise<Scraping
         timeElapsed: Math.round(timeElapsed / 1000), // Convert to seconds
         source: source.id,
         nextScrapingTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
-        metadata: result.metadata || {}
+        fallbackUsed: result.fallbackUsed || false
       };
     } else {
       console.error(`❌ ${source.name} scraping failed:`, result.error);
       return {
         success: false,
         articlesScraped: 0,
-        errors: [{ 
+        errors: [{
           message: result.error || 'Unknown scraping error',
-          type: 'scraping_error',
-          source: source.id
+          type: 'unknown' as const,
+          timestamp: new Date()
         }],
         timeElapsed: Math.round(timeElapsed / 1000),
         source: source.id,
@@ -98,14 +93,14 @@ async function triggerSourceScraping(source: NewsSourceConfig): Promise<Scraping
   } catch (error) {
     const timeElapsed = Date.now() - startTime;
     console.error(`❌ ${source.name} network error:`, error);
-    
+
     return {
       success: false,
       articlesScraped: 0,
       errors: [{
         message: error instanceof Error ? error.message : 'Network error',
-        type: 'network_error',
-        source: source.id
+        type: 'network' as const,
+        timestamp: new Date()
       }],
       timeElapsed: Math.round(timeElapsed / 1000),
       source: source.id,
@@ -150,9 +145,9 @@ export async function triggerAllSourcesScraping(): Promise<{
   };
 }> {
   console.log('🚀 Triggering all news sources scraping...');
-  
+
   const startTime = Date.now();
-  
+
   // Run all scrapers in parallel for faster execution
   const [watanoc, todaii, nhkEasy] = await Promise.allSettled([
     triggerWatanocScraping(),
@@ -162,17 +157,17 @@ export async function triggerAllSourcesScraping(): Promise<{
 
   // Extract results (handle promise rejections)
   const watanocResult = watanoc.status === 'fulfilled' ? watanoc.value : {
-    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'promise_error', source: 'watanoc' }],
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
     timeElapsed: 0, source: 'watanoc', nextScrapingTime: new Date()
   };
 
   const todaiiResult = todaii.status === 'fulfilled' ? todaii.value : {
-    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'promise_error', source: 'todaii' }],
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
     timeElapsed: 0, source: 'todaii', nextScrapingTime: new Date()
   };
 
   const nhkEasyResult = nhkEasy.status === 'fulfilled' ? nhkEasy.value : {
-    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'promise_error', source: 'nhk-easy' }],
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
     timeElapsed: 0, source: 'nhk-easy', nextScrapingTime: new Date()
   };
 
@@ -213,7 +208,7 @@ export function getResultEmoji(result: ScrapingResult): string {
 export function formatScrapingResult(result: ScrapingResult, source: NewsSourceConfig): string {
   const emoji = getResultEmoji(result);
   const sourceName = source.name;
-  
+
   if (result.success) {
     if (result.articlesScraped > 0) {
       return `${emoji} ${sourceName}: ${result.articlesScraped} articles scraped (${result.timeElapsed}s)`;

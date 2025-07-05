@@ -10,6 +10,16 @@
   display: inline-block;
 }
 
+/* Ruby text alignment */
+ruby {
+  ruby-align: start;
+}
+
+rt {
+  text-align: left;
+  font-size: 0.6em;
+}
+
 /* Noun */
 .grammar-noun {
   border-bottom: 2px solid #3b82f6;

@@ -113,12 +113,16 @@ export function GrammarHighlightedText({
               className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 md:px-0.5 md:py-0 inline-block mx-0.5 my-0.5 md:mx-0 md:my-0 ${
                 isHighlighted ? `grammar-${posType}` : ''
               }`}
-              style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
+              style={{
+                ...(isHighlighted ? { backgroundColor: `${token.color}20` } : {}),
+                rubyAlign: 'start' as any,
+                WebkitRubyAlign: 'start' as any
+              }}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
             >
               {token.surface_form}
-              <rt className="text-xs">{token.reading}</rt>
+              <rt className="text-xs" style={{ textAlign: 'left' }}>{token.reading}</rt>
             </ruby>
           );
         } else {

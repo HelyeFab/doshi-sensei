@@ -222,11 +222,16 @@ export class JapaneseNewsScraper {
         try {
           console.log(`📡 Calling ${func.name} scraper...`);
           
-          const response = await fetch(`${func.url}?limit=${articlesPerSource}`, {
-            method: 'GET',
+          const response = await fetch(func.url, {
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+              limit: articlesPerSource,
+              trigger: 'manual',
+              timestamp: new Date().toISOString()
+            })
           });
 
           if (!response.ok) {

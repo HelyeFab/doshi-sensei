@@ -4,7 +4,42 @@ const admin = require('firebase-admin');
 // Adapted for Netlify functions with Firebase integration
 
 // Global variables for Firebase
+let firebaseInitialized = false;
 let db = null;
+
+// Initialize Firebase at module level (critical for Netlify Functions)
+if (!admin.apps.length) {
+  try {
+    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    
+    const serviceAccount = {
+      type: "service_account",
+      project_id: projectId,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      client_id: process.env.FIREBASE_CLIENT_ID,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    };
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+
+    firebaseInitialized = true;
+    db = admin.firestore();
+    console.log('✅ Firebase Admin SDK initialized at module level');
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase Admin SDK at module level:', error.message);
+    firebaseInitialized = false;
+  }
+} else {
+  firebaseInitialized = true;
+  db = admin.firestore();
+}
 
 // Simple cheerio-like parsing using native DOM-like parsing
 function parseHTML(html) {
@@ -200,41 +235,18 @@ exports.handler = async (event, context) => {
   try {
     console.log('🚀 Watanoc scraper (copied from working scraping-next)');
 
-    // Initialize Firebase
-    if (!admin.apps.length) {
-      try {
-        const serviceAccount = {
-          type: "service_account",
-          project_id: process.env.FIREBASE_PROJECT_ID,
-          private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-          private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\\\n/g, '\\n'),
-          client_email: process.env.FIREBASE_CLIENT_EMAIL,
-          client_id: process.env.FIREBASE_CLIENT_ID,
-          auth_uri: "https://accounts.google.com/o/oauth2/auth",
-          token_uri: "https://oauth2.googleapis.com/token",
-          auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-          client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
-        };
-
-        admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount)
-        });
-        console.log('✅ Firebase initialized');
-      } catch (error) {
-        console.error('❌ Firebase init failed:', error.message);
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({
-            success: false,
-            error: 'Firebase initialization failed: ' + error.message,
-            timestamp: new Date().toISOString()
-          }),
-        };
-      }
+    // Check if Firebase is properly initialized at module level
+    if (!firebaseInitialized || !db) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: 'Firebase Admin SDK not configured',
+          timestamp: new Date().toISOString()
+        }),
+      };
     }
-
-    db = admin.firestore();
 
     const articles = await scrapeWatanoc();
     console.log(`📊 Scraped ${articles.length} articles`);

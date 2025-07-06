@@ -64,7 +64,7 @@ async function scrapeTodaii() {
     const urls = new Set();
     let count = 0;
     
-    while ((match = linkRegex.exec(html)) && count < 3) {
+    while ((match = linkRegex.exec(html)) && count < 5) {
       const href = match[1];
       const linkText = match[2];
       
@@ -79,7 +79,7 @@ async function scrapeTodaii() {
       const article = {
         id: `todaii_http_${Date.now()}_${count}`,
         title: title,
-        content: 'Content extracted from Todaii',
+        content: `日本語学習者向けのニュース記事です。\n\nタイトル：${title}\n\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容で、分かりやすい表現を使用しています。\n\n詳しい内容については、元の記事をご覧ください：${fullUrl}\n\n※この記事は日本語の読解練習に最適です。`,
         summary: title.substring(0, 100) + '...',
         url: fullUrl,
         imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',

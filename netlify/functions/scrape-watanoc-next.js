@@ -38,7 +38,7 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
-// Simple scraping function
+// Enhanced scraping function with actual content extraction
 async function scrapeWatanoc() {
   const articles = [];
   
@@ -58,25 +58,95 @@ async function scrapeWatanoc() {
     const html = await response.text();
     console.log(`✅ Fetched ${html.length} characters`);
 
-    // Simple regex extraction
+    // Extract article URLs and metadata
     const articleRegex = /<article[^>]*class="[^"]*loop-article[^"]*"[^>]*>([\s\S]*?)<\/article>/gi;
     let match;
     let count = 0;
+    const articleData = [];
 
-    while ((match = articleRegex.exec(html)) && count < 3) {
+    while ((match = articleRegex.exec(html)) && count < 5) {
       const articleHtml = match[1];
       
       const urlMatch = articleHtml.match(/href="(https:\/\/watanoc\.com\/[^"]+)"/);
       const titleMatch = articleHtml.match(/title="([^"]+)"/);
       
       if (urlMatch && titleMatch) {
-        const article = {
-          id: `watanoc_http_${Date.now()}_${count}`,
-          title: titleMatch[1].replace(/\s*\(n[1-5]\).*$/i, ''),
-          content: 'Content extracted from Watanoc',
-          summary: titleMatch[1].substring(0, 100) + '...',
+        articleData.push({
           url: urlMatch[1],
-          imageUrl: 'https://images.unsplash.com/photo-1500000000000?w=400',
+          title: titleMatch[1].replace(/\s*\(n[1-5]\).*$/i, ''),
+          rawTitle: titleMatch[1]
+        });
+        count++;
+      }
+    }
+
+    // Now fetch actual content for each article
+    for (let i = 0; i < articleData.length; i++) {
+      const data = articleData[i];
+      
+      try {
+        console.log(`📄 Fetching article content: ${data.title}`);
+        
+        const articleResponse = await fetch(data.url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
+          signal: AbortSignal.timeout(10000)
+        });
+
+        if (!articleResponse.ok) {
+          console.warn(`Failed to fetch article ${i + 1}: HTTP ${articleResponse.status}`);
+          continue;
+        }
+
+        const articleHtml = await articleResponse.text();
+        
+        // Extract content from the article page
+        let content = '';
+        
+        // Try different content selectors
+        const contentSelectors = [
+          /<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<footer|<\/article>|<div[^>]*class="[^"]*(?:share|comment|related))/i,
+          /<article[^>]*>[\s\S]*?<div[^>]*class="[^"]*entry[^"]*"[^>]*>([\s\S]*?)(?:<footer|<\/article>)/i,
+          /<main[^>]*>([\s\S]*?)<\/main>/i
+        ];
+
+        for (const selector of contentSelectors) {
+          const contentMatch = articleHtml.match(selector);
+          if (contentMatch && contentMatch[1]) {
+            content = contentMatch[1];
+            break;
+          }
+        }
+
+        // Clean the content
+        if (content) {
+          // Remove script, style, and unwanted elements
+          content = content
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<div[^>]*class="[^"]*(?:ad|banner|share|comment)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+            .replace(/<[^>]*>/g, ' ') // Remove all HTML tags
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/\s+/g, ' ')
+            .trim();
+        }
+
+        // Extract JLPT level
+        const levelMatch = data.rawTitle.match(/\(n([1-5])\)/i);
+        const difficulty = levelMatch ? `N${levelMatch[1].toUpperCase()}` : 'N4';
+
+        const article = {
+          id: `watanoc_http_${Date.now()}_${i}`,
+          title: data.title,
+          content: content || 'この記事の内容を読み込み中です。しばらくお待ちください。',
+          summary: content ? content.substring(0, 200) + '...' : data.title,
+          url: data.url,
+          imageUrl: `https://images.unsplash.com/photo-${1500000000000 + i}?w=400`,
           publishDate: new Date(),
           scrapedAt: new Date(),
           source: {
@@ -85,15 +155,21 @@ async function scrapeWatanoc() {
             displayName: 'Watanoc - Japanese Learning Articles'
           },
           category: 'general',
-          tags: ['japanese-learning', 'watanoc'],
-          difficulty: 'N4',
-          estimatedReadingTime: 3,
+          tags: ['japanese-learning', 'watanoc', difficulty.toLowerCase()],
+          difficulty: difficulty,
+          estimatedReadingTime: Math.ceil((content?.length || 500) / 500),
           vocabulary: [],
           kanji: []
         };
         
         articles.push(article);
-        count++;
+        console.log(`✅ Extracted article ${i + 1}: ${data.title} (${content?.length || 0} chars)`);
+        
+        // Be respectful - wait between requests
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+      } catch (error) {
+        console.warn(`⚠️ Failed to fetch content for article ${i + 1}: ${error.message}`);
       }
     }
     

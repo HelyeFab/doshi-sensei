@@ -76,33 +76,173 @@ async function scrapeTodaii() {
       let title = linkText.replace(/<[^>]*>/g, '').trim();
       if (!title || title.length < 5) continue;
       
-      const article = {
-        id: `todaii_http_${Date.now()}_${count}`,
-        title: title,
-        content: `日本語学習者向けのニュース記事です。\n\nタイトル：${title}\n\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容で、分かりやすい表現を使用しています。\n\n詳しい内容については、元の記事をご覧ください：${fullUrl}\n\n※この記事は日本語の読解練習に最適です。`,
-        summary: title.substring(0, 100) + '...',
+      // Store article data for later content extraction
+      const articleData = {
         url: fullUrl,
-        imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',
-        publishDate: new Date(),
-        scrapedAt: new Date(),
-        source: {
-          id: 'todaii',
-          name: 'Todaii',
-          displayName: 'Todaii - Japanese News'
-        },
-        category: 'news',
-        tags: ['japanese-learning', 'todaii'],
-        difficulty: 'N4',
-        estimatedReadingTime: 4,
-        vocabulary: [],
-        kanji: []
+        title: title
       };
       
-      articles.push(article);
+      articles.push(articleData);
       count++;
     }
     
-    return articles;
+    console.log(`✅ [Improved] Found ${articles.length} Todaii articles to process`);
+    
+    // Now fetch actual content for each article
+    const processedArticles = [];
+    for (let i = 0; i < Math.min(articles.length, 5); i++) {
+      const data = articles[i];
+      
+      try {
+        console.log(`📄 [Improved] Fetching article content: ${data.title}`);
+        
+        const articleResponse = await fetch(data.url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          },
+          signal: AbortSignal.timeout(8000)
+        });
+
+        if (!articleResponse.ok) {
+          console.warn(`Failed to fetch Todaii article ${i + 1}: HTTP ${articleResponse.status}`);
+          continue;
+        }
+
+        const articleHtml = await articleResponse.text();
+        
+        // Extract content from the Todaii article page
+        let content = '';
+        
+        // Enhanced content selectors for Todaii
+        const contentSelectors = [
+          // Todaii specific content areas
+          /<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<(?:footer|div[^>]*class="[^"]*(?:share|comment|related)))/i,
+          /<article[^>]*>([\s\S]*?)(?:<footer|<\/article>)/i,
+          /<main[^>]*>([\s\S]*?)(?:<aside|<footer|<\/main>)/i,
+          // Generic selectors
+          /<div[^>]*class="[^"]*(?:post-content|article-content|news-content)[^"]*"[^>]*>([\s\S]*?)(?:<\/div>)/i
+        ];
+
+        for (const selector of contentSelectors) {
+          const contentMatch = articleHtml.match(selector);
+          if (contentMatch && contentMatch[1]) {
+            content = contentMatch[1];
+            console.log(`✅ [Improved] Content extracted using selector pattern`);
+            break;
+          }
+        }
+
+        // If no content found with selectors, try extracting paragraphs with Japanese
+        if (!content || content.length < 100) {
+          console.log('⚠️ [Improved] Primary selectors failed, trying fallback extraction...');
+          
+          const paragraphMatches = articleHtml.match(/<p[^>]*>([^<]*[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF][^<]*)<\/p>/gi);
+          if (paragraphMatches && paragraphMatches.length > 0) {
+            content = paragraphMatches.slice(0, 8).join('\n');
+            console.log(`✅ [Improved] Extracted ${paragraphMatches.length} paragraphs as fallback`);
+          }
+        }
+
+        // Enhanced content cleaning (same as Watanoc improvements)
+        if (content) {
+          console.log(`🧹 [Improved] Cleaning Todaii content (${content.length} chars before cleaning)`);
+          
+          // Remove unwanted elements
+          content = content
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
+            .replace(/<div[^>]*class="[^"]*(?:ad|advertisement|banner|share|comment|related|navigation|sidebar)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+            .replace(/<aside[^>]*>[\s\S]*?<\/aside>/gi, '')
+            .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '');
+          
+          // Remove English content specifically for Todaii
+          content = content
+            .replace(/[A-Z][a-zA-Z\s,.'"\\-!?:;0-9()]+[.!?]\s*/g, '') // Remove English sentences
+            .replace(/\\b[a-zA-Z]{3,}\\b/g, '') // Remove English words
+            .replace(/\\([^)]*[a-zA-Z][^)]*\\)/g, ''); // Remove parentheses with English
+          
+          // Remove HTML tags and clean formatting
+          content = content
+            .replace(/<[^>]*>/g, ' ')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/\\s+/g, ' ')
+            .replace(/\\s*([。！？])\\s*/g, '$1\\n\\n')
+            .replace(/\\n\\n\\n+/g, '\\n\\n')
+            .trim();
+          
+          console.log(`✅ [Improved] Todaii content cleaned (${content.length} chars after cleaning)`);
+        }
+
+        // Ensure we have meaningful content
+        if (!content || content.length < 50) {
+          console.log(`⚠️ [Improved] Insufficient Todaii content extracted, creating fallback content`);
+          content = `この記事について：${data.title}\\n\\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容で、分かりやすい表現を使用しています。\\n\\n詳しい内容については元の記事をご覧ください：${data.url}\\n\\n※この記事は日本語の読解練習に最適です。`;
+        }
+
+        const article = {
+          id: `todaii_improved_${Date.now()}_${i}`,
+          title: data.title,
+          content: content,
+          summary: content.length > 200 ? content.substring(0, 200) + '...' : content,
+          url: data.url,
+          imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',
+          publishDate: new Date(),
+          scrapedAt: new Date(),
+          source: {
+            id: 'todaii',
+            name: 'Todaii',
+            displayName: 'Todaii - Japanese News (Improved)'
+          },
+          category: 'news',
+          tags: ['japanese-learning', 'todaii', 'improved'],
+          difficulty: 'N4',
+          estimatedReadingTime: Math.ceil((content?.length || 500) / 500),
+          vocabulary: [],
+          kanji: []
+        };
+        
+        processedArticles.push(article);
+        console.log(`✅ [Improved] Processed Todaii article ${i + 1}: ${data.title} (${content?.length || 0} chars)`);
+        
+        // Be respectful - wait between requests
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+      } catch (error) {
+        console.warn(`⚠️ [Improved] Failed to fetch Todaii content for article ${i + 1}: ${error.message}`);
+        
+        // Create fallback article with available data
+        const fallbackArticle = {
+          id: `todaii_improved_fallback_${Date.now()}_${i}`,
+          title: data.title,
+          content: `この記事について：${data.title}\\n\\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容です。\\n\\n記事の詳細な内容を取得中にエラーが発生しました。元の記事をご覧ください：${data.url}\\n\\n※この記事は日本語の読解練習に最適です。`,
+          summary: data.title,
+          url: data.url,
+          imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',
+          publishDate: new Date(),
+          scrapedAt: new Date(),
+          source: {
+            id: 'todaii',
+            name: 'Todaii',
+            displayName: 'Todaii - Japanese News (Fallback)'
+          },
+          category: 'news',
+          tags: ['japanese-learning', 'todaii', 'fallback'],
+          difficulty: 'N4',
+          estimatedReadingTime: 3,
+          vocabulary: [],
+          kanji: []
+        };
+        
+        processedArticles.push(fallbackArticle);
+      }
+    }
+    
+    return processedArticles;
   } catch (error) {
     console.error('❌ Error scraping Todaii:', error);
     return [];

@@ -104,98 +104,47 @@ async function scrapeWatanoc() {
         // Extract content from the article page
         let content = '';
         
-        // Enhanced content selectors for Watanoc
+        // Try different content selectors
         const contentSelectors = [
-          // Primary Watanoc content area
-          /<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<(?:footer|div[^>]*class="[^"]*(?:share|comment|related|navigation)))/i,
-          // Alternative content selectors
-          /<article[^>]*class="[^"]*post[^"]*"[^>]*>[\s\S]*?<div[^>]*class="[^"]*(?:content|entry)[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<footer)/i,
-          // WordPress content area
-          /<div[^>]*class="[^"]*(?:post-content|article-content|the-content)[^"]*"[^>]*>([\s\S]*?)(?:<\/div>)/i,
-          // Generic content area
-          /<main[^>]*>([\s\S]*?)(?:<aside|<footer|<\/main>)/i,
-          // Fallback: look for article tag content
-          /<article[^>]*>([\s\S]*?)(?:<footer|<\/article>)/i
+          /<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<footer|<\/article>|<div[^>]*class="[^"]*(?:share|comment|related))/i,
+          /<article[^>]*>[\s\S]*?<div[^>]*class="[^"]*entry[^"]*"[^>]*>([\s\S]*?)(?:<footer|<\/article>)/i,
+          /<main[^>]*>([\s\S]*?)<\/main>/i
         ];
 
         for (const selector of contentSelectors) {
           const contentMatch = articleHtml.match(selector);
           if (contentMatch && contentMatch[1]) {
             content = contentMatch[1];
-            console.log(`✅ [Enhanced] Content extracted using selector pattern`);
             break;
           }
         }
 
-        // If no content found with selectors, try extracting from any substantial text blocks
-        if (!content || content.length < 100) {
-          console.log('⚠️ [Enhanced] Primary selectors failed, trying fallback extraction...');
-          
-          // Look for paragraphs with Japanese content
-          const paragraphMatches = articleHtml.match(/<p[^>]*>([^<]*[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF][^<]*)<\/p>/gi);
-          if (paragraphMatches && paragraphMatches.length > 0) {
-            content = paragraphMatches.slice(0, 10).join('\n'); // Take first 10 paragraphs
-            console.log(`✅ [Enhanced] Extracted ${paragraphMatches.length} paragraphs as fallback`);
-          }
-        }
-
-        // Enhanced content cleaning
+        // Clean the content
         if (content) {
-          console.log(`🧹 [Enhanced] Cleaning content (${content.length} chars before cleaning)`);
-          
-          // Remove unwanted elements first
+          // Remove script, style, and unwanted elements
           content = content
             .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
             .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-            .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
-            .replace(/<div[^>]*class="[^"]*(?:ad|advertisement|banner|share|comment|related|navigation|sidebar)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-            .replace(/<aside[^>]*>[\s\S]*?<\/aside>/gi, '')
-            .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '')
-            .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '');
-          
-          // Process ruby tags for furigana before removing HTML
-          content = content.replace(/<ruby[^>]*>(.*?)<rt[^>]*>(.*?)<\/rt>.*?<\/ruby>/gi, '$1（$2）');
-          
-          // Remove all remaining HTML tags
-          content = content.replace(/<[^>]*>/g, ' ');
-          
-          // Clean up HTML entities and formatting
-          content = content
+            .replace(/<div[^>]*class="[^"]*(?:ad|banner|share|comment)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+            .replace(/<[^>]*>/g, ' ') // Remove all HTML tags
             .replace(/&nbsp;/g, ' ')
             .replace(/&amp;/g, '&')
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"')
-            .replace(/&apos;/g, "'")
-            .replace(/&#\d+;/g, '') // Remove numeric entities
-            .replace(/\s+/g, ' ') // Collapse multiple spaces
-            .replace(/\s*([。！？])\s*/g, '$1\n\n') // Add line breaks after Japanese punctuation
-            .replace(/\n\n\n+/g, '\n\n') // Remove excessive line breaks
+            .replace(/\s+/g, ' ')
             .trim();
-          
-          // Remove URLs and email addresses
-          content = content
-            .replace(/https?:\/\/[^\s]+/gi, '')
-            .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '');
-          
-          console.log(`✅ [Enhanced] Content cleaned (${content.length} chars after cleaning)`);
         }
 
         // Extract JLPT level
         const levelMatch = data.rawTitle.match(/\(n([1-5])\)/i);
         const difficulty = levelMatch ? `N${levelMatch[1].toUpperCase()}` : 'N4';
 
-        // Ensure we have meaningful content
-        if (!content || content.length < 50) {
-          console.log(`⚠️ [Enhanced] Insufficient content extracted, creating fallback content`);
-          content = `この記事について：${data.title}\n\nこの記事はWatanocから取得された日本語学習記事です。${difficulty}レベルの内容となっています。\n\n詳しい内容については元の記事をご覧ください：${data.url}\n\n※この記事は日本語の読解練習に適しています。`;
-        }
-
         const article = {
-          id: `watanoc_improved_${Date.now()}_${i}`,
+          id: `watanoc_http_${Date.now()}_${i}`,
           title: data.title,
-          content: content,
-          summary: content.length > 200 ? content.substring(0, 200) + '...' : content,
+          content: content || 'この記事の内容を読み込み中です。しばらくお待ちください。',
+          summary: content ? content.substring(0, 200) + '...' : data.title,
           url: data.url,
           imageUrl: `https://images.unsplash.com/photo-${1500000000000 + i}?w=400`,
           publishDate: new Date(),

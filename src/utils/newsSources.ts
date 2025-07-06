@@ -18,18 +18,18 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
   watanoc: {
     id: 'watanoc',
     name: 'Watanoc',
-    displayName: 'Watanoc Real Japanese News (Enhanced)',
-    netlifyFunction: 'scrape-watanoc-enhanced',
+    displayName: 'Watanoc Real Japanese News (Improved)',
+    netlifyFunction: 'scrape-watanoc-next',
     emoji: '🌐',
-    description: 'Real Japanese news with enhanced content extraction and furigana'
+    description: 'Real Japanese news with improved content extraction and furigana'
   },
   todaii: {
     id: 'todaii',
     name: 'Todaii',
-    displayName: 'Todaii Japanese News - Enhanced Platform',
-    netlifyFunction: 'scrape-todaii-enhanced',
+    displayName: 'Todaii Japanese News - Improved Platform',
+    netlifyFunction: 'scrape-todaii-next',
     emoji: '📚',
-    description: 'Japanese learning content with enhanced vocabulary extraction'
+    description: 'Japanese learning content with actual article extraction'
   },
   nhkEasy: {
     id: 'nhkEasy',

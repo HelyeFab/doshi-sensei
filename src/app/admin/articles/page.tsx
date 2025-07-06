@@ -8,7 +8,6 @@ import { getArticleStats, clearCache } from '@/utils/watanocArticles';
 import { 
   triggerWatanocScraping, 
   triggerTodaiiScraping, 
-  triggerNHKEasyScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult
@@ -57,23 +56,6 @@ export default function ArticlesManagementPage() {
     }
   };
 
-  const handleNHKEasyScraping = async () => {
-    setLoading(true);
-    setStatus('📺 Scraping NHK Easy News...');
-    
-    try {
-      const result = await triggerNHKEasyScraping();
-      setStatus(formatScrapingResult(result, NEWS_SOURCES.nhkEasy));
-      
-      if (result.success) {
-        setTimeout(loadStats, 2000);
-      }
-    } catch (error) {
-      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAllSourcesScraping = async () => {
     setLoading(true);
@@ -210,18 +192,6 @@ export default function ArticlesManagementPage() {
               </button>
               
               <button
-                onClick={handleNHKEasyScraping}
-                disabled={loading}
-                className="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <span className="text-lg">{NEWS_SOURCES.nhkEasy.emoji}</span>
-                <div className="text-left">
-                  <div className="font-medium">{NEWS_SOURCES.nhkEasy.name}</div>
-                  <div className="text-xs opacity-90">{NEWS_SOURCES.nhkEasy.description}</div>
-                </div>
-              </button>
-              
-              <button
                 onClick={handleAllSourcesScraping}
                 disabled={loading}
                 className="px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
@@ -229,7 +199,7 @@ export default function ArticlesManagementPage() {
                 <span className="text-lg">🚀</span>
                 <div className="text-left">
                   <div className="font-medium">All Sources</div>
-                  <div className="text-xs opacity-90">Scrape all three sources</div>
+                  <div className="text-xs opacity-90">Scrape all sources</div>
                 </div>
               </button>
             </div>
@@ -333,8 +303,8 @@ export default function ArticlesManagementPage() {
                     {Object.entries(stats.articlesBySource).map(([source, count]) => (
                       <div key={source} className="flex justify-between">
                         <span className="capitalize">
-                          {source === 'nhk-easy' ? '📰 NHK Easy' : 
-                           source === 'watanoc' ? '🏯 Watanoc' : 
+                          {source === 'watanoc' ? '🏯 Watanoc' : 
+                           source === 'todaii' ? '📚 Todaii' :
                            source === 'fallback' ? '🔄 Fallback' : source}:
                         </span>
                         <span className="font-medium">{count as number}</span>

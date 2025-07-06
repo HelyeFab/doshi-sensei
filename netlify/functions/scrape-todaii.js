@@ -26,7 +26,7 @@ function makeRequest(url, redirectCount = 0) {
         'Accept-Language': 'ja,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate',
       },
-      timeout: 30000
+      timeout: 25000
     };
 
     let data = '';
@@ -123,7 +123,7 @@ async function scrapeTodaiiArticles() {
     const articleData = [];
     
     for (const match of articleMatches) {
-      if (articleData.length >= 5) break; // Limit to 5 articles to stay within 26-second timeout
+      if (articleData.length >= 2) break; // REDUCED: Limit to 2 articles to stay within timeout
       
       const articleHtml = match[1];
       
@@ -326,7 +326,7 @@ exports.handler = async (event, context) => {
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 20000) // 20 seconds timeout (Netlify limit is 26s)
+      setTimeout(() => reject(new Error('Scraping timeout')), 15000) // REDUCED: 15 seconds timeout
     );
     
     const articles = await Promise.race([

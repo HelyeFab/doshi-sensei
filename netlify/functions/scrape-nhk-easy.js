@@ -151,7 +151,7 @@ async function scrapeNHKEasyArticles() {
     console.log(`Found ${allArticles.length} total articles`);
     
     // Convert to our format (limit to 30 articles)
-    const articles = allArticles.slice(0, 5).map((article, index) => ({
+    const articles = allArticles.slice(0, 2).map((article, index) => ({ // REDUCED: from 5 to 2 articles
       id: `nhk_easy_${article.news_id || Date.now()}_${index}`,
       title: article.title || 'NHK Easy News Article',
       content: article.title_with_ruby || article.title || '',
@@ -278,7 +278,7 @@ exports.handler = async (event, context) => {
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 20000) // 20 seconds timeout (Netlify limit is 26s)
+      setTimeout(() => reject(new Error('Scraping timeout')), 15000) // REDUCED: 15 seconds timeout
     );
     
     const articles = await Promise.race([

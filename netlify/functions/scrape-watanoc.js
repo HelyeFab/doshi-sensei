@@ -153,7 +153,7 @@ async function scrapeWatanocArticles() {
     let count = 0;
 
     for (const match of articleMatches) {
-      if (count >= 20) break; // Limit to 20 articles
+      if (count >= 5) break; // Limit to 5 articles to stay within 26-second timeout
       
       const articleHtml = match[0];
       
@@ -420,7 +420,7 @@ exports.handler = async (event, context) => {
 
     // Get articles from Watanoc with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 90000) // 90 seconds timeout
+      setTimeout(() => reject(new Error('Scraping timeout')), 20000) // 20 seconds timeout (Netlify limit is 26s)
     );
     
     const articles = await Promise.race([

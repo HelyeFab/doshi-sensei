@@ -123,7 +123,7 @@ async function scrapeTodaiiArticles() {
     const articleData = [];
     
     for (const match of articleMatches) {
-      if (articleData.length >= 20) break;
+      if (articleData.length >= 5) break; // Limit to 5 articles to stay within 26-second timeout
       
       const articleHtml = match[1];
       
@@ -326,7 +326,7 @@ exports.handler = async (event, context) => {
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Scraping timeout')), 90000) // 90 seconds timeout
+      setTimeout(() => reject(new Error('Scraping timeout')), 20000) // 20 seconds timeout (Netlify limit is 26s)
     );
     
     const articles = await Promise.race([

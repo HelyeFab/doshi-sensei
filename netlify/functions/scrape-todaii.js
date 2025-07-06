@@ -262,7 +262,11 @@ async function saveArticlesToFirebase(articles) {
 
 // Main handler
 exports.handler = async (event, context) => {
+  // Set function timeout - Netlify functions have a max timeout of 26 seconds for synchronous functions
+  // For background/scheduled functions, the timeout can be up to 15 minutes
   context.callbackWaitsForEmptyEventLoop = false;
+  
+  console.log('⏱️ Function timeout:', context.getRemainingTimeInMillis ? context.getRemainingTimeInMillis() : 'Unknown');
   
   const headers = {
     'Access-Control-Allow-Origin': '*',

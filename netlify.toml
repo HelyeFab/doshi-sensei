@@ -56,21 +56,14 @@
   autoLaunch = false
 
 [functions]
-  # Set timeout for all functions to 2 minutes (120 seconds)
-  # Default is only 10 seconds which is too short for web scraping
-  timeout = 120
-
   # Scrape NHK Easy articles every morning at 6 AM UTC (3 PM JST)
   [functions."scrape-nhk-easy"]
     schedule = "0 6 * * *"
-    timeout = 120
 
   # Scrape Todaii News articles every morning at 6:30 AM UTC
   [functions."scrape-todaii"]
     schedule = "30 6 * * *"
-    timeout = 120
 
   # Scrape Watanoc articles every morning at 7 AM UTC
   [functions."scrape-watanoc"]
     schedule = "0 7 * * *"
-    timeout = 120

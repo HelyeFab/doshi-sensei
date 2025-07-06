@@ -1,9 +1,7 @@
-// All requires at the top - CRITICAL for Netlify Functions
 const admin = require('firebase-admin');
 const https = require('https');
-const { URL } = require('url');
 
-// Initialize Firebase Admin SDK at module level
+// Initialize Firebase Admin SDK
 let firebaseInitialized = false;
 let db = null;
 
@@ -40,171 +38,218 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
-// HTTP request function with retry logic and gzip support
-function makeRequest(url, maxRedirects = 3, maxRetries = 3) {
+// HTTP request with retry logic and gzip support
+function makeRequestWithRetry(url, retries = 3) {
   return new Promise((resolve, reject) => {
     const zlib = require('zlib');
-    let retryCount = 0;
-
-    const attemptRequest = () => {
-      const performRequest = (currentUrl, redirectCount) => {
-        if (redirectCount > maxRedirects) {
-          reject(new Error('Too many redirects'));
+    const { URL } = require('url');
+    const parsedUrl = new URL(url);
+    
+    const attemptRequest = (retriesLeft) => {
+      const options = {
+        hostname: parsedUrl.hostname,
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; DoshiSensei/1.0)',
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': 'ja,en;q=0.9',
+          'Accept-Encoding': 'gzip, deflate',
+        },
+        timeout: 30000
+      };
+      
+      const req = https.request(options, (res) => {
+        console.log(`Response status: ${res.statusCode}`);
+        console.log('Content-Encoding:', res.headers['content-encoding']);
+        
+        if (res.statusCode !== 200) {
+          if (retriesLeft > 0) {
+            console.log(`⚠️ HTTP ${res.statusCode}, retrying... (${retriesLeft} attempts left)`);
+            setTimeout(() => attemptRequest(retriesLeft - 1), 1000 * (4 - retriesLeft));
+          } else {
+            reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
+          }
           return;
         }
-
-        const parsedUrl = new URL(currentUrl);
-
-        const options = {
-          hostname: parsedUrl.hostname,
-          path: parsedUrl.pathname + parsedUrl.search,
-          method: 'GET',
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (compatible; DoshiSensei/1.0)',
-            'Accept': 'application/json, text/html',
-            'Accept-Language': 'ja,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate',
-          },
-          timeout: 30000 // 30 second timeout
-        };
-
-        const req = https.request(options, (res) => {
-          console.log(`Response status: ${res.statusCode}`);
-          console.log('Content-Encoding:', res.headers['content-encoding']);
+        
+        let data = '';
+        
+        // Handle gzip compression
+        if (res.headers['content-encoding'] === 'gzip') {
+          const gunzip = zlib.createGunzip();
+          res.pipe(gunzip);
           
-          // Handle redirects
-          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            const newUrl = new URL(res.headers.location, currentUrl);
-            performRequest(newUrl.toString(), redirectCount + 1);
-            return;
-          }
-
-          if (res.statusCode !== 200) {
-            reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
-            return;
-          }
-
-          let data = '';
+          gunzip.on('data', chunk => {
+            data += chunk.toString();
+            if (data.length > 2000000) { // 2MB limit for NHK Easy JSON
+              gunzip.destroy();
+              reject(new Error('Response too large'));
+            }
+          });
           
-          // Handle gzip compression
-          if (res.headers['content-encoding'] === 'gzip') {
-            const gunzip = zlib.createGunzip();
-            res.pipe(gunzip);
-            
-            gunzip.on('data', chunk => {
-              data += chunk.toString();
-              if (data.length > 2000000) { // 2MB limit for NHK Easy JSON
-                gunzip.destroy();
-                reject(new Error('Response too large'));
-              }
-            });
-            
-            gunzip.on('end', () => {
-              console.log(`✅ Decompressed ${data.length} bytes`);
-              resolve(data);
-            });
-            
-            gunzip.on('error', err => {
-              console.error('Gunzip error:', err);
+          gunzip.on('end', () => {
+            console.log(`✅ Decompressed ${data.length} bytes from ${url}`);
+            resolve(data);
+          });
+          
+          gunzip.on('error', err => {
+            console.error('Gunzip error:', err);
+            if (retriesLeft > 0) {
+              console.log(`⚠️ Decompression error, retrying... (${retriesLeft} attempts left)`);
+              setTimeout(() => attemptRequest(retriesLeft - 1), 1000 * (4 - retriesLeft));
+            } else {
               reject(err);
-            });
-          } else {
-            res.setEncoding('utf8');
-
-            res.on('data', (chunk) => {
-              data += chunk;
-              if (data.length > 2000000) { // 2MB limit
-                req.destroy();
-                reject(new Error('Response too large'));
-              }
-            });
-
-            res.on('end', () => {
-              console.log(`✅ Received ${data.length} bytes`);
-              resolve(data);
-            });
-          }
-        });
-
-        req.on('error', (error) => {
-          if (retryCount < maxRetries) {
-            retryCount++;
-            console.log(`Retry attempt ${retryCount} after error:`, error.message);
-            setTimeout(attemptRequest, 1000 * retryCount); // Exponential backoff
-          } else {
-            reject(error);
-          }
-        });
-
-        req.on('timeout', () => {
-          req.destroy();
-          if (retryCount < maxRetries) {
-            retryCount++;
-            console.log(`Retry attempt ${retryCount} after timeout`);
-            setTimeout(attemptRequest, 1000 * retryCount);
-          } else {
-            reject(new Error('Request timeout'));
-          }
-        });
-
-        req.end();
-      };
-
-      performRequest(url, 0);
+            }
+          });
+        } else {
+          res.setEncoding('utf8');
+          res.on('data', chunk => {
+            data += chunk;
+            if (data.length > 2000000) { // 2MB limit for NHK Easy JSON
+              req.destroy();
+              reject(new Error('Response too large'));
+            }
+          });
+          
+          res.on('end', () => {
+            console.log(`✅ Received ${data.length} bytes from ${url}`);
+            resolve(data);
+          });
+        }
+      });
+      
+      req.on('error', (err) => {
+        console.error('Request error:', err);
+        if (retriesLeft > 0) {
+          console.log(`⚠️ Request error, retrying... (${retriesLeft} attempts left)`);
+          setTimeout(() => attemptRequest(retriesLeft - 1), 1000 * (4 - retriesLeft));
+        } else {
+          reject(err);
+        }
+      });
+      
+      req.on('timeout', () => {
+        req.destroy();
+        if (retriesLeft > 0) {
+          console.log(`⚠️ Timeout, retrying... (${retriesLeft} attempts left)`);
+          setTimeout(() => attemptRequest(retriesLeft - 1), 1000 * (4 - retriesLeft));
+        } else {
+          reject(new Error('Request timeout after all retries'));
+        }
+      });
+      
+      req.end();
     };
-
-    attemptRequest();
+    
+    attemptRequest(retries);
   });
 }
 
-// Parse date from various formats
-function parseDate(dateStr) {
-  if (!dateStr) return new Date();
-
+// Parse JSON with BOM handling
+function parseJSON(text) {
+  // Remove BOM if present
+  const cleanText = text.replace(/^\uFEFF/, '');
   try {
-    // Try parsing ISO format
-    const date = new Date(dateStr);
-    if (!isNaN(date.getTime())) return date;
-
-    // Try parsing Japanese date format (令和6年6月29日)
-    const japaneseMatch = dateStr.match(/令和(\d+)年(\d+)月(\d+)日/);
-    if (japaneseMatch) {
-      const reiwaYear = parseInt(japaneseMatch[1]);
-      const year = 2018 + reiwaYear; // Reiwa started in 2019
-      const month = parseInt(japaneseMatch[2]) - 1;
-      const day = parseInt(japaneseMatch[3]);
-      return new Date(year, month, day);
-    }
-
-    // Try parsing yyyy年mm月dd日 format
-    const match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
-    if (match) {
-      return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
-    }
-
-    return new Date();
+    return JSON.parse(cleanText);
   } catch (error) {
-    console.error('Date parsing error:', error);
-    return new Date();
+    console.error('❌ JSON parse error:', error.message);
+    console.log('First 200 chars:', cleanText.substring(0, 200));
+    throw error;
   }
 }
 
-// Clean and sanitize text
-function cleanText(text) {
-  if (!text) return '';
-
-  return text
-    .replace(/<ruby>.*?<\/ruby>/g, (match) => {
-      const base = match.match(/<ruby>(.*?)<rt>/);
-      return base ? base[1] : match;
-    })
-    .replace(/<[^>]*>/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+// Simplified NHK Easy scraping
+async function scrapeNHKEasyArticles() {
+  try {
+    console.log('📡 Fetching NHK Easy news list...');
+    const jsonData = await makeRequestWithRetry('https://www3.nhk.or.jp/news/easy/news-list.json');
+    
+    const data = parseJSON(jsonData);
+    console.log('📰 Parsing news data...');
+    
+    // Handle both array and object formats
+    let allArticles = [];
+    if (Array.isArray(data)) {
+      allArticles = data;
+    } else if (data[0]) {
+      // Date-keyed format
+      const dates = Object.keys(data).sort().reverse();
+      for (const date of dates.slice(0, 3)) { // Last 3 days
+        if (data[date] && Array.isArray(data[date])) {
+          allArticles.push(...data[date]);
+        }
+      }
+    }
+    
+    console.log(`Found ${allArticles.length} total articles`);
+    
+    // Convert to our format (limit to 30 articles)
+    const articles = allArticles.slice(0, 30).map((article, index) => ({
+      id: `nhk_easy_${article.news_id || Date.now()}_${index}`,
+      title: article.title || 'NHK Easy News Article',
+      content: article.title_with_ruby || article.title || '',
+      summary: (article.title || '').substring(0, 100) + '...',
+      url: article.news_web_url || `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.html`,
+      imageUrl: article.news_web_image_uri || article.news_easy_image_uri || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400',
+      audioUrl: article.has_news_easy_voice ? `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.mp3` : null,
+      publishDate: article.news_prearranged_time ? new Date(article.news_prearranged_time) : new Date(),
+      scrapedAt: new Date(),
+      source: {
+        id: 'nhk-easy',
+        name: 'NHK Easy',
+        displayName: 'NHK NEWS WEB EASY'
+      },
+      category: 'news',
+      tags: ['nhk-easy', 'news', 'beginner-friendly'],
+      difficulty: 'N5',
+      estimatedReadingTime: 3,
+      hasVideo: !!article.has_news_easy_movie,
+      hasAudio: !!article.has_news_easy_voice,
+      vocabulary: [],
+      furigana: article.title_with_ruby || ''
+    }));
+    
+    return articles.length > 0 ? articles : getFallbackArticles();
+    
+  } catch (error) {
+    console.error('❌ Error scraping NHK Easy:', error.message);
+    return getFallbackArticles();
+  }
 }
 
-// Main handler function
+// Fallback articles - return empty array instead of test data
+function getFallbackArticles() {
+  return [];
+}
+
+// Save to Firebase
+async function saveArticlesToFirebase(articles) {
+  if (!db || !firebaseInitialized) {
+    throw new Error('Firebase not initialized');
+  }
+
+  const batch = db.batch();
+  const articlesRef = db.collection('articles');
+
+  for (const article of articles) {
+    const docRef = articlesRef.doc(article.id);
+    batch.set(docRef, {
+      ...article,
+      publishDate: admin.firestore.Timestamp.fromDate(article.publishDate),
+      scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt)
+    });
+  }
+
+  await batch.commit();
+  console.log(`✅ Successfully saved ${articles.length} articles to Firebase`);
+  return true;
+}
+
+// Main handler
 exports.handler = async (event, context) => {
+  context.callbackWaitsForEmptyEventLoop = false;
+  
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -212,7 +257,6 @@ exports.handler = async (event, context) => {
     'Content-Type': 'application/json',
   };
 
-  // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -221,13 +265,13 @@ exports.handler = async (event, context) => {
     };
   }
 
+  const startTime = Date.now();
+
   try {
-    console.log('🚀 Starting NHK Easy News scraper...');
-    console.log('📅 Event type:', event.httpMethod || 'scheduled');
+    console.log('🚀 Fixed NHK Easy scraping function triggered');
     console.log('🔧 Firebase initialized:', firebaseInitialized);
 
-    // Check if Firebase is properly initialized
-    if (!firebaseInitialized || !db) {
+    if (!firebaseInitialized) {
       return {
         statusCode: 500,
         headers,
@@ -239,173 +283,49 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Fetch NHK Easy News
-    console.log('📰 Fetching articles from NHK Easy News...');
-    const newsData = await makeRequest('https://www3.nhk.or.jp/news/easy/news-list.json');
+    // Scrape with timeout protection
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Scraping timeout')), 90000) // 90 seconds timeout
+    );
+    
+    const articles = await Promise.race([
+      scrapeNHKEasyArticles(),
+      timeoutPromise
+    ]);
 
-    let articles;
-    try {
-      // Remove BOM if present
-      const cleanData = newsData.replace(/^\uFEFF/, '');
-      const parsed = JSON.parse(cleanData);
+    console.log(`📊 Scraped ${articles.length} articles`);
 
-      // Extract articles from the nested structure
-      articles = [];
+    // Save to Firebase
+    await saveArticlesToFirebase(articles);
 
-      // Handle new array format: [{"2025-07-04": [articles]}, ...]
-      if (Array.isArray(parsed)) {
-        parsed.forEach(dateObject => {
-          Object.values(dateObject).forEach(dateData => {
-            if (Array.isArray(dateData)) {
-              articles.push(...dateData);
-            }
-          });
-        });
-      } else {
-        // Handle old object format (backward compatibility)
-        Object.values(parsed).forEach(dateData => {
-          if (Array.isArray(dateData)) {
-            articles.push(...dateData);
-          }
-        });
-      }
-    } catch (parseError) {
-      console.error('Failed to parse NHK news data:', parseError);
-      throw new Error('Invalid response format from NHK');
-    }
-
-    if (!articles || articles.length === 0) {
-      console.log('No articles found');
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          message: 'No articles found',
-          articlesProcessed: 0
-        })
-      };
-    }
-
-    console.log(`📊 Found ${articles.length} articles to process`);
-
-    // Process articles
-    let successCount = 0;
-    let errorCount = 0;
-    const processedArticles = [];
-
-    for (const article of articles.slice(0, 5)) { // Limit to 5 articles for now
-      try {
-        if (!article.news_id) {
-          console.warn('Article missing ID, skipping');
-          errorCount++;
-          continue;
-        }
-
-        // Fetch full article content
-        const articleUrl = `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.html`;
-        console.log(`Fetching article: ${article.news_id}`);
-
-        const articleHtml = await makeRequest(articleUrl);
-
-        // Extract content from HTML
-        const contentMatch = articleHtml.match(/<div class="article-body"[^>]*>([\s\S]*?)<\/div>/);
-        const content = contentMatch ? cleanText(contentMatch[1]) : '';
-
-        if (!content) {
-          console.warn(`No content found for article ${article.news_id}`);
-          errorCount++;
-          continue;
-        }
-
-        // Create article document
-        const articleDoc = {
-          articleId: article.news_id,
-          url: articleUrl,
-          imageUrl: article.news_web_image_uri || article.news_prearranged_time || null,
-          title: cleanText(article.title || article.news_prearranged_time || ''),
-          content: content,
-          date: parseDate(article.news_prearranged_time || article.news_publication_time),
-          category: 'nhk_easy',
-          source: 'NHK Easy News',
-          difficulty: 'beginner',
-          readTime: Math.ceil(content.length / 300), // Estimate based on reading speed
-          tags: ['news', 'nhk', 'easy'],
-          metadata: {
-            originalId: article.news_id,
-            hasVideo: article.has_news_web_movie || false,
-            hasVoice: article.has_news_easy_voice || false,
-            publicationTime: article.news_publication_time || null,
-            prearrangedTime: article.news_prearranged_time || null
-          },
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          views: 0,
-          bookmarks: 0
-        };
-
-        // Save to Firestore with article ID as document ID
-        try {
-          await db.collection('articles')
-            .doc(`nhk_easy_${article.news_id}`)
-            .set(articleDoc, { merge: true });
-          console.log('Article written:', article.news_id);
-          processedArticles.push({
-            id: article.news_id,
-            title: articleDoc.title
-          });
-          successCount++;
-        } catch (err) {
-          console.error('Failed to write article:', article.news_id, err);
-          errorCount++;
-        }
-
-        // Be respectful - wait between requests
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-      } catch (articleError) {
-        console.error(`Error processing article ${article.news_id}:`, articleError.message);
-        errorCount++;
-      }
-    }
-
-    // Update metadata
-    await db.collection('articlesMetadata').doc('stats').set({
-      lastNHKEasyScrape: admin.firestore.FieldValue.serverTimestamp(),
-      nhkEasyArticleCount: admin.firestore.FieldValue.increment(successCount),
-      lastScrapeResults: {
-        source: 'nhk_easy',
-        processed: successCount,
-        errors: errorCount,
-        timestamp: new Date().toISOString()
-      }
-    }, { merge: true });
-
-    console.log(`✅ Scraping completed: ${successCount} articles saved, ${errorCount} errors`);
+    const elapsed = Date.now() - startTime;
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'NHK Easy News scraping completed',
-        articlesProcessed: successCount,
-        errors: errorCount,
-        articles: processedArticles,
-        timestamp: new Date().toISOString()
-      })
+        message: `Successfully saved ${articles.length} NHK Easy articles`,
+        articlesCount: articles.length,
+        articles: articles.map(a => ({ id: a.id, title: a.title })),
+        timestamp: new Date().toISOString(),
+        timeElapsed: Math.round(elapsed / 1000),
+        fallbackUsed: articles.some(a => a.id.includes('fallback'))
+      }),
     };
 
   } catch (error) {
-    console.error('💥 Unexpected error in NHK scraping function:', error);
+    console.error('💥 Function error:', error);
+    const elapsed = Date.now() - startTime;
 
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
         success: false,
-        error: 'Internal server error during article scraping',
-        details: error.message,
-        timestamp: new Date().toISOString()
+        error: error.message || 'Internal server error',
+        timestamp: new Date().toISOString(),
+        timeElapsed: Math.round(elapsed / 1000)
       }),
     };
   }

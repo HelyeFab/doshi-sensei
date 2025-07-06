@@ -207,8 +207,8 @@ export class JapaneseNewsScraper {
       
       // Scraping functions to call
       const scrapingFunctions = [
-        { url: `${baseUrl}/.netlify/functions/scrape-watanoc-real`, name: 'Watanoc' },
-        { url: `${baseUrl}/.netlify/functions/scrape-todaii-news`, name: 'Todaii' },
+        { url: `${baseUrl}/.netlify/functions/scrape-watanoc`, name: 'Watanoc' },
+        { url: `${baseUrl}/.netlify/functions/scrape-todaii`, name: 'Todaii' },
         { url: `${baseUrl}/.netlify/functions/scrape-nhk-easy`, name: 'NHK Easy' }
       ];
 

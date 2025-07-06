@@ -127,7 +127,7 @@ export async function getWatanocArticles(forceRefresh: boolean = false, page?: n
 export async function triggerArticleScraping(): Promise<ScrapingResult> {
   try {
 
-    const response = await fetch('/.netlify/functions/scrape-watanoc-real', {
+    const response = await fetch('/.netlify/functions/scrape-watanoc', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

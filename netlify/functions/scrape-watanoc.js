@@ -1,7 +1,6 @@
 const admin = require('firebase-admin');
 const https = require('https');
 const { URL } = require('url');
-const zlib = require('zlib');
 
 // Initialize Firebase Admin SDK
 let firebaseInitialized = false;
@@ -44,6 +43,7 @@ if (!admin.apps.length) {
 function makeRequest(url) {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(url);
+    const zlib = require('zlib');
     
     const options = {
       hostname: parsedUrl.hostname,
@@ -410,7 +410,7 @@ exports.handler = async (event, context) => {
   const startTime = Date.now();
 
   try {
-    console.log('🚀 Watanoc scraping function triggered');
+    console.log('🚀 Fixed Watanoc scraping function triggered');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
     console.log('🔧 Firebase initialized:', firebaseInitialized);
 

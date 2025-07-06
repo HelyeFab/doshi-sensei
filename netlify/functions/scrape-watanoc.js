@@ -369,8 +369,24 @@ async function scrapeWatanocArticles() {
 
 // Function to save articles to Firebase
 async function saveArticlesToFirebase(articles) {
-  if (!db || !firebaseInitialized) {
-    throw new Error('Firebase not initialized');
+  console.log('💾 Saving to Firebase - Check:', { 
+    hasDb: !!db, 
+    firebaseInitialized,
+    adminAppsLength: admin.apps.length 
+  });
+  
+  if (!firebaseInitialized) {
+    throw new Error('Firebase not initialized - firebaseInitialized is false');
+  }
+  
+  if (!db) {
+    // Try to get db again
+    db = admin.firestore();
+    console.log('🔄 Re-initialized db:', !!db);
+  }
+  
+  if (!db) {
+    throw new Error('Firebase Firestore db is null');
   }
 
   const batch = db.batch();

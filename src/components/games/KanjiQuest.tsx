@@ -4,13 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GameKanji, getKanjiByJLPT } from '@/utils/kanjiUtils';
 import { getRandomPokemon, getPokemonSpriteUrl, getPokemonSilhouetteStyle } from '@/data/pokemonData';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { KanjiTTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
-import { subscriptionValidator } from '@/utils/subscriptionValidator';
-import { isPremiumUserType } from '@/types/subscription';
-import { subscriptionLogger } from '@/utils/subscriptionLogger';
 import { useState, useEffect } from 'react';
-import { useEntitlements } from '@/hooks/useEntitlements';
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useNotification } from '@/contexts/NotificationContext';
 
 // Types
 interface StudySession {
@@ -56,18 +55,10 @@ export default function KanjiQuest({
   });
 
   const { user, loading: authLoading } = useAuth();
-  const {
-    isFeatureAvailable,
-    incrementKanjiQuestCount,
-    showLoginPrompt,
-    showUpgradePrompt,
-    userType,
-    guestUsage,
-    userSubscription,
-    loading: subscriptionLoading
-  } = useSubscription();
-  
-  const { canPlayGame, promptForAccess } = useEntitlements();
+  const { checkAndTrack } = useAccess();
+  const { feature, access, remaining, isLoading: featureLoading } = useFeature('kanji_quest');
+  const { isPremium, userType, isLoading: subscriptionLoading } = useSubscription2();
+  const { showNotification } = useNotification();
 
   // Component state is now logged centrally in SubscriptionContext
 
@@ -81,18 +72,10 @@ export default function KanjiQuest({
   const [showQuizFeedback, setShowQuizFeedback] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [showFurigana, setShowFurigana] = useState(true);
-  const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [gameLoading, setGameLoading] = useState(true);
   const [showLimitMessage, setShowLimitMessage] = useState(false);
   const [entitlementCheckComplete, setEntitlementCheckComplete] = useState(false);
 
-  // Update premium status when user or subscription changes
-  useEffect(() => {
-    if (!authLoading && !subscriptionLoading) {
-      const validation = subscriptionValidator.validate(user, userSubscription, false);
-      setIsPremiumUser(validation.isPremium);
-    }
-  }, [user, userSubscription, authLoading, subscriptionLoading]);
 
   // Initialize session - properly coordinate with auth and subscription loading
   useEffect(() => {
@@ -118,118 +101,19 @@ export default function KanjiQuest({
         return;
       }
 
-      // Perform entitlement check using the validator
-      const validation = subscriptionValidator.validate(user, userSubscription, false);
-
-      // Debug the validation state
-      subscriptionValidator.debugSubscriptionState(user, userSubscription, 'KanjiQuest Start');
-
-      const canPlay = isFeatureAvailable('kanjiquest');
+      // Check if user can play KanjiQuest
+      const canPlay = await checkAndTrack('kanji_quest');
       
-      // Log the current battle count and limit check
-      const today = new Date().toISOString().split('T')[0];
-      const currentBattleCount = userSubscription?.currentUsage?.kanjiQuestToday || 0;
-      const isToday = userSubscription?.currentUsage?.lastKanjiQuestDate === today;
-      const actualCount = isToday ? currentBattleCount : 0;
-      
-      subscriptionLogger.logFeatureCheck(
-        'kanjiquest',
-        canPlay || false,
-        user,
-        userSubscription,
-        validation.userType
-      );
-      
-      console.log('🎮 Pokemon Battle Count Check:', {
-        canPlay,
-        currentBattleCount: actualCount,
-        maxBattles: userSubscription?.limits?.maxKanjiQuestPerDay || 3,
-        isToday,
-        lastPlayDate: userSubscription?.currentUsage?.lastKanjiQuestDate,
-        todayDate: today,
-        willAllow: canPlay
-      });
-      
-      if (canPlay === undefined) {
-        // Defensive: should never happen, as we wait for loading to finish
-        console.error('❓ isFeatureAvailable returned undefined after loading:', {
-          user,
-          userSubscription,
-          validation
-        });
-        setGameLoading(false);
-        setShowLimitMessage(true);
-        return;
-      }
-
-      const premiumStatus = validation.isPremium;
-      setIsPremiumUser(premiumStatus);
-
       setEntitlementCheckComplete(true);
 
-      // CRITICAL: Premium users ALWAYS have access, regardless of what isFeatureAvailable says
-      // This prevents race conditions where isFeatureAvailable might return false temporarily
-      if (!premiumStatus && !canPlay) {
-        console.log('🎮 KanjiQuest Access Check Failed:', {
-          isPremiumUser: premiumStatus,
-          canPlay,
-          validation,
-          userType,
-          userSubscription
-        });
-
+      if (!canPlay) {
+        console.log('🎮 KanjiQuest Access Check Failed');
         setGameLoading(false);
         setShowLimitMessage(true);
-
-        // Get usage info for the message
-        const today = new Date().toISOString().split('T')[0];
-        let playsToday = 0;
-
-        if (userType === 'guest' && guestUsage) {
-          const isToday = guestUsage.lastKanjiQuestDate === today;
-          playsToday = isToday ? guestUsage.kanjiQuestToday : 0;
-        } else if (userSubscription) {
-          const isToday = userSubscription.currentUsage.lastKanjiQuestDate === today;
-          playsToday = isToday ? (userSubscription.currentUsage.kanjiQuestToday || 0) : 0;
-        }
-
-        // Get game limits from entitlements system
-        const gameCheck = canPlayGame('kanjiQuest');
-        const maxEncounters = gameCheck.limit || 3;
-        const encountersUsed = Math.min(playsToday, maxEncounters); // Cap at max
-        
-        console.log('🚫 Pokemon Battle BLOCKED - Limit reached:', {
-          playsToday,
-          encountersUsed,
-          maxEncounters,
-          userType,
-          isPremiumUser: premiumStatus,
-          lastPlayDate: userSubscription?.currentUsage?.lastKanjiQuestDate || guestUsage?.lastKanjiQuestDate,
-          todayDate: today
-        });
-
-        // Show appropriate prompt based on user type
-        if (validation.userType === 'guest') {
-          // Guest user (not logged in)
-          promptForAccess(
-            'Pokémon encounters',
-            `You've used all ${encountersUsed}/${maxEncounters} daily Pokémon encounters! Team Rocket won't let you pass! 🚫\n\nSign up free to get more encounters and save your Pokédex!`
-          );
-        } else if (!isPremiumUserType(validation.userType)) {
-          // Logged in but not premium (freemium)
-          promptForAccess(
-            'Pokémon encounters',
-            `You've reached your daily limit of ${encountersUsed}/${maxEncounters} Pokémon encounters! 🎮\n\nUpgrade to Premium for unlimited encounters and become a true Pokémon Master!`
-          );
-        }
         return;
       }
 
-      console.log('✅ KanjiQuest Access Granted:', {
-        isPremiumUser: premiumStatus,
-        canPlay,
-        validation
-      });
+      console.log('✅ KanjiQuest Access Granted');
 
       // User has access, proceeding with game setup
 
@@ -254,7 +138,11 @@ export default function KanjiQuest({
         const availableKanji = allKanji.filter(k => !completedKanjiIds.has(k.id));
 
         if (availableKanji.length < 5) {
-          alert('Not enough new kanji available for this level!');
+          showNotification({
+            title: 'Not Enough Kanji',
+            message: 'Not enough new kanji available for this level!',
+            type: 'warning'
+          });
           onBack();
           return;
         }
@@ -288,7 +176,11 @@ export default function KanjiQuest({
 
       // NOTE: Usage count is now incremented after quiz completion, not at start
     } catch (error) {
-      alert('Failed to load kanji data. Please try again.');
+      showNotification({
+        title: 'Loading Error',
+        message: 'Failed to load kanji data. Please try again.',
+        type: 'error'
+      });
       onBack();
     } finally {
       setGameLoading(false);
@@ -496,42 +388,19 @@ export default function KanjiQuest({
       }
     }
 
-    // Increment the usage count only for non-premium users after quiz completion
-    // This ensures users can play their full daily limit (3 games for free users)
-    if (!isPremiumUser) {
-      const today = new Date().toISOString().split('T')[0];
-      const currentCount = userSubscription?.currentUsage?.kanjiQuestToday || 0;
-      const isToday = userSubscription?.currentUsage?.lastKanjiQuestDate === today;
-      const actualCount = isToday ? currentCount : 0;
-      
-      console.log('🎮 Pokemon Battle COMPLETED - Incrementing count:', {
-        currentBattleCount: actualCount,
-        newBattleCount: actualCount + 1,
-        maxBattles: userSubscription?.limits?.maxKanjiQuestPerDay || 3,
-        isPremiumUser,
-        userType: userType,
-        willIncrementCount: true
-      });
-      
-      incrementKanjiQuestCount();
-    } else {
-      console.log('🎮 Pokemon Battle COMPLETED - Premium user, not incrementing:', {
-        isPremiumUser,
-        userType: userType
-      });
-    }
+    // Usage tracking is now handled automatically by checkAndTrack
 
     setPhase('result');
   };
 
-  // Show loading state while auth, subscription or game is initializing
-  if (authLoading || subscriptionLoading || gameLoading) {
+  // Show loading state while auth, subscription, feature or game is initializing
+  if (authLoading || subscriptionLoading || featureLoading || gameLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">
-            {authLoading ? 'Checking authentication...' : subscriptionLoading ? 'Checking your subscription...' : 'Loading kanji data...'}
+            {authLoading ? 'Checking authentication...' : (subscriptionLoading || featureLoading) ? 'Checking your subscription...' : 'Loading kanji data...'}
           </p>
         </div>
       </div>

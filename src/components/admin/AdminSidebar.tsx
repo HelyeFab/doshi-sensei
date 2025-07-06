@@ -26,6 +26,12 @@ const sidebarItems: SidebarItem[] = [
     href: '/admin/users',
   },
   {
+    id: 'features' as AdminSection,
+    label: 'Feature Matrix',
+    icon: '🎯',
+    href: '/admin/features',
+  },
+  {
     id: 'mood-boards',
     label: 'Mood Boards',
     icon: '🎨',

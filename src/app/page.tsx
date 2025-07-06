@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useSettings } from '@/contexts/SettingsContext';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
@@ -99,7 +99,7 @@ function pastelizeHSL(hsl: string) {
 
 export default function Home() {
   const { profile } = useUserProfile();
-  const { userSubscription } = useSubscription();
+  const { subscription } = useSubscription2();
   const { settings } = useSettings();
   const [stats, setStats] = useState<UserStats>({
     drillsCompleted: 0,
@@ -138,9 +138,9 @@ export default function Home() {
     const loadPokemonCount = async () => {
       try {
         // Get user premium status
-        const isPremiumUser = userSubscription?.subscription?.status === 'active' &&
-          (userSubscription?.subscription?.plan === 'monthly' ||
-            userSubscription?.subscription?.plan === 'yearly');
+        const isPremiumUser = subscription?.status === 'active' &&
+          (subscription?.plan === 'monthly' ||
+            subscription?.plan === 'yearly');
 
         // Get caught Pokemon from IndexedDB and cloud if premium
         const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
@@ -160,7 +160,7 @@ export default function Home() {
     };
 
     loadPokemonCount();
-  }, [profile, userSubscription]);
+  }, [profile, subscription]);
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {
@@ -169,7 +169,7 @@ export default function Home() {
         const { default: StatsManager } = await import('@/utils/stats');
 
         if (profile) {
-          const canSync = userSubscription?.subscription?.status === 'active';
+          const canSync = subscription?.status === 'active';
           StatsManager.setUser(profile, canSync);
         } else {
           StatsManager.setUser(null, false);
@@ -184,7 +184,7 @@ export default function Home() {
     };
 
     loadStatsManager();
-  }, [profile, userSubscription]);
+  }, [profile, subscription]);
 
   useEffect(() => {
     // Reload stats when page becomes visible/focused
@@ -218,9 +218,9 @@ export default function Home() {
       // Get Pokémon count from both sources
       let pokemonCount = 0;
       try {
-        const isPremiumUser = userSubscription?.subscription?.status === 'active' &&
-          (userSubscription?.subscription?.plan === 'monthly' ||
-            userSubscription?.subscription?.plan === 'yearly');
+        const isPremiumUser = subscription?.status === 'active' &&
+          (subscription?.plan === 'monthly' ||
+            subscription?.plan === 'yearly');
 
         const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
         pokemonCount = caughtPokemon.length;

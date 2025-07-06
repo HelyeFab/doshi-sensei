@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
+import { STRIPE_CONFIG } from '@/lib/stripe';
 
 interface UpgradePromptModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface UpgradePromptModalProps {
 }
 
 export function UpgradePromptModal({ isOpen, onClose, message, feature }: UpgradePromptModalProps) {
-  const { createCheckoutSession } = useSubscription();
+  const { createCheckoutSession } = useSubscription2();
 
   if (!isOpen) return null;
 
@@ -21,13 +22,11 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
 
   const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
     try {
-      // These would be your Stripe price IDs
-      const priceIds = {
-        monthly: 'price_monthly_premium', // Replace with actual Stripe price ID
-        yearly: 'price_yearly_premium'   // Replace with actual Stripe price ID
-      };
+      const priceId = plan === 'monthly'
+        ? STRIPE_CONFIG.priceIds.monthly
+        : STRIPE_CONFIG.priceIds.yearly;
 
-      await createCheckoutSession(priceIds[plan]);
+      await createCheckoutSession(priceId);
     } catch (error) {
       console.error('Upgrade failed:', error);
     }

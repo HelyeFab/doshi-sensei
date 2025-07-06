@@ -5,8 +5,6 @@
 
 import { db } from '@/lib/firebase';
 import { collection, doc, setDoc, deleteDoc, query, where, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { NewsArticle } from '@/types/news';
 
 export interface BookmarkedArticle {

@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { doc, setDoc, getDoc, runTransaction, collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
-import { UserType } from '@/types/subscription';
+import { entitlementManager } from '@/lib/entitlements/manager';
+import { subscriptionManager } from '@/lib/subscriptions/manager';
+import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
+import { UserType } from '@/lib/entitlements/types';
+import { Subscription } from '@/lib/subscriptions/types';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -60,15 +63,20 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
+        console.log(`Unhandled event type: ${event.type}`);
     }
 
     // Mark event as processed
-    await setDoc(processedEventRef, {
-      eventId: event.id,
-      eventType: event.type,
-      processedAt: new Date().toISOString(),
-      success: true
-    });
+    try {
+      await setDoc(processedEventRef, {
+        eventId: event.id,
+        type: event.type,
+        processedAt: new Date(),
+        result: 'success'
+      });
+    } catch (error) {
+      console.error('Error marking event as processed:', error);
+    }
 
     // Log successful processing
     await logWebhookEvent(event, 'success');
@@ -88,13 +96,12 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-
   // Handle donations (one-time payments)
   if (session.mode === 'payment' && session.metadata?.type === 'donation') {
-
     // Log the donation
     try {
       // You could store donation records in Firestore here if needed
+      console.log('Donation received:', session);
     } catch (error) {
       console.error('Error logging donation:', error);
     }
@@ -105,19 +112,35 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const firebaseUID = session.metadata?.firebaseUID;
 
   if (!firebaseUID) {
+    console.error('No Firebase UID in checkout session metadata');
     return;
   }
 
-
   // The subscription will be handled by the subscription.created event
   // This is mainly for logging and any additional setup needed
+  console.log('Checkout completed for user:', firebaseUID);
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
-  const firebaseUID = subscription.metadata?.firebaseUID;
+  // First try to get firebaseUID from subscription metadata
+  let firebaseUID = subscription.metadata?.firebaseUID;
+  
+  // If not found in subscription metadata, try to get it from customer
+  if (!firebaseUID && typeof subscription.customer === 'string') {
+    try {
+      const customer = await stripe.customers.retrieve(subscription.customer);
+      if (customer && !customer.deleted && 'metadata' in customer) {
+        firebaseUID = customer.metadata?.firebaseUID;
+        console.log('Found firebaseUID in customer metadata:', firebaseUID);
+      }
+    } catch (error) {
+      console.error('Error retrieving customer:', error);
+    }
+  }
 
   if (!firebaseUID) {
-    console.error('No Firebase UID found in subscription metadata. Full subscription object:', JSON.stringify(subscription, null, 2));
+    console.error('No Firebase UID found in subscription or customer metadata. Subscription ID:', subscription.id);
+    console.error('Customer ID:', subscription.customer);
     return;
   }
 
@@ -129,6 +152,35 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     plan = 'yearly';
   }
 
+  // Get current entitlement rules (dynamic or static)
+  const rules = await dynamicRules.getRules();
+  
+  // Determine user type based on plan and subscription status
+  let userType: UserType = 'free';
+  if ((plan === 'monthly' || plan === 'yearly') && subscription.status === 'active') {
+    userType = plan;
+  }
+  
+  // Get entitlements for this user type
+  const entitlementRule = rules.find(r => r.userTypes.includes(userType));
+  const limits = entitlementRule?.limits || { daily: {}, total: {} };
+
+  // Create subscription object using our new structure
+  const subscriptionData: Subscription = {
+    userId: firebaseUID,
+    status: subscription.status as any,
+    plan: subscription.status === 'active' ? plan : 'free',
+    stripeCustomerId: subscription.customer as string,
+    stripeSubscriptionId: subscription.id,
+    currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+    cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+    metadata: {
+      source: 'stripe',
+      createdAt: new Date(subscription.created * 1000),
+      updatedAt: new Date()
+    }
+  };
+
   // Use transaction to prevent race conditions
   const userDocRef = doc(db, 'users', firebaseUID);
 
@@ -136,61 +188,82 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     const userDoc = await transaction.get(userDocRef);
     const currentData = userDoc.data();
 
-    // Validate subscription status
-    const validStatuses = ['active', 'trialing', 'past_due', 'canceled', 'unpaid'];
-    if (!validStatuses.includes(subscription.status)) {
-      throw new Error(`Invalid subscription status: ${subscription.status}`);
-    }
-
-    // Build updated subscription data
-    const updatedSubscription = {
-      ...currentData?.subscription,
-      subscription: {
-        status: subscription.status,
-        plan: plan,
-        renewalDate: new Date(subscription.current_period_end * 1000).toISOString(),
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        stripeSubscriptionId: subscription.id,
-        stripePriceId: priceId,
-        updatedAt: new Date().toISOString(),
+    // Build the complete user subscription data
+    const userSubscriptionData = {
+      subscription: subscriptionData,
+      limits: {
+        maxLists: limits.total?.word_lists ?? (userType === 'free' ? 3 : -1),
+        maxDrillsPerDay: limits.daily?.drill_practice ?? (userType === 'free' ? 3 : -1),
+        maxKanjiQuestPerDay: limits.daily?.games ?? (userType === 'free' ? 3 : -1),
+        maxStoriesPerDay: limits.daily?.story_reading ?? (userType === 'free' ? 1 : -1),
+        maxArticlesPerDay: limits.daily?.article_reading ?? (userType === 'free' ? 3 : -1),
+        maxKanaDropPerDay: limits.daily?.games ?? (userType === 'free' ? 3 : -1),
+        canSync: userType !== 'guest' && userType !== 'free',
+        canSave: userType !== 'guest'
       },
-      limits: (() => {
-        // Determine user type based on plan and subscription status
-        let userType: UserType = 'free';
-        if ((plan === 'monthly' || plan === 'yearly') && subscription.status === 'active') {
-          userType = plan as 'monthly' | 'yearly';
-        }
-        
-        // Get entitlements from centralized system
-        const entitlements = getEntitlementsForUserType(userType);
-        return {
-          maxLists: getFeatureLimit(userType, 'storage.lists', 'total') || 3,
-          maxDrillsPerDay: getFeatureLimit(userType, 'learning.drills', 'daily') || 3,
-          maxKanjiQuestPerDay: getFeatureLimit(userType, 'games.kanjiQuest', 'daily') || 3,
-          maxStoriesPerDay: getFeatureLimit(userType, 'learning.stories', 'daily') || 3,
-          maxArticlesPerDay: getFeatureLimit(userType, 'learning.articles', 'daily') || 3,
-          canSync: entitlements.system.cloudSync.enabled,
-          canSave: entitlements.system.progressTracking.enabled,
-        };
-      })(),
-      currentUsage: currentData?.subscription?.currentUsage || {
+      currentUsage: currentData?.currentUsage || {
         listsCount: 0,
         drillsToday: 0,
         lastDrillDate: new Date().toISOString().split('T')[0],
-      },
+        kanjiQuestToday: 0,
+        lastKanjiQuestDate: new Date().toISOString().split('T')[0],
+        kanaDropToday: 0,
+        lastKanaDropDate: new Date().toISOString().split('T')[0],
+        storiesToday: 0,
+        lastStoryDate: new Date().toISOString().split('T')[0],
+        articlesToday: 0,
+        lastArticleDate: new Date().toISOString().split('T')[0]
+      }
     };
 
-    transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+    // Update the user document with the new structure
+    transaction.set(userDocRef, userSubscriptionData, { merge: true });
+    
+    console.log(`Updated subscription for user ${firebaseUID}: ${userType}`);
   });
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  const firebaseUID = subscription.metadata?.firebaseUID;
+  // First try to get firebaseUID from subscription metadata
+  let firebaseUID = subscription.metadata?.firebaseUID;
+  
+  // If not found in subscription metadata, try to get it from customer
+  if (!firebaseUID && typeof subscription.customer === 'string') {
+    try {
+      const customer = await stripe.customers.retrieve(subscription.customer);
+      if (customer && !customer.deleted && 'metadata' in customer) {
+        firebaseUID = customer.metadata?.firebaseUID;
+        console.log('Found firebaseUID in customer metadata for deletion:', firebaseUID);
+      }
+    } catch (error) {
+      console.error('Error retrieving customer for deletion:', error);
+    }
+  }
 
   if (!firebaseUID) {
-    console.error('No Firebase UID found in subscription metadata (deleted event). Full subscription object:', JSON.stringify(subscription, null, 2));
+    console.error('No Firebase UID found in subscription or customer metadata (deleted event). Subscription ID:', subscription.id);
     return;
   }
+
+  // Get free user entitlements
+  const rules = await dynamicRules.getRules();
+  const freeRule = rules.find(r => r.userTypes.includes('free'));
+  const limits = freeRule?.limits || { daily: {}, total: {} };
+
+  // Create canceled subscription object
+  const subscriptionData: Subscription = {
+    userId: firebaseUID,
+    status: 'canceled',
+    plan: 'free',
+    stripeCustomerId: subscription.customer as string,
+    stripeSubscriptionId: null,
+    cancelAtPeriodEnd: false,
+    metadata: {
+      source: 'stripe',
+      createdAt: new Date(subscription.created * 1000),
+      updatedAt: new Date()
+    }
+  };
 
   // Use transaction to prevent race conditions
   const userDocRef = doc(db, 'users', firebaseUID);
@@ -199,84 +272,70 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     const userDoc = await transaction.get(userDocRef);
     const currentData = userDoc.data();
 
-    // Revert to free plan
-    const updatedSubscription = {
-      ...currentData?.subscription,
-      subscription: {
-        status: 'inactive',
-        plan: 'free',
-        stripeSubscriptionId: null,
-        stripePriceId: null,
-        canceledAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+    // Revert to free plan with free limits
+    const userSubscriptionData = {
+      subscription: subscriptionData,
+      limits: {
+        maxLists: limits.total?.word_lists ?? 3,
+        maxDrillsPerDay: limits.daily?.drill_practice ?? 3,
+        maxKanjiQuestPerDay: limits.daily?.games ?? 3,
+        maxStoriesPerDay: limits.daily?.story_reading ?? 1,
+        maxArticlesPerDay: limits.daily?.article_reading ?? 3,
+        maxKanaDropPerDay: limits.daily?.games ?? 3,
+        canSync: false,
+        canSave: true
       },
-      limits: (() => {
-        // User reverted to free plan
-        const userType: UserType = 'free';
-        const entitlements = getEntitlementsForUserType(userType);
-        return {
-          maxLists: getFeatureLimit(userType, 'storage.lists', 'total') || 3,
-          maxDrillsPerDay: getFeatureLimit(userType, 'learning.drills', 'daily') || 3,
-          maxKanjiQuestPerDay: getFeatureLimit(userType, 'games.kanjiQuest', 'daily') || 3,
-          maxStoriesPerDay: getFeatureLimit(userType, 'learning.stories', 'daily') || 3,
-          maxArticlesPerDay: getFeatureLimit(userType, 'learning.articles', 'daily') || 3,
-          canSync: entitlements.system.cloudSync.enabled,
-          canSave: entitlements.system.progressTracking.enabled,
-        };
-      })(),
-      currentUsage: currentData?.subscription?.currentUsage || {
+      currentUsage: currentData?.currentUsage || {
         listsCount: 0,
         drillsToday: 0,
         lastDrillDate: new Date().toISOString().split('T')[0],
-      },
+        kanjiQuestToday: 0,
+        lastKanjiQuestDate: new Date().toISOString().split('T')[0],
+        kanaDropToday: 0,
+        lastKanaDropDate: new Date().toISOString().split('T')[0],
+        storiesToday: 0,
+        lastStoryDate: new Date().toISOString().split('T')[0],
+        articlesToday: 0,
+        lastArticleDate: new Date().toISOString().split('T')[0]
+      }
     };
 
-    transaction.set(userDocRef, { subscription: updatedSubscription }, { merge: true });
+    transaction.set(userDocRef, userSubscriptionData, { merge: true });
+    
+    console.log(`Subscription canceled for user ${firebaseUID}, reverted to free plan`);
   });
 }
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   if ((invoice as any).subscription) {
     // Subscription status will be updated via subscription.updated event
+    console.log('Payment succeeded for subscription:', (invoice as any).subscription);
   }
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   if ((invoice as any).subscription) {
-    // Handle payment failure - could send notification to user
-    const subscriptionId = (invoice as any).subscription;
-    console.error(`Payment failed for subscription: ${subscriptionId}`);
-
-    // Log payment failure for monitoring
-    await logWebhookEvent({
-      id: invoice.id,
-      type: 'invoice.payment_failed',
-      data: { object: invoice }
-    } as Stripe.Event, 'payment_failed', `Payment failed for subscription ${subscriptionId}`);
+    // Subscription status will be updated via subscription.updated event
+    console.log('Payment failed for subscription:', (invoice as any).subscription);
+    // You could send an email notification here
   }
 }
 
-// Logging function for webhook events
-async function logWebhookEvent(event: Stripe.Event, status: 'success' | 'error' | 'payment_failed', errorMessage?: string) {
+async function logWebhookEvent(event: Stripe.Event, status: 'success' | 'error', errorMessage?: string) {
   try {
-    const logData = {
+    await addDoc(collection(db, 'webhook_logs'), {
       eventId: event.id,
-      eventType: event.type,
-      status: status,
-      timestamp: new Date().toISOString(),
-      error: errorMessage || null,
+      type: event.type,
+      status,
+      errorMessage,
+      timestamp: new Date(),
       data: {
-        // Store relevant event data for debugging
-        objectId: (event.data.object as any)?.id,
-        customerId: (event.data.object as any)?.customer,
-        subscriptionId: (event.data.object as any)?.subscription || (event.data.object as any)?.id,
+        // Store minimal relevant data
+        objectId: (event.data.object as any).id,
+        customerId: (event.data.object as any).customer
       }
-    };
-
-    // Store in webhook_logs collection for monitoring
-    await addDoc(collection(db, 'webhook_logs'), logData);
+    });
   } catch (error) {
-    console.error('Failed to log webhook event:', error);
-    // Don't throw error to avoid disrupting webhook processing
+    console.error('Error logging webhook event:', error);
   }
 }

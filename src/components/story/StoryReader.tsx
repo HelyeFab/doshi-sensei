@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Story, StoryQuizQuestion } from '@/types/story';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useTTS } from '@/hooks/useTTS';
 import { parseJapaneseText, processTextWithFurigana } from '@/utils/japaneseParser';
 import { storyManager } from '@/utils/storyManager';
@@ -13,6 +13,9 @@ import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord } from '@/types';
 import { lookupWord } from '@/utils/dictionaryLookup';
 import { StoryBookmarkManager } from '@/utils/storyBookmarkManager';
+import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
+import { PageHeader } from '@/components/PageHeader';
+import ImprovedArticleAudioPlayer from '@/components/audio/ImprovedArticleAudioPlayer';
 
 interface StoryReaderProps {
   story: Story;
@@ -27,13 +30,130 @@ interface SelectedWord {
   position: { x: number; y: number };
 }
 
+interface ReadingSettings {
+  fontSize: 'small' | 'medium' | 'large' | 'xlarge';
+  showFurigana: boolean;
+  highlightVocabulary: boolean;
+  highlightMode: 'none' | 'all' | 'content' | 'grammar';
+  darkMode: boolean;
+}
+
+interface SettingsPanelProps {
+  settings: ReadingSettings;
+  onSettingsChange: (settings: ReadingSettings) => void;
+  onClose: () => void;
+}
+
+function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelProps) {
+  const handleFontSizeChange = (fontSize: ReadingSettings['fontSize']) => {
+    onSettingsChange({ ...settings, fontSize });
+  };
+
+  const handleToggleFurigana = () => {
+    onSettingsChange({ ...settings, showFurigana: !settings.showFurigana });
+  };
+
+  const handleToggleVocabularyHighlight = () => {
+    onSettingsChange({ ...settings, highlightVocabulary: !settings.highlightVocabulary });
+  };
+
+  const handleHighlightModeChange = (mode: ReadingSettings['highlightMode']) => {
+    onSettingsChange({ ...settings, highlightMode: mode });
+  };
+
+  return (
+    <div className="absolute top-12 right-0 z-40 bg-card border border-border rounded-lg shadow-lg p-4 w-64">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-medium text-foreground">Reading Settings</h3>
+        <button
+          onClick={onClose}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {/* Font Size */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Font Size</label>
+          <div className="flex gap-2">
+            {(['small', 'medium', 'large', 'xlarge'] as const).map((size) => (
+              <button
+                key={size}
+                onClick={() => handleFontSizeChange(size)}
+                className={`px-3 py-1 rounded text-sm ${settings.fontSize === size
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+              >
+                {size.charAt(0).toUpperCase() + size.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Furigana Toggle */}
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium">Show Furigana</label>
+          <button
+            onClick={handleToggleFurigana}
+            className={`w-12 h-6 rounded-full transition-colors ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
+              }`}
+          >
+            <div
+              className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-1'
+                }`}
+            />
+          </button>
+        </div>
+
+        {/* Vocabulary Highlighting */}
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium">Highlight Vocabulary</label>
+          <button
+            onClick={handleToggleVocabularyHighlight}
+            className={`w-12 h-6 rounded-full transition-colors ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'
+              }`}
+          >
+            <div
+              className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-1'
+                }`}
+            />
+          </button>
+        </div>
+
+        {/* Highlight Mode */}
+        {settings.highlightVocabulary && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Highlight Mode</label>
+            <div className="space-y-2">
+              {(['none', 'all', 'content', 'grammar'] as const).map((mode) => (
+                <label key={mode} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="highlightMode"
+                    checked={settings.highlightMode === mode}
+                    onChange={() => handleHighlightModeChange(mode)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm capitalize">{mode}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function StoryReader({ story, onComplete, onExit }: StoryReaderProps) {
   const { user } = useAuth();
-  const { userType } = useSubscription();
+  const { userType } = useSubscription2();
   const { speakSentence, isPlaying, isCacheLoading } = useTTS();
 
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  const [showFurigana, setShowFurigana] = useState(true);
   const [selectedWord, setSelectedWord] = useState<SelectedWord | null>(null);
   const [savedWords, setSavedWords] = useState<Set<string>>(new Set());
   const [showQuiz, setShowQuiz] = useState(false);
@@ -43,6 +163,18 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   const [showTranslation, setShowTranslation] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
+  // New advanced features
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [settings, setSettings] = useState<ReadingSettings>({
+    fontSize: 'medium',
+    showFurigana: true,
+    highlightVocabulary: true,
+    highlightMode: 'content',
+    darkMode: false
+  });
 
   const textContainerRef = useRef<HTMLDivElement>(null);
   const isPremium = userType === 'monthly' || userType === 'yearly';
@@ -76,6 +208,12 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
 
     checkBookmarkStatus();
   }, [user, story.id]);
+
+  // Calculate reading progress
+  useEffect(() => {
+    const progress = ((currentPageIndex + 1) / story.pages.length) * 100;
+    setReadingProgress(progress);
+  }, [currentPageIndex, story.pages.length]);
 
   // Save progress
   useEffect(() => {
@@ -207,11 +345,10 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
 
   const handlePageChange = (direction: 'next' | 'prev') => {
     if (direction === 'next' && currentPageIndex < story.pages.length - 1) {
-      setCurrentPageIndex(prev => prev + 1);
+      setCurrentPageIndex(currentPageIndex + 1);
     } else if (direction === 'prev' && currentPageIndex > 0) {
-      setCurrentPageIndex(prev => prev - 1);
+      setCurrentPageIndex(currentPageIndex - 1);
     } else if (direction === 'next' && currentPageIndex === story.pages.length - 1) {
-      // Last page - show quiz
       setShowQuiz(true);
     }
   };
@@ -223,29 +360,60 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   };
 
   const handleQuizSubmit = async () => {
-    let correct = 0;
+    if (quizAnswers.length !== story.quiz.length) return;
+
+    let correctAnswers = 0;
     story.quiz.forEach((question, index) => {
       if (quizAnswers[index] === question.correctIndex) {
-        correct++;
+        correctAnswers++;
       }
     });
 
-    const score = Math.round((correct / story.quiz.length) * 100);
+    const score = Math.round((correctAnswers / story.quiz.length) * 100);
     setQuizScore(score);
 
-    // Mark story as completed
+    // Save quiz results
     if (user && story.id) {
-      await storyManager.markStoryCompleted(user.uid, story.id, score);
-    }
-
-    if (onComplete) {
-      onComplete();
+      try {
+        await storyManager.saveQuizResults(user.uid, story.id, {
+          score,
+          answers: quizAnswers,
+          completedAt: new Date()
+        });
+      } catch (error) {
+        console.error('Error saving quiz results:', error);
+      }
     }
   };
 
+  const getFontSizeClass = () => {
+    const sizes = {
+      small: 'text-sm',
+      medium: 'text-base',
+      large: 'text-lg',
+      xlarge: 'text-xl'
+    };
+    return sizes[settings.fontSize];
+  };
+
   const renderJapaneseText = (html: string) => {
-    // Process text with furigana if needed
-    const processedHtml = showFurigana ? html : html.replace(/<rt>.*?<\/rt>/g, '');
+    if (settings.highlightVocabulary && settings.highlightMode !== 'none') {
+      return (
+        <GrammarHighlightedText
+          text={html.replace(/<[^>]*>/g, '')} // Remove HTML tags for grammar analysis
+          highlightMode={settings.highlightMode}
+          onWordClick={handleWordClick}
+          showFurigana={settings.showFurigana}
+          className={`${getFontSizeClass()} leading-relaxed`}
+        />
+      );
+    }
+
+    // Fallback to basic rendering
+    let processedHtml = html;
+    if (settings.showFurigana) {
+      processedHtml = processTextWithFurigana(html);
+    }
 
     // Parse the HTML and add click handlers
     const parser = new DOMParser();
@@ -263,7 +431,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     return (
       <div
         ref={textContainerRef}
-        className="japanese-text text-lg leading-relaxed relative"
+        className={`japanese-text ${getFontSizeClass()} leading-relaxed relative`}
         dangerouslySetInnerHTML={{ __html: doc.body.innerHTML }}
         onClick={(e) => {
           const target = e.target as HTMLElement;
@@ -375,168 +543,281 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentPageIndex}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          className="space-y-6"
-        >
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">{story.title}</h1>
-              <p className="text-muted-foreground">
-                Page {currentPageIndex + 1} of {story.pages.length}
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowFurigana(!showFurigana)}
-                className="px-3 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
-              >
-                {showFurigana ? 'Hide' : 'Show'} Furigana
-              </button>
-              <button
-                onClick={() => setShowTranslation(!showTranslation)}
-                className="px-3 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
-              >
-                {showTranslation ? 'Hide' : 'Show'} Translation
-              </button>
-              <button
-                onClick={() => speakSentence(currentPage.text.replace(/<[^>]*>/g, ''))}
-                disabled={isPlaying || isCacheLoading}
-                className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors disabled:opacity-50"
-              >
-                🔊
-              </button>
-              <button
-                onClick={handleBookmarkToggle}
-                disabled={bookmarkLoading}
-                className={`p-2 rounded-lg transition-colors ${isBookmarked
-                  ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                title={user ? (isBookmarked ? 'Remove bookmark' : 'Bookmark story') : 'Login to bookmark'}
-              >
-                {bookmarkLoading ? '⏳' : (isBookmarked ? '★' : '☆')}
-              </button>
-              <button
-                onClick={onExit}
-                className="p-2 rounded-lg bg-secondary text-secondary-foreground"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
+    <>
+      {/* Gradient Header - full page width */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+      </div>
 
-          {/* Page Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Image */}
-            <div className="relative">
-              {currentPage.imageUrl && currentPage.imageUrl.trim() !== '' && (
-                <img
-                  src={currentPage.imageUrl}
-                  alt={currentPage.imageAlt || `Page ${currentPage.pageNumber}`}
-                  className="w-full rounded-lg shadow-lg"
-                />
-              )}
-            </div>
+      {/* Page Header */}
+      <div className="container mx-auto px-4">
+        <PageHeader title={story.title} showBackButton={true} onBackClick={onExit} />
+      </div>
 
-            {/* Text */}
-            <div className="space-y-4 relative">
-              {renderJapaneseText(currentPage.text)}
-
-              {showTranslation && (
-                <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                  <p className="text-sm text-muted-foreground">Translation:</p>
-                  <p>{currentPage.translation}</p>
-                </div>
-              )}
-
-              {/* Word Popup */}
-              {selectedWord && (
-                <div
-                  className="absolute z-50 bg-card border border-border rounded-lg shadow-lg p-4 min-w-[200px]"
-                  style={{
-                    left: `${selectedWord.position.x}px`,
-                    top: `${selectedWord.position.y + 30}px`,
-                    transform: 'translateX(-50%)'
-                  }}
+      <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+        <div className="max-w-6xl mx-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPageIndex}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              {/* Header with navigation and controls */}
+              <div className="flex items-center justify-between mb-6">
+                <button
+                  onClick={onExit}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-all transform hover:scale-105 active:scale-95"
                 >
-                  {wordLookupLoading ? (
-                    <div className="text-center py-2">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex justify-between items-start mb-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  <span>Back to Stories</span>
+                </button>
+
+                <div className="relative">
+                  {/* Options Menu Button */}
+                  <button
+                    onClick={() => setShowOptionsMenu(!showOptionsMenu)}
+                    className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg font-medium transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                      />
+                    </svg>
+                    <span>Options</span>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showOptionsMenu && (
+                    <div className="absolute top-12 right-0 z-50 bg-card border border-border rounded-lg shadow-lg p-1 w-64">
+                      {/* Audio Reader */}
+                      <button
+                        onClick={() => {
+                          speakSentence(currentPage.text.replace(/<[^>]*>/g, ''));
+                          setShowOptionsMenu(false);
+                        }}
+                        disabled={isPlaying || isCacheLoading}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left disabled:opacity-50"
+                      >
+                        <span className="text-xl">🔊</span>
                         <div>
-                          <p className="font-bold text-lg japanese-text">{selectedWord.word}</p>
-                          {selectedWord.reading && (
-                            <p className="text-sm text-muted-foreground japanese-text">{selectedWord.reading}</p>
-                          )}
+                          <div className="font-medium">Play Audio</div>
+                          <div className="text-sm text-muted-foreground">Listen to this page</div>
                         </div>
-                        <button
-                          onClick={() => setSelectedWord(null)}
-                          className="text-muted-foreground hover:text-foreground ml-2"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                      <div className="space-y-1">
-                        {selectedWord.meanings?.map((meaning, index) => (
-                          <p key={index} className="text-sm">{index + 1}. {meaning}</p>
-                        ))}
-                      </div>
-                      {user && (
-                        <button
-                          onClick={handleSaveWord}
-                          disabled={savedWords.has(selectedWord.word)}
-                          className="mt-3 w-full px-3 py-1 bg-primary text-primary-foreground rounded text-sm disabled:bg-muted disabled:text-muted-foreground"
-                        >
-                          {savedWords.has(selectedWord.word) ? 'Saved' : 'Save Word'}
-                        </button>
-                      )}
-                    </>
+                      </button>
+
+                      {/* Quiz */}
+                      <button
+                        onClick={() => {
+                          setShowQuiz(true);
+                          setShowOptionsMenu(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left"
+                      >
+                        <span className="text-xl">🎯</span>
+                        <div>
+                          <div className="font-medium">Comprehension Quiz</div>
+                          <div className="text-sm text-muted-foreground">Test your understanding</div>
+                        </div>
+                      </button>
+
+                      {/* Bookmark */}
+                      <button
+                        onClick={() => {
+                          handleBookmarkToggle();
+                          setShowOptionsMenu(false);
+                        }}
+                        disabled={bookmarkLoading || !user}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span className="text-xl">{isBookmarked ? '★' : '☆'}</span>
+                        <div>
+                          <div className="font-medium">{isBookmarked ? 'Remove Bookmark' : 'Bookmark Story'}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {!user ? 'Login required' : 'Save for later'}
+                          </div>
+                        </div>
+                      </button>
+
+                      <div className="border-t border-border my-1"></div>
+
+                      {/* Settings */}
+                      <button
+                        onClick={() => {
+                          setShowSettings(true);
+                          setShowOptionsMenu(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left"
+                      >
+                        <span className="text-xl">⚙️</span>
+                        <div>
+                          <div className="font-medium">Reading Settings</div>
+                          <div className="text-sm text-muted-foreground">Font size, furigana, etc.</div>
+                        </div>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Settings Panel (separate from menu) */}
+                  {showSettings && (
+                    <SettingsPanel
+                      settings={settings}
+                      onSettingsChange={setSettings}
+                      onClose={() => setShowSettings(false)}
+                    />
                   )}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between items-center pt-4">
-            <button
-              onClick={() => handlePageChange('prev')}
-              disabled={currentPageIndex === 0}
-              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg disabled:opacity-50"
-            >
-              Previous
-            </button>
-
-            <div className="flex gap-2">
-              {story.pages.map((_, index) => (
+              {/* Reading progress bar */}
+              <div className="w-full bg-muted rounded-full h-1 mb-6">
                 <div
-                  key={index}
-                  className={`w-2 h-2 rounded-full ${index === currentPageIndex ? 'bg-primary' : 'bg-muted'
-                    }`}
+                  className="bg-primary h-1 rounded-full transition-all duration-300"
+                  style={{ width: `${readingProgress}%` }}
                 />
-              ))}
-            </div>
+              </div>
 
-            <button
-              onClick={() => handlePageChange('next')}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
-            >
-              {currentPageIndex === story.pages.length - 1 ? 'Take Quiz' : 'Next'}
-            </button>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+              {/* Story content */}
+              <div className="bg-card rounded-lg p-4 md:p-8 border border-border">
+                {/* Story header */}
+                <header className="mb-8">
+                  <h1 className={`font-bold text-foreground mb-4 ${settings.fontSize === 'xlarge' ? 'text-3xl' :
+                    settings.fontSize === 'large' ? 'text-2xl' :
+                      settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
+                    }`}>
+                    {story.title}
+                  </h1>
 
-    </div>
+                  {/* Story metadata */}
+                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
+                    <span>📄 Page {currentPageIndex + 1} of {story.pages.length}</span>
+                    <span>📊 {story.jlptLevel}</span>
+                    <span>🏷️ {story.theme}</span>
+                    <span>❓ {story.quiz.length} questions</span>
+                  </div>
+                </header>
+
+                {/* Page Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Image */}
+                  <div className="relative">
+                    {currentPage.imageUrl && currentPage.imageUrl.trim() !== '' && (
+                      <img
+                        src={currentPage.imageUrl}
+                        alt={currentPage.imageAlt || `Page ${currentPage.pageNumber}`}
+                        className="w-full rounded-lg shadow-lg"
+                      />
+                    )}
+                  </div>
+
+                  {/* Text */}
+                  <div className="space-y-4 relative">
+                    {/* Grammar Legend */}
+                    {settings.highlightVocabulary && settings.highlightMode !== 'none' && (
+                      <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+                        <h4 className="text-sm font-medium mb-2">Grammar Color Guide:</h4>
+                        <GrammarLegend />
+                      </div>
+                    )}
+
+                    {renderJapaneseText(currentPage.text)}
+
+                    {showTranslation && (
+                      <div className="p-4 bg-muted/50 rounded-lg border border-border">
+                        <p className="text-sm text-muted-foreground">Translation:</p>
+                        <p>{currentPage.translation}</p>
+                      </div>
+                    )}
+
+                    {/* Word Popup */}
+                    {selectedWord && (
+                      <div
+                        className="absolute z-50 bg-card border border-border rounded-lg shadow-lg p-4 min-w-[200px]"
+                        style={{
+                          left: `${selectedWord.position.x}px`,
+                          top: `${selectedWord.position.y + 30}px`,
+                          transform: 'translateX(-50%)'
+                        }}
+                      >
+                        {wordLookupLoading ? (
+                          <div className="text-center py-2">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <p className="font-bold text-lg japanese-text">{selectedWord.word}</p>
+                                {selectedWord.reading && (
+                                  <p className="text-sm text-muted-foreground japanese-text">{selectedWord.reading}</p>
+                                )}
+                              </div>
+                              <button
+                                onClick={() => setSelectedWord(null)}
+                                className="text-muted-foreground hover:text-foreground ml-2"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                            <div className="space-y-1">
+                              {selectedWord.meanings?.map((meaning, index) => (
+                                <p key={index} className="text-sm">{index + 1}. {meaning}</p>
+                              ))}
+                            </div>
+                            {user && (
+                              <button
+                                onClick={handleSaveWord}
+                                disabled={savedWords.has(selectedWord.word)}
+                                className="mt-3 w-full px-3 py-1 bg-primary text-primary-foreground rounded text-sm disabled:bg-muted disabled:text-muted-foreground"
+                              >
+                                {savedWords.has(selectedWord.word) ? 'Saved' : 'Save Word'}
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="flex justify-between items-center pt-6 mt-6 border-t border-border">
+                  <button
+                    onClick={() => handlePageChange('prev')}
+                    disabled={currentPageIndex === 0}
+                    className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+
+                  <div className="flex gap-2">
+                    {story.pages.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full ${index === currentPageIndex ? 'bg-primary' : 'bg-muted'
+                          }`}
+                      />
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange('next')}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
+                  >
+                    {currentPageIndex === story.pages.length - 1 ? 'Take Quiz' : 'Next'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    </>
   );
 }

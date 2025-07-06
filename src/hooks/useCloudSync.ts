@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useFeature } from '@/hooks/useFeature';
 import CloudSync, { SyncStatus, SyncResult } from '@/utils/cloudSync';
 import WordListManager from '@/utils/wordLists';
 
@@ -21,25 +22,25 @@ export interface CloudSyncHook {
 
 export function useCloudSync(): CloudSyncHook {
   const { user } = useAuth();
-  const { userSubscription, isFeatureAvailable } = useSubscription();
+  const { subscription } = useSubscription2();
+  const { access: syncAccess } = useFeature('cloud_sync');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>(CloudSync.getSyncStatus());
 
-  // Check if user can sync using SubscriptionContext logic
-  const canSync = isFeatureAvailable('sync');
+  // Check if user can sync using new system
+  const canSync = syncAccess?.allowed ?? false;
 
   // Debug logging for troubleshooting
   useEffect(() => {
-    if (user && userSubscription) {
+    if (user && subscription) {
       console.log('CloudSync Debug:', {
         userEmail: user.email,
-        subscriptionPlan: userSubscription.subscription?.plan,
-        subscriptionStatus: userSubscription.subscription?.status,
-        canSyncLimit: userSubscription.limits?.canSync,
-        isFeatureAvailableResult: isFeatureAvailable('sync'),
+        subscriptionPlan: subscription?.plan,
+        subscriptionStatus: subscription?.status,
+        canSyncFromFeature: syncAccess?.allowed,
         canSyncValue: canSync
       });
     }
-  }, [user, userSubscription, canSync, isFeatureAvailable]);
+  }, [user, subscription, canSync, syncAccess]);
 
   // Initialize network monitoring and sync status listener
   useEffect(() => {
@@ -77,8 +78,8 @@ export function useCloudSync(): CloudSyncHook {
       return { success: false, error: 'User not authenticated' };
     }
 
-    return await WordListManager.syncToCloud(user, userSubscription?.subscription.status, userSubscription?.subscription.plan);
-  }, [user, userSubscription?.subscription.status, userSubscription?.subscription.plan]);
+    return await WordListManager.syncToCloud(user, subscription?.status, subscription?.plan);
+  }, [user, subscription?.status, subscription?.plan]);
 
   // Sync word lists from cloud
   const syncWordListsFromCloud = useCallback(async (): Promise<SyncResult> => {
@@ -86,8 +87,8 @@ export function useCloudSync(): CloudSyncHook {
       return { success: false, error: 'User not authenticated' };
     }
 
-    return await WordListManager.syncFromCloud(user, userSubscription?.subscription.status, userSubscription?.subscription.plan);
-  }, [user, userSubscription?.subscription.status, userSubscription?.subscription.plan]);
+    return await WordListManager.syncFromCloud(user, subscription?.status, subscription?.plan);
+  }, [user, subscription?.status, subscription?.plan]);
 
   // Perform full bidirectional sync
   const performFullWordListSync = useCallback(async (): Promise<SyncResult> => {
@@ -95,8 +96,8 @@ export function useCloudSync(): CloudSyncHook {
       return { success: false, error: 'User not authenticated' };
     }
 
-    return await WordListManager.performFullSync(user, userSubscription?.subscription.status, userSubscription?.subscription.plan);
-  }, [user, userSubscription?.subscription.status, userSubscription?.subscription.plan]);
+    return await WordListManager.performFullSync(user, subscription?.status, subscription?.plan);
+  }, [user, subscription?.status, subscription?.plan]);
 
   // Trigger sync (convenience method for full sync)
   const triggerSync = useCallback(async (): Promise<SyncResult> => {

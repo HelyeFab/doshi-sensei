@@ -6,14 +6,14 @@ import { NewsArticle } from '@/types/news';
 import { getArticleById } from '@/utils/watanocArticles';
 import ArticleReader from '@/components/reading/ArticleReader';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useEntitlements } from '@/hooks/useEntitlements';
+import { useAccess } from '@/hooks/useAccess';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 
 export default function ArticlePage() {
     const router = useRouter();
-    const { user } = useAuth();
-    const { userType, showLoginPrompt, showUpgradePrompt, incrementArticleCount } = useSubscription();
-    const { canReadArticle, promptForAccess } = useEntitlements();
+    const { user, loading: authLoading } = useAuth();
+    const { checkAndTrack } = useAccess();
+    const { isPremium, userType } = useSubscription2();
     const [article, setArticle] = useState<NewsArticle | null>(null);
     const [loading, setLoading] = useState(true);
     const [canRead, setCanRead] = useState(true);
@@ -24,53 +24,53 @@ export default function ArticlePage() {
             ? params.id[0]
             : undefined;
 
-    const isPremium = userType === 'monthly' || userType === 'yearly';
-
     useEffect(() => {
         loadArticle();
-    }, [articleId]);
+    }, [articleId, authLoading]);
 
     const loadArticle = async () => {
+        // Wait for auth to be ready
+        if (authLoading) {
+            return;
+        }
+
         try {
             setLoading(true);
-
-            // Check if user can read articles today using entitlements
-            const articleCheck = canReadArticle();
-            setCanRead(articleCheck.allowed);
-
-            if (!articleCheck.allowed) {
-                promptForAccess(
-                    'articles',
-                    !user
-                        ? `You've reached your daily article limit (${articleCheck.used}/${articleCheck.limit})! Sign up to read more articles and save your progress.`
-                        : `You've read your daily article limit (${articleCheck.used}/${articleCheck.limit})! Upgrade to Premium for unlimited articles.`
-                );
-                router.push('/news');
-                return;
-            }
 
             if (!articleId) {
                 router.push('/news');
                 return;
             }
 
-            // Load article from Firebase
-            const loadedArticle = await getArticleById(articleId);
+            // Check if user can read articles using new system
+            const canAccess = await checkAndTrack('article_reading');
+            setCanRead(canAccess);
 
-            if (!loadedArticle) {
+            if (!canAccess) {
+                // The access system will show the appropriate modal
                 router.push('/news');
                 return;
             }
 
-            setArticle(loadedArticle);
+            // Load article from Firebase
+            console.log('[ArticlePage] Loading article:', articleId);
+            const loadedArticle = await getArticleById(articleId);
 
-            // Track article read after successfully loading
-            try {
-                await incrementArticleCount();
-            } catch (error) {
-                console.error('Error tracking article read:', error);
-                // Don't fail the whole article load if tracking fails
+            if (!loadedArticle) {
+                console.error('[ArticlePage] Article not found:', articleId);
+                router.push('/news');
+                return;
             }
+
+            console.log('[ArticlePage] Article loaded:', {
+                id: loadedArticle.id,
+                hasContent: !!loadedArticle.content,
+                contentLength: loadedArticle.content?.length || 0,
+                title: loadedArticle.title
+            });
+
+            setArticle(loadedArticle);
+            // Usage tracking is handled automatically by checkAndTrack
         } catch (error) {
             console.error('Error loading article:', error);
             router.push('/news');

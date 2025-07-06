@@ -7,7 +7,9 @@ import { searchWords } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAccess } from '@/hooks/useAccess';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import WordListManager from '@/utils/wordLists';
 import StatsManager from '@/utils/stats';
 import TTSManager from '@/utils/tts';
@@ -65,6 +67,9 @@ const practiceStructuredData = {
 };
 
 export default function PracticePage() {
+  const { user } = useAuth();
+  const { checkAndTrack } = useAccess();
+  const { isPremium, userType } = useSubscription2();
   const [activeTab, setActiveTab] = useState<'conjugation' | 'kana'>('kana');
   const [words, setWords] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -261,37 +266,11 @@ export default function PracticePage() {
       return;
     }
     
-    // Check if user can play KanaDrop using entitlements
-    // For now, we'll check KanjiQuest limits since games share the same daily limit
-    const canPlay = isFeatureAvailable('kanjiquest');
+    // Check if user can play KanaDrop using new system
+    const canPlay = await checkAndTrack('kana_drop');
     
-    if (canPlay === false) {
-      // Get usage info for the message
-      const today = new Date().toISOString().split('T')[0];
-      let gamesPlayed = 0;
-      
-      if (userType === 'guest' && guestUsage) {
-        const isToday = guestUsage.lastKanjiQuestDate === today;
-        gamesPlayed = isToday ? guestUsage.kanjiQuestToday : 0;
-      } else if (userSubscription) {
-        const isToday = userSubscription.currentUsage.lastKanjiQuestDate === today;
-        gamesPlayed = isToday ? (userSubscription.currentUsage.kanjiQuestToday || 0) : 0;
-      }
-      
-      const maxGames = 3; // Daily limit for non-premium users
-      
-      // Show appropriate prompt based on user type
-      if (userType === 'guest') {
-        showLoginPrompt(
-          `You've played ${gamesPlayed}/${maxGames} games today! 🎮\n\nSign up free to track your progress and get more daily games!`,
-          'kanadrop'
-        );
-      } else if (userType === 'free') {
-        showUpgradePrompt(
-          `You've reached your daily limit of ${gamesPlayed}/${maxGames} games! 🎮\n\nUpgrade to Premium for unlimited games and become a kana master!`,
-          'kanadrop'
-        );
-      }
+    if (!canPlay) {
+      // The access system will show the appropriate modal
       return;
     }
     
@@ -653,7 +632,8 @@ interface WordCardProps {
 }
 
 function WordCard({ word, onSelect }: WordCardProps) {
-  const { userSubscription, canCreateList, incrementListCount } = useSubscription();
+  const { checkAndTrack } = useAccess();
+  const { isPremium, userType } = useSubscription2();
   const [wordLists, setWordLists] = useState<WordList[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [newListName, setNewListName] = useState('');
@@ -708,16 +688,16 @@ function WordCard({ word, onSelect }: WordCardProps) {
   const handleCreateNewList = async () => {
     if (!newListName.trim()) return;
 
-    // Check if user can create more lists
-    if (!canCreateList()) {
-      alert(`You've reached the maximum of ${userSubscription?.limits.maxLists} lists on the free plan. Upgrade to create unlimited lists!`);
+    // Check if user can create more lists using new system
+    const canCreate = await checkAndTrack('word_lists');
+    if (!canCreate) {
+      // The access system will show the appropriate modal
       return;
     }
 
     try {
       await WordListManager.createWordList(newListName.trim());
-      // Increment list count for subscription tracking
-      await incrementListCount();
+      // Usage tracking is handled automatically by checkAndTrack
       setNewListName('');
       await loadWordLists(); // Reload lists
     } catch (err) {

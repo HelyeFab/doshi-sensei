@@ -347,111 +347,173 @@ When working on features related to user limits, subscriptions, or game access, 
 
 **Note**: The system currently uses 'monthly' and 'yearly' as distinct user types rather than a generic 'premium'. See `/docs/PREMIUM_TYPE_REFERENCES.md` for all locations that depend on this distinction.
 
-## Entitlements System Migration Plan - January 2025
+## New Subscription System Architecture - January 2025
 
 ### Overview
-We're migrating from scattered hardcoded user limits to a centralized entitlements system. The new system (`src/utils/userEntitlements.ts`) provides a single source of truth for all feature access controls.
+We've successfully rebuilt the subscription system with a clean three-pillar architecture that separates concerns and provides dynamic configuration capabilities.
 
-### Current Status
-- ✅ Core entitlements system created
-- ✅ React hook (`useEntitlements`) implemented
-- ✅ Documentation completed
-- ✅ KanaDrop game migrated as proof of concept
-- 🚧 Other features still using hardcoded limits
+### Architecture Components
 
-### Migration Phases
+#### 1. **Entitlements** (`/src/lib/entitlements/`)
+- User permissions and access control
+- Dynamic rules that can be edited via admin dashboard
+- Usage tracking and limit enforcement
 
-#### Phase 1: Fix Critical Issues (Priority: HIGH)
-**Files to update:**
-1. `src/components/UsageLimitDisplay.tsx` - Fix incorrect drill limit (shows 50, should be 3)
-2. `src/contexts/SubscriptionContext.tsx` - Replace hardcoded FREE_LIMITS and GUEST limits
+#### 2. **Features** (`/src/lib/features/`)
+- Feature registry and configuration
+- System limits and game configs
+- Feature flags and status tracking
 
-**Instructions:**
+#### 3. **Subscriptions** (`/src/lib/subscriptions/`)
+- Payment status and Stripe integration
+- Plan management (free, monthly, yearly)
+- Subscription state synchronization
+
+#### 4. **Unified Access API** (`/src/lib/access/`)
+- Single entry point for all access checks
+- Combines all three pillars
+- Provides hooks for React components
+
+### Current Status (Phase 2 - 50% Complete)
+- ✅ Core architecture built and deployed
+- ✅ Admin dashboard with dynamic limit editing
+- ✅ Major components migrated (News, Games, Drill)
+- ✅ Stripe webhooks updated
+- 🚧 Remaining components being migrated
+- 🚧 Old code cleanup in progress
+
+### Using the New System
+
+#### For React Components
 ```typescript
-// Replace hardcoded limits with:
-import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
+// Import the new hooks
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 
-// Get limits dynamically:
-const drillLimit = getFeatureLimit(userType, 'learning.drills', 'daily');
-```
-
-#### Phase 2: Update Core Features (Priority: HIGH)
-**Features to migrate:**
-
-1. **KanjiQuest** (`src/components/games/KanjiQuest.tsx`)
-   - Replace lines 195-196 hardcoded limits
-   - Use `useEntitlements().canPlayGame('kanjiQuest')`
-
-2. **Drill System** (`src/app/drill/page.tsx`)
-   - Replace line 886 hardcoded display
-   - Use `useEntitlements().canDoDrill()`
-
-3. **Story System** 
-   - Find and update story limit checks
-   - Use `useEntitlements().canReadStory()`
-
-4. **Article System**
-   - Find and update article limit checks  
-   - Use `useEntitlements().canReadArticle()`
-
-5. **List Creation** (`src/app/practice/page.tsx` line 713)
-   - Replace hardcoded alert
-   - Use `useEntitlements().canCreateList()`
-
-#### Phase 3: Update Backend/API (Priority: MEDIUM)
-**Files to update:**
-1. `src/app/api/stripe-webhook/route.ts` - Lines 161-164, 204-207
-2. `src/types/subscription.ts` - DEFAULT constants
-
-**Instructions:**
-- Import entitlements system in API routes
-- Replace hardcoded limit objects with calls to `getEntitlementsForUserType()`
-
-#### Phase 4: Update Documentation & Types (Priority: LOW)
-**Files to update:**
-1. `src/types/subscription.ts` - SUBSCRIPTION_PLANS descriptions
-2. Any remaining documentation references
-
-### Implementation Guidelines
-
-1. **Always use the entitlements hook in components:**
-```typescript
-const { canAccess, promptForAccess } = useEntitlements();
-
-// Check access
-const check = canAccess('feature.path');
-if (!check.allowed) {
-  promptForAccess('Feature Name', check.reason);
-  return;
+// Check access (automatically tracks usage)
+const { checkAndTrack } = useAccess();
+const canPlay = await checkAndTrack('kanji_quest');
+if (!canPlay) {
+  return; // Modals shown automatically
 }
+
+// Get feature info
+const { feature, access, remaining } = useFeature('drill_practice');
+
+// Get subscription status
+const { isPremium, userType } = useSubscription2();
 ```
 
-2. **For non-React code, use the utility directly:**
+#### For API Routes
 ```typescript
-import { getFeatureLimit, isFeatureEnabled } from '@/utils/userEntitlements';
+import { entitlementManager } from '@/lib/entitlements/manager';
+import { subscriptionManager } from '@/lib/subscriptions/manager';
+import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
 
-const limit = getFeatureLimit(userType, 'games.kanjiQuest', 'daily');
+// Get user entitlements
+const rules = await dynamicRules.getRules();
+const userType = subscriptionManager.getUserType(subscription);
 ```
 
-3. **Test each migration:**
-- Test as guest user
-- Test as free user  
-- Test as premium user
-- Verify limits are enforced correctly
+### Migration Status
+
+#### ✅ Completed Migrations
+1. **News/Articles Page** - Full migration to new system
+2. **KanjiQuest Game** - Integrated with automatic tracking
+3. **KanaDrop Game** - Updated with access checks
+4. **Drill Page** - Using new subscription hooks
+5. **Stripe Webhooks** - Updated to use new managers
+
+#### 🚧 In Progress
+1. **Account Page** - Partially migrated
+2. **Admin Subscription Fix** - Script ready to run
+
+#### ❌ Still Using Old System
+1. **Story Pages** - Needs migration
+2. **Practice/Lists Pages** - Needs update
+3. **Vocabulary Page** - May need updates
+4. **Reading Pages** - Check for limits
+
+### Admin Dashboard Features
+
+The new system includes a powerful admin dashboard at `/admin/features` that allows:
+
+1. **View Feature Matrix** - See all features and limits across user types
+2. **Edit Limits Dynamically** - Click any limit to change it (changes apply immediately)
+3. **Export Data** - Export feature matrix as CSV or JSON
+4. **Real-time Updates** - Changes propagate to all users instantly
+
+### Scripts for Migration
+
+```bash
+# Fix admin user's nested subscription structure
+node scripts/fix-admin-subscription.js
+
+# Check all users' subscription structures
+node scripts/check-user-subscriptions.js
+```
+
+### Key Differences from Old System
+
+#### Old System (SubscriptionContext)
+- Hardcoded limits scattered across codebase
+- Manual usage tracking with increment functions
+- Three different subscription structures in production
+- No way to change limits without deployment
+
+#### New System (Three-Pillar Architecture)
+- Centralized limits in feature registry
+- Automatic usage tracking via `checkAndTrack`
+- Single consistent structure
+- Dynamic limit editing via admin dashboard
+- Clean separation of concerns
+
+### Important Files
+
+#### Core System
+- `/src/lib/entitlements/` - Entitlement rules and manager
+- `/src/lib/features/` - Feature registry and definitions  
+- `/src/lib/subscriptions/` - Subscription management
+- `/src/lib/access/` - Unified access API
+
+#### React Hooks
+- `/src/hooks/useAccess.ts` - Main access control hook
+- `/src/hooks/useFeature.ts` - Feature-specific data
+- `/src/hooks/useSubscription2.ts` - New subscription hook
+
+#### Admin Dashboard
+- `/src/app/admin/features/page.tsx` - Feature matrix view
+- `/src/components/admin/feature-matrix/` - Matrix components
 
 ### Testing Checklist
-- [ ] Guest users see correct limits (3/day for games, drills, etc.)
-- [ ] Free users see correct limits (3 lists max, 5 bookmarks max)
-- [ ] Premium users have unlimited access
-- [ ] Upgrade prompts show correct messages
-- [ ] Usage tracking increments properly
+- [x] New hooks working in components
+- [x] Automatic usage tracking functioning
+- [x] Dynamic limit editing in admin dashboard
+- [x] Stripe webhook integration updated
+- [ ] Admin user subscription structure fixed
+- [ ] All components migrated to new system
+- [ ] Old code removed
+- [ ] Both users tested end-to-end
 
-### Common Pitfalls to Avoid
-1. Don't forget to handle the loading state from `useEntitlements`
-2. Remember that KanaDrop shares the KanjiQuest counter (all games share limits)
-3. Always reset usage tracking when appropriate (game restart, etc.)
-4. Test date-based resets for daily limits
+### Next Steps for Completion
 
-### Branch Information
-Working branch: `feature/entitlements-migration`
-Main tracking issue: Consolidate all hardcoded user limits into centralized entitlements system
+1. **Run Admin Fix** (Immediate)
+   ```bash
+   node scripts/fix-admin-subscription.js
+   ```
+
+2. **Complete Migrations** (This Week)
+   - Story pages
+   - Practice/Lists pages  
+   - Any remaining components
+
+3. **Clean Up** (This Week)
+   - Remove old SubscriptionContext
+   - Delete compatibility code
+   - Update imports throughout
+
+4. **Documentation** (Ongoing)
+   - Update all README files
+   - Document new admin features
+   - Create migration guide for future developers

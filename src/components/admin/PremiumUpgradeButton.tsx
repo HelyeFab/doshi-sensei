@@ -17,8 +17,8 @@ export function PremiumUpgradeButton({ user, onUpgrade }: PremiumUpgradeButtonPr
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { success, error } = useAdminNotifications();
 
-  const isPremium = user.subscription?.subscription?.plan === 'monthly' ||
-                   user.subscription?.subscription?.plan === 'yearly';
+  const isPremium = user.subscription?.plan === 'monthly' ||
+                   user.subscription?.plan === 'yearly';
 
   // Calculate menu position based on button position
   useEffect(() => {

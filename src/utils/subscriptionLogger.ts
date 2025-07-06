@@ -42,11 +42,11 @@ class SubscriptionLogger {
         isAuthenticated: !!data.user
       },
       '💳 Subscription': data.userSubscription ? {
-        status: data.userSubscription.subscription.status,
-        plan: data.userSubscription.subscription.plan,
-        stripeId: data.userSubscription.subscription.stripeSubscriptionId || 'N/A',
-        cancelAtPeriodEnd: data.userSubscription.subscription.cancelAtPeriodEnd || false,
-        renewalDate: data.userSubscription.subscription.renewalDate || 'N/A'
+        status: data.userSubscription.subscription?.status || data.userSubscription.status || 'N/A',
+        plan: data.userSubscription.subscription?.plan || data.userSubscription.plan || 'N/A',
+        stripeId: data.userSubscription.subscription?.stripeSubscriptionId || data.userSubscription.stripeSubscriptionId || 'N/A',
+        cancelAtPeriodEnd: data.userSubscription.subscription?.cancelAtPeriodEnd || data.userSubscription.cancelAtPeriodEnd || false,
+        renewalDate: data.userSubscription.subscription?.renewalDate || data.userSubscription.renewalDate || 'N/A'
       } : 'No subscription data',
       '🏷️ User Type': data.userType,
       '📊 Limits': data.userSubscription?.limits || 'N/A',

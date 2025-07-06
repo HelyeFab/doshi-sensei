@@ -58,17 +58,28 @@ export class ArticleTTSManager {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
       
+      const requestBody = {
+        articleId,
+        content,
+        voice,
+        provider
+      };
+      
+      console.log('[ArticleTTSManager] Sending request:', {
+        articleId: requestBody.articleId,
+        hasContent: !!requestBody.content,
+        contentLength: requestBody.content?.length || 0,
+        contentPreview: requestBody.content ? requestBody.content.substring(0, 100) + '...' : 'NO CONTENT',
+        voice: requestBody.voice,
+        provider: requestBody.provider
+      });
+      
       const response = await fetch('/api/tts/article', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          articleId,
-          content,
-          voice,
-          provider
-        }),
+        body: JSON.stringify(requestBody),
         signal: controller.signal
       });
       

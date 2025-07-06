@@ -4,7 +4,6 @@ import "./globals.css";
 import { strings } from "@/config/strings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
@@ -198,7 +197,6 @@ export default function RootLayout({
             <SettingsProvider>
               <AuthProvider>
                 <NotificationProvider>
-                  <SubscriptionProvider>
                     <AdminProvider>
                       <ModalProvider>
                         {/* Use a client component to connect settings to theme */}
@@ -221,7 +219,6 @@ export default function RootLayout({
                         </ClientThemeWrapper>
                       </ModalProvider>
                     </AdminProvider>
-                  </SubscriptionProvider>
                 </NotificationProvider>
               </AuthProvider>
             </SettingsProvider>

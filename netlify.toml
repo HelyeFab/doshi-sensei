@@ -57,13 +57,13 @@
 
 [functions]
   # Scrape NHK Easy articles every morning at 6 AM UTC (3 PM JST)
-  [functions."scrape-nhk-easy"]
+  [functions."scrape-nhk-easy-fixed"]
     schedule = "0 6 * * *"
 
   # Scrape Todaii News articles every morning at 6:30 AM UTC
-  [functions."scrape-todaii-news"]
+  [functions."scrape-todaii-fixed"]
     schedule = "30 6 * * *"
 
   # Scrape Watanoc articles every morning at 7 AM UTC
-  [functions."scrape-watanoc-working"]
+  [functions."scrape-watanoc-fixed"]
     schedule = "0 7 * * *"

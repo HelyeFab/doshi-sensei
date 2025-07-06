@@ -67,11 +67,29 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
   // Play TTS audio
   const playTTSAudio = async () => {
+    // Validate article data
+    if (!article) {
+      console.error('[Audio Player] No article provided');
+      setError('No article data available.');
+      return;
+    }
+    
+    if (!article.id || !article.content) {
+      console.error('[Audio Player] Invalid article data:', { 
+        hasId: !!article.id, 
+        hasContent: !!article.content,
+        article: article 
+      });
+      setError('Invalid article data. Missing ID or content.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setLoadingStatus('Connecting to audio service...');
 
     try {
+      console.log('[Audio Player] Starting TTS for article:', article.id);
       const audio = await ArticleTTSManager.playArticle(
         article.id,
         article.content,
@@ -289,6 +307,12 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
   const progressPercent = controls.duration > 0 
     ? (controls.progress / controls.duration) * 100 
     : 0;
+
+  // Don't render if no article is provided
+  if (!article) {
+    console.warn('[Audio Player] Component rendered without article data');
+    return null;
+  }
 
   return (
     <div className="bg-card rounded-lg border border-border p-6 mb-6">

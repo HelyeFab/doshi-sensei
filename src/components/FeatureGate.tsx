@@ -1,19 +1,32 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { UserType } from '@/types/subscription';
 
 interface FeatureGateProps {
   children: React.ReactNode;
-  feature?: 'lists' | 'drills' | 'sync' | 'save';
+  feature?: 'lists' | 'drills' | 'sync' | 'save' | 'articles' | 'stories' | 'games';
   requiredUserType?: UserType | UserType[];
   fallback?: React.ReactNode;
   showUpgradePrompt?: boolean;
   upgradeMessage?: string;
   loginMessage?: string;
 }
+
+// Map old feature names to new feature IDs
+const featureMap: Record<string, string> = {
+  lists: 'word_lists',
+  drills: 'drill_practice',
+  sync: 'cloud_sync',
+  save: 'progress_saving',
+  articles: 'article_reading',
+  stories: 'story_reading',
+  games: 'kanji_quest' // or 'kana_drop'
+};
 
 export function FeatureGate({
   children,
@@ -24,35 +37,63 @@ export function FeatureGate({
   upgradeMessage,
   loginMessage,
 }: FeatureGateProps) {
-  const { user } = useAuth();
-  const { userType, isFeatureAvailable, showLoginPrompt, showUpgradePrompt: triggerUpgradePrompt, loading } = useSubscription();
+  const { user, loading: authLoading } = useAuth();
+  const { userType } = useSubscription2();
+  const { canAccess, showAccessPrompt } = useAccess();
+  const [hasAccess, setHasAccess] = useState(true);
+  const [checking, setChecking] = useState(false);
 
-  // Check if user type meets requirement
-  const hasRequiredUserType = () => {
-    if (!requiredUserType) return true;
+  // Get the mapped feature ID
+  const featureId = feature ? featureMap[feature] : undefined;
 
-    if (Array.isArray(requiredUserType)) {
-      return requiredUserType.includes(userType);
-    }
+  // Check access when component mounts or dependencies change
+  useEffect(() => {
+    const checkAccess = async () => {
+      // If auth is still loading, allow access temporarily
+      if (authLoading) {
+        setHasAccess(true);
+        return;
+      }
 
-    return userType === requiredUserType;
-  };
+      // Check user type requirement
+      if (requiredUserType) {
+        const typeOk = Array.isArray(requiredUserType) 
+          ? requiredUserType.includes(userType)
+          : userType === requiredUserType;
+        
+        if (!typeOk) {
+          setHasAccess(false);
+          return;
+        }
+      }
 
-  // Check if feature is available
-  const hasFeatureAccess = () => {
-    if (!feature) return true;
-    return isFeatureAvailable(feature);
-  };
+      // Check feature access if feature is specified
+      if (featureId) {
+        setChecking(true);
+        try {
+          const result = await canAccess(featureId);
+          setHasAccess(result.allowed);
+        } catch (error) {
+          console.error('Error checking feature access:', error);
+          setHasAccess(false);
+        } finally {
+          setChecking(false);
+        }
+      } else {
+        // No feature specified, just check user type
+        setHasAccess(true);
+      }
+    };
 
-  // CRITICAL: Allow access while subscription is loading to prevent race conditions
-  if (loading && user) {
-    // Subscription data still loading, temporarily allowing access
+    checkAccess();
+  }, [authLoading, userType, requiredUserType, featureId, canAccess]);
+
+  // Allow access while checking
+  if (checking || authLoading) {
     return <>{children}</>;
   }
 
-  // Determine if access should be granted
-  const hasAccess = hasRequiredUserType() && hasFeatureAccess();
-
+  // Grant access if allowed
   if (hasAccess) {
     return <>{children}</>;
   }
@@ -64,12 +105,15 @@ export function FeatureGate({
 
   // Show appropriate prompt based on user status
   const handlePromptClick = () => {
-    if (!user) {
-      const message = loginMessage || 'Please log in to access this feature';
-      showLoginPrompt(message);
+    if (featureId) {
+      // Let the access system handle the prompt
+      showAccessPrompt(featureId, upgradeMessage || loginMessage);
+    } else if (!user) {
+      // Manual prompt for non-feature gates
+      showAccessPrompt('', loginMessage || 'Please log in to access this feature');
     } else if (showUpgradePrompt) {
-      const message = upgradeMessage || 'Upgrade to premium to access this feature';
-      triggerUpgradePrompt(message);
+      // Manual upgrade prompt
+      showAccessPrompt('', upgradeMessage || 'Upgrade to premium to access this feature');
     }
   };
 

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getPokemonSpriteUrl, getPokemonSilhouetteStyle } from '@/data/pokemonData';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useModal } from '@/contexts/ModalContext';
 
 interface PokedexModalProps {
@@ -92,7 +92,7 @@ const POKEMON_NAMES: Record<number, string> = {
 
 export default function PokedexModal({ isOpen, onClose, userId }: PokedexModalProps) {
   const { user } = useAuth();
-  const { userType } = useSubscription();
+  const { userType } = useSubscription2();
   const { setModalOpen } = useModal();
   const [caughtPokemonIds, setCaughtPokemonIds] = useState<number[]>([]);
   const [selectedPokemon, setSelectedPokemon] = useState<number | null>(null);

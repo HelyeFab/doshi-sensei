@@ -132,17 +132,17 @@ export async function getSubscriptionStats(): Promise<SubscriptionStats> {
 
     // Filter by subscription type - check both potential structures
     const freeUsers = allUsers.filter(user => {
-      const plan = user.subscription?.subscription?.plan;
+      const plan = user.subscription?.plan;
       return plan === 'free' || !plan; // Count users with no plan as free
     }).length;
 
     const monthlySubscribers = allUsers.filter(user => {
-      const plan = user.subscription?.subscription?.plan;
+      const plan = user.subscription?.plan;
       return plan === 'monthly';
     }).length;
 
     const yearlySubscribers = allUsers.filter(user => {
-      const plan = user.subscription?.subscription?.plan;
+      const plan = user.subscription?.plan;
       return plan === 'yearly';
     }).length;
 

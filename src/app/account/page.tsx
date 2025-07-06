@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useFeature } from '@/hooks/useFeature';
+import { useNotification } from '@/contexts/NotificationContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
 import AuthErrorModal from '@/components/AuthErrorModal';
 import { ADMIN_EMAIL } from '@/types/admin';
@@ -48,7 +50,8 @@ const THUMBNAIL_OPTIONS = [
 
 export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
-  const { userSubscription, loading: subLoading } = useSubscription();
+  const { subscription, isPremium, userType, isLoading: subLoading } = useSubscription2();
+  const { showNotification } = useNotification();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -147,7 +150,11 @@ export default function AccountPage() {
     try {
       await resetPassword(email);
       setError(''); // Clear any existing errors
-      alert('Password reset email sent! Check your inbox.');
+      showNotification({
+        title: 'Email Sent',
+        message: 'Password reset email sent! Check your inbox.',
+        type: 'success'
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to send reset email');
     }

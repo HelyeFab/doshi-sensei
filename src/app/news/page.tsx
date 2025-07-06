@@ -1,12 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
 import { NewsArticle } from '@/types/news';
 import { getWatanocArticles, triggerArticleScraping, getArticleStats } from '@/utils/watanocArticles';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useEntitlements } from '@/hooks/useEntitlements';
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { LoginPromptModal } from '@/components/LoginPromptModal';
+import { UpgradePromptModal } from '@/components/UpgradePromptModal';
 
 // Loading skeleton component
 function ArticleCardSkeleton() {
@@ -266,9 +270,16 @@ function FilterBar({
 
 // Main news page component
 export default function NewsPage() {
+  const router = useRouter();
   const { user } = useAuth();
-  const { showLoginPrompt, showUpgradePrompt, incrementArticleCount } = useSubscription();
-  const { canReadArticle, isPremium, loading: entitlementsLoading, userType } = useEntitlements();
+  const { checkAndTrack, getRemainingUsage } = useAccess();
+  const { feature, access, remaining, isLoading: featureLoading } = useFeature('article_reading');
+  const { isPremium, userType } = useSubscription2();
+
+  // Modal states
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
@@ -278,8 +289,6 @@ export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const [stats, setStats] = useState<any>(null);
-  const [articlesReadToday, setArticlesReadToday] = useState(0);
-  const [articleLimit, setArticleLimit] = useState(0);
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
@@ -287,19 +296,12 @@ export default function NewsPage() {
   useEffect(() => {
     loadArticles(false, page);
     loadStats();
-    checkArticleStatus();
   }, [page]);
 
   // Filter articles when filters change
   useEffect(() => {
     filterArticles();
   }, [articles, selectedLevel, selectedCategory]);
-
-  const checkArticleStatus = () => {
-    const articleCheck = canReadArticle();
-    setArticlesReadToday(articleCheck.used || 0);
-    setArticleLimit(articleCheck.limit || 0);
-  };
 
   const loadArticles = async (forceRefresh = false, pageNum = 1) => {
     try {
@@ -341,58 +343,15 @@ export default function NewsPage() {
   };
 
   const handleArticleClick = async (article: NewsArticle) => {
-    // Check if user can read more articles today using entitlements
-    const articleCheck = canReadArticle();
+    // Check if user can access articles
+    const canAccess = await checkAndTrack('article_reading');
     
-    // Debug logging
-    console.log('Article access check:', {
-      user: user?.email,
-      isPremium,
-      articleCheck,
-      userType,
-      entitlementsLoading
-    });
-    
-    // Don't enforce limits while entitlements are still loading
-    if (entitlementsLoading) {
-      console.log('Entitlements still loading, allowing access...');
-      // Track and navigate anyway during loading
-      try {
-        await incrementArticleCount();
-        checkArticleStatus();
-      } catch (error) {
-        console.error('Error tracking article read:', error);
-      }
-      window.location.href = `/news/${article.id}`;
-      return;
+    if (canAccess) {
+      // Navigate to individual article page using Next.js router
+      router.push(`/news/${article.id}`);
     }
-    
-    if (!articleCheck.allowed) {
-      if (!user) {
-        showLoginPrompt(
-          `You've reached your daily article limit (${articleCheck.used}/${articleCheck.limit})! Sign up to read more articles and track your progress.`,
-          'articles'
-        );
-      } else {
-        showUpgradePrompt(
-          `You've read your daily article limit (${articleCheck.used}/${articleCheck.limit})! Upgrade to Premium for unlimited articles.`,
-          'articles'
-        );
-      }
-      return;
-    }
-
-    // Track article read BEFORE navigating
-    try {
-      await incrementArticleCount();
-      checkArticleStatus(); // Update the displayed counts
-    } catch (error) {
-      console.error('Error tracking article read:', error);
-      // Don't fail the navigation if tracking fails
-    }
-    
-    // Navigate to individual article page
-    window.location.href = `/news/${article.id}`;
+    // The access system will automatically show the appropriate modal
+    // DO NOT manually handle modals here - the useAccess hook handles it
   };
 
   const handleRefresh = async () => {
@@ -418,7 +377,10 @@ export default function NewsPage() {
     }
   };
 
-
+  // Calculate articles read today and limit
+  const articlesReadToday = access ? (access.usage || 0) : 0;
+  const articleLimit = access ? (access.limit || 0) : 0;
+  const articlesRemaining = remaining || 0;
 
   // Main article list view
   return (
@@ -444,10 +406,10 @@ export default function NewsPage() {
               <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                 <span>📚 {stats.totalArticles} articles available</span>
                 <span>📅 Updated: {new Date(stats.lastUpdated).toLocaleDateString()}</span>
-                {!isPremium && articleLimit > 0 && (
+                {!isPremium && articleLimit > 0 && !featureLoading && (
                   <span className="text-primary">
-                    📖 {articlesReadToday < articleLimit
-                      ? `${articleLimit - articlesReadToday} ${articleLimit - articlesReadToday === 1 ? 'article' : 'articles'} remaining today`
+                    📖 {articlesRemaining > 0
+                      ? `${articlesRemaining} ${articlesRemaining === 1 ? 'article' : 'articles'} remaining today`
                       : 'Daily limit reached'
                     }
                   </span>
@@ -553,6 +515,21 @@ export default function NewsPage() {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <LoginPromptModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        message={modalMessage}
+        feature="articles"
+      />
+      
+      <UpgradePromptModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        message={modalMessage}
+        feature="articles"
+      />
     </>
   );
 }

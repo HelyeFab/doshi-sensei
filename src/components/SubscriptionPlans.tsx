@@ -1,13 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useFeature } from '@/hooks/useFeature';
+import { useNotification } from '@/contexts/NotificationContext';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
 
 export default function SubscriptionPlans() {
-  const { userSubscription, createCheckoutSession, cancelSubscription } = useSubscription();
+  const { subscription, isPremium, userType, isLoading, createCheckoutSession, cancelSubscription } = useSubscription2();
+  const { feature: drillFeature, access: drillAccess } = useFeature('drill_practice');
+  const { feature: listFeature, access: listAccess } = useFeature('word_lists');
+  const { feature: articleFeature, access: articleAccess } = useFeature('article_reading');
+  const { feature: gameFeature, access: gameAccess } = useFeature('kanji_quest');
+  const { showNotification } = useNotification();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
     setIsProcessing(true);
@@ -19,33 +27,54 @@ export default function SubscriptionPlans() {
       await createCheckoutSession(priceId);
     } catch (error) {
       console.error('Error upgrading:', error);
-      alert('Failed to start upgrade process. Please try again.');
+      showNotification({
+        title: 'Upgrade Failed',
+        message: 'Failed to start upgrade process. Please try again.',
+        type: 'error'
+      });
     } finally {
       setIsProcessing(false);
     }
   };
 
   const handleCancel = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.')) {
-      return;
-    }
+    setShowCancelConfirm(true);
+  };
 
+  const confirmCancel = async () => {
+    setShowCancelConfirm(false);
     setIsProcessing(true);
     try {
       await cancelSubscription();
-      alert('Subscription cancelled successfully. You will continue to have access until the end of your current billing period.');
+      showNotification({
+        title: 'Subscription Cancelled',
+        message: 'You will continue to have access until the end of your current billing period.',
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error cancelling:', error);
-      alert('Failed to cancel subscription. Please try again.');
+      showNotification({
+        title: 'Cancellation Failed',
+        message: 'Failed to cancel subscription. Please try again.',
+        type: 'error'
+      });
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const currentPlan = userSubscription?.subscription.plan || 'free';
+  const currentPlan = subscription?.plan || 'free';
   const currentPlanData = SUBSCRIPTION_PLANS.find(plan => plan.id === currentPlan);
   const monthlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'monthly');
   const yearlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'yearly');
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -68,33 +97,43 @@ export default function SubscriptionPlans() {
             </span>
           </div>
 
-          {userSubscription && (
-            <>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Word Lists</span>
-                <span className="text-sm font-medium text-foreground">
-                  {userSubscription.limits.maxLists === -1 ? 'Unlimited' : `${userSubscription.currentUsage.listsCount}/${userSubscription.limits.maxLists}`}
-                </span>
-              </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Word Lists</span>
+            <span className="text-sm font-medium text-foreground">
+              {isPremium ? 'Unlimited' : listAccess?.limit === -1 ? 'Unlimited' : `${listAccess?.limit || 3} max`}
+            </span>
+          </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Daily Drills</span>
-                <span className="text-sm font-medium text-foreground">
-                  {userSubscription.limits.maxDrillsPerDay === -1 ? 'Unlimited' : `${userSubscription.currentUsage.drillsToday}/${userSubscription.limits.maxDrillsPerDay}`}
-                </span>
-              </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Daily Drills</span>
+            <span className="text-sm font-medium text-foreground">
+              {isPremium ? 'Unlimited' : drillAccess?.limit === -1 ? 'Unlimited' : `${drillAccess?.limit || 3}/day`}
+            </span>
+          </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Cloud Sync</span>
-                <span className="text-sm font-medium text-foreground">
-                  {userSubscription.limits.canSync ? '✅ Available' : '❌ Not Available'}
-                </span>
-              </div>
-            </>
-          )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Daily Articles</span>
+            <span className="text-sm font-medium text-foreground">
+              {isPremium ? 'Unlimited' : articleAccess?.limit === -1 ? 'Unlimited' : `${articleAccess?.limit || 3}/day`}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Daily Games</span>
+            <span className="text-sm font-medium text-foreground">
+              {isPremium ? 'Unlimited' : gameAccess?.limit === -1 ? 'Unlimited' : `${gameAccess?.limit || 3}/day`}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Cloud Sync</span>
+            <span className="text-sm font-medium text-foreground">
+              {isPremium || userType !== 'guest' ? '✅ Available' : '❌ Not Available'}
+            </span>
+          </div>
         </div>
 
-        {currentPlan !== 'free' && userSubscription?.subscription.stripeSubscriptionId && (
+        {currentPlan !== 'free' && subscription?.stripeSubscriptionId && (
           <div className="mt-4 pt-4 border-t border-border">
             <button
               onClick={handleCancel}
@@ -184,21 +223,48 @@ export default function SubscriptionPlans() {
       )}
 
       {/* Free Plan Limitations */}
-      {currentPlan === 'free' && userSubscription && (
+      {currentPlan === 'free' && (
         <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-600 rounded-lg p-4">
           <div className="flex items-start space-x-3">
             <span className="text-yellow-600 dark:text-yellow-400 text-lg">⚠️</span>
             <div>
               <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Free Plan Limitations</h4>
               <ul className="text-sm text-yellow-900 dark:text-yellow-100 space-y-1 font-medium">
-                <li>• Limited to {userSubscription.limits.maxLists} word lists</li>
-                <li>• Maximum {userSubscription.limits.maxDrillsPerDay} drills per day</li>
+                <li>• Limited to {listFeature?.limit || 3} word lists</li>
+                <li>• Maximum {drillFeature?.limit || 3} drills per day</li>
                 <li>• No cloud sync across devices</li>
                 <li>• Local storage only</li>
               </ul>
               <p className="text-sm text-yellow-900 dark:text-yellow-100 mt-3 font-medium">
                 ⬆️ Upgrade to unlock unlimited features and cloud sync!
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Confirmation Dialog */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-card rounded-lg p-6 max-w-md w-full mx-4 border border-border">
+            <h3 className="text-lg font-semibold mb-4">Cancel Subscription?</h3>
+            <p className="text-muted-foreground mb-6">
+              Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.
+            </p>
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={() => setShowCancelConfirm(false)}
+                className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Keep Subscription
+              </button>
+              <button
+                onClick={confirmCancel}
+                disabled={isProcessing}
+                className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50"
+              >
+                {isProcessing ? 'Cancelling...' : 'Yes, Cancel'}
+              </button>
             </div>
           </div>
         </div>

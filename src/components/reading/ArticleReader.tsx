@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { NewsArticle, ExtractedVocabulary } from '@/types/news';
 import { JapaneseWord } from '@/types';
 import { searchWords } from '@/utils/api';
@@ -14,7 +15,7 @@ import {
 import { generateFuriganaWithCache, checkFuriganaApiHealth } from '@/utils/furigana';
 import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import ImprovedArticleAudioPlayer from '@/components/audio/ImprovedArticleAudioPlayer';
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
@@ -320,8 +321,9 @@ interface ArticleReaderProps {
 
 export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const { user } = useAuth();
-  const { userType } = useSubscription();
+  const { userType } = useSubscription2();
   const isPremium = userType === 'monthly' || userType === 'yearly';
+  const router = useRouter();
 
   const [settings, setSettings] = useState<ReadingSettings>(() => {
     // Load settings from localStorage
@@ -704,7 +706,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                   {/* Audio Reader */}
                   <button
                     onClick={() => {
-                      window.location.href = `/reading/audio?id=${article.id}&source=news`;
+                      router.push(`/reading/audio?id=${article.id}&source=news`);
                       setShowOptionsMenu(false);
                     }}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left"

@@ -97,7 +97,9 @@ export async function getWatanocArticles(forceRefresh: boolean = false, page?: n
         vocabulary: data.vocabulary || [],
         kanji: data.kanji || [],
         isBookmarked: false,
-        readingProgress: 0
+        readingProgress: 0,
+        // Ensure content is present - try multiple possible field names
+        content: data.content || data.body || data.text || data.articleContent || data.description || ''
       } as NewsArticle;
     });
 
@@ -223,6 +225,15 @@ export async function getArticleById(articleId: string): Promise<NewsArticle | n
     }
 
     const data = articleDoc.data();
+    
+    // Log the raw data for debugging
+    console.log('[getArticleById] Raw article data:', {
+      id: articleDoc.id,
+      hasContent: !!data.content,
+      contentLength: data.content?.length || 0,
+      fields: Object.keys(data)
+    });
+    
     const article: NewsArticle = {
       ...data,
       id: articleDoc.id,
@@ -231,8 +242,33 @@ export async function getArticleById(articleId: string): Promise<NewsArticle | n
       vocabulary: data.vocabulary || [],
       kanji: data.kanji || [],
       isBookmarked: false,
-      readingProgress: 0
+      readingProgress: 0,
+      // Ensure content is present - try multiple possible field names
+      content: data.content || data.body || data.text || data.articleContent || data.description || ''
     } as NewsArticle;
+    
+    // Validate critical fields
+    if (!article.content) {
+      console.error('[getArticleById] Article missing content:', articleId);
+      console.error('[getArticleById] Available fields in article:', Object.keys(data));
+      console.error('[getArticleById] Article data sample:', {
+        title: data.title,
+        summary: data.summary?.substring(0, 100),
+        hasBody: !!data.body,
+        hasText: !!data.text,
+        hasDescription: !!data.description,
+        hasContent: !!data.content
+      });
+      
+      // If we still don't have content, use the summary or title as fallback
+      if (data.summary) {
+        article.content = data.summary;
+      } else if (data.title) {
+        article.content = data.title;
+      } else {
+        article.content = 'Content unavailable for this article.';
+      }
+    }
 
     return article;
 

@@ -45,12 +45,12 @@ export function UserTable({
     // Apply type filter
     switch (filterType) {
       case 'free':
-        filtered = filtered.filter((user: AdminUserDetails) => user.subscription?.subscription?.plan === 'free');
+        filtered = filtered.filter((user: AdminUserDetails) => user.subscription?.plan === 'free');
         break;
       case 'premium':
         filtered = filtered.filter((user: AdminUserDetails) =>
-          user.subscription?.subscription?.plan === 'monthly' ||
-          user.subscription?.subscription?.plan === 'yearly'
+          user.subscription?.plan === 'monthly' ||
+          user.subscription?.plan === 'yearly'
         );
         break;
       case 'active':
@@ -114,7 +114,7 @@ export function UserTable({
   };
 
   const getSubscriptionBadge = (subscription: any) => {
-    const plan = subscription?.subscription?.plan;
+    const plan = subscription?.plan;
 
     switch (plan) {
       case 'monthly':

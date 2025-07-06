@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useEntitlements } from '@/hooks/useEntitlements';
+import { useAuth } from '@/contexts/AuthContext';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 
 interface UsageLimitDisplayProps {
   type: 'drills' | 'lists';
@@ -10,47 +11,17 @@ interface UsageLimitDisplayProps {
 }
 
 export function UsageLimitDisplay({ type, className = '' }: UsageLimitDisplayProps) {
-  const { userSubscription, userType, guestUsage } = useSubscription();
-  const { getLimit } = useEntitlements();
-
-  // Get limits from entitlements system
-  const drillLimit = getLimit('learning.drills', 'daily') || 3;
-  const listLimit = getLimit('storage.lists', 'total') || 3;
-
-  if (userType === 'guest') {
-    if (type === 'drills' && guestUsage) {
-      const maxDrills = drillLimit;
-      const today = new Date().toISOString().split('T')[0];
-      const isToday = guestUsage.lastDrillDate === today;
-      const currentUsage = isToday ? guestUsage.drillsToday : 0;
-
-      return (
-        <div className={`text-sm text-muted-foreground ${className}`}>
-          <span className="font-medium">Drills today:</span> {currentUsage}/{maxDrills}
-          {currentUsage >= maxDrills && (
-            <span className="text-orange-400 ml-2">• Limit reached</span>
-          )}
-        </div>
-      );
-    }
-
-    if (type === 'lists') {
-      return (
-        <div className={`text-sm text-muted-foreground ${className}`}>
-          <span className="text-orange-400">• Login required to create lists</span>
-        </div>
-      );
-    }
-  }
-
-  if (!userSubscription) return null;
+  const { user } = useAuth();
+  const { userType } = useSubscription2();
+  const drillFeature = useFeature('drill_practice');
+  const listFeature = useFeature('word_lists');
 
   if (type === 'drills') {
-    const maxDrills = userSubscription.limits.maxDrillsPerDay;
-    const currentUsage = userSubscription.currentUsage.drillsToday;
-    const today = new Date().toISOString().split('T')[0];
-    const isToday = userSubscription.currentUsage.lastDrillDate === today;
-    const actualUsage = isToday ? currentUsage : 0;
+    const { access } = drillFeature;
+    if (!access) return null;
+
+    const maxDrills = access.limit;
+    const currentUsage = access.limit === -1 ? 0 : access.used;
 
     if (maxDrills === -1) {
       return (
@@ -62,8 +33,8 @@ export function UsageLimitDisplay({ type, className = '' }: UsageLimitDisplayPro
 
     return (
       <div className={`text-sm text-muted-foreground ${className}`}>
-        <span className="font-medium">Drills today:</span> {actualUsage}/{maxDrills}
-        {actualUsage >= maxDrills && (
+        <span className="font-medium">Drills today:</span> {currentUsage}/{maxDrills}
+        {currentUsage >= maxDrills && (
           <span className="text-red-400 ml-2">• Limit reached</span>
         )}
       </div>
@@ -71,8 +42,20 @@ export function UsageLimitDisplay({ type, className = '' }: UsageLimitDisplayPro
   }
 
   if (type === 'lists') {
-    const maxLists = userSubscription.limits.maxLists;
-    const currentUsage = userSubscription.currentUsage.listsCount;
+    const { access } = listFeature;
+    
+    if (!user) {
+      return (
+        <div className={`text-sm text-muted-foreground ${className}`}>
+          <span className="text-orange-400">• Login required to create lists</span>
+        </div>
+      );
+    }
+
+    if (!access) return null;
+
+    const maxLists = access.limit;
+    const currentUsage = access.limit === -1 ? 0 : access.used;
 
     if (maxLists === -1) {
       return (
@@ -101,37 +84,32 @@ interface UsageProgressBarProps {
 }
 
 export function UsageProgressBar({ type, className = '' }: UsageProgressBarProps) {
-  const { userSubscription, userType, guestUsage } = useSubscription();
-  const { getLimit } = useEntitlements();
-
-  // Get limits from entitlements system
-  const drillLimit = getLimit('learning.drills', 'daily') || 3;
-  const listLimit = getLimit('storage.lists', 'total') || 3;
+  const { user } = useAuth();
+  const { userType } = useSubscription2();
+  const drillFeature = useFeature('drill_practice');
+  const listFeature = useFeature('word_lists');
 
   let current = 0;
   let max = 0;
   let color = 'bg-primary';
 
-  if (userType === 'guest') {
-    if (type === 'drills' && guestUsage) {
-      max = drillLimit;
-      const today = new Date().toISOString().split('T')[0];
-      const isToday = guestUsage.lastDrillDate === today;
-      current = isToday ? guestUsage.drillsToday : 0;
-    } else if (type === 'lists') {
+  if (type === 'drills') {
+    const { access } = drillFeature;
+    if (!access) return null;
+    
+    max = access.limit;
+    current = access.limit === -1 ? 0 : access.used;
+  } else if (type === 'lists') {
+    if (!user) {
       max = 1; // Show as blocked
       current = 1;
       color = 'bg-orange-400';
-    }
-  } else if (userSubscription) {
-    if (type === 'drills') {
-      max = userSubscription.limits.maxDrillsPerDay;
-      const today = new Date().toISOString().split('T')[0];
-      const isToday = userSubscription.currentUsage.lastDrillDate === today;
-      current = isToday ? userSubscription.currentUsage.drillsToday : 0;
-    } else if (type === 'lists') {
-      max = userSubscription.limits.maxLists;
-      current = userSubscription.currentUsage.listsCount;
+    } else {
+      const { access } = listFeature;
+      if (!access) return null;
+      
+      max = access.limit;
+      current = access.limit === -1 ? 0 : access.used;
     }
   }
 

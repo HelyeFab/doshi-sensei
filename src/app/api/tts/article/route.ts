@@ -12,9 +12,24 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    const { articleId, content, voice = 'male', provider = 'elevenlabs' } = await request.json();
+    const body = await request.json();
+    console.log('[TTS API] Received request body:', {
+      hasArticleId: !!body.articleId,
+      hasContent: !!body.content,
+      contentLength: body.content?.length || 0,
+      voice: body.voice,
+      provider: body.provider,
+      bodyKeys: Object.keys(body)
+    });
+    
+    const { articleId, content, voice = 'male', provider = 'elevenlabs' } = body;
 
     if (!articleId || !content) {
+      console.error('[TTS API] Missing required fields:', { 
+        articleId: articleId || 'MISSING',
+        contentPreview: content ? content.substring(0, 50) + '...' : 'MISSING',
+        requestBody: body 
+      });
       return NextResponse.json({ error: 'Article ID and content are required' }, { status: 400 });
     }
 
@@ -52,6 +67,7 @@ export async function POST(request: NextRequest) {
       const elevenLabsApiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY;
       
       if (elevenLabsApiKey) {
+        console.log('[TTS API] Using ElevenLabs with API key:', elevenLabsApiKey.substring(0, 8) + '...');
         try {
           // ElevenLabs voice IDs
           const voiceId = voice === 'female' 
@@ -88,13 +104,21 @@ export async function POST(request: NextRequest) {
             console.log(`✅ ElevenLabs generated ${audioBuffer.byteLength} bytes`);
           } else {
             const errorText = await response.text();
-            console.error('❌ ElevenLabs error:', response.status, errorText);
+            console.error('❌ ElevenLabs API error:', {
+              status: response.status,
+              statusText: response.statusText,
+              error: errorText,
+              voiceId,
+              contentLength: content.length
+            });
             // Fall through to Google TTS
           }
         } catch (error) {
           console.error('❌ ElevenLabs API error:', error);
           // Fall through to Google TTS
         }
+      } else {
+        console.log('[TTS API] No ElevenLabs API key found');
       }
     }
 
@@ -104,8 +128,14 @@ export async function POST(request: NextRequest) {
       const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY;
 
       if (!googleApiKey) {
+        console.error('[TTS API] No Google TTS API key found');
+        console.error('[TTS API] Available env vars:', Object.keys(process.env).filter(k => k.includes('TTS') || k.includes('ELEVENLABS')));
         return NextResponse.json({
-          error: 'No TTS API keys configured',
+          error: 'No TTS API keys configured. Please check environment variables.',
+          debug: {
+            elevenLabsConfigured: !!process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY,
+            googleConfigured: !!process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY
+          }
         }, { status: 500 });
       }
 

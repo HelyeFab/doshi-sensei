@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Kanji, JLPTLevel, KanjiByLevel, KanjiList, StudyList, StudyListType } from '@/types';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useAccess } from '@/hooks/useAccess';
 import KanjiManager from '@/utils/kanjiManager';
 import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
@@ -54,7 +55,8 @@ const kanjiStructuredData = {
 
 export default function KanjiBrowserPage() {
   const { user } = useAuth();
-  const { userSubscription } = useSubscription();
+  const { subscription } = useSubscription2();
+  const { checkAndTrack } = useAccess();
   const { setSelectedKanji } = useKanjiSelection();
   const router = useRouter();
 
@@ -204,7 +206,7 @@ export default function KanjiBrowserPage() {
 
   const handleKanjiRemove = async (kanjiCharacter: string) => {
     try {
-      await KanjiManager.removeSavedKanji(kanjiCharacter, user, userSubscription?.subscription.plan);
+      await KanjiManager.removeSavedKanji(kanjiCharacter, user, subscription?.plan);
       setSavedKanjiSet(prev => {
         const newSet = new Set(prev);
         newSet.delete(kanjiCharacter);
@@ -225,7 +227,7 @@ export default function KanjiBrowserPage() {
           newListName,
           undefined,
           user,
-          userSubscription?.subscription?.status
+          subscription?.status
         );
         listsToSaveTo.push(newList.id);
       }
@@ -623,7 +625,8 @@ interface SaveKanjiModalProps {
 
 function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: SaveKanjiModalProps) {
   const { user } = useAuth();
-  const { userSubscription } = useSubscription();
+  const { subscription } = useSubscription2();
+  const { checkAndTrack } = useAccess();
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [showCreateNew, setShowCreateNew] = useState(false);
@@ -680,7 +683,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
           newListType,
           `Created for saving ${kanji.kanji}`,
           user,
-          userSubscription?.subscription?.status
+          subscription?.status
         );
         listsToSaveTo.push(newList.id);
       }
@@ -691,7 +694,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
         'kanji',
         listsToSaveTo,
         user,
-        userSubscription?.subscription?.status
+        subscription?.status
       );
 
       if (result.success) {

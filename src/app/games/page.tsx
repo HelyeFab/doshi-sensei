@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
 import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord, StudyList } from '@/types';
 import TTSManager from '@/utils/tts';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import KanjiQuest from '@/components/games/KanjiQuest';
 import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
-import { subscriptionValidator } from '@/utils/subscriptionValidator';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 
 // Disable static generation for this page
@@ -120,8 +122,12 @@ const GAME_MODES: GameMode[] = [
 ];
 
 export default function GamesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
-  const { userSubscription, userType, loading: subLoading } = useSubscription();
+  const { checkAndTrack } = useAccess();
+  const { feature: kanjiFeature, access: kanjiAccess, remaining: kanjiRemaining } = useFeature('kanji_quest');
+  const { isPremium, userType, subscription } = useSubscription2();
   const { selectedKanji, clearSelectedKanji } = useKanjiSelection();
   const [currentGameMode, setCurrentGameMode] = useState<string | null>(null);
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
@@ -169,7 +175,6 @@ export default function GamesPage() {
   const [customKanjiSelection, setCustomKanjiSelection] = useState<any[]>([]);
   const [waitingForKanji, setWaitingForKanji] = useState(false);
 
-  const isPremium = userSubscription?.subscription?.status === 'active';
   const canPlayMore = isPremium ||
     (currentGameMode === 'assembly' ? assemblyStats.gamesToday < FREE_USER_DAILY_LIMIT : quizStats.questionsToday < FREE_USER_DAILY_LIMIT);
 
@@ -180,9 +185,8 @@ export default function GamesPage() {
     setLoading(false); // Set loading to false initially since we're showing game selection
 
     // Check URL parameters for direct game mode
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get('mode');
-    const selection = params.get('selection');
+    const mode = searchParams.get('mode');
+    const selection = searchParams.get('selection');
 
     if (mode === 'kanji-quest' && selection === 'custom') {
       // Set up the game mode and wait for kanji
@@ -214,30 +218,27 @@ export default function GamesPage() {
   useEffect(() => {
     if (currentGameMode === 'kanji-quest' &&
       customKanjiSelection.length > 0 &&
-      !authLoading && 
-      !subLoading &&
+      !authLoading &&
       !waitingForKanji &&
       !gameStarted) {
 
       if (process.env.NODE_ENV === 'development') {
         console.log('Starting Kanji Quest game:', {
           authLoading,
-          subLoading,
           user: !!user,
-          userSubscription: !!userSubscription,
+          subscription: !!subscription,
           customKanjiCount: customKanjiSelection.length,
           gameStarted,
           waitingForKanji
         });
         
         // Add subscription validation debug
-        const validation = subscriptionValidator.validate(user, userSubscription, false);
         console.log('🔍 Subscription Validation:', {
-          isPremium: validation.isPremium,
-          userType: validation.userType,
+          isPremium,
+          userType,
           userEmail: user?.email,
-          plan: userSubscription?.subscription?.plan,
-          status: userSubscription?.subscription?.status
+          plan: subscription?.plan,
+          status: subscription?.status
         });
       }
 
@@ -246,7 +247,7 @@ export default function GamesPage() {
       // Clear the session storage
       sessionStorage.removeItem('kanjiQuestSelection');
     }
-  }, [userSubscription, currentGameMode, customKanjiSelection, user, authLoading, subLoading, waitingForKanji, gameStarted]);
+  }, [subscription, currentGameMode, customKanjiSelection, user, authLoading, waitingForKanji, gameStarted]);
 
   // Load words when selected lists change
   useEffect(() => {
@@ -578,8 +579,7 @@ export default function GamesPage() {
       await pokemonManager.migrateFromLocalStorage(user?.uid);
 
       // Then load the caught Pokémon
-      const validation = subscriptionValidator.validate(user, userSubscription, false);
-      const isPremiumUser = validation.isPremium;
+      const isPremiumUser = isPremium;
       const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
       setCaughtPokemonIds(new Set(caughtPokemon));
     } catch (error) {
@@ -596,12 +596,11 @@ export default function GamesPage() {
   const handlePokemonCaught = async (pokemonId: number, kanjiIds: string[] = []) => {
     try {
       // Determine if user is premium using validator
-      const validation = subscriptionValidator.validate(user, userSubscription, false);
-      const isPremiumUser = validation.isPremium;
+      const isPremiumUser = isPremium;
 
       // Debug log the validation
       if (process.env.NODE_ENV === 'development') {
-        subscriptionValidator.debugSubscriptionState(user, userSubscription, 'Pokemon Caught Handler');
+        console.log('Pokemon Caught Handler - Premium Status:', isPremiumUser);
       }
 
       // Save using the new Pokemon manager
@@ -795,8 +794,7 @@ export default function GamesPage() {
       currentGameMode,
       customKanjiSelectionLength: customKanjiSelection.length,
       waitingForKanji,
-      authLoading,
-      subLoading
+      authLoading
     });
   }
 
@@ -838,7 +836,7 @@ export default function GamesPage() {
               Save words from vocabulary search and add them to lists to get started!
             </p>
             <button
-              onClick={() => window.location.href = '/vocabulary'}
+              onClick={() => router.push('/vocabulary')}
               className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               Go to Vocabulary

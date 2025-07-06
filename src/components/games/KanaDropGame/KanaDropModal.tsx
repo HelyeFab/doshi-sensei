@@ -7,8 +7,10 @@ import RomajiControls from './RomajiControls';
 import VictoryScreen from './VictoryScreen';
 import { GameState, GameStats as GameStatsType, KanaChar, GAME_CONSTANTS } from './types';
 import { getGameAudioManager } from './audioManager';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 
 interface KanaDropModalProps {
   isOpen: boolean;
@@ -18,11 +20,9 @@ interface KanaDropModalProps {
 
 export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDropModalProps) {
   const { user } = useAuth();
-  const { 
-    incrementKanaDropCount, 
-    incrementGuestKanaDropCount,
-    userType 
-  } = useSubscription();
+  const { checkAndTrack } = useAccess();
+  const { feature, access, remaining } = useFeature('kana_drop');
+  const { isPremium, userType } = useSubscription2();
   
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(false);
@@ -128,22 +128,15 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
       setShowVictory(true);
       
-      // Increment usage count for KanaDrop
+      // Usage tracking is now handled automatically by checkAndTrack
       setHasIncrementedUsage(true);
-      if (userType === 'guest') {
-        incrementGuestKanaDropCount();
-      } else if (user) {
-        incrementKanaDropCount().catch(err => {
-          console.error('Failed to increment KanaDrop count:', err);
-        });
-      }
       
       // Play victory sound
       getGameAudioManager().playSound('victory').catch(() => {
         console.warn('[KanaDrop] Failed to play victory sound');
       });
     }
-  }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks, hasIncrementedUsage, userType, user, incrementKanjiQuestCount, incrementGuestKanjiQuestCount]);
+  }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks, hasIncrementedUsage]);
 
   // Handle romaji button click
   const handleRomajiClick = useCallback((romaji: string) => {
@@ -244,7 +237,14 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   };
 
   // Start countdown
-  const startCountdown = useCallback(() => {
+  const startCountdown = useCallback(async () => {
+    // Check if user can play before starting
+    const canPlay = await checkAndTrack('kana_drop');
+    if (!canPlay) {
+      onClose();
+      return;
+    }
+
     setShowHowToPlay(false);
     setCountdown(3);
     const audioManager = getGameAudioManager();
@@ -270,7 +270,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
         return prev - 1;
       });
     }, 1000);
-  }, []);
+  }, [checkAndTrack, onClose]);
 
 
   if (!isOpen) return null;

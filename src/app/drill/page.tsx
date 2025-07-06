@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, FlashcardQuality, WordType } from '@/types';
 import { getCommonWordsForPractice, searchWords } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEntitlements } from '@/hooks/useEntitlements';
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
@@ -58,19 +60,12 @@ const drillStructuredData = {
 };
 
 export default function DrillPage() {
+  const router = useRouter();
   const { settings, isLoading: settingsLoading } = useSettings();
-  const {
-    userSubscription,
-    canDoDrill,
-    incrementDrillCount,
-    incrementGuestDrillCount,
-    userType,
-    guestUsage,
-    showLoginPrompt,
-    showUpgradePrompt
-  } = useSubscription();
   const { user } = useAuth();
-  const { canDoDrill: canDoDrillEntitlements, getLimit } = useEntitlements();
+  const { checkAndTrack } = useAccess();
+  const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
+  const { isPremium, userType } = useSubscription2();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'conjugation' | 'flashcards'>('conjugation');
@@ -843,7 +838,12 @@ export default function DrillPage() {
     loadQuestions();
   };
 
-  const startGame = () => {
+  const startGame = async () => {
+    // Check if user can do drill
+    const canDo = await checkAndTrack('drill_practice');
+    if (!canDo) {
+      return;
+    }
     setGameStarted(true);
   };
 
@@ -864,19 +864,14 @@ export default function DrillPage() {
       const wordsStudied = questions.map(q => q.word.id);
       await StatsManager.recordDrillSession(questions.length, actualScore, wordsStudied);
 
-      // Increment drill count based on user type
-      if (user) {
-        await incrementDrillCount();
-      } else {
-        incrementGuestDrillCount();
-      }
+      // Usage tracking is now handled automatically by checkAndTrack
     } catch (err) {
       console.error('Error recording drill session:', err);
     }
   };
 
   // Check drill limits
-  if (!canDoDrill()) {
+  if (!featureLoading && access && !access.allowed && remaining === 0) {
     return (
       <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md mx-auto">
@@ -885,10 +880,10 @@ export default function DrillPage() {
             Daily Drill Limit Reached
           </h3>
           <p className="text-muted-foreground mb-6">
-            You've completed {userSubscription?.currentUsage.drillsToday || guestUsage?.drillsToday || 0} out of {getLimit('learning.drills', 'daily') || 3} drills today.
+            You've completed {access.usage || 0} out of {access.limit || 3} drills today.
           </p>
           <button
-            onClick={() => window.location.href = '/account'}
+            onClick={() => router.push('/account')}
             className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
           >
             Upgrade Plan

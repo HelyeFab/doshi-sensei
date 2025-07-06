@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { JapaneseWord, WordList, StudyList, StudyListType, Kanji } from '@/types';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useEntitlements } from '@/hooks/useEntitlements';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useFeature } from '@/hooks/useFeature';
+import { useAccess } from '@/hooks/useAccess';
 import ArticleManager from '@/utils/articleManager';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
@@ -52,8 +53,9 @@ type TabType = 'lists' | 'articles' | 'stories';
 
 export default function FavouritesPage() {
   const { user } = useAuth();
-  const { userSubscription, isPremium, showLoginPrompt, showUpgradePrompt, incrementListCount } = useSubscription();
-  const { canCreateList, isPremium: isPremiumEntitlement } = useEntitlements();
+  const { subscription, isPremium } = useSubscription2();
+  const { feature: listFeature, access: listAccess } = useFeature('word_lists');
+  const { canAccess, showAccessPrompt, checkAndTrack } = useAccess();
 
   // Tab management
   const [activeTab, setActiveTab] = useState<TabType>('lists');
@@ -146,22 +148,11 @@ export default function FavouritesPage() {
     }
   };
 
-  const handleCreateListClick = () => {
-    // Check if user can create more lists using entitlements
-    const listCheck = canCreateList();
-    if (!listCheck.allowed) {
-      if (!user) {
-        showLoginPrompt(
-          `Sign up to create vocabulary lists and save your learning progress!`,
-          'lists'
-        );
-      } else {
-        showUpgradePrompt(
-          `You've reached your list limit (${listCheck.used}/${listCheck.limit})! Upgrade to Premium for unlimited vocabulary lists.`,
-          'lists'
-        );
-      }
-      return;
+  const handleCreateListClick = async () => {
+    // Check if user can create more lists using new access system
+    const allowed = await checkAndTrack('word_lists');
+    if (!allowed) {
+      return; // Access system will show appropriate modal
     }
     
     setShowCreateListModal(true);
@@ -208,7 +199,7 @@ export default function FavouritesPage() {
   const handleListDelete = async (listId: string) => {
     if (confirm('Are you sure you want to delete this list? This action cannot be undone.')) {
       try {
-        await StudyListManager.deleteStudyList(listId, user, userSubscription?.subscription?.status);
+        await StudyListManager.deleteStudyList(listId, user, subscription?.status);
         setWordLists(prev => prev.filter(list => list.id !== listId));
         if (selectedList?.id === listId) {
           setSelectedList(null);
@@ -285,7 +276,7 @@ export default function FavouritesPage() {
           setConfirmDialog((prev) => ({ ...prev, loading: true }));
           try {
             for (const list of wordLists) {
-              await StudyListManager.deleteStudyList(list.id, user, userSubscription?.subscription?.status);
+              await StudyListManager.deleteStudyList(list.id, user, subscription?.status);
             }
             setWordLists([]);
             setSelectedList(null);
@@ -1022,7 +1013,9 @@ export default function FavouritesPage() {
           <CreateListModal
             onClose={() => setShowCreateListModal(false)}
             onCreated={loadWordLists}
-            onListCreated={incrementListCount}
+            onListCreated={() => {
+              // List creation tracked automatically by access system
+            }}
           />
         )}
 
@@ -1265,7 +1258,7 @@ interface CreateListModalProps {
 
 function CreateListModal({ onClose, onCreated, onListCreated }: CreateListModalProps) {
   const { user } = useAuth();
-  const { userSubscription } = useSubscription();
+  const { subscription } = useSubscription2();
   const [listName, setListName] = useState('');
   const [description, setDescription] = useState('');
   const [creating, setCreating] = useState(false);
@@ -1280,7 +1273,7 @@ function CreateListModal({ onClose, onCreated, onListCreated }: CreateListModalP
         'flashcard', // Default to flashcard type for simple word lists
         description,
         user,
-        userSubscription?.subscription?.status
+        subscription?.status
       );
       
       // Track list creation

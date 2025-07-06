@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, getDocs, doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AdminUserDetails } from '@/types/admin';
 import { UserSubscription, getDefaultSubscription } from '@/types/subscription';
@@ -106,7 +106,14 @@ export function useUsers(): UseUsersReturn {
       // Calculate renewal date
       const renewalDate = new Date(Date.now() + (plan === 'yearly' ? 365 : 30) * 24 * 60 * 60 * 1000);
 
-      // Create new subscription object
+      // Get existing usage to preserve counters
+      const userDoc = await getDoc(userRef);
+      const existingData = userDoc.data();
+      const existingUsage = existingData?.subscription?.currentUsage || {};
+      
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Create new subscription object with all required fields
       const newSubscription: UserSubscription = {
         subscription: {
           plan: plan,
@@ -116,13 +123,24 @@ export function useUsers(): UseUsersReturn {
         limits: {
           maxLists: -1, // Unlimited for premium
           maxDrillsPerDay: -1, // Unlimited for premium
+          maxKanjiQuestPerDay: -1, // Unlimited
+          maxStoriesPerDay: -1, // Unlimited
+          maxArticlesPerDay: -1, // Unlimited
           canSync: true,
           canSave: true,
         },
         currentUsage: {
-          listsCount: 0,
-          drillsToday: 0,
-          lastDrillDate: new Date().toISOString(),
+          listsCount: existingUsage.listsCount || 0,
+          drillsToday: existingUsage.drillsToday || 0,
+          lastDrillDate: existingUsage.lastDrillDate || today,
+          kanjiQuestToday: existingUsage.kanjiQuestToday || 0,
+          lastKanjiQuestDate: existingUsage.lastKanjiQuestDate || today,
+          kanaDropToday: existingUsage.kanaDropToday || 0,
+          lastKanaDropDate: existingUsage.lastKanaDropDate || today,
+          storiesToday: existingUsage.storiesToday || 0,
+          lastStoryDate: existingUsage.lastStoryDate || today,
+          articlesToday: existingUsage.articlesToday || 0,
+          lastArticleDate: existingUsage.lastArticleDate || today,
         }
       };
 

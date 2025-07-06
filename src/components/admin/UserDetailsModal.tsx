@@ -27,8 +27,8 @@ export function UserDetailsModal({ user, isOpen, onClose, onUpgrade }: UserDetai
   };
 
   const getSubscriptionStatus = () => {
-    const plan = user.subscription?.subscription?.plan;
-    const status = user.subscription?.subscription?.status;
+    const plan = user.subscription?.plan;
+    const status = user.subscription?.status;
 
     if (plan === 'monthly' || plan === 'yearly') {
       return {
@@ -134,11 +134,11 @@ export function UserDetailsModal({ user, isOpen, onClose, onUpgrade }: UserDetai
                       <span className="text-muted-foreground">Billing:</span>
                       <span className="text-foreground text-sm capitalize">{subscriptionInfo.plan}</span>
                     </div>
-                    {user.subscription?.subscription?.renewalDate && (
+                    {user.subscription?.renewalDate && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Renewal:</span>
                         <span className="text-foreground text-sm">
-                          {formatDate(new Date(user.subscription.subscription.renewalDate))}
+                          {formatDate(new Date(user.subscription.renewalDate))}
                         </span>
                       </div>
                     )}

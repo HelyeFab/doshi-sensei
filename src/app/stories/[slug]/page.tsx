@@ -7,14 +7,14 @@ import { storyManager } from '@/utils/storyManager';
 import { storyOfflineManager } from '@/utils/storyOfflineManager';
 import StoryReader from '@/components/story/StoryReader';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useEntitlements } from '@/hooks/useEntitlements';
+import { useAccess } from '@/hooks/useAccess';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 
 export default function StoryPage() {
   const router = useRouter();
-  const { user } = useAuth();
-  const { userType, showLoginPrompt, showUpgradePrompt, incrementStoryCount } = useSubscription();
-  const { canReadStory, promptForAccess } = useEntitlements();
+  const { user, loading: authLoading } = useAuth();
+  const { checkAndTrack } = useAccess();
+  const { isPremium, userType } = useSubscription2();
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
   const [canRead, setCanRead] = useState(true);
@@ -25,27 +25,30 @@ export default function StoryPage() {
       ? params.slug[0]
       : undefined;
 
-  const isPremium = userType === 'monthly' || userType === 'yearly';
-
   useEffect(() => {
     loadStory();
-  }, [slug]);
+  }, [slug, authLoading]);
 
   const loadStory = async () => {
+    // Wait for auth to be ready
+    if (authLoading) {
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // Check if user can read stories today using entitlements
-      const storyCheck = canReadStory();
-      setCanRead(storyCheck.allowed);
+      if (!slug) {
+        router.push('/stories');
+        return;
+      }
 
-      if (!storyCheck.allowed) {
-        promptForAccess(
-          'stories',
-          !user 
-            ? `You've reached your daily story limit (${storyCheck.used}/${storyCheck.limit})! Sign up to read more stories and save your progress.`
-            : `You've read your daily story limit (${storyCheck.used}/${storyCheck.limit})! Upgrade to Premium for unlimited stories.`
-        );
+      // Check if user can read stories using new system
+      const canAccess = await checkAndTrack('story_reading');
+      setCanRead(canAccess);
+
+      if (!canAccess) {
+        // The access system will show the appropriate modal
         router.push('/stories');
         return;
       }
@@ -70,14 +73,7 @@ export default function StoryPage() {
       }
 
       setStory(loadedStory);
-      
-      // Track story read after successfully loading
-      try {
-        await incrementStoryCount();
-      } catch (error) {
-        console.error('Error tracking story read:', error);
-        // Don't fail the whole story load if tracking fails
-      }
+      // Usage tracking is handled automatically by checkAndTrack
     } catch (error) {
       console.error('Error loading story:', error);
       router.push('/stories');

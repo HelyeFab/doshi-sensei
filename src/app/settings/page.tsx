@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { strings } from '@/config/strings';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { clearProgress } from '@/utils/storage';
 import { PageHeader } from '@/components/PageHeader';
 import EnhancedStorageManager from '@/utils/storage';
@@ -17,7 +17,7 @@ import { AVAILABLE_NAV_ITEMS, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 export default function SettingsPage() {
   const { settings, updateSetting, resetSettings } = useSettings();
   const { user } = useAuth();
-  const { userSubscription } = useSubscription();
+  const { subscription } = useSubscription2();
   const { syncStatus, canSync, triggerSync } = useCloudSync();
   const [showResetModal, setShowResetModal] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
@@ -246,7 +246,7 @@ export default function SettingsPage() {
     // Navigate to tutorial if this was a successful tutorial reset
     if (wasTutorialReset) {
       // Use window.location to force a full page reload and ensure OnboardingWrapper detects the parameter
-      window.location.href = '/?tutorial=true';
+      router.push('/?tutorial=true');
     }
   };
 
@@ -284,7 +284,7 @@ export default function SettingsPage() {
       resetSettings();
 
       // Force page reload to ensure clean state
-      window.location.reload();
+      router.refresh();
 
     } catch (error) {
       console.error('Error during data reset:', error);

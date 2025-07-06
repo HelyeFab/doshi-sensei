@@ -64,7 +64,7 @@ async function scrapeWatanoc() {
     let count = 0;
     const articleData = [];
 
-    while ((match = articleRegex.exec(html)) && count < 5) {
+    while ((match = articleRegex.exec(html)) && count < 3) {
       const articleHtml = match[1];
       
       const urlMatch = articleHtml.match(/href="(https:\/\/watanoc\.com\/[^"]+)"/);
@@ -91,7 +91,7 @@ async function scrapeWatanoc() {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
-          signal: AbortSignal.timeout(10000)
+          signal: AbortSignal.timeout(8000)
         });
 
         if (!articleResponse.ok) {
@@ -166,7 +166,7 @@ async function scrapeWatanoc() {
         console.log(`✅ Extracted article ${i + 1}: ${data.title} (${content?.length || 0} chars)`);
         
         // Be respectful - wait between requests
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
       } catch (error) {
         console.warn(`⚠️ Failed to fetch content for article ${i + 1}: ${error.message}`);
@@ -239,7 +239,15 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const articles = await scrapeWatanoc();
+    // Add timeout protection for the whole scraping process
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Scraping timeout')), 20000) // 20 seconds max
+    );
+    
+    const articles = await Promise.race([
+      scrapeWatanoc(),
+      timeoutPromise
+    ]);
     console.log(`📊 Scraped ${articles.length} articles`);
 
     // Save articles to Firebase

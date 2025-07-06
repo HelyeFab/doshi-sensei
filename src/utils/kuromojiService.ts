@@ -87,7 +87,7 @@ class KuromojiService {
 
     this.initPromise = new Promise((resolve) => {
       const builder = kuromoji.builder({
-        dicPath: '/dict/', // We'll need to serve dictionary files
+        dicPath: '/_next/static/dict/', // Dictionary files served from static assets
       });
 
       builder.build((err: any, tokenizer: any) => {

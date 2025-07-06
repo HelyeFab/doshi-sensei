@@ -29,8 +29,20 @@ async function prepareForDeploy() {
     // Create .next directory if it doesn't exist
     await fs.mkdir('.next', { recursive: true });
 
+    // Copy kuromoji dictionary files to .next/static for deployment
+    const dictSource = path.join(__dirname, '..', 'public', 'dict');
+    const dictDest = path.join(__dirname, '..', '.next', 'static', 'dict');
+    
+    try {
+      await fs.access(dictSource);
+      console.log('Copying kuromoji dictionary files...');
+      await copyDirectory(dictSource, dictDest);
+      console.log('✅ Kuromoji dictionary files copied successfully');
+    } catch (error) {
+      console.log('⚠️  Kuromoji dictionary files not found, skipping copy');
+    }
+
     console.log('✅ Deployment preparation complete');
-    console.log('No dictionary files to copy (Jisho removed)');
 
   } catch (error) {
     console.error('❌ Error preparing for deployment:', error);

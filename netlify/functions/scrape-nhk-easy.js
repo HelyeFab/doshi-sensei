@@ -1,5 +1,7 @@
 const admin = require('firebase-admin');
 const https = require('https');
+const zlib = require('zlib');
+const { URL } = require('url');
 
 // Initialize Firebase Admin SDK
 let firebaseInitialized = false;
@@ -41,8 +43,6 @@ if (!admin.apps.length) {
 // HTTP request with retry logic and gzip support
 function makeRequestWithRetry(url, retries = 3) {
   return new Promise((resolve, reject) => {
-    const zlib = require('zlib');
-    const { URL } = require('url');
     const parsedUrl = new URL(url);
     
     const attemptRequest = (retriesLeft) => {

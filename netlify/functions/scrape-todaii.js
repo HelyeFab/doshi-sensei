@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const https = require('https');
 const { URL } = require('url');
+const zlib = require('zlib');
 
 // Initialize Firebase Admin SDK
 let firebaseInitialized = false;
@@ -48,7 +49,6 @@ function makeRequest(url, redirectCount = 0) {
     }
 
     const parsedUrl = new URL(url);
-    const zlib = require('zlib');
     
     const options = {
       hostname: parsedUrl.hostname,

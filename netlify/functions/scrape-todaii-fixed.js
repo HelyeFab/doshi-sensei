@@ -152,34 +152,24 @@ async function scrapeTodaiiArticles() {
     const html = await makeRequest('https://japanese.todaiinews.com');
     console.log(`✅ Fetched homepage: ${html.length} bytes`);
 
-    // Extract article data from the page
-    const articleMatches = html.matchAll(/<article[^>]*class="[^"]*post[^"]*"[^>]*>([\s\S]*?)<\/article>/gi);
+    // Extract article data from the page - Updated for new structure
+    const articleMatches = html.matchAll(/href="(https:\/\/japanese\.todaiinews\.com\/detail\/[^"?]+[^"\s]*)"/gi);
     const articleData = [];
     
     for (const match of articleMatches) {
       if (articleData.length >= 20) break;
       
-      const articleHtml = match[1];
+      const url = match[1].trim();
       
-      // Extract URL
-      const urlMatch = articleHtml.match(/href="(https:\/\/japanese\.todaiinews\.com\/news\/[^"]+)"/);
-      if (!urlMatch) continue;
+      // Skip if we already have this URL
+      if (articleData.some(a => a.url === url)) continue;
       
-      // Extract title
-      const titleMatch = articleHtml.match(/<h[23][^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/h[23]>/i);
-      if (!titleMatch) continue;
-      
-      // Extract image
-      const imgMatch = articleHtml.match(/src="([^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i);
-      
-      // Extract date
-      const dateMatch = articleHtml.match(/<time[^>]*datetime="([^"]+)"|<span[^>]*class="[^"]*date[^"]*"[^>]*>([^<]+)</);
-      
+      // For now, we'll extract title from the article page itself
       articleData.push({
-        url: urlMatch[1],
-        title: cleanText(titleMatch[1]),
-        imageUrl: imgMatch ? imgMatch[1] : null,
-        publishDate: dateMatch ? new Date(dateMatch[1] || dateMatch[2]) : new Date()
+        url: url,
+        title: '', // Will be filled when fetching content
+        imageUrl: null, // Will be extracted from article page
+        publishDate: new Date() // Will be updated if found on article page
       });
     }
 
@@ -190,8 +180,26 @@ async function scrapeTodaiiArticles() {
       try {
         await new Promise(resolve => setTimeout(resolve, i * 300)); // Stagger requests
         
-        console.log(`📄 Fetching article ${i + 1}: ${data.title}`);
+        console.log(`📄 Fetching article ${i + 1}: ${data.url}`);
         const articleHtml = await makeRequest(data.url);
+        
+        // Extract title if not already set
+        if (!data.title) {
+          const titleMatch = articleHtml.match(/<h1[^>]*>([^<]+)<\/h1>/i) || 
+                             articleHtml.match(/<title>([^<]+)<\/title>/i);
+          if (titleMatch) {
+            data.title = cleanText(titleMatch[1]).replace(/\s*[-–—]\s*Todaii.*$/i, '').trim();
+          }
+        }
+        
+        // Extract image if not already set
+        if (!data.imageUrl) {
+          const imgMatch = articleHtml.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i) ||
+                          articleHtml.match(/<img[^>]*class="[^"]*main[^"]*"[^>]*src="([^"]+)"/i);
+          if (imgMatch) {
+            data.imageUrl = imgMatch[1];
+          }
+        }
         
         // Extract content - Todaii specific selectors
         let content = '';
@@ -225,7 +233,7 @@ async function scrapeTodaiiArticles() {
             
             articles.push({
               id: `todaii_${Date.now()}_${i}`,
-              title: data.title,
+              title: data.title || 'Todaii Japanese Article',
               content: cleanContent.substring(0, 3000),
               summary: cleanContent.substring(0, 250) + '...',
               url: data.url,

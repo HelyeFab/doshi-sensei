@@ -1,12 +1,49 @@
 const admin = require('firebase-admin');
 const https = require('https');
 const { URL } = require('url');
-const zlib = require('zlib');
+
+// Initialize Firebase Admin SDK
+let firebaseInitialized = false;
+let db = null;
+
+const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+
+if (!admin.apps.length) {
+  try {
+    const serviceAccount = {
+      type: "service_account",
+      project_id: projectId,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      client_id: process.env.FIREBASE_CLIENT_ID,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    };
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+
+    firebaseInitialized = true;
+    db = admin.firestore();
+    console.log('✅ Firebase Admin SDK initialized successfully');
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
+    firebaseInitialized = false;
+  }
+} else {
+  firebaseInitialized = true;
+  db = admin.firestore();
+}
 
 // HTTP request helper with gzip support
 function makeRequest(url) {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(url);
+    const zlib = require('zlib');
     
     const options = {
       hostname: parsedUrl.hostname,
@@ -326,11 +363,10 @@ async function scrapeWatanocArticles() {
 }
 
 // Function to save articles to Firebase
-async function saveArticlesToFirebase(articles, db) {
-  console.log('💾 Saving to Firebase:', { 
-    articlesCount: articles.length,
-    adminAppsLength: admin.apps.length 
-  });
+async function saveArticlesToFirebase(articles) {
+  if (!db || !firebaseInitialized) {
+    throw new Error('Firebase not initialized');
+  }
 
   const batch = db.batch();
   const articlesRef = db.collection('articles');
@@ -374,35 +410,22 @@ exports.handler = async (event, context) => {
   const startTime = Date.now();
 
   try {
-    console.log('🚀 Watanoc scraping function triggered');
+    console.log('🚀 Fixed Watanoc scraping function triggered');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
+    console.log('🔧 Firebase initialized:', firebaseInitialized);
 
-    // Initialize Firebase in the handler - same pattern as test-simple
-    let db;
-    if (!admin.apps.length) {
-      const serviceAccount = {
-        type: "service_account",
-        project_id: process.env.FIREBASE_PROJECT_ID,
-        private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-        private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        client_id: process.env.FIREBASE_CLIENT_ID,
-        auth_uri: "https://accounts.google.com/o/oauth2/auth",
-        token_uri: "https://oauth2.googleapis.com/token",
-        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    // Check if Firebase is properly initialized
+    if (!firebaseInitialized) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: 'Firebase Admin SDK not configured',
+          timestamp: new Date().toISOString()
+        }),
       };
-
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      console.log('✅ Firebase Admin SDK initialized successfully');
-    } else {
-      console.log('✅ Firebase Admin SDK already initialized');
     }
-
-    // Get Firestore reference
-    db = admin.firestore();
 
     // Get articles from Watanoc with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
@@ -417,7 +440,7 @@ exports.handler = async (event, context) => {
     console.log(`📊 Scraped ${articles.length} articles`);
 
     // Save articles to Firebase
-    await saveArticlesToFirebase(articles, db);
+    await saveArticlesToFirebase(articles);
 
     const elapsed = Date.now() - startTime;
 

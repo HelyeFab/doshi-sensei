@@ -2,6 +2,43 @@ const admin = require('firebase-admin');
 const https = require('https');
 const { URL } = require('url');
 
+// Initialize Firebase Admin SDK
+let firebaseInitialized = false;
+let db = null;
+
+const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+
+if (!admin.apps.length) {
+  try {
+    const serviceAccount = {
+      type: "service_account",
+      project_id: projectId,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      client_id: process.env.FIREBASE_CLIENT_ID,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    };
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+
+    firebaseInitialized = true;
+    db = admin.firestore();
+    console.log('✅ Firebase Admin SDK initialized successfully');
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
+    firebaseInitialized = false;
+  }
+} else {
+  firebaseInitialized = true;
+  db = admin.firestore();
+}
+
 // HTTP request helper with redirect support
 function makeRequest(url, redirectCount = 0) {
   return new Promise((resolve, reject) => {
@@ -115,24 +152,34 @@ async function scrapeTodaiiArticles() {
     const html = await makeRequest('https://japanese.todaiinews.com');
     console.log(`✅ Fetched homepage: ${html.length} bytes`);
 
-    // Extract article data from the page - Updated for new structure
-    const articleMatches = html.matchAll(/href="(https:\/\/japanese\.todaiinews\.com\/detail\/[^"?]+[^"\s]*)"/gi);
+    // Extract article data from the page
+    const articleMatches = html.matchAll(/<article[^>]*class="[^"]*post[^"]*"[^>]*>([\s\S]*?)<\/article>/gi);
     const articleData = [];
     
     for (const match of articleMatches) {
       if (articleData.length >= 20) break;
       
-      const url = match[1].trim();
+      const articleHtml = match[1];
       
-      // Skip if we already have this URL
-      if (articleData.some(a => a.url === url)) continue;
+      // Extract URL
+      const urlMatch = articleHtml.match(/href="(https:\/\/japanese\.todaiinews\.com\/news\/[^"]+)"/);
+      if (!urlMatch) continue;
       
-      // For now, we'll extract title from the article page itself
+      // Extract title
+      const titleMatch = articleHtml.match(/<h[23][^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/h[23]>/i);
+      if (!titleMatch) continue;
+      
+      // Extract image
+      const imgMatch = articleHtml.match(/src="([^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i);
+      
+      // Extract date
+      const dateMatch = articleHtml.match(/<time[^>]*datetime="([^"]+)"|<span[^>]*class="[^"]*date[^"]*"[^>]*>([^<]+)</);
+      
       articleData.push({
-        url: url,
-        title: '', // Will be filled when fetching content
-        imageUrl: null, // Will be extracted from article page
-        publishDate: new Date() // Will be updated if found on article page
+        url: urlMatch[1],
+        title: cleanText(titleMatch[1]),
+        imageUrl: imgMatch ? imgMatch[1] : null,
+        publishDate: dateMatch ? new Date(dateMatch[1] || dateMatch[2]) : new Date()
       });
     }
 
@@ -143,26 +190,8 @@ async function scrapeTodaiiArticles() {
       try {
         await new Promise(resolve => setTimeout(resolve, i * 300)); // Stagger requests
         
-        console.log(`📄 Fetching article ${i + 1}: ${data.url}`);
+        console.log(`📄 Fetching article ${i + 1}: ${data.title}`);
         const articleHtml = await makeRequest(data.url);
-        
-        // Extract title if not already set
-        if (!data.title) {
-          const titleMatch = articleHtml.match(/<h1[^>]*>([^<]+)<\/h1>/i) || 
-                             articleHtml.match(/<title>([^<]+)<\/title>/i);
-          if (titleMatch) {
-            data.title = cleanText(titleMatch[1]).replace(/\s*[-–—]\s*Todaii.*$/i, '').trim();
-          }
-        }
-        
-        // Extract image if not already set
-        if (!data.imageUrl) {
-          const imgMatch = articleHtml.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i) ||
-                          articleHtml.match(/<img[^>]*class="[^"]*main[^"]*"[^>]*src="([^"]+)"/i);
-          if (imgMatch) {
-            data.imageUrl = imgMatch[1];
-          }
-        }
         
         // Extract content - Todaii specific selectors
         let content = '';
@@ -196,7 +225,7 @@ async function scrapeTodaiiArticles() {
             
             articles.push({
               id: `todaii_${Date.now()}_${i}`,
-              title: data.title || 'Todaii Japanese Article',
+              title: data.title,
               content: cleanContent.substring(0, 3000),
               summary: cleanContent.substring(0, 250) + '...',
               url: data.url,
@@ -243,11 +272,10 @@ function getFallbackArticles() {
 }
 
 // Save to Firebase
-async function saveArticlesToFirebase(articles, db) {
-  console.log('💾 Saving to Firebase:', { 
-    articlesCount: articles.length,
-    adminAppsLength: admin.apps.length 
-  });
+async function saveArticlesToFirebase(articles) {
+  if (!db || !firebaseInitialized) {
+    throw new Error('Firebase not initialized');
+  }
 
   const batch = db.batch();
   const articlesRef = db.collection('articles');
@@ -288,35 +316,20 @@ exports.handler = async (event, context) => {
   const startTime = Date.now();
 
   try {
-    console.log('🚀 Todaii scraping function triggered');
-    console.log('📅 Event type:', event.httpMethod || 'scheduled');
+    console.log('🚀 Fixed Todaii scraping function triggered');
+    console.log('🔧 Firebase initialized:', firebaseInitialized);
 
-    // Initialize Firebase in the handler - same pattern as test-simple
-    let db;
-    if (!admin.apps.length) {
-      const serviceAccount = {
-        type: "service_account",
-        project_id: process.env.FIREBASE_PROJECT_ID,
-        private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-        private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        client_id: process.env.FIREBASE_CLIENT_ID,
-        auth_uri: "https://accounts.google.com/o/oauth2/auth",
-        token_uri: "https://oauth2.googleapis.com/token",
-        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    if (!firebaseInitialized) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: 'Firebase Admin SDK not configured',
+          timestamp: new Date().toISOString()
+        }),
       };
-
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      console.log('✅ Firebase Admin SDK initialized successfully');
-    } else {
-      console.log('✅ Firebase Admin SDK already initialized');
     }
-
-    // Get Firestore reference
-    db = admin.firestore();
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
@@ -331,7 +344,7 @@ exports.handler = async (event, context) => {
     console.log(`📊 Scraped ${articles.length} articles`);
 
     // Save to Firebase
-    await saveArticlesToFirebase(articles, db);
+    await saveArticlesToFirebase(articles);
 
     const elapsed = Date.now() - startTime;
 

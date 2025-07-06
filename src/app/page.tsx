@@ -145,10 +145,7 @@ export default function Home() {
         // Get caught Pokemon from IndexedDB and cloud if premium
         const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
 
-        console.log('🎮 Pokédex count check:', {
-          pokemonCount: caughtPokemon.length,
-          user: profile?.email
-        });
+        // Removed debug logging to prevent console spam
 
         if (caughtPokemon.length > 0) {
           setStats(prev => ({ ...prev, pokemonCaught: caughtPokemon.length }));
@@ -160,7 +157,7 @@ export default function Home() {
     };
 
     loadPokemonCount();
-  }, [profile, subscription]);
+  }, [profile?.uid, subscription?.status, subscription?.plan]);
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {

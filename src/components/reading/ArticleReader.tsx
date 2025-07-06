@@ -17,6 +17,7 @@ import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import ImprovedArticleAudioPlayer from '@/components/audio/ImprovedArticleAudioPlayer';
+import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
 
@@ -364,6 +365,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [readingTimeDisplay, setReadingTimeDisplay] = useState(0);
   const [vocabularyEncountered, setVocabularyEncountered] = useState<Set<string>>(new Set());
   const [statsVisible, setStatsVisible] = useState(false);
+  const [showShadowingMode, setShowShadowingMode] = useState(false);
   const [userRequestedStats, setUserRequestedStats] = useState(false);
   const [stableWPM, setStableWPM] = useState(0);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
@@ -830,7 +832,18 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             </header>
 
             {/* Audio Player */}
-            <ImprovedArticleAudioPlayer article={article} />
+            <div className="space-y-2">
+              <ImprovedArticleAudioPlayer article={article} />
+              <button
+                onClick={() => setShowShadowingMode(true)}
+                className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+                Shadowing Practice Mode
+              </button>
+            </div>
 
             {/* Grammar Legend */}
             {settings.highlightVocabulary && settings.highlightMode !== 'none' && (
@@ -1054,6 +1067,14 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                 setShowSettings(false);
                 setShowOptionsMenu(false);
               }}
+            />
+          )}
+          
+          {/* Shadowing Mode Modal */}
+          {showShadowingMode && (
+            <ShadowingAudioPlayer 
+              article={article} 
+              onClose={() => setShowShadowingMode(false)}
             />
           )}
         </div>

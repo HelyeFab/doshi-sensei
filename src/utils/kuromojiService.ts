@@ -87,7 +87,7 @@ class KuromojiService {
 
     this.initPromise = new Promise((resolve) => {
       const builder = kuromoji.builder({
-        dicPath: '/_next/static/dict/', // Dictionary files served from static assets
+        dicPath: '/dict/', // Dictionary files served from public directory
       });
 
       builder.build((err: any, tokenizer: any) => {

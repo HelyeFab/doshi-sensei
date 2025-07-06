@@ -29,17 +29,18 @@ async function prepareForDeploy() {
     // Create .next directory if it doesn't exist
     await fs.mkdir('.next', { recursive: true });
 
-    // Copy kuromoji dictionary files to .next/static for deployment
+    // Ensure kuromoji dictionary files exist in public directory
     const dictSource = path.join(__dirname, '..', 'public', 'dict');
-    const dictDest = path.join(__dirname, '..', '.next', 'static', 'dict');
     
     try {
       await fs.access(dictSource);
-      console.log('Copying kuromoji dictionary files...');
-      await copyDirectory(dictSource, dictDest);
-      console.log('✅ Kuromoji dictionary files copied successfully');
+      const files = await fs.readdir(dictSource);
+      console.log(`✅ Found ${files.length} kuromoji dictionary files in public/dict/`);
     } catch (error) {
-      console.log('⚠️  Kuromoji dictionary files not found, skipping copy');
+      console.log('⚠️  Kuromoji dictionary files not found in public/dict/, running setup...');
+      // Run setup script to download dictionary files
+      const { execSync } = require('child_process');
+      execSync('node scripts/setup-kuromoji.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
     }
 
     console.log('✅ Deployment preparation complete');

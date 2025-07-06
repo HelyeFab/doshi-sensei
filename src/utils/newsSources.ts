@@ -19,7 +19,7 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     id: 'watanoc',
     name: 'Watanoc',
     displayName: 'Watanoc Real Japanese News',
-    netlifyFunction: 'scrape-watanoc-fixed',
+    netlifyFunction: 'scrape-watanoc-next',
     emoji: '🌐',
     description: 'Real Japanese news with JLPT level estimation'
   },
@@ -27,7 +27,7 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     id: 'todaii',
     name: 'Todaii',
     displayName: 'Todaii Japanese News - Learning Platform',
-    netlifyFunction: 'scrape-todaii-fixed',
+    netlifyFunction: 'scrape-todaii-next',
     emoji: '📚',
     description: 'Japanese learning content with vocabulary focus'
   },

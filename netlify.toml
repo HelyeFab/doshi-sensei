@@ -55,11 +55,4 @@
   targetPort = 3002
   autoLaunch = false
 
-[functions]
-  # Scrape Todaii News articles every morning at 6:30 AM UTC using scraping-next implementation
-  [functions."scrape-todaii-next"]
-    schedule = "30 6 * * *"
-
-  # Scrape Watanoc articles every morning at 7 AM UTC using scraping-next implementation
-  [functions."scrape-watanoc-next"]
-    schedule = "0 7 * * *"
+# Functions are now HTTP endpoints, not scheduled

@@ -18,18 +18,26 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
   watanoc: {
     id: 'watanoc',
     name: 'Watanoc',
-    displayName: 'Watanoc Real Japanese News',
-    netlifyFunction: 'scrape-watanoc-next',
+    displayName: 'Watanoc Real Japanese News (Enhanced)',
+    netlifyFunction: 'scrape-watanoc-enhanced',
     emoji: '🌐',
-    description: 'Real Japanese news with JLPT level estimation'
+    description: 'Real Japanese news with enhanced content extraction and furigana'
   },
   todaii: {
     id: 'todaii',
     name: 'Todaii',
-    displayName: 'Todaii Japanese News - Learning Platform',
-    netlifyFunction: 'scrape-todaii-next',
+    displayName: 'Todaii Japanese News - Enhanced Platform',
+    netlifyFunction: 'scrape-todaii-enhanced',
     emoji: '📚',
-    description: 'Japanese learning content with vocabulary focus'
+    description: 'Japanese learning content with enhanced vocabulary extraction'
+  },
+  nhkEasy: {
+    id: 'nhkEasy',
+    name: 'NHK Easy',
+    displayName: 'NHK NEWS WEB EASY',
+    netlifyFunction: 'scrape-nhk-easy',
+    emoji: '📺',
+    description: 'Beginner-friendly Japanese news from NHK'
   },
 };
 
@@ -125,6 +133,13 @@ export async function triggerTodaiiScraping(): Promise<ScrapingResult> {
   return triggerSourceScraping(NEWS_SOURCES.todaii);
 }
 
+/**
+ * Trigger NHK Easy article scraping
+ */
+export async function triggerNHKEasyScraping(): Promise<ScrapingResult> {
+  return triggerSourceScraping(NEWS_SOURCES.nhkEasy);
+}
+
 
 /**
  * Trigger all sources sequentially
@@ -132,6 +147,7 @@ export async function triggerTodaiiScraping(): Promise<ScrapingResult> {
 export async function triggerAllSourcesScraping(): Promise<{
   watanoc: ScrapingResult;
   todaii: ScrapingResult;
+  nhkEasy: ScrapingResult;
   overall: {
     totalArticles: number;
     successfulSources: number;
@@ -139,14 +155,15 @@ export async function triggerAllSourcesScraping(): Promise<{
     totalTimeElapsed: number;
   };
 }> {
-  console.log('🚀 Triggering all news sources scraping...');
+  console.log('🚀 Triggering all enhanced news sources scraping...');
 
   const startTime = Date.now();
 
-  // Run all scrapers in parallel for faster execution
-  const [watanoc, todaii] = await Promise.allSettled([
+  // Run all enhanced scrapers in parallel for faster execution
+  const [watanoc, todaii, nhkEasy] = await Promise.allSettled([
     triggerWatanocScraping(),
-    triggerTodaiiScraping()
+    triggerTodaiiScraping(),
+    triggerNHKEasyScraping()
   ]);
 
   // Extract results (handle promise rejections)
@@ -160,16 +177,22 @@ export async function triggerAllSourcesScraping(): Promise<{
     timeElapsed: 0, source: 'todaii', nextScrapingTime: new Date()
   };
 
-  const totalTimeElapsed = Math.round((Date.now() - startTime) / 1000);
-  const totalArticles = watanocResult.articlesScraped + todaiiResult.articlesScraped;
-  const successfulSources = [watanocResult, todaiiResult].filter(r => r.success).length;
-  const failedSources = 2 - successfulSources;
+  const nhkEasyResult = nhkEasy.status === 'fulfilled' ? nhkEasy.value : {
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
+    timeElapsed: 0, source: 'nhkEasy', nextScrapingTime: new Date()
+  };
 
-  console.log(`✅ All sources scraping completed. Total: ${totalArticles} articles from ${successfulSources}/2 sources`);
+  const totalTimeElapsed = Math.round((Date.now() - startTime) / 1000);
+  const totalArticles = watanocResult.articlesScraped + todaiiResult.articlesScraped + nhkEasyResult.articlesScraped;
+  const successfulSources = [watanocResult, todaiiResult, nhkEasyResult].filter(r => r.success).length;
+  const failedSources = 3 - successfulSources;
+
+  console.log(`✅ All enhanced sources scraping completed. Total: ${totalArticles} articles from ${successfulSources}/3 sources`);
 
   return {
     watanoc: watanocResult,
     todaii: todaiiResult,
+    nhkEasy: nhkEasyResult,
     overall: {
       totalArticles,
       successfulSources,
@@ -212,6 +235,7 @@ export function formatScrapingResult(result: ScrapingResult, source: NewsSourceC
 export default {
   triggerWatanocScraping,
   triggerTodaiiScraping,
+  triggerNHKEasyScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult,

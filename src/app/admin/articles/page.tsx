@@ -8,6 +8,7 @@ import { getArticleStats, clearCache } from '@/utils/watanocArticles';
 import { 
   triggerWatanocScraping, 
   triggerTodaiiScraping, 
+  triggerNHKEasyScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult
@@ -45,6 +46,24 @@ export default function ArticlesManagementPage() {
     try {
       const result = await triggerTodaiiScraping();
       setStatus(formatScrapingResult(result, NEWS_SOURCES.todaii));
+      
+      if (result.success) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNHKEasyScraping = async () => {
+    setLoading(true);
+    setStatus('📺 Scraping NHK Easy Japanese News...');
+    
+    try {
+      const result = await triggerNHKEasyScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.nhkEasy));
       
       if (result.success) {
         setTimeout(loadStats, 2000);
@@ -188,6 +207,18 @@ export default function ArticlesManagementPage() {
                 <div className="text-left">
                   <div className="font-medium">{NEWS_SOURCES.todaii.name}</div>
                   <div className="text-xs opacity-90">{NEWS_SOURCES.todaii.description}</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={handleNHKEasyScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.nhkEasy.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.nhkEasy.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.nhkEasy.description}</div>
                 </div>
               </button>
               

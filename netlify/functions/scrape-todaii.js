@@ -2,48 +2,6 @@ const admin = require('firebase-admin');
 const https = require('https');
 const { URL } = require('url');
 
-// Initialize Firebase Admin SDK
-let firebaseInitialized = false;
-let db = null;
-
-const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-
-if (!admin.apps.length) {
-  try {
-    const serviceAccount = {
-      type: "service_account",
-      project_id: projectId,
-      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      client_email: process.env.FIREBASE_CLIENT_EMAIL,
-      client_id: process.env.FIREBASE_CLIENT_ID,
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
-    };
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
-
-    firebaseInitialized = true;
-    db = admin.firestore();
-    console.log('✅ Firebase Admin SDK initialized successfully');
-  } catch (error) {
-    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
-    firebaseInitialized = false;
-  }
-} else {
-  firebaseInitialized = true;
-  db = admin.firestore();
-}
-
-// Ensure db is always set if Firebase is initialized
-if (firebaseInitialized && !db) {
-  db = admin.firestore();
-}
-
 // HTTP request helper with redirect support
 function makeRequest(url, redirectCount = 0) {
   return new Promise((resolve, reject) => {
@@ -285,26 +243,11 @@ function getFallbackArticles() {
 }
 
 // Save to Firebase
-async function saveArticlesToFirebase(articles) {
-  console.log('💾 Saving to Firebase - Check:', { 
-    hasDb: !!db, 
-    firebaseInitialized,
+async function saveArticlesToFirebase(articles, db) {
+  console.log('💾 Saving to Firebase:', { 
+    articlesCount: articles.length,
     adminAppsLength: admin.apps.length 
   });
-  
-  if (!firebaseInitialized) {
-    throw new Error('Firebase not initialized - firebaseInitialized is false');
-  }
-  
-  if (!db) {
-    // Try to get db again
-    db = admin.firestore();
-    console.log('🔄 Re-initialized db:', !!db);
-  }
-  
-  if (!db) {
-    throw new Error('Firebase Firestore db is null');
-  }
 
   const batch = db.batch();
   const articlesRef = db.collection('articles');
@@ -345,20 +288,35 @@ exports.handler = async (event, context) => {
   const startTime = Date.now();
 
   try {
-    console.log('🚀 Fixed Todaii scraping function triggered');
-    console.log('🔧 Firebase initialized:', firebaseInitialized);
+    console.log('🚀 Todaii scraping function triggered');
+    console.log('📅 Event type:', event.httpMethod || 'scheduled');
 
-    if (!firebaseInitialized) {
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          success: false,
-          error: 'Firebase Admin SDK not configured',
-          timestamp: new Date().toISOString()
-        }),
+    // Initialize Firebase in the handler - same pattern as test-simple
+    let db;
+    if (!admin.apps.length) {
+      const serviceAccount = {
+        type: "service_account",
+        project_id: process.env.FIREBASE_PROJECT_ID,
+        private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+        private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        client_id: process.env.FIREBASE_CLIENT_ID,
+        auth_uri: "https://accounts.google.com/o/oauth2/auth",
+        token_uri: "https://oauth2.googleapis.com/token",
+        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
       };
+
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      console.log('✅ Firebase Admin SDK initialized successfully');
+    } else {
+      console.log('✅ Firebase Admin SDK already initialized');
     }
+
+    // Get Firestore reference
+    db = admin.firestore();
 
     // Scrape with timeout protection
     const timeoutPromise = new Promise((_, reject) => 
@@ -373,7 +331,7 @@ exports.handler = async (event, context) => {
     console.log(`📊 Scraped ${articles.length} articles`);
 
     // Save to Firebase
-    await saveArticlesToFirebase(articles);
+    await saveArticlesToFirebase(articles, db);
 
     const elapsed = Date.now() - startTime;
 

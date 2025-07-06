@@ -268,7 +268,7 @@ exports.handler = async (event, context) => {
   const startTime = Date.now();
 
   try {
-    console.log('🚀 Fixed NHK Easy scraping function triggered');
+    console.log('🚀 NHK Easy scraping function triggered');
     console.log('🔧 Firebase initialized:', firebaseInitialized);
 
     if (!firebaseInitialized) {

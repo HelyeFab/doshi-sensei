@@ -316,7 +316,7 @@ exports.handler = async (event, context) => {
   const startTime = Date.now();
 
   try {
-    console.log('🚀 Fixed Todaii scraping function triggered');
+    console.log('🚀 Todaii scraping function triggered');
     console.log('🔧 Firebase initialized:', firebaseInitialized);
 
     if (!firebaseInitialized) {

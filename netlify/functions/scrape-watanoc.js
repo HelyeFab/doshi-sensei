@@ -410,7 +410,7 @@ exports.handler = async (event, context) => {
   const startTime = Date.now();
 
   try {
-    console.log('🚀 Fixed Watanoc scraping function triggered');
+    console.log('🚀 Watanoc scraping function triggered');
     console.log('📅 Event type:', event.httpMethod || 'scheduled');
     console.log('🔧 Firebase initialized:', firebaseInitialized);
 

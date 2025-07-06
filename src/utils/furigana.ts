@@ -104,11 +104,18 @@ export async function generateFuriganaForParagraphs(paragraphs: string[]): Promi
 }
 
 /**
- * Cache for furigana results to avoid repeated API calls
+ * Enhanced cache for furigana results with persistence and article-level caching
  */
 class FuriganaCache {
   private cache = new Map<string, string>();
+  private articleCache = new Map<string, Map<string, string>>();
   private maxSize = 100;
+  private maxArticles = 10;
+  private readonly STORAGE_KEY = 'furigana_cache_v2';
+
+  constructor() {
+    this.loadFromStorage();
+  }
 
   get(text: string): string | undefined {
     return this.cache.get(text);
@@ -123,14 +130,93 @@ class FuriganaCache {
       }
     }
     this.cache.set(text, result);
+    this.saveToStorage();
+  }
+
+  // Article-level caching for better performance
+  getArticleCache(articleId: string): Map<string, string> | undefined {
+    return this.articleCache.get(articleId);
+  }
+
+  setArticleCache(articleId: string, paragraphCache: Map<string, string>): void {
+    if (this.articleCache.size >= this.maxArticles) {
+      // Remove oldest article
+      const firstKey = this.articleCache.keys().next().value;
+      if (firstKey !== undefined) {
+        this.articleCache.delete(firstKey);
+      }
+    }
+    this.articleCache.set(articleId, paragraphCache);
+    console.log(`[FuriganaCache] Cached ${paragraphCache.size} paragraphs for article: ${articleId}`);
+  }
+
+  getFromArticle(articleId: string, text: string): string | undefined {
+    const articleCache = this.articleCache.get(articleId);
+    return articleCache?.get(text) || this.cache.get(text);
+  }
+
+  setToArticle(articleId: string, text: string, result: string): void {
+    // Set in main cache
+    this.set(text, result);
+    
+    // Set in article cache
+    let articleCache = this.articleCache.get(articleId);
+    if (!articleCache) {
+      articleCache = new Map();
+      this.setArticleCache(articleId, articleCache);
+    }
+    articleCache.set(text, result);
   }
 
   clear(): void {
     this.cache.clear();
+    this.articleCache.clear();
+    this.clearStorage();
+  }
+
+  clearArticle(articleId: string): void {
+    this.articleCache.delete(articleId);
+    console.log(`[FuriganaCache] Cleared cache for article: ${articleId}`);
   }
 
   size(): number {
     return this.cache.size;
+  }
+
+  private loadFromStorage(): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        const data = JSON.parse(stored);
+        this.cache = new Map(data.cache || []);
+        // Don't persist article cache due to size - rebuild on demand
+        console.log(`[FuriganaCache] Loaded ${this.cache.size} entries from storage`);
+      }
+    } catch (error) {
+      console.warn('[FuriganaCache] Failed to load from storage:', error);
+    }
+  }
+
+  private saveToStorage(): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      // Only save main cache, not article cache (too large)
+      const data = {
+        cache: Array.from(this.cache.entries()).slice(-50), // Keep last 50 entries
+        timestamp: Date.now()
+      };
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+      console.warn('[FuriganaCache] Failed to save to storage:', error);
+    }
+  }
+
+  private clearStorage(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(this.STORAGE_KEY);
   }
 }
 
@@ -154,6 +240,77 @@ export async function generateFuriganaWithCache(text: string): Promise<string> {
 }
 
 /**
+ * Generate furigana for an article with article-level caching
+ * @param articleId - Unique article identifier for caching
+ * @param text - Japanese text to process
+ * @returns Promise with furigana-enhanced HTML string
+ */
+export async function generateFuriganaForArticle(articleId: string, text: string): Promise<string> {
+  const cached = furiganaCache.getFromArticle(articleId, text);
+  if (cached !== undefined) {
+    console.log(`[FuriganaCache] Cache hit for article ${articleId}, text length: ${text.length}`);
+    return cached;
+  }
+
+  console.log(`[FuriganaCache] Cache miss for article ${articleId}, processing text length: ${text.length}`);
+  const result = await generateFurigana(text);
+  furiganaCache.setToArticle(articleId, text, result);
+
+  return result;
+}
+
+/**
+ * Pre-process an entire article's content with furigana and cache it
+ * @param articleId - Unique article identifier
+ * @param paragraphs - Array of text paragraphs from the article
+ * @returns Promise with array of furigana-enhanced paragraphs
+ */
+export async function generateFuriganaForArticleParagraphs(articleId: string, paragraphs: string[]): Promise<string[]> {
+  const results: string[] = [];
+  const uncachedParagraphs: { index: number; text: string }[] = [];
+
+  // Check what's already cached
+  for (let i = 0; i < paragraphs.length; i++) {
+    const cached = furiganaCache.getFromArticle(articleId, paragraphs[i]);
+    if (cached !== undefined) {
+      results[i] = cached;
+    } else {
+      uncachedParagraphs.push({ index: i, text: paragraphs[i] });
+    }
+  }
+
+  if (uncachedParagraphs.length === 0) {
+    console.log(`[FuriganaCache] All ${paragraphs.length} paragraphs cached for article: ${articleId}`);
+    return results;
+  }
+
+  console.log(`[FuriganaCache] Processing ${uncachedParagraphs.length}/${paragraphs.length} uncached paragraphs for article: ${articleId}`);
+
+  // Process uncached paragraphs in batches
+  const batchSize = 3; // Smaller batches for articles to prevent freezing
+  for (let i = 0; i < uncachedParagraphs.length; i += batchSize) {
+    const batch = uncachedParagraphs.slice(i, i + batchSize);
+    
+    const batchPromises = batch.map(({ text }) => generateFurigana(text));
+    const batchResults = await Promise.all(batchPromises);
+
+    // Store results and cache them
+    batch.forEach(({ index, text }, batchIndex) => {
+      const result = batchResults[batchIndex];
+      results[index] = result;
+      furiganaCache.setToArticle(articleId, text, result);
+    });
+
+    // Longer delay between batches for articles
+    if (i + batchSize < uncachedParagraphs.length) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+  }
+
+  return results;
+}
+
+/**
  * Clear the furigana cache
  */
 export function clearFuriganaCache(): void {
@@ -161,11 +318,19 @@ export function clearFuriganaCache(): void {
 }
 
 /**
+ * Clear furigana cache for a specific article
+ */
+export function clearArticleFuriganaCache(articleId: string): void {
+  furiganaCache.clearArticle(articleId);
+}
+
+/**
  * Get furigana cache statistics
  */
-export function getFuriganaCacheStats(): { size: number; maxSize: number } {
+export function getFuriganaCacheStats(): { size: number; maxSize: number; articles: number } {
   return {
     size: furiganaCache.size(),
-    maxSize: 100
+    maxSize: 100,
+    articles: furiganaCache['articleCache'].size // Access private member for stats
   };
 }

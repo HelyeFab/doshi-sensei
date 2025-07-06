@@ -12,7 +12,7 @@ import {
   formatReadingTime,
   getReadingSpeedCategory
 } from '@/utils/readingAnalytics';
-import { generateFuriganaWithCache, checkFuriganaApiHealth } from '@/utils/furigana';
+import { generateFuriganaForArticle, generateFuriganaForArticleParagraphs, checkFuriganaApiHealth } from '@/utils/furigana';
 import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -374,6 +374,10 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
   const articleRef = useRef<HTMLDivElement>(null);
   const timeUpdateInterval = useRef<NodeJS.Timeout | null>(null);
+  
+  // Content processing cache to prevent re-processing
+  const contentCacheRef = useRef<Map<string, string[]>>(new Map());
+  const processingRef = useRef<Promise<string[]> | null>(null);
 
   // Save settings to localStorage when they change
   useEffect(() => {
@@ -453,15 +457,15 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     }
   };
 
-  // Add furigana to Japanese text using Kuromoji tokenizer
+  // Add furigana to Japanese text using article-aware caching
   const addFuriganaToText = async (text: string): Promise<string> => {
     if (!settings.showFurigana) {
       return text;
     }
 
     try {
-      // Use the new Kuromoji-based furigana API with caching
-      const furiganaText = await generateFuriganaWithCache(text);
+      // Use article-aware furigana generation with enhanced caching
+      const furiganaText = await generateFuriganaForArticle(article.id, text);
       return furiganaText;
     } catch (error) {
       console.error('Failed to generate furigana:', error);
@@ -522,34 +526,118 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Process article content when settings change
+  // Process article content when settings change - WITH CACHING
   useEffect(() => {
     const processContent = async () => {
       setContentLoading(true);
+      
       try {
         const paragraphs = article.content.split('\n');
-
-        // Only process with old method if not using grammar highlighting
-        if (!settings.highlightVocabulary || settings.highlightMode === 'none') {
-          const processedParagraphs = await Promise.all(
-            paragraphs.map(paragraph => renderTextWithHighlighting(paragraph))
-          );
-          setProcessedContent(processedParagraphs);
-        } else {
-          // For grammar highlighting, keep paragraphs as plain text
-          setProcessedContent(paragraphs);
+        
+        // Create cache key based on settings that affect processing
+        const cacheKey = `${article.id}-${settings.showFurigana}-${settings.highlightVocabulary}-${settings.highlightMode}`;
+        
+        // Check cache first
+        const cached = contentCacheRef.current.get(cacheKey);
+        if (cached) {
+          console.log('[ArticleReader] Using cached content for:', cacheKey);
+          setProcessedContent(cached);
+          setContentLoading(false);
+          return;
         }
+        
+        // Prevent concurrent processing of the same content
+        if (processingRef.current) {
+          console.log('[ArticleReader] Already processing content, waiting...');
+          const result = await processingRef.current;
+          setProcessedContent(result);
+          setContentLoading(false);
+          return;
+        }
+        
+        // Skip heavy processing by default - prioritize performance
+        if (!settings.showFurigana && (!settings.highlightVocabulary || settings.highlightMode === 'none')) {
+          console.log('[ArticleReader] Using unprocessed content for performance');
+          setProcessedContent(paragraphs);
+          contentCacheRef.current.set(cacheKey, paragraphs);
+          setContentLoading(false);
+          return;
+        }
+        
+        // Heavy processing only when specifically requested
+        console.log('[ArticleReader] Processing content with settings:', { 
+          showFurigana: settings.showFurigana, 
+          highlightVocabulary: settings.highlightVocabulary, 
+          highlightMode: settings.highlightMode 
+        });
+        
+        const processPromise = (async () => {
+          if (!settings.highlightVocabulary || settings.highlightMode === 'none') {
+            // Use optimized batch processing for furigana
+            if (settings.showFurigana) {
+              console.log('[ArticleReader] Batch processing furigana for all paragraphs');
+              const furiganaParagraphs = await generateFuriganaForArticleParagraphs(article.id, paragraphs);
+              
+              // Apply vocabulary highlighting if needed
+              if (settings.highlightVocabulary && settings.highlightMode !== 'none') {
+                return await Promise.all(
+                  furiganaParagraphs.map(async (paragraph, index) => {
+                    const vocabulary = extractVocabularyFromText(paragraphs[index]);
+                    let processedText = paragraph;
+                    
+                    vocabulary.forEach((word) => {
+                      if (processedText.includes(`<ruby>${word}`) || processedText.includes(`<rt>${word}`)) {
+                        return;
+                      }
+                      const regex = new RegExp(`(?<!<[^>]*)(${word})(?![^<]*>)`, 'g');
+                      processedText = processedText.replace(
+                        regex,
+                        `<span class="vocabulary-highlight cursor-pointer hover:bg-primary/20 transition-colors rounded px-0.5" data-word="$1">$1</span>`
+                      );
+                    });
+                    
+                    return processedText;
+                  })
+                );
+              }
+              
+              return furiganaParagraphs;
+            } else {
+              // Process vocabulary highlighting only
+              const processedParagraphs = await Promise.all(
+                paragraphs.map(paragraph => renderTextWithHighlighting(paragraph))
+              );
+              return processedParagraphs;
+            }
+          } else {
+            // For grammar highlighting, keep paragraphs as plain text
+            return paragraphs;
+          }
+        })();
+        
+        processingRef.current = processPromise;
+        
+        const result = await processPromise;
+        
+        // Cache the result
+        contentCacheRef.current.set(cacheKey, result);
+        console.log('[ArticleReader] Content processed and cached for:', cacheKey);
+        
+        setProcessedContent(result);
+        
       } catch (error) {
         console.error('Error processing article content:', error);
         // Fallback to unprocessed content
-        setProcessedContent(article.content.split('\n'));
+        const fallback = article.content.split('\n');
+        setProcessedContent(fallback);
       } finally {
         setContentLoading(false);
+        processingRef.current = null;
       }
     };
 
     processContent();
-  }, [article.content, settings.showFurigana, settings.highlightVocabulary, settings.highlightMode]);
+  }, [article.content, article.id, settings.showFurigana, settings.highlightVocabulary, settings.highlightMode]);
 
   // Initialize reading session
   useEffect(() => {
@@ -625,12 +713,6 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     }
   };
 
-  // Handle reading completion
-  const handleReadingComplete = () => {
-    if (readingSession && readingProgress >= 80) {
-      setShowQuiz(true);
-    }
-  };
 
   // Handle comprehension quiz completion
   const handleQuizComplete = (score: number) => {

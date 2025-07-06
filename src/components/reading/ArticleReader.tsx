@@ -23,6 +23,11 @@ import { PageHeader } from '@/components/PageHeader';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
+  // If text already contains HTML ruby tags, return as-is
+  if (text.includes('<ruby>') && text.includes('<rt>')) {
+    return text;
+  }
+  
   // Convert furigana notation like 漢字[かんじ] to <ruby>漢字<rt>かんじ</rt></ruby>
   const rubyPattern = /([一-龯]+)\[([ひらがな\u3040-\u309F]+)\]/g;
   return text.replace(rubyPattern, '<ruby>$1<rt>$2</rt></ruby>');

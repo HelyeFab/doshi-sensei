@@ -40,6 +40,11 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
+// Ensure db is always set if Firebase is initialized
+if (firebaseInitialized && !db) {
+  db = admin.firestore();
+}
+
 // HTTP request helper with gzip support
 function makeRequest(url) {
   return new Promise((resolve, reject) => {

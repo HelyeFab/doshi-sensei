@@ -38,6 +38,11 @@ if (!admin.apps.length) {
   db = admin.firestore();
 }
 
+// Ensure db is always set if Firebase is initialized
+if (firebaseInitialized && !db) {
+  db = admin.firestore();
+}
+
 // HTTP request with retry logic and gzip support
 function makeRequestWithRetry(url, retries = 3) {
   return new Promise((resolve, reject) => {

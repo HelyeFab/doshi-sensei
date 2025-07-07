@@ -123,9 +123,11 @@ export default function MobileMenu() {
               className="p-1 hover:bg-muted rounded transition-colors"
               aria-label="Close menu"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <img
+                src="/close.svg"
+                alt="Close"
+                className="w-4 h-4"
+              />
             </button>
           </div>
 

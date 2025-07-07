@@ -1,6 +1,37 @@
 const admin = require('firebase-admin');
 const cheerio = require('cheerio');
 
+// Function to get Unsplash image for articles without covers
+async function getUnsplashImage(keyword = 'japan news') {
+  try {
+    const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY;
+    if (!unsplashAccessKey) {
+      console.log('⚠️ Unsplash API key not configured, skipping image fetch');
+      return null;
+    }
+    
+    const response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&content_filter=high`, {
+      headers: {
+        'Authorization': `Client-ID ${unsplashAccessKey}`,
+        'Accept-Version': 'v1'
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+    
+    if (!response.ok) {
+      console.warn('❌ Unsplash API request failed:', response.status);
+      return null;
+    }
+    
+    const data = await response.json();
+    console.log('✅ Unsplash image fetched:', data.urls.regular);
+    return data.urls.regular;
+  } catch (error) {
+    console.warn('⚠️ Failed to fetch Unsplash image:', error.message);
+    return null;
+  }
+}
+
 // Global variables for Firebase (same pattern as working functions)
 let firebaseInitialized = false;
 let db = null;
@@ -255,8 +286,6 @@ ${data.excerpt || 'この記事はNHK NEWS WEB EASYから取得されました�
 • 日常的な表現を学べます
 • ニュースを通じて日本の文化を理解できます
 
-元の記事：${data.url}
-
 ※このニュースは${data.level}レベルの日本語学習に最適です。`;
 
       const article = {
@@ -265,7 +294,7 @@ ${data.excerpt || 'この記事はNHK NEWS WEB EASYから取得されました�
         content: content,
         summary: data.excerpt || data.title.substring(0, 100) + '...',
         url: data.url,
-        imageUrl: data.imageUrl || `https://images.unsplash.com/photo-${1600000000000 + i}?w=400`,
+        imageUrl: data.imageUrl || await getUnsplashImage('japan news'),
         publishDate: new Date(data.date || Date.now()),
         scrapedAt: new Date(),
         source: {

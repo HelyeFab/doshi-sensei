@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 interface NavItem {
   id: string;
@@ -74,16 +75,20 @@ export default function DesktopNavMenu() {
 
   return (
     <div className="hidden md:block fixed top-6 right-6 z-50">
-      {/* Burger Menu Button */}
+      {/* Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-12 h-12 bg-card/95 backdrop-blur-md border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-muted transition-colors"
         aria-label="Navigation menu"
       >
-        <div className="space-y-1">
-          <div className={`w-5 h-0.5 bg-foreground transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
-          <div className={`w-5 h-0.5 bg-foreground transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
-          <div className={`w-5 h-0.5 bg-foreground transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+        <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+          <Image
+            src="/flat-icons/menu.svg"
+            alt="Menu"
+            width={24}
+            height={24}
+            className="w-6 h-6"
+          />
         </div>
       </button>
 

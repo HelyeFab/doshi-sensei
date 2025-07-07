@@ -188,7 +188,7 @@ async function scrapeWatanoc() {
           content: content,
           summary: content.length > 200 ? content.substring(0, 200) + '...' : content,
           url: data.url,
-          imageUrl: data.imageUrl || `https://images.unsplash.com/photo-${1500000000000 + i}?w=400`,
+          imageUrl: data.imageUrl || null,
           publishDate: new Date(data.date || Date.now()),
           scrapedAt: new Date(),
           source: {
@@ -221,7 +221,7 @@ async function scrapeWatanoc() {
           content: `この記事について：${data.title}\\n\\n${data.excerpt || '記事の詳細な内容を取得中にエラーが発生しました。'}\\n\\n元の記事をご覧ください：${data.url}`,
           summary: data.excerpt || data.title,
           url: data.url,
-          imageUrl: data.imageUrl || `https://images.unsplash.com/photo-${1500000000000 + i}?w=400`,
+          imageUrl: data.imageUrl || null,
           publishDate: new Date(data.date || Date.now()),
           scrapedAt: new Date(),
           source: {

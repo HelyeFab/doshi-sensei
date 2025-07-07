@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3002",
+    "dev": "node scripts/dev.mjs",
     "dev:netlify": "netlify dev",
     "build": "node scripts/prepare-deploy.js && next build",
     "start": "next start",
@@ -57,6 +57,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "detect-port": "^2.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "jest": "^30.0.0",

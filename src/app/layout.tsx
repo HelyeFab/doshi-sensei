@@ -9,7 +9,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { ToastContainer } from "@/components/ui/Toast";
 import { EnvProvider } from "@/components/EnvProvider";
-import BottomNavigation from "@/components/BottomNavigation";
+import MobileMenu from "@/components/MobileMenu";
 import PWAInstaller from "@/components/PWAInstaller";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
@@ -207,7 +207,7 @@ export default function RootLayout({
                                 <OfflineNotification />
                                 <JMdictInitializer />
                                 {children}
-                                <BottomNavigation />
+                                <MobileMenu />
                                 <PWAInstaller />
                                 <PWAUpdateNotification />
                                 <FloatingDonateButton />

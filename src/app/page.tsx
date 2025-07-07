@@ -293,23 +293,6 @@ export default function Home() {
 
         {/* Virtual Companion Button positioned within this section */}
 
-        {/* Pokédex Icon - positioned on the right */}
-        {stats.pokemonCaught > 0 && (
-          <button
-            onClick={() => setShowPokedexModal(true)}
-            className="absolute top-4 right-4 p-3 bg-white backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10"
-            aria-label="Open Pokédex"
-          >
-            <img
-              src="/flat-icons/188915-pokemon-go/png/smartphone.png"
-              alt="Pokédex"
-              className="w-8 h-8 md:w-10 md:h-10"
-            />
-            <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-              {stats.pokemonCaught}
-            </span>
-          </button>
-        )}
       </div>
 
       {/* Main Content */}

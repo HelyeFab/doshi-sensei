@@ -1,7 +1,7 @@
 'use client';
 
 import { NewsArticle } from '@/types/news';
-import ImprovedArticleAudioPlayer from '@/components/audio/ImprovedArticleAudioPlayer';
+import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioPlayer';
 
 // Example of how to use the improved audio player
 export default function ArticleWithImprovedAudio({ article }: { article: NewsArticle }) {
@@ -16,7 +16,7 @@ export default function ArticleWithImprovedAudio({ article }: { article: NewsArt
       </div>
 
       {/* Improved Audio Player with Caching */}
-      <ImprovedArticleAudioPlayer article={article} />
+      <EnhancedArticleAudioPlayer article={article} />
 
       {/* Article Content */}
       <div className="prose dark:prose-invert max-w-none">

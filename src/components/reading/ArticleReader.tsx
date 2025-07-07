@@ -16,7 +16,7 @@ import { generateFuriganaForArticle, generateFuriganaForArticleParagraphs, check
 import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import ImprovedArticleAudioPlayer from '@/components/audio/ImprovedArticleAudioPlayer';
+import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioPlayer';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
@@ -920,7 +920,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
             {/* Audio Player */}
             <div className="space-y-2">
-              <ImprovedArticleAudioPlayer article={article} />
+              <EnhancedArticleAudioPlayer article={article} />
               <button
                 onClick={() => setShowShadowingMode(true)}
                 className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors flex items-center justify-center gap-2"

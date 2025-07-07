@@ -1,5 +1,36 @@
 const admin = require('firebase-admin');
 
+// Function to get Unsplash image for articles without covers
+async function getUnsplashImage(keyword = 'japan news') {
+  try {
+    const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY;
+    if (!unsplashAccessKey) {
+      console.log('⚠️ Unsplash API key not configured, skipping image fetch');
+      return null;
+    }
+    
+    const response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&content_filter=high`, {
+      headers: {
+        'Authorization': `Client-ID ${unsplashAccessKey}`,
+        'Accept-Version': 'v1'
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+    
+    if (!response.ok) {
+      console.warn('❌ Unsplash API request failed:', response.status);
+      return null;
+    }
+    
+    const data = await response.json();
+    console.log('✅ Unsplash image fetched:', data.urls.regular);
+    return data.urls.regular;
+  } catch (error) {
+    console.warn('⚠️ Failed to fetch Unsplash image:', error.message);
+    return null;
+  }
+}
+
 // Global variables for Firebase
 let firebaseInitialized = false;
 let db = null;
@@ -191,19 +222,17 @@ async function scrapeWatanoc() {
             .replace(/\n\n\n+/g, '\n\n') // Remove excessive line breaks
             .trim();
           
-          // Remove URLs and email addresses
+          // Enhanced URL and English text removal
           content = content
-            .replace(/https?:\/\/[^\s]+/gi, '')
-            .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '');
-          
-          // Enhanced English text removal
-          content = content
+            .replace(/https?:\/\/[^\s]+/gi, '') // Remove URLs
+            .replace(/www\.[^\s]+/gi, '') // Remove www URLs
+            .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '') // Remove email addresses
             .replace(/\b[A-Z][a-zA-Z\s,.'"\-!?:;0-9()]+[.!?]\s*/g, ' ') // Remove English sentences
             .replace(/\b[a-zA-Z]{3,}\b/g, ' ') // Remove English words 3+ characters
             .replace(/\([^)]*[a-zA-Z][^)]*\)/g, ' ') // Remove parentheses with English
             .replace(/[""'']/g, '') // Remove English quotes
             .replace(/\b[a-zA-Z]\b/g, ' ') // Remove single English letters
-            .replace(/\s+/g, ' ') // Clean up extra spaces again
+            .replace(/\s+/g, ' ') // Clean up extra spaces
             .trim();
           
           console.log(`✅ [Enhanced] Content cleaned (${content.length} chars after cleaning)`);
@@ -216,7 +245,7 @@ async function scrapeWatanoc() {
         // Ensure we have meaningful content
         if (!content || content.length < 50) {
           console.log(`⚠️ [Enhanced] Insufficient content extracted, creating fallback content`);
-          content = `この記事について：${data.title}\n\nこの記事はWatanocから取得された日本語学習記事です。${difficulty}レベルの内容となっています。\n\n詳しい内容については元の記事をご覧ください：${data.url}\n\n※この記事は日本語の読解練習に適しています。`;
+          content = `この記事について：${data.title}\n\nこの記事はWatanocから取得された日本語学習記事です。${difficulty}レベルの内容となっています。\n\n詳しい内容については元の記事をご覧ください。\n\n※この記事は日本語の読解練習に適しています。`;
         }
 
         const article = {
@@ -225,7 +254,7 @@ async function scrapeWatanoc() {
           content: content,
           summary: content.length > 200 ? content.substring(0, 200) + '...' : content,
           url: data.url,
-          imageUrl: imageUrl || `https://images.unsplash.com/photo-${1500000000000 + i}?w=400`,
+          imageUrl: imageUrl || await getUnsplashImage('japan news'),
           publishDate: new Date(),
           scrapedAt: new Date(),
           source: {

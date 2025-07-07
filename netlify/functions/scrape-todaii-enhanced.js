@@ -212,7 +212,7 @@ async function scrapeTodaii() {
           content: content,
           summary: content.length > 200 ? content.substring(0, 200) + '...' : content,
           url: data.url,
-          imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1600000000000?w=400',
+          imageUrl: data.imageUrl || null,
           publishDate: new Date(),
           scrapedAt: new Date(),
           source: {
@@ -244,7 +244,7 @@ async function scrapeTodaii() {
           content: `この記事について：${data.title}\\n\\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。${data.level}レベルの日本語学習に適した内容です。\\n\\n記事の詳細な内容を取得中にエラーが発生しました。元の記事をご覧ください：${data.url}\\n\\n※この記事は日本語の読解練習に最適です。`,
           summary: data.title,
           url: data.url,
-          imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1600000000000?w=400',
+          imageUrl: data.imageUrl || null,
           publishDate: new Date(),
           scrapedAt: new Date(),
           source: {

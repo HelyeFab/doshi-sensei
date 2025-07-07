@@ -15,7 +15,7 @@ import { lookupWord } from '@/utils/dictionaryLookup';
 import { StoryBookmarkManager } from '@/utils/storyBookmarkManager';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
-import ImprovedArticleAudioPlayer from '@/components/audio/ImprovedArticleAudioPlayer';
+import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioPlayer';
 
 interface StoryReaderProps {
   story: Story;

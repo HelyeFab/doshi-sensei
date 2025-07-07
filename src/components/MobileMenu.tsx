@@ -179,12 +179,19 @@ export default function MobileMenu() {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border flex-shrink-0 bg-gradient-to-r from-purple-100 to-purple-200">
-            <div className="text-center text-sm text-purple-800">
-              Doshi Sensei
-            </div>
-            <div className="text-center text-xs text-purple-700 mt-1">
-              E.Fabiani ❤️
+          <div className="p-2 border-t border-border flex-shrink-0">
+            <div 
+              className="p-4 rounded-lg"
+              style={{
+                backgroundImage: 'linear-gradient(to right bottom, #bb75e9, #9389f7, #6798fb, #39a4f6, #12aceb)'
+              }}
+            >
+              <div className="text-center text-sm text-white">
+                Doshi Sensei
+              </div>
+              <div className="text-center text-xs text-white mt-1">
+                E.Fabiani ❤️
+              </div>
             </div>
           </div>
         </div>

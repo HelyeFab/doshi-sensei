@@ -78,7 +78,7 @@ export default function MobileMenu() {
   return (
     <>
       {/* Menu Button - Top Right Corner (replaces Pokédex position) */}
-      <div className="fixed top-4 right-4 z-50 md:hidden">
+      <div className="fixed top-4 right-4 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center justify-center w-12 h-12 bg-background/80 backdrop-blur-md rounded-full hover:bg-background/90 transition-all duration-300"
@@ -103,14 +103,14 @@ export default function MobileMenu() {
       {/* Menu Modal Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Menu Modal - Simple dropdown like your image */}
       <div className={`
-        fixed top-20 right-4 w-64 bg-background border border-border rounded-lg shadow-xl z-50 md:hidden
+        fixed top-20 right-4 w-64 bg-background border border-border rounded-lg shadow-xl z-50
         transform transition-all duration-200 ease-in-out origin-top-right
         ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}
       `}>

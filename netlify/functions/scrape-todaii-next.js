@@ -110,8 +110,26 @@ async function scrapeTodaii() {
 
         const articleHtml = await articleResponse.text();
         
-        // Extract content from the Todaii article page
+        // Extract content and image from the Todaii article page
         let content = '';
+        let imageUrl = '';
+        
+        // Extract article image first
+        const imageSelectors = [
+          /<img[^>]*src="([^"]*\/images\/news\/[^"]*)"[^>]*/i,
+          /<img[^>]*class="[^"]*(?:featured|thumbnail|article|news)[^"]*"[^>]*src="([^"]+)"/i,
+          /<img[^>]*src="([^"]+)"[^>]*class="[^"]*(?:featured|thumbnail|article|news)[^"]*"/i,
+          /<div[^>]*class="[^"]*(?:image|photo)[^"]*"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"/i
+        ];
+        
+        for (const selector of imageSelectors) {
+          const imageMatch = articleHtml.match(selector);
+          if (imageMatch && imageMatch[1]) {
+            imageUrl = imageMatch[1].startsWith('http') ? imageMatch[1] : `https://japanese.todaiinews.com${imageMatch[1]}`;
+            console.log(`✅ [Simplified] Article image found: ${imageUrl}`);
+            break;
+          }
+        }
         
         // Simplified content extraction for Todaii (avoiding complex regex)
         const contentSelectors = [
@@ -141,9 +159,9 @@ async function scrapeTodaii() {
           }
         }
 
-        // Simplified content cleaning (avoiding complex regex that causes timeouts)
+        // Enhanced content cleaning with English removal
         if (content) {
-          console.log(`🧹 [Simplified] Cleaning Todaii content (${content.length} chars before cleaning)`);
+          console.log(`🧹 [Enhanced] Cleaning Todaii content (${content.length} chars before cleaning)`);
           
           // Basic HTML removal
           content = content
@@ -160,7 +178,17 @@ async function scrapeTodaii() {
             .replace(/\n\n\n+/g, '\n\n')
             .trim();
           
-          console.log(`✅ [Simplified] Todaii content cleaned (${content.length} chars after cleaning)`);
+          // Remove English text for Japanese learning focus
+          content = content
+            .replace(/\b[A-Z][a-zA-Z\s,.'"\-!?:;0-9()]+[.!?]\s*/g, ' ') // Remove English sentences
+            .replace(/\b[a-zA-Z]{3,}\b/g, ' ') // Remove English words 3+ characters
+            .replace(/\([^)]*[a-zA-Z][^)]*\)/g, ' ') // Remove parentheses with English
+            .replace(/[""'']/g, '') // Remove English quotes
+            .replace(/\b[a-zA-Z]\b/g, ' ') // Remove single English letters
+            .replace(/\s+/g, ' ') // Clean up extra spaces
+            .trim();
+          
+          console.log(`✅ [Enhanced] Todaii content cleaned (${content.length} chars after cleaning)`);
         }
 
         // Ensure we have meaningful content
@@ -175,7 +203,7 @@ async function scrapeTodaii() {
           content: content,
           summary: content.length > 200 ? content.substring(0, 200) + '...' : content,
           url: data.url,
-          imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',
+          imageUrl: imageUrl || 'https://images.unsplash.com/photo-1600000000000?w=400',
           publishDate: new Date(),
           scrapedAt: new Date(),
           source: {
@@ -207,7 +235,7 @@ async function scrapeTodaii() {
           content: `この記事について：${data.title}\n\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容です。\n\n記事の詳細な内容を取得中にエラーが発生しました。元の記事をご覧ください：${data.url}\n\n※この記事は日本語の読解練習に最適です。`,
           summary: data.title,
           url: data.url,
-          imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',
+          imageUrl: imageUrl || 'https://images.unsplash.com/photo-1600000000000?w=400',
           publishDate: new Date(),
           scrapedAt: new Date(),
           source: {

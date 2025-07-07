@@ -101,8 +101,26 @@ async function scrapeWatanoc() {
 
         const articleHtml = await articleResponse.text();
         
-        // Extract content from the article page
+        // Extract content and image from the article page
         let content = '';
+        let imageUrl = '';
+        
+        // Extract article image first
+        const imageSelectors = [
+          /<img[^>]*class="[^"]*(?:featured|thumbnail|article|post)[^"]*"[^>]*src="([^"]+)"/i,
+          /<img[^>]*src="([^"]+)"[^>]*class="[^"]*(?:featured|thumbnail|article|post)[^"]*"/i,
+          /<div[^>]*class="[^"]*(?:featured|thumbnail|post)[^"]*"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"/i,
+          /<img[^>]*src="([^"]+)"[^>]*(?:width|height)="[^"]*"/i
+        ];
+        
+        for (const selector of imageSelectors) {
+          const imageMatch = articleHtml.match(selector);
+          if (imageMatch && imageMatch[1]) {
+            imageUrl = imageMatch[1].startsWith('http') ? imageMatch[1] : `https://watanoc.com${imageMatch[1]}`;
+            console.log(`✅ [Enhanced] Article image found: ${imageUrl}`);
+            break;
+          }
+        }
         
         // Enhanced content selectors for Watanoc
         const contentSelectors = [
@@ -178,6 +196,16 @@ async function scrapeWatanoc() {
             .replace(/https?:\/\/[^\s]+/gi, '')
             .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '');
           
+          // Enhanced English text removal
+          content = content
+            .replace(/\b[A-Z][a-zA-Z\s,.'"\-!?:;0-9()]+[.!?]\s*/g, ' ') // Remove English sentences
+            .replace(/\b[a-zA-Z]{3,}\b/g, ' ') // Remove English words 3+ characters
+            .replace(/\([^)]*[a-zA-Z][^)]*\)/g, ' ') // Remove parentheses with English
+            .replace(/[""'']/g, '') // Remove English quotes
+            .replace(/\b[a-zA-Z]\b/g, ' ') // Remove single English letters
+            .replace(/\s+/g, ' ') // Clean up extra spaces again
+            .trim();
+          
           console.log(`✅ [Enhanced] Content cleaned (${content.length} chars after cleaning)`);
         }
 
@@ -197,7 +225,7 @@ async function scrapeWatanoc() {
           content: content,
           summary: content.length > 200 ? content.substring(0, 200) + '...' : content,
           url: data.url,
-          imageUrl: `https://images.unsplash.com/photo-${1500000000000 + i}?w=400`,
+          imageUrl: imageUrl || `https://images.unsplash.com/photo-${1500000000000 + i}?w=400`,
           publishDate: new Date(),
           scrapedAt: new Date(),
           source: {

@@ -75,6 +75,7 @@ export default function MobileMenu() {
               width={24}
               height={24}
               className="w-6 h-6"
+              unoptimized
             />
           </div>
         </button>
@@ -155,11 +156,9 @@ export default function MobileMenu() {
             <div className="text-center text-sm text-muted-foreground">
               Doshi Sensei
             </div>
-            {user && (
-              <div className="text-center text-xs text-muted-foreground mt-1">
-                {user.email}
-              </div>
-            )}
+            <div className="text-center text-xs text-muted-foreground mt-1">
+              E.Fabiani ❤️
+            </div>
           </div>
         </div>
       </div>

@@ -98,7 +98,6 @@ const config = withPWA({
     /app-build-manifest\.json$/,
     /_buildManifest\.js$/,
     /_ssgManifest\.js$/,
-    /flat-icons/,
     /chunks\/pages\/_app/,
     /chunks\/pages\/_error/,
   ],

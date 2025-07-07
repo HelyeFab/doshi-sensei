@@ -65,7 +65,11 @@ export default function MobileMenu() {
       <div className="fixed top-4 right-4 z-50 md:hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center w-12 h-12 bg-background/80 backdrop-blur-md border border-border rounded-full shadow-lg hover:bg-background/90 transition-all duration-300"
+          className="flex items-center justify-center w-12 h-12 bg-background/80 backdrop-blur-md rounded-full hover:bg-background/90 transition-all duration-300"
+          style={{
+            border: '2px solid white',
+            boxShadow: 'inset 0 0 0 1px var(--primary), 0 6px 20px rgba(0, 0, 0, 0.2)'
+          }}
           aria-label="Toggle menu"
         >
           <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>

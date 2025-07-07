@@ -18,7 +18,7 @@ export default function FloatingDonateButton() {
     <>
       <button
         onClick={handleClick}
-        className="fixed bottom-32 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-primary hover:bg-primary/90 border border-primary/30 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group backdrop-blur-md"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-primary hover:bg-primary/90 border border-primary/30 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group backdrop-blur-md"
         aria-label="Support the developer"
         title="Support the developer"
       >

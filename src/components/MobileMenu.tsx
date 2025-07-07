@@ -5,6 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { AVAILABLE_NAV_ITEMS, HOME_NAV_ITEM } from '@/config/navigation';
 import PokedexModal from '@/components/games/PokedexModal';
@@ -15,27 +17,37 @@ export default function MobileMenu() {
   const [pokemonCaught, setPokemonCaught] = useState(0);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
+  const { profile } = useUserProfile();
+  const { subscription } = useSubscription2();
   const router = useRouter();
   const pathname = usePathname();
 
   // Load Pokemon stats just like in the homepage
   useEffect(() => {
-    const loadPokemonStats = async () => {
+    const loadPokemonCount = async () => {
       try {
-        const pokedexStats = await pokemonManager.getPokedexStats();
-        setPokemonCaught(pokedexStats.totalCaught);
+        // Get user premium status
+        const isPremiumUser = subscription?.status === 'active' &&
+          (subscription?.plan === 'monthly' ||
+            subscription?.plan === 'yearly');
+
+        // Get caught Pokemon from IndexedDB and cloud if premium
+        const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
+
+        console.log('🎮 MobileMenu Pokemon count:', caughtPokemon.length);
+        setPokemonCaught(caughtPokemon.length);
       } catch (error) {
-        console.error('Error loading Pokemon stats:', error);
+        console.error('Error loading Pokémon count in MobileMenu:', error);
       }
     };
 
-    loadPokemonStats();
+    loadPokemonCount();
 
     // Test both menu SVG paths
     console.log('🧪 Testing menu SVG paths:');
     console.log('📍 Current path:', window.location.origin + '/menu.svg');
     console.log('📍 Original path:', window.location.origin + '/flat-icons/menu.svg');
-  }, []);
+  }, [profile?.uid, subscription?.status, subscription?.plan]);
 
   // Close menu when route changes
   useEffect(() => {

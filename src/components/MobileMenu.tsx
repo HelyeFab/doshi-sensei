@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { pokemonManager } from '@/utils/pokemonManager';
@@ -73,13 +72,10 @@ export default function MobileMenu() {
           aria-label="Toggle menu"
         >
           <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-            <Image
+            <img
               src="/flat-icons/menu.svg"
               alt="Menu"
-              width={24}
-              height={24}
               className="w-6 h-6"
-              unoptimized
             />
           </div>
         </button>

@@ -69,10 +69,18 @@ export default function MobileMenu() {
     { label: 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: 'Admin Dashboard', icon: '👑', href: '/admin' }] : []),
     ...(pokemonCaught > 0 ? [{ label: 'Pokédex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
-    { label: 'Account', icon: '👤', href: '/account' },
-    { label: 'News Articles', icon: '🗞️', href: '/news' },
+    { label: 'Practice', icon: '📚', href: '/practice' },
+    { label: 'Drill', icon: '⚡', href: '/drill' },
     { label: 'Vocabulary', icon: '📖', href: '/vocabulary' },
-    { label: 'Practice Drill', icon: '⚡', href: '/drill' },
+    { label: 'Kanji', icon: '漢', href: '/kanji-browser' },
+    { label: 'Mood Boards', icon: '🗺️', href: '/kanji-moods' },
+    { label: 'Saved Items', icon: '⭐', href: '/favourites' },
+    { label: 'Account', icon: '👤', href: '/account' },
+    { label: 'Settings', icon: '⚙️', href: '/settings' },
+    { label: 'News', icon: '🗞️', href: '/news' },
+    { label: 'Games', icon: '🎮', href: '/games' },
+    { label: 'Resources', icon: '✨🎌✨', href: '/resources' },
+    { label: 'AI Stories', icon: '📖', href: '/stories' },
   ];
 
   return (

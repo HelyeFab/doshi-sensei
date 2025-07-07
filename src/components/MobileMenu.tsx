@@ -68,7 +68,7 @@ export default function MobileMenu() {
   const simpleMenuItems = [
     { label: 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: 'Admin Dashboard', icon: '👑', href: '/admin' }] : []),
-    ...(pokemonCaught > 0 ? [{ label: 'Pokédex', icon: '📱', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
+    ...(pokemonCaught > 0 ? [{ label: 'Pokédex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
     { label: 'Account', icon: '👤', href: '/account' },
     { label: 'News Articles', icon: '🗞️', href: '/news' },
     { label: 'Vocabulary', icon: '📖', href: '/vocabulary' },
@@ -142,7 +142,11 @@ export default function MobileMenu() {
                     onClick={togglePokedex}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
                   >
-                    <span className="text-lg">{item.icon}</span>
+                    {item.icon.startsWith('/') ? (
+                      <img src={item.icon} alt={item.label} className="w-5 h-5 object-contain" />
+                    ) : (
+                      <span className="text-lg">{item.icon}</span>
+                    )}
                     <span className="font-medium">{item.label}</span>
                     {item.count && (
                       <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -163,7 +167,11 @@ export default function MobileMenu() {
                     ${isActive ? 'bg-primary/10 text-primary' : 'text-foreground'}
                   `}
                 >
-                  <span className="text-lg">{item.icon}</span>
+                  {item.icon.startsWith('/') ? (
+                    <img src={item.icon} alt={item.label} className="w-5 h-5 object-contain" />
+                  ) : (
+                    <span className="text-lg">{item.icon}</span>
+                  )}
                   <span className="font-medium">{item.label}</span>
                 </Link>
               );

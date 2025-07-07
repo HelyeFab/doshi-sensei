@@ -47,7 +47,7 @@ function RubyTextRenderer({ text, settings, onWordClick }: {
         settings.fontSize === 'medium' ? 'text-base' :
           settings.fontSize === 'large' ? 'text-lg' :
             'text-xl'
-        } leading-relaxed [&_ruby]:cursor-pointer [&_ruby]:hover:bg-primary/20 [&_ruby]:transition-colors [&_ruby]:rounded [&_ruby]:px-0.5`}
+        } leading-relaxed [&_ruby]:cursor-pointer [&_ruby]:hover:bg-primary/20 [&_ruby]:transition-colors [&_ruby]:rounded [&_ruby]:px-1 [&_ruby]:min-w-[3em] [&_ruby]:inline-block [&_ruby]:text-center [&_ruby]:mx-1`}
       dangerouslySetInnerHTML={{ __html: processedText }}
       onClick={onWordClick}
       style={{

@@ -88,9 +88,9 @@ async function scrapeTodaii() {
     
     console.log(`✅ [Improved] Found ${articles.length} Todaii articles to process`);
     
-    // Now fetch actual content for each article
+    // Now fetch actual content for each article (reduced to 3 for Netlify limits)
     const processedArticles = [];
-    for (let i = 0; i < Math.min(articles.length, 5); i++) {
+    for (let i = 0; i < Math.min(articles.length, 3); i++) {
       const data = articles[i];
       
       try {
@@ -100,7 +100,7 @@ async function scrapeTodaii() {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           },
-          signal: AbortSignal.timeout(8000)
+          signal: AbortSignal.timeout(5000)
         });
 
         if (!articleResponse.ok) {
@@ -113,75 +113,60 @@ async function scrapeTodaii() {
         // Extract content from the Todaii article page
         let content = '';
         
-        // Enhanced content selectors for Todaii
+        // Simplified content extraction for Todaii (avoiding complex regex)
         const contentSelectors = [
-          // Todaii specific content areas
-          /<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<(?:footer|div[^>]*class="[^"]*(?:share|comment|related)))/i,
-          /<article[^>]*>([\s\S]*?)(?:<footer|<\/article>)/i,
-          /<main[^>]*>([\s\S]*?)(?:<aside|<footer|<\/main>)/i,
-          // Generic selectors
-          /<div[^>]*class="[^"]*(?:post-content|article-content|news-content)[^"]*"[^>]*>([\s\S]*?)(?:<\/div>)/i
+          // Look for main content areas
+          /<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+          /<article[^>]*>([\s\S]*?)<\/article>/i,
+          /<main[^>]*>([\s\S]*?)<\/main>/i
         ];
 
         for (const selector of contentSelectors) {
           const contentMatch = articleHtml.match(selector);
           if (contentMatch && contentMatch[1]) {
             content = contentMatch[1];
-            console.log(`✅ [Improved] Content extracted using selector pattern`);
+            console.log(`✅ [Simplified] Content extracted using selector pattern`);
             break;
           }
         }
 
-        // If no content found with selectors, try extracting paragraphs with Japanese
+        // Simple fallback - extract paragraphs with Japanese text
         if (!content || content.length < 100) {
-          console.log('⚠️ [Improved] Primary selectors failed, trying fallback extraction...');
+          console.log('⚠️ [Simplified] Primary selectors failed, trying paragraph extraction...');
           
           const paragraphMatches = articleHtml.match(/<p[^>]*>([^<]*[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF][^<]*)<\/p>/gi);
           if (paragraphMatches && paragraphMatches.length > 0) {
-            content = paragraphMatches.slice(0, 8).join('\n');
-            console.log(`✅ [Improved] Extracted ${paragraphMatches.length} paragraphs as fallback`);
+            content = paragraphMatches.slice(0, 5).join('\n');
+            console.log(`✅ [Simplified] Extracted ${paragraphMatches.length} paragraphs as fallback`);
           }
         }
 
-        // Enhanced content cleaning (same as Watanoc improvements)
+        // Simplified content cleaning (avoiding complex regex that causes timeouts)
         if (content) {
-          console.log(`🧹 [Improved] Cleaning Todaii content (${content.length} chars before cleaning)`);
+          console.log(`🧹 [Simplified] Cleaning Todaii content (${content.length} chars before cleaning)`);
           
-          // Remove unwanted elements
+          // Basic HTML removal
           content = content
             .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
             .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-            .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
-            .replace(/<div[^>]*class="[^"]*(?:ad|advertisement|banner|share|comment|related|navigation|sidebar)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-            .replace(/<aside[^>]*>[\s\S]*?<\/aside>/gi, '')
-            .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '');
-          
-          // Remove English content specifically for Todaii
-          content = content
-            .replace(/[A-Z][a-zA-Z\s,.'"\\-!?:;0-9()]+[.!?]\s*/g, '') // Remove English sentences
-            .replace(/\\b[a-zA-Z]{3,}\\b/g, '') // Remove English words
-            .replace(/\\([^)]*[a-zA-Z][^)]*\\)/g, ''); // Remove parentheses with English
-          
-          // Remove HTML tags and clean formatting
-          content = content
             .replace(/<[^>]*>/g, ' ')
             .replace(/&nbsp;/g, ' ')
             .replace(/&amp;/g, '&')
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"')
-            .replace(/\\s+/g, ' ')
-            .replace(/\\s*([。！？])\\s*/g, '$1\\n\\n')
-            .replace(/\\n\\n\\n+/g, '\\n\\n')
+            .replace(/\s+/g, ' ')
+            .replace(/\s*([。！？])\s*/g, '$1\n\n')
+            .replace(/\n\n\n+/g, '\n\n')
             .trim();
           
-          console.log(`✅ [Improved] Todaii content cleaned (${content.length} chars after cleaning)`);
+          console.log(`✅ [Simplified] Todaii content cleaned (${content.length} chars after cleaning)`);
         }
 
         // Ensure we have meaningful content
         if (!content || content.length < 50) {
-          console.log(`⚠️ [Improved] Insufficient Todaii content extracted, creating fallback content`);
-          content = `この記事について：${data.title}\\n\\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容で、分かりやすい表現を使用しています。\\n\\n詳しい内容については元の記事をご覧ください：${data.url}\\n\\n※この記事は日本語の読解練習に最適です。`;
+          console.log(`⚠️ [Simplified] Insufficient Todaii content extracted, creating fallback content`);
+          content = `この記事について：${data.title}\n\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容で、分かりやすい表現を使用しています。\n\n詳しい内容については元の記事をご覧ください：${data.url}\n\n※この記事は日本語の読解練習に最適です。`;
         }
 
         const article = {
@@ -219,7 +204,7 @@ async function scrapeTodaii() {
         const fallbackArticle = {
           id: `todaii_improved_fallback_${Date.now()}_${i}`,
           title: data.title,
-          content: `この記事について：${data.title}\\n\\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容です。\\n\\n記事の詳細な内容を取得中にエラーが発生しました。元の記事をご覧ください：${data.url}\\n\\n※この記事は日本語の読解練習に最適です。`,
+          content: `この記事について：${data.title}\n\nこの記事は東大生が運営するTodaiiニュースサイトから取得されました。日本語学習に適した内容です。\n\n記事の詳細な内容を取得中にエラーが発生しました。元の記事をご覧ください：${data.url}\n\n※この記事は日本語の読解練習に最適です。`,
           summary: data.title,
           url: data.url,
           imageUrl: 'https://images.unsplash.com/photo-1600000000000?w=400',

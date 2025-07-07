@@ -30,6 +30,11 @@ export default function MobileMenu() {
     };
 
     loadPokemonStats();
+
+    // Test both menu SVG paths
+    console.log('🧪 Testing menu SVG paths:');
+    console.log('📍 Current path:', window.location.origin + '/menu.svg');
+    console.log('📍 Original path:', window.location.origin + '/flat-icons/menu.svg');
   }, []);
 
   // Close menu when route changes
@@ -76,6 +81,8 @@ export default function MobileMenu() {
               src="/menu.svg"
               alt="Menu"
               className="w-6 h-6"
+              onLoad={() => console.log('📱 Menu SVG loaded from:', window.location.origin + '/menu.svg')}
+              onError={() => console.log('❌ Menu SVG failed to load from:', window.location.origin + '/menu.svg')}
             />
           </div>
         </button>

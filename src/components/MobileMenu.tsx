@@ -94,9 +94,9 @@ export default function MobileMenu() {
         transform transition-all duration-200 ease-in-out origin-top-right
         ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}
       `}>
-        <div className="flex flex-col max-h-80 overflow-hidden">
+        <div className="flex flex-col max-h-80">
           {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b border-border">
+          <div className="flex items-center justify-between p-3 border-b border-border flex-shrink-0">
             <h2 className="text-sm font-semibold">Menu</h2>
             <button
               onClick={() => setIsOpen(false)}
@@ -109,8 +109,8 @@ export default function MobileMenu() {
             </button>
           </div>
 
-          {/* Simple Menu Items like your image */}
-          <div className="py-2">
+          {/* Simple Menu Items like your image - Scrollable */}
+          <div className="py-2 overflow-y-auto flex-1 min-h-0">
             {simpleMenuItems.map((item, index) => {
               const isActive = pathname === item.href || 
                 (item.href !== '/' && pathname.startsWith(item.href));
@@ -151,7 +151,7 @@ export default function MobileMenu() {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border">
+          <div className="p-4 border-t border-border flex-shrink-0">
             <div className="text-center text-sm text-muted-foreground">
               Doshi Sensei
             </div>

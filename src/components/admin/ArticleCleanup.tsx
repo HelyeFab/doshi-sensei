@@ -9,6 +9,7 @@ import {
   findDuplicateArticles,
   TEST_PATTERNS 
 } from '@/utils/articleCleanup';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 
 interface ArticleCleanupProps {
   onRefresh?: () => void;
@@ -26,6 +27,11 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
   const [stats, setStats] = useState<any>(null);
   const [status, setStatus] = useState('');
   const [showTestPatterns, setShowTestPatterns] = useState(false);
+  
+  // Modal states
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
+  const [showDeleteDuplicatesModal, setShowDeleteDuplicatesModal] = useState(false);
+  const [selectedDuplicateGroup, setSelectedDuplicateGroup] = useState<typeof duplicates[0] | null>(null);
 
   // Load test articles and stats
   const loadTestArticles = async () => {
@@ -64,12 +70,6 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
   const handleDeleteTestArticles = async () => {
     if (testArticles.length === 0) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ALL ${testArticles.length} test articles? This action cannot be undone.`
-    );
-
-    if (!confirmed) return;
-
     try {
       setDeleteLoading(true);
       setStatus('🗑️ Deleting test articles...');
@@ -93,6 +93,7 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
       console.error('Error deleting test articles:', error);
     } finally {
       setDeleteLoading(false);
+      setShowDeleteAllModal(false);
     }
   };
 
@@ -117,17 +118,13 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
   };
 
   // Delete duplicate articles (keep the newest one)
-  const handleDeleteDuplicates = async (duplicateGroup: typeof duplicates[0]) => {
-    const confirmed = window.confirm(
-      `Delete ${duplicateGroup.articles.length - 1} older duplicates of "${duplicateGroup.title}"? The newest one will be kept.`
-    );
-
-    if (!confirmed) return;
+  const handleDeleteDuplicates = async () => {
+    if (!selectedDuplicateGroup) return;
 
     try {
       setDeleteLoading(true);
       // Keep the first one (newest), delete the rest
-      const toDelete = duplicateGroup.articles.slice(1).map(a => a.id);
+      const toDelete = selectedDuplicateGroup.articles.slice(1).map(a => a.id);
       const result = await deleteTestArticles(toDelete);
       
       if (result.success) {
@@ -142,6 +139,8 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
       setStatus('❌ Error deleting duplicates');
     } finally {
       setDeleteLoading(false);
+      setShowDeleteDuplicatesModal(false);
+      setSelectedDuplicateGroup(null);
     }
   };
 
@@ -230,7 +229,7 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
         <div className="flex gap-3 mb-4">
           {testArticles.length > 0 && (
             <button
-              onClick={handleDeleteTestArticles}
+              onClick={() => setShowDeleteAllModal(true)}
               disabled={deleteLoading}
               className="px-4 py-2 bg-destructive text-destructive-foreground rounded hover:bg-destructive/90 disabled:opacity-50"
             >
@@ -293,7 +292,10 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleDeleteDuplicates(group)}
+                    onClick={() => {
+                      setSelectedDuplicateGroup(group);
+                      setShowDeleteDuplicatesModal(true);
+                    }}
                     disabled={deleteLoading}
                     className="px-3 py-1 bg-destructive text-destructive-foreground rounded text-sm hover:bg-destructive/90 disabled:opacity-50"
                   >
@@ -313,6 +315,38 @@ export function ArticleCleanup({ onRefresh }: ArticleCleanupProps) {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modals */}
+      <ConfirmationDialog
+        isOpen={showDeleteAllModal}
+        title="Delete All Test Articles"
+        message={`Are you sure you want to delete ALL ${testArticles.length} test articles? This action cannot be undone.`}
+        confirmText="Delete All"
+        cancelText="Cancel"
+        isDestructive={true}
+        onConfirm={handleDeleteTestArticles}
+        onCancel={() => setShowDeleteAllModal(false)}
+        loading={deleteLoading}
+      />
+
+      <ConfirmationDialog
+        isOpen={showDeleteDuplicatesModal}
+        title="Delete Duplicate Articles"
+        message={
+          selectedDuplicateGroup
+            ? `Delete ${selectedDuplicateGroup.articles.length - 1} older duplicates of "${selectedDuplicateGroup.title}"? The newest one will be kept.`
+            : ''
+        }
+        confirmText="Delete Duplicates"
+        cancelText="Cancel"
+        isDestructive={true}
+        onConfirm={handleDeleteDuplicates}
+        onCancel={() => {
+          setShowDeleteDuplicatesModal(false);
+          setSelectedDuplicateGroup(null);
+        }}
+        loading={deleteLoading}
+      />
     </div>
   );
 }

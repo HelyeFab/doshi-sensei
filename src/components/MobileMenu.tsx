@@ -179,11 +179,11 @@ export default function MobileMenu() {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border flex-shrink-0 bg-gradient-to-r from-purple-600 to-purple-800">
-            <div className="text-center text-sm text-white">
+          <div className="p-4 border-t border-border flex-shrink-0 bg-gradient-to-r from-purple-100 to-purple-200">
+            <div className="text-center text-sm text-purple-800">
               Doshi Sensei
             </div>
-            <div className="text-center text-xs text-white mt-1">
+            <div className="text-center text-xs text-purple-700 mt-1">
               E.Fabiani ❤️
             </div>
           </div>

@@ -126,21 +126,21 @@ export function GrammarHighlightedText({
           return (
             <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1.5 my-3 md:mx-0.5 md:my-0 inline-block relative ${isHighlighted ? `grammar-${posType}` : ''
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1 my-1 inline-block relative min-w-[2.5em] text-center ${isHighlighted ? `grammar-${posType}` : ''
                 }`}
               style={{
                 ...(isHighlighted ? { backgroundColor: `${token.color}20` } : {}),
-                paddingTop: showFurigana ? '1.2em' : undefined
+                paddingTop: showFurigana ? '0.8em' : undefined
               }}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
             >
               <span
-                className="absolute text-xs"
+                className="absolute text-xs w-full text-center"
                 style={{
-                  top: '-0.3em',
+                  top: '0.1em',
                   left: '0',
-                  fontSize: '0.6em',
+                  fontSize: '0.7em',
                   lineHeight: 1
                 }}
               >
@@ -154,7 +154,7 @@ export function GrammarHighlightedText({
           return (
             <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1.5 my-3 md:mx-0.5 md:my-0 ${isHighlighted ? `grammar-${posType}` : ''}`}
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1 my-1 inline-block min-w-[2.5em] text-center ${isHighlighted ? `grammar-${posType}` : ''}`}
               style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}

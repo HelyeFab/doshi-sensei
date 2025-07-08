@@ -115,6 +115,82 @@ Guest User → LoginPromptModal → Free User → UpgradePromptModal → Premium
 />
 ```
 
+### 3. **ListSelectionModal**
+**File**: `src/components/ListSelectionModal.tsx`
+
+**Purpose**: Unified modal for creating study lists across all contexts (favorites, word saving, etc.)
+
+#### **Visual Design**
+```tsx
+<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+    <h3 className="text-lg font-semibold text-card-foreground mb-4">Create New Study List</h3>
+    
+    {/* List Type Selection with Visual Indicators */}
+    <div className="space-y-2">
+      <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg">
+        <input type="radio" name="listType" value="flashcard" />
+        <div className="flex-1">
+          <span className="text-sm font-medium">Flashcard List</span>
+          <span className="text-xs px-2 py-0.5 rounded border bg-purple-500/10 text-purple-400">flashcard</span>
+          <div className="text-xs text-muted-foreground">For general review (any content)</div>
+        </div>
+      </label>
+      {/* Drillable and Sentence options */}
+    </div>
+    
+    {/* Name and Description Fields */}
+    {/* Validation and Error Display */}
+    {/* Action Buttons */}
+  </div>
+</div>
+```
+
+#### **Key Features**
+- 📋 **List Type Selection**: Flashcard, Drillable, or Sentence lists
+- 🎨 **Visual Indicators**: Color-coded badges and descriptions
+- ✅ **Validation**: Duplicate name checking and type validation
+- 🔄 **Unified Experience**: Same modal across all list creation contexts
+- 🎯 **Smart Defaults**: Context-appropriate default selections
+
+#### **Usage Examples**
+```tsx
+// From Favorites Page
+<ListSelectionModal
+  isOpen={showCreateListModal}
+  onClose={() => setShowCreateListModal(false)}
+  onCreateList={handleCreateList}
+  title="Create New Study List"
+  allowedTypes={['flashcard', 'drillable', 'sentence']}
+/>
+
+// From Word Saving Context
+<ListSelectionModal
+  isOpen={showModal}
+  onClose={onClose}
+  onCreateList={handleCreateList}
+  title="Create List for Word"
+  allowedTypes={['flashcard', 'drillable']}
+  showOnlyTypes={['flashcard', 'drillable']}
+/>
+
+// From Sentence Saving Context
+<ListSelectionModal
+  isOpen={showModal}
+  onClose={onClose}
+  onCreateList={handleCreateList}
+  title="Create List for Sentences"
+  allowedTypes={['sentence']}
+  showOnlyTypes={['sentence']}
+/>
+```
+
+#### **Integration Benefits**
+- **Consistent UX**: Same modal experience across all list creation contexts
+- **Type Safety**: Prevents inappropriate list type selections
+- **Reduced Code Duplication**: Single component replaces multiple similar modals
+- **Enhanced Validation**: Centralized duplicate name checking and error handling
+
 ---
 
 ## 🔄 **User Conversion Flows**

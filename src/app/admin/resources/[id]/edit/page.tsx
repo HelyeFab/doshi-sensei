@@ -9,6 +9,8 @@ import { getResourcePost, updateResourcePost, extractExcerpt, calculateReadingTi
 import { marked } from 'marked';
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { strings } from '@/config/strings';
 
 interface EditResourcePageProps {
   params: Promise<{
@@ -47,6 +49,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
   const [tagInput, setTagInput] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Resolve params
   useEffect(() => {
@@ -75,7 +78,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
       const resourceData = await getResourcePost(resourceId);
 
       if (!resourceData) {
-        alert('Resource not found');
+        setErrorMessage('Resource not found');
         router.push('/admin/resources');
         return;
       }
@@ -100,7 +103,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
       });
     } catch (error) {
       console.error('Error loading resource:', error);
-      alert('Failed to load resource');
+      setErrorMessage('Failed to load resource');
       router.push('/admin/resources');
     } finally {
       setLoading(false);
@@ -116,12 +119,12 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
 
       // Validation
       if (!formData.title.trim()) {
-        alert('Title is required');
+        setErrorMessage(strings.forms.validation.required);
         return;
       }
 
       if (!formData.content.trim()) {
-        alert('Content is required');
+        setErrorMessage(strings.forms.validation.required);
         return;
       }
 
@@ -129,7 +132,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
       router.push('/admin/resources');
     } catch (error: any) {
       console.error('Error updating resource:', error);
-      alert(error.message || 'Failed to update resource. Please try again.');
+      setErrorMessage(error.message || 'Failed to update resource. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -162,13 +165,13 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      setErrorMessage('Please select an image file');
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB');
+      setErrorMessage('Image size must be less than 5MB');
       return;
     }
 
@@ -196,7 +199,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
+      setErrorMessage('Failed to upload image. Please try again.');
     } finally {
       setUploadingImage(false);
     }
@@ -283,7 +286,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
-                placeholder="Enter resource title"
+                placeholder={strings.forms.placeholders.title}
               />
             </div>
 
@@ -379,7 +382,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
               onChange={(e) => handleInputChange('content', e.target.value)}
               rows={20}
               className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground font-mono text-sm"
-              placeholder="Write your content in Markdown..."
+              placeholder={strings.forms.placeholders.content}
             />
           )}
         </div>
@@ -400,9 +403,8 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
             />
             <label
               htmlFor="image-upload"
-              className={`inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer ${
-                uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               {uploadingImage ? (
                 <>
@@ -619,6 +621,21 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
           </button>
         </div>
       </form>
+
+      {/* Error Message Modal */}
+      {errorMessage && (
+        <ConfirmationDialog
+          isOpen={!!errorMessage}
+          title="Error"
+          message={errorMessage}
+          confirmText="OK"
+          cancelText=""
+          isDestructive={false}
+          onConfirm={() => setErrorMessage(null)}
+          onCancel={() => setErrorMessage(null)}
+          loading={false}
+        />
+      )}
     </div>
   );
 }

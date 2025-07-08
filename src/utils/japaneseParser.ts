@@ -32,11 +32,28 @@ export function parseJapaneseText(text: string): ParsedWord[] {
 /**
  * Process text with furigana - adds or removes furigana based on settings
  */
-export function processTextWithFurigana(text: string, showFurigana: boolean): string {
+export function processTextWithFurigana(text: string, showFurigana: boolean = true): string {
   if (showFurigana) {
     return text;
   }
   
   // Remove ruby tags but keep the base text
   return text.replace(/<ruby>([^<]+)<rt>[^<]+<\/rt><\/ruby>/g, '$1');
+}
+
+/**
+ * Clean text for TTS by properly handling ruby tags and removing HTML
+ * This ensures that text with furigana doesn't get read twice
+ */
+export function cleanTextForTTS(text: string): string {
+  // First, handle ruby tags by keeping only the base text (kanji)
+  let cleanedText = text.replace(/<ruby>([^<]+)<rt>[^<]+<\/rt><\/ruby>/g, '$1');
+  
+  // Then remove all other HTML tags
+  cleanedText = cleanedText.replace(/<[^>]*>/g, '');
+  
+  // Clean up extra whitespace and normalize
+  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+  
+  return cleanedText;
 }

@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { JapaneseWord } from '@/types';
+import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import { searchWords } from '@/utils/api';
 import { strings } from '@/config/strings';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAccess } from '@/hooks/useAccess';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
 import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
+import { StudyListManager } from '@/utils/studyListManager';
 
 export default function VocabularyPage() {
   const { user } = useAuth();
+  const { subscription } = useSubscription2();
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<JapaneseWord[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -20,6 +24,8 @@ export default function VocabularyPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [wordToSave, setWordToSave] = useState<JapaneseWord | null>(null);
 
   useEffect(() => {
     loadSearchHistory();
@@ -75,6 +81,47 @@ export default function VocabularyPage() {
 
   const handleCloseModal = () => {
     setSelectedWord(null);
+  };
+
+  const handleSaveWord = (word: JapaneseWord) => {
+    setWordToSave(word);
+    setShowSaveModal(true);
+    setSelectedWord(null); // Close the word detail modal
+  };
+
+  const handleSaveWordToLists = async (word: JapaneseWord, listIds: string[], newListName?: string) => {
+    try {
+      let listsToSaveTo = [...listIds];
+
+      // Create new list if specified
+      if (newListName?.trim()) {
+        const newList = await StudyListManager.createStudyList(
+          newListName,
+          'flashcard', // Default to flashcard for words
+          `Created for saving ${word.kanji}`,
+          user,
+          subscription?.status
+        );
+        listsToSaveTo.push(newList.id);
+      }
+
+      // Save word to selected lists
+      await StudyListManager.addItemToLists(
+        word,
+        'word',
+        listsToSaveTo,
+        user,
+        subscription?.status
+      );
+
+      setShowSaveModal(false);
+      setWordToSave(null);
+      
+      // Show success message (optional)
+      console.log('Word saved successfully');
+    } catch (error) {
+      console.error('Error saving word to lists:', error);
+    }
   };
 
   const handleSearchHistoryClick = async (entry: SearchHistoryEntry) => {
@@ -290,6 +337,19 @@ export default function VocabularyPage() {
           <WordModal
             word={selectedWord}
             onClose={handleCloseModal}
+            onSave={handleSaveWord}
+          />
+        )}
+
+        {/* Save Word Modal */}
+        {showSaveModal && wordToSave && (
+          <SaveWordModal
+            word={wordToSave}
+            onClose={() => {
+              setShowSaveModal(false);
+              setWordToSave(null);
+            }}
+            onSaveToLists={handleSaveWordToLists}
           />
         )}
 
@@ -388,9 +448,10 @@ function WordCard({ word, onWordClick }: WordCardProps) {
 interface WordModalProps {
   word: JapaneseWord;
   onClose: () => void;
+  onSave: (word: JapaneseWord) => void;
 }
 
-function WordModal({ word, onClose }: WordModalProps) {
+function WordModal({ word, onClose, onSave }: WordModalProps) {
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
@@ -433,18 +494,257 @@ function WordModal({ word, onClose }: WordModalProps) {
             </div>
           )}
 
+          {/* Save Button */}
+          <div className="pt-4 border-t border-border">
+            <button
+              onClick={() => onSave(word)}
+              className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-center font-medium"
+            >
+              Save to Lists
+            </button>
+          </div>
+
           {/* Conjugation Link */}
           {(word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' || 
             word.type === 'i-adjective' || word.type === 'na-adjective') && (
-            <div className="pt-4 border-t border-border">
+            <div className="pt-2">
               <a
                 href={`/practice?word=${encodeURIComponent(word.kanji)}`}
-                className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-center font-medium"
+                className="block w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors text-center font-medium"
               >
                 Practice Conjugations
               </a>
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface SaveWordModalProps {
+  word: JapaneseWord;
+  onClose: () => void;
+  onSaveToLists: (word: JapaneseWord, listIds: string[], newListName?: string) => Promise<void>;
+}
+
+function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
+  const { user } = useAuth();
+  const { subscription } = useSubscription2();
+  const { checkAndTrack } = useAccess();
+  const [studyLists, setStudyLists] = useState<StudyList[]>([]);
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [showCreateNew, setShowCreateNew] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [newListType, setNewListType] = useState<StudyListType>('flashcard');
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  // Load unified study lists
+  useEffect(() => {
+    const loadStudyLists = async () => {
+      try {
+        const lists = await StudyListManager.getAllStudyLists();
+        setStudyLists(lists);
+      } catch (error) {
+        console.error('Error loading study lists:', error);
+      }
+    };
+    loadStudyLists();
+  }, []);
+
+  const handleToggleList = (listId: string) => {
+    setSelectedLists(prev =>
+      prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId]
+    );
+  };
+
+  const canAddToList = (listType: StudyListType): boolean => {
+    return StudyListManager.canAddToList('word', word, listType);
+  };
+
+  const getValidationMessage = (listType: StudyListType, canAdd: boolean): string => {
+    if (!canAdd) {
+      if (listType === 'drillable') {
+        return `${strings.listCompatibility.incompatible}: ${strings.listCompatibility.cannotConjugate}`;
+      }
+      return `${strings.listCompatibility.incompatible}: ${strings.listCompatibility.sentencesOnly}`;
+    }
+    
+    if (listType === 'flashcard') {
+      return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.flashcardReview}`;
+    }
+    
+    if (listType === 'drillable') {
+      return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.conjugationPractice}`;
+    }
+    
+    return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.flashcardReview}`;
+  };
+
+  const handleSave = async () => {
+    if (selectedLists.length === 0 && !newListName.trim()) return;
+
+    try {
+      setSaving(true);
+      setErrors([]);
+      await onSaveToLists(word, selectedLists, newListName.trim() || undefined);
+      onClose();
+    } catch (err) {
+      console.error('Error saving word:', err);
+      setErrors(['Failed to save word to lists']);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <h3 className="text-lg font-semibold text-card-foreground mb-4">
+          Save "{word.kanji}" to Lists
+        </h3>
+
+        {/* Error messages */}
+        {errors.length > 0 && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+            <div className="text-sm text-red-400">
+              {errors.map((error, index) => (
+                <div key={index}>• {error}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {studyLists.length > 0 && (
+          <div className="space-y-3 mb-4">
+            <h4 className="text-sm font-medium text-muted-foreground">Select existing lists:</h4>
+            {studyLists.map((list) => {
+              const canAdd = canAddToList(list.type);
+              return (
+                <label key={list.id} className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg transition-colors ${
+                  canAdd ? 'hover:bg-muted/50' : 'opacity-60'
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={selectedLists.includes(list.id)}
+                    onChange={() => canAdd && handleToggleList(list.id)}
+                    disabled={!canAdd}
+                    className="rounded border-border mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: list.color }}
+                      ></div>
+                      <span className="text-sm text-foreground">{list.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({list.itemIds.length} items)
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
+                      }`}>
+                        {list.type}
+                      </span>
+                    </div>
+                    <div className={`text-xs ${canAdd ? 'text-green-400' : 'text-red-400'}`}>
+                      {getValidationMessage(list.type, canAdd)}
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center gap-2 mb-3">
+            <input
+              type="checkbox"
+              checked={showCreateNew}
+              onChange={(e) => setShowCreateNew(e.target.checked)}
+              className="rounded border-border"
+            />
+            <label className="text-sm font-medium text-muted-foreground cursor-pointer">
+              Create new list
+            </label>
+          </div>
+
+          {showCreateNew && (
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                placeholder="New list name..."
+                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                maxLength={50}
+              />
+
+              <div>
+                <label className="block text-xs text-muted-foreground mb-2">List Type:</label>
+                <div className="space-y-2">
+                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
+                    <input
+                      type="radio"
+                      name="listType"
+                      value="flashcard"
+                      checked={newListType === 'flashcard'}
+                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                      className="mt-0.5"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-foreground">Flashcard List</div>
+                      <div className="text-xs text-muted-foreground">For memorization and review (accepts any content)</div>
+                      <div className="text-xs text-green-400 mt-1">✓ Perfect for vocabulary study</div>
+                    </div>
+                  </label>
+
+                  <label className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input ${
+                    !canAddToList('drillable') ? 'opacity-60' : ''
+                  }`}>
+                    <input
+                      type="radio"
+                      name="listType"
+                      value="drillable"
+                      checked={newListType === 'drillable'}
+                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                      disabled={!canAddToList('drillable')}
+                      className="mt-0.5"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-foreground">Drillable List</div>
+                      <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
+                      <div className={`text-xs mt-1 ${
+                        canAddToList('drillable') ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {canAddToList('drillable') ? '✓ Can be conjugated' : '⚠️ Cannot be conjugated'}
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={(selectedLists.length === 0 && !newListName.trim()) || saving}
+            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? 'Saving...' : 'Save Word'}
+          </button>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import { strings } from '@/config/strings';
 
 interface NavItem {
   id: string;
@@ -15,56 +16,56 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     id: 'home',
-    label: 'Home',
-    icon: '🏠',
+    label: strings.navigation.home.label,
+    icon: strings.navigation.home.icon,
     href: '/'
   },
   {
     id: 'practice',
-    label: 'Practice',
-    icon: '📚',
+    label: strings.navigation.practice.label,
+    icon: strings.navigation.practice.icon,
     href: '/practice'
   },
   {
     id: 'drill',
-    label: 'Drill',
-    icon: '⚡',
+    label: strings.navigation.drill.label,
+    icon: strings.navigation.drill.icon,
     href: '/drill'
   },
   {
     id: 'kanji-moods',
-    label: 'Kanji Mood Boards',
-    icon: '🗺️',
+    label: strings.navigation.kanjiMoods.label,
+    icon: strings.navigation.kanjiMoods.icon,
     href: '/kanji-moods'
   },
   {
     id: 'kanji',
-    label: 'Kanji Browser',
-    icon: '漢',
+    label: strings.navigation.kanjiBrowser.label,
+    icon: strings.navigation.kanjiBrowser.icon,
     href: '/kanji-browser'
   },
   {
     id: 'vocabulary',
-    label: 'Browse Vocabulary',
-    icon: '📖',
+    label: strings.navigation.vocabulary.label,
+    icon: strings.navigation.vocabulary.icon,
     href: '/vocabulary'
   },
   {
     id: 'favourites',
-    label: 'Saved Items',
-    icon: '⭐',
+    label: strings.navigation.favourites.label,
+    icon: strings.navigation.favourites.icon,
     href: '/favourites'
   },
   {
     id: 'settings',
-    label: 'Settings',
-    icon: '⚙️',
+    label: strings.navigation.settings.label,
+    icon: strings.navigation.settings.icon,
     href: '/settings'
   },
   {
     id: 'account',
-    label: 'Account',
-    icon: '👤',
+    label: strings.navigation.account.label,
+    icon: strings.navigation.account.icon,
     href: '/account'
   }
 ];
@@ -79,7 +80,7 @@ export default function DesktopNavMenu() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-12 h-12 bg-card/95 backdrop-blur-md border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-muted transition-colors"
-        aria-label="Navigation menu"
+        aria-label={strings.navigation.menu.navigationMenu}
       >
         <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
           <Image
@@ -111,9 +112,8 @@ export default function DesktopNavMenu() {
                     key={item.id}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center space-x-3 px-4 py-3 hover:bg-muted transition-colors ${
-                      isActive ? 'bg-primary/10 text-primary' : 'text-foreground'
-                    }`}
+                    className={`flex items-center space-x-3 px-4 py-3 hover:bg-muted transition-colors ${isActive ? 'bg-primary/10 text-primary' : 'text-foreground'
+                      }`}
                   >
                     <span className="text-lg">{item.icon}</span>
                     <span className="font-medium">{item.label}</span>
@@ -129,10 +129,10 @@ export default function DesktopNavMenu() {
             <div className="px-4 py-3 bg-muted/50">
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <span className="text-lg">🏮</span>
-                <span className="font-medium">Doshi Sensei</span>
+                <span className="font-medium">{strings.navigation.app.name}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Japanese Conjugation Practice
+                {strings.navigation.app.tagline}
               </p>
             </div>
           </div>

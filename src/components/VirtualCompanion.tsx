@@ -8,6 +8,7 @@ import {
   updateCompanionHistory,
   CompanionCharacter
 } from '@/utils/virtualCompanion';
+import { strings } from '@/config/strings';
 
 interface VirtualCompanionProps {
   isOpen: boolean;
@@ -62,9 +63,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
       {/* Modal */}
       <div
-        className={`relative bg-card rounded-2xl shadow-2xl p-6 w-full max-w-md mx-auto transform transition-all duration-500 ${
-          isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
+        className={`relative bg-card rounded-2xl shadow-2xl p-6 w-full max-w-md mx-auto transform transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+          }`}
         style={{
           border: '2px solid white',
           boxShadow: 'inset 0 0 0 1px var(--primary), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
@@ -74,7 +74,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors duration-200 group"
-          aria-label="Close companion"
+          aria-label={strings.tooltips.closeCompanion}
         >
           <svg
             className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors duration-200"
@@ -90,9 +90,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         {character && (
           <div className="flex flex-col items-center space-y-4">
             <div
-              className={`w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-4 flex items-center justify-center transform transition-all duration-700 ${
-                isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
-              }`}
+              className={`w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-4 flex items-center justify-center transform transition-all duration-700 ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
+                }`}
               style={{
                 border: '3px solid white',
                 boxShadow: 'inset 0 0 0 2px var(--primary), 0 8px 16px rgba(0, 0, 0, 0.1)'
@@ -118,9 +117,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
             {/* Quote */}
             <div
-              className={`bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-4 transform transition-all duration-700 delay-300 ${
-                isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-              }`}
+              className={`bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-4 transform transition-all duration-700 delay-300 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+                }`}
               style={{
                 border: '1px solid var(--primary)',
                 background: 'linear-gradient(135deg, rgba(var(--primary), 0.1), rgba(var(--accent), 0.1))'
@@ -133,9 +131,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
             {/* Gambatte Message */}
             <div
-              className={`text-center transform transition-all duration-700 delay-500 ${
-                isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-              }`}
+              className={`text-center transform transition-all duration-700 delay-500 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+                }`}
             >
               <p className="text-primary font-medium japanese-text text-lg">
                 頑張ってください！
@@ -148,9 +145,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             {/* Action Button */}
             <button
               onClick={onClose}
-              className={`mt-4 px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${
-                isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-              }`}
+              className={`mt-4 px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+                }`}
               style={{ transitionDelay: '700ms' }}
             >
               Thank you! ✨

@@ -7,6 +7,8 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { ResourceListItem, ResourceStats, RESOURCE_CATEGORIES } from '@/types/resources';
 import { getAllResourcePosts, deleteResourcePost, getResourceStats } from '@/utils/resources';
 import { formatDistanceToNow } from 'date-fns';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { strings } from '@/config/strings';
 
 export default function AdminResourcesPage() {
   const router = useRouter();
@@ -19,6 +21,19 @@ export default function AdminResourcesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft' | 'scheduled'>('all');
   const [selectedResources, setSelectedResources] = useState<string[]>([]);
+
+  // Add state for confirmation dialog and error message
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    loading: false,
+    title: '',
+    message: '',
+    confirmText: '',
+    cancelText: '',
+    isDestructive: true,
+    onConfirm: () => { },
+  });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Check admin access
   useEffect(() => {
@@ -53,34 +68,53 @@ export default function AdminResourcesPage() {
   };
 
   const handleDeleteResource = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this resource? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      await deleteResourcePost(id);
-      await loadResourcesData(); // Refresh the list
-    } catch (error) {
-      console.error('Error deleting resource:', error);
-      alert('Failed to delete resource. Please try again.');
-    }
+    setConfirmDialog({
+      isOpen: true,
+      loading: false,
+      title: strings.admin.resources.deleteResource,
+      message: strings.admin.resources.deleteResourceConfirm,
+      confirmText: strings.admin.resources.delete,
+      cancelText: strings.common.cancel,
+      isDestructive: true,
+      onConfirm: async () => {
+        setConfirmDialog((prev) => ({ ...prev, loading: true }));
+        try {
+          await deleteResourcePost(id);
+          await loadResourcesData();
+        } catch (error) {
+          setErrorMessage(strings.admin.resources.failedToDelete);
+          console.error('Error deleting resource:', error);
+        } finally {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }));
+        }
+      },
+    });
   };
 
   const handleBulkDelete = async () => {
     if (selectedResources.length === 0) return;
-
-    if (!confirm(`Are you sure you want to delete ${selectedResources.length} resources? This action cannot be undone.`)) {
-      return;
-    }
-
-    try {
-      await Promise.all(selectedResources.map(id => deleteResourcePost(id)));
-      setSelectedResources([]);
-      await loadResourcesData();
-    } catch (error) {
-      console.error('Error bulk deleting resources:', error);
-      alert('Failed to delete some resources. Please try again.');
-    }
+    setConfirmDialog({
+      isOpen: true,
+      loading: false,
+      title: strings.admin.resources.deleteResources,
+      message: strings.admin.resources.deleteResourcesConfirm.replace('{count}', selectedResources.length.toString()),
+      confirmText: strings.admin.resources.delete,
+      cancelText: strings.common.cancel,
+      isDestructive: true,
+      onConfirm: async () => {
+        setConfirmDialog((prev) => ({ ...prev, loading: true }));
+        try {
+          await Promise.all(selectedResources.map(id => deleteResourcePost(id)));
+          setSelectedResources([]);
+          await loadResourcesData();
+        } catch (error) {
+          setErrorMessage(strings.admin.resources.failedToDeleteSome);
+          console.error('Error bulk deleting resources:', error);
+        } finally {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }));
+        }
+      },
+    });
   };
 
   const toggleResourceSelection = (id: string) => {
@@ -124,7 +158,7 @@ export default function AdminResourcesPage() {
   };
 
   if (adminLoading || !isAdmin) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">{strings.loading.general}</div>;
   }
 
   return (
@@ -150,20 +184,20 @@ export default function AdminResourcesPage() {
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
           </svg>
-          <span className="text-sm md:text-base">Back to Admin Dashboard</span>
+          <span className="text-sm md:text-base">{strings.admin.backToDashboard}</span>
         </button>
 
         {/* Title and action button */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Resources Management</h1>
-            <p className="text-sm md:text-base text-muted-foreground mt-1">Create and manage blog posts and resources</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{strings.admin.resources.title}</h1>
+            <p className="text-sm md:text-base text-muted-foreground mt-1">{strings.admin.resources.description}</p>
           </div>
           <button
             onClick={() => router.push('/admin/resources/new')}
             className="w-full sm:w-auto px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm md:text-base"
           >
-            + New Resource
+            + {strings.admin.resources.newResource}
           </button>
         </div>
       </div>
@@ -173,19 +207,19 @@ export default function AdminResourcesPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
           <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
             <div className="text-xl md:text-2xl font-bold text-primary">{stats.totalPosts}</div>
-            <div className="text-xs md:text-sm text-muted-foreground">Total Posts</div>
+            <div className="text-xs md:text-sm text-muted-foreground">{strings.admin.resources.totalPosts}</div>
           </div>
           <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
             <div className="text-xl md:text-2xl font-bold text-green-600">{stats.publishedPosts}</div>
-            <div className="text-xs md:text-sm text-muted-foreground">Published</div>
+            <div className="text-xs md:text-sm text-muted-foreground">{strings.admin.resources.published}</div>
           </div>
           <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
             <div className="text-xl md:text-2xl font-bold text-gray-600">{stats.draftPosts}</div>
-            <div className="text-xs md:text-sm text-muted-foreground">Drafts</div>
+            <div className="text-xs md:text-sm text-muted-foreground">{strings.admin.resources.draft}</div>
           </div>
           <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
             <div className="text-xl md:text-2xl font-bold text-secondary">{stats.totalViews.toLocaleString()}</div>
-            <div className="text-xs md:text-sm text-muted-foreground">Total Views</div>
+            <div className="text-xs md:text-sm text-muted-foreground">{strings.admin.resources.totalViews}</div>
           </div>
         </div>
       )}
@@ -196,7 +230,7 @@ export default function AdminResourcesPage() {
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Search resources..."
+              placeholder={strings.admin.resources.searchResources}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-3 py-2 text-sm md:text-base border border-border rounded-lg bg-background text-foreground"
@@ -207,10 +241,10 @@ export default function AdminResourcesPage() {
             onChange={(e) => setStatusFilter(e.target.value as any)}
             className="px-3 py-2 text-sm md:text-base border border-border rounded-lg bg-background text-foreground"
           >
-            <option value="all">All Status</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="scheduled">Scheduled</option>
+            <option value="all">{strings.admin.resources.allStatus}</option>
+            <option value="published">{strings.admin.resources.published}</option>
+            <option value="draft">{strings.admin.resources.draft}</option>
+            <option value="scheduled">{strings.admin.resources.scheduled}</option>
           </select>
         </div>
 
@@ -218,19 +252,19 @@ export default function AdminResourcesPage() {
         {selectedResources.length > 0 && (
           <div className="mt-4 flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
-              {selectedResources.length} resource{selectedResources.length !== 1 ? 's' : ''} selected
+              {selectedResources.length} {strings.admin.resources.selected}
             </span>
             <button
               onClick={handleBulkDelete}
               className="px-3 py-1 bg-destructive text-destructive-foreground rounded text-sm hover:bg-destructive/90"
             >
-              Delete Selected
+              {strings.admin.resources.deleteSelected}
             </button>
             <button
               onClick={() => setSelectedResources([])}
               className="px-3 py-1 bg-secondary text-secondary-foreground rounded text-sm hover:bg-secondary/90"
             >
-              Clear Selection
+              {strings.admin.resources.clearSelection}
             </button>
           </div>
         )}
@@ -239,10 +273,10 @@ export default function AdminResourcesPage() {
       {/* Resources Table/Cards */}
       <div className="bg-card rounded-lg border border-border overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-muted-foreground">Loading resources...</div>
+          <div className="p-8 text-center text-muted-foreground">{strings.admin.resources.loadingResources}</div>
         ) : filteredResources.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground">
-            {searchQuery ? 'No resources found matching your search.' : 'No resources found. Create your first resource!'}
+            {searchQuery ? strings.admin.resources.noResourcesMatching : strings.admin.resources.noResourcesFound}
           </div>
         ) : (
           <>
@@ -257,7 +291,7 @@ export default function AdminResourcesPage() {
                     onChange={toggleSelectAll}
                     className="rounded"
                   />
-                  Select all
+                  {strings.admin.resources.selectAll}
                 </label>
               </div>
 
@@ -279,33 +313,33 @@ export default function AdminResourcesPage() {
                             {getStatusBadge(resource.status)}
                             {resource.featured && (
                               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                                Featured
+                                {strings.admin.resources.featured}
                               </span>
                             )}
                           </div>
                         </div>
                         <div className="text-sm text-muted-foreground space-y-1">
-                          <div>{resource.category || 'Uncategorized'}</div>
-                          <div>{resource.views.toLocaleString()} views • {formatDistanceToNow(resource.updatedAt, { addSuffix: true })}</div>
+                          <div>{resource.category || strings.admin.resources.uncategorized}</div>
+                          <div>{resource.views.toLocaleString()} {strings.admin.resources.views} • {formatDistanceToNow(resource.updatedAt, { addSuffix: true })}</div>
                         </div>
                         <div className="flex flex-wrap gap-2 pt-2">
                           <button
                             onClick={() => router.push(`/admin/resources/${resource.id}/edit`)}
                             className="px-3 py-1.5 text-sm bg-secondary text-secondary-foreground rounded hover:bg-secondary/90"
                           >
-                            Edit
+                            {strings.admin.resources.edit}
                           </button>
                           <button
                             onClick={() => window.open(`/resources/${resource.id}`, '_blank')}
                             className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90"
                           >
-                            View
+                            {strings.admin.resources.view}
                           </button>
                           <button
                             onClick={() => handleDeleteResource(resource.id)}
                             className="px-3 py-1.5 text-sm bg-destructive text-destructive-foreground rounded hover:bg-destructive/90"
                           >
-                            Delete
+                            {strings.admin.resources.delete}
                           </button>
                         </div>
                       </div>
@@ -328,12 +362,12 @@ export default function AdminResourcesPage() {
                         className="rounded"
                       />
                     </th>
-                    <th className="text-left p-4 font-medium">Title</th>
-                    <th className="text-left p-4 font-medium">Status</th>
-                    <th className="text-left p-4 font-medium">Category</th>
-                    <th className="text-left p-4 font-medium">Views</th>
-                    <th className="text-left p-4 font-medium">Updated</th>
-                    <th className="text-left p-4 font-medium">Actions</th>
+                    <th className="text-left p-4 font-medium">{strings.admin.resources.title}</th>
+                    <th className="text-left p-4 font-medium">{strings.admin.resources.status}</th>
+                    <th className="text-left p-4 font-medium">{strings.admin.resources.category}</th>
+                    <th className="text-left p-4 font-medium">{strings.admin.resources.views}</th>
+                    <th className="text-left p-4 font-medium">{strings.admin.resources.updated}</th>
+                    <th className="text-left p-4 font-medium">{strings.admin.resources.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -353,14 +387,14 @@ export default function AdminResourcesPage() {
                             <div className="font-medium text-foreground">{resource.title}</div>
                             {resource.featured && (
                               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                                Featured
+                                {strings.admin.resources.featured}
                               </span>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="p-4">{getStatusBadge(resource.status)}</td>
-                      <td className="p-4 text-muted-foreground">{resource.category || 'Uncategorized'}</td>
+                      <td className="p-4 text-muted-foreground">{resource.category || strings.admin.resources.uncategorized}</td>
                       <td className="p-4 text-muted-foreground">{resource.views.toLocaleString()}</td>
                       <td className="p-4 text-muted-foreground">
                         {formatDistanceToNow(resource.updatedAt, { addSuffix: true })}
@@ -371,19 +405,19 @@ export default function AdminResourcesPage() {
                             onClick={() => router.push(`/admin/resources/${resource.id}/edit`)}
                             className="px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/90"
                           >
-                            Edit
+                            {strings.admin.resources.edit}
                           </button>
                           <button
                             onClick={() => window.open(`/resources/${resource.id}`, '_blank')}
                             className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
                           >
-                            View
+                            {strings.admin.resources.view}
                           </button>
                           <button
                             onClick={() => handleDeleteResource(resource.id)}
                             className="px-2 py-1 text-xs bg-destructive text-destructive-foreground rounded hover:bg-destructive/90"
                           >
-                            Delete
+                            {strings.admin.resources.delete}
                           </button>
                         </div>
                       </td>
@@ -395,6 +429,34 @@ export default function AdminResourcesPage() {
           </>
         )}
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText={confirmDialog.confirmText}
+        cancelText={confirmDialog.cancelText}
+        isDestructive={confirmDialog.isDestructive}
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
+        loading={confirmDialog.loading}
+      />
+
+      {/* Error Message Modal */}
+      {errorMessage && (
+        <ConfirmationDialog
+          isOpen={!!errorMessage}
+          title={strings.admin.resources.error}
+          message={errorMessage}
+          confirmText="OK"
+          cancelText=""
+          isDestructive={false}
+          onConfirm={() => setErrorMessage(null)}
+          onCancel={() => setErrorMessage(null)}
+          loading={false}
+        />
+      )}
     </div>
   );
 }

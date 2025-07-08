@@ -111,7 +111,10 @@ Based on the MVP prompt and existing code, the Practice Mode should:
 
 1. Add audio pronunciation (if scope expands beyond MVP)
 
-2. Implement "favorite words" functionality
+2. Implement "favorite words" functionality with unified modal system:
+   - Use `ListSelectionModal` for consistent list creation experience
+   - Support drillable lists for conjugable content
+   - Support flashcard lists for general vocabulary review
 
 3. Add progress tracking:
    - Words viewed
@@ -140,8 +143,35 @@ src/app/practice/
 │   ├── ConjugationTable.tsx  # Table of all conjugation forms
 │   ├── ConjugationCard.tsx   # Individual conjugation form card
 │   ├── RuleExplanation.tsx   # Conjugation rule explanation
-│   └── PracticeHeader.tsx    # Page header with navigation
+│   ├── PracticeHeader.tsx    # Page header with navigation
+│   └── SaveToListButton.tsx  # Save word to list with modal integration
 ```
+
+### Modal System Integration
+
+The practice mode integrates with the unified modal system for list management:
+
+**Word Saving Component:**
+```tsx
+import ListSelectionModal from '@/components/ListSelectionModal';
+import { StudyListManager } from '@/utils/studyListManager';
+
+// In SaveToListButton.tsx or ConjugationTable.tsx
+<ListSelectionModal
+  isOpen={showSaveModal}
+  onClose={() => setShowSaveModal(false)}
+  onCreateList={handleCreateList}
+  title="Save Word to List"
+  allowedTypes={['flashcard', 'drillable']}
+  showOnlyTypes={canConjugate ? ['flashcard', 'drillable'] : ['flashcard']}
+/>
+```
+
+**Benefits:**
+- **Consistent UX**: Same modal experience as favorites page and word saving
+- **Smart Type Selection**: Conjugable words can go to drillable lists
+- **Unified Validation**: Centralized duplicate name checking
+- **Type Safety**: Prevents inappropriate list type selections
 
 ### State Management
 

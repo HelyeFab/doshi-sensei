@@ -6,6 +6,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useNotification } from '@/contexts/NotificationContext';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
+import { strings } from '@/config/strings';
 
 export default function SubscriptionPlans() {
   const { subscription, isPremium, userType, isLoading, createCheckoutSession, cancelSubscription } = useSubscription2();
@@ -28,8 +29,8 @@ export default function SubscriptionPlans() {
     } catch (error) {
       console.error('Error upgrading:', error);
       showNotification({
-        title: 'Upgrade Failed',
-        message: 'Failed to start upgrade process. Please try again.',
+        title: strings.subscriptions.upgradeFailed,
+        message: strings.subscriptions.upgradeFailedMessage,
         type: 'error'
       });
     } finally {
@@ -47,15 +48,15 @@ export default function SubscriptionPlans() {
     try {
       await cancelSubscription();
       showNotification({
-        title: 'Subscription Cancelled',
-        message: 'You will continue to have access until the end of your current billing period.',
+        title: strings.subscriptions.subscriptionCancelled,
+        message: strings.subscriptions.subscriptionCancelledMessage,
         type: 'success'
       });
     } catch (error) {
       console.error('Error cancelling:', error);
       showNotification({
-        title: 'Cancellation Failed',
-        message: 'Failed to cancel subscription. Please try again.',
+        title: strings.subscriptions.cancellationFailed,
+        message: strings.subscriptions.cancellationFailedMessage,
         type: 'error'
       });
     } finally {
@@ -67,7 +68,7 @@ export default function SubscriptionPlans() {
   const currentPlanData = SUBSCRIPTION_PLANS.find(plan => plan.id === currentPlan);
   const monthlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'monthly');
   const yearlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'yearly');
-  
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -81,7 +82,7 @@ export default function SubscriptionPlans() {
       {/* Current Plan */}
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Current Plan</h3>
+          <h3 className="text-lg font-semibold text-foreground">{strings.subscriptions.currentPlan}</h3>
           {currentPlan !== 'free' && currentPlanData && (
             <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
               {currentPlanData.name}
@@ -91,44 +92,44 @@ export default function SubscriptionPlans() {
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Plan</span>
+            <span className="text-sm text-muted-foreground">{strings.subscriptions.plan}</span>
             <span className="text-sm font-medium text-foreground">
               {currentPlanData?.name || 'Free'} {currentPlan !== 'free' && currentPlanData && `($${currentPlanData.price}/${currentPlan === 'monthly' ? 'month' : 'year'})`}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Word Lists</span>
+            <span className="text-sm text-muted-foreground">{strings.subscriptions.wordLists}</span>
             <span className="text-sm font-medium text-foreground">
-              {isPremium ? 'Unlimited' : listAccess?.limit === -1 ? 'Unlimited' : `${listAccess?.limit || 3} max`}
+              {isPremium ? strings.subscriptions.unlimited : listAccess?.limit === -1 ? strings.subscriptions.unlimited : `${listAccess?.limit || 3} max`}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Daily Drills</span>
+            <span className="text-sm text-muted-foreground">{strings.subscriptions.dailyDrills}</span>
             <span className="text-sm font-medium text-foreground">
-              {isPremium ? 'Unlimited' : drillAccess?.limit === -1 ? 'Unlimited' : `${drillAccess?.limit || 3}/day`}
+              {isPremium ? strings.subscriptions.unlimited : drillAccess?.limit === -1 ? strings.subscriptions.unlimited : `${drillAccess?.limit || 3}/day`}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Daily Articles</span>
+            <span className="text-sm text-muted-foreground">{strings.subscriptions.dailyArticles}</span>
             <span className="text-sm font-medium text-foreground">
-              {isPremium ? 'Unlimited' : articleAccess?.limit === -1 ? 'Unlimited' : `${articleAccess?.limit || 3}/day`}
+              {isPremium ? strings.subscriptions.unlimited : articleAccess?.limit === -1 ? strings.subscriptions.unlimited : `${articleAccess?.limit || 3}/day`}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Daily Games</span>
+            <span className="text-sm text-muted-foreground">{strings.subscriptions.dailyGames}</span>
             <span className="text-sm font-medium text-foreground">
-              {isPremium ? 'Unlimited' : gameAccess?.limit === -1 ? 'Unlimited' : `${gameAccess?.limit || 3}/day`}
+              {isPremium ? strings.subscriptions.unlimited : gameAccess?.limit === -1 ? strings.subscriptions.unlimited : `${gameAccess?.limit || 3}/day`}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Cloud Sync</span>
+            <span className="text-sm text-muted-foreground">{strings.subscriptions.cloudSync}</span>
             <span className="text-sm font-medium text-foreground">
-              {isPremium || userType !== 'guest' ? '✅ Available' : '❌ Not Available'}
+              {isPremium || userType !== 'guest' ? strings.subscriptions.available : strings.subscriptions.notAvailable}
             </span>
           </div>
         </div>
@@ -140,7 +141,7 @@ export default function SubscriptionPlans() {
               disabled={isProcessing}
               className="px-4 py-2 text-destructive border border-destructive rounded-lg hover:bg-destructive/10 transition-colors disabled:opacity-50"
             >
-              {isProcessing ? 'Processing...' : 'Cancel Subscription'}
+              {isProcessing ? strings.subscriptions.processing : strings.subscriptions.cancelSubscription}
             </button>
           </div>
         )}
@@ -149,7 +150,7 @@ export default function SubscriptionPlans() {
       {/* Upgrade Options */}
       {currentPlan === 'free' && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Upgrade Plans</h3>
+          <h3 className="text-lg font-semibold text-foreground">{strings.subscriptions.upgradePlans}</h3>
 
           <div className="grid md:grid-cols-2 gap-4">
             {/* Monthly Plan */}
@@ -177,7 +178,7 @@ export default function SubscriptionPlans() {
                   disabled={isProcessing}
                   className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
                 >
-                  {isProcessing ? 'Processing...' : 'Upgrade to Monthly'}
+                  {isProcessing ? strings.subscriptions.processing : strings.subscriptions.upgradeToMonthly}
                 </button>
               </div>
             )}
@@ -187,7 +188,7 @@ export default function SubscriptionPlans() {
               <div className="bg-card border border-primary rounded-lg p-6 relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                    Best Value
+                    {strings.subscriptions.bestValue}
                   </span>
                 </div>
 
@@ -197,7 +198,7 @@ export default function SubscriptionPlans() {
                     ${yearlyPlan.price}
                     <span className="text-sm font-normal text-muted-foreground">/year</span>
                   </div>
-                  <p className="text-sm text-green-600 mt-1">2 months free!</p>
+                  <p className="text-sm text-green-600 mt-1">{strings.subscriptions.twoMonthsFree}</p>
                 </div>
 
                 <ul className="space-y-2 mb-6">
@@ -214,7 +215,7 @@ export default function SubscriptionPlans() {
                   disabled={isProcessing}
                   className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
                 >
-                  {isProcessing ? 'Processing...' : 'Upgrade to Yearly'}
+                  {isProcessing ? strings.subscriptions.processing : strings.subscriptions.upgradeToYearly}
                 </button>
               </div>
             )}

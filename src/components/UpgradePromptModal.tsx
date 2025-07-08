@@ -4,6 +4,7 @@ import React from 'react';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
+import { strings } from '@/config/strings';
 
 interface UpgradePromptModalProps {
   isOpen: boolean;
@@ -38,7 +39,7 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
         <div className="text-center">
           <div className="text-4xl mb-4">✨</div>
           <h3 className="text-lg font-semibold text-card-foreground mb-2">
-            Upgrade to Premium
+            {strings.subscriptions.upgradeToPremium}
           </h3>
           <p className="text-muted-foreground mb-6 text-sm">
             {message}
@@ -46,7 +47,7 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
 
           <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 mb-6">
             <div className="text-sm text-muted-foreground mb-2">
-              <strong>Premium Benefits:</strong>
+              <strong>{strings.subscriptions.premiumBenefits}</strong>
             </div>
             <div className="text-sm text-foreground space-y-1">
               {monthlyPlan?.features.map((feature: string, index: number) => (
@@ -64,10 +65,10 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
               className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium relative"
             >
               <div className="absolute top-0 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-b transform translate-y-0">
-                Save 17%
+                {strings.subscriptions.savePercent}
               </div>
               <div className="text-lg">${yearlyPlan?.price}/year</div>
-              <div className="text-sm opacity-90">Best Value</div>
+              <div className="text-sm opacity-90">{strings.subscriptions.bestValue}</div>
             </button>
 
             <button
@@ -75,7 +76,7 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
               className="w-full px-4 py-3 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors font-medium"
             >
               <div className="text-lg">${monthlyPlan?.price}/month</div>
-              <div className="text-sm opacity-70">Monthly Plan</div>
+              <div className="text-sm opacity-70">{strings.subscriptions.monthlyPlan}</div>
             </button>
           </div>
 
@@ -83,11 +84,11 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
             onClick={onClose}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Maybe Later
+            {strings.subscriptions.maybeLater}
           </button>
 
           <div className="text-xs text-muted-foreground mt-3">
-            Cancel anytime • Secure payment via Stripe
+            {strings.subscriptions.cancelAnytime}
           </div>
         </div>
       </div>

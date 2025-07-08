@@ -7,6 +7,9 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { ResourceFormData, RESOURCE_CATEGORIES } from '@/types/resources';
 import { createResourcePost, generateSlug, extractExcerpt, calculateReadingTime } from '@/utils/resources';
 import { marked } from 'marked';
+import QuickResourceCreator from '@/components/admin/QuickResourceCreator';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { strings } from '@/config/strings';
 
 export default function NewResourcePage() {
   const router = useRouter();
@@ -36,6 +39,7 @@ export default function NewResourcePage() {
   const [tagInput, setTagInput] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Check admin access
   useEffect(() => {
@@ -67,12 +71,12 @@ export default function NewResourcePage() {
 
       // Friendly validation messages
       if (!formData.title.trim()) {
-        alert('📝 Please enter a title for your resource.\n\nThe title is required and will be displayed in resource listings.');
+        setErrorMessage(strings.forms.validation.required);
         return;
       }
 
       if (!formData.content.trim()) {
-        alert('📄 Please add some content to your resource.\n\nContent is required - this is the main body of your article or resource.');
+        setErrorMessage(strings.forms.validation.required);
         return;
       }
 
@@ -94,7 +98,7 @@ export default function NewResourcePage() {
         errorMessage += error.message || 'Please try again.';
       }
 
-      alert(errorMessage);
+      setErrorMessage(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -114,6 +118,25 @@ export default function NewResourcePage() {
     }
   };
 
+  const handleQuickResourceCreated = (quickResourceData: Partial<ResourceFormData>) => {
+    // Auto-populate form with quick resource data
+    setFormData(prev => ({
+      ...prev,
+      ...quickResourceData,
+      // Ensure we keep the default author as 'doshisensei'
+      // and merge tags properly
+      tags: [...(prev.tags || []), ...(quickResourceData.tags || [])].filter((tag, index, arr) => arr.indexOf(tag) === index)
+    }));
+
+    // Scroll to the form
+    setTimeout(() => {
+      const formElement = document.querySelector('form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
   const removeTag = (tagToRemove: string) => {
     setFormData(prev => ({
       ...prev,
@@ -123,29 +146,29 @@ export default function NewResourcePage() {
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    
+
     console.log('File selected:', file);
     console.log('User:', user);
-    
+
     if (!file) {
       console.log('No file selected');
       return;
     }
-    
+
     if (!user) {
-      alert('You must be logged in to upload images');
+      setErrorMessage('You must be logged in to upload images');
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      setErrorMessage('Please select an image file');
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB');
+      setErrorMessage('Image size must be less than 5MB');
       return;
     }
 
@@ -155,7 +178,7 @@ export default function NewResourcePage() {
 
       // Get user token for authorization
       const token = await user.getIdToken();
-      
+
       // Create form data
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
@@ -183,17 +206,17 @@ export default function NewResourcePage() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      
+
       // Show success message if using fallback
       if (data.message) {
         console.log(data.message);
       }
     } catch (error: any) {
       console.error('Error uploading image:', error);
-      
+
       // More detailed error messages
       let errorMessage = 'Failed to upload image. ';
-      
+
       if (error.code === 'storage/unauthorized') {
         errorMessage = 'You don\'t have permission to upload images. Please check your Firebase Storage rules.';
       } else if (error.code === 'storage/quota-exceeded') {
@@ -205,8 +228,8 @@ export default function NewResourcePage() {
       } else {
         errorMessage += error.message || 'Please try again.';
       }
-      
-      alert(errorMessage);
+
+      setErrorMessage(errorMessage);
     } finally {
       setUploadingImage(false);
     }
@@ -269,6 +292,9 @@ export default function NewResourcePage() {
         </div>
       </div>
 
+      {/* Quick Resource Creator */}
+      <QuickResourceCreator onResourceCreated={handleQuickResourceCreated} />
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Required Fields Notice */}
         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
@@ -288,10 +314,12 @@ export default function NewResourcePage() {
               <input
                 type="text"
                 required
+                id="title"
+                name="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
-                placeholder="Enter resource title"
+                placeholder={strings.forms.placeholders.title}
               />
             </div>
 
@@ -383,11 +411,13 @@ export default function NewResourcePage() {
             </div>
           ) : (
             <textarea
+              id="content"
+              name="content"
               value={formData.content}
               onChange={(e) => handleInputChange('content', e.target.value)}
               rows={20}
               className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground font-mono text-sm"
-              placeholder="Write your content in Markdown..."
+              placeholder={strings.forms.placeholders.content}
             />
           )}
         </div>
@@ -409,9 +439,8 @@ export default function NewResourcePage() {
             />
             <label
               htmlFor="image-upload"
-              className={`inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer ${
-                uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               onClick={(e) => {
                 if (uploadingImage) {
                   e.preventDefault();
@@ -633,6 +662,21 @@ export default function NewResourcePage() {
           </button>
         </div>
       </form>
+
+      {/* Error Message Modal */}
+      {errorMessage && (
+        <ConfirmationDialog
+          isOpen={!!errorMessage}
+          title="Error"
+          message={errorMessage}
+          confirmText="OK"
+          cancelText=""
+          isDestructive={false}
+          onConfirm={() => setErrorMessage(null)}
+          onCancel={() => setErrorMessage(null)}
+          loading={false}
+        />
+      )}
     </div>
   );
 }

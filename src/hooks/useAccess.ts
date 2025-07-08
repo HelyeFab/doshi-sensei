@@ -5,9 +5,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { accessControl } from '@/lib/access';
+import { accessControl, featureManager } from '@/lib/access';
 import { AccessCheckResult } from '@/lib/access/types';
-import { useModal } from '@/contexts/ModalContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
 interface UseAccessReturn {
@@ -25,7 +24,6 @@ interface UseAccessReturn {
 
 export function useAccess(): UseAccessReturn {
   const { user } = useAuth();
-  const { setModal, closeModal } = useModal();
   const { showNotification } = useNotification();
   const [isChecking, setIsChecking] = useState(false);
   
@@ -47,26 +45,23 @@ export function useAccess(): UseAccessReturn {
       await accessControl.trackUsage(user?.uid || null, featureId);
     } else {
       // Show appropriate prompt based on the reason
-      const feature = await accessControl.getFeature(featureId);
+      const feature = featureManager.getFeature(featureId);
       const featureName = feature?.name || featureId.replace(/_/g, ' ');
       
       switch (result.reason) {
         case 'not_authenticated':
-          setModal({
-            type: 'login',
-            isOpen: true,
-            onClose: closeModal,
-            message: `Please log in to access ${featureName}`
+          showNotification({
+            title: 'Login Required',
+            message: `Please log in to access ${featureName}`,
+            type: 'info'
           });
           break;
           
         case 'subscription_required':
-          setModal({
-            type: 'upgrade',
-            isOpen: true,
-            onClose: closeModal,
+          showNotification({
+            title: 'Premium Required',
             message: `Premium subscription required for ${featureName}`,
-            feature: featureId
+            type: 'info'
           });
           break;
           
@@ -74,17 +69,14 @@ export function useAccess(): UseAccessReturn {
           const resetTime = result.resetAt 
             ? ` Resets at ${result.resetAt.toLocaleTimeString()}`
             : '';
-          setModal({
-            type: 'upgrade',
-            isOpen: true,
-            onClose: closeModal,
+          showNotification({
+            title: 'Limit Reached',
             message: `Daily limit reached (${result.usage}/${result.limit})${resetTime}`,
-            feature: featureId
+            type: 'warning'
           });
           break;
           
         default:
-          // For other cases, use notification
           showNotification({
             title: 'Access Denied',
             message: `Cannot access ${featureName}`,
@@ -94,7 +86,7 @@ export function useAccess(): UseAccessReturn {
     }
     
     return result.allowed;
-  }, [user, canAccess, setModal, closeModal, showNotification]);
+  }, [user, canAccess, showNotification]);
   
   const getRemainingUsage = useCallback(async (featureId: string): Promise<number | null> => {
     return accessControl.getRemainingUsage(user?.uid || null, featureId);
@@ -107,21 +99,18 @@ export function useAccess(): UseAccessReturn {
         
         switch (result.reason) {
           case 'not_authenticated':
-            setModal({
-              type: 'login',
-              isOpen: true,
-              onClose: closeModal,
-              message: `Please log in to access ${displayName}`
+            showNotification({
+              title: 'Login Required',
+              message: `Please log in to access ${displayName}`,
+              type: 'info'
             });
             break;
           
           case 'subscription_required':
-            setModal({
-              type: 'upgrade',
-              isOpen: true,
-              onClose: closeModal,
+            showNotification({
+              title: 'Premium Required',
               message: `Premium subscription required for ${displayName}`,
-              feature: featureId
+              type: 'info'
             });
             break;
           
@@ -129,12 +118,10 @@ export function useAccess(): UseAccessReturn {
             const resetTime = result.resetAt 
               ? ` Resets at ${result.resetAt.toLocaleTimeString()}`
               : '';
-            setModal({
-              type: 'upgrade',
-              isOpen: true,
-              onClose: closeModal,
+            showNotification({
+              title: 'Limit Reached',
               message: `Daily limit reached (${result.usage}/${result.limit})${resetTime}`,
-              feature: featureId
+              type: 'warning'
             });
             break;
           
@@ -147,7 +134,7 @@ export function useAccess(): UseAccessReturn {
         }
       }
     });
-  }, [canAccess, setModal, closeModal, showNotification]);
+  }, [canAccess, showNotification]);
   
   return {
     canAccess,

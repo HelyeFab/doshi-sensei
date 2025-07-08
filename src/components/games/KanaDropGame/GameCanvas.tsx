@@ -104,15 +104,17 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
         type: 'kana',
         content: randomKana.kana,
         kanaData: randomKana,
-        x: Math.random() * 60 + 20,
+        x: Math.random() * 40 + 30,
         y: 0,
         speed: currentGameState.gameSpeed
       };
       console.log('[KanaDrop] Spawned target kana:', randomKana.kana);
     } else if (rand < 0.7) {
       // Wrong kana (not in selectedKana)
-      const selectedIds = currentGameState.selectedKana.map(k => k.id);
-      const wrongKanaList = getBasicKana().filter(k => !selectedIds.includes(k.id));
+      // Extract base IDs from selectedKana (remove '-hiragana' and '-katakana' suffixes)
+      const selectedBaseIds = currentGameState.selectedKana.map(k => k.id.replace(/-(hiragana|katakana)$/, ''));
+      const wrongKanaList = getBasicKana().filter(k => !selectedBaseIds.includes(k.id));
+      console.log('[KanaDrop] Selected base IDs:', selectedBaseIds);
       console.log('[KanaDrop] Wrong kana pool size:', wrongKanaList.length);
       if (wrongKanaList.length > 0) {
         const randomWrongKana = wrongKanaList[Math.floor(Math.random() * wrongKanaList.length)];
@@ -121,7 +123,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
           type: 'wrong-kana',
           content: randomWrongKana.hiragana,
           kanaData: randomWrongKana,
-          x: Math.random() * 60 + 20,
+          x: Math.random() * 40 + 30,
           y: 0,
           speed: currentGameState.gameSpeed
         };
@@ -133,7 +135,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
           id: `distractor-${Date.now()}-${Math.random()}`,
           type: 'distractor',
           content: randomImage,
-          x: Math.random() * 60 + 20,
+          x: Math.random() * 40 + 30,
           y: 0,
           speed: currentGameState.gameSpeed
         };
@@ -146,7 +148,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
         id: `distractor-${Date.now()}-${Math.random()}`,
         type: 'distractor',
         content: randomImage,
-        x: Math.random() * 60 + 20,
+        x: Math.random() * 40 + 30,
         y: 0,
         speed: currentGameState.gameSpeed
       };
@@ -390,10 +392,42 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
             fallDuration={getFallDuration() || 2000}
             onReachBottom={handleObjectReachBottom}
             onClick={handleObjectClick}
-            isClickable={object.type === 'kana' || object.type === 'wrong-kana'}
+            isClickable={true}
           />
         ))}
       </AnimatePresence>
+
+      {/* Target Kana Display */}
+      <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 z-20 px-2">
+        <div className={`grid gap-1 sm:gap-2 ${gameState.selectedKana.length <= 5 ? 'grid-cols-5' : 'grid-cols-5 grid-rows-2'} w-full max-w-xs sm:max-w-md`}>
+          {gameState.selectedKana.map((kana, index) => {
+            const pastelColors = [
+              'bg-pink-100 border-pink-300',
+              'bg-blue-100 border-blue-300', 
+              'bg-green-100 border-green-300',
+              'bg-yellow-100 border-yellow-300',
+              'bg-purple-100 border-purple-300',
+              'bg-indigo-100 border-indigo-300',
+              'bg-red-100 border-red-300',
+              'bg-orange-100 border-orange-300',
+              'bg-teal-100 border-teal-300',
+              'bg-cyan-100 border-cyan-300'
+            ];
+            const colorClass = pastelColors[index % pastelColors.length];
+            
+            return (
+              <div
+                key={`${kana.id}-${index}`}
+                className={`w-10 h-10 sm:w-12 sm:h-12 ${colorClass} rounded-lg flex items-center justify-center backdrop-blur-sm border-2 shadow-md hover:shadow-lg transition-shadow`}
+              >
+                <span className="text-xs sm:text-sm font-bold text-gray-700">
+                  {kana.romaji}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Feedback Animation */}
       <AnimatePresence>

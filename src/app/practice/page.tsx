@@ -257,10 +257,10 @@ export default function PracticePage() {
       });
       return;
     }
-    if (getSelectedKanaData.length > 5) {
+    if (getSelectedKanaData.length > 10) {
       showNotification({
         title: 'Too Many Characters',
-        message: 'Please select up to 5 characters for Kana Drop.',
+        message: 'Please select up to 10 characters for Kana Drop.',
         type: 'info'
       });
       return;
@@ -280,7 +280,7 @@ export default function PracticePage() {
   const allKanaSelected = selectedHiragana.size + selectedKatakana.size === getBasicKana().length;
 
   // Add this rightAction for the header
-  const kanaDropHeaderButton = (selectedHiragana.size + selectedKatakana.size) <= 5 && (selectedHiragana.size + selectedKatakana.size) > 0 && (
+  const kanaDropHeaderButton = (selectedHiragana.size + selectedKatakana.size) <= 10 && (selectedHiragana.size + selectedKatakana.size) > 0 && (
     <button
       onClick={handleStartKanaDrop}
       className="ml-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
@@ -462,6 +462,12 @@ export default function PracticePage() {
                   onClose={() => setShowKanaDropModal(false)}
                   selectedKana={getSelectedKanaData}
                 />
+              )}
+
+              {(selectedHiragana.size + selectedKatakana.size) > 8 && (selectedHiragana.size + selectedKatakana.size) <= 10 && (
+                <div className="my-4 p-4 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center">
+                  <strong>Tip:</strong> You have selected {selectedHiragana.size + selectedKatakana.size} characters. The maximum for Kana Drop is 10.
+                </div>
               )}
 
               {allKanaSelected && (

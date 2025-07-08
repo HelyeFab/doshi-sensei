@@ -82,11 +82,24 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     sharedLimitGroup: 'games'
   },
   
+  'sentence_scramble': {
+    id: 'sentence_scramble',
+    name: 'Sentence Scramble',
+    description: 'Reassemble scrambled Japanese sentences from your saved lists',
+    category: 'games',
+    icon: '🧩',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+    sharedLimitGroup: 'games'
+  },
+  
   // Storage Features
   'word_lists': {
     id: 'word_lists',
-    name: 'Word Lists',
-    description: 'Create and manage vocabulary lists',
+    name: 'Study Lists',
+    description: 'Create and manage study lists (words, kanji, sentences)',
     category: 'storage',
     icon: '📋',
     limitType: 'total',
@@ -106,6 +119,19 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
+
+  'sentences-bookmark': {
+    id: 'sentences-bookmark',
+    name: 'Sentence Bookmarks',
+    description: 'Save sentences from shadowing practice to lists',
+    category: 'storage',
+    icon: '📝',
+    limitType: 'total',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active'
+  },
+
   
   // System Features
   'cloud_sync': {

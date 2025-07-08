@@ -5,6 +5,7 @@ import { UserSearch } from '@/components/admin/UserSearch';
 import { UserTable } from '@/components/admin/UserTable';
 import { useState } from 'react';
 import { AdminUserDetails } from '@/types/admin';
+import { strings } from '@/config/strings';
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,15 +21,15 @@ export default function UsersPage() {
   };
 
   return (
-    <AdminLayout title="User Management">
+    <AdminLayout title={strings.admin.userManagement}>
       <div className="space-y-6">
         {/* Page header */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 sm:p-6 border border-blue-200 dark:border-blue-800">
           <h2 className="text-xl font-bold text-foreground mb-2">
-            User Management
+            {strings.admin.userManagement}
           </h2>
           <p className="text-muted-foreground">
-            Search users, view details, and manage premium accounts from this interface.
+            {strings.admin.userManagementDescription}
           </p>
         </div>
 

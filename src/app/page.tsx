@@ -126,17 +126,34 @@ export default function Home() {
       : card
   );
 
-  // Get theme colors for gradient (moderate pastel)
-  const colorScheme = settings.colorScheme || 'default';
-  const palette = colorPalettes[colorScheme]?.colors || colorPalettes['default'].colors;
-  const pastelPrimary = pastelizeHSL(palette.primary);
-  const pastelAccent = pastelizeHSL(palette.accent);
-  const pastelSecondary = pastelizeHSL(palette.secondary);
+  // Get theme colors for gradient (moderate pastel) - client-side only to prevent hydration issues
+  const [gradientColors, setGradientColors] = useState({
+    primary: 'hsl(210, 60%, 85%)',
+    accent: 'hsl(220, 60%, 85%)', 
+    secondary: 'hsl(230, 60%, 85%)'
+  });
+
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (typeof window === 'undefined') return;
+    
+    const colorScheme = settings.colorScheme || 'default';
+    const palette = colorPalettes[colorScheme]?.colors || colorPalettes['default'].colors;
+    
+    setGradientColors({
+      primary: pastelizeHSL(palette.primary),
+      accent: pastelizeHSL(palette.accent),
+      secondary: pastelizeHSL(palette.secondary)
+    });
+  }, [settings.colorScheme]);
 
   // Load Pokédex count separately to ensure it's always available
   useEffect(() => {
     const loadPokemonCount = async () => {
       try {
+        // Only run on client side
+        if (typeof window === 'undefined') return;
+        
         // Get user premium status
         const isPremiumUser = subscription?.status === 'active' &&
           (subscription?.plan === 'monthly' ||
@@ -156,13 +173,18 @@ export default function Home() {
       }
     };
 
-    loadPokemonCount();
+    if (typeof window !== 'undefined') {
+      loadPokemonCount();
+    }
   }, [profile?.uid, subscription?.status, subscription?.plan]);
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {
     const loadStatsManager = async () => {
       try {
+        // Only run on client side
+        if (typeof window === 'undefined') return;
+        
         const { default: StatsManager } = await import('@/utils/stats');
 
         if (profile) {
@@ -184,6 +206,9 @@ export default function Home() {
   }, [profile, subscription]);
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     // Reload stats when page becomes visible/focused
     const handleFocus = () => {
       loadStats();
@@ -208,6 +233,9 @@ export default function Home() {
 
   const loadStats = async () => {
     try {
+      // Only run on client side
+      if (typeof window === 'undefined') return;
+      
       const { default: StatsManager } = await import('@/utils/stats');
       const { storyManager } = await import('@/utils/storyManager');
       const userStats = await StatsManager.getUserStats();
@@ -256,20 +284,25 @@ export default function Home() {
     }
   };
 
-  // Get user's first name only
-  const getUserDisplayName = () => {
+  // Get user's first name only - memoized to prevent hydration issues
+  const [displayName, setDisplayName] = useState('Friend');
+  
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (typeof window === 'undefined') return;
+    
     if (profile?.displayName) {
       // Extract first name from display name (split by space and take first part)
-      return profile.displayName.split(' ')[0];
-    }
-    if (profile?.email) {
+      setDisplayName(profile.displayName.split(' ')[0]);
+    } else if (profile?.email) {
       // For email-based names, take the part before @ and split by common separators
       const emailName = profile.email.split('@')[0];
       // Handle cases like "john.doe" or "john_doe" or "john-doe"
-      return emailName.split(/[._-]/)[0];
+      setDisplayName(emailName.split(/[._-]/)[0]);
+    } else {
+      setDisplayName('Friend');
     }
-    return 'Friend';
-  };
+  }, [profile?.displayName, profile?.email]);
 
   return (
     <>
@@ -301,7 +334,7 @@ export default function Home() {
         <header className="mb-8 md:mb-12 text-center">
           {/* Welcome Text with Inline Avatar */}
           <div className="flex items-center justify-center gap-3 mb-2">
-            {profile?.avatar ? (
+            {typeof window !== 'undefined' && profile?.avatar ? (
               <img
                 src={profile.avatar}
                 alt={`${profile.displayName || profile.email}'s profile`}
@@ -310,7 +343,7 @@ export default function Home() {
                   boxShadow: '0 0 0 2px white, 0 0 0 3px var(--primary), 0 2px 8px rgba(0,0,0,0.1)'
                 }}
               />
-            ) : profile?.photoURL ? (
+            ) : typeof window !== 'undefined' && profile?.photoURL ? (
               <img
                 src={profile.photoURL}
                 alt={`${profile.displayName || profile.email}'s profile`}
@@ -320,8 +353,8 @@ export default function Home() {
                 }}
               />
             ) : null}
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
-              Hello {getUserDisplayName()}!
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2" suppressHydrationWarning>
+              Hello {displayName}!
               <span
                 className="inline-block animate-pulse origin-[70%_70%]"
                 style={{
@@ -379,8 +412,9 @@ export default function Home() {
             style={{
               border: '2px solid white',
               boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
-              background: `linear-gradient(90deg, ${pastelPrimary} 0%, ${pastelAccent} 60%, ${pastelSecondary} 100%)`,
+              background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
             }}
+            suppressHydrationWarning
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">
               {/* Streak Badge */}
@@ -675,124 +709,5 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
         </div>
       </div>
     </Link>
-  );
-}
-
-interface CompactStatProps {
-  label: string;
-  value: number;
-  color: 'blue' | 'green' | 'purple' | 'orange';
-  loading: boolean;
-  isPercentage?: boolean;
-  suffix?: string;
-}
-
-function CompactStat({ label, value, color, loading, isPercentage = false, suffix = '' }: CompactStatProps) {
-  const colorClasses = {
-    blue: 'text-blue-600 dark:text-blue-400',
-    green: 'text-green-600 dark:text-green-400',
-    purple: 'text-purple-600 dark:text-purple-400',
-    orange: 'text-orange-600 dark:text-orange-400'
-  };
-
-  const displayValue = isPercentage ? `${value}%` : value.toString();
-
-  return (
-    <div className="text-center">
-      <div className={`text-xl md:text-2xl font-bold mb-1 ${colorClasses[color]}`}>
-        {loading ? '...' : displayValue}
-      </div>
-      <div className="text-xs md:text-sm text-muted-foreground font-medium">
-        {label}
-      </div>
-      {suffix && !isPercentage && (
-        <div className="text-xs text-muted-foreground opacity-75">
-          {suffix}
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface StatCircleProps {
-  label: string;
-  value: number;
-  maxValue: number;
-  color: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'indigo' | 'teal';
-  loading: boolean;
-  isPercentage?: boolean;
-  suffix?: string;
-}
-
-function StatCircle({ label, value, maxValue, color, loading, isPercentage = false, suffix = '' }: StatCircleProps) {
-  const colorClasses = {
-    blue: 'text-blue-600 dark:text-blue-400',
-    green: 'text-green-600 dark:text-green-400',
-    purple: 'text-purple-600 dark:text-purple-400',
-    orange: 'text-orange-600 dark:text-orange-400',
-    pink: 'text-pink-600 dark:text-pink-400',
-    indigo: 'text-indigo-600 dark:text-indigo-400',
-    teal: 'text-teal-600 dark:text-teal-400'
-  };
-
-  const strokeClasses = {
-    blue: 'stroke-blue-600 dark:stroke-blue-400',
-    green: 'stroke-green-600 dark:stroke-green-400',
-    purple: 'stroke-purple-600 dark:stroke-purple-400',
-    orange: 'stroke-orange-600 dark:stroke-orange-400',
-    pink: 'stroke-pink-600 dark:stroke-pink-400',
-    indigo: 'stroke-indigo-600 dark:stroke-indigo-400',
-    teal: 'stroke-teal-600 dark:stroke-teal-400'
-  };
-
-  const percentage = Math.min((value / maxValue) * 100, 100);
-  const circumference = 2 * Math.PI * 45;
-  const strokeDasharray = `${(circumference * percentage) / 100} ${circumference}`;
-
-  const displayValue = isPercentage ? `${value}%` : value.toString();
-  const displaySuffix = suffix && !isPercentage ? ` ${suffix}` : '';
-
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-24 h-24 md:w-32 md:h-32">
-        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-          {/* Background circle */}
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            stroke="var(--muted)"
-            strokeWidth="6"
-            fill="none"
-            className="opacity-20"
-          />
-          {/* Progress circle */}
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            stroke="currentColor"
-            strokeWidth="6"
-            fill="none"
-            strokeDasharray={loading ? '0 283' : strokeDasharray}
-            strokeLinecap="round"
-            className={`transition-all duration-1000 ease-out ${strokeClasses[color]}`}
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className={`text-lg md:text-xl font-bold ${colorClasses[color]}`}>
-            {loading ? '...' : displayValue}
-          </span>
-          {suffix && !isPercentage && (
-            <span className="text-xs text-muted-foreground">
-              {suffix}
-            </span>
-          )}
-        </div>
-      </div>
-      <span className="text-sm md:text-base font-medium text-muted-foreground mt-2 text-center">
-        {label}
-      </span>
-    </div>
   );
 }

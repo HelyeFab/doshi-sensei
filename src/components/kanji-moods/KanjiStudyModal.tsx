@@ -186,8 +186,12 @@ export default function KanjiStudyModal({
 
     switch (currentMode) {
       case 'kanji':
-        // Check meaning (English text, so simple comparison)
-        isCorrect = userAnswer.toLowerCase() === currentKanji.meaning.toLowerCase();
+        // Check meaning - accept any individual meaning from the list
+        const meanings = currentKanji.meaning.toLowerCase()
+          .split(/[;,\/]/)
+          .map(m => m.trim())
+          .filter(m => m.length > 0);
+        isCorrect = meanings.includes(userAnswer.toLowerCase());
         break;
       case 'meaning':
         // Check if user typed the kanji (exact match required)

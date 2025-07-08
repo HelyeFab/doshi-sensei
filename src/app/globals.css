@@ -107,6 +107,14 @@ body {
   color: var(--muted-foreground);
 }
 
+/* Pixelated images for game sprites */
+.pixelated {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 /* Custom scrollbar for dark theme */
 ::-webkit-scrollbar {
   width: 8px;
@@ -392,4 +400,36 @@ html, body {
   .pb-nav {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
+}
+
+/* Pastel bubble background for titles */
+.pastel-bubble-bg {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(147, 197, 253, 0.3) 0%,   /* Light blue */
+    rgba(196, 181, 253, 0.3) 25%,  /* Light purple */
+    rgba(252, 165, 165, 0.3) 50%,  /* Light pink */
+    rgba(254, 215, 170, 0.3) 75%,  /* Light orange */
+    rgba(167, 243, 208, 0.3) 100%  /* Light green */
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Dark theme adjustments */
+.dark .pastel-bubble-bg {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.2) 0%,    /* Darker blue */
+    rgba(139, 92, 246, 0.2) 25%,   /* Darker purple */
+    rgba(239, 68, 68, 0.2) 50%,    /* Darker pink/red */
+    rgba(245, 158, 11, 0.2) 75%,   /* Darker orange */
+    rgba(34, 197, 94, 0.2) 100%    /* Darker green */
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }

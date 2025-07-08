@@ -1,4 +1,4 @@
-import { StudyList, StudyListType, SavedStudyItem, StudyItemType, JapaneseWord, Kanji, WordType } from '@/types';
+import { StudyList, StudyListType, SavedStudyItem, StudyItemType, JapaneseWord, Kanji, Sentence, WordType } from '@/types';
 import { DatabaseManager } from './indexedDB';
 import CloudSync, { SyncResult } from './cloudSync';
 import { User } from 'firebase/auth';
@@ -92,6 +92,14 @@ export class StudyListManager {
   }
 
   /**
+   * Get sentence lists only (for shadowing practice)
+   */
+  static async getSentenceLists(): Promise<StudyList[]> {
+    const allLists = await this.getAllStudyLists();
+    return allLists.filter(list => list.type === 'sentence');
+  }
+
+  /**
    * Create a new study list with explicit type selection
    */
   static async createStudyList(
@@ -138,17 +146,22 @@ export class StudyListManager {
   /**
    * Validate if an item can be added to a specific list type
    */
-  static canAddToList(itemType: StudyItemType, item: JapaneseWord | Kanji, listType: StudyListType): boolean {
+  static canAddToList(itemType: StudyItemType, item: JapaneseWord | Kanji | Sentence, listType: StudyListType): boolean {
 
     if (listType === 'flashcard') {
       // Flashcard lists accept any content
       return true;
     }
 
+    if (listType === 'sentence') {
+      // Sentence lists only accept sentences
+      return itemType === 'sentence';
+    }
+
     if (listType === 'drillable') {
       // Drillable lists only accept conjugable words
-      if (itemType === 'kanji') {
-        return false; // Kanji cannot be conjugated
+      if (itemType === 'kanji' || itemType === 'sentence') {
+        return false; // Kanji and sentences cannot be conjugated
       }
 
       if (itemType === 'word') {
@@ -218,7 +231,7 @@ export class StudyListManager {
    * Add an item to study lists with validation
    */
   static async addItemToLists(
-    item: JapaneseWord | Kanji,
+    item: JapaneseWord | Kanji | Sentence,
     itemType: StudyItemType,
     listIds: string[],
     user: User | null = null,
@@ -240,9 +253,11 @@ export class StudyListManager {
 
         // Check if item can be added to this list type
         if (!this.canAddToList(itemType, item, list.type)) {
-          const itemTypeName = itemType === 'word' ? 'word' : 'kanji';
+          const itemTypeName = itemType === 'word' ? 'word' : itemType === 'kanji' ? 'kanji' : 'sentence';
           const reason = list.type === 'drillable'
-            ? (itemType === 'kanji' ? 'kanji cannot be conjugated' : 'only verbs and adjectives allowed')
+            ? (itemType === 'kanji' ? 'kanji cannot be conjugated' : itemType === 'sentence' ? 'sentences cannot be conjugated' : 'only verbs and adjectives allowed')
+            : list.type === 'sentence'
+            ? 'only sentences allowed'
             : 'invalid item type';
           errors.push(`Cannot add ${itemTypeName} to ${list.type} list "${list.name}": ${reason}`);
           continue;
@@ -251,7 +266,9 @@ export class StudyListManager {
         // Generate item ID
         const itemId = itemType === 'word'
           ? (item as JapaneseWord).id
-          : `kanji_${(item as Kanji).kanji}`;
+          : itemType === 'kanji'
+          ? `kanji_${(item as Kanji).kanji}`
+          : (item as Sentence).id;
 
         // Check for duplicates
         if (await this.isItemInList(itemId, listId)) {
@@ -270,13 +287,16 @@ export class StudyListManager {
       const savedItems = await this.getSavedStudyItems();
       const itemId = itemType === 'word'
         ? (item as JapaneseWord).id
-        : `kanji_${(item as Kanji).kanji}`;
+        : itemType === 'kanji'
+        ? `kanji_${(item as Kanji).kanji}`
+        : (item as Sentence).id;
 
       // Find existing saved item
       const existingIndex = savedItems.findIndex(saved =>
         saved.itemType === itemType && (
           (itemType === 'word' && saved.word?.id === itemId) ||
-          (itemType === 'kanji' && saved.kanji?.kanji === (item as Kanji).kanji)
+          (itemType === 'kanji' && saved.kanji?.kanji === (item as Kanji).kanji) ||
+          (itemType === 'sentence' && saved.sentence?.id === (item as Sentence).id)
         )
       );
 
@@ -293,7 +313,11 @@ export class StudyListManager {
         const newSavedItem: SavedStudyItem = {
           id: `saved_${itemType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           itemType,
-          ...(itemType === 'word' ? { word: item as JapaneseWord } : { kanji: item as Kanji }),
+          ...(itemType === 'word' 
+            ? { word: item as JapaneseWord } 
+            : itemType === 'kanji' 
+            ? { kanji: item as Kanji }
+            : { sentence: item as Sentence }),
           savedAt: new Date(),
           listIds: validListIds
         };
@@ -354,7 +378,9 @@ export class StudyListManager {
       // Update the saved item
       const savedItems = await this.getSavedStudyItems();
       const savedItemIndex = savedItems.findIndex(saved =>
-        (saved.word?.id === itemId) || (saved.kanji && `kanji_${saved.kanji.kanji}` === itemId)
+        (saved.word?.id === itemId) || 
+        (saved.kanji && `kanji_${saved.kanji.kanji}` === itemId) ||
+        (saved.sentence?.id === itemId)
       );
 
       if (savedItemIndex >= 0) {
@@ -423,26 +449,29 @@ export class StudyListManager {
   /**
    * Get all items in a specific list
    */
-  static async getItemsInList(listId: string): Promise<{ words: JapaneseWord[]; kanji: Kanji[] }> {
+  static async getItemsInList(listId: string): Promise<{ words: JapaneseWord[]; kanji: Kanji[]; sentences: Sentence[] }> {
     try {
       const savedItems = await this.getSavedStudyItems();
       const listItems = savedItems.filter(saved => saved.listIds.includes(listId));
 
       const words: JapaneseWord[] = [];
       const kanji: Kanji[] = [];
+      const sentences: Sentence[] = [];
 
       listItems.forEach(item => {
         if (item.itemType === 'word' && item.word) {
           words.push(item.word);
         } else if (item.itemType === 'kanji' && item.kanji) {
           kanji.push(item.kanji);
+        } else if (item.itemType === 'sentence' && item.sentence) {
+          sentences.push(item.sentence);
         }
       });
 
-      return { words, kanji };
+      return { words, kanji, sentences };
     } catch (error) {
       console.error('Error getting items in list:', error);
-      return { words: [], kanji: [] };
+      return { words: [], kanji: [], sentences: [] };
     }
   }
 
@@ -473,7 +502,9 @@ export class StudyListManager {
     try {
       const savedItems = await this.getSavedStudyItems();
       const savedItem = savedItems.find(saved =>
-        (saved.word?.id === itemId) || (saved.kanji && `kanji_${saved.kanji.kanji}` === itemId)
+        (saved.word?.id === itemId) || 
+        (saved.kanji && `kanji_${saved.kanji.kanji}` === itemId) ||
+        (saved.sentence?.id === itemId)
       );
 
       if (!savedItem) return [];

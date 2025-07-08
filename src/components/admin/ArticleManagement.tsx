@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { NewsArticle } from '@/types/news';
 import { getWatanocArticles, deleteArticle, deleteArticles, deleteAllArticles } from '@/utils/watanocArticles';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface ArticleManagementProps {
   onRefresh?: () => void;
@@ -64,16 +66,198 @@ function ConfirmationDialog({
   );
 }
 
+interface ArticleEditModalProps {
+  isOpen: boolean;
+  article: NewsArticle | null;
+  onClose: () => void;
+  onSave: (updatedArticle: NewsArticle) => void;
+  loading: boolean;
+}
+
+function ArticleEditModal({ isOpen, article, onClose, onSave, loading }: ArticleEditModalProps) {
+  const [editedArticle, setEditedArticle] = useState<NewsArticle | null>(null);
+
+  useEffect(() => {
+    if (article) {
+      setEditedArticle({ ...article });
+    }
+  }, [article]);
+
+  if (!isOpen || !editedArticle) return null;
+
+  const handleSave = () => {
+    onSave(editedArticle);
+  };
+
+  const handleFieldChange = (field: keyof NewsArticle, value: any) => {
+    setEditedArticle(prev => prev ? { ...prev, [field]: value } : null);
+  };
+
+  const jlptLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+  const categories = ['general', 'politics', 'economics', 'society', 'international', 'sports', 'culture', 'technology', 'weather', 'disaster'];
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-card border border-border rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-foreground">Edit Article</h3>
+            <button
+              onClick={onClose}
+              disabled={loading}
+              className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Title</label>
+              <input
+                type="text"
+                value={editedArticle.title}
+                onChange={(e) => handleFieldChange('title', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded bg-background text-foreground"
+                disabled={loading}
+              />
+            </div>
+
+            {/* Summary */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Summary</label>
+              <textarea
+                value={editedArticle.summary || ''}
+                onChange={(e) => handleFieldChange('summary', e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-border rounded bg-background text-foreground"
+                disabled={loading}
+              />
+            </div>
+
+            {/* Content */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Content</label>
+              <textarea
+                value={editedArticle.content}
+                onChange={(e) => handleFieldChange('content', e.target.value)}
+                rows={8}
+                className="w-full px-3 py-2 border border-border rounded bg-background text-foreground font-mono text-sm"
+                disabled={loading}
+              />
+            </div>
+
+            {/* Metadata Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* JLPT Level */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">JLPT Level</label>
+                <select
+                  value={editedArticle.difficulty}
+                  onChange={(e) => handleFieldChange('difficulty', e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded bg-background text-foreground"
+                  disabled={loading}
+                >
+                  {jlptLevels.map(level => (
+                    <option key={level} value={level}>{level}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Category</label>
+                <select
+                  value={editedArticle.category}
+                  onChange={(e) => handleFieldChange('category', e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded bg-background text-foreground"
+                  disabled={loading}
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Reading Time */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Reading Time (min)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="60"
+                  value={editedArticle.estimatedReadingTime}
+                  onChange={(e) => handleFieldChange('estimatedReadingTime', parseInt(e.target.value) || 1)}
+                  className="w-full px-3 py-2 border border-border rounded bg-background text-foreground"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            {/* URL */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Source URL</label>
+              <input
+                type="url"
+                value={editedArticle.url}
+                onChange={(e) => handleFieldChange('url', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded bg-background text-foreground"
+                disabled={loading}
+              />
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Tags (comma-separated)</label>
+              <input
+                type="text"
+                value={editedArticle.tags?.join(', ') || ''}
+                onChange={(e) => handleFieldChange('tags', e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag))}
+                className="w-full px-3 py-2 border border-border rounded bg-background text-foreground"
+                disabled={loading}
+                placeholder="tag1, tag2, tag3"
+              />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-border">
+            <button
+              onClick={onClose}
+              disabled={loading}
+              className="px-4 py-2 text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? '⏳ Saving...' : '💾 Save Changes'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ArticleCard({ 
   article, 
   isSelected, 
   onSelect, 
-  onDelete 
+  onDelete,
+  onEdit
 }: { 
   article: NewsArticle; 
   isSelected: boolean; 
   onSelect: (checked: boolean) => void;
   onDelete: () => void;
+  onEdit: () => void;
 }) {
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -112,13 +296,22 @@ function ArticleCard({
             <h3 className="font-semibold text-foreground line-clamp-2 leading-tight">
               {article.title}
             </h3>
-            <button
-              onClick={onDelete}
-              className="text-destructive hover:text-destructive/80 p-1 rounded hover:bg-destructive/10 transition-colors flex-shrink-0"
-              title="Delete article"
-            >
-              🗑️
-            </button>
+            <div className="flex gap-1 flex-shrink-0">
+              <button
+                onClick={onEdit}
+                className="text-primary hover:text-primary/80 p-1 rounded hover:bg-primary/10 transition-colors"
+                title="Edit article"
+              >
+                ✏️
+              </button>
+              <button
+                onClick={onDelete}
+                className="text-destructive hover:text-destructive/80 p-1 rounded hover:bg-destructive/10 transition-colors"
+                title="Delete article"
+              >
+                🗑️
+              </button>
+            </div>
           </div>
 
           {/* Article metadata */}
@@ -176,6 +369,16 @@ export function ArticleManagement({ onRefresh }: ArticleManagementProps) {
 
   const [filterLevel, setFilterLevel] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  
+  // Edit modal state
+  const [editModal, setEditModal] = useState<{
+    isOpen: boolean;
+    article: NewsArticle | null;
+  }>({
+    isOpen: false,
+    article: null
+  });
+  const [editLoading, setEditLoading] = useState(false);
 
   // Load articles
   const loadArticles = async () => {
@@ -311,6 +514,51 @@ export function ArticleManagement({ onRefresh }: ArticleManagementProps) {
     });
   };
 
+  // Edit handlers
+  const handleEditArticle = (article: NewsArticle) => {
+    setEditModal({
+      isOpen: true,
+      article
+    });
+  };
+
+  const handleSaveEdit = async (updatedArticle: NewsArticle) => {
+    try {
+      setEditLoading(true);
+      
+      // Update in Firebase
+      const articleRef = doc(db, 'articles', updatedArticle.id);
+      await updateDoc(articleRef, {
+        title: updatedArticle.title,
+        summary: updatedArticle.summary,
+        content: updatedArticle.content,
+        difficulty: updatedArticle.difficulty,
+        category: updatedArticle.category,
+        estimatedReadingTime: updatedArticle.estimatedReadingTime,
+        url: updatedArticle.url,
+        tags: updatedArticle.tags,
+        // Update the modified timestamp
+        scrapedAt: new Date()
+      });
+
+      setStatus('✅ Article updated successfully');
+      setEditModal({ isOpen: false, article: null });
+      await loadArticles();
+      onRefresh?.();
+    } catch (error) {
+      console.error('Failed to update article:', error);
+      setStatus('❌ Failed to update article');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleCloseEdit = () => {
+    if (!editLoading) {
+      setEditModal({ isOpen: false, article: null });
+    }
+  };
+
   // Get unique categories and levels
   const categories = ['all', ...new Set(articles.map(a => a.category))];
   const levels = ['all', 'N5', 'N4', 'N3', 'N2', 'N1'];
@@ -440,6 +688,7 @@ export function ArticleManagement({ onRefresh }: ArticleManagementProps) {
               isSelected={selectedArticles.has(article.id)}
               onSelect={(checked) => handleSelectArticle(article.id, checked)}
               onDelete={() => handleDeleteSingle(article.id)}
+              onEdit={() => handleEditArticle(article)}
             />
           ))}
         </div>
@@ -456,6 +705,15 @@ export function ArticleManagement({ onRefresh }: ArticleManagementProps) {
         onConfirm={confirmDialog.action}
         onCancel={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
         loading={deleteLoading}
+      />
+
+      {/* Edit modal */}
+      <ArticleEditModal
+        isOpen={editModal.isOpen}
+        article={editModal.article}
+        onClose={handleCloseEdit}
+        onSave={handleSaveEdit}
+        loading={editLoading}
       />
     </div>
   );

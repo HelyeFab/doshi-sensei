@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import validator from 'validator';
+import { strings } from '@/config/strings';
 
 export default function ContactPage() {
   const router = useRouter();
@@ -16,6 +19,7 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Handle URL parameters for pre-selecting category
   useEffect(() => {
@@ -46,6 +50,11 @@ export default function ContactPage() {
       netlifyFormData.append('category', formData.category);
       netlifyFormData.append('message', formData.message);
 
+      if (!validator.isEmail(formData.email)) {
+        setErrorMessage(strings.forms.validation.invalidEmail);
+        return;
+      }
+
       const response = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -65,8 +74,7 @@ export default function ContactPage() {
         throw new Error('Form submission failed');
       }
     } catch (error) {
-      console.error('Contact form error:', error);
-      alert('Sorry, there was an error sending your message. Please try again.');
+      setErrorMessage('Sorry, there was an error sending your message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -161,7 +169,7 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                    Name *
+                    {strings.forms.name} *
                   </label>
                   <input
                     type="text"
@@ -171,12 +179,12 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Your name"
+                    placeholder={strings.forms.placeholders.name}
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                    Email *
+                    {strings.forms.email} *
                   </label>
                   <input
                     type="email"
@@ -186,7 +194,7 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="your.email@example.com"
+                    placeholder={strings.forms.placeholders.email}
                   />
                 </div>
               </div>
@@ -250,6 +258,20 @@ export default function ContactPage() {
           </div>
         </main>
       </div>
+      {/* Error Message Modal */}
+      {errorMessage && (
+        <ConfirmationDialog
+          isOpen={!!errorMessage}
+          title="Error"
+          message={errorMessage}
+          confirmText="OK"
+          cancelText=""
+          isDestructive={false}
+          onConfirm={() => setErrorMessage(null)}
+          onCancel={() => setErrorMessage(null)}
+          loading={false}
+        />
+      )}
     </>
   );
 }

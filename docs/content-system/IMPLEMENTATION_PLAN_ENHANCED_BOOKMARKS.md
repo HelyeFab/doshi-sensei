@@ -158,6 +158,7 @@ match /users/{userId}/userBookmarks/{bookmarkId} {
 - Filter by content type
 - Search functionality
 - Sort by date, progress, etc.
+- **List creation using unified modal system** - Use `ListSelectionModal` for consistent UX
 
 #### 3.2 Add Bookmark Buttons
 **Files to modify:**
@@ -299,6 +300,31 @@ src/components/bookmarks/
 ├── ReadingProgress.tsx       # Progress indicator
 └── SyncStatus.tsx           # Sync status indicator
 ```
+
+#### Modal System Integration
+The bookmark system integrates with the unified modal system for consistent list creation:
+
+**Using ListSelectionModal for Bookmark Lists:**
+```tsx
+import ListSelectionModal from '@/components/ListSelectionModal';
+
+// In BookmarkList.tsx or similar components
+<ListSelectionModal
+  isOpen={showCreateListModal}
+  onClose={() => setShowCreateListModal(false)}
+  onCreateList={handleCreateBookmarkList}
+  title="Create Bookmark List"
+  allowedTypes={['flashcard', 'sentence']}
+  createButtonText="Create Bookmark List"
+  className="bookmark-modal"
+/>
+```
+
+**Benefits:**
+- **Consistent UX**: Same modal experience across all list creation contexts
+- **Type Safety**: Appropriate list types for bookmark content
+- **Validation**: Unified duplicate name checking and error handling
+- **Future-Proof**: Automatically inherits modal system improvements
 
 ## 🚀 Deployment Strategy
 

@@ -31,6 +31,11 @@ class StoryOfflineManager {
 
   async initDB(): Promise<void> {
     if (this.db) return;
+    
+    // Only run on client side
+    if (typeof window === 'undefined') {
+      throw new Error('IndexedDB is not available on server side');
+    }
 
     try {
       this.db = await openDB<StoryDBSchema>(this.DB_NAME, this.DB_VERSION, {
@@ -104,10 +109,15 @@ class StoryOfflineManager {
 
   // Get all cached stories
   async getAllCachedStories(): Promise<Story[]> {
-    await this.initDB();
-    if (!this.db) throw new Error('Database not initialized');
-
+    // Only run on client side
+    if (typeof window === 'undefined') {
+      return [];
+    }
+    
     try {
+      await this.initDB();
+      if (!this.db) throw new Error('Database not initialized');
+
       const allCached = await this.db.getAll('stories');
       const now = new Date();
 

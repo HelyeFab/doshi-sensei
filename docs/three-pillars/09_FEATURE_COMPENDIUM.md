@@ -107,8 +107,10 @@ Today, Doshi Sensei stands as the ultimate Japanese learning resource, offering 
 ## 📚 **Vocabulary & List Management**
 
 ### 📋 **Unified Study Lists**
-- **Smart List Types**: Drillable lists (verbs/adjectives) and Flashcard lists (any content)
+- **Smart List Types**: Drillable lists (verbs/adjectives), Flashcard lists (any content), and Sentence lists (shadowing practice)
 - **Mixed Content Support**: Words, kanji, and mixed items in single lists
+- **Unified Modal Interface**: Consistent list creation experience across all contexts
+- **Type-Aware Validation**: Prevents incompatible content in specialized lists
 - **Cloud Synchronization**: Premium users can sync across devices
 - **List Organization**: Color-coded lists with descriptions and metadata
 - **Import/Export**: Save and share study lists
@@ -185,6 +187,13 @@ Today, Doshi Sensei stands as the ultimate Japanese learning resource, offering 
 - **Notification Settings**: Customize learning reminders
 - **Data Management**: Export/import learning data
 - **Privacy Controls**: Manage data sharing and storage preferences
+
+### 🎛️ **Interface Components**
+- **Modal System**: Consistent modal design across all features
+- **ListSelectionModal**: Unified interface for creating study lists
+- **Type-Safe UI**: Visual indicators for different list types and content
+- **Smart Validation**: Real-time feedback and error prevention
+- **Contextual Help**: Clear explanations and guidance throughout the interface
 
 ---
 

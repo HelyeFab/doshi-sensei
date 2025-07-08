@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useTTS, TTSOptions } from '@/hooks/useTTS';
+import { strings } from '@/config/strings';
 
 interface TTSButtonProps {
   text: string;
@@ -32,10 +33,10 @@ export function TTSButton({
   children
 }: TTSButtonProps) {
   const { state, speak } = useTTS();
-  
+
   const handleClick = async () => {
     if (disabled || state.isLoading) return;
-    
+
     // Use reading if provided (for kanji), otherwise use text
     const textToSpeak = reading || text;
     await speak(textToSpeak, options);
@@ -44,7 +45,7 @@ export function TTSButton({
   // Size classes
   const sizeClasses = {
     sm: 'p-1.5 w-6 h-6',
-    md: 'p-2 w-8 h-8', 
+    md: 'p-2 w-8 h-8',
     lg: 'p-3 w-10 h-10'
   };
 
@@ -109,13 +110,13 @@ export function TTSButton({
       {state.isPlaying ? (
         // Playing animation
         <>
-          <path d="M3 9v6h4l5 5V4L7 9H3z"/>
-          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-          <path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          <path d="M3 9v6h4l5 5V4L7 9H3z" />
+          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+          <path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
         </>
       ) : (
         // Static speaker
-        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
       )}
     </svg>
   );
@@ -125,7 +126,7 @@ export function TTSButton({
       {state.isLoading ? <LoadingIcon /> : <SpeakerIcon />}
       {showText && (
         <span className="ml-2 text-sm">
-          {state.isLoading ? 'Loading...' : state.isPlaying ? 'Playing...' : 'Play'}
+          {state.isLoading ? strings.loading.general : state.isPlaying ? 'Playing...' : 'Play'}
         </span>
       )}
       {children}
@@ -133,7 +134,7 @@ export function TTSButton({
   );
 
   // Generate tooltip text
-  const tooltipText = tooltip || `Play pronunciation: ${reading || text}`;
+  const tooltipText = tooltip || `${strings.tooltips.playPronunciation}: ${reading || text}`;
 
   return (
     <button
@@ -194,9 +195,9 @@ export function KanjiTTSButton({
     <TTSButton
       text={kanji}
       reading={reading}
-      options={{ 
-        voice, 
-        speed, 
+      options={{
+        voice,
+        speed,
         context: `kanji-${readingType}-reading`
       }}
       {...props}
@@ -218,9 +219,9 @@ export function GameTTSButton({
 }: GameTTSButtonProps) {
   return (
     <TTSButton
-      options={{ 
-        voice, 
-        speed, 
+      options={{
+        voice,
+        speed,
         context: `game-${gameType}`
       }}
       {...props}

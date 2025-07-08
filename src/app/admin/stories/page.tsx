@@ -7,6 +7,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { Story } from '@/types/story';
 import { storyManager } from '@/utils/storyManager';
 import Link from 'next/link';
+import { strings } from '@/config/strings';
 
 export default function AdminStoriesPage() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function AdminStoriesPage() {
   };
 
   if (adminLoading || !isAdmin) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">{strings.loading.general}</div>;
   }
 
   return (
@@ -62,19 +63,19 @@ export default function AdminStoriesPage() {
               <button
                 onClick={() => router.push('/admin')}
                 className="mr-2 p-2 rounded-full hover:bg-muted transition-colors"
-                title="Back to Admin Dashboard"
+                title={strings.admin.backToDashboard}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h1 className="text-3xl font-bold text-foreground">AI Stories</h1>
+              <h1 className="text-3xl font-bold text-foreground">{strings.admin.aiStories}</h1>
             </div>
             <Link
               href="/admin/stories/new"
               className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
             >
-              Create New Story
+              {strings.admin.createNewStory}
             </Link>
           </div>
 
@@ -85,12 +86,12 @@ export default function AdminStoriesPage() {
             </div>
           ) : stories.length === 0 ? (
             <div className="bg-card rounded-lg p-8 text-center">
-              <p className="text-muted-foreground mb-4">No stories created yet.</p>
+              <p className="text-muted-foreground mb-4">{strings.admin.noStoriesCreatedYet}</p>
               <Link
                 href="/admin/stories/new"
                 className="text-primary hover:text-primary/90 underline"
               >
-                Create your first story
+                {strings.admin.createYourFirstStory}
               </Link>
             </div>
           ) : (
@@ -99,14 +100,14 @@ export default function AdminStoriesPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left p-4 font-medium">Title</th>
-                      <th className="text-left p-4 font-medium">JLPT</th>
-                      <th className="text-left p-4 font-medium">Theme</th>
-                      <th className="text-left p-4 font-medium">Pages</th>
-                      <th className="text-left p-4 font-medium">Status</th>
-                      <th className="text-left p-4 font-medium">Views</th>
-                      <th className="text-left p-4 font-medium">Completed</th>
-                      <th className="text-left p-4 font-medium">Actions</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.title}</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.jlpt}</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.theme}</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.pages}</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.status}</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.views}</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.completed}</th>
+                      <th className="text-left p-4 font-medium">{strings.admin.actions}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -141,14 +142,14 @@ export default function AdminStoriesPage() {
                               href={`/admin/stories/edit/${story.id}`}
                               className="text-primary hover:text-primary/90"
                             >
-                              Edit
+                              {strings.admin.edit}
                             </Link>
                             <Link
                               href={`/stories/${story.slug}`}
                               className="text-primary hover:text-primary/90"
                               target="_blank"
                             >
-                              View
+                              {strings.admin.view}
                             </Link>
                           </div>
                         </td>

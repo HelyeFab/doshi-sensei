@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useAdminLogs } from '@/hooks/useAdminLogs';
 import { AdminLogAction } from '@/types/admin';
+import { strings } from '@/config/strings';
 import { formatLogAction, getActionSeverity } from '@/utils/adminLogs';
 
 const ACTIONS_PER_PAGE = 20;
@@ -13,10 +14,10 @@ export default function AdminLogsPage() {
   const [searchUserId, setSearchUserId] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { 
-    logs, 
-    loading, 
-    error, 
+  const {
+    logs,
+    loading,
+    error,
     refreshLogs,
     totalActions,
     actionsByType
@@ -81,36 +82,36 @@ export default function AdminLogsPage() {
   };
 
   return (
-    <AdminLayout title="Activity Logs">
+    <AdminLayout title={strings.admin.activityLogs}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Activity Logs</h1>
-            <p className="text-gray-600">Track all administrative actions and system changes</p>
+            <h1 className="text-2xl font-bold text-gray-900">{strings.admin.activityLogsTitle}</h1>
+            <p className="text-gray-600">{strings.admin.activityLogsDescription}</p>
           </div>
           <button
             onClick={refreshLogs}
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Refreshing...' : 'Refresh'}
+            {loading ? strings.admin.refreshing : strings.admin.refresh}
           </button>
         </div>
 
         {/* Activity Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Recent Activity</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{strings.admin.recentActivity}</h3>
             <p className="text-3xl font-bold text-blue-600">{totalActions}</p>
-            <p className="text-gray-600">Actions in last 7 days</p>
+            <p className="text-gray-600">{strings.admin.actionsInLast7Days}</p>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Most Common</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{strings.admin.mostCommon}</h3>
             <div className="space-y-2">
               {Object.entries(actionsByType)
-                .sort(([,a], [,b]) => b - a)
+                .sort(([, a], [, b]) => b - a)
                 .slice(0, 3)
                 .map(([action, count]) => (
                   <div key={action} className="flex justify-between text-sm">
@@ -122,12 +123,12 @@ export default function AdminLogsPage() {
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">System Status</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{strings.admin.systemStatus}</h3>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-              <span className="text-green-600 font-medium">All Systems Operational</span>
+              <span className="text-green-600 font-medium">{strings.admin.allSystemsOperational}</span>
             </div>
-            <p className="text-gray-600 text-sm mt-1">Last checked: {formatDate(new Date())}</p>
+            <p className="text-gray-600 text-sm mt-1">{strings.admin.lastChecked}: {formatDate(new Date())}</p>
           </div>
         </div>
 
@@ -136,7 +137,7 @@ export default function AdminLogsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="actionFilter" className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Action
+                {strings.admin.filterByAction}
               </label>
               <select
                 id="actionFilter"
@@ -147,19 +148,19 @@ export default function AdminLogsPage() {
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">All Actions</option>
-                <option value="user_upgraded_to_premium">User Upgrades</option>
-                <option value="user_suspended">User Suspensions</option>
-                <option value="mood_board_created">Mood Board Created</option>
-                <option value="mood_board_updated">Mood Board Updated</option>
-                <option value="mood_board_deleted">Mood Board Deleted</option>
-                <option value="admin_login">Admin Logins</option>
+                <option value="all">{strings.admin.allActions}</option>
+                <option value="user_upgraded_to_premium">{strings.admin.userUpgrades}</option>
+                <option value="user_suspended">{strings.admin.userSuspensions}</option>
+                <option value="mood_board_created">{strings.admin.moodBoardCreated}</option>
+                <option value="mood_board_updated">{strings.admin.moodBoardUpdated}</option>
+                <option value="mood_board_deleted">{strings.admin.moodBoardDeleted}</option>
+                <option value="admin_login">{strings.admin.adminLogins}</option>
               </select>
             </div>
 
             <div>
               <label htmlFor="userSearch" className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by User ID
+                {strings.admin.filterByUserId}
               </label>
               <input
                 id="userSearch"
@@ -169,7 +170,7 @@ export default function AdminLogsPage() {
                   setSearchUserId(e.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder="Enter user ID to filter..."
+                placeholder={strings.forms.placeholders.enterUserId}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -186,7 +187,7 @@ export default function AdminLogsPage() {
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error Loading Logs</h3>
+                <h3 className="text-sm font-medium text-red-800">{strings.forms.errors.errorLoadingLogs}</h3>
                 <p className="text-sm text-red-700 mt-1">{error}</p>
               </div>
             </div>
@@ -196,7 +197,7 @@ export default function AdminLogsPage() {
         {/* Logs Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Activity Log</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{strings.admin.activityLog}</h2>
           </div>
 
           {loading ? (
@@ -232,7 +233,7 @@ export default function AdminLogsPage() {
                     {currentLogs.map((log) => {
                       const severity = getActionSeverity(log.action);
                       const severityColor = getSeverityColor(severity);
-                      
+
                       return (
                         <tr key={log.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">

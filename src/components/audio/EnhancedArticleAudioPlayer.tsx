@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { NewsArticle } from '@/types/news';
 import ArticleTTSManager from '@/utils/articleTTS';
 import { ChevronDown, Play, Pause, Square, Volume2, Settings } from 'lucide-react';
+import { strings } from '@/config/strings';
 
 interface ArticleAudioPlayerProps {
   article: NewsArticle;
@@ -36,7 +37,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
     progress: 0,
     duration: 0
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -45,17 +46,17 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
   const [provider, setProvider] = useState<'elevenlabs' | 'google'>('elevenlabs');
   const [showMobileOptions, setShowMobileOptions] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCache = useRef<AudioCache>({});
   const retryCountRef = useRef(0);
-  
+
   // Check if mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -83,14 +84,14 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
       audioRef.current.removeEventListener('error', handleError);
       audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
       audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      
+
       // Clean up blob URL if it exists
       if (audioRef.current.src.startsWith('blob:')) {
         URL.revokeObjectURL(audioRef.current.src);
       }
       audioRef.current = null;
     }
-    
+
     setControls(prev => ({
       ...prev,
       isPlaying: false,
@@ -109,9 +110,9 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
   }, []);
 
   const handleEnded = useCallback(() => {
-    setControls(prev => ({ 
-      ...prev, 
-      isPlaying: false, 
+    setControls(prev => ({
+      ...prev,
+      isPlaying: false,
       isPaused: false,
       progress: 0
     }));
@@ -119,11 +120,11 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
 
   const handleError = useCallback((e: Event) => {
     console.error('Audio playback error:', e);
-    setError('Failed to play audio');
-    setControls(prev => ({ 
-      ...prev, 
-      isPlaying: false, 
-      isPaused: false 
+    setError(strings.audio.failedToPlay);
+    setControls(prev => ({
+      ...prev,
+      isPlaying: false,
+      isPaused: false
     }));
   }, []);
 
@@ -147,23 +148,23 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
     audio.addEventListener('error', handleError);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    
+
     // Apply current settings
     audio.playbackRate = controls.playbackSpeed;
     audio.volume = controls.volume;
-    
+
     return audio;
   }, [controls.playbackSpeed, controls.volume, handlePlay, handlePause, handleEnded, handleError, handleTimeUpdate, handleLoadedMetadata]);
 
   // Enhanced TTS audio with better caching and error handling
   const playTTSAudio = async () => {
     if (!article?.id || !article?.content) {
-      setError('Invalid article data.');
+      setError(strings.audio.failedToLoad);
       return;
     }
 
     const cacheKey = generateCacheKey(article.id, voice, provider);
-    
+
     // Check cache first
     if (audioCache.current[cacheKey]) {
       const cachedAudio = audioCache.current[cacheKey];
@@ -185,7 +186,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
 
     setIsLoading(true);
     setError(null);
-    setLoadingStatus('Connecting to audio service...');
+    setLoadingStatus(strings.audio.generating);
     retryCountRef.current = 0;
 
     const attemptTTSGeneration = async (): Promise<void> => {
@@ -204,7 +205,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
 
         cleanup();
         audioRef.current = setupAudioElement(audio);
-        
+
         // Cache the audio URL
         audioCache.current[cacheKey] = {
           audioUrl: audio.src,
@@ -218,7 +219,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
 
       } catch (error) {
         console.error('TTS Error:', error);
-        
+
         // Retry logic
         if (retryCountRef.current < 2) {
           retryCountRef.current++;
@@ -226,7 +227,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
           setTimeout(attemptTTSGeneration, 1000);
           return;
         }
-        
+
         setError(error instanceof Error ? error.message : 'Failed to generate audio');
         setIsLoading(false);
         setLoadingStatus('');
@@ -263,7 +264,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
   // Enhanced pause/resume with better state management
   const togglePause = useCallback(async () => {
     if (!audioRef.current) return;
-    
+
     try {
       if (controls.isPlaying) {
         audioRef.current.pause();
@@ -347,8 +348,8 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
     }
   }, [provider, stop]);
 
-  const progressPercent = controls.duration > 0 
-    ? (controls.progress / controls.duration) * 100 
+  const progressPercent = controls.duration > 0
+    ? (controls.progress / controls.duration) * 100
     : 0;
 
   if (!article) {
@@ -360,96 +361,91 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
     <div className="fixed inset-0 bg-black/50 flex items-end z-50" onClick={() => setShowMobileOptions(false)}>
       <div className="bg-background rounded-t-2xl w-full p-6 space-y-6" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Audio Options</h3>
-          <button 
+          <h3 className="text-lg font-semibold">{strings.audio.mobileOptions}</h3>
+          <button
             onClick={() => setShowMobileOptions(false)}
             className="p-2 hover:bg-muted rounded-lg"
           >
             ✕
           </button>
         </div>
-        
+
         {audioMode === 'tts' && (
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 block">Voice</label>
+              <label className="text-sm font-medium text-muted-foreground mb-2 block">{strings.audio.voice}</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => handleVoiceChange('male')}
-                  className={`p-3 rounded-lg text-sm font-medium ${
-                    voice === 'male' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-foreground hover:bg-muted/80'
-                  }`}
+                  className={`p-3 rounded-lg text-sm font-medium ${voice === 'male'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                    }`}
                 >
-                  Male Voice
+                  {strings.audio.maleVoice}
                 </button>
                 <button
                   onClick={() => handleVoiceChange('female')}
-                  className={`p-3 rounded-lg text-sm font-medium ${
-                    voice === 'female' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-foreground hover:bg-muted/80'
-                  }`}
+                  className={`p-3 rounded-lg text-sm font-medium ${voice === 'female'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                    }`}
                 >
-                  Female Voice
+                  {strings.audio.femaleVoice}
                 </button>
               </div>
             </div>
-            
+
             <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 block">Provider</label>
+              <label className="text-sm font-medium text-muted-foreground mb-2 block">{strings.audio.provider}</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => handleProviderChange('elevenlabs')}
-                  className={`p-3 rounded-lg text-sm font-medium ${
-                    provider === 'elevenlabs' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-foreground hover:bg-muted/80'
-                  }`}
+                  className={`p-3 rounded-lg text-sm font-medium ${provider === 'elevenlabs'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                    }`}
                 >
-                  ElevenLabs
+                  {strings.audio.elevenlabs}
                 </button>
                 <button
                   onClick={() => handleProviderChange('google')}
-                  className={`p-3 rounded-lg text-sm font-medium ${
-                    provider === 'google' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-foreground hover:bg-muted/80'
-                  }`}
+                  className={`p-3 rounded-lg text-sm font-medium ${provider === 'google'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                    }`}
                 >
-                  Google
+                  {strings.audio.google}
                 </button>
               </div>
             </div>
           </div>
         )}
-        
+
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
-              Speed: {controls.playbackSpeed}x
+              {strings.audio.speed}: {controls.playbackSpeed}x
             </label>
             <div className="grid grid-cols-6 gap-1">
               {[0.5, 0.75, 1, 1.25, 1.5, 2].map(speed => (
                 <button
                   key={speed}
                   onClick={() => changeSpeed(speed)}
-                  className={`p-2 rounded text-xs ${
-                    controls.playbackSpeed === speed 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-foreground'
-                  }`}
+                  className={`p-2 rounded text-xs ${controls.playbackSpeed === speed
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground'
+                    }`}
                 >
                   {speed}x
                 </button>
               ))}
             </div>
           </div>
-          
+
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
-              Volume: {Math.round(controls.volume * 100)}%
+              {strings.audio.volume}: {Math.round(controls.volume * 100)}%
             </label>
             <input
               type="range"
@@ -474,7 +470,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Volume2 className="w-5 h-5 text-primary" />
-              <h3 className="font-medium text-foreground">Listen to Article</h3>
+              <h3 className="font-medium text-foreground">{strings.audio.playEntireArticle}</h3>
             </div>
             {isLoading && (
               <div className="flex items-center gap-2">
@@ -489,23 +485,21 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
             <div className="flex gap-2 p-1 bg-muted rounded-lg">
               <button
                 onClick={() => switchAudioMode('original')}
-                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  audioMode === 'original' 
-                    ? 'bg-background text-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${audioMode === 'original'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
               >
-                Original Audio
+                {strings.audio.originalAudio}
               </button>
               <button
                 onClick={() => switchAudioMode('tts')}
-                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  audioMode === 'tts' 
-                    ? 'bg-background text-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${audioMode === 'tts'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
               >
-                AI Voice
+                {strings.audio.ttsAudio}
               </button>
             </div>
           )}
@@ -516,45 +510,41 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
               <div className="flex gap-2">
                 <button
                   onClick={() => handleVoiceChange('male')}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    voice === 'male' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`px-3 py-1 rounded-md text-sm ${voice === 'male'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                 >
-                  Male
+                  {strings.audio.maleVoice}
                 </button>
                 <button
                   onClick={() => handleVoiceChange('female')}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    voice === 'female' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`px-3 py-1 rounded-md text-sm ${voice === 'female'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                 >
-                  Female
+                  {strings.audio.femaleVoice}
                 </button>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => handleProviderChange('elevenlabs')}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    provider === 'elevenlabs' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`px-3 py-1 rounded-md text-sm ${provider === 'elevenlabs'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                 >
-                  ElevenLabs
+                  {strings.audio.elevenlabs}
                 </button>
                 <button
                   onClick={() => handleProviderChange('google')}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    provider === 'google' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`px-3 py-1 rounded-md text-sm ${provider === 'google'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                 >
-                  Google
+                  {strings.audio.google}
                 </button>
               </div>
             </div>
@@ -624,7 +614,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
 
             {/* Progress bar */}
             <div className="space-y-1">
-              <div 
+              <div
                 className="w-full bg-muted rounded-full h-2 cursor-pointer relative"
                 onClick={(e) => {
                   if (controls.duration > 0) {

@@ -322,24 +322,24 @@ export default function SettingsPage() {
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="space-y-8">
             {/* Virtual Companion Settings */}
-            <SettingsSection title="Virtual Companion">
+            <SettingsSection title={strings.settings.virtualCompanion}>
               <div className="space-y-4">
                 <ToggleSetting
-                  label="Show Virtual Companion"
-                  description="Display the friendly companion character across the app for encouragement"
+                  label={strings.settings.showVirtualCompanion}
+                  description={strings.settings.showVirtualCompanionDesc}
                   checked={settings.showCompanion ?? true}
                   onChange={(checked) => updateSetting('showCompanion', checked)}
                 />
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">
-                    The virtual companion provides motivational messages and adds a friendly touch to your learning experience.
+                    {strings.settings.virtualCompanionInfo}
                   </p>
                 </div>
               </div>
             </SettingsSection>
 
             {/* Theme Settings */}
-            <SettingsSection title="Appearance">
+            <SettingsSection title={strings.settings.appearance}>
               <ThemeSelector
                 currentTheme={settings.theme}
                 currentColorScheme={settings.colorScheme}
@@ -352,27 +352,27 @@ export default function SettingsPage() {
 
 
             {/* Tutorial & Learning */}
-            <SettingsSection title="Tutorial & Learning">
+            <SettingsSection title={strings.settings.tutorialLearning}>
               <div className="space-y-4">
                 <LinkButton
-                  label="Replay Tutorial"
-                  description="Watch the onboarding tutorial again to refresh your knowledge"
+                  label={strings.settings.replayTutorial}
+                  description={strings.settings.replayTutorialDesc}
                   onClick={handleReplayTutorial}
                 />
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">
-                    The tutorial covers conjugation engine, vocabulary lists, practice modes, and more.
+                    {strings.settings.tutorialInfo}
                   </p>
                 </div>
               </div>
             </SettingsSection>
 
             {/* Goals & Progress */}
-            <SettingsSection title="Goals & Progress">
+            <SettingsSection title={strings.settings.goalsProgress}>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-foreground">
-                    Daily Goal (words)
+                    {strings.settings.dailyGoalWords}
                   </label>
                   <div className="flex items-center space-x-4">
                     <input
@@ -397,10 +397,10 @@ export default function SettingsPage() {
                       onClick={() => setShowResetModal(true)}
                       className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
                     >
-                      Reset All Data
+                      {strings.settings.resetAllData}
                     </button>
                     <p className="text-xs text-muted-foreground mt-2">
-                      This will reset all your progress, statistics, word lists, and settings.
+                      {strings.settings.resetAllDataDesc}
                     </p>
                   </div>
                 </div>
@@ -408,28 +408,28 @@ export default function SettingsPage() {
             </SettingsSection>
 
             {/* Data Management */}
-            <SettingsSection title="Data Management">
+            <SettingsSection title={strings.settings.dataManagement}>
               <div className="space-y-4">
                 <LinkButton
-                  label="Export Data"
-                  description="Download your progress and word lists"
+                  label={strings.settings.exportData}
+                  description={strings.settings.exportDataDesc}
                   onClick={handleExportData}
                 />
                 <LinkButton
-                  label="Import Data"
-                  description="Restore from a previously exported file"
+                  label={strings.settings.importData}
+                  description={strings.settings.importDataDesc}
                   onClick={handleImportData}
                 />
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">
-                    Keep your data safe by regularly exporting your progress and word lists.
+                    {strings.settings.dataManagementInfo}
                   </p>
                 </div>
               </div>
             </SettingsSection>
 
             {/* Cloud Sync */}
-            <SettingsSection title="Cloud Sync">
+            <SettingsSection title={strings.settings.cloudSync}>
               <div className="space-y-4">
                 {canSync ? (
                   <>
@@ -437,28 +437,28 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div className="flex items-center space-x-3">
                         <div className={`w-3 h-3 rounded-full ${syncStatus.isSyncing
-                            ? 'bg-yellow-500 animate-pulse'
-                            : syncStatus.isOnline
-                              ? 'bg-green-500'
-                              : 'bg-red-500'
+                          ? 'bg-yellow-500 animate-pulse'
+                          : syncStatus.isOnline
+                            ? 'bg-green-500'
+                            : 'bg-red-500'
                           }`}></div>
                         <div>
                           <div className="text-sm font-medium text-foreground">
                             {syncStatus.isSyncing
-                              ? 'Syncing...'
+                              ? strings.settings.syncing
                               : syncStatus.isOnline
-                                ? 'Connected'
-                                : 'Offline'}
+                                ? strings.settings.connected
+                                : strings.settings.offline}
                           </div>
                           <div className="text-xs text-muted-foreground">
                             {syncStatus.lastSyncTime
-                              ? `Last synced: ${syncStatus.lastSyncTime.toLocaleTimeString()}`
-                              : 'Never synced'}
+                              ? `${strings.settings.lastSynced} ${syncStatus.lastSyncTime.toLocaleTimeString()}`
+                              : strings.settings.neverSynced}
                           </div>
                         </div>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Auto-sync enabled
+                        {strings.settings.autoSyncEnabled}
                       </div>
                     </div>
 
@@ -471,14 +471,14 @@ export default function SettingsPage() {
                       {(isSyncing || syncStatus.isSyncing) ? (
                         <>
                           <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
-                          <span>Syncing...</span>
+                          <span>{strings.settings.syncing}</span>
                         </>
                       ) : (
                         <>
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                           </svg>
-                          <span>Sync Now</span>
+                          <span>{strings.settings.syncNow}</span>
                         </>
                       )}
                     </button>
@@ -486,8 +486,7 @@ export default function SettingsPage() {
                     {/* Sync Info */}
                     <div className="pt-2 border-t border-border">
                       <p className="text-xs text-muted-foreground">
-                        Your vocabulary lists and progress are automatically synced across all your devices.
-                        Click "Sync Now" to manually trigger a sync.
+                        {strings.settings.cloudSyncInfo}
                       </p>
                     </div>
                   </>
@@ -497,22 +496,22 @@ export default function SettingsPage() {
                     <div className="text-center p-6 border border-border rounded-lg">
                       <div className="text-3xl mb-3">☁️</div>
                       <h3 className="text-lg font-medium text-foreground mb-2">
-                        Cloud Sync Available
+                        {strings.settings.cloudSyncAvailable}
                       </h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Sync your vocabulary lists and progress across all your devices with a premium subscription.
+                        {strings.settings.cloudSyncDesc}
                       </p>
                       <button
                         onClick={handleUpgradeForSync}
                         className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                       >
-                        Upgrade to Premium
+                        {strings.settings.upgradeToPremium}
                       </button>
                     </div>
 
                     <div className="pt-2">
                       <p className="text-xs text-muted-foreground">
-                        Premium users get unlimited cloud sync, vocabulary lists, and daily drills.
+                        {strings.settings.premiumUsersInfo}
                       </p>
                     </div>
                   </>
@@ -521,83 +520,82 @@ export default function SettingsPage() {
             </SettingsSection>
 
             {/* Support & Feedback */}
-            <SettingsSection title="Support & Feedback">
+            <SettingsSection title={strings.settings.supportFeedback}>
               <div className="space-y-4">
                 <LinkButton
-                  label="Contact Us"
-                  description="Get in touch with our support team"
+                  label={strings.settings.contactUs}
+                  description={strings.settings.contactUsDesc}
                   onClick={handleContactUs}
                 />
                 <LinkButton
-                  label="Report a Bug"
-                  description="Help us improve by reporting issues"
+                  label={strings.settings.reportBug}
+                  description={strings.settings.reportBugDesc}
                   onClick={handleReportBug}
                 />
                 <LinkButton
-                  label="Send Feedback"
-                  description="Share your thoughts and suggestions"
+                  label={strings.settings.sendFeedback}
+                  description={strings.settings.sendFeedbackDesc}
                   onClick={handleSendFeedback}
                 />
                 <LinkButton
-                  label="Help & FAQ"
-                  description="Find answers to common questions"
+                  label={strings.settings.helpFAQ}
+                  description={strings.settings.helpFAQDesc}
                   onClick={handleHelpFAQ}
                 />
               </div>
             </SettingsSection>
 
             {/* Legal & Privacy */}
-            <SettingsSection title="Legal & Privacy">
+            <SettingsSection title={strings.settings.legalPrivacy}>
               <div className="space-y-4">
                 <LinkButton
-                  label="Privacy Policy"
-                  description="How we handle your data"
+                  label={strings.settings.privacyPolicy}
+                  description={strings.settings.privacyPolicyDesc}
                   onClick={handlePrivacyPolicy}
                 />
                 <LinkButton
-                  label="Terms of Service"
-                  description="Terms and conditions of use"
+                  label={strings.settings.termsOfService}
+                  description={strings.settings.termsOfServiceDesc}
                   onClick={handleTermsOfService}
                 />
                 <LinkButton
-                  label="Data Usage"
-                  description="What data we collect and why"
+                  label={strings.settings.dataUsage}
+                  description={strings.settings.dataUsageDesc}
                   onClick={handleDataUsage}
                 />
               </div>
             </SettingsSection>
 
             {/* About */}
-            <SettingsSection title="About">
+            <SettingsSection title={strings.settings.about}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Version</span>
+                  <span className="text-sm text-muted-foreground">{strings.settings.version}</span>
                   <span className="text-sm text-foreground">1.0.0</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Build</span>
+                  <span className="text-sm text-muted-foreground">{strings.settings.build}</span>
                   <span className="text-sm text-foreground">2025.06.12</span>
                 </div>
                 <div className="pt-2 mb-4">
                   <p className="text-sm text-muted-foreground">
-                    Doshi Sensei is a Japanese verb and adjective conjugation practice app.
-                    Built with Next.js and designed to help you master Japanese conjugations.
+                    {strings.settings.aboutInfo}
                   </p>
                 </div>
                 <div className="space-y-3 border-t border-border pt-4">
                   <LinkButton
-                    label="Rate the App"
-                    description="Help others discover Doshi Sensei"
+                    label={strings.settings.rateApp}
+                    description={strings.settings.rateAppDesc}
                     onClick={handleRateApp}
                   />
                   <LinkButton
-                    label="Share with Friends"
-                    description="Spread the word about learning Japanese"
+                    label={strings.settings.shareWithFriends}
+                    description={strings.settings.shareWithFriendsDesc}
                     onClick={handleShareApp}
                   />
                   <LinkButton
-                    label="Acknowledgments"
-                    description="Credits and open source libraries"
+                    label={strings.settings.acknowledgments}
+                    description={strings.settings.acknowledgmentsDesc}
                     onClick={handleAcknowledgments}
                   />
                 </div>
@@ -627,7 +625,7 @@ export default function SettingsPage() {
                   onClick={closeSyncModal}
                   className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                 >
-                  OK
+                  {strings.settings.ok}
                 </button>
               </div>
             </div>
@@ -641,19 +639,18 @@ export default function SettingsPage() {
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">⚠️</div>
                 <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                  Reset All Data?
+                  {strings.settings.resetAllDataTitle}
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  This action will permanently delete:
+                  {strings.settings.resetAllDataDesc}
                 </p>
                 <ul className="text-muted-foreground text-sm mt-2 space-y-1">
-                  <li>• All your word lists and saved words</li>
-                  <li>• Practice progress and statistics</li>
-                  <li>• Settings and preferences</li>
-                  <li>• Recently viewed words</li>
+                  {strings.settings.resetAllDataItems.map((item, index) => (
+                    <li key={index}>• {item}</li>
+                  ))}
                 </ul>
                 <p className="text-red-400 font-medium text-sm mt-4">
-                  This action cannot be undone!
+                  {strings.settings.resetAllDataWarning}
                 </p>
               </div>
 
@@ -663,7 +660,7 @@ export default function SettingsPage() {
                   disabled={isResetting}
                   className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
                 >
-                  Cancel
+                  {strings.settings.cancel}
                 </button>
                 <button
                   onClick={handleResetAllData}
@@ -673,10 +670,10 @@ export default function SettingsPage() {
                   {isResetting ? (
                     <div className="flex items-center justify-center gap-2">
                       <div className="animate-spin w-4 h-4 border-2 border-destructive-foreground border-t-transparent rounded-full"></div>
-                      Resetting...
+                      {strings.settings.resetting}
                     </div>
                   ) : (
-                    'Reset All Data'
+                    strings.settings.resetAllData
                   )}
                 </button>
               </div>

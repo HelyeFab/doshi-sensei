@@ -10,6 +10,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { AVAILABLE_NAV_ITEMS, HOME_NAV_ITEM } from '@/config/navigation';
 import PokedexModal from '@/components/games/PokedexModal';
+import { strings } from '@/config/strings';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,21 +67,21 @@ export default function MobileMenu() {
 
   // Create a simple menu items array like in your image
   const simpleMenuItems = [
-    { label: 'Home', icon: '🏠', href: '/' },
-    ...(isAdmin ? [{ label: 'Admin Dashboard', icon: '👑', href: '/admin' }] : []),
-    ...(pokemonCaught > 0 ? [{ label: 'Pokédex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
-    { label: 'Practice', icon: '📚', href: '/practice' },
-    { label: 'Drill', icon: '⚡', href: '/drill' },
-    { label: 'Vocabulary', icon: '📖', href: '/vocabulary' },
-    { label: 'Kanji', icon: '漢', href: '/kanji-browser' },
-    { label: 'Mood Boards', icon: '🗺️', href: '/kanji-moods' },
-    { label: 'Saved Items', icon: '⭐', href: '/favourites' },
-    { label: 'Account', icon: '👤', href: '/account' },
-    { label: 'Settings', icon: '⚙️', href: '/settings' },
-    { label: 'News', icon: '🗞️', href: '/news' },
-    { label: 'Games', icon: '🎮', href: '/games' },
-    { label: 'Resources', icon: '✨🎌✨', href: '/resources' },
-    { label: 'AI Stories', icon: '📖', href: '/stories' },
+    { label: strings.navigation.home.label, icon: strings.navigation.home.icon, href: '/' },
+    ...(isAdmin ? [{ label: strings.navigation.adminDashboard.label, icon: strings.navigation.adminDashboard.icon, href: '/admin' }] : []),
+    ...(pokemonCaught > 0 ? [{ label: strings.navigation.pokedex.label, icon: strings.navigation.pokedex.icon, href: '#', action: 'pokedex', count: pokemonCaught }] : []),
+    { label: strings.navigation.practice.label, icon: strings.navigation.practice.icon, href: '/practice' },
+    { label: strings.navigation.drill.label, icon: strings.navigation.drill.icon, href: '/drill' },
+    { label: strings.navigation.vocabulary.label, icon: strings.navigation.vocabulary.icon, href: '/vocabulary' },
+    { label: strings.navigation.kanjiBrowser.label, icon: strings.navigation.kanjiBrowser.icon, href: '/kanji-browser' },
+    { label: strings.navigation.kanjiMoods.label, icon: strings.navigation.kanjiMoods.icon, href: '/kanji-moods' },
+    { label: strings.navigation.favourites.label, icon: strings.navigation.favourites.icon, href: '/favourites' },
+    { label: strings.navigation.account.label, icon: strings.navigation.account.icon, href: '/account' },
+    { label: strings.navigation.settings.label, icon: strings.navigation.settings.icon, href: '/settings' },
+    { label: strings.navigation.news.label, icon: strings.navigation.news.icon, href: '/news' },
+    { label: strings.navigation.games.label, icon: strings.navigation.games.icon, href: '/games' },
+    { label: strings.navigation.resources.label, icon: strings.navigation.resources.icon, href: '/resources' },
+    { label: strings.navigation.stories.label, icon: strings.navigation.stories.icon, href: '/stories' },
   ];
 
   return (
@@ -110,7 +111,7 @@ export default function MobileMenu() {
 
       {/* Menu Modal Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40"
           onClick={() => setIsOpen(false)}
         />
@@ -142,9 +143,9 @@ export default function MobileMenu() {
           {/* Simple Menu Items like your image - Scrollable */}
           <div className="py-2 overflow-y-auto flex-1 min-h-0">
             {simpleMenuItems.map((item, index) => {
-              const isActive = pathname === item.href || 
+              const isActive = pathname === item.href ||
                 (item.href !== '/' && pathname.startsWith(item.href));
-              
+
               if (item.action === 'pokedex') {
                 return (
                   <button
@@ -166,7 +167,7 @@ export default function MobileMenu() {
                   </button>
                 );
               }
-              
+
               return (
                 <Link
                   key={index}
@@ -190,7 +191,7 @@ export default function MobileMenu() {
 
           {/* Footer */}
           <div className="p-2 border-t border-border flex-shrink-0">
-            <div 
+            <div
               className="p-4 rounded-lg"
               style={{
                 backgroundImage: 'linear-gradient(to right bottom, #bb75e9, #9389f7, #6798fb, #39a4f6, #12aceb)'

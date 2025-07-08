@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { NewsArticle } from '@/types/news';
 import TTSManager from '@/utils/tts';
 import { TranslationCache } from '@/utils/translationCache';
+import { strings } from '@/config/strings';
 
 interface ArticleAudioPlayerProps {
   article: NewsArticle;
@@ -45,10 +46,10 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
   // Translate current sentence
   const translateCurrentSentence = async (sentenceIndex: number) => {
     if (sentenceIndex >= sentences.length) return;
-    
+
     setIsTranslating(true);
     const sentence = sentences[sentenceIndex];
-    
+
     try {
       const translation = await translationCache.getTranslation(
         sentence,
@@ -66,7 +67,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
           return data.translation || 'Translation not available';
         }
       );
-      
+
       setCurrentTranslation(translation || 'Translation not available');
     } catch (error) {
       console.error('Translation error:', error);
@@ -107,10 +108,10 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
 
   const startPreloading = async () => {
     if (sentences.length === 0) return;
-    
+
     setIsPreloading(true);
     setPreloadProgress({ completed: 0, total: sentences.length });
-    
+
     try {
       await TTSManager.preloadArticleAudio(
         article.id,
@@ -121,7 +122,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
           setPreloadProgress({ completed, total });
         }
       );
-      
+
       console.log(`✅ Preloaded audio for ${sentences.length} sentences`);
     } catch (error) {
       console.error('Error preloading audio:', error);
@@ -342,19 +343,17 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
               {sentences.map((sentence, index) => (
                 <div
                   key={index}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                    index === controls.currentSentence
-                      ? 'bg-primary/10 border border-primary'
-                      : 'bg-muted hover:bg-muted/80'
-                  }`}
+                  className={`p-3 rounded-lg cursor-pointer transition-colors ${index === controls.currentSentence
+                    ? 'bg-primary/10 border border-primary'
+                    : 'bg-muted hover:bg-muted/80'
+                    }`}
                   onClick={() => goToSentence(index)}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      index === controls.currentSentence
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted-foreground text-background'
-                    }`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index === controls.currentSentence
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted-foreground text-background'
+                      }`}>
                       {index + 1}
                     </div>
                     <div className="flex-1">
@@ -383,7 +382,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
           {/* Current Sentence Display */}
           <div className="w-1/2 flex flex-col">
             <div className="p-4 border-b border-border">
-              <h3 className="font-medium text-foreground mb-2">🎯 Current Sentence</h3>
+              <h3 className="font-medium text-foreground mb-2">🎯 {strings.audio.playCurrentSentence}</h3>
               <p className="text-sm text-muted-foreground">
                 {controls.currentSentence + 1} / {sentences.length}
               </p>
@@ -472,7 +471,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
               disabled={isLoading}
               className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 text-sm"
             >
-              📖 Play All
+              📖 {strings.audio.playAll}
             </button>
 
             {/* Stop */}
@@ -488,7 +487,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
 
             {/* Playback Speed Control */}
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-foreground">Speed:</span>
+              <span className="text-foreground">{strings.audio.speed}:</span>
               <select
                 value={controls.playbackSpeed}
                 onChange={(e) => setControls(prev => ({
@@ -517,14 +516,14 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
                 }))}
                 className="rounded"
               />
-              <span className="text-foreground">Auto-advance</span>
+              <span className="text-foreground">{strings.audio.autoAdvance}</span>
             </label>
           </div>
 
           {/* Progress Bar */}
           <div className="mt-4">
             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-              <span>進捗</span>
+              <span>{strings.audio.progress}</span>
               <span>{controls.currentSentence + 1} / {sentences.length}</span>
             </div>
             <div className="w-full bg-muted rounded-full h-2">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import DonationModal from './DonationModal';
+import { strings } from '@/config/strings';
 
 export default function FloatingDonateButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,8 +20,8 @@ export default function FloatingDonateButton() {
       <button
         onClick={handleClick}
         className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-primary hover:bg-primary/90 border border-primary/30 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group backdrop-blur-md"
-        aria-label="Support the developer"
-        title="Support the developer"
+        aria-label={strings.tooltips.supportDeveloper}
+        title={strings.tooltips.supportDeveloper}
       >
         {/* Coffee Cup Emoji - matching navigation style */}
         <span className="text-2xl group-hover:scale-110 transition-transform duration-200">

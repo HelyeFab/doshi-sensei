@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { strings } from '@/config/strings';
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -21,6 +23,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
   const [customAmount, setCustomAmount] = useState('');
   const [isCustom, setIsCustom] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -28,7 +31,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
   const handleStripeClick = async () => {
     if (finalAmount < 100) {
-      alert('Minimum donation amount is $1.00');
+      setErrorMessage(strings.subscriptions.minimumDonation);
       return;
     }
 
@@ -52,11 +55,11 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
         window.location.href = data.sessionUrl;
       } else {
         console.error('Donation session creation failed:', data.error);
-        alert('Failed to create donation session. Please try again.');
+        setErrorMessage(strings.subscriptions.donationFailed);
       }
     } catch (error) {
       console.error('Error creating donation session:', error);
-      alert('An error occurred. Please try again.');
+      setErrorMessage(strings.subscriptions.errorOccurred);
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +67,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
   const handlePayPalClick = async () => {
     if (finalAmount < 100) {
-      alert('Minimum donation amount is $1.00');
+      setErrorMessage(strings.subscriptions.minimumDonation);
       return;
     }
 
@@ -88,11 +91,11 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
         window.location.href = data.approvalUrl;
       } else {
         console.error('PayPal order creation failed:', data.error);
-        alert('Failed to create PayPal order. Please try again.');
+        setErrorMessage(strings.subscriptions.paypalFailed);
       }
     } catch (error) {
       console.error('Error creating PayPal order:', error);
-      alert('An error occurred. Please try again.');
+      setErrorMessage(strings.subscriptions.errorOccurred);
     } finally {
       setIsLoading(false);
     }
@@ -115,9 +118,9 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
         {/* Header */}
         <div className="bg-primary text-primary-foreground p-6 text-center">
           <div className="text-4xl mb-3">☕</div>
-          <h2 className="text-xl font-semibold mb-1">Support Doshi Sensei</h2>
+          <h2 className="text-xl font-semibold mb-1">{strings.subscriptions.supportDeveloper}</h2>
           <p className="text-primary-foreground/80 text-sm">
-            Help keep this app free and growing!
+            {strings.subscriptions.supportDescription}
           </p>
         </div>
 
@@ -126,7 +129,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
           {/* Amount Selection */}
           <div className="space-y-3">
             <p className="text-center text-muted-foreground text-sm">
-              Choose donation amount:
+              {strings.subscriptions.chooseDonationAmount}
             </p>
 
             {/* Preset Amounts */}
@@ -135,15 +138,14 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
                 <button
                   key={amount.value}
                   onClick={() => handleAmountSelect(amount.value)}
-                  className={`relative p-3 rounded-lg border transition-all ${
-                    selectedAmount === amount.value && !isCustom
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border hover:border-primary/50 text-foreground'
-                  }`}
+                  className={`relative p-3 rounded-lg border transition-all ${selectedAmount === amount.value && !isCustom
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:border-primary/50 text-foreground'
+                    }`}
                 >
                   {amount.popular && (
                     <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
-                      Popular
+                      {strings.subscriptions.popular}
                     </div>
                   )}
                   <div className="font-medium">{amount.label}</div>
@@ -156,14 +158,13 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
               <div className="flex items-center space-x-2">
                 <input
                   type="number"
-                  placeholder="Custom amount"
+                  placeholder={strings.subscriptions.customAmount}
                   value={customAmount}
                   onChange={(e) => handleCustomAmountChange(e.target.value)}
                   min="1"
                   step="0.01"
-                  className={`flex-1 px-3 py-2 border rounded-lg bg-background text-foreground ${
-                    isCustom ? 'border-primary' : 'border-border'
-                  } focus:outline-none focus:border-primary`}
+                  className={`flex-1 px-3 py-2 border rounded-lg bg-background text-foreground ${isCustom ? 'border-primary' : 'border-border'
+                    } focus:outline-none focus:border-primary`}
                 />
                 <span className="text-muted-foreground text-sm">USD</span>
               </div>
@@ -173,7 +174,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
           {/* Payment Methods */}
           <div className="space-y-3 pt-2 border-t border-border">
             <p className="text-center text-muted-foreground text-sm">
-              Secure payment via Stripe:
+              {strings.subscriptions.securePaymentViaStripe}
             </p>
 
             {/* Stripe Button */}
@@ -193,7 +194,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
                     <span className="text-indigo-600 font-bold text-sm">S</span>
                   </div>
                   <span className="font-medium">
-                    Donate ${(finalAmount / 100).toFixed(2)} via Stripe
+                    {strings.subscriptions.donateViaStripe.replace('{amount}', (finalAmount / 100).toFixed(2))}
                   </span>
                   <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
@@ -213,7 +214,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
                   <span className="text-blue-600 font-bold text-sm">P</span>
                 </div>
                 <span className="font-medium">
-                  Donate ${(finalAmount / 100).toFixed(2)} via PayPal
+                  {strings.subscriptions.donateViaPayPal.replace('{amount}', (finalAmount / 100).toFixed(2))}
                 </span>
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
@@ -239,6 +240,21 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
           </p>
         </div>
       </div>
+
+      {/* Error Message Modal */}
+      {errorMessage && (
+        <ConfirmationDialog
+          isOpen={!!errorMessage}
+          title="Error"
+          message={errorMessage}
+          confirmText="OK"
+          cancelText=""
+          isDestructive={false}
+          onConfirm={() => setErrorMessage(null)}
+          onCancel={() => setErrorMessage(null)}
+          loading={false}
+        />
+      )}
     </div>
   );
 }

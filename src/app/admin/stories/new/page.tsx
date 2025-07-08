@@ -10,6 +10,7 @@ import { JLPTLevel, JLPT_LEVELS } from '@/types/kanji';
 import { storyManager } from '@/utils/storyManager';
 import { marked } from 'marked';
 import { validateStoryJson, parseStoryJson, StoryJsonImport } from '@/utils/storyJsonValidator';
+import { strings } from '@/config/strings';
 
 interface StoryFormData {
   title: string;
@@ -143,8 +144,8 @@ export default function NewStoryPage() {
       // Validation
       if (!formData.title.trim() || !formData.titleJa.trim()) {
         showNotification({
-          title: 'Missing Information',
-          message: '📝 Please enter both English and Japanese titles.',
+          title: strings.admin.articles.missingInfo,
+          message: strings.admin.articles.enterTitles,
           type: 'warning'
         });
         setLoading(false);
@@ -153,8 +154,8 @@ export default function NewStoryPage() {
 
       if (formData.pages.some(page => !page.text.trim() || !page.translation.trim())) {
         showNotification({
-          title: 'Incomplete Pages',
-          message: '📄 All pages must have both Japanese text and English translation.',
+          title: strings.admin.articles.incompletePages,
+          message: strings.admin.articles.allPagesRequired,
           type: 'warning'
         });
         setLoading(false);
@@ -163,8 +164,8 @@ export default function NewStoryPage() {
 
       if (formData.status === 'published' && !formData.publishedAt) {
         showNotification({
-          title: 'Missing Publish Date',
-          message: 'Please select a publish date.',
+          title: strings.admin.articles.missingPublishDate,
+          message: strings.admin.articles.selectPublishDate,
           type: 'warning'
         });
         setLoading(false);
@@ -636,11 +637,13 @@ export default function NewStoryPage() {
                   <label className="block text-sm font-medium mb-2">English Title *</label>
                   <input
                     type="text"
+                    id="title"
+                    name="title"
                     required
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
-                    placeholder="The Adventure Begins"
+                    placeholder={strings.forms.placeholders.storyTitle}
                   />
                 </div>
 
@@ -648,11 +651,13 @@ export default function NewStoryPage() {
                   <label className="block text-sm font-medium mb-2">Japanese Title (with furigana) *</label>
                   <input
                     type="text"
+                    id="titleJa"
+                    name="titleJa"
                     required
                     value={formData.titleJa}
                     onChange={(e) => handleInputChange('titleJa', e.target.value)}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground japanese-text"
-                    placeholder="<ruby>冒険<rt>ぼうけん</rt></ruby>が<ruby>始<rt>はじ</rt></ruby>まる"
+                    placeholder={strings.forms.placeholders.storyJapaneseTitle}
                   />
                 </div>
               </div>
@@ -660,11 +665,13 @@ export default function NewStoryPage() {
               <div>
                 <label className="block text-sm font-medium mb-2">Description</label>
                 <textarea
+                  id="description"
+                  name="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   rows={2}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
-                  placeholder="A young hero embarks on an exciting journey..."
+                  placeholder={strings.forms.placeholders.storyDescription}
                 />
               </div>
 

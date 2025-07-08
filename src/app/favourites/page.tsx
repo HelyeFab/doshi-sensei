@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { JapaneseWord, WordList, StudyList, StudyListType, Kanji } from '@/types';
+import { JapaneseWord, WordList, StudyList, StudyListType, Kanji, Sentence } from '@/types';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -11,8 +11,10 @@ import ArticleManager from '@/utils/articleManager';
 import StudyListManager from '@/utils/studyListManager';
 import WordListManager from '@/utils/wordLists';
 import { StoryBookmarkManager } from '@/utils/storyBookmarkManager';
+import { generateFuriganaWithCache } from '@/utils/furigana';
 import Link from 'next/link';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import ListSelectionModal from '@/components/ListSelectionModal';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -65,6 +67,7 @@ export default function FavouritesPage() {
   const [selectedList, setSelectedList] = useState<WordList | null>(null);
   const [listWords, setListWords] = useState<JapaneseWord[]>([]);
   const [listKanji, setListKanji] = useState<Kanji[]>([]);
+  const [listSentences, setListSentences] = useState<Sentence[]>([]);
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
 
@@ -138,7 +141,9 @@ export default function FavouritesPage() {
         createdAt: studyList.createdAt,
         updatedAt: studyList.updatedAt,
         color: studyList.color,
-        isConjugable: studyList.type === 'drillable'
+        isConjugable: studyList.type === 'drillable',
+        // Add the actual type for proper tag display
+        type: studyList.type
       }));
       setWordLists(legacyWordLists);
     } catch (error) {
@@ -154,8 +159,26 @@ export default function FavouritesPage() {
     if (!allowed) {
       return; // Access system will show appropriate modal
     }
-    
+
     setShowCreateListModal(true);
+  };
+
+  const handleCreateList = async (name: string, type: StudyListType, description?: string) => {
+    try {
+      await StudyListManager.createStudyList(
+        name,
+        type,
+        description,
+        user,
+        subscription?.status
+      );
+
+      // Reload the lists
+      await loadWordLists();
+    } catch (error) {
+      console.error('Error creating list:', error);
+      throw error; // Re-throw so the modal can handle it
+    }
   };
 
   const loadBookmarkedArticles = async () => {
@@ -187,29 +210,44 @@ export default function FavouritesPage() {
   const handleListClick = async (list: WordList) => {
     try {
       setSelectedList(list);
-      // Use the unified system to get both words and kanji from the list
-      const { words, kanji } = await StudyListManager.getItemsInList(list.id);
+      // Use the unified system to get words, kanji, and sentences from the list
+      const { words, kanji, sentences } = await StudyListManager.getItemsInList(list.id);
       setListWords(words);
       setListKanji(kanji);
+      setListSentences(sentences);
     } catch (error) {
       console.error('Error loading list items:', error);
     }
   };
 
   const handleListDelete = async (listId: string) => {
-    if (confirm('Are you sure you want to delete this list? This action cannot be undone.')) {
-      try {
-        await StudyListManager.deleteStudyList(listId, user, subscription?.status);
-        setWordLists(prev => prev.filter(list => list.id !== listId));
-        if (selectedList?.id === listId) {
-          setSelectedList(null);
-          setListWords([]);
-          setListKanji([]);
+    setConfirmDialog({
+      isOpen: true,
+      loading: false,
+      title: 'Delete List',
+      message: 'Are you sure you want to delete this list? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      isDestructive: true,
+      onConfirm: async () => {
+        setConfirmDialog((prev) => ({ ...prev, loading: true }));
+        try {
+          await StudyListManager.deleteStudyList(listId, user, subscription?.status);
+          setWordLists(prev => prev.filter(list => list.id !== listId));
+          if (selectedList?.id === listId) {
+            setSelectedList(null);
+            setListWords([]);
+            setListKanji([]);
+            setListSentences([]);
+          }
+        } catch (error) {
+          setErrorMessage('Error deleting list. Please try again.');
+          console.error('Error deleting list:', error);
+        } finally {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }));
         }
-      } catch (error) {
-        console.error('Error deleting list:', error);
-      }
-    }
+      },
+    });
   };
 
   const handleWordRemoveFromList = async (wordId: string) => {
@@ -237,6 +275,23 @@ export default function FavouritesPage() {
       setListKanji(prev => prev.filter(kanji => kanji.kanji !== kanjiChar));
     } catch (error) {
       console.error('Error removing kanji from list:', error);
+    }
+  };
+
+  const handleSentenceRemoveFromList = async (sentenceId: string) => {
+    if (!selectedList) return;
+
+    try {
+      await StudyListManager.removeItemFromList(sentenceId, selectedList.id, user);
+      setListSentences(prev => prev.filter(sentence => sentence.id !== sentenceId));
+      // Update the item count in the list
+      setWordLists(prev => prev.map(list =>
+        list.id === selectedList.id
+          ? { ...list, wordIds: list.wordIds.filter(id => id !== sentenceId) }
+          : list
+      ));
+    } catch (error) {
+      console.error('Error removing sentence from list:', error);
     }
   };
 
@@ -557,11 +612,13 @@ export default function FavouritesPage() {
 
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">{list.wordIds.length} items</span>
-                        <span className={`px-2 py-1 rounded text-xs ${list.isConjugable
-                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                          : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                        <span className={`px-2 py-1 rounded text-xs ${list.type === 'drillable'
+                            ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                            : list.type === 'sentence'
+                              ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                              : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
                           }`}>
-                          {list.isConjugable ? 'Drillable' : 'Flashcard'}
+                          {list.type === 'drillable' ? 'Drillable' : list.type === 'sentence' ? 'Sentence' : 'Flashcard'}
                         </span>
                       </div>
                     </div>
@@ -580,6 +637,7 @@ export default function FavouritesPage() {
                       setSelectedList(null);
                       setListWords([]);
                       setListKanji([]);
+                      setListSentences([]);
                     }}
                     className="p-2 hover:bg-muted rounded-lg transition-colors"
                   >
@@ -605,7 +663,7 @@ export default function FavouritesPage() {
               </div>
 
               {/* List Items */}
-              {listWords.length > 0 || listKanji.length > 0 ? (
+              {listWords.length > 0 || listKanji.length > 0 || listSentences.length > 0 ? (
                 <div className="space-y-4 mb-32 md:mb-8">
                   {/* Words */}
                   {listWords.map((word) => (
@@ -625,6 +683,16 @@ export default function FavouritesPage() {
                       kanji={kanji}
                       onKanjiClick={() => { }}
                       onRemoveClick={() => handleKanjiRemoveFromList(kanji.kanji)}
+                      showRemoveButton={true}
+                    />
+                  ))}
+
+                  {/* Sentences */}
+                  {listSentences.map((sentence) => (
+                    <SentenceCard
+                      key={sentence.id}
+                      sentence={sentence}
+                      onRemoveClick={() => handleSentenceRemoveFromList(sentence.id)}
                       showRemoveButton={true}
                     />
                   ))}
@@ -1009,15 +1077,14 @@ export default function FavouritesPage() {
         )}
 
         {/* Create List Modal */}
-        {showCreateListModal && (
-          <CreateListModal
-            onClose={() => setShowCreateListModal(false)}
-            onCreated={loadWordLists}
-            onListCreated={() => {
-              // List creation tracked automatically by access system
-            }}
-          />
-        )}
+        <ListSelectionModal
+          isOpen={showCreateListModal}
+          onClose={() => setShowCreateListModal(false)}
+          onCreateList={handleCreateList}
+          title="Create New Study List"
+          createButtonText="Create List"
+          allowedTypes={['flashcard', 'drillable', 'sentence']}
+        />
 
         <ConfirmationDialog
           isOpen={confirmDialog.isOpen}
@@ -1206,6 +1273,112 @@ function KanjiCard({ kanji, onKanjiClick, onRemoveClick, showRemoveButton }: Kan
   );
 }
 
+interface SentenceCardProps {
+  sentence: Sentence;
+  onRemoveClick?: () => void;
+  showRemoveButton?: boolean;
+}
+
+function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCardProps) {
+  const [showFurigana, setShowFurigana] = useState(false);
+  const [furiganaText, setFuriganaText] = useState<string | null>(null);
+  const [loadingFurigana, setLoadingFurigana] = useState(false);
+
+  // Generate furigana when toggle is enabled
+  useEffect(() => {
+    const generateFurigana = async () => {
+      if (!showFurigana || furiganaText) return;
+
+      setLoadingFurigana(true);
+      try {
+        const generated = await generateFuriganaWithCache(sentence.text);
+        setFuriganaText(generated);
+      } catch (error) {
+        console.error('Failed to generate furigana:', error);
+      } finally {
+        setLoadingFurigana(false);
+      }
+    };
+
+    if (showFurigana) {
+      generateFurigana();
+    }
+  }, [showFurigana, sentence.text, furiganaText]);
+
+  return (
+    <div className="bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="mb-2">
+            <div className="text-lg font-medium text-foreground japanese-text leading-relaxed">
+              {showFurigana && furiganaText ? (
+                <div 
+                  dangerouslySetInnerHTML={{ __html: furiganaText }}
+                  className="ruby-text"
+                />
+              ) : (
+                <p>{sentence.text}</p>
+              )}
+            </div>
+          </div>
+
+          {sentence.translation && (
+            <p className="text-sm text-muted-foreground mb-3">
+              {sentence.translation}
+            </p>
+          )}
+
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-block px-2 py-1 text-xs rounded-full border bg-green-500/10 text-green-400 border-green-500/20">
+              Sentence
+            </span>
+            {sentence.source && (
+              <span className="text-xs text-muted-foreground">
+                From: {sentence.source.title}
+              </span>
+            )}
+            
+            {/* Furigana toggle */}
+            <button
+              onClick={() => setShowFurigana(!showFurigana)}
+              className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                showFurigana 
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+              title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+            >
+              {loadingFurigana ? (
+                <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                'あ'
+              )}
+              <span className="text-xs">
+                {showFurigana ? 'ON' : 'OFF'}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {showRemoveButton && onRemoveClick && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveClick();
+            }}
+            className="text-red-400 hover:text-red-600 transition-colors"
+            title="Remove from list"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 interface WordModalProps {
   word: JapaneseWord;
   onClose: () => void;
@@ -1250,102 +1423,3 @@ function WordModal({ word, onClose }: WordModalProps) {
   );
 }
 
-interface CreateListModalProps {
-  onClose: () => void;
-  onCreated: () => void;
-  onListCreated?: () => Promise<void>;
-}
-
-function CreateListModal({ onClose, onCreated, onListCreated }: CreateListModalProps) {
-  const { user } = useAuth();
-  const { subscription } = useSubscription2();
-  const [listName, setListName] = useState('');
-  const [description, setDescription] = useState('');
-  const [creating, setCreating] = useState(false);
-
-  const handleCreate = async () => {
-    if (!listName.trim()) return;
-
-    try {
-      setCreating(true);
-      await StudyListManager.createStudyList(
-        listName,
-        'flashcard', // Default to flashcard type for simple word lists
-        description,
-        user,
-        subscription?.status
-      );
-      
-      // Track list creation
-      if (onListCreated) {
-        try {
-          await onListCreated();
-        } catch (error) {
-          console.error('Error tracking list creation:', error);
-          // Don't fail the whole list creation if tracking fails
-        }
-      }
-      
-      onCreated();
-      onClose();
-    } catch (err) {
-      console.error('Error creating list:', err);
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
-        <h3 className="text-lg font-semibold text-card-foreground mb-4">Create New List</h3>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              List Name *
-            </label>
-            <input
-              type="text"
-              value={listName}
-              onChange={(e) => setListName(e.target.value)}
-              placeholder="e.g., JLPT N5 Verbs, Cooking Terms"
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              maxLength={50}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Description (optional)
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description of this list..."
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              rows={3}
-              maxLength={200}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleCreate}
-            disabled={!listName.trim() || creating}
-            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {creating ? 'Creating...' : 'Create List'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}

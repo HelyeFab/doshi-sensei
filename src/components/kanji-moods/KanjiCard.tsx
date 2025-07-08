@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { KanjiCardProps } from '@/types/moodBoard';
 import KanjiModal from './KanjiModal';
+import { strings } from '@/config/strings';
 
 export default function KanjiCard({
   kanji,
@@ -30,7 +31,7 @@ export default function KanjiCard({
               <div className="text-lg text-muted-foreground text-center">
                 {kanji.meaning}
               </div>
-              
+
               {/* Readings Preview */}
               {(kanji.readings?.on?.length > 0 || kanji.readings?.kun?.length > 0) && (
                 <div className="mt-3 space-y-1">
@@ -56,7 +57,7 @@ export default function KanjiCard({
                     ? 'bg-emerald-200 text-emerald-700 dark:bg-emerald-800/30 dark:text-emerald-300'
                     : 'bg-violet-200 text-violet-600 dark:bg-violet-800/30 dark:text-violet-400'
                 }`}
-                aria-label={isLearned ? 'Learned' : 'Not learned'}
+                aria-label={isLearned ? strings.tooltips.learned : strings.tooltips.notLearned}
               >
                 {isLearned && (
                   <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">

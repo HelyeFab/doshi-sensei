@@ -53,7 +53,7 @@ export default function FallingObject({
       onTouchStart={handleClick}
       onPointerDown={handleClick}
     >
-      {object.type === 'kana' ? (
+      {(object.type === 'kana' || object.type === 'wrong-kana') ? (
         <div className="relative group">
           {/* Invisible click area for better mobile tapping */}
           <div className="absolute -inset-4 rounded-lg" />
@@ -72,6 +72,11 @@ export default function FallingObject({
             alt="distractor"
             className="w-full h-full object-contain drop-shadow-md"
             draggable={false}
+            onError={(e) => {
+              console.warn('[KanaDrop] Failed to load distractor image:', object.content);
+              // Hide broken images instead of showing broken icon
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
           />
         </div>
       )}

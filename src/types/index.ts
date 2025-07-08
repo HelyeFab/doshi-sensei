@@ -292,8 +292,8 @@ export interface CachedAPIResponse {
 }
 
 // Unified Study List Types
-export type StudyListType = 'drillable' | 'flashcard';
-export type StudyItemType = 'word' | 'kanji';
+export type StudyListType = 'drillable' | 'flashcard' | 'sentence';
+export type StudyItemType = 'word' | 'kanji' | 'sentence';
 
 export interface StudyList {
   id: string;
@@ -308,9 +308,10 @@ export interface StudyList {
 
 export interface SavedStudyItem {
   id: string;
-  itemType: StudyItemType; // 'word' or 'kanji'
+  itemType: StudyItemType; // 'word', 'kanji', or 'sentence'
   word?: JapaneseWord; // Present if itemType is 'word'
   kanji?: Kanji; // Present if itemType is 'kanji'
+  sentence?: Sentence; // Present if itemType is 'sentence'
   savedAt: Date;
   listIds: string[]; // Which lists this item belongs to
 }
@@ -325,6 +326,7 @@ export interface WordList {
   updatedAt: Date;
   color: string;
   isConjugable?: boolean;
+  type?: StudyListType; // Add the actual type for proper handling
 }
 
 export interface SavedWord {
@@ -398,6 +400,25 @@ export interface Kanji {
   jlpt: JLPTLevel;
 }
 
+// Sentence Types
+export interface Sentence {
+  id: string;
+  text: string;
+  furigana?: string;
+  translation?: string;
+  source: {
+    type: 'article' | 'story';
+    id: string;
+    title: string;
+    url?: string;
+  };
+  metadata?: {
+    difficulty?: string;
+    grammar?: string[];
+    vocabulary?: string[];
+  };
+}
+
 export interface SavedKanji {
   id: string;
   kanji: Kanji;
@@ -441,6 +462,9 @@ export interface DatabaseSchema {
   flashcardReviews: FlashcardReview;
   savedKanji: SavedKanji;
   kanjiLists: KanjiList;
+  // Sentence system
+  sentenceLists: import('@/types/sentences').SentenceList;
+  savedSentences: import('@/types/sentences').SavedSentence;
 }
 
 // IndexedDB Configuration

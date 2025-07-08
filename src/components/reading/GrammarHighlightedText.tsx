@@ -105,7 +105,7 @@ export function GrammarHighlightedText({
   }
 
   return (
-    <span className={`${className} block md:inline`} style={{ lineHeight: '2.5' }}>
+    <span className={`${className} block md:inline`} style={{ lineHeight: '2.5', marginTop: '0.5rem' }}>
       {tokens.map((token, index) => {
         const isHighlighted = shouldHighlight(token);
         const posType = KuromojiService.getInstance().getPartOfSpeech(token);
@@ -126,11 +126,14 @@ export function GrammarHighlightedText({
           return (
             <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1.5 my-1 inline-block relative min-w-[2.5em] text-center ${isHighlighted ? `grammar-${posType}` : ''
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-2 py-0.5 mx-2 my-2 inline-block relative min-w-[2.5em] text-center ${isHighlighted ? `grammar-${posType}` : ''
                 }`}
               style={{
                 ...(isHighlighted ? { backgroundColor: `${token.color}20` } : {}),
-                paddingTop: showFurigana ? '0.8em' : undefined
+                paddingTop: showFurigana ? '1em' : undefined,
+                whiteSpace: 'nowrap',
+                wordBreak: 'keep-all',
+                overflowWrap: 'normal'
               }}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
@@ -141,7 +144,8 @@ export function GrammarHighlightedText({
                   top: '0.1em',
                   left: '0',
                   fontSize: '0.7em',
-                  lineHeight: 1
+                  lineHeight: 1,
+                  whiteSpace: 'nowrap'
                 }}
               >
                 {hiraganaReading}
@@ -154,8 +158,13 @@ export function GrammarHighlightedText({
           return (
             <span
               key={index}
-              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-1 py-0.5 mx-1.5 my-1 inline-block min-w-[2.5em] text-center ${isHighlighted ? `grammar-${posType}` : ''}`}
-              style={isHighlighted ? { backgroundColor: `${token.color}20` } : {}}
+              className={`cursor-pointer hover:bg-primary/20 transition-colors rounded px-2 py-0.5 mx-2 my-1 inline-block min-w-[2.5em] text-center ${isHighlighted ? `grammar-${posType}` : ''}`}
+              style={{
+                ...(isHighlighted ? { backgroundColor: `${token.color}20` } : {}),
+                whiteSpace: 'nowrap',
+                wordBreak: 'keep-all',
+                overflowWrap: 'normal'
+              }}
               onClick={(e) => handleWordClick(token, e)}
               data-pos={posType}
               title={hiraganaReading || token.surface_form}

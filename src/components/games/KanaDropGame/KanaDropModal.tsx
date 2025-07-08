@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameCanvas from './GameCanvas';
 import RomajiControls from './RomajiControls';
@@ -11,6 +11,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import KanaChart from '@/components/kana/KanaChart';
+import { useNotification } from '@/contexts/NotificationContext';
+import { kanaData, getBasicKana } from '@/data/kanaData';
 
 interface KanaDropModalProps {
   isOpen: boolean;
@@ -46,6 +49,133 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   const [gameStats, setGameStats] = useState<GameStatsType | null>(null);
   const audioManager = getGameAudioManager();
   const [showHowToPlay, setShowHowToPlay] = useState(true);
+
+  // Kana selection state (for games page flow)
+  const [showKanaSelection, setShowKanaSelection] = useState(false);
+  const [kanaChartType, setKanaChartType] = useState<'hiragana' | 'katakana'>('hiragana');
+  const [selectedHiragana, setSelectedHiragana] = useState<Set<string>>(new Set());
+  const [selectedKatakana, setSelectedKatakana] = useState<Set<string>>(new Set());
+  const [showRomaji, setShowRomaji] = useState(true);
+  const [internalSelectedKana, setInternalSelectedKana] = useState<KanaChar[]>([]);
+  const { showNotification } = useNotification();
+
+  // Helper function to get selected kana data
+  const getSelectedKanaData = useMemo((): KanaChar[] => {
+    const selectedData: KanaChar[] = [];
+
+    // Get hiragana selections
+    selectedHiragana.forEach(id => {
+      const kana = kanaData.find(k => k.id === id);
+      if (kana) {
+        selectedData.push({
+          id: `${id}-hiragana`,
+          kana: kana.hiragana,
+          romaji: kana.romaji,
+          type: 'hiragana'
+        });
+      }
+    });
+
+    // Get katakana selections
+    selectedKatakana.forEach(id => {
+      const kana = kanaData.find(k => k.id === id);
+      if (kana) {
+        selectedData.push({
+          id: `${id}-katakana`,
+          kana: kana.katakana,
+          romaji: kana.romaji,
+          type: 'katakana'
+        });
+      }
+    });
+
+    return selectedData;
+  }, [selectedHiragana, selectedKatakana]);
+
+  // Handle kana chart selection
+  const handleToggleKana = (kanaId: string) => {
+    if (kanaChartType === 'hiragana') {
+      const newSelection = new Set(selectedHiragana);
+      if (newSelection.has(kanaId)) {
+        newSelection.delete(kanaId);
+      } else {
+        // Check if adding this would exceed the limit
+        const totalSelected = newSelection.size + selectedKatakana.size;
+        if (totalSelected >= 10) {
+          showNotification({
+            title: 'Maximum Reached',
+            message: 'You can only select up to 10 characters for Kana Drop.',
+            type: 'info'
+          });
+          return;
+        }
+        newSelection.add(kanaId);
+      }
+      setSelectedHiragana(newSelection);
+    } else {
+      const newSelection = new Set(selectedKatakana);
+      if (newSelection.has(kanaId)) {
+        newSelection.delete(kanaId);
+      } else {
+        // Check if adding this would exceed the limit
+        const totalSelected = selectedHiragana.size + newSelection.size;
+        if (totalSelected >= 10) {
+          showNotification({
+            title: 'Maximum Reached',
+            message: 'You can only select up to 10 characters for Kana Drop.',
+            type: 'info'
+          });
+          return;
+        }
+        newSelection.add(kanaId);
+      }
+      setSelectedKatakana(newSelection);
+    }
+  };
+
+  // Clear kana selection
+  const handleClearKanaSelection = () => {
+    setSelectedHiragana(new Set());
+    setSelectedKatakana(new Set());
+  };
+
+  // Handle start game with selected kana
+  const handleStartWithSelectedKana = () => {
+    const kanaData = getSelectedKanaData;
+    
+    if (kanaData.length === 0) {
+      showNotification({
+        title: 'No Characters Selected',
+        message: 'Please select some kana characters to play Kana Drop!',
+        type: 'info'
+      });
+      return;
+    }
+    
+    if (kanaData.length > 10) {
+      showNotification({
+        title: 'Too Many Characters',
+        message: 'Please select up to 10 characters for Kana Drop.',
+        type: 'info'
+      });
+      return;
+    }
+
+    // Set the selected kana and proceed to how-to-play
+    setInternalSelectedKana(kanaData);
+    
+    // Update game state with the selected kana
+    setGameState(prev => ({
+      ...prev,
+      selectedKana: kanaData
+    }));
+    
+    setShowKanaSelection(false);
+    setShowHowToPlay(true);
+  };
+
+  // Determine which kana to use
+  const effectiveSelectedKana = selectedKana.length > 0 ? selectedKana : internalSelectedKana;
 
   // Start countdown when modal opens
   useEffect(() => {
@@ -182,9 +312,13 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     setShowVictory(false);
     setGameStats(null);
     setHasIncrementedUsage(false); // Reset usage tracking
+    
+    // Use the current game state's selectedKana to ensure consistency
+    const currentSelectedKana = gameState.selectedKana.length > 0 ? gameState.selectedKana : effectiveSelectedKana;
+    
     setGameState({
       score: 0,
-      selectedKana,
+      selectedKana: currentSelectedKana,
       activeRomaji: null,
       fallingObjects: [],
       gameSpeed: 1,
@@ -205,17 +339,31 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     onClose();
   };
 
-  // When modal opens, show how-to-play screen
+  // When modal opens, determine flow based on selectedKana
   useEffect(() => {
     if (isOpen) {
-      setShowHowToPlay(true);
       setCountdown(null);
       setShowVictory(false);
       setGameStats(null);
       setHasIncrementedUsage(false); // Reset usage tracking
+      
+      // If no kana provided (games page flow), show kana selection
+      if (selectedKana.length === 0) {
+        setShowKanaSelection(true);
+        setShowHowToPlay(false);
+        // Clear any previous internal selection
+        setInternalSelectedKana([]);
+        setSelectedHiragana(new Set());
+        setSelectedKatakana(new Set());
+      } else {
+        // Practice page flow - proceed to how-to-play
+        setShowKanaSelection(false);
+        setShowHowToPlay(true);
+      }
+      
       setGameState({
         score: 0,
-        selectedKana,
+        selectedKana: effectiveSelectedKana,
         activeRomaji: null,
         fallingObjects: [],
         gameSpeed: 1,
@@ -275,6 +423,138 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
   if (!isOpen) return null;
 
+  // Kana Selection Screen (for games page flow)
+  if (showKanaSelection) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              onClose();
+            }
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative w-full h-full md:w-[900px] md:h-[700px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
+          >
+            {/* Header */}
+            <div className="p-6 border-b border-border">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold">Select Kana for Kana Drop</h2>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-muted-foreground mt-2">
+                Select 1-10 kana characters to practice. Click the purple corner to select.
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Chart Type Toggle */}
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => setKanaChartType('hiragana')}
+                  className={`px-4 py-2 rounded-lg border transition-colors ${kanaChartType === 'hiragana'
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-background text-foreground border-input hover:bg-muted'
+                    }`}
+                >
+                  ひらがな Hiragana
+                </button>
+                <button
+                  onClick={() => setKanaChartType('katakana')}
+                  className={`px-4 py-2 rounded-lg border transition-colors ${kanaChartType === 'katakana'
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-background text-foreground border-input hover:bg-muted'
+                    }`}
+                >
+                  カタカナ Katakana
+                </button>
+              </div>
+
+              {/* Options */}
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showRomaji}
+                    onChange={(e) => setShowRomaji(e.target.checked)}
+                    className="rounded border-input"
+                  />
+                  <span className="text-sm">Show Romaji</span>
+                </label>
+
+                {(selectedHiragana.size > 0 || selectedKatakana.size > 0) && (
+                  <button
+                    onClick={handleClearKanaSelection}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Clear Selection ({selectedHiragana.size + selectedKatakana.size})
+                  </button>
+                )}
+              </div>
+
+              {/* Kana Chart */}
+              <div className="w-full">
+                <KanaChart
+                  chartType={kanaChartType}
+                  selectedKana={kanaChartType === 'hiragana' ? selectedHiragana : selectedKatakana}
+                  onToggleKana={handleToggleKana}
+                  showRomaji={showRomaji}
+                />
+              </div>
+            </div>
+
+            {/* Footer with Start Button */}
+            <div className="p-6 border-t border-border bg-muted/50">
+              <div className="text-center space-y-4">
+                <div className={`text-sm ${(selectedHiragana.size + selectedKatakana.size) > 10 
+                  ? 'text-red-600 font-medium' 
+                  : 'text-muted-foreground'
+                }`}>
+                  {selectedHiragana.size + selectedKatakana.size} characters selected 
+                  {(selectedHiragana.size + selectedKatakana.size) > 10 
+                    ? ' (Too many! Maximum is 10)' 
+                    : ' (1-10 required)'
+                  }
+                </div>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={onClose}
+                    className="px-8 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleStartWithSelectedKana}
+                    disabled={getSelectedKanaData.length === 0 || getSelectedKanaData.length > 10}
+                    className="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Start Game ({getSelectedKanaData.length} selected)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
   if (showHowToPlay) {
     return (
       <AnimatePresence>
@@ -308,7 +588,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">Your Selected Kana:</h3>
                 <div className="flex justify-center gap-3 flex-wrap">
-                  {selectedKana.map((kana) => (
+                  {effectiveSelectedKana.map((kana) => (
                     <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
                       <div className="text-2xl japanese-text">{kana.kana}</div>
                       <div className="text-sm text-muted-foreground">{kana.romaji}</div>
@@ -471,7 +751,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-3">Selected Kana:</h3>
                   <div className="flex justify-center gap-3 flex-wrap">
-                    {selectedKana.map((kana) => (
+                    {effectiveSelectedKana.map((kana) => (
                       <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
                         <div className="text-2xl japanese-text">{kana.kana}</div>
                         <div className="text-sm text-muted-foreground">{kana.romaji}</div>

@@ -11,6 +11,8 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import KanjiQuest from '@/components/games/KanjiQuest';
+import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
+import SentenceScrambleModal from '@/components/games/SentenceScrambleGame/SentenceScrambleModal';
 import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
@@ -71,53 +73,63 @@ interface AssemblyStats {
 // Daily limit for free users
 const FREE_USER_DAILY_LIMIT = 3;
 
+import { strings } from '@/config/strings';
+
 // Available game modes
 const GAME_MODES: GameMode[] = [
   {
     id: 'kanji-quest',
-    title: 'Kanji Quest',
-    description: 'Study kanji and battle to catch Pokémon for your Pokédex',
+    title: strings.games.modes.kanjiQuest.title,
+    description: strings.games.modes.kanjiQuest.description,
     icon: '🎮', // Fallback emoji
     iconImage: '/pokeball.png',
     color: 'bg-red-500'
   },
   {
+    id: 'kana-drop',
+    title: strings.games.modes.kanaDrop.title,
+    description: strings.games.modes.kanaDrop.description,
+    icon: '🌧️', // Fallback emoji
+    iconImage: '/flat-icons/kana-drop.svg',
+    color: 'bg-cyan-500'
+  },
+  {
     id: 'listening',
-    title: 'Tap What You Hear',
-    description: 'Listen to Japanese words and select the correct written form',
+    title: strings.games.modes.listening.title,
+    description: strings.games.modes.listening.description,
     icon: '🎧',
     color: 'bg-blue-500'
   },
   {
     id: 'assembly',
-    title: 'Word Assembly Challenge',
-    description: 'Build the correct kana spelling of words you hear',
+    title: strings.games.modes.assembly.title,
+    description: strings.games.modes.assembly.description,
     icon: '🔤',
     color: 'bg-purple-500'
   },
   {
     id: 'reading',
-    title: 'Reading Speed',
-    description: 'Test your reading speed with timed challenges',
+    title: strings.games.modes.reading.title,
+    description: strings.games.modes.reading.description,
     icon: '⚡',
     color: 'bg-green-500',
     comingSoon: true
   },
   {
     id: 'matching',
-    title: 'Word Matching',
-    description: 'Match kanji with their meanings or readings',
+    title: strings.games.modes.matching.title,
+    description: strings.games.modes.matching.description,
     icon: '🎯',
     color: 'bg-red-500',
     comingSoon: true
   },
   {
-    id: 'sentence',
-    title: 'Sentence Builder',
-    description: 'Build correct Japanese sentences from word fragments',
+    id: 'sentence-scramble',
+    title: strings.games.modes.sentenceScramble.title,
+    description: strings.games.modes.sentenceScramble.description,
     icon: '🧩',
-    color: 'bg-orange-500',
-    comingSoon: true
+    iconImage: '/flat-icons/construction.svg',
+    color: 'bg-orange-500'
   }
 ];
 
@@ -137,7 +149,7 @@ export default function GamesPage() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [quizStats, setQuizStats] = useState<QuizStats>({
     totalQuestions: 0,
     correctAnswers: 0,
@@ -174,6 +186,8 @@ export default function GamesPage() {
   const [caughtPokemonIds, setCaughtPokemonIds] = useState<Set<number>>(new Set());
   const [customKanjiSelection, setCustomKanjiSelection] = useState<any[]>([]);
   const [waitingForKanji, setWaitingForKanji] = useState(false);
+  const [showKanaDropModal, setShowKanaDropModal] = useState(false);
+  const [showSentenceScrambleModal, setShowSentenceScrambleModal] = useState(false);
 
   const canPlayMore = isPremium ||
     (currentGameMode === 'assembly' ? assemblyStats.gamesToday < FREE_USER_DAILY_LIMIT : quizStats.questionsToday < FREE_USER_DAILY_LIMIT);
@@ -182,7 +196,6 @@ export default function GamesPage() {
   useEffect(() => {
     loadQuizStats();
     loadCaughtPokemon();
-    setLoading(false); // Set loading to false initially since we're showing game selection
 
     // Check URL parameters for direct game mode
     const mode = searchParams.get('mode');
@@ -195,19 +208,13 @@ export default function GamesPage() {
       setShowKanjiQuestLevelSelect(false);
       setWaitingForKanji(true);
       setGameStarted(false);
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Custom kanji mode detected, waiting for kanji from context...');
-      }
+
     }
-  }, [user, userType]);
+  }, [searchParams]);
 
   // Handle kanji arrival from context
   useEffect(() => {
     if (waitingForKanji && selectedKanji && selectedKanji.length > 0) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Kanji arrived from context:', selectedKanji.length, 'kanji');
-      }
       setCustomKanjiSelection(selectedKanji);
       setWaitingForKanji(false);
       clearSelectedKanji();
@@ -222,25 +229,6 @@ export default function GamesPage() {
       !waitingForKanji &&
       !gameStarted) {
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Starting Kanji Quest game:', {
-          authLoading,
-          user: !!user,
-          subscription: !!subscription,
-          customKanjiCount: customKanjiSelection.length,
-          gameStarted,
-          waitingForKanji
-        });
-        
-        // Add subscription validation debug
-        console.log('🔍 Subscription Validation:', {
-          isPremium,
-          userType,
-          userEmail: user?.email,
-          plan: subscription?.plan,
-          status: subscription?.status
-        });
-      }
 
       // Start the game
       setGameStarted(true);
@@ -248,6 +236,7 @@ export default function GamesPage() {
       sessionStorage.removeItem('kanjiQuestSelection');
     }
   }, [subscription, currentGameMode, customKanjiSelection, user, authLoading, waitingForKanji, gameStarted]);
+
 
   // Load words when selected lists change
   useEffect(() => {
@@ -518,11 +507,26 @@ export default function GamesPage() {
       loadAssemblyStats();
     } else if (gameMode.id === 'kanji-quest') {
       setShowKanjiQuestLevelSelect(true);
+    } else if (gameMode.id === 'kana-drop') {
+      // Open KanaDrop modal (will handle kana selection internally)
+      setShowKanaDropModal(true);
+    } else if (gameMode.id === 'sentence-scramble') {
+      // Open SentenceScramble modal (will handle list selection internally)
+      setShowSentenceScrambleModal(true);
     }
   };
 
-  const handleStartQuiz = () => {
+  const handleStartQuiz = async () => {
     if (selectedListIds.length === 0 || savedWords.length === 0) return;
+
+    // Check access using three-pillar system
+    const featureId = currentGameMode === 'assembly' ? 'word_assembly' : 'listening_quiz';
+    const canPlay = await checkAndTrack(featureId);
+    
+    if (!canPlay) {
+      // Access denied - modals are shown automatically by checkAndTrack
+      return;
+    }
 
     setShowListSelection(false);
     setGameStarted(true);
@@ -535,9 +539,8 @@ export default function GamesPage() {
     }
   };
 
-  const startNewQuestion = () => {
-    if (!canPlayMore) return;
-
+  const startNewQuestion = async () => {
+    // Access is already checked in handleStartQuiz, so proceed with question generation
     const question = generateQuestion();
     if (question) {
       setCurrentQuestion(question);
@@ -579,7 +582,7 @@ export default function GamesPage() {
       await pokemonManager.migrateFromLocalStorage(user?.uid);
 
       // Then load the caught Pokémon
-      const isPremiumUser = isPremium;
+      const isPremiumUser = userType === 'monthly' || userType === 'yearly';
       const caughtPokemon = await pokemonManager.getCaughtPokemon(user, isPremiumUser);
       setCaughtPokemonIds(new Set(caughtPokemon));
     } catch (error) {
@@ -591,17 +594,16 @@ export default function GamesPage() {
     setKanjiQuestJlptLevel(level);
     setShowKanjiQuestLevelSelect(false);
     setGameStarted(true);
+    
+    // Clear kanji selection so KanjiQuest component uses JLPT level kanji
+    setCustomKanjiSelection([]);
   };
 
   const handlePokemonCaught = async (pokemonId: number, kanjiIds: string[] = []) => {
     try {
       // Determine if user is premium using validator
-      const isPremiumUser = isPremium;
+      const isPremiumUser = userType === 'monthly' || userType === 'yearly';
 
-      // Debug log the validation
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Pokemon Caught Handler - Premium Status:', isPremiumUser);
-      }
 
       // Save using the new Pokemon manager
       await pokemonManager.saveCaughtPokemon(
@@ -702,9 +704,7 @@ export default function GamesPage() {
 
   // Assembly Game Handlers
   const startNewAssemblyQuestion = () => {
-    const canPlay = isPremium || assemblyStats.gamesToday < FREE_USER_DAILY_LIMIT;
-    if (!canPlay) return;
-
+    // Access is already checked in handleStartQuiz, so proceed with question generation
     const question = generateAssemblyQuestion();
     if (question) {
       setCurrentAssemblyQuestion(question);
@@ -786,17 +786,6 @@ export default function GamesPage() {
     });
   };
 
-  // Debug: log gameStarted and render condition
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Game State:', {
-      gameStarted,
-      showGameSelection,
-      currentGameMode,
-      customKanjiSelectionLength: customKanjiSelection.length,
-      waitingForKanji,
-      authLoading
-    });
-  }
 
   if (loading) {
     return (
@@ -820,7 +809,7 @@ export default function GamesPage() {
 
         <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
           <PageHeader
-            title={currentGameMode === 'assembly' ? "Word Assembly" : "Listening Games"}
+            title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : "Listening Games"}
             showBackButton={true}
             helpKey="games"
             onBackClick={handleBackToGameSelection}
@@ -829,23 +818,23 @@ export default function GamesPage() {
           <div className="max-w-2xl mx-auto text-center py-16">
             <div className="text-8xl mb-6">🎧</div>
             <h3 className="text-2xl font-semibold text-foreground mb-4">
-              No Study Lists Found
+              {strings.games.noStudyLists}
             </h3>
             <p className="text-muted-foreground mb-6">
-              You need to create study lists with saved words to play the listening quiz.
-              Save words from vocabulary search and add them to lists to get started!
+              {strings.games.noStudyListsDescription}
             </p>
             <button
               onClick={() => router.push('/vocabulary')}
               className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
-              Go to Vocabulary
+              {strings.games.goToVocabulary}
             </button>
           </div>
         </div>
       </>
     );
   }
+
 
   return (
     <>
@@ -857,7 +846,7 @@ export default function GamesPage() {
 
       <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
         <PageHeader
-          title={showGameSelection ? "Games" : currentGameMode === 'listening' ? "Listening Games" : currentGameMode === 'assembly' ? "Word Assembly" : "Games"}
+          title={showGameSelection ? strings.games.title : currentGameMode === 'listening' ? "Listening Games" : currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.title}
           showBackButton={true}
           helpKey="games"
           onBackClick={!showGameSelection ? handleBackToGameSelection : undefined}
@@ -871,10 +860,10 @@ export default function GamesPage() {
               <div className="text-center py-8">
                 <div className="text-6xl mb-6">🎮</div>
                 <h2 className="text-3xl font-bold text-foreground mb-4">
-                  Choose Your Game
+                  {strings.games.chooseYourGame}
                 </h2>
                 <p className="text-muted-foreground mb-8 text-lg">
-                  Select a game mode to test your Japanese skills.
+                  {strings.games.selectGameMode}
                 </p>
               </div>
 
@@ -907,7 +896,7 @@ export default function GamesPage() {
                           {gameMode.title}
                           {gameMode.comingSoon && (
                             <span className="ml-2 text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                              Coming Soon
+                              {strings.games.comingSoon}
                             </span>
                           )}
                         </h3>
@@ -937,13 +926,13 @@ export default function GamesPage() {
                   <div className="text-2xl font-bold text-primary">
                     {currentGameMode === 'assembly' ? assemblyStats.correctAnswers : quizStats.correctAnswers}
                   </div>
-                  <div className="text-sm text-muted-foreground">Correct</div>
+                  <div className="text-sm text-muted-foreground">{strings.games.correct}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-secondary">
                     {currentGameMode === 'assembly' ? assemblyStats.totalGames : quizStats.totalQuestions}
                   </div>
-                  <div className="text-sm text-muted-foreground">Total</div>
+                  <div className="text-sm text-muted-foreground">{strings.games.total}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-accent">
@@ -952,7 +941,7 @@ export default function GamesPage() {
                       : quizStats.totalQuestions > 0 ? Math.round((quizStats.correctAnswers / quizStats.totalQuestions) * 100) : 0
                     }%
                   </div>
-                  <div className="text-sm text-muted-foreground">Accuracy</div>
+                  <div className="text-sm text-muted-foreground">{strings.games.accuracy}</div>
                 </div>
               </div>
 
@@ -960,11 +949,11 @@ export default function GamesPage() {
                 <div className="mt-4 pt-4 border-t border-border">
                   <div className="text-center">
                     <div className="text-sm text-muted-foreground">
-                      Daily Limit: {currentGameMode === 'assembly' ? assemblyStats.gamesToday : quizStats.questionsToday}/{FREE_USER_DAILY_LIMIT}
+                      {strings.games.dailyLimit}: {currentGameMode === 'assembly' ? assemblyStats.gamesToday : quizStats.questionsToday}/{FREE_USER_DAILY_LIMIT}
                     </div>
                     {!canPlayMore && (
                       <div className="text-xs text-destructive mt-1">
-                        Upgrade to Premium for unlimited quizzes!
+                        {strings.games.upgradeForUnlimited}
                       </div>
                     )}
                   </div>
@@ -991,7 +980,7 @@ export default function GamesPage() {
 
               {/* List Selection */}
               <div className="bg-card rounded-lg p-6 border border-border">
-                <h3 className="text-xl font-semibold mb-4">Select Study Lists</h3>
+                <h3 className="text-xl font-semibold mb-4">{strings.games.selectStudyLists}</h3>
 
                 {studyLists.length > 0 ? (
                   <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -1024,7 +1013,7 @@ export default function GamesPage() {
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
-                    No study lists found
+                    {strings.games.noStudyLists}
                   </div>
                 )}
               </div>
@@ -1053,7 +1042,7 @@ export default function GamesPage() {
                     (currentGameMode === 'assembly' && savedWords.length === 0)}
                   className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-xl font-semibold transition-colors"
                 >
-                  {!canPlayMore ? 'Daily Limit Reached 😔' :
+                  {!canPlayMore ? strings.games.dailyLimit :
                     selectedListIds.length === 0 ? 'Select Lists First' :
                       (currentGameMode === 'listening' && savedWords.length < 4) ? 'Need More Words (4+)' :
                         (currentGameMode === 'assembly' && savedWords.length === 0) ? 'Need at least 1 word' :
@@ -1105,10 +1094,10 @@ export default function GamesPage() {
                   disabled={audioLoading}
                   className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-lg font-semibold transition-colors"
                 >
-                  {audioLoading ? '🔄 Playing...' : '🔊 Play Again'}
+                  {audioLoading ? strings.loading.general : strings.games.states.playAgain}
                 </button>
                 <div className="mt-4 text-sm text-muted-foreground">
-                  Listen and select the correct word below
+                  {strings.games.modes.listening.description}
                 </div>
               </div>
 
@@ -1156,9 +1145,9 @@ export default function GamesPage() {
                   <button
                     onClick={handleNextQuestion}
                     disabled={!canPlayMore}
-                    className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                    className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-lg font-semibold transition-colors"
                   >
-                    {canPlayMore ? 'Next Question →' : 'Daily Limit Reached'}
+                    {canPlayMore ? strings.games.states.nextQuestion : strings.games.dailyLimit}
                   </button>
                 </div>
               )}
@@ -1177,7 +1166,7 @@ export default function GamesPage() {
                   disabled={audioLoading}
                   className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-lg font-semibold transition-colors"
                 >
-                  {audioLoading ? '🔄 Playing...' : '🔊 Play Word'}
+                  {audioLoading ? strings.loading.general : strings.games.states.playAgain}
                 </button>
                 <div className="mt-4 text-sm text-muted-foreground">
                   Build the kana pronunciation by selecting segments below
@@ -1260,9 +1249,9 @@ export default function GamesPage() {
                   <button
                     onClick={handleNextQuestion}
                     disabled={!canPlayMore}
-                    className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                    className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-lg font-semibold transition-colors"
                   >
-                    {canPlayMore ? 'Next Word →' : 'Daily Limit Reached'}
+                    {canPlayMore ? strings.games.states.nextQuestion : strings.games.dailyLimit}
                   </button>
                 </div>
               )}
@@ -1282,7 +1271,7 @@ export default function GamesPage() {
                   Kanji Quest - Wild Battle Mode
                 </h2>
                 <p className="text-muted-foreground mb-8 text-lg">
-                  Choose your trainer level to start your Pokémon journey!
+                  Choose your JLPT level to browse and select kanji for battle!
                 </p>
                 {customKanjiSelection.length > 0 && (
                   <button
@@ -1364,14 +1353,7 @@ export default function GamesPage() {
 
           {/* Kanji Quest Game */}
           {(() => {
-            const shouldRenderKanjiQuest = !showGameSelection && currentGameMode === 'kanji-quest' && gameStarted && customKanjiSelection.length > 0;
-            if (process.env.NODE_ENV === 'development' && shouldRenderKanjiQuest) {
-              console.log('✅ Rendering KanjiQuest with:', { 
-                jlptLevel: kanjiQuestJlptLevel, 
-                customKanjiCount: customKanjiSelection.length,
-                firstKanji: customKanjiSelection[0]
-              });
-            }
+            const shouldRenderKanjiQuest = !showGameSelection && currentGameMode === 'kanji-quest' && gameStarted;
             return shouldRenderKanjiQuest ? (
               <KanjiQuest
                 jlptLevel={kanjiQuestJlptLevel}
@@ -1379,11 +1361,34 @@ export default function GamesPage() {
                 onPokemonCaught={handlePokemonCaught}
                 completedKanjiIds={completedKanjiIds}
                 onKanjiCompleted={handleKanjiCompleted}
-                customKanji={customKanjiSelection}
+                customKanji={customKanjiSelection.length > 0 ? customKanjiSelection : undefined}
               />
             ) : null;
           })()}
         </div>
+
+        {/* KanaDrop Modal */}
+        {showKanaDropModal && (
+          <KanaDropModal
+            isOpen={showKanaDropModal}
+            onClose={() => {
+              setShowKanaDropModal(false);
+              setShowGameSelection(true);
+            }}
+            selectedKana={[]} // Empty array - modal will handle kana selection internally
+          />
+        )}
+
+        {/* SentenceScramble Modal */}
+        {showSentenceScrambleModal && (
+          <SentenceScrambleModal
+            isOpen={showSentenceScrambleModal}
+            onClose={() => {
+              setShowSentenceScrambleModal(false);
+              setShowGameSelection(true);
+            }}
+          />
+        )}
       </div>
     </>
   );

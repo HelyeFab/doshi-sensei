@@ -13,7 +13,8 @@ import KanjiModal from '@/components/kanji/KanjiModal';
 import KanjiStudyModal from '@/components/kanji-moods/KanjiStudyModal';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { strings } from '@/config/strings';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -59,6 +60,7 @@ export default function KanjiBrowserPage() {
   const { checkAndTrack } = useAccess();
   const { setSelectedKanji } = useKanjiSelection();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
@@ -93,6 +95,34 @@ export default function KanjiBrowserPage() {
     loadKanjiLists();
     loadStudySelection();
   }, []);
+
+  // Handle URL parameters for level focusing
+  useEffect(() => {
+    const level = searchParams.get('level');
+    const mode = searchParams.get('mode');
+    
+    if (level && ['1', '2', '3', '4', '5'].includes(level)) {
+      const jlptLevel = `N${level}` as JLPTLevel;
+      setExpandedLevels(prev => new Set([...prev, jlptLevel]));
+      
+      // Show notification for Kanji Quest mode
+      if (mode === 'kanji-quest') {
+        showNotification({
+          title: 'Kanji Quest Mode',
+          message: `Select kanji from JLPT ${jlptLevel} to battle Pokémon! Click the checkboxes to select kanji, then click "Battle" when ready.`,
+          type: 'info'
+        });
+      }
+      
+      // Scroll to the level section after a short delay
+      setTimeout(() => {
+        const levelElement = document.querySelector(`[data-level="${jlptLevel}"]`);
+        if (levelElement) {
+          levelElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [searchParams, showNotification]);
 
   // Save study selection when it changes
   useEffect(() => {
@@ -485,7 +515,7 @@ export default function KanjiBrowserPage() {
             const info = levelInfo[level];
 
             return (
-              <div key={level} className="bg-card border border-border rounded-lg overflow-hidden">
+              <div key={level} data-level={level} className="bg-card border border-border rounded-lg overflow-hidden">
                 <button
                   onClick={() => toggleLevel(level)}
                   className="w-full px-6 py-4 text-left hover:bg-muted transition-colors"
@@ -660,11 +690,19 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
     return StudyListManager.canAddToList('kanji', kanji, listType);
   };
 
-  const getValidationMessage = (listType: StudyListType): string => {
-    if (listType === 'drillable') {
-      return 'Not compatible: Kanji cannot be conjugated (use flashcard lists instead)';
+  const getValidationMessage = (listType: StudyListType, canAdd: boolean): string => {
+    if (!canAdd) {
+      if (listType === 'drillable') {
+        return `${strings.listCompatibility.incompatible}: ${strings.listCompatibility.kanjiCannotConjugate}`;
+      }
+      return `${strings.listCompatibility.incompatible}: ${strings.listCompatibility.sentencesOnly}`;
     }
-    return 'Compatible: Can be used for flashcard review';
+    
+    if (listType === 'flashcard') {
+      return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.flashcardReview}`;
+    }
+    
+    return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.conjugationPractice}`;
   };
 
   const handleSave = async () => {
@@ -760,7 +798,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
                       </span>
                     </div>
                     <div className={`text-xs ${canAdd ? 'text-green-400' : 'text-red-400'}`}>
-                      {getValidationMessage(list.type)}
+                      {getValidationMessage(list.type, canAdd)}
                     </div>
                   </div>
                 </label>

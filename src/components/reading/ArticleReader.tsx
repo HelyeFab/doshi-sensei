@@ -20,6 +20,8 @@ import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioP
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
+import { cleanTextForTTS } from '@/utils/japaneseParser';
+import { strings } from '@/config/strings';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -27,7 +29,7 @@ function parseWithRubyTags(text: string): string {
   if (text.includes('<ruby>') && text.includes('<rt>')) {
     return text;
   }
-  
+
   // Convert furigana notation like 漢字[かんじ] to <ruby>漢字<rt>かんじ</rt></ruby>
   const rubyPattern = /([一-龯]+)\[([ひらがな\u3040-\u309F]+)\]/g;
   return text.replace(rubyPattern, '<ruby>$1<rt>$2</rt></ruby>');
@@ -47,11 +49,11 @@ function RubyTextRenderer({ text, settings, onWordClick }: {
         settings.fontSize === 'medium' ? 'text-base' :
           settings.fontSize === 'large' ? 'text-lg' :
             'text-xl'
-        } leading-relaxed [&_ruby]:cursor-pointer [&_ruby]:hover:bg-primary/20 [&_ruby]:transition-colors [&_ruby]:rounded [&_ruby]:px-1 [&_ruby]:min-w-[2.5em] [&_ruby]:inline-block [&_ruby]:text-center [&_ruby]:mx-0.5 [&_ruby_rt]:leading-none [&_ruby_rt]:text-xs`}
+        } leading-relaxed`}
       dangerouslySetInnerHTML={{ __html: processedText }}
       onClick={onWordClick}
       style={{
-        lineHeight: '1.8',
+        lineHeight: '2.5',
         fontFamily: 'system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif'
       }}
     />
@@ -372,6 +374,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [statsVisible, setStatsVisible] = useState(false);
   const [showShadowingMode, setShowShadowingMode] = useState(false);
   const [userRequestedStats, setUserRequestedStats] = useState(false);
+  const [showGrammarLegend, setShowGrammarLegend] = useState(false);
   const [stableWPM, setStableWPM] = useState(0);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
@@ -379,7 +382,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
   const articleRef = useRef<HTMLDivElement>(null);
   const timeUpdateInterval = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Content processing cache to prevent re-processing
   const contentCacheRef = useRef<Map<string, string[]>>(new Map());
   const processingRef = useRef<Promise<string[]> | null>(null);
@@ -535,13 +538,13 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   useEffect(() => {
     const processContent = async () => {
       setContentLoading(true);
-      
+
       try {
         const paragraphs = article.content.split('\n');
-        
+
         // Create cache key based on settings that affect processing
         const cacheKey = `${article.id}-${settings.showFurigana}-${settings.highlightVocabulary}-${settings.highlightMode}`;
-        
+
         // Check cache first
         const cached = contentCacheRef.current.get(cacheKey);
         if (cached) {
@@ -550,7 +553,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           setContentLoading(false);
           return;
         }
-        
+
         // Prevent concurrent processing of the same content
         if (processingRef.current) {
           console.log('[ArticleReader] Already processing content, waiting...');
@@ -559,7 +562,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           setContentLoading(false);
           return;
         }
-        
+
         // Skip heavy processing by default - prioritize performance
         if (!settings.showFurigana && (!settings.highlightVocabulary || settings.highlightMode === 'none')) {
           console.log('[ArticleReader] Using unprocessed content for performance');
@@ -568,28 +571,28 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           setContentLoading(false);
           return;
         }
-        
+
         // Heavy processing only when specifically requested
-        console.log('[ArticleReader] Processing content with settings:', { 
-          showFurigana: settings.showFurigana, 
-          highlightVocabulary: settings.highlightVocabulary, 
-          highlightMode: settings.highlightMode 
+        console.log('[ArticleReader] Processing content with settings:', {
+          showFurigana: settings.showFurigana,
+          highlightVocabulary: settings.highlightVocabulary,
+          highlightMode: settings.highlightMode
         });
-        
+
         const processPromise = (async () => {
           if (!settings.highlightVocabulary || settings.highlightMode === 'none') {
             // Use optimized batch processing for furigana
             if (settings.showFurigana) {
               console.log('[ArticleReader] Batch processing furigana for all paragraphs');
               const furiganaParagraphs = await generateFuriganaForArticleParagraphs(article.id, paragraphs);
-              
+
               // Apply vocabulary highlighting if needed
               if (settings.highlightVocabulary && settings.highlightMode !== 'none') {
                 return await Promise.all(
                   furiganaParagraphs.map(async (paragraph, index) => {
                     const vocabulary = extractVocabularyFromText(paragraphs[index]);
                     let processedText = paragraph;
-                    
+
                     vocabulary.forEach((word) => {
                       if (processedText.includes(`<ruby>${word}`) || processedText.includes(`<rt>${word}`)) {
                         return;
@@ -600,12 +603,12 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                         `<span class="vocabulary-highlight cursor-pointer hover:bg-primary/20 transition-colors rounded px-0.5" data-word="$1">$1</span>`
                       );
                     });
-                    
+
                     return processedText;
                   })
                 );
               }
-              
+
               return furiganaParagraphs;
             } else {
               // Process vocabulary highlighting only
@@ -619,17 +622,17 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             return paragraphs;
           }
         })();
-        
+
         processingRef.current = processPromise;
-        
+
         const result = await processPromise;
-        
+
         // Cache the result
         contentCacheRef.current.set(cacheKey, result);
         console.log('[ArticleReader] Content processed and cached for:', cacheKey);
-        
+
         setProcessedContent(result);
-        
+
       } catch (error) {
         console.error('Error processing article content:', error);
         // Fallback to unprocessed content
@@ -786,7 +789,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                     d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
                   />
                 </svg>
-                <span>Options</span>
+                <span>{strings.navigation.menu.options}</span>
               </button>
 
               {/* Dropdown Menu */}
@@ -888,12 +891,14 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           >
             {/* Article header */}
             <header className="mb-8">
-              <h1 className={`font-bold text-foreground mb-4 ${settings.fontSize === 'xlarge' ? 'text-3xl' :
-                settings.fontSize === 'large' ? 'text-2xl' :
-                  settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
-                }`}>
-                {article.title}
-              </h1>
+              <div className="inline-block">
+                <h1 className={`font-bold text-foreground mb-4 px-6 py-4 rounded-2xl inline-block pastel-bubble-bg ${settings.fontSize === 'xlarge' ? 'text-3xl' :
+                  settings.fontSize === 'large' ? 'text-2xl' :
+                    settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
+                  }`}>
+                  {article.title}
+                </h1>
+              </div>
 
               {/* Article metadata */}
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
@@ -920,7 +925,12 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
             {/* Audio Player */}
             <div className="space-y-2">
-              <EnhancedArticleAudioPlayer article={article} />
+              <EnhancedArticleAudioPlayer
+                article={{
+                  ...article,
+                  content: cleanTextForTTS(article.content)
+                }}
+              />
               <button
                 onClick={() => setShowShadowingMode(true)}
                 className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -935,14 +945,31 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             {/* Grammar Legend */}
             {settings.highlightVocabulary && settings.highlightMode !== 'none' && (
               <div className="mb-6 p-4 bg-muted/30 rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Grammar Color Guide:</h4>
-                <GrammarLegend />
+                <button
+                  onClick={() => setShowGrammarLegend(!showGrammarLegend)}
+                  className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors w-full text-left"
+                >
+                  <svg
+                    className={`w-4 h-4 transition-transform ${showGrammarLegend ? 'rotate-180' : 'rotate-0'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                  Grammar Color Guide
+                </button>
+                {showGrammarLegend && (
+                  <div className="mt-3">
+                    <GrammarLegend />
+                  </div>
+                )}
               </div>
             )}
 
             {/* Article body */}
             <div
-              className={`prose prose-lg max-w-none leading-[2.5] md:leading-relaxed ${getFontSizeClass()}`}
+              className={`prose prose-lg max-w-none leading-[2.5] md:leading-relaxed mt-8 ${getFontSizeClass()}`}
             >
               {contentLoading ? (
                 <div className="text-center py-8">
@@ -1156,11 +1183,14 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               }}
             />
           )}
-          
+
           {/* Shadowing Mode Modal */}
           {showShadowingMode && (
-            <ShadowingAudioPlayer 
-              article={article} 
+            <ShadowingAudioPlayer
+              article={{
+                ...article,
+                content: cleanTextForTTS(article.content)
+              }}
               onClose={() => setShowShadowingMode(false)}
             />
           )}

@@ -28,6 +28,79 @@ interface QuizQuestion {
   kanjiRef: GameKanji;
 }
 
+// Battle system types
+type AttackType = 'reading' | 'meaning' | 'kanji' | 'vocabulary';
+
+interface Attack {
+  type: AttackType;
+  baseDamage: number;
+  accuracy: number;
+  criticalChance: number;
+  effectDescription: string;
+}
+
+interface BattleEvent {
+  type: 'player_attack' | 'kanji_attack' | 'status_effect' | 'victory' | 'defeat';
+  damage?: number;
+  isEffective?: 'super' | 'normal' | 'not_very';
+  message: string;
+  timestamp: Date;
+}
+
+// Attack type definitions
+const ATTACK_TYPES: Record<AttackType, Attack> = {
+  reading: {
+    type: 'reading',
+    baseDamage: 30,
+    accuracy: 0.85,
+    criticalChance: 0.15,
+    effectDescription: 'Sound Wave Attack - Tests pronunciation knowledge'
+  },
+  meaning: {
+    type: 'meaning',
+    baseDamage: 35,
+    accuracy: 0.90,
+    criticalChance: 0.10,
+    effectDescription: 'Mind Strike - Tests conceptual understanding'
+  },
+  kanji: {
+    type: 'kanji',
+    baseDamage: 40,
+    accuracy: 0.80,
+    criticalChance: 0.20,
+    effectDescription: 'Symbol Slash - Tests character recognition'
+  },
+  vocabulary: {
+    type: 'vocabulary',
+    baseDamage: 45,
+    accuracy: 0.75,
+    criticalChance: 0.25,
+    effectDescription: 'Context Combo - Tests practical usage'
+  }
+};
+
+// Kanji counter-attacks
+const KANJI_ATTACKS = [
+  {
+    name: 'Confusion Ray',
+    damage: 20,
+    effect: 'confused',
+    message: '{kanji} used Confusion Ray! You feel bewildered!'
+  },
+  {
+    name: 'Memory Drain',
+    damage: 25,
+    effect: 'weakened',
+    message: '{kanji} drained your knowledge! Your attacks are weakened!'
+  },
+  {
+    name: 'Character Overwhelm',
+    damage: 30,
+    effect: null,
+    message: '{kanji} overwhelmed you with complexity!'
+  }
+];
+
 interface KanjiQuestProps {
   jlptLevel: number;
   onBack: () => void;
@@ -62,7 +135,7 @@ export default function KanjiQuest({
 
   // Component state is now logged centrally in SubscriptionContext
 
-  const [phase, setPhase] = useState<'encounter' | 'study' | 'quiz' | 'result'>('encounter');
+  const [phase, setPhase] = useState<'kanji_selection' | 'encounter' | 'study' | 'battle' | 'quiz' | 'result'>('kanji_selection');
   const [session, setSession] = useState<StudySession | null>(null);
   const [studiedKanji, setStudiedKanji] = useState<Set<string>>(new Set());
   const [currentKanjiIndex, setCurrentKanjiIndex] = useState(0);
@@ -75,6 +148,22 @@ export default function KanjiQuest({
   const [gameLoading, setGameLoading] = useState(true);
   const [showLimitMessage, setShowLimitMessage] = useState(false);
   const [entitlementCheckComplete, setEntitlementCheckComplete] = useState(false);
+
+  // Battle system state
+  const [kanjiHP, setKanjiHP] = useState(100);
+  const [trainerHP, setTrainerHP] = useState(100);
+  const [maxKanjiHP, setMaxKanjiHP] = useState(100);
+  const [maxTrainerHP, setMaxTrainerHP] = useState(100);
+  const [battleGradient, setBattleGradient] = useState('');
+  const [battleLog, setBattleLog] = useState<BattleEvent[]>([]);
+  const [isAttacking, setIsAttacking] = useState(false);
+  const [showDamageEffect, setShowDamageEffect] = useState(false);
+  const [currentAttackType, setCurrentAttackType] = useState<AttackType>('meaning');
+
+  // Kanji selection state
+  const [availableKanji, setAvailableKanji] = useState<GameKanji[]>([]);
+  const [selectedKanji, setSelectedKanji] = useState<Set<string>>(new Set());
+  const [showKanjiSelection, setShowKanjiSelection] = useState(false);
 
 
   // Initialize session - properly coordinate with auth and subscription loading
@@ -103,7 +192,7 @@ export default function KanjiQuest({
 
       // Check if user can play KanjiQuest
       const canPlay = await checkAndTrack('kanji_quest');
-      
+
       setEntitlementCheckComplete(true);
 
       if (!canPlay) {
@@ -116,6 +205,16 @@ export default function KanjiQuest({
       console.log('✅ KanjiQuest Access Granted');
 
       // User has access, proceeding with game setup
+
+      // Load available kanji for selection
+      if (!customKanji) {
+        const allKanji = await getKanjiByJLPT(jlptLevel);
+        const availableKanjiForLevel = allKanji.filter(k => !completedKanjiIds.has(k.id));
+        setAvailableKanji(availableKanjiForLevel);
+        setShowKanjiSelection(true);
+        setGameLoading(false);
+        return;
+      }
 
       // Get available kanji for the level
       let selectedKanji: GameKanji[];
@@ -140,18 +239,19 @@ export default function KanjiQuest({
         if (availableKanji.length < 5) {
           showNotification({
             title: 'Not Enough Kanji',
-            message: 'Not enough new kanji available for this level!',
+            message: 'You need at least 5 new kanji available for this level!',
             type: 'warning'
           });
           onBack();
           return;
         }
 
-        // Select 5 random kanji
+        // Select 5-8 random kanji
         selectedKanji = [];
         const tempAvailable = [...availableKanji];
+        const numToSelect = Math.min(5 + Math.floor(Math.random() * 4), tempAvailable.length); // 5-8 kanji
 
-        for (let i = 0; i < 5 && tempAvailable.length > 0; i++) {
+        for (let i = 0; i < numToSelect && tempAvailable.length > 0; i++) {
           const randomIndex = Math.floor(Math.random() * tempAvailable.length);
           selectedKanji.push(tempAvailable.splice(randomIndex, 1)[0]);
         }
@@ -174,6 +274,27 @@ export default function KanjiQuest({
       setCurrentQuestionIndex(0);
       setUserAnswers([]);
 
+      // Initialize battle state based on JLPT level
+      const baseHP = getKanjiHP(jlptLevel);
+      setKanjiHP(baseHP);
+      setMaxKanjiHP(baseHP);
+      setTrainerHP(100);
+      setMaxTrainerHP(100);
+      setBattleLog([]);
+
+      // Generate random gradient for this encounter
+      const gradients = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+      ];
+      setBattleGradient(gradients[Math.floor(Math.random() * gradients.length)]);
+
       // NOTE: Usage count is now incremented after quiz completion, not at start
     } catch (error) {
       showNotification({
@@ -187,11 +308,107 @@ export default function KanjiQuest({
     }
   };
 
+  // Battle mechanics functions
+  const getKanjiHP = (jlptLevel: number): number => {
+    // HP based on JLPT difficulty
+    switch (jlptLevel) {
+      case 5: return 60 + Math.floor(Math.random() * 20); // 60-80 HP
+      case 4: return 80 + Math.floor(Math.random() * 20); // 80-100 HP
+      case 3: return 100 + Math.floor(Math.random() * 20); // 100-120 HP
+      case 2: return 120 + Math.floor(Math.random() * 20); // 120-140 HP
+      case 1: return 140 + Math.floor(Math.random() * 20); // 140-160 HP
+      default: return 100;
+    }
+  };
+
+  const getAttackTypeFromQuestion = (questionType: QuizQuestion['type']): AttackType => {
+    switch (questionType) {
+      case 'reading': return 'reading';
+      case 'meaning': return 'meaning';
+      case 'kanji': return 'kanji';
+      case 'vocab': return 'vocabulary';
+      default: return 'meaning';
+    }
+  };
+
+  const calculateDamage = (
+    attack: Attack,
+    isCorrect: boolean,
+    effectiveness: 'super' | 'normal' | 'not_very',
+    isCritical: boolean
+  ): number => {
+    if (!isCorrect) return 0;
+
+    let damage = attack.baseDamage;
+
+    // Type effectiveness multiplier
+    switch (effectiveness) {
+      case 'super': damage *= 1.5; break;
+      case 'not_very': damage *= 0.75; break;
+      case 'normal': damage *= 1.0; break;
+    }
+
+    // Critical hit multiplier
+    if (isCritical) {
+      damage *= 1.5;
+    }
+
+    // Add random variance (±10%)
+    damage *= (0.9 + Math.random() * 0.2);
+
+    return Math.round(damage);
+  };
+
+  const getTypeEffectiveness = (attackType: AttackType, kanji: GameKanji): 'super' | 'normal' | 'not_very' => {
+    // Calculate weaknesses based on kanji characteristics
+    const totalReadings = (kanji.on_readings?.length || 0) + (kanji.kun_readings?.length || 0);
+    const hasComplexMeanings = kanji.meanings.length > 2;
+    const hasVocabulary = kanji.vocabulary && kanji.vocabulary.length >= 3;
+
+    // Type effectiveness logic
+    if (attackType === 'reading' && totalReadings >= 4) return 'super';
+    if (attackType === 'meaning' && hasComplexMeanings) return 'super';
+    if (attackType === 'vocabulary' && hasVocabulary) return 'super';
+    if (attackType === 'kanji' && kanji.meanings[0].length > 10) return 'super'; // Long meanings = complex kanji
+
+    // Some resistances
+    if (attackType === 'reading' && totalReadings <= 1) return 'not_very';
+    if (attackType === 'vocabulary' && !hasVocabulary) return 'not_very';
+
+    return 'normal';
+  };
+
+  const executeKanjiCounterAttack = () => {
+    const randomAttack = KANJI_ATTACKS[Math.floor(Math.random() * KANJI_ATTACKS.length)];
+    const damage = randomAttack.damage + Math.floor(Math.random() * 10) - 5; // ±5 variance
+
+    setTrainerHP(prev => Math.max(0, prev - damage));
+    setShowDamageEffect(true);
+
+    const message = randomAttack.message.replace('{kanji}', session?.kanji[currentKanjiIndex]?.character || 'Kanji');
+
+    setBattleLog(prev => [...prev, {
+      type: 'kanji_attack',
+      damage,
+      message,
+      timestamp: new Date()
+    }]);
+
+    setTimeout(() => setShowDamageEffect(false), 500);
+
+    // Check for trainer defeat
+    if (trainerHP - damage <= 0) {
+      setTimeout(() => {
+        completeQuiz(userAnswers);
+      }, 1000);
+    }
+  };
+
   const handleStudyComplete = () => {
     if (!session) return;
 
-    // Generate quiz questions
-    const questions = generateQuizQuestions(session.kanji);
+    // Generate quiz questions for the first kanji (index 0)
+    const questions = generateQuizQuestions(session.kanji, 0);
 
     // Questions generated successfully
 
@@ -202,23 +419,22 @@ export default function KanjiQuest({
     setShowQuizFeedback(false); // Ensure feedback is reset
   };
 
-  const generateQuizQuestions = (kanji: GameKanji[]): QuizQuestion[] => {
+  const generateQuizQuestions = (kanji: GameKanji[], targetKanjiIndex: number): QuizQuestion[] => {
     const questions: QuizQuestion[] = [];
     // Use the session kanji as the pool for distractors
     const allKanji = kanji;
-
-    // Ensure at least one question per kanji
-    kanji.forEach(k => {
-      const questionType = Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3;
-      questions.push(createQuestion(k, questionType, allKanji));
-    });
-
-    // Add 0-2 more random questions to reach 5-7 total
-    const extraQuestions = Math.floor(Math.random() * 3);
-    for (let i = 0; i < extraQuestions; i++) {
-      const randomKanji = kanji[Math.floor(Math.random() * kanji.length)];
-      const questionType = Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3;
-      questions.push(createQuestion(randomKanji, questionType, allKanji));
+    
+    // Get the specific kanji to ask questions about
+    const targetKanji = kanji[targetKanjiIndex];
+    
+    // Generate 5-7 questions about the TARGET kanji only
+    const numQuestions = 5 + Math.floor(Math.random() * 3); // 5-7 questions
+    const questionTypes: QuizQuestion['type'][] = ['reading', 'meaning', 'kanji', 'vocab'];
+    
+    for (let i = 0; i < numQuestions; i++) {
+      // Rotate through question types to ensure variety
+      const questionType = i % 4;
+      questions.push(createQuestion(targetKanji, questionType, allKanji));
     }
 
     // Shuffle questions
@@ -233,10 +449,25 @@ export default function KanjiQuest({
       case 'reading': {
         // Show kanji, ask for reading
         const correctAnswer = kanji.on_readings[0] || kanji.kun_readings[0];
-        const distractors = allKanji
+
+        // Get all possible readings from other kanji
+        const possibleDistractors: string[] = [];
+        allKanji
           .filter(k => k.id !== kanji.id)
-          .map(k => k.on_readings[0] || k.kun_readings[0])
-          .filter(r => r && r !== correctAnswer)
+          .forEach(k => {
+            // Add all readings from other kanji
+            k.on_readings.forEach(r => {
+              if (r && r !== correctAnswer) possibleDistractors.push(r);
+            });
+            k.kun_readings.forEach(r => {
+              if (r && r !== correctAnswer) possibleDistractors.push(r);
+            });
+          });
+
+        // Remove duplicates and take 3 random distractors
+        const uniqueDistractors = [...new Set(possibleDistractors)];
+        const distractors = uniqueDistractors
+          .sort(() => Math.random() - 0.5)
           .slice(0, 3);
 
         const options = [correctAnswer, ...distractors];
@@ -305,10 +536,13 @@ export default function KanjiQuest({
           const options = [correctAnswer, ...distractors];
           const shuffled = [...options].sort(() => Math.random() - 0.5);
 
-          // Only show reading in parentheses if it exists
-          const questionText = vocab.reading
-            ? `Which kanji is used in "${vocab.word}" (${vocab.reading})?`
-            : `Which kanji is used in "${vocab.word}"?`;
+          // Replace the kanji in the word with a placeholder to avoid showing the answer
+          const displayWord = vocab.word.replace(kanji.character, '—');
+          
+          // Only show reading in parentheses if it exists and doesn't contain the kanji
+          const questionText = vocab.reading && !vocab.reading.includes(kanji.character)
+            ? `Which kanji completes this word: "${displayWord}" (${vocab.reading})?`
+            : `Which kanji completes this word: "${displayWord}"?`;
 
           return {
             type: 'vocab',
@@ -326,28 +560,85 @@ export default function KanjiQuest({
   };
 
   const handleQuizAnswer = (answerIndex: number) => {
-    if (showQuizFeedback) {
+    if (showQuizFeedback || isAttacking) {
       return;
     }
 
     const currentQuestion = quizQuestions[currentQuestionIndex];
-    if (!currentQuestion) {
+    if (!currentQuestion || !session) {
       return;
     }
 
-    // These variables are used in development for debugging
-    // const selectedAnswer = currentQuestion.options[answerIndex];
-    // const correctAnswer = currentQuestion.options[currentQuestion.correctIndex];
-    // const isCorrect = answerIndex === currentQuestion.correctIndex;
+    const isCorrect = answerIndex === currentQuestion.correctIndex;
+    const attackType = getAttackTypeFromQuestion(currentQuestion.type);
+    const attack = ATTACK_TYPES[attackType];
+    const currentKanji = session.kanji[currentKanjiIndex];
 
-    // Quiz answer processed
+    setIsAttacking(true);
+
+    // Calculate damage if correct
+    if (isCorrect) {
+      // Check for critical hit
+      const isCritical = Math.random() < attack.criticalChance;
+      const effectiveness = getTypeEffectiveness(attackType, currentKanji);
+      const damage = calculateDamage(attack, true, effectiveness, isCritical);
+
+      // Apply damage
+      setKanjiHP(prev => Math.max(0, prev - damage));
+
+      // Add to battle log
+      let message = `You used ${attack.type === 'vocabulary' ? 'Context Combo' : attack.type === 'reading' ? 'Sound Wave' : attack.type === 'kanji' ? 'Symbol Slash' : 'Mind Strike'}!`;
+      if (effectiveness === 'super') message += ' It\'s super effective!';
+      if (effectiveness === 'not_very') message += ' It\'s not very effective...';
+      if (isCritical) message += ' Critical hit!';
+
+      setBattleLog(prev => [...prev, {
+        type: 'player_attack',
+        damage,
+        isEffective: effectiveness,
+        message,
+        timestamp: new Date()
+      }]);
+    } else {
+      // Wrong answer - kanji counter-attacks
+      setBattleLog(prev => [...prev, {
+        type: 'player_attack',
+        damage: 0,
+        message: 'Your attack missed!',
+        timestamp: new Date()
+      }]);
+
+      // Execute counter-attack after a delay
+      setTimeout(() => {
+        executeKanjiCounterAttack();
+      }, 1000);
+    }
 
     const newAnswers = [...userAnswers, answerIndex];
     setUserAnswers(newAnswers);
     setShowQuizFeedback(true);
 
-    // Use a timeout for the transition
+    // Check for battle end conditions
     setTimeout(() => {
+      setIsAttacking(false);
+
+      // Check if kanji is defeated
+      if (kanjiHP <= 0 && currentKanjiIndex < session.kanji.length - 1) {
+        // Move to next kanji
+        const nextIndex = currentKanjiIndex + 1;
+        setCurrentKanjiIndex(nextIndex);
+        const nextHP = getKanjiHP(jlptLevel);
+        setKanjiHP(nextHP);
+        setMaxKanjiHP(nextHP);
+        
+        // Generate new questions for the next kanji
+        const newQuestions = generateQuizQuestions(session.kanji, nextIndex);
+        setQuizQuestions(newQuestions);
+        setCurrentQuestionIndex(0);
+        setUserAnswers([]);
+      }
+
+      // Continue to next question or complete quiz
       if (currentQuestionIndex < quizQuestions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
         setShowQuizFeedback(false);
@@ -355,7 +646,87 @@ export default function KanjiQuest({
         // Quiz complete
         completeQuiz(newAnswers);
       }
-    }, 1500);
+    }, 2000);
+  };
+
+  // Kanji selection functions
+  const handleKanjiToggle = (kanjiId: string) => {
+    const currentSize = selectedKanji.size;
+    const isSelected = selectedKanji.has(kanjiId);
+
+    if (isSelected) {
+      // Deselect
+      setSelectedKanji(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(kanjiId);
+        return newSet;
+      });
+    } else if (currentSize < 8) {
+      // Select
+      setSelectedKanji(prev => {
+        const newSet = new Set(prev);
+        newSet.add(kanjiId);
+        return newSet;
+      });
+    } else {
+      // Show notification when trying to select more than 8
+      showNotification({
+        title: 'Maximum Selection Reached',
+        message: 'You can only select up to 8 kanji. Please deselect one to add another.',
+        type: 'warning'
+      });
+    }
+  };
+
+  const startNewSessionWithKanji = async (kanjiIds: string[]) => {
+    const selectedKanjiData = availableKanji.filter(k => kanjiIds.includes(k.id));
+
+    // Import vocabulary loading function
+    const { getVocabularyForKanji } = await import('@/utils/jmdictVocabulary');
+
+    const kanjiWithVocab = selectedKanjiData.map(k => ({
+      ...k,
+      vocabulary: getVocabularyForKanji(k.character, 3)
+    }));
+
+    // Create new session
+    const newSession: StudySession = {
+      kanji: kanjiWithVocab,
+      pokemonId: getRandomPokemon(),
+      status: 'studying',
+      startTime: new Date().toISOString(),
+      quizScore: null
+    };
+
+    setSession(newSession);
+    setPhase('encounter');
+    setStudiedKanji(new Set());
+    setCurrentKanjiIndex(0);
+    setQuizQuestions([]);
+    setCurrentQuestionIndex(0);
+    setUserAnswers([]);
+    setShowKanjiSelection(false);
+
+    // Initialize battle state
+    const baseHP = getKanjiHP(jlptLevel);
+    setKanjiHP(baseHP);
+    setMaxKanjiHP(baseHP);
+    setTrainerHP(100);
+    setMaxTrainerHP(100);
+    setBattleLog([]);
+
+    // Generate random gradient for this encounter
+    const gradients = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+    ];
+    setBattleGradient(gradients[Math.floor(Math.random() * gradients.length)]);
   };
 
   const completeQuiz = (answers: number[]) => {
@@ -451,6 +822,70 @@ export default function KanjiQuest({
       </div>
     );
   }
+
+  // Show kanji selection interface
+  if (showKanjiSelection) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="mb-8">
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold">Select Kanji to Battle</h1>
+              <button
+                onClick={() => {
+                  if (selectedKanji.size < 5 || selectedKanji.size > 8) {
+                    showNotification({
+                      title: 'Invalid Selection',
+                      message: `Please select between 5 and 8 kanji to battle. You currently have ${selectedKanji.size} selected.`,
+                      type: 'warning'
+                    });
+                  } else {
+                    startNewSessionWithKanji(Array.from(selectedKanji));
+                  }
+                }}
+                className="px-4 py-2 md:px-6 md:py-3 bg-primary text-primary-foreground rounded-lg text-sm md:text-lg font-bold hover:bg-primary/90 transition-colors whitespace-nowrap"
+              >
+                Start Battle
+              </button>
+            </div>
+            <p className="text-muted-foreground text-sm md:text-base">Choose 5-8 kanji to practice with</p>
+            <div className="mt-2">
+              <span className="text-sm font-medium">
+                Selected: {selectedKanji.size}/8 (minimum: 5)
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+            {availableKanji.map((kanji) => (
+              <button
+                key={kanji.id}
+                onClick={() => handleKanjiToggle(kanji.id)}
+                className={`relative p-4 rounded-lg border-2 transition-all ${selectedKanji.has(kanji.id)
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border hover:border-primary/50'
+                  }`}
+              >
+                {/* Purple checkmark in top-left corner */}
+                {selectedKanji.has(kanji.id) && (
+                  <div className="absolute top-1 left-1 w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center">
+                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                )}
+                <div className="text-4xl japanese-text mb-2">{kanji.character}</div>
+                <div className="text-sm text-muted-foreground">
+                  {kanji.meanings[0]}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!session) {
     return null;
   }
@@ -496,13 +931,371 @@ export default function KanjiQuest({
               </motion.div>
 
               <button
-                onClick={() => setPhase('study')}
+                onClick={() => {
+                  // Generate quiz questions for battle - starting with first kanji
+                  const questions = generateQuizQuestions(session.kanji, 0);
+                  setQuizQuestions(questions);
+                  setPhase('battle');
+                }}
                 className="px-8 py-4 bg-primary text-primary-foreground rounded-lg text-xl font-bold hover:bg-primary/90 transition-colors"
               >
-                Study Kanji to Battle!
+                Battle!
               </button>
             </motion.div>
           </motion.div>
+        )}
+
+        {/* Battle Phase - Integrated Quiz with Battle Interface */}
+        {phase === 'battle' && quizQuestions.length > 0 && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+            {/* Grey transparent overlay behind the modal */}
+            <div className="absolute inset-0 bg-black/80 z-0" onClick={onBack} />
+            {/* Modal (battle UI card) centered */}
+            <motion.div
+              key="battle"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col rounded-2xl w-full mx-auto z-10 overflow-hidden"
+              style={{
+                background: battleGradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                height: 'auto',
+                maxHeight: '95vh',
+                maxWidth: '24rem'
+              }}
+            >
+              <div className="container mx-auto px-4 py-2 flex flex-col flex-1">
+                {/* Battle Arena Header */}
+                <div className="text-center mb-2">
+                  <h2 className="text-white text-lg font-bold">Battle Arena - Question {currentQuestionIndex + 1} of {quizQuestions.length}</h2>
+                </div>
+
+                {/* GameBoy-style frosted screen wrapper */}
+                <div className="rounded-xl border border-white/30 bg-white/30 backdrop-blur-md shadow-md mb-3 p-3 relative overflow-hidden">
+                  {/* Corner Glows */}
+                  <div className="absolute -top-10 -left-10 w-32 h-32 bg-yellow-300/50 rounded-full blur-2xl pointer-events-none animate-pulse" />
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-400/50 rounded-full blur-2xl pointer-events-none animate-pulse" />
+                  <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-400/50 rounded-full blur-2xl pointer-events-none animate-pulse" />
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-green-400/50 rounded-full blur-2xl pointer-events-none animate-pulse" />
+                  
+                  {/* Opponent HP Bar - Top Left Corner */}
+                  <div className="absolute top-1 left-1">
+                    <div className="bg-yellow-200 border border-gray-800 rounded-md px-2 py-0.5 min-w-[120px]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-gray-800">Wild{session.kanji[currentKanjiIndex]?.character}</span>
+                        <span className="text-[10px] font-bold text-gray-800">Lv.{jlptLevel === 5 ? '10' : jlptLevel === 4 ? '20' : jlptLevel === 3 ? '30' : jlptLevel === 2 ? '40' : '50'}</span>
+                      </div>
+                      <div className="bg-gray-700 rounded-full h-1.5 p-0.5">
+                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-300 h-full rounded-full relative overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-green-400 to-green-300 h-full rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${(kanjiHP / maxKanjiHP) * 100}%`,
+                              backgroundColor: kanjiHP < maxKanjiHP * 0.2 ? '#ef4444' : kanjiHP < maxKanjiHP * 0.5 ? '#eab308' : '#22c55e'
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="text-[9px] font-bold text-gray-700 text-right">{kanjiHP}/{maxKanjiHP}</div>
+                    </div>
+                  </div>
+
+                  {/* Player HP Bar - Bottom Right Corner */}
+                  <div className="absolute bottom-1 right-1">
+                    <div className="bg-yellow-200 border border-gray-800 rounded-md px-2 py-0.5 min-w-[120px]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-gray-800">{user?.displayName?.split(' ')[0] || 'Sensei'}</span>
+                        <span className="text-[10px] font-bold text-gray-800">Lv.50</span>
+                      </div>
+                      <div className="bg-gray-700 rounded-full h-1.5 p-0.5">
+                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-300 h-full rounded-full relative overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-green-400 to-green-300 h-full rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${(trainerHP / maxTrainerHP) * 100}%`,
+                              backgroundColor: trainerHP < maxTrainerHP * 0.2 ? '#ef4444' : trainerHP < maxTrainerHP * 0.5 ? '#eab308' : '#22c55e'
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="text-[9px] font-bold text-gray-700 text-right">{trainerHP}/{maxTrainerHP}</div>
+                    </div>
+                  </div>
+
+                  {/* Battle Arena */}
+                  <div className="h-32 md:h-40 flex items-center justify-center relative">
+                    {/* Pokemon Sprite - Top Right */}
+                    <div className="absolute -top-2 right-2">
+                      <motion.div
+                        animate={{
+                          y: [0, -2, 0],
+                          x: [0, 1, 0]
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <img
+                          src={getPokemonSpriteUrl(session.pokemonId)}
+                          alt="Wild Pokémon"
+                          className="w-16 h-16 md:w-20 md:h-20"
+                        />
+                      </motion.div>
+                    </div>
+
+                    {/* Kanji - Center */}
+                    <motion.div
+                      animate={{
+                        y: [0, -5, 0],
+                        rotate: [0, 2, -2, 0],
+                        ...(showDamageEffect && isAttacking && !userAnswers[currentQuestionIndex] ? {
+                          x: [0, -5, 5, -5, 5, 0],
+                          filter: ['brightness(1)', 'brightness(2)', 'brightness(0.5)', 'brightness(1)'],
+                          transition: { duration: 0.5 }
+                        } : {})
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="relative"
+                    >
+                      <div className="text-6xl md:text-7xl relative">
+                        {session.kanji[currentKanjiIndex]?.character}
+                        {/* Damage number animation */}
+                        <AnimatePresence>
+                          {isAttacking && userAnswers[currentQuestionIndex] === quizQuestions[currentQuestionIndex]?.correctIndex && (
+                            <motion.div
+                              initial={{ y: 0, opacity: 1 }}
+                              animate={{ y: -50, opacity: 0 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 1 }}
+                              className="absolute top-0 left-1/2 -translate-x-1/2 text-red-500 font-bold text-3xl"
+                            >
+                              -{battleLog[battleLog.length - 1]?.damage || 0}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </motion.div>
+
+                    {/* Trainer - Bottom Left */}
+                    <div className="absolute -bottom-2 left-2">
+                      <motion.div
+                        animate={{
+                          x: [0, 1, 0],
+                          y: [0, -0.5, 0],
+                          ...(showDamageEffect && !isAttacking ? {
+                            x: [0, -3, 3, -3, 3, 0],
+                            filter: ['brightness(1)', 'brightness(2)', 'brightness(0.5)', 'brightness(1)'],
+                            transition: { duration: 0.5 }
+                          } : {})
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                        className="relative"
+                      >
+                        <img
+                          src="/trainer.png"
+                          alt="Trainer"
+                          className="w-12 h-16 md:w-16 md:h-20"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = 'block';
+                            }
+                          }}
+                        />
+                        <div className="text-3xl md:text-4xl hidden">🥋</div>
+                        {/* Damage number animation for trainer */}
+                        <AnimatePresence>
+                          {showDamageEffect && !isAttacking && (
+                            <motion.div
+                              initial={{ y: 0, opacity: 1 }}
+                              animate={{ y: -50, opacity: 0 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 1 }}
+                              className="absolute top-0 left-1/2 -translate-x-1/2 text-red-500 font-bold text-xl"
+                            >
+                              -{battleLog.find(log => log.type === 'kanji_attack' && log.timestamp === battleLog[battleLog.length - 1]?.timestamp)?.damage || 0}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Controls area: D-pad, A/B, Start/Select (improved Game Boy layout) */}
+                <div className="relative flex flex-col items-center gap-4 mb-10 mt-6">
+                  <div className="flex w-full justify-between items-end px-8 relative" style={{ minHeight: '80px' }}>
+                    {/* D-pad left, lower */}
+                    <div className="absolute left-0 bottom-0">
+                      <div className="relative w-20 h-20 flex items-center justify-center">
+                        {/* Vertical bar */}
+                        <div className="absolute left-1/2 top-0 -translate-x-1/2 w-7 h-20 bg-gray-600 rounded-sm shadow-inner border border-gray-900 shadow-lg" />
+                        {/* Horizontal bar */}
+                        <div className="absolute top-1/2 left-0 -translate-y-1/2 h-7 w-20 bg-gray-600 rounded-sm shadow-inner border border-gray-900 shadow-lg" />
+                        {/* Center circle */}
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-gray-700 rounded-full shadow-md flex items-center justify-center border border-gray-900 shadow-xl">
+                          <div className="w-4 h-4 bg-gray-800 rounded-full shadow-inner" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* A/B buttons right, Game Boy layout */}
+                    <div className="absolute right-0 bottom-0">
+                      <div className="relative w-24 h-16">
+                        {/* A button - left and lower */}
+                        <button className="absolute left-0 bottom-0 w-12 h-12 rounded-full bg-gray-700 text-white font-bold text-lg shadow-md border-2 border-gray-900 flex items-center justify-center">A</button>
+                        {/* B button - right and higher */}
+                        <button className="absolute right-0 top-0 w-12 h-12 rounded-full bg-gray-700 text-white font-bold text-lg shadow-md border-2 border-gray-900 flex items-center justify-center">B</button>
+                      </div>
+                    </div>
+                    {/* Start/Select centered below controls */}
+                    <div className="absolute left-1/2 bottom-[-32px] -translate-x-1/2 flex gap-4">
+                      <button className="w-14 h-6 rounded-full bg-gray-400 border-2 border-gray-600 flex items-center justify-center text-xs font-semibold shadow-inner">Start</button>
+                      <button className="w-14 h-6 rounded-full bg-gray-400 border-2 border-gray-600 flex items-center justify-center text-xs font-semibold shadow-inner">Select</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-auto px-2 pb-1">
+                {/* Battle Interface - Integrated Quiz */}
+                <div className="bg-black/30 rounded-lg p-3 backdrop-blur-sm">
+                  <div className="text-white text-center mb-3">
+                    <h3 className="text-lg font-bold">{quizQuestions[currentQuestionIndex].question}</h3>
+                  </div>
+
+                  {/* 2x2 grid for answers */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {quizQuestions[currentQuestionIndex].options.map((option, idx) => {
+                      const isCorrect = idx === quizQuestions[currentQuestionIndex].correctIndex;
+                      const isSelected = userAnswers[currentQuestionIndex] === idx;
+                      const hasAnswered = userAnswers[currentQuestionIndex] !== undefined;
+
+                      // Get attack type for current question
+                      const questionAttackType = getAttackTypeFromQuestion(quizQuestions[currentQuestionIndex].type);
+                      const currentAttack = ATTACK_TYPES[questionAttackType];
+
+                      // Visual indicators for attack types
+                      const attackIcons = {
+                        'meaning': '🧠',
+                        'reading': '🔊',
+                        'kanji': '⚔️',
+                        'vocabulary': '📚'
+                      };
+
+                      const attackNames = {
+                        'meaning': 'Mind Strike',
+                        'reading': 'Sound Wave',
+                        'kanji': 'Symbol Slash',
+                        'vocabulary': 'Context Combo'
+                      };
+
+                      // Pastel color backgrounds for each button position
+                      const pastelBackgrounds = [
+                        'bg-pink-300/20',    // Top left - soft pink
+                        'bg-sky-300/20',     // Top right - soft blue
+                        'bg-amber-300/20',   // Bottom left - soft yellow
+                        'bg-emerald-300/20'  // Bottom right - soft green
+                      ];
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => handleQuizAnswer(idx)}
+                          disabled={showQuizFeedback}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all backdrop-blur-sm ${showQuizFeedback && hasAnswered
+                            ? isCorrect
+                              ? 'border-green-400 bg-green-500/30 text-green-100'
+                              : isSelected
+                                ? 'border-red-400 bg-red-500/30 text-red-100'
+                                : `border-white/30 ${pastelBackgrounds[idx]} text-white/90`
+                            : `border-white/40 ${pastelBackgrounds[idx]} hover:bg-white/30 text-white cursor-pointer`
+                            }`}
+                        >
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <img src="/pokeball.png" alt="Pokeball" className="w-5 h-5 flex-shrink-0" />
+                              <div className="text-base md:text-lg japanese-text font-medium truncate">{option}</div>
+                            </div>
+                            <div className="text-xs text-white/60 text-right">
+                              <div className="text-[10px] md:text-xs">{attackNames[questionAttackType]}</div>
+                              <div className="text-[10px] md:text-xs">Power: {currentAttack.baseDamage}</div>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Manual continue button as fallback */}
+                  {showQuizFeedback && (
+                    <div className="mt-4 text-center">
+                      <button
+                        onClick={() => {
+                          // If no answer was recorded for this question, record it as unanswered (-1)
+                          if (userAnswers.length <= currentQuestionIndex) {
+                            const newAnswers = [...userAnswers];
+                            // Fill any gaps with -1 (unanswered)
+                            while (newAnswers.length <= currentQuestionIndex) {
+                              newAnswers.push(-1);
+                            }
+                            setUserAnswers(newAnswers);
+                          }
+
+                          if (currentQuestionIndex < quizQuestions.length - 1) {
+                            setCurrentQuestionIndex(prev => prev + 1);
+                            setShowQuizFeedback(false);
+                          } else {
+                            // Make sure we have all answers including the current one
+                            const finalAnswers = [...userAnswers];
+                            // Fill any remaining gaps
+                            while (finalAnswers.length < quizQuestions.length) {
+                              finalAnswers.push(-1);
+                            }
+                            completeQuiz(finalAnswers);
+                          }
+                        }}
+                        className="text-sm text-white/80 hover:text-white underline"
+                      >
+                        Continue →
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Battle Log */}
+                  {battleLog.length > 0 && (
+                    <div className="mt-4 bg-black/20 rounded p-2 max-h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+                      <div className="text-xs text-white/80 space-y-1">
+                        {battleLog.slice(-4).map((event, idx) => (
+                          <motion.div
+                            key={`${event.timestamp.getTime()}-${idx}`}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className={`${event.type === 'player_attack'
+                              ? (event.damage || 0) > 0 ? 'text-green-300' : 'text-red-300'
+                              : 'text-orange-300'
+                              } text-[11px] leading-relaxed`}
+                          >
+                            {event.message}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
 
         {/* Study Phase */}
@@ -768,6 +1561,11 @@ export default function KanjiQuest({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center min-h-screen p-4"
+            style={{
+              background: session.status === 'completed'
+                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                : 'linear-gradient(135deg, #434343 0%, #000000 100%)'
+            }}
           >
             <div className="text-center max-w-2xl">
               {session.status === 'completed' ? (
@@ -777,50 +1575,126 @@ export default function KanjiQuest({
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", duration: 0.8 }}
                   >
-                    <h1 className="text-4xl font-bold mb-8">Pokémon Caught! 🎉</h1>
+                    <h1 className="text-4xl font-bold mb-8 text-white">Gotcha! 🎉</h1>
+
+                    {/* Pokeball capture animation */}
+                    <div className="relative mb-8">
+                      <motion.div
+                        initial={{ y: -200, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                      >
+                        <motion.div
+                          animate={{
+                            rotate: [0, 10, -10, 10, -10, 0],
+                            scale: [1, 1.1, 0.9, 1.1, 0.9, 1]
+                          }}
+                          transition={{
+                            duration: 1,
+                            delay: 1,
+                            times: [0, 0.2, 0.4, 0.6, 0.8, 1]
+                          }}
+                          className="inline-block"
+                        >
+                          <img
+                            src="/pokeball.png"
+                            alt="Pokeball"
+                            className="w-32 h-32 mx-auto mb-4"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = document.createElement('div');
+                              fallback.textContent = '🔴';
+                              fallback.className = 'text-6xl';
+                              e.currentTarget.parentNode?.appendChild(fallback);
+                            }}
+                          />
+                        </motion.div>
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.5, delay: 2 }}
+                      >
+                        <img
+                          src={getPokemonSpriteUrl(session.pokemonId)}
+                          alt="Caught Pokémon"
+                          className="w-48 h-48 mx-auto"
+                        />
+                      </motion.div>
+                    </div>
 
                     <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, delay: 0.5 }}
-                      className="mb-8"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 2.5 }}
                     >
-                      <img
-                        src={getPokemonSpriteUrl(session.pokemonId)}
-                        alt="Caught Pokémon"
-                        className="w-64 h-64 mx-auto"
-                      />
+                      <p className="text-xl mb-2 text-white">Score: {Math.round(session.quizScore || 0)}%</p>
+                      <p className="text-white/80 mb-4">
+                        The wild Pokémon was caught!
+                      </p>
+                      <p className="text-white/80 mb-8">
+                        You mastered {session.kanji.length} kanji!
+                      </p>
                     </motion.div>
-
-                    <p className="text-xl mb-2">Score: {Math.round(session.quizScore || 0)}%</p>
-                    <p className="text-muted-foreground mb-8">
-                      The Pokémon has been added to your Pokédex!
-                    </p>
                   </motion.div>
                 </>
               ) : (
                 <>
-                  <h1 className="text-4xl font-bold mb-8">The wild Pokémon fled... 😔</h1>
-                  <p className="text-xl mb-2">Score: {Math.round(session.quizScore || 0)}%</p>
-                  <p className="text-muted-foreground mb-8">
-                    You need at least 75% to catch the Pokémon. Try again!
-                  </p>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", duration: 0.8 }}
+                  >
+                    <h1 className="text-4xl font-bold mb-8 text-white">
+                      {trainerHP <= 0 ? 'You blacked out!' : 'The wild Pokémon fled...'} 😔
+                    </h1>
+
+                    <motion.div
+                      animate={{
+                        opacity: [1, 0.3, 1],
+                        filter: ['grayscale(0)', 'grayscale(1)', 'grayscale(1)']
+                      }}
+                      transition={{ duration: 2 }}
+                      className="mb-8"
+                    >
+                      <img
+                        src={getPokemonSpriteUrl(session.pokemonId)}
+                        alt="Escaped Pokémon"
+                        className="w-48 h-48 mx-auto opacity-50"
+                        style={getPokemonSilhouetteStyle()}
+                      />
+                    </motion.div>
+
+                    <p className="text-xl mb-2 text-white">Score: {Math.round(session.quizScore || 0)}%</p>
+                    <p className="text-white/80 mb-8">
+                      {trainerHP <= 0
+                        ? 'Your HP reached 0. Train harder and try again!'
+                        : 'You need at least 75% to catch the Pokémon. Keep practicing!'}
+                    </p>
+                  </motion.div>
                 </>
               )}
 
-              <div className="flex gap-4 justify-center">
+              <motion.div
+                className="flex gap-4 justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 3 }}
+              >
                 <button
                   onClick={onBack}
-                  className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg"
+                  className="px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors"
                 >
                   Back to Games
                 </button>
                 <button
                   onClick={startNewSession}
-                  className="px-6 py-3 bg-primary text-primary-foreground rounded-lg"
+                  className="px-6 py-3 bg-white text-purple-700 rounded-lg hover:bg-white/90 transition-colors font-bold"
                 >
                   New Encounter
                 </button>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         )}

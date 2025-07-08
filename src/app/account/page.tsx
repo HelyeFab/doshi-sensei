@@ -12,6 +12,8 @@ import { ADMIN_EMAIL } from '@/types/admin';
 import Link from 'next/link';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { strings } from '@/config/strings';
 
 // List of available SVGs for user thumbnails
 const THUMBNAIL_OPTIONS = [
@@ -63,6 +65,7 @@ export default function AccountPage() {
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [updatingAvatar, setUpdatingAvatar] = useState(false);
   const [firestoreUser, setFirestoreUser] = useState<any>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Fetch Firestore user document on mount and when user changes
   useEffect(() => {
@@ -84,13 +87,13 @@ export default function AccountPage() {
 
     // Basic validation
     if (!email || !password) {
-      setError('Please fill in all required fields');
+      setError(strings.forms.validation.required);
       setIsLoading(false);
       return;
     }
 
     if (!isLogin && password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(strings.forms.validation.passwordMismatch);
       setIsLoading(false);
       return;
     }
@@ -143,7 +146,7 @@ export default function AccountPage() {
 
   const handleForgotPassword = async () => {
     if (!email) {
-      setError('Please enter your email address first');
+      setError(strings.forms.validation.invalidEmail);
       return;
     }
 
@@ -173,8 +176,8 @@ export default function AccountPage() {
         setFirestoreUser(userSnap.data());
       }
       setShowAvatarModal(false);
-    } catch (e) {
-      alert('Failed to update avatar.');
+    } catch (error) {
+      setErrorMessage('Failed to update avatar.');
     } finally {
       setUpdatingAvatar(false);
     }
@@ -406,6 +409,21 @@ export default function AccountPage() {
             </div>
           </div>
         )}
+
+        {/* Error Message Modal */}
+        {errorMessage && (
+          <ConfirmationDialog
+            isOpen={!!errorMessage}
+            title="Error"
+            message={errorMessage}
+            confirmText="OK"
+            cancelText=""
+            isDestructive={false}
+            onConfirm={() => setErrorMessage(null)}
+            onCancel={() => setErrorMessage(null)}
+            loading={false}
+          />
+        )}
       </>
     );
   }
@@ -481,10 +499,11 @@ export default function AccountPage() {
                   <input
                     id="displayName"
                     type="text"
+                    name="displayName"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={strings.forms.placeholders.name}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Your name"
                   />
                 </div>
               )}
@@ -496,10 +515,11 @@ export default function AccountPage() {
                 <input
                   id="email"
                   type="email"
+                  name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder={strings.forms.placeholders.email}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="your.email@example.com"
                   required
                 />
               </div>
@@ -511,10 +531,11 @@ export default function AccountPage() {
                 <input
                   id="password"
                   type="password"
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder={strings.forms.placeholders.password}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Enter your password"
                   required
                 />
               </div>
@@ -527,10 +548,11 @@ export default function AccountPage() {
                   <input
                     id="confirmPassword"
                     type="password"
+                    name="confirmPassword"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder={strings.forms.placeholders.confirmPassword}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Confirm your password"
                     required
                   />
                 </div>

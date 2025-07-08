@@ -1,8 +1,36 @@
 /* Grammar Highlighting Styles */
 
-/* Minimal ruby styles - let browser handle most of it */
+/* Enhanced ruby styles for proper furigana spacing */
 ruby {
   display: inline-block;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  min-width: 2.5em;
+  text-align: center;
+  margin: 0.5rem 0.5rem 0.25rem 0.5rem;
+  position: relative;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+ruby:hover {
+  background-color: rgba(99, 102, 241, 0.2);
+}
+
+ruby rt {
+  position: absolute;
+  top: -1em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  line-height: 1;
+  width: auto;
+  min-width: 100%;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* Base styles for all grammar elements */
@@ -15,12 +43,9 @@ ruby {
   display: inline-block;
 }
 
+/* Basic rt styling for compatibility - overridden by specific ruby rt styles above */
 rt {
-  font-size: 0.6em;
-  /* Try to force left alignment */
-  text-align: start;
-  text-align: left;
-  text-align: -webkit-left;
+  font-size: 0.75rem;
 }
 
 /* Override any Tailwind or other reset styles with higher specificity */
@@ -66,12 +91,7 @@ ruby.grammar-adverb {
   text-align-last: left !important;
 }
 
-/* Additional webkit-specific fixes */
-@supports (-webkit-appearance: none) {
-  ruby rt {
-    text-align: -webkit-left !important;
-  }
-}
+/* Remove conflicting webkit-specific fixes - enhanced ruby styles handle this */
 
 /* Noun */
 .grammar-noun {

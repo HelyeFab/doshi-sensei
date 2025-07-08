@@ -9,6 +9,7 @@ import { EditableFeatureMatrix } from '@/components/admin/feature-matrix/Editabl
 import { FeatureMatrixStats } from '@/components/admin/feature-matrix/FeatureMatrixStats';
 import { useFeatureMatrix } from '@/hooks/useFeatureMatrix';
 import { useNotification } from '@/contexts/NotificationContext';
+import { strings } from '@/config/strings';
 
 export default function AdminFeaturesPage() {
   const router = useRouter();
@@ -16,13 +17,13 @@ export default function AdminFeaturesPage() {
   const { data, isLoading, error, refresh } = useFeatureMatrix();
   const { showNotification } = useNotification();
   const [isEditMode, setIsEditMode] = useState(false);
-  
+
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
       router.push('/');
     }
   }, [isAdmin, adminLoading, router]);
-  
+
   if (adminLoading || isLoading) {
     return (
       <AdminLayout>
@@ -32,11 +33,11 @@ export default function AdminFeaturesPage() {
       </AdminLayout>
     );
   }
-  
+
   if (!isAdmin) {
     return null;
   }
-  
+
   if (error) {
     return (
       <AdminLayout>
@@ -55,11 +56,11 @@ export default function AdminFeaturesPage() {
       </AdminLayout>
     );
   }
-  
+
   if (!data) {
     return null;
   }
-  
+
   const handleExportCSV = () => {
     const headers = ['Feature', 'Category', 'Status', ...data.userTypes];
     const rows = data.matrix.map(row => {
@@ -77,7 +78,7 @@ export default function AdminFeaturesPage() {
       ];
       return cells.join(',');
     });
-    
+
     const csv = [headers.join(','), ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -87,7 +88,7 @@ export default function AdminFeaturesPage() {
     a.click();
     URL.revokeObjectURL(url);
   };
-  
+
   const handleExportJSON = () => {
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
@@ -98,18 +99,18 @@ export default function AdminFeaturesPage() {
     a.click();
     URL.revokeObjectURL(url);
   };
-  
+
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
     if (!isEditMode) {
       showNotification({
-        title: 'Edit Mode Enabled',
-        message: 'Click on any limit to change it.',
+        title: strings.admin.features.editModeEnabled,
+        message: strings.admin.features.clickToChange,
         type: 'info'
       });
     }
   };
-  
+
   return (
     <AdminLayout>
       <div className="p-6 max-w-7xl mx-auto">
@@ -117,85 +118,85 @@ export default function AdminFeaturesPage() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold">Feature Access Matrix</h1>
+              <h1 className="text-3xl font-bold">{strings.admin.features.title}</h1>
               <p className="text-muted-foreground mt-1">
-                View and manage feature access levels across different user types
+                {strings.admin.features.description}
               </p>
             </div>
-            
+
             <div className="flex gap-2">
               <button
                 onClick={toggleEditMode}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                  isEditMode 
-                    ? 'bg-yellow-500 text-white hover:bg-yellow-600' 
+                  isEditMode
+                    ? 'bg-yellow-500 text-white hover:bg-yellow-600'
                     : 'bg-secondary text-secondary-foreground hover:bg-secondary/90'
                 }`}
               >
                 <span className="text-lg">{isEditMode ? '💾' : '✏️'}</span>
-                {isEditMode ? 'Save Mode' : 'Edit Limits'}
+                {isEditMode ? strings.admin.features.saveMode : strings.admin.features.editLimits}
               </button>
-              
+
               <button
                 onClick={refresh}
                 className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90"
               >
                 <span className="text-lg">🔄</span>
-                Refresh
+                {strings.forms.buttons.refresh}
               </button>
-              
+
               <div className="relative group">
                 <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">
                   <span className="text-lg">📥</span>
-                  Export
+                  {strings.forms.buttons.export}
                 </button>
-                
+
                 <div className="absolute right-0 mt-2 w-40 bg-popover border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                   <button
                     onClick={handleExportCSV}
                     className="w-full px-4 py-2 text-left hover:bg-muted rounded-t-lg"
                   >
-                    Export as CSV
+                    {strings.admin.features.exportCsv}
                   </button>
                   <button
                     onClick={handleExportJSON}
                     className="w-full px-4 py-2 text-left hover:bg-muted rounded-b-lg"
                   >
-                    Export as JSON
+                    {strings.admin.features.exportJson}
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          
+
           {/* Last updated */}
           <p className="text-sm text-muted-foreground">
-            Last updated: {new Date(data.lastUpdated).toLocaleString()}
+            {strings.admin.features.lastUpdated}: {new Date(data.lastUpdated).toLocaleString()}
           </p>
         </div>
-        
+
         {/* Stats */}
         <FeatureMatrixStats stats={data.stats} />
-        
+
         {/* Feature Matrix Table */}
         {isEditMode ? (
-          <EditableFeatureMatrix 
-            matrix={data.matrix} 
+          <EditableFeatureMatrix
+            matrix={data.matrix}
             userTypes={data.userTypes}
             onUpdate={refresh}
             isEditMode={isEditMode}
           />
         ) : (
-          <FeatureMatrixTable 
-            matrix={data.matrix} 
+          <FeatureMatrixTable
+            matrix={data.matrix}
             userTypes={data.userTypes}
           />
         )}
-        
+
         {/* Info Box */}
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <h3 className="font-semibold mb-2">
-            {isEditMode ? 'Editing Limits' : 'Understanding the Matrix'}
+            {isEditMode ? strings.admin.features.editingLimits : strings.admin.features.understandingMatrix}
           </h3>
           {isEditMode ? (
             <ul className="text-sm space-y-1 text-muted-foreground">

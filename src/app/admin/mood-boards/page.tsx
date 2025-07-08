@@ -5,6 +5,7 @@ import { MoodBoardManager } from '@/components/admin/MoodBoardManager';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { strings } from '@/config/strings';
 
 export default function MoodBoardsPage() {
   const { moodBoards, loading } = useMoodBoards();
@@ -31,22 +32,22 @@ export default function MoodBoardsPage() {
     if (!loading && moodBoards.length > 0) {
       const totalBoards = moodBoards.length;
       const activeBoards = moodBoards.filter(board => board.isActive !== false).length;
-      
+
       // Find most popular mood board (could be based on views or usage)
       const mostPopular = moodBoards.find(board => board.isActive !== false)?.title || 'None';
-      
+
       // Find the most recently updated board
       const mostRecentBoard = moodBoards.reduce((latest, current) => {
         const currentDate = current.updatedAt ? new Date(current.updatedAt) : new Date(0);
         const latestDate = latest.updatedAt ? new Date(latest.updatedAt) : new Date(0);
         return currentDate > latestDate ? current : latest;
       }, moodBoards[0]);
-      
-      const lastUpdated = mostRecentBoard?.updatedAt 
+
+      const lastUpdated = mostRecentBoard?.updatedAt
         ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
-            Math.floor((new Date(mostRecentBoard.updatedAt).getTime() - Date.now()) / (1000 * 60 * 60)), 
-            'hour'
-          )
+          Math.floor((new Date(mostRecentBoard.updatedAt).getTime() - Date.now()) / (1000 * 60 * 60)),
+          'hour'
+        )
         : 'Unknown';
 
       setStats({
@@ -66,14 +67,14 @@ export default function MoodBoardsPage() {
   }, [moodBoards, loading]);
 
   return (
-    <AdminLayout title="Mood Board Management">
+    <AdminLayout title={strings.admin.moodBoardsManagement}>
       <div className="space-y-6">
         {/* Page header */}
         <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-foreground mb-2">
-                Mood Board Management
+                {strings.admin.moodBoardsManagement}
               </h2>
               <p className="text-muted-foreground">
                 Create, edit, and manage kanji mood boards with our hybrid editor interface.
@@ -86,7 +87,7 @@ export default function MoodBoardsPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              Create New Board
+              {strings.admin.createNewBoard}
             </Link>
           </div>
         </div>
@@ -98,7 +99,7 @@ export default function MoodBoardsPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <label htmlFor="mood-board-search" className="sr-only">
-                  Search mood boards
+                  {strings.admin.searchMoodBoards}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -119,7 +120,7 @@ export default function MoodBoardsPage() {
                   <input
                     id="mood-board-search"
                     type="text"
-                    placeholder="Search mood boards by title, emoji, or kanji..."
+                    placeholder={strings.admin.searchMoodBoardsPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -128,7 +129,7 @@ export default function MoodBoardsPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-foreground">JLPT Level:</span>
+                <span className="text-sm font-medium text-foreground">{strings.admin.jlptLevel}:</span>
                 <select
                   value={filterJLPT}
                   onChange={(e) => setFilterJLPT(e.target.value as any)}
@@ -167,12 +168,12 @@ export default function MoodBoardsPage() {
               <div>
                 {searchQuery && (
                   <span>
-                    Searching for: <strong className="text-foreground">"{searchQuery}"</strong>
+                    {strings.admin.searchingFor}: <strong className="text-foreground">"{searchQuery}"</strong>
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-4">
-                <span>Level: <strong className="text-foreground">{jlptOptions.find(o => o.value === filterJLPT)?.label}</strong></span>
+                <span>{strings.admin.level}: <strong className="text-foreground">{jlptOptions.find(o => o.value === filterJLPT)?.label}</strong></span>
                 {(searchQuery || filterJLPT !== 'all') && (
                   <button
                     onClick={() => {
@@ -181,7 +182,7 @@ export default function MoodBoardsPage() {
                     }}
                     className="text-primary hover:text-primary/80 transition-colors"
                   >
-                    Clear filters
+                    {strings.admin.clearFilters}
                   </button>
                 )}
               </div>
@@ -201,7 +202,7 @@ export default function MoodBoardsPage() {
             <div className="flex items-center gap-3">
               <div className="text-2xl">📊</div>
               <div>
-                <div className="text-sm text-muted-foreground">Total Boards</div>
+                <div className="text-sm text-muted-foreground">{strings.admin.totalBoards}</div>
                 <div className="text-xl font-bold text-foreground">
                   {loading ? '...' : stats.totalBoards}
                 </div>
@@ -213,7 +214,7 @@ export default function MoodBoardsPage() {
             <div className="flex items-center gap-3">
               <div className="text-2xl">🎯</div>
               <div>
-                <div className="text-sm text-muted-foreground">Active Boards</div>
+                <div className="text-sm text-muted-foreground">{strings.admin.activeBoards}</div>
                 <div className="text-xl font-bold text-foreground">
                   {loading ? '...' : stats.activeBoards}
                 </div>
@@ -225,9 +226,9 @@ export default function MoodBoardsPage() {
             <div className="flex items-center gap-3">
               <div className="text-2xl">📈</div>
               <div>
-                <div className="text-sm text-muted-foreground">Most Popular</div>
+                <div className="text-sm text-muted-foreground">{strings.admin.mostPopular}</div>
                 <div className="text-sm font-medium text-foreground">
-                  {loading ? 'Loading...' : stats.mostPopular}
+                  {loading ? strings.admin.loading : stats.mostPopular}
                 </div>
               </div>
             </div>
@@ -237,9 +238,9 @@ export default function MoodBoardsPage() {
             <div className="flex items-center gap-3">
               <div className="text-2xl">🕒</div>
               <div>
-                <div className="text-sm text-muted-foreground">Last Updated</div>
+                <div className="text-sm text-muted-foreground">{strings.admin.lastUpdated}</div>
                 <div className="text-sm font-medium text-foreground">
-                  {loading ? 'Calculating...' : stats.lastUpdated}
+                  {loading ? strings.admin.calculating : stats.lastUpdated}
                 </div>
               </div>
             </div>

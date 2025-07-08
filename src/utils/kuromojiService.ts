@@ -154,7 +154,7 @@ class KuromojiService {
 
   isContentWord(token: TokenFeatures): boolean {
     const pos = this.getPartOfSpeech(token);
-    return ['noun', 'verb', 'adjective', 'adverb'].includes(pos);
+    return ['noun', 'verb', 'adjective', 'adverb', 'adnominal'].includes(pos);
   }
 
   isGrammarWord(token: TokenFeatures): boolean {

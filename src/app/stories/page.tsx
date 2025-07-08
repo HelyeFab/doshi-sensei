@@ -13,6 +13,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import Link from 'next/link';
+import { strings } from '@/config/strings';
 
 export default function StoriesPage() {
   const router = useRouter();
@@ -29,7 +30,10 @@ export default function StoriesPage() {
 
   useEffect(() => {
     loadStories();
-    loadCachedStories();
+    // Only load cached stories on client side
+    if (typeof window !== 'undefined') {
+      loadCachedStories();
+    }
   }, [selectedLevel, selectedTheme, showOfflineOnly]);
 
   const loadStories = async () => {
@@ -38,13 +42,15 @@ export default function StoriesPage() {
       let loadedStories: Story[] = [];
 
       if (showOfflineOnly) {
-        // Show only cached stories
-        loadedStories = await storyOfflineManager.getAllCachedStories();
-        if (selectedLevel !== 'all') {
-          loadedStories = loadedStories.filter(s => s.jlptLevel === selectedLevel);
-        }
-        if (selectedTheme !== 'all') {
-          loadedStories = loadedStories.filter(s => s.theme === selectedTheme);
+        // Show only cached stories - only on client side
+        if (typeof window !== 'undefined') {
+          loadedStories = await storyOfflineManager.getAllCachedStories();
+          if (selectedLevel !== 'all') {
+            loadedStories = loadedStories.filter(s => s.jlptLevel === selectedLevel);
+          }
+          if (selectedTheme !== 'all') {
+            loadedStories = loadedStories.filter(s => s.theme === selectedTheme);
+          }
         }
       } else {
         // Load from Firebase
@@ -71,6 +77,9 @@ export default function StoriesPage() {
 
   const loadCachedStories = async () => {
     try {
+      // Only run on client side
+      if (typeof window === 'undefined') return;
+
       const cached = await storyOfflineManager.getAllCachedStories();
       const cachedIds = new Set(cached.map(s => s.id));
       setCachedStoryIds(cachedIds);
@@ -286,14 +295,14 @@ export default function StoriesPage() {
           {!isPremium && stories.length > 0 && (
             <div className="mt-12 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-6 text-center">
               <h3 className="text-xl font-bold mb-2">Want unlimited stories?</h3>
-              <p className="text-muted-foreground mb-4">
-                Upgrade to Premium for unlimited access to all stories, progress tracking, and more!
+              <p className="text-center text-muted-foreground mb-4">
+                {strings.subscriptions.upgradeForUnlimited}
               </p>
               <button
-                onClick={() => router.push('/pricing')}
-                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+                onClick={() => router.push('/account')}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
-                View Plans
+                {strings.subscriptions.viewPlans}
               </button>
             </div>
           )}

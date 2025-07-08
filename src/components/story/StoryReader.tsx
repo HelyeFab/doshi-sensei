@@ -6,7 +6,7 @@ import { Story, StoryQuizQuestion } from '@/types/story';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useTTS } from '@/hooks/useTTS';
-import { parseJapaneseText, processTextWithFurigana } from '@/utils/japaneseParser';
+import { parseJapaneseText, processTextWithFurigana, cleanTextForTTS } from '@/utils/japaneseParser';
 import { storyManager } from '@/utils/storyManager';
 import { storyOfflineManager } from '@/utils/storyOfflineManager';
 import { StudyListManager } from '@/utils/studyListManager';
@@ -16,6 +16,7 @@ import { StoryBookmarkManager } from '@/utils/storyBookmarkManager';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
 import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioPlayer';
+import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 
 interface StoryReaderProps {
   story: Story;
@@ -168,6 +169,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [showGrammarLegend, setShowGrammarLegend] = useState(false);
   const [settings, setSettings] = useState<ReadingSettings>({
     fontSize: 'medium',
     showFurigana: true,
@@ -175,6 +177,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     highlightMode: 'content',
     darkMode: false
   });
+  const [showShadowingMode, setShowShadowingMode] = useState(false);
 
   const textContainerRef = useRef<HTMLDivElement>(null);
   const isPremium = userType === 'monthly' || userType === 'yearly';
@@ -599,7 +602,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                       {/* Audio Reader */}
                       <button
                         onClick={() => {
-                          speakSentence(currentPage.text.replace(/<[^>]*>/g, ''));
+                          speakSentence(cleanTextForTTS(currentPage.text));
                           setShowOptionsMenu(false);
                         }}
                         disabled={isPlaying || isCacheLoading}
@@ -687,12 +690,14 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
               <div className="bg-card rounded-lg p-4 md:p-8 border border-border">
                 {/* Story header */}
                 <header className="mb-8">
-                  <h1 className={`font-bold text-foreground mb-4 ${settings.fontSize === 'xlarge' ? 'text-3xl' :
-                    settings.fontSize === 'large' ? 'text-2xl' :
-                      settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
-                    }`}>
-                    {story.title}
-                  </h1>
+                  <div className="inline-block">
+                    <h1 className={`font-bold text-foreground mb-4 px-6 py-4 rounded-2xl inline-block pastel-bubble-bg ${settings.fontSize === 'xlarge' ? 'text-3xl' :
+                      settings.fontSize === 'large' ? 'text-2xl' :
+                        settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
+                      }`}>
+                      {story.title}
+                    </h1>
+                  </div>
 
                   {/* Story metadata */}
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
@@ -718,11 +723,48 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
 
                   {/* Text */}
                   <div className="space-y-4 relative">
+                    {/* Audio Player - moved inside text column */}
+                    <div className="space-y-2 mb-6">
+                      <EnhancedArticleAudioPlayer 
+                        article={{
+                          id: `${story.id}_page_${currentPageIndex}`,
+                          content: cleanTextForTTS(currentPage.text),
+                          title: story.title,
+                          audioUrl: undefined
+                        } as any}
+                      />
+                      <button
+                        onClick={() => setShowShadowingMode(true)}
+                        className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                        </svg>
+                        Shadowing Practice Mode
+                      </button>
+                    </div>
                     {/* Grammar Legend */}
                     {settings.highlightVocabulary && settings.highlightMode !== 'none' && (
                       <div className="mb-6 p-4 bg-muted/30 rounded-lg">
-                        <h4 className="text-sm font-medium mb-2">Grammar Color Guide:</h4>
-                        <GrammarLegend />
+                        <button
+                          onClick={() => setShowGrammarLegend(!showGrammarLegend)}
+                          className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors w-full text-left"
+                        >
+                          <svg 
+                            className={`w-4 h-4 transition-transform ${showGrammarLegend ? 'rotate-180' : 'rotate-0'}`} 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                          Grammar Color Guide
+                        </button>
+                        {showGrammarLegend && (
+                          <div className="mt-3">
+                            <GrammarLegend />
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -813,9 +855,22 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                     {currentPageIndex === story.pages.length - 1 ? 'Take Quiz' : 'Next'}
                   </button>
                 </div>
+
               </div>
             </motion.div>
           </AnimatePresence>
+          
+          {/* Shadowing Mode Modal */}
+          {showShadowingMode && (
+            <ShadowingAudioPlayer 
+              article={{
+                id: `${story.id}_page_${currentPageIndex}`,
+                content: cleanTextForTTS(currentPage.text),
+                title: story.title
+              } as any}
+              onClose={() => setShowShadowingMode(false)}
+            />
+          )}
         </div>
       </div>
     </>

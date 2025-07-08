@@ -127,6 +127,21 @@ service cloud.firestore {
       }
     }
 
+    // News articles collection (alternative collection name)
+    match /news_articles/{articleId} {
+      // Allow anyone to read articles (no authentication required)
+      allow read: if true;
+
+      // Only admin can write articles
+      allow write: if isAdmin();
+
+      // Allow reading subcollections
+      match /{document=**} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+    }
+
     // Articles metadata collection
     match /articlesMetadata/stats {
       // Allow anyone to read article statistics

@@ -92,8 +92,10 @@ export class AccessControl {
       'story_reading': 'read_stories',
       'kanji_quest': 'play_games',
       'kana_drop': 'play_games',
+      'sentence_scramble': 'play_games',
       'word_lists': 'create_lists',
       'bookmarks': 'create_lists',
+      'sentences-bookmark': 'create_lists',
       'cloud_sync': 'cloud_sync',
       'progress_saving': 'save_progress',
       'kanji_moods': 'kanji_moods'

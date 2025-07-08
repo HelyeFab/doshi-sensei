@@ -6,6 +6,7 @@ import { UserType } from '@/lib/entitlements/types';
 import { EditableLimitCell } from './EditableLimitCell';
 import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
 import { useNotification } from '@/contexts/NotificationContext';
+import { strings } from '@/config/strings';
 
 interface FeatureAccess {
   allowed: boolean;
@@ -24,11 +25,11 @@ interface EditableFeatureMatrixProps {
   isEditMode: boolean;
 }
 
-export function EditableFeatureMatrix({ 
-  matrix, 
-  userTypes, 
+export function EditableFeatureMatrix({
+  matrix,
+  userTypes,
   onUpdate,
-  isEditMode 
+  isEditMode
 }: EditableFeatureMatrixProps) {
   const { showNotification } = useNotification();
   const [editingCell, setEditingCell] = useState<{
@@ -43,7 +44,7 @@ export function EditableFeatureMatrix({
     if (filter !== 'all' && row.feature.status !== filter) {
       return false;
     }
-    
+
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       return (
@@ -52,7 +53,7 @@ export function EditableFeatureMatrix({
         row.feature.id.toLowerCase().includes(search)
       );
     }
-    
+
     return true;
   });
 
@@ -68,15 +69,15 @@ export function EditableFeatureMatrix({
     try {
       await dynamicRules.updateLimit(userType, featureId, limitType, newValue);
       showNotification({
-        title: 'Success',
-        message: `Updated ${featureId} limit for ${userType} users`,
+        title: strings.forms.notifications.success,
+        message: strings.admin.features.limitUpdated.replace('{feature}', featureId).replace('{userType}', userType),
         type: 'success'
       });
       onUpdate();
     } catch (error) {
       showNotification({
-        title: 'Error',
-        message: 'Failed to update limit',
+        title: strings.forms.notifications.error,
+        message: strings.admin.features.failedToUpdate,
         type: 'error'
       });
       console.error('Error updating limit:', error);
@@ -87,7 +88,7 @@ export function EditableFeatureMatrix({
     if (!access.allowed) return { text: '❌', className: 'text-red-500' };
     if (access.limit === -1) return { text: '∞', className: 'text-green-500 font-bold text-lg' };
     if (access.limit === 0) return { text: '✅', className: 'text-green-500' };
-    
+
     const limitText = access.limit > 0 ? `${access.limit}` : '✅';
     return { text: limitText, className: 'text-blue-600 font-medium' };
   };
@@ -122,13 +123,13 @@ export function EditableFeatureMatrix({
         {userTypes.map(userType => {
           const access = row.access[userType];
           const display = getAccessDisplay(access);
-          const isEditing = editingCell?.featureId === row.feature.id && 
+          const isEditing = editingCell?.featureId === row.feature.id &&
                            editingCell?.userType === userType;
           const canEdit = isEditMode && access.allowed && row.feature.limitType !== 'none';
-          
+
           return (
-            <td 
-              key={userType} 
+            <td
+              key={userType}
               className={`p-4 text-center relative ${canEdit ? 'cursor-pointer hover:bg-muted/30' : ''}`}
               onClick={() => {
                 if (canEdit && !isEditing) {
@@ -181,52 +182,52 @@ export function EditableFeatureMatrix({
           <button
             onClick={() => setFilter('all')}
             className={`px-3 py-1 rounded-lg transition-colors ${
-              filter === 'all' 
-                ? 'bg-primary text-primary-foreground' 
+              filter === 'all'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-muted hover:bg-muted/80'
             }`}
           >
-            All Features
+            {strings.admin.features.allFeatures}
           </button>
           <button
             onClick={() => setFilter('active')}
             className={`px-3 py-1 rounded-lg transition-colors ${
-              filter === 'active' 
-                ? 'bg-primary text-primary-foreground' 
+              filter === 'active'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-muted hover:bg-muted/80'
             }`}
           >
-            Active
+            {strings.admin.features.active}
           </button>
           <button
             onClick={() => setFilter('planned')}
             className={`px-3 py-1 rounded-lg transition-colors ${
-              filter === 'planned' 
-                ? 'bg-primary text-primary-foreground' 
+              filter === 'planned'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-muted hover:bg-muted/80'
             }`}
           >
-            Planned
+            {strings.admin.features.planned}
           </button>
         </div>
-        
+
         <div className="flex-1">
           <input
             type="text"
-            placeholder="Search features..."
+            placeholder={strings.forms.placeholders.searchFeatures}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-xs px-3 py-1 rounded-lg border bg-background"
+            className="px-3 py-1 border border-border rounded-lg bg-background text-foreground"
           />
         </div>
 
         {isEditMode && (
           <div className="text-sm text-muted-foreground">
-            💡 Click on any number to edit limits
+            💡 {strings.admin.features.clickToEdit}
           </div>
         )}
       </div>
-      
+
       {/* Table */}
       <div className="bg-card rounded-lg overflow-hidden border">
         <table className="w-full">
@@ -246,18 +247,18 @@ export function EditableFeatureMatrix({
               <>
                 <tr>
                   <td colSpan={2 + userTypes.length} className="bg-muted/50 px-4 py-2 font-medium">
-                    Active Features ({activeFeatures.length})
+                    {strings.admin.features.activeFeatures} ({activeFeatures.length})
                   </td>
                 </tr>
                 {renderFeatureRows(activeFeatures)}
               </>
             )}
-            
+
             {plannedFeatures.length > 0 && (
               <>
                 <tr>
                   <td colSpan={2 + userTypes.length} className="bg-muted/50 px-4 py-2 font-medium">
-                    🚧 Planned Features ({plannedFeatures.length})
+                    🚧 {strings.admin.features.plannedFeatures} ({plannedFeatures.length})
                   </td>
                 </tr>
                 {renderFeatureRows(plannedFeatures)}
@@ -266,14 +267,14 @@ export function EditableFeatureMatrix({
           </tbody>
         </table>
       </div>
-      
+
       {/* Legend */}
       <div className="flex gap-6 text-sm text-muted-foreground">
-        <span>❌ Not Available</span>
-        <span>✅ Available</span>
-        <span>∞ Unlimited (-1)</span>
-        <span>Numbers = Daily/Total Limits</span>
-        {isEditMode && <span>✏️ Click to Edit</span>}
+        <span>{strings.admin.features.notAvailable}</span>
+        <span>{strings.admin.features.available}</span>
+        <span>{strings.admin.features.unlimited} (-1)</span>
+        <span>{strings.admin.features.numbers} = {strings.admin.features.dailyOrTotalLimits}</span>
+        {isEditMode && <span>{strings.admin.features.clickToEdit}</span>}
       </div>
     </div>
   );

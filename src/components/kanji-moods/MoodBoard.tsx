@@ -9,6 +9,7 @@ import KanjiCard from './KanjiCard';
 import ProgressIndicator from './ProgressIndicator';
 import KanjiStudyModal from './KanjiStudyModal';
 import { UpgradePromptModal } from '@/components/UpgradePromptModal';
+import { strings } from '@/config/strings';
 
 interface MoodBoardProps {
   board: MoodBoardType;
@@ -20,10 +21,10 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
   const [progress, setProgress] = useState(getBoardProgress(board.id));
   const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [studyAccess, setStudyAccess] = useState<{ canStudy: boolean; remainingSessions: number; isPremium: boolean }>({ 
-    canStudy: false, 
-    remainingSessions: 0, 
-    isPremium: false 
+  const [studyAccess, setStudyAccess] = useState<{ canStudy: boolean; remainingSessions: number; isPremium: boolean }>({
+    canStudy: false,
+    remainingSessions: 0,
+    isPremium: false
   });
 
   // Update progress when component mounts or board changes
@@ -78,7 +79,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                 <h1 className="text-3xl font-bold mb-2">{board.title}</h1>
                 <p className="text-base opacity-90">{board.description}</p>
                 <div className="mt-3 text-sm opacity-80">
-                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned • 
+                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned •
                   <span className="ml-1">{progress?.progressPercentage || 0}% complete</span>
                 </div>
               </div>
@@ -92,12 +93,11 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                     setShowUpgradeModal(true);
                   }
                 }}
-                className={`flex items-center gap-2 backdrop-blur-md rounded-full px-5 py-2.5 text-white transition-all duration-200 shadow-lg ${
-                  studyAccess.canStudy 
-                    ? 'bg-white/10 hover:bg-white/20' 
+                className={`flex items-center gap-2 backdrop-blur-md rounded-full px-5 py-2.5 text-white transition-all duration-200 shadow-lg ${studyAccess.canStudy
+                    ? 'bg-white/10 hover:bg-white/20'
                     : 'bg-white/5 opacity-75 cursor-not-allowed'
-                }`}
-                title={studyAccess.canStudy ? "Study all kanji" : `${studyAccess.remainingSessions} sessions remaining today`}
+                  }`}
+                title={studyAccess.canStudy ? strings.tooltips.studyAllKanji : `${studyAccess.remainingSessions} ${strings.tooltips.sessionsRemaining}`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -131,12 +131,11 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                     setShowUpgradeModal(true);
                   }
                 }}
-                className={`flex items-center gap-2 backdrop-blur-md rounded-full px-4 py-2 text-white transition-all duration-200 shadow-lg ${
-                  studyAccess.canStudy 
-                    ? 'bg-white/10 hover:bg-white/20' 
+                className={`flex items-center gap-2 backdrop-blur-md rounded-full px-4 py-2 text-white transition-all duration-200 shadow-lg ${studyAccess.canStudy
+                    ? 'bg-white/10 hover:bg-white/20'
                     : 'bg-white/5 opacity-75 cursor-not-allowed'
-                }`}
-                title={studyAccess.canStudy ? "Study all kanji" : `${studyAccess.remainingSessions} sessions remaining today`}
+                  }`}
+                title={studyAccess.canStudy ? strings.tooltips.studyAllKanji : `${studyAccess.remainingSessions} ${strings.tooltips.sessionsRemaining}`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -144,7 +143,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                 <span className="text-sm font-medium">Study</span>
               </button>
             </div>
-            
+
             {/* Content centered in remaining space */}
             <div className="flex-1 flex items-center justify-center px-4 pb-4">
               <div className="text-center">
@@ -152,7 +151,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                 <h1 className="text-xl sm:text-2xl font-bold mb-1">{board.title}</h1>
                 <p className="text-sm opacity-90">{board.description}</p>
                 <div className="mt-2 text-xs sm:text-sm opacity-80">
-                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned • 
+                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned •
                   <span>{progress?.progressPercentage || 0}% complete</span>
                 </div>
               </div>

@@ -9,6 +9,7 @@ import { Story, StoryPage, StoryQuizQuestion, STORY_THEMES, STORY_TAGS } from "@
 import { JLPTLevel, JLPT_LEVELS } from "@/types/kanji";
 import { storyManager } from "@/utils/storyManager";
 import { marked } from "marked";
+import { strings } from '@/config/strings';
 
 export default function EditStoryPage() {
     const router = useRouter();
@@ -154,18 +155,18 @@ export default function EditStoryPage() {
         try {
             // Validation
             if (!formData.title.trim() || !formData.titleJa.trim()) {
-                showNotification({ title: "Missing Information", message: "Please enter both English and Japanese titles.", type: "warning" });
+                showNotification({ title: strings.admin.articles.missingInfo, message: strings.admin.articles.enterTitles, type: "warning" });
                 setSaving(false); return;
             }
             if (formData.pages.some((page: any) => !page.text.trim() || !page.translation.trim())) {
-                showNotification({ title: "Incomplete Pages", message: "All pages must have both Japanese text and English translation.", type: "warning" });
+                showNotification({ title: strings.admin.articles.incompletePages, message: strings.admin.articles.allPagesRequired, type: "warning" });
                 setSaving(false); return;
             }
             // If publishing, require publishedAt
             let status = publish ? "published" : formData.status;
             let publishedAt = publish ? (formData.publishedAt ? new Date(formData.publishedAt) : new Date()) : (formData.publishedAt ? new Date(formData.publishedAt) : undefined);
             if (publish && !publishedAt) {
-                showNotification({ title: "Missing Publish Date", message: "Please select a publish date.", type: "warning" });
+                showNotification({ title: strings.admin.articles.missingPublishDate, message: strings.admin.articles.selectPublishDate, type: "warning" });
                 setSaving(false); return;
             }
             const storyData = {
@@ -224,11 +225,27 @@ export default function EditStoryPage() {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-sm font-medium mb-2">Title (EN)</label>
-                                <input type="text" value={formData.title} onChange={e => handleInputChange("title", e.target.value)} className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground" />
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={e => handleInputChange('title', e.target.value)}
+                                    placeholder={strings.forms.placeholders.storyTitle}
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-2">Title (JA)</label>
-                                <input type="text" value={formData.titleJa} onChange={e => handleInputChange("titleJa", e.target.value)} className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground" />
+                                <input
+                                    type="text"
+                                    id="titleJa"
+                                    name="titleJa"
+                                    value={formData.titleJa}
+                                    onChange={e => handleInputChange('titleJa', e.target.value)}
+                                    placeholder={strings.forms.placeholders.storyJapaneseTitle}
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-2">URL Slug</label>
@@ -250,7 +267,15 @@ export default function EditStoryPage() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-2">Description</label>
-                                <textarea value={formData.description} onChange={e => handleInputChange("description", e.target.value)} rows={2} className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground" />
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={e => handleInputChange('description', e.target.value)}
+                                    placeholder={strings.forms.placeholders.storyDescription}
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
+                                />
                             </div>
                         </div>
                         {/* Cover Image */}

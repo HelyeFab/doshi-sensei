@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { strings } from '@/config/strings';
 
 interface UserSearchProps {
   searchQuery: string;
@@ -31,7 +32,7 @@ export function UserSearch({
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <label htmlFor="user-search" className="sr-only">
-              Search users
+              {strings.forms.search}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -52,7 +53,7 @@ export function UserSearch({
               <input
                 id="user-search"
                 type="text"
-                placeholder="Search users..."
+                placeholder={strings.forms.placeholders.searchUsers}
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="block w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"

@@ -8,15 +8,18 @@ import { marked } from 'marked';
 import { formatDistanceToNow, format } from 'date-fns';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { strings } from '@/config/strings';
 
 export default function ResourcePostPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
-  
+
   const [resource, setResource] = useState<ResourcePost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (slug) {
@@ -28,16 +31,16 @@ export default function ResourcePostPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const resourceData = await getResourcePostBySlug(slug);
-      
+
       if (!resourceData) {
         setError('Resource not found');
         return;
       }
 
       setResource(resourceData);
-      
+
       // Track view count (don't await to avoid blocking)
       incrementResourceViews(resourceData.id);
     } catch (error) {
@@ -63,7 +66,7 @@ export default function ResourcePostPage() {
       } else {
         // Fallback: copy to clipboard
         await navigator.clipboard.writeText(window.location.href);
-        alert('Link copied to clipboard!');
+        setInfoMessage('Link copied to clipboard!');
       }
     } catch (error) {
       console.error('Error sharing:', error);
@@ -167,8 +170,8 @@ export default function ResourcePostPage() {
                 </span>
               )}
               {resource.isPremium && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                  Premium
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  {strings.subscriptions.plans.monthly.name}
                 </span>
               )}
             </div>
@@ -212,6 +215,33 @@ export default function ResourcePostPage() {
               </button>
             </div>
           </header>
+
+          {/* External Resource CTA */}
+          {resource.externalUrl && (
+            <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                    🔗 External Resource
+                  </h3>
+                  <p className="text-blue-700 dark:text-blue-300 text-sm">
+                    Click below to visit the original resource
+                  </p>
+                </div>
+                <a
+                  href={resource.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Visit Resource
+                  <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          )}
 
           {/* Article Content */}
           <article className="prose prose-lg max-w-none dark:prose-invert">
@@ -272,6 +302,21 @@ export default function ResourcePostPage() {
           </footer>
         </div>
       </div>
+
+      {/* Info Message Modal */}
+      {infoMessage && (
+        <ConfirmationDialog
+          isOpen={!!infoMessage}
+          title="Info"
+          message={infoMessage}
+          confirmText="OK"
+          cancelText=""
+          isDestructive={false}
+          onConfirm={() => setInfoMessage(null)}
+          onCancel={() => setInfoMessage(null)}
+          loading={false}
+        />
+      )}
     </>
   );
 }

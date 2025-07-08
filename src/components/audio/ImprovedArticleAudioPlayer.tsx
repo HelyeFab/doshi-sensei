@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NewsArticle } from '@/types/news';
 import ArticleTTSManager from '@/utils/articleTTS';
+import { strings } from '@/config/strings';
 
 interface ArticleAudioPlayerProps {
   article: NewsArticle;
@@ -32,10 +33,10 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
   const [audioMode, setAudioMode] = useState<'original' | 'tts'>('tts');
   const [voice, setVoice] = useState<'male' | 'female'>('male');
   const [provider, setProvider] = useState<'elevenlabs' | 'google'>('elevenlabs');
-  
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Debug state changes
   useEffect(() => {
     console.log('[Audio Player] State changed:', {
@@ -70,23 +71,23 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     // Validate article data
     if (!article) {
       console.error('[Audio Player] No article provided');
-      setError('No article data available.');
+      setError(strings.audio.failedToLoad);
       return;
     }
-    
+
     if (!article.id || !article.content) {
-      console.error('[Audio Player] Invalid article data:', { 
-        hasId: !!article.id, 
+      console.error('[Audio Player] Invalid article data:', {
+        hasId: !!article.id,
         hasContent: !!article.content,
-        article: article 
+        article: article
       });
-      setError('Invalid article data. Missing ID or content.');
+      setError(strings.audio.failedToLoad);
       return;
     }
 
     setIsLoading(true);
     setError(null);
-    setLoadingStatus('Connecting to audio service...');
+    setLoadingStatus(strings.audio.generating);
 
     try {
       console.log('[Audio Player] Starting TTS for article:', article.id);
@@ -108,7 +109,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
         audioRef.current.pause();
         audioRef.current = null;
       }
-      
+
       audioRef.current = audio;
 
       // Set up event listeners
@@ -121,9 +122,9 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
       });
 
       audio.addEventListener('ended', () => {
-        setControls(prev => ({ 
-          ...prev, 
-          isPlaying: false, 
+        setControls(prev => ({
+          ...prev,
+          isPlaying: false,
           isPaused: false,
           progress: 0
         }));
@@ -132,33 +133,33 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
       audio.addEventListener('error', (e) => {
         console.error('Audio playback error:', e);
-        setError('Failed to play audio');
-        setControls(prev => ({ 
-          ...prev, 
-          isPlaying: false, 
-          isPaused: false 
+        setError(strings.audio.failedToPlay);
+        setControls(prev => ({
+          ...prev,
+          isPlaying: false,
+          isPaused: false
         }));
       });
 
       // Apply settings
       audio.playbackRate = controls.playbackSpeed;
       audio.volume = controls.volume;
-      
+
       // Ensure state is properly set when audio starts
       audio.addEventListener('playing', () => {
         console.log('[Audio Player] Playing event triggered');
         setControls(prev => ({ ...prev, isPlaying: true, isPaused: false }));
       });
-      
+
       audio.addEventListener('loadedmetadata', () => {
         console.log('[Audio Player] Metadata loaded, duration:', audio.duration);
         setControls(prev => ({ ...prev, duration: audio.duration || 0 }));
       });
-      
+
       audio.addEventListener('timeupdate', () => {
         setControls(prev => ({ ...prev, progress: audio.currentTime }));
       });
-      
+
       // Immediately set playing state since playArticle auto-plays
       setControls(prev => ({ ...prev, isPlaying: true, isPaused: false }));
       setIsLoading(false);
@@ -166,7 +167,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
     } catch (error) {
       console.error('TTS Error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to generate audio');
+      setError(error instanceof Error ? error.message : strings.audio.failedToGenerate);
       setControls(prev => ({ ...prev, isPlaying: false, isPaused: false }));
       setIsLoading(false);
       setLoadingStatus('');
@@ -190,9 +191,9 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     });
 
     audio.addEventListener('ended', () => {
-      setControls(prev => ({ 
-        ...prev, 
-        isPlaying: false, 
+      setControls(prev => ({
+        ...prev,
+        isPlaying: false,
         isPaused: false,
         progress: 0
       }));
@@ -202,20 +203,20 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     // Apply settings
     audio.playbackRate = controls.playbackSpeed;
     audio.volume = controls.volume;
-    
+
     // Add metadata and timeupdate listeners
     audio.addEventListener('loadedmetadata', () => {
       console.log('[Audio Player] Original audio metadata loaded, duration:', audio.duration);
       setControls(prev => ({ ...prev, duration: audio.duration || 0 }));
     });
-    
+
     audio.addEventListener('timeupdate', () => {
       setControls(prev => ({ ...prev, progress: audio.currentTime }));
     });
 
     audio.play().catch(err => {
       console.error('Failed to play original audio:', err);
-      setError('Failed to play original audio');
+      setError(strings.audio.failedToPlay);
       setControls(prev => ({ ...prev, isPlaying: false, isPaused: false }));
     });
   };
@@ -232,13 +233,13 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
   // Pause/Resume
   const togglePause = () => {
     if (!audioRef.current) return;
-    
+
     if (controls.isPlaying) {
       audioRef.current.pause();
     } else if (controls.isPaused) {
       audioRef.current.play().catch(err => {
         console.error('Failed to resume playback:', err);
-        setError('Failed to resume playback');
+        setError(strings.audio.failedToResume);
       });
     }
   };
@@ -248,13 +249,13 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      
+
       // Clean up blob URL if it exists
       if (audioRef.current.src.startsWith('blob:')) {
         URL.revokeObjectURL(audioRef.current.src);
       }
     }
-    
+
     ArticleTTSManager.stop();
     setControls(prev => ({
       ...prev,
@@ -304,8 +305,8 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const progressPercent = controls.duration > 0 
-    ? (controls.progress / controls.duration) * 100 
+  const progressPercent = controls.duration > 0
+    ? (controls.progress / controls.duration) * 100
     : 0;
 
   // Don't render if no article is provided
@@ -321,8 +322,8 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" 
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
               />
             </svg>
             <h3 className="font-medium text-foreground">Listen to Article</h3>
@@ -340,23 +341,21 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
           <div className="flex gap-2 p-1 bg-muted rounded-lg">
             <button
               onClick={() => switchAudioMode('original')}
-              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                audioMode === 'original' 
-                  ? 'bg-background text-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${audioMode === 'original'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+                }`}
             >
-              Original Audio
+              {strings.audio.originalAudio}
             </button>
             <button
               onClick={() => switchAudioMode('tts')}
-              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                audioMode === 'tts' 
-                  ? 'bg-background text-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${audioMode === 'tts'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+                }`}
             >
-              AI Voice
+              {strings.audio.ttsAudio}
             </button>
           </div>
         )}
@@ -367,45 +366,41 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
             <div className="flex gap-2">
               <button
                 onClick={() => setVoice('male')}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  voice === 'male' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground hover:text-foreground'
-                }`}
+                className={`px-3 py-1 rounded-md text-sm ${voice === 'male'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+                  }`}
               >
-                Male
+                {strings.audio.maleVoice}
               </button>
               <button
                 onClick={() => setVoice('female')}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  voice === 'female' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground hover:text-foreground'
-                }`}
+                className={`px-3 py-1 rounded-md text-sm ${voice === 'female'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+                  }`}
               >
-                Female
+                {strings.audio.femaleVoice}
               </button>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setProvider('elevenlabs')}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  provider === 'elevenlabs' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground hover:text-foreground'
-                }`}
+                className={`px-3 py-1 rounded-md text-sm ${provider === 'elevenlabs'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+                  }`}
               >
-                ElevenLabs
+                {strings.audio.elevenlabs}
               </button>
               <button
                 onClick={() => setProvider('google')}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  provider === 'google' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground hover:text-foreground'
-                }`}
+                className={`px-3 py-1 rounded-md text-sm ${provider === 'google'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+                  }`}
               >
-                Google
+                {strings.audio.google}
               </button>
             </div>
           </div>
@@ -414,7 +409,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
         {/* Error Message */}
         {error && (
           <div className="p-3 bg-destructive/10 text-destructive rounded-md text-sm">
-            {error}
+            {strings.errors.audioPlaybackError}
           </div>
         )}
 
@@ -437,7 +432,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
                 onClick={togglePause}
                 disabled={isLoading}
                 className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-xl min-w-[60px] flex items-center justify-center disabled:opacity-50"
-                title={isLoading ? 'Loading...' : controls.isPlaying ? 'Pause' : 'Resume'}
+                title={isLoading ? strings.audio.loading : controls.isPlaying ? strings.audio.pause : strings.audio.resume}
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
@@ -456,7 +451,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
                 onClick={play}
                 disabled={isLoading}
                 className="p-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-xl min-w-[60px] flex items-center justify-center disabled:opacity-50"
-                title="Play"
+                title={strings.audio.play}
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
@@ -472,7 +467,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
           {/* Progress bar */}
           <div className="space-y-1">
-            <div 
+            <div
               className="w-full bg-muted rounded-full h-2 cursor-pointer relative"
               onClick={(e) => {
                 if (controls.duration > 0) {
@@ -494,7 +489,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
           {/* Speed and Volume controls */}
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Speed:</span>
+              <span className="text-muted-foreground">{strings.audio.speed}:</span>
               <select
                 value={controls.playbackSpeed}
                 onChange={(e) => changeSpeed(parseFloat(e.target.value))}
@@ -510,7 +505,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Volume:</span>
+              <span className="text-muted-foreground">{strings.audio.volume}:</span>
               <input
                 type="range"
                 min="0"

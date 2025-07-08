@@ -1,4 +1,5 @@
 import { NavItem } from '@/types';
+import { strings } from '@/config/strings';
 
 /**
  * ⚠️  IMPORTANT: NAVIGATION MAINTENANCE REMINDER ⚠️
@@ -24,87 +25,87 @@ import { NavItem } from '@/types';
 export const AVAILABLE_NAV_ITEMS: NavItem[] = [
   {
     id: 'drill',
-    label: 'Drill',
-    icon: '⚡',
+    label: strings.navigation.drill.label,
+    icon: strings.navigation.drill.icon,
     href: '/drill',
-    description: 'Quick conjugation practice sessions'
+    description: strings.navigation.drill.description
   },
   {
     id: 'kanji-moods',
-    label: 'Moods',
-    icon: '🗺️',
+    label: strings.navigation.kanjiMoods.label,
+    icon: strings.navigation.kanjiMoods.icon,
     href: '/kanji-moods',
-    description: 'Learn kanji by themed mood boards'
+    description: strings.navigation.kanjiMoods.description
   },
   {
     id: 'resources',
-    label: 'Resources',
-    icon: '🎌',
+    label: strings.navigation.resources.label,
+    icon: strings.navigation.resources.icon,
     href: '/resources',
-    description: 'Articles, tips, and learning resources'
+    description: strings.navigation.resources.description
   },
   {
     id: 'vocabulary',
-    label: 'Vocabulary',
-    icon: '📖',
+    label: strings.navigation.vocabulary.label,
+    icon: strings.navigation.vocabulary.icon,
     href: '/vocabulary',
-    description: 'Search and browse Japanese vocabulary'
+    description: strings.navigation.vocabulary.description
   },
   {
     id: 'practice',
-    label: 'Practice',
-    icon: '📚',
+    label: strings.navigation.practice.label,
+    icon: strings.navigation.practice.icon,
     href: '/practice',
-    description: 'Learn verb conjugations step by step'
+    description: strings.navigation.practice.description
   },
   {
     id: 'news',
-    label: 'News',
-    icon: '🗞️',
+    label: strings.navigation.news.label,
+    icon: strings.navigation.news.icon,
     href: '/news',
-    description: 'Read Japanese news articles'
+    description: strings.navigation.news.description
   },
   {
     id: 'stories',
-    label: 'Stories',
-    icon: '📚',
+    label: strings.navigation.stories.label,
+    icon: strings.navigation.stories.icon,
     href: '/stories',
-    description: 'Interactive AI-generated stories'
+    description: strings.navigation.stories.description
   },
   {
     id: 'games',
-    label: 'Games',
-    icon: '🎮',
+    label: strings.navigation.games.label,
+    icon: strings.navigation.games.icon,
     href: '/games',
-    description: 'Fun listening and word games'
+    description: strings.navigation.games.description
   },
   // {
   //   id: 'favourites',
-  //   label: 'Saved',
-  //   icon: '⭐',
+  //   label: strings.navigation.favourites.label,
+  //   icon: strings.navigation.favourites.icon,
   //   href: '/favourites',
-  //   description: 'Your saved words and items'
+  //   description: strings.navigation.favourites.description
   // },
   // {
   //   id: 'kanji-browser',
-  //   label: 'Kanji',
-  //   icon: '漢',
+  //   label: strings.navigation.kanjiBrowser.label,
+  //   icon: strings.navigation.kanjiBrowser.icon,
   //   href: '/kanji-browser',
-  //   description: 'Browse and study individual kanji'
+  //   description: strings.navigation.kanjiBrowser.description
   // },
   {
     id: 'account',
-    label: 'Account',
-    icon: '👤',
+    label: strings.navigation.account.label,
+    icon: strings.navigation.account.icon,
     href: '/account',
-    description: 'Profile, stats, and account settings'
+    description: strings.navigation.account.description
   },
   {
     id: 'settings',
-    label: 'Settings',
-    icon: '⚙️',
+    label: strings.navigation.settings.label,
+    icon: strings.navigation.settings.icon,
     href: '/settings',
-    description: 'App preferences and configuration'
+    description: strings.navigation.settings.description
   }
 ];
 
@@ -113,10 +114,10 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
  */
 export const HOME_NAV_ITEM: NavItem = {
   id: 'home',
-  label: 'Home',
-  icon: '🏠',
+  label: strings.navigation.home.label,
+  icon: strings.navigation.home.icon,
   href: '/',
-  description: 'Return to the main dashboard'
+  description: strings.navigation.home.description
 };
 
 /**

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { strings } from '@/config/strings';
 
 interface PageHelpIconProps {
   title: string;
@@ -16,7 +17,7 @@ export function PageHelpIcon({ title, description, tips }: PageHelpIconProps) {
       <button
         onClick={() => setShowModal(true)}
         className="ml-2 inline-flex items-center justify-center w-6 h-6 hover:opacity-80 transition-opacity text-lg"
-        aria-label="Page help"
+        aria-label={strings.tooltips.pageHelp}
       >
         ℹ️
       </button>
@@ -42,17 +43,17 @@ export function PageHelpIcon({ title, description, tips }: PageHelpIconProps) {
             <button
               onClick={() => setShowModal(false)}
               className="text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Close"
+              aria-label={strings.tooltips.close}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <p className="text-foreground">{description}</p>
-            
+
             {tips && tips.length > 0 && (
               <div className="space-y-2">
                 <h4 className="font-semibold text-foreground">Tips:</h4>
@@ -65,13 +66,13 @@ export function PageHelpIcon({ title, description, tips }: PageHelpIconProps) {
                 </ul>
               </div>
             )}
-            
+
             <div className="pt-4">
               <button
                 onClick={() => setShowModal(false)}
                 className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
-                Got it!
+                {strings.common.gotIt}
               </button>
             </div>
           </div>

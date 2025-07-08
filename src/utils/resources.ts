@@ -87,7 +87,7 @@ export async function createResourcePost(data: ResourceFormData, authorId: strin
       excerpt,
       author: {
         id: authorId,
-        name: 'Admin', // You can enhance this with actual user data
+        name: 'doshisensei', // Default author name
         email: '' // You can enhance this with actual user data
       },
       status: data.status,
@@ -111,6 +111,9 @@ export async function createResourcePost(data: ResourceFormData, authorId: strin
     }
     if (data.imageAlt?.trim()) {
       resourcePost.imageAlt = data.imageAlt.trim();
+    }
+    if (data.externalUrl?.trim()) {
+      resourcePost.externalUrl = data.externalUrl.trim();
     }
     if (data.category?.trim()) {
       resourcePost.category = data.category.trim();

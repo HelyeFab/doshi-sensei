@@ -7,6 +7,7 @@ export interface ResourcePost {
   excerpt: string; // Short description for cards/SEO
   imageUrl?: string;
   imageAlt?: string;
+  externalUrl?: string; // For quick resources from URLs
   author: {
     id: string;
     name: string;
@@ -35,6 +36,7 @@ export interface ResourceFormData {
   excerpt: string;
   imageUrl: string;
   imageAlt: string;
+  externalUrl?: string; // For quick resources from URLs
   status: 'draft' | 'published' | 'scheduled';
   scheduledFor?: string; // ISO string for form handling
   tags: string[];

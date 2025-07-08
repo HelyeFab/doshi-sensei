@@ -6,6 +6,7 @@ import { KanjiEditor } from './KanjiEditor';
 import { MoodBoardPreview } from './MoodBoardPreview';
 import { JsonEditor } from './JsonEditor';
 import { convertImportToMoodBoard, validateMoodBoardImport } from '@/utils/moodBoardConverter';
+import { strings } from '@/config/strings';
 
 interface MoodBoardEditorProps {
   initialData?: MoodBoard;
@@ -68,19 +69,19 @@ export function MoodBoardEditor({
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = strings.forms.validation.titleRequired;
     }
 
     if (!formData.emoji) {
-      newErrors.emoji = 'Emoji is required';
+      newErrors.emoji = strings.forms.validation.emojiRequired;
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
+      newErrors.description = strings.forms.validation.descriptionRequired;
     }
 
     if (formData.kanji.length === 0) {
-      newErrors.kanji = 'At least one kanji is required';
+      newErrors.kanji = strings.forms.validation.kanjiRequired;
     }
 
     setErrors(newErrors);
@@ -89,7 +90,7 @@ export function MoodBoardEditor({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -109,26 +110,26 @@ export function MoodBoardEditor({
     reader.onload = (e) => {
       try {
         const jsonData = JSON.parse(e.target?.result as string);
-        
+
         // Handle array format (your JSON has an array with one object)
         const importData = Array.isArray(jsonData) ? jsonData[0] : jsonData;
-        
+
         // Validate the import format
         if (!validateMoodBoardImport(importData)) {
           setUploadError('Invalid JSON format. Please check the file structure.');
           return;
         }
-        
+
         // Convert to internal format
         const convertedData = convertImportToMoodBoard(importData);
-        
+
         // Update form with converted data
         setFormData({
           ...convertedData,
           isActive: formData.isActive,
           sortOrder: formData.sortOrder
         } as any);
-        
+
         setUploadError(null);
         setErrors({});
       } catch (error) {
@@ -136,13 +137,13 @@ export function MoodBoardEditor({
         console.error('JSON parse error:', error);
       }
     };
-    
+
     reader.readAsText(file);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: checked }));
@@ -213,7 +214,7 @@ export function MoodBoardEditor({
         <div className="bg-card border border-border rounded-lg shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-foreground">
-              Mood Board Editor
+              {strings.admin.moodBoards.editor}
             </h2>
             <div className="flex items-center gap-4">
               <button
@@ -237,8 +238,8 @@ export function MoodBoardEditor({
           <div className="mb-6 p-4 bg-muted/30 rounded-lg border border-border">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-foreground mb-1">Import from JSON File</h3>
-                <p className="text-xs text-muted-foreground">Upload a JSON file to populate the form</p>
+                <h3 className="text-sm font-medium text-foreground mb-1">{strings.admin.moodBoards.importFromJson}</h3>
+                <p className="text-xs text-muted-foreground">{strings.admin.moodBoards.uploadJsonDescription}</p>
               </div>
               <label className="cursor-pointer">
                 <input
@@ -248,7 +249,7 @@ export function MoodBoardEditor({
                   className="hidden"
                 />
                 <span className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors inline-block">
-                  📁 Choose File
+                  {strings.forms.buttons.chooseFile}
                 </span>
               </label>
             </div>
@@ -261,7 +262,7 @@ export function MoodBoardEditor({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
-                Title *
+                {strings.forms.labels.title} *
               </label>
               <input
                 type="text"
@@ -269,10 +270,9 @@ export function MoodBoardEditor({
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground ${
-                  errors.title ? 'border-destructive' : 'border-border'
-                }`}
-                placeholder="e.g., Nature"
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.title ? 'border-destructive' : 'border-border'
+                  }`}
+                placeholder={strings.forms.placeholders.moodBoardTitle}
               />
               {errors.title && (
                 <p className="mt-1 text-sm text-destructive">{errors.title}</p>
@@ -282,7 +282,7 @@ export function MoodBoardEditor({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="emoji" className="block text-sm font-medium text-foreground mb-2">
-                  Emoji *
+                  {strings.forms.labels.emoji} *
                 </label>
                 <div className="flex items-center gap-2">
                   <input
@@ -291,9 +291,8 @@ export function MoodBoardEditor({
                     name="emoji"
                     value={formData.emoji}
                     onChange={handleInputChange}
-                    className={`w-20 px-3 py-2 text-center text-2xl border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground ${
-                      errors.emoji ? 'border-destructive' : 'border-border'
-                    }`}
+                    className={`w-20 px-3 py-2 text-center text-2xl border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.emoji ? 'border-destructive' : 'border-border'
+                      }`}
                     maxLength={2}
                   />
                   <div className="flex flex-wrap gap-1">
@@ -316,7 +315,7 @@ export function MoodBoardEditor({
 
               <div>
                 <label htmlFor="jlpt" className="block text-sm font-medium text-foreground mb-2">
-                  JLPT Level
+                  {strings.forms.labels.jlptLevel}
                 </label>
                 <select
                   id="jlpt"
@@ -335,7 +334,7 @@ export function MoodBoardEditor({
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
-              Description *
+              {strings.forms.labels.description} *
             </label>
             <textarea
               id="description"
@@ -343,10 +342,9 @@ export function MoodBoardEditor({
               value={formData.description}
               onChange={handleInputChange}
               rows={3}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground ${
-                errors.description ? 'border-destructive' : 'border-border'
-              }`}
-              placeholder="Enter a description for this mood board..."
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.description ? 'border-destructive' : 'border-border'
+                }`}
+              placeholder={strings.forms.placeholders.moodBoardDescription}
             />
             {errors.description && (
               <p className="mt-1 text-sm text-destructive">{errors.description}</p>
@@ -356,7 +354,7 @@ export function MoodBoardEditor({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Status
+                {strings.forms.labels.status}
               </label>
               <label className="flex items-center gap-2">
                 <input
@@ -367,14 +365,14 @@ export function MoodBoardEditor({
                   className="rounded border-border text-primary focus:ring-primary"
                 />
                 <span className="text-sm text-foreground">
-                  Active (visible to users)
+                  {strings.forms.labels.active}
                 </span>
               </label>
             </div>
 
             <div>
               <label htmlFor="sortOrder" className="block text-sm font-medium text-foreground mb-2">
-                Sort Order
+                {strings.forms.labels.sortOrder}
               </label>
               <input
                 type="number"
@@ -392,9 +390,9 @@ export function MoodBoardEditor({
         {/* Visual Design */}
         <div className="bg-card border border-border rounded-lg shadow-lg p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
-            Visual Design
+            {strings.admin.moodBoards.visualDesign}
           </h3>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Background Gradient
@@ -405,11 +403,10 @@ export function MoodBoardEditor({
                   key={gradient.name}
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, background: gradient.value }))}
-                  className={`relative h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                    formData.background === gradient.value
+                  className={`relative h-20 rounded-lg overflow-hidden border-2 transition-all ${formData.background === gradient.value
                       ? 'border-primary ring-2 ring-primary ring-offset-1 sm:ring-offset-2'
                       : 'border-border hover:border-muted-foreground'
-                  }`}
+                    }`}
                   style={{ background: gradient.value }}
                 >
                   <span className="absolute bottom-1 left-1 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
@@ -418,7 +415,7 @@ export function MoodBoardEditor({
                 </button>
               ))}
             </div>
-            
+
             <div>
               <label htmlFor="customGradient" className="block text-sm font-medium text-foreground mb-2">
                 Custom Gradient CSS

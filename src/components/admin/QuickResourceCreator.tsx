@@ -1,0 +1,305 @@
+'use client';
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  extractUrlMetadata, 
+  getRandomPastelColor, 
+  getRandomIcon, 
+  generateSuggestedTags,
+  createResourceContent 
+} from '@/utils/quickResource';
+import { ResourceFormData } from '@/types/resources';
+
+interface QuickResourceCreatorProps {
+  onResourceCreated: (resourceData: Partial<ResourceFormData>) => void;
+}
+
+export default function QuickResourceCreator({ onResourceCreated }: QuickResourceCreatorProps) {
+  const [url, setUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
+  const [customTitle, setCustomTitle] = useState('');
+  const [customTag, setCustomTag] = useState('');
+  const [randomSeed, setRandomSeed] = useState(Math.random());
+  
+  // Generate random visual elements
+  const colors = getRandomPastelColor();
+  const iconPath = getRandomIcon();
+
+  const handleUrlAnalysis = async () => {
+    if (!url.trim()) return;
+    
+    setIsLoading(true);
+    try {
+      const metadata = await extractUrlMetadata(url);
+      if (metadata) {
+        const suggestedTags = generateSuggestedTags(url, metadata);
+        setPreviewData({
+          ...metadata,
+          suggestedTags,
+          url
+        });
+        setCustomTitle(metadata.title || '');
+        setRandomSeed(Math.random()); // Regenerate visual elements
+      }
+    } catch (error) {
+      console.error('Failed to analyze URL:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateResource = () => {
+    if (!previewData) return;
+    
+    const finalTitle = customTitle.trim() || previewData.title || 'External Resource';
+    const finalTags = customTag.trim() 
+      ? [...previewData.suggestedTags, customTag.trim()]
+      : previewData.suggestedTags;
+    
+    const resourceData: Partial<ResourceFormData> = {
+      title: finalTitle,
+      content: createResourceContent(url, previewData),
+      tags: finalTags,
+      category: 'Study Tips', // Default category
+      status: 'published',
+      excerpt: previewData.description || `External resource from ${new URL(url).hostname}`,
+      imageUrl: previewData.image || `/flat-icons/${iconPath}`,
+      externalUrl: url, // Store the original URL
+      featured: false,
+      isPremium: false
+    };
+    
+    onResourceCreated(resourceData);
+    
+    // Reset form
+    setUrl('');
+    setPreviewData(null);
+    setCustomTitle('');
+    setCustomTag('');
+  };
+
+  const regenerateVisuals = () => {
+    setRandomSeed(Math.random());
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg mb-8"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span className="text-2xl">⚡</span>
+            Quick Resource Creator
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+            Turn any URL into a beautiful resource instantly
+          </p>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={regenerateVisuals}
+          className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          title="Regenerate visuals"
+        >
+          🎲
+        </motion.button>
+      </div>
+
+      {/* URL Input */}
+      <div className="space-y-4">
+        <div className="flex gap-3">
+          <div className="flex-1">
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleUrlAnalysis()}
+              placeholder="https://youtu.be/tLLYivvP_y0?si=pwvcGqfwVIQT-Dfk"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleUrlAnalysis}
+            disabled={!url.trim() || isLoading}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors flex items-center gap-2 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <span>🔍</span>
+                Analyze
+              </>
+            )}
+          </motion.button>
+        </div>
+
+        {/* Preview Section */}
+        <AnimatePresence>
+          {previewData && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className={`${colors.bg} ${colors.border} border-2 rounded-xl p-6 space-y-4`}>
+                {/* Resource Preview */}
+                <div className="flex items-start gap-4">
+                  {/* Icon */}
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring", bounce: 0.4 }}
+                    className="flex-shrink-0"
+                  >
+                    <div className="w-16 h-16 rounded-xl bg-white shadow-lg flex items-center justify-center overflow-hidden">
+                      <img 
+                        src={`/flat-icons/${iconPath}`}
+                        alt="Resource icon"
+                        className="w-12 h-12 object-contain"
+                        onError={(e) => {
+                          // Fallback to emoji if icon fails to load
+                          const target = e.target as HTMLElement;
+                          target.style.display = 'none';
+                          const emoji = document.createElement('span');
+                          emoji.textContent = '🔗';
+                          emoji.className = 'text-2xl';
+                          target.parentNode?.appendChild(emoji);
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <motion.div
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${colors.text} bg-white/50`}>
+                          {previewData.type === 'youtube' ? '🎥 YouTube' : 
+                           previewData.type === 'instagram' ? '📸 Instagram' :
+                           previewData.type === 'twitter' ? '🐦 Twitter/X' : '🔗 External'}
+                        </span>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => window.open(url, '_blank')}
+                          className="text-gray-500 hover:text-gray-700 transition-colors"
+                          title="Open original"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </motion.button>
+                      </div>
+                      
+                      <h3 className={`font-bold text-lg ${colors.text} truncate`}>
+                        {previewData.title || 'Untitled Resource'}
+                      </h3>
+                      
+                      {previewData.description && (
+                        <p className={`text-sm ${colors.text} opacity-80 mt-1`}>
+                          {previewData.description}
+                        </p>
+                      )}
+                      
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {previewData.suggestedTags?.map((tag: string, index: number) => (
+                          <motion.span
+                            key={tag}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 0.4 + index * 0.1 }}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/70 text-gray-700"
+                          >
+                            #{tag}
+                          </motion.span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Customization Options */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="space-y-3 pt-4 border-t border-white/30"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className={`block text-sm font-medium ${colors.text} mb-1`}>
+                        Custom Title (optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={customTitle}
+                        onChange={(e) => setCustomTitle(e.target.value)}
+                        placeholder={previewData.title || 'Enter custom title...'}
+                        className="w-full px-3 py-2 bg-white/70 border border-white/50 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className={`block text-sm font-medium ${colors.text} mb-1`}>
+                        Additional Tag (optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={customTag}
+                        onChange={(e) => setCustomTag(e.target.value)}
+                        placeholder="custom-tag"
+                        className="w-full px-3 py-2 bg-white/70 border border-white/50 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-end gap-3 pt-2">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setPreviewData(null)}
+                      className="px-4 py-2 bg-white/70 hover:bg-white/90 text-gray-700 rounded-lg font-medium transition-colors"
+                    >
+                      Cancel
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleCreateResource}
+                      className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                    >
+                      <span>✨</span>
+                      Create Resource
+                    </motion.button>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}

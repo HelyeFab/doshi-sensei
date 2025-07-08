@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameState } from './types';
+import { strings } from '@/config/strings';
 
 interface GameStatsProps {
   gameState: GameState;
@@ -34,7 +35,7 @@ export default function GameStats({ gameState, showFeedback }: GameStatsProps) {
             Accuracy: {accuracy}%
           </div>
         </motion.div>
-        
+
         <div className="bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md border border-border">
           <div className="text-xs text-muted-foreground">Speed</div>
           <div className="text-sm font-semibold text-foreground">

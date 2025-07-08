@@ -4,6 +4,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { AdminSection } from '@/types/admin';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { strings } from '@/config/strings';
 
 interface SidebarItem {
   id: AdminSection;
@@ -15,38 +16,38 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
-    icon: '📊',
+    label: strings.navigation.admin.dashboard.label,
+    icon: strings.navigation.admin.dashboard.icon,
     href: '/admin',
   },
   {
     id: 'users',
-    label: 'Users',
-    icon: '👥',
+    label: strings.navigation.admin.users.label,
+    icon: strings.navigation.admin.users.icon,
     href: '/admin/users',
   },
   {
     id: 'features' as AdminSection,
-    label: 'Feature Matrix',
-    icon: '🎯',
+    label: strings.navigation.admin.features.label,
+    icon: strings.navigation.admin.features.icon,
     href: '/admin/features',
   },
   {
     id: 'mood-boards',
-    label: 'Mood Boards',
-    icon: '🎨',
+    label: strings.navigation.admin.moodBoards.label,
+    icon: strings.navigation.admin.moodBoards.icon,
     href: '/admin/mood-boards',
   },
   {
     id: 'resources',
-    label: 'Resources',
-    icon: '📚',
+    label: strings.navigation.admin.resources.label,
+    icon: strings.navigation.admin.resources.icon,
     href: '/admin/resources',
   },
   {
     id: 'logs',
-    label: 'Activity Logs',
-    icon: '📝',
+    label: strings.navigation.admin.logs.label,
+    icon: strings.navigation.admin.logs.icon,
     href: '/admin/logs',
   },
 ];
@@ -89,14 +90,14 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <div className="flex items-center gap-3">
               <div className="text-2xl">🎯</div>
               <div>
-                <h1 className="text-lg font-bold text-foreground">Admin</h1>
-                <p className="text-sm text-muted-foreground">Doshi Sensei</p>
+                <h1 className="text-lg font-bold text-foreground">{strings.navigation.admin.label}</h1>
+                <p className="text-sm text-muted-foreground">{strings.navigation.app.name}</p>
               </div>
             </div>
             <button
               onClick={onClose}
               className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
-              aria-label="Close sidebar"
+              aria-label={strings.navigation.menu.closeSidebar}
             >
               ✕
             </button>
@@ -134,8 +135,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {/* Footer */}
           <div className="p-4 border-t border-border">
             <div className="text-xs text-muted-foreground">
-              <p>Admin Dashboard v1.0</p>
-              <p>Branch: feature/admin-dashboard</p>
+              <p>{strings.navigation.app.name} {strings.navigation.app.version}</p>
+              <p>Branch: {strings.navigation.app.branch}</p>
             </div>
           </div>
         </div>

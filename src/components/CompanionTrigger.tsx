@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import VirtualCompanion from './VirtualCompanion';
+import { strings } from '@/config/strings';
 
 export default function CompanionTrigger() {
   const { settings, isLoading } = useSettings();
@@ -32,8 +33,8 @@ export default function CompanionTrigger() {
           boxShadow: 'inset 0 0 0 1px var(--primary), 0 6px 20px rgba(0, 0, 0, 0.2)',
           animation: 'float 3s ease-in-out infinite'
         }}
-        aria-label="Open virtual companion"
-        title="Say hello to your companion! 🦒"
+        aria-label={strings.tooltips.openVirtualCompanion}
+        title={strings.tooltips.sayHelloToCompanion}
       >
         {/* Giraffe Icon */}
         <div className="w-10 h-10 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">

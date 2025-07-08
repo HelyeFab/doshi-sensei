@@ -159,6 +159,11 @@ export default function KanjiQuest({
   const [isAttacking, setIsAttacking] = useState(false);
   const [showDamageEffect, setShowDamageEffect] = useState(false);
   const [currentAttackType, setCurrentAttackType] = useState<AttackType>('meaning');
+  const [showKanjiDefeat, setShowKanjiDefeat] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isProcessingAnswer, setIsProcessingAnswer] = useState(false);
+  const [showWrongAnswerModal, setShowWrongAnswerModal] = useState(false);
+  const [lastWrongQuestion, setLastWrongQuestion] = useState<QuizQuestion | null>(null);
 
   // Kanji selection state
   const [availableKanji, setAvailableKanji] = useState<GameKanji[]>([]);
@@ -447,21 +452,42 @@ export default function KanjiQuest({
 
     switch (questionType) {
       case 'reading': {
-        // Show kanji, ask for reading
-        const correctAnswer = kanji.on_readings[0] || kanji.kun_readings[0];
+        // Randomly decide whether to ask for on'yomi or kun'yomi
+        const hasOnReadings = kanji.on_readings.length > 0;
+        const hasKunReadings = kanji.kun_readings.length > 0;
+        
+        let askForOn = false;
+        let correctAnswer = '';
+        
+        // Decide which reading type to ask for
+        if (hasOnReadings && hasKunReadings) {
+          // If both exist, randomly choose
+          askForOn = Math.random() < 0.5;
+          correctAnswer = askForOn ? kanji.on_readings[0] : kanji.kun_readings[0];
+        } else if (hasOnReadings) {
+          // Only on'yomi exists
+          askForOn = true;
+          correctAnswer = kanji.on_readings[0];
+        } else if (hasKunReadings) {
+          // Only kun'yomi exists
+          askForOn = false;
+          correctAnswer = kanji.kun_readings[0];
+        }
 
-        // Get all possible readings from other kanji
+        // Get all possible readings from other kanji (matching the type we're asking for)
         const possibleDistractors: string[] = [];
         allKanji
           .filter(k => k.id !== kanji.id)
           .forEach(k => {
-            // Add all readings from other kanji
-            k.on_readings.forEach(r => {
-              if (r && r !== correctAnswer) possibleDistractors.push(r);
-            });
-            k.kun_readings.forEach(r => {
-              if (r && r !== correctAnswer) possibleDistractors.push(r);
-            });
+            if (askForOn) {
+              k.on_readings.forEach(r => {
+                if (r && r !== correctAnswer) possibleDistractors.push(r);
+              });
+            } else {
+              k.kun_readings.forEach(r => {
+                if (r && r !== correctAnswer) possibleDistractors.push(r);
+              });
+            }
           });
 
         // Remove duplicates and take 3 random distractors
@@ -473,9 +499,11 @@ export default function KanjiQuest({
         const options = [correctAnswer, ...distractors];
         const shuffled = [...options].sort(() => Math.random() - 0.5);
 
+        const readingType = askForOn ? "on'yomi (音読み)" : "kun'yomi (訓読み)";
+
         return {
           type: 'reading',
-          question: `What is the reading of ${kanji.character}?`,
+          question: `What is the ${readingType} reading of "${kanji.character}"?`,
           options: shuffled,
           correctIndex: shuffled.indexOf(correctAnswer),
           kanjiRef: kanji
@@ -496,7 +524,7 @@ export default function KanjiQuest({
 
         return {
           type: 'meaning',
-          question: `What does ${kanji.character} mean?`,
+          question: `What does "${kanji.character}" mean?`,
           options: shuffled,
           correctIndex: shuffled.indexOf(correctAnswer),
           kanjiRef: kanji
@@ -539,10 +567,13 @@ export default function KanjiQuest({
           // Replace the kanji in the word with a placeholder to avoid showing the answer
           const displayWord = vocab.word.replace(kanji.character, '—');
           
+          // Build question text with meaning for clarity
+          const meaningText = vocab.meaning ? ` meaning "${vocab.meaning}"` : '';
+          
           // Only show reading in parentheses if it exists and doesn't contain the kanji
           const questionText = vocab.reading && !vocab.reading.includes(kanji.character)
-            ? `Which kanji completes this word: "${displayWord}" (${vocab.reading})?`
-            : `Which kanji completes this word: "${displayWord}"?`;
+            ? `Which kanji completes this word: "${displayWord}" (${vocab.reading})${meaningText}?`
+            : `Which kanji completes this word: "${displayWord}"${meaningText}?`;
 
           return {
             type: 'vocab',
@@ -560,7 +591,8 @@ export default function KanjiQuest({
   };
 
   const handleQuizAnswer = (answerIndex: number) => {
-    if (showQuizFeedback || isAttacking) {
+    // Prevent multiple clicks
+    if (showQuizFeedback || isAttacking || isProcessingAnswer || isTransitioning) {
       return;
     }
 
@@ -568,6 +600,14 @@ export default function KanjiQuest({
     if (!currentQuestion || !session) {
       return;
     }
+
+    // Check if this question was already answered
+    if (userAnswers[currentQuestionIndex] !== undefined) {
+      return;
+    }
+
+    // Lock the answer processing immediately
+    setIsProcessingAnswer(true);
 
     const isCorrect = answerIndex === currentQuestion.correctIndex;
     const attackType = getAttackTypeFromQuestion(currentQuestion.type);
@@ -577,14 +617,16 @@ export default function KanjiQuest({
     setIsAttacking(true);
 
     // Calculate damage if correct
+    let newKanjiHP = kanjiHP;
     if (isCorrect) {
       // Check for critical hit
       const isCritical = Math.random() < attack.criticalChance;
       const effectiveness = getTypeEffectiveness(attackType, currentKanji);
       const damage = calculateDamage(attack, true, effectiveness, isCritical);
 
-      // Apply damage
-      setKanjiHP(prev => Math.max(0, prev - damage));
+      // Apply damage and track new HP
+      newKanjiHP = Math.max(0, kanjiHP - damage);
+      setKanjiHP(newKanjiHP);
 
       // Add to battle log
       let message = `You used ${attack.type === 'vocabulary' ? 'Context Combo' : attack.type === 'reading' ? 'Sound Wave' : attack.type === 'kanji' ? 'Symbol Slash' : 'Mind Strike'}!`;
@@ -600,7 +642,10 @@ export default function KanjiQuest({
         timestamp: new Date()
       }]);
     } else {
-      // Wrong answer - kanji counter-attacks
+      // Wrong answer - show feedback modal and kanji counter-attacks
+      setLastWrongQuestion(currentQuestion);
+      setShowWrongAnswerModal(true);
+      
       setBattleLog(prev => [...prev, {
         type: 'player_attack',
         damage: 0,
@@ -621,27 +666,58 @@ export default function KanjiQuest({
     // Check for battle end conditions
     setTimeout(() => {
       setIsAttacking(false);
+      
+      // Don't progress if wrong answer modal is showing (for incorrect answers)
+      if (!isCorrect) {
+        return; // Let the modal close handler deal with progression
+      }
 
-      // Check if kanji is defeated
-      if (kanjiHP <= 0 && currentKanjiIndex < session.kanji.length - 1) {
-        // Move to next kanji
-        const nextIndex = currentKanjiIndex + 1;
-        setCurrentKanjiIndex(nextIndex);
-        const nextHP = getKanjiHP(jlptLevel);
-        setKanjiHP(nextHP);
-        setMaxKanjiHP(nextHP);
+      // Check if kanji is defeated (check actual HP state after damage was applied)
+      if (newKanjiHP <= 0 && currentKanjiIndex < session.kanji.length - 1) {
+        // Show defeat animation
+        setShowKanjiDefeat(true);
+        setIsTransitioning(true);
         
-        // Generate new questions for the next kanji
-        const newQuestions = generateQuizQuestions(session.kanji, nextIndex);
-        setQuizQuestions(newQuestions);
-        setCurrentQuestionIndex(0);
-        setUserAnswers([]);
+        // Add victory message to battle log
+        setBattleLog(prev => [...prev, {
+          type: 'victory',
+          message: `${session.kanji[currentKanjiIndex].character} was defeated! Moving to next opponent...`,
+          timestamp: new Date()
+        }]);
+
+        // Wait for defeat animation then transition
+        setTimeout(() => {
+          // Move to next kanji
+          const nextIndex = currentKanjiIndex + 1;
+          setCurrentKanjiIndex(nextIndex);
+          const nextHP = getKanjiHP(jlptLevel);
+          setKanjiHP(nextHP);
+          setMaxKanjiHP(nextHP);
+          
+          // Generate new questions for the next kanji
+          const newQuestions = generateQuizQuestions(session.kanji, nextIndex);
+          setQuizQuestions(newQuestions);
+          setCurrentQuestionIndex(0);
+          setUserAnswers([]);
+          setShowKanjiDefeat(false);
+          setIsProcessingAnswer(false);
+          setShowWrongAnswerModal(false);
+          
+          // End transition after a brief moment
+          setTimeout(() => {
+            setIsTransitioning(false);
+          }, 500);
+        }, 2500);
+        
+        return; // Don't continue to next question yet
       }
 
       // Continue to next question or complete quiz
       if (currentQuestionIndex < quizQuestions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
         setShowQuizFeedback(false);
+        setIsProcessingAnswer(false);
+        setShowWrongAnswerModal(false);
       } else {
         // Quiz complete
         completeQuiz(newAnswers);
@@ -727,6 +803,20 @@ export default function KanjiQuest({
       'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
     ];
     setBattleGradient(gradients[Math.floor(Math.random() * gradients.length)]);
+  };
+
+  const handleWrongAnswerModalClose = () => {
+    setShowWrongAnswerModal(false);
+    
+    // Progress to next question after modal is closed
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setShowQuizFeedback(false);
+      setIsProcessingAnswer(false);
+    } else {
+      // Quiz complete
+      completeQuiz(userAnswers);
+    }
   };
 
   const completeQuiz = (answers: number[]) => {
@@ -961,13 +1051,14 @@ export default function KanjiQuest({
                 background: battleGradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 height: 'auto',
                 maxHeight: '95vh',
-                maxWidth: '24rem'
+                maxWidth: '22rem'
               }}
             >
               <div className="container mx-auto px-4 py-2 flex flex-col flex-1">
                 {/* Battle Arena Header */}
                 <div className="text-center mb-2">
-                  <h2 className="text-white text-lg font-bold">Battle Arena - Question {currentQuestionIndex + 1} of {quizQuestions.length}</h2>
+                  <h2 className="text-white text-lg font-bold">Battle Arena - Kanji {currentKanjiIndex + 1}/{session.kanji.length}</h2>
+                  <p className="text-white/80 text-sm">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
                 </div>
 
                 {/* GameBoy-style frosted screen wrapper */}
@@ -1047,19 +1138,30 @@ export default function KanjiQuest({
 
                     {/* Kanji - Center */}
                     <motion.div
+                      key={`kanji-${currentKanjiIndex}`}
+                      initial={{ opacity: 1, scale: 1 }}
                       animate={{
-                        y: [0, -5, 0],
-                        rotate: [0, 2, -2, 0],
-                        ...(showDamageEffect && isAttacking && !userAnswers[currentQuestionIndex] ? {
-                          x: [0, -5, 5, -5, 5, 0],
-                          filter: ['brightness(1)', 'brightness(2)', 'brightness(0.5)', 'brightness(1)'],
-                          transition: { duration: 0.5 }
-                        } : {})
+                        ...(showKanjiDefeat ? {
+                          scale: [1, 1.2, 0],
+                          opacity: [1, 1, 0],
+                          rotate: [0, 180, 360],
+                          filter: ['brightness(1)', 'brightness(2)', 'brightness(0)']
+                        } : {
+                          opacity: 1,
+                          scale: 1,
+                          y: [0, -5, 0],
+                          rotate: [0, 2, -2, 0],
+                          ...(showDamageEffect && isAttacking && !userAnswers[currentQuestionIndex] ? {
+                            x: [0, -5, 5, -5, 5, 0],
+                            filter: ['brightness(1)', 'brightness(2)', 'brightness(0.5)', 'brightness(1)'],
+                            transition: { duration: 0.5 }
+                          } : {})
+                        })
                       }}
                       transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
+                        duration: showKanjiDefeat ? 1.5 : 3,
+                        repeat: showKanjiDefeat ? 0 : Infinity,
+                        ease: showKanjiDefeat ? "easeOut" : "easeInOut"
                       }}
                       className="relative"
                     >
@@ -1133,6 +1235,110 @@ export default function KanjiQuest({
                   </div>
                 </div>
 
+                {/* Transition Overlay */}
+                <AnimatePresence>
+                  {isTransitioning && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-xl flex items-center justify-center z-20"
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                        className="bg-white/90 rounded-lg p-6 text-center"
+                      >
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">Kanji Defeated!</h3>
+                        <p className="text-gray-600">
+                          {currentKanjiIndex < session.kanji.length - 1 
+                            ? `Next opponent: ${session.kanji[currentKanjiIndex + 1]?.character}`
+                            : 'Final battle complete!'}
+                        </p>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Wrong Answer Feedback Modal */}
+                <AnimatePresence>
+                  {showWrongAnswerModal && lastWrongQuestion && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-xl flex items-center justify-center z-30"
+                      onClick={handleWrongAnswerModalClose}
+                    >
+                      <motion.div
+                        initial={{ scale: 0, rotate: -10 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: 10 }}
+                        transition={{ type: "spring", damping: 15 }}
+                        className="relative bg-red-50 dark:bg-red-950/90 rounded-lg p-6 max-w-sm mx-4 border-2 border-red-500 shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {/* X close button in top right */}
+                        <button
+                          onClick={handleWrongAnswerModalClose}
+                          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-red-200 dark:bg-red-800 hover:bg-red-300 dark:hover:bg-red-700 transition-colors"
+                          aria-label="Close"
+                        >
+                          <svg className="w-5 h-5 text-red-700 dark:text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                        
+                        <div className="text-center">
+                          <div className="text-4xl mb-3">❌</div>
+                          <h3 className="text-xl font-bold text-red-700 dark:text-red-300 mb-4">Incorrect!</h3>
+                          
+                          <div className="bg-white dark:bg-gray-900 rounded-lg p-4 mb-4">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">The correct answer was:</p>
+                            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200 japanese-text">
+                              {lastWrongQuestion.options[lastWrongQuestion.correctIndex]}
+                            </p>
+                            
+                            {/* Show additional context based on question type */}
+                            {lastWrongQuestion.type === 'meaning' && (
+                              <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                                <p>"{lastWrongQuestion.kanjiRef.character}" means "{lastWrongQuestion.kanjiRef.meanings.join(', ')}"</p>
+                              </div>
+                            )}
+                            
+                            {lastWrongQuestion.type === 'reading' && (
+                              <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                                <p>"{lastWrongQuestion.kanjiRef.character}" is read as:</p>
+                                <div className="mt-1">
+                                  {lastWrongQuestion.kanjiRef.on_readings.length > 0 && (
+                                    <p>On'yomi: {lastWrongQuestion.kanjiRef.on_readings.join(', ')}</p>
+                                  )}
+                                  {lastWrongQuestion.kanjiRef.kun_readings.length > 0 && (
+                                    <p>Kun'yomi: {lastWrongQuestion.kanjiRef.kun_readings.join(', ')}</p>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {lastWrongQuestion.type === 'kanji' && (
+                              <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                                <p>The kanji for "{lastWrongQuestion.kanjiRef.meanings[0]}" is "{lastWrongQuestion.kanjiRef.character}"</p>
+                              </div>
+                            )}
+                            
+                            {lastWrongQuestion.type === 'vocab' && (
+                              <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                                <p>The complete word uses "{lastWrongQuestion.kanjiRef.character}"</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Controls area: D-pad, A/B, Start/Select (improved Game Boy layout) */}
                 <div className="relative flex flex-col items-center gap-4 mb-10 mt-6">
                   <div className="flex w-full justify-between items-end px-8 relative" style={{ minHeight: '80px' }}>
@@ -1171,12 +1377,12 @@ export default function KanjiQuest({
                 {/* Battle Interface - Integrated Quiz */}
                 <div className="bg-black/30 rounded-lg p-3 backdrop-blur-sm">
                   <div className="text-white text-center mb-3">
-                    <h3 className="text-lg font-bold">{quizQuestions[currentQuestionIndex].question}</h3>
+                    <h3 className="text-lg font-bold">{quizQuestions[currentQuestionIndex]?.question || 'Loading...'}</h3>
                   </div>
 
                   {/* 2x2 grid for answers */}
                   <div className="grid grid-cols-2 gap-3">
-                    {quizQuestions[currentQuestionIndex].options.map((option, idx) => {
+                    {quizQuestions[currentQuestionIndex]?.options?.map((option, idx) => {
                       const isCorrect = idx === quizQuestions[currentQuestionIndex].correctIndex;
                       const isSelected = userAnswers[currentQuestionIndex] === idx;
                       const hasAnswered = userAnswers[currentQuestionIndex] !== undefined;
@@ -1212,7 +1418,7 @@ export default function KanjiQuest({
                         <button
                           key={idx}
                           onClick={() => handleQuizAnswer(idx)}
-                          disabled={showQuizFeedback}
+                          disabled={showQuizFeedback || isTransitioning || isProcessingAnswer}
                           className={`w-full p-3 rounded-lg border-2 text-left transition-all backdrop-blur-sm ${showQuizFeedback && hasAnswered
                             ? isCorrect
                               ? 'border-green-400 bg-green-500/30 text-green-100'
@@ -1236,62 +1442,6 @@ export default function KanjiQuest({
                       );
                     })}
                   </div>
-
-                  {/* Manual continue button as fallback */}
-                  {showQuizFeedback && (
-                    <div className="mt-4 text-center">
-                      <button
-                        onClick={() => {
-                          // If no answer was recorded for this question, record it as unanswered (-1)
-                          if (userAnswers.length <= currentQuestionIndex) {
-                            const newAnswers = [...userAnswers];
-                            // Fill any gaps with -1 (unanswered)
-                            while (newAnswers.length <= currentQuestionIndex) {
-                              newAnswers.push(-1);
-                            }
-                            setUserAnswers(newAnswers);
-                          }
-
-                          if (currentQuestionIndex < quizQuestions.length - 1) {
-                            setCurrentQuestionIndex(prev => prev + 1);
-                            setShowQuizFeedback(false);
-                          } else {
-                            // Make sure we have all answers including the current one
-                            const finalAnswers = [...userAnswers];
-                            // Fill any remaining gaps
-                            while (finalAnswers.length < quizQuestions.length) {
-                              finalAnswers.push(-1);
-                            }
-                            completeQuiz(finalAnswers);
-                          }
-                        }}
-                        className="text-sm text-white/80 hover:text-white underline"
-                      >
-                        Continue →
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Battle Log */}
-                  {battleLog.length > 0 && (
-                    <div className="mt-4 bg-black/20 rounded p-2 max-h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                      <div className="text-xs text-white/80 space-y-1">
-                        {battleLog.slice(-4).map((event, idx) => (
-                          <motion.div
-                            key={`${event.timestamp.getTime()}-${idx}`}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={`${event.type === 'player_attack'
-                              ? (event.damage || 0) > 0 ? 'text-green-300' : 'text-red-300'
-                              : 'text-orange-300'
-                              } text-[11px] leading-relaxed`}
-                          >
-                            {event.message}
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </motion.div>

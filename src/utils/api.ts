@@ -302,17 +302,8 @@ function getMockVocabularyData(query: string): JapaneseWord[] {
     return [mockData[query]];
   }
 
-  // Return a generic mock word
-  return [{
-    id: `mock-${query}`,
-    kanji: query,
-    kana: query,
-    romaji: query,
-    meaning: 'Mock definition for development',
-    type: 'other',
-    jlpt: 'N5',
-    tags: []
-  }];
+  // Return empty array if not found (no generic mock word)
+  return [];
 }
 
 // Process Jisho API response

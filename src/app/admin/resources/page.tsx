@@ -8,9 +8,10 @@ import { ResourceListItem, ResourceStats, RESOURCE_CATEGORIES } from '@/types/re
 import { getAllResourcePosts, deleteResourcePost, getResourceStats } from '@/utils/resources';
 import { formatDistanceToNow } from 'date-fns';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function AdminResourcesPage() {
+  const strings = useStrings();
   const router = useRouter();
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();

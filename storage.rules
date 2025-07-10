@@ -22,5 +22,22 @@ service firebase.storage {
     match /tts-cache/{allPaths=**} {
       allow write: if request.auth != null;
     }
+    
+    // Helper function to check if user is premium (same as in Firestore rules)
+    function isPremiumUser(userId) {
+      let userData = firestore.get(/databases/(default)/documents/users/$(userId)).data;
+      return userData.subscription != null &&
+        userData.subscription.subscription != null &&
+        userData.subscription.subscription.status == 'active' &&
+        userData.subscription.subscription.plan in ['monthly', 'yearly'];
+    }
+    
+    // Premium sync storage - users can only access their own synced assets
+    match /userSync/{userId}/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && 
+        request.auth.uid == userId &&
+        isPremiumUser(userId);
+    }
   }
 }

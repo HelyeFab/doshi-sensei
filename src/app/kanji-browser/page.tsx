@@ -11,10 +11,11 @@ import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
 import KanjiModal from '@/components/kanji/KanjiModal';
 import KanjiStudyModal from '@/components/kanji-moods/KanjiStudyModal';
+import KanjiQuestTutorialModal from '@/components/games/KanjiQuestTutorialModal';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -61,6 +62,7 @@ export default function KanjiBrowserPage() {
   const { setSelectedKanji } = useKanjiSelection();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const strings = useStrings();
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
@@ -77,6 +79,7 @@ export default function KanjiBrowserPage() {
   // Study selection state
   const [studySelection, setStudySelection] = useState<Set<string>>(new Set());
   const [showStudyModal, setShowStudyModal] = useState(false);
+  const [showKanjiQuestTutorial, setShowKanjiQuestTutorial] = useState(false);
   const { showNotification } = useNotification();
 
   // JLPT level info
@@ -100,20 +103,20 @@ export default function KanjiBrowserPage() {
   useEffect(() => {
     const level = searchParams.get('level');
     const mode = searchParams.get('mode');
-    
+
     if (level && ['1', '2', '3', '4', '5'].includes(level)) {
       const jlptLevel = `N${level}` as JLPTLevel;
       setExpandedLevels(prev => new Set([...prev, jlptLevel]));
-      
+
       // Show notification for Kanji Quest mode
       if (mode === 'kanji-quest') {
         showNotification({
-          title: 'Kanji Quest Mode',
-          message: `Select kanji from JLPT ${jlptLevel} to battle Pokémon! Click the checkboxes to select kanji, then click "Battle" when ready.`,
+          title: strings.kanjiBrowser.kanjiQuestMode,
+          message: `${strings.kanjiBrowser.selectKanjiFrom} ${levelInfo[jlptLevel].name} ${strings.kanjiBrowser.toBattlePokémon} ${strings.kanjiBrowser.clickCheckboxesToSelect} ${strings.kanjiBrowser.kanji} ${strings.kanjiBrowser.thenClick} ${strings.kanjiBrowser.battleWhenReady}`,
           type: 'info'
         });
       }
-      
+
       // Scroll to the level section after a short delay
       setTimeout(() => {
         const levelElement = document.querySelector(`[data-level="${jlptLevel}"]`);
@@ -122,7 +125,7 @@ export default function KanjiBrowserPage() {
         }
       }, 500);
     }
-  }, [searchParams, showNotification]);
+  }, [searchParams, showNotification, levelInfo]);
 
   // Save study selection when it changes
   useEffect(() => {
@@ -190,16 +193,16 @@ export default function KanjiBrowserPage() {
       // Check if we've reached the limit of 10
       if (newSelection.size >= 10) {
         const messages = [
-          "Woah there, eager learner! 🌟 Master these 10 first!",
-          "10 kanji is the perfect study portion! 🍱 Quality over quantity!",
-          "Your brain will thank you for keeping it to 10! 🧠✨",
-          "10 kanji selected! Time to study these beauties! 📚",
-          "That's a full study session! Let's ace these 10 first! 🎯"
+          strings.kanjiBrowser.woahThere,
+          strings.kanjiBrowser.qualityOverQuantity,
+          strings.kanjiBrowser.yourBrainWillThankYou,
+          strings.kanjiBrowser.fullStudySession,
+          strings.kanjiBrowser.letsAceTheseTenFirst
         ];
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
         showNotification({
-          title: "Study Limit Reached",
+          title: strings.kanjiBrowser.studyLimitReached,
           message: randomMessage,
           type: 'info'
         });
@@ -328,8 +331,8 @@ export default function KanjiBrowserPage() {
                 newSelection.add(kanjiItem.kanji);
               } else {
                 showNotification({
-                  title: 'Study Limit Reached',
-                  message: 'You can select up to 10 kanji for study',
+                  title: strings.kanjiBrowser.studyLimitReached,
+                  message: strings.kanjiBrowser.studyLimitMessage,
                   type: 'info'
                 });
               }
@@ -354,7 +357,7 @@ export default function KanjiBrowserPage() {
       <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading kanji data...</p>
+          <p className="text-muted-foreground">{strings.kanjiBrowser.loadingKanjiData}</p>
         </div>
       </div>
     );
@@ -386,7 +389,7 @@ export default function KanjiBrowserPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <PageHeader title="漢字 Kanji Browser" helpKey="kanji-browser" />
+            <PageHeader title={strings.kanjiBrowser.title} helpKey="kanji-browser" />
             {/* Study Buttons */}
             {studySelection.size > 0 && (
               <div className="flex flex-row gap-2 flex-wrap self-start sm:self-auto">
@@ -399,72 +402,48 @@ export default function KanjiBrowserPage() {
                       d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                     />
                   </svg>
-                  <span>Study ({studySelection.size}/10)</span>
+                  <span>{strings.kanjiBrowser.studyButton} ({studySelection.size}/{strings.kanjiBrowser.studyLimit})</span>
                 </button>
                 {studySelection.size >= 5 && (
                   <button
                     type="button"
-                    onClick={async () => {
-                      console.log('Battle button clicked!');
-                      // Store selected kanji in KanjiSelectionContext
-                      const selectedKanjiData = Array.from(studySelection).map((k, index) => {
-                        for (const [level, kanjiList] of Object.entries(kanjiData)) {
-                          const found = kanjiList.find(kanji => kanji.kanji === k);
-                          if (found) {
-                            return {
-                              id: `custom-${index}`,
-                              character: found.kanji,
-                              meanings: found.meaning.split(',').map(m => m.trim()),
-                              on_readings: found.onyomi || [],
-                              kun_readings: found.kunyomi || [],
-                              jlpt: parseInt(level.replace('N', '')),
-                              vocabulary: []
-                            };
-                          }
-                        }
-                        return null;
-                      }).filter(Boolean);
-                      console.log('Transporting kanji to Kanji Quest:', selectedKanjiData);
-                      setSelectedKanji(selectedKanjiData);
-                      
-                      // Add a small delay to ensure context is updated before navigation
-                      await new Promise(resolve => setTimeout(resolve, 100));
-                      
-                      router.push('/games?mode=kanji-quest&selection=custom');
+                    onClick={() => {
+                      // Show tutorial modal first
+                      setShowKanjiQuestTutorial(true);
                     }}
                     className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
                   >
                     <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
-                    <span>Battle ({studySelection.size} kanji)</span>
+                    <span>{strings.kanjiBrowser.battleButton} ({studySelection.size} {strings.kanjiBrowser.kanji})</span>
                   </button>
                 )}
               </div>
             )}
           </div>
           <p className="text-muted-foreground text-center mt-2">
-            Browse Japanese kanji by JLPT level. Select kanji to create custom study sessions or battle Pokémon in Kanji Quest!
+            {strings.kanjiBrowser.browseKanjiByLevel}
           </p>
         </div>
 
         {/* Search Bar */}
         <div className="max-w-md mx-auto mb-8">
-          <div className="relative">
+          <form onSubmit={e => { e.preventDefault(); performSearch(); }} className="relative">
             <input
               type="text"
-              placeholder="Search kanji by character, meaning, or reading..."
+              placeholder={strings.kanjiBrowser.searchKanjiPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-3 pl-10 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-3 pr-12 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
-            <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <button
+              type="submit"
+              className="absolute top-1/2 right-3 -translate-y-1/2 p-2 rounded-full hover:bg-muted transition-colors"
+              aria-label="Search"
+              style={{ lineHeight: 0 }}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
+              <img src="/flat-icons/magnifying-glass.svg" alt="Search" className="w-6 h-6" />
+            </button>
+          </form>
         </div>
 
         {/* Search Results */}
@@ -472,11 +451,11 @@ export default function KanjiBrowserPage() {
           <div className="mb-8">
             <div className="bg-card border border-border rounded-lg p-6">
               <h3 className="text-lg font-semibold text-card-foreground mb-4">
-                Search Results
+                {strings.kanjiBrowser.searchResultsTitle}
                 {isSearching ? (
-                  <span className="ml-2 text-sm text-muted-foreground">(searching...)</span>
+                  <span className="ml-2 text-sm text-muted-foreground">({strings.kanjiBrowser.searching})</span>
                 ) : (
-                  <span className="ml-2 text-sm text-muted-foreground">({searchResults.length} found)</span>
+                  <span className="ml-2 text-sm text-muted-foreground">({searchResults.length} {strings.kanjiBrowser.found})</span>
                 )}
               </h3>
               {isSearching ? (
@@ -487,7 +466,7 @@ export default function KanjiBrowserPage() {
                 renderKanjiGrid(searchResults)
               ) : (
                 <p className="text-muted-foreground text-center py-8">
-                  No kanji found matching "{searchQuery}"
+                  {strings.kanjiBrowser.noKanjiFoundMatching} "{searchQuery}"
                 </p>
               )}
             </div>
@@ -502,7 +481,7 @@ export default function KanjiBrowserPage() {
                 {level.replace('N', '')}
               </div>
               <div className="text-lg font-semibold text-card-foreground">{kanji.length}</div>
-              <div className="text-xs text-muted-foreground">kanji</div>
+              <div className="text-xs text-muted-foreground">{strings.kanjiBrowser.kanji}</div>
             </div>
           ))}
         </div>
@@ -527,7 +506,7 @@ export default function KanjiBrowserPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-card-foreground">{info.name}</h3>
-                        <p className="text-sm text-muted-foreground">{info.description} • {kanji.length} kanji</p>
+                        <p className="text-sm text-muted-foreground">{info.description} • {kanji.length} {strings.kanjiBrowser.kanji}</p>
                       </div>
                     </div>
                     <svg
@@ -547,7 +526,7 @@ export default function KanjiBrowserPage() {
                       renderKanjiGrid(kanji)
                     ) : (
                       <p className="text-muted-foreground text-center py-8">
-                        No kanji available for {level}
+                        {strings.kanjiBrowser.noKanjiAvailableFor} {level}
                       </p>
                     )}
                   </div>
@@ -599,7 +578,7 @@ export default function KanjiBrowserPage() {
               }
             }}
             boardId="kanji-browser-study"
-            boardTitle="Kanji Study Session"
+            boardTitle={strings.kanjiBrowser.kanjiStudySession}
             kanjiList={Array.from(studySelection).map(kanjiChar => {
               // Find the full kanji object from our data
               let found: Kanji | undefined;
@@ -640,6 +619,43 @@ export default function KanjiBrowserPage() {
             })}
           />
         )}
+
+        {/* Kanji Quest Tutorial Modal */}
+        <KanjiQuestTutorialModal
+          isOpen={showKanjiQuestTutorial}
+          onClose={() => {
+            setShowKanjiQuestTutorial(false);
+          }}
+          onStart={async () => {
+            setShowKanjiQuestTutorial(false);
+
+            // Store selected kanji in KanjiSelectionContext
+            const selectedKanjiData = Array.from(studySelection).map((k, index) => {
+              for (const [level, kanjiList] of Object.entries(kanjiData)) {
+                const found = kanjiList.find(kanji => kanji.kanji === k);
+                if (found) {
+                  return {
+                    id: `custom-${index}`,
+                    character: found.kanji,
+                    meanings: found.meaning.split(',').map(m => m.trim()),
+                    on_readings: found.onyomi || [],
+                    kun_readings: found.kunyomi || [],
+                    jlpt: parseInt(level.replace('N', '')),
+                    vocabulary: []
+                  };
+                }
+              }
+              return null;
+            }).filter(Boolean);
+
+            setSelectedKanji(selectedKanjiData);
+
+            // Add a small delay to ensure context is updated before navigation
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            router.push('/games?mode=kanji-quest&selection=custom');
+          }}
+        />
       </div>
     </>
   );
@@ -657,6 +673,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
   const { user } = useAuth();
   const { subscription } = useSubscription2();
   const { checkAndTrack } = useAccess();
+  const strings = useStrings();
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [showCreateNew, setShowCreateNew] = useState(false);
@@ -697,11 +714,11 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
       }
       return `${strings.listCompatibility.incompatible}: ${strings.listCompatibility.sentencesOnly}`;
     }
-    
+
     if (listType === 'flashcard') {
       return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.flashcardReview}`;
     }
-    
+
     return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.conjugationPractice}`;
   };
 
@@ -753,7 +770,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          Save "{kanji.kanji}" to Lists
+          {strings.kanjiBrowser.saveKanjiTitle} "{kanji.kanji}"
         </h3>
 
         {/* Error messages */}
@@ -769,7 +786,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
 
         {studyLists.length > 0 && (
           <div className="space-y-3 mb-4">
-            <h4 className="text-sm font-medium text-muted-foreground">Select existing lists:</h4>
+            <h4 className="text-sm font-medium text-muted-foreground">{strings.kanjiBrowser.selectExistingLists}</h4>
             {studyLists.map((list) => {
               const canAdd = canAddToList(list.type);
               return (
@@ -790,7 +807,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
                       ></div>
                       <span className="text-sm text-foreground">{list.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        ({list.itemIds.length} items)
+                        ({list.itemIds.length} {strings.kanjiBrowser.items})
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded ${list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
                         }`}>
@@ -815,9 +832,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
               onChange={(e) => setShowCreateNew(e.target.checked)}
               className="rounded border-border"
             />
-            <label className="text-sm font-medium text-muted-foreground cursor-pointer">
-              Create new list
-            </label>
+            <label className="text-sm font-medium text-muted-foreground cursor-pointer">{strings.kanjiBrowser.createNewList}</label>
           </div>
 
           {showCreateNew && (
@@ -826,13 +841,13 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
                 type="text"
                 value={newListName}
                 onChange={(e) => setNewListName(e.target.value)}
-                placeholder="New list name..."
+                placeholder={strings.kanjiBrowser.newListNamePlaceholder}
                 className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 maxLength={50}
               />
 
               <div>
-                <label className="block text-xs text-muted-foreground mb-2">List Type:</label>
+                <label className="block text-xs text-muted-foreground mb-2">{strings.kanjiBrowser.listType}</label>
                 <div className="space-y-2">
                   <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
                     <input
@@ -844,9 +859,9 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
                       className="mt-0.5"
                     />
                     <div>
-                      <div className="text-sm font-medium text-foreground">Flashcard List</div>
-                      <div className="text-xs text-muted-foreground">For memorization and review (accepts any content)</div>
-                      <div className="text-xs text-green-400 mt-1">✓ Perfect for kanji study</div>
+                      <div className="text-sm font-medium text-foreground">{strings.kanjiBrowser.flashcardList}</div>
+                      <div className="text-xs text-muted-foreground">{strings.kanjiBrowser.flashcardReviewDescription}</div>
+                      <div className="text-xs text-green-400 mt-1">{strings.kanjiBrowser.flashcardPerfectForKanjiStudy}</div>
                     </div>
                   </label>
 
@@ -861,9 +876,9 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
                       className="mt-0.5"
                     />
                     <div>
-                      <div className="text-sm font-medium text-foreground">Drillable List</div>
-                      <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
-                      <div className="text-xs text-red-400 mt-1">⚠️ Kanji cannot be conjugated</div>
+                      <div className="text-sm font-medium text-foreground">{strings.kanjiBrowser.drillableList}</div>
+                      <div className="text-xs text-muted-foreground">{strings.kanjiBrowser.conjugationPracticeDescription}</div>
+                      <div className="text-xs text-red-400 mt-1">{strings.kanjiBrowser.kanjiCannotBeConjugated}</div>
                     </div>
                   </label>
                 </div>
@@ -877,14 +892,14 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
             onClick={onClose}
             className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
           >
-            Cancel
+            {strings.kanjiBrowser.cancel}
           </button>
           <button
             onClick={handleSave}
             disabled={(selectedLists.length === 0 && !newListName.trim()) || saving}
             className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? 'Saving...' : 'Save Kanji'}
+            {saving ? 'Saving...' : strings.kanjiBrowser.saveKanji}
           </button>
         </div>
       </div>

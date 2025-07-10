@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface PageHelpIconProps {
   title: string;
@@ -11,6 +11,7 @@ interface PageHelpIconProps {
 
 export function PageHelpIcon({ title, description, tips }: PageHelpIconProps) {
   const [showModal, setShowModal] = useState(false);
+  const strings = useStrings();
 
   if (!showModal) {
     return (

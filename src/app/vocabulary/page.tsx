@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import { searchWords } from '@/utils/api';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
@@ -16,6 +16,7 @@ import { StudyListManager } from '@/utils/studyListManager';
 export default function VocabularyPage() {
   const { user } = useAuth();
   const { subscription } = useSubscription2();
+  const strings = useStrings();
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<JapaneseWord[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -56,11 +57,11 @@ export default function VocabularyPage() {
       setCurrentSearchResults(searchResults);
       setCurrentSearchTerm(term);
       setShowSearchResults(true);
-      
+
       // Save to search history
       await SearchHistoryManager.addSearchEntry(term, searchResults);
       await loadSearchHistory(); // Reload history to show the new entry
-      
+
       // Track vocabulary search analytics
       Analytics.trackVocabularySearch(user?.uid, {
         searchTerm: term,
@@ -116,7 +117,7 @@ export default function VocabularyPage() {
 
       setShowSaveModal(false);
       setWordToSave(null);
-      
+
       // Show success message (optional)
       console.log('Word saved successfully');
     } catch (error) {
@@ -182,6 +183,9 @@ export default function VocabularyPage() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
         <PageHeader title={strings.vocab.title} helpKey="vocabulary" />
+        <p className="text-muted-foreground text-center mt-2">
+          {strings.vocab.searchPlaceholder}
+        </p>
 
         <main className="max-w-4xl mx-auto">
           <p className="text-muted-foreground mb-6 text-center">
@@ -190,29 +194,25 @@ export default function VocabularyPage() {
 
           {/* Search */}
           <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchTerm); }} className="mb-8">
-            <div className="flex gap-3">
+            <div className="relative">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={strings.vocab.searchPlaceholder}
-                className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="flex-1 w-full px-4 py-3 pr-12 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <button
                 type="submit"
                 disabled={searching}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center justify-center disabled:opacity-50"
+                className="absolute top-1/2 right-3 -translate-y-1/2 p-2 rounded-full hover:bg-muted transition-colors disabled:opacity-50"
+                style={{ lineHeight: 0 }}
+                aria-label="Search"
               >
                 {searching ? (
                   <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
                 ) : (
-                  <>
-                    <svg className="w-5 h-5 md:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <span className="hidden md:inline">Search</span>
-                  </>
+                  <img src="/flat-icons/magnifying-glass.svg" alt="Search" className="w-6 h-6" />
                 )}
               </button>
             </div>
@@ -277,10 +277,12 @@ export default function VocabularyPage() {
 
               {searchHistory.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="text-6xl mb-4">🔍</div>
-                  <h3 className="text-lg font-medium text-foreground mb-2">No Search History</h3>
-                  <p className="text-muted-foreground">
-                    Your search history will appear here as you search for Japanese words.
+                  <div className="text-6xl mb-4">📚</div>
+                  <h3 className="text-xl font-semibold text-foreground mb-4">
+                    {strings.vocab.noResults}
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    {strings.vocab.searchPlaceholder}
                   </p>
                 </div>
               ) : (
@@ -367,6 +369,7 @@ interface SearchLoadingOverlayProps {
 }
 
 function SearchLoadingOverlay({ searchTerm }: SearchLoadingOverlayProps) {
+  const strings = useStrings();
   const [currentMessage, setCurrentMessage] = useState(0);
 
   useEffect(() => {
@@ -453,11 +456,11 @@ interface WordModalProps {
 
 function WordModal({ word, onClose, onSave }: WordModalProps) {
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-card border border-border rounded-lg p-6 max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
@@ -472,7 +475,7 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
             </svg>
           </button>
         </div>
-        
+
         <div className="space-y-4">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Reading</p>
@@ -481,12 +484,12 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
               <VocabularyTTSButton word={word} />
             </p>
           </div>
-          
+
           <div>
             <p className="text-sm text-muted-foreground mb-1">Meaning</p>
             <p className="text-lg">{word.meaning}</p>
           </div>
-          
+
           {word.type && (
             <div>
               <p className="text-sm text-muted-foreground mb-1">Type</p>
@@ -505,7 +508,7 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
           </div>
 
           {/* Conjugation Link */}
-          {(word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' || 
+          {(word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' ||
             word.type === 'i-adjective' || word.type === 'na-adjective') && (
             <div className="pt-2">
               <a
@@ -532,6 +535,7 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
   const { user } = useAuth();
   const { subscription } = useSubscription2();
   const { checkAndTrack } = useAccess();
+  const strings = useStrings();
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [showCreateNew, setShowCreateNew] = useState(false);
@@ -572,15 +576,15 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
       }
       return `${strings.listCompatibility.incompatible}: ${strings.listCompatibility.sentencesOnly}`;
     }
-    
+
     if (listType === 'flashcard') {
       return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.flashcardReview}`;
     }
-    
+
     if (listType === 'drillable') {
       return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.conjugationPractice}`;
     }
-    
+
     return `${strings.listCompatibility.compatible}: ${strings.listCompatibility.flashcardReview}`;
   };
 

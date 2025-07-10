@@ -1,5 +1,5 @@
 import { NavItem } from '@/types';
-import { strings } from '@/config/strings';
+import { en as strings } from '@/config/strings/en';
 
 /**
  * ⚠️  IMPORTANT: NAVIGATION MAINTENANCE REMINDER ⚠️
@@ -25,59 +25,59 @@ import { strings } from '@/config/strings';
 export const AVAILABLE_NAV_ITEMS: NavItem[] = [
   {
     id: 'drill',
-    label: strings.navigation.drill.label,
-    icon: strings.navigation.drill.icon,
+    label: strings.nav.drill,
+    icon: '⚡', // Fallback icon
     href: '/drill',
-    description: strings.navigation.drill.description
+    description: strings.nav.drillDescription || 'Drill mode'
   },
   {
     id: 'kanji-moods',
-    label: strings.navigation.kanjiMoods.label,
-    icon: strings.navigation.kanjiMoods.icon,
+    label: strings.nav.kanjiMoods,
+    icon: '🎭', // Fallback icon
     href: '/kanji-moods',
-    description: strings.navigation.kanjiMoods.description
+    description: strings.nav.kanjiMoodsDescription || 'Kanji Moods'
   },
   {
     id: 'resources',
-    label: strings.navigation.resources.label,
-    icon: strings.navigation.resources.icon,
+    label: strings.nav.resources,
+    icon: '📚', // Fallback icon
     href: '/resources',
-    description: strings.navigation.resources.description
+    description: strings.nav.resourcesDescription || 'Resources'
   },
   {
     id: 'vocabulary',
-    label: strings.navigation.vocabulary.label,
-    icon: strings.navigation.vocabulary.icon,
+    label: strings.nav.vocabulary,
+    icon: '📝', // Fallback icon
     href: '/vocabulary',
-    description: strings.navigation.vocabulary.description
+    description: strings.nav.vocabularyDescription || 'Vocabulary'
   },
   {
     id: 'practice',
-    label: strings.navigation.practice.label,
-    icon: strings.navigation.practice.icon,
+    label: strings.nav.practice,
+    icon: '💪', // Fallback icon
     href: '/practice',
-    description: strings.navigation.practice.description
+    description: strings.nav.practiceDescription || 'Practice'
   },
   {
     id: 'news',
-    label: strings.navigation.news.label,
-    icon: strings.navigation.news.icon,
+    label: strings.nav.news,
+    icon: '📰', // Fallback icon
     href: '/news',
-    description: strings.navigation.news.description
+    description: strings.nav.newsDescription || 'News'
   },
   {
     id: 'stories',
-    label: strings.navigation.stories.label,
-    icon: strings.navigation.stories.icon,
+    label: strings.nav.stories,
+    icon: '📖', // Fallback icon
     href: '/stories',
-    description: strings.navigation.stories.description
+    description: strings.nav.storiesDescription || 'Stories'
   },
   {
     id: 'games',
-    label: strings.navigation.games.label,
-    icon: strings.navigation.games.icon,
+    label: strings.nav.games,
+    icon: '🎮', // Fallback icon
     href: '/games',
-    description: strings.navigation.games.description
+    description: strings.nav.gamesDescription || 'Games'
   },
   // {
   //   id: 'favourites',
@@ -95,17 +95,17 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
   // },
   {
     id: 'account',
-    label: strings.navigation.account.label,
-    icon: strings.navigation.account.icon,
+    label: strings.nav.account,
+    icon: '👤', // Fallback icon
     href: '/account',
-    description: strings.navigation.account.description
+    description: strings.nav.accountDescription || 'Account'
   },
   {
     id: 'settings',
-    label: strings.navigation.settings.label,
-    icon: strings.navigation.settings.icon,
+    label: strings.nav.settings,
+    icon: '⚙️', // Fallback icon
     href: '/settings',
-    description: strings.navigation.settings.description
+    description: strings.nav.settingsDescription || 'Settings'
   }
 ];
 
@@ -114,10 +114,10 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
  */
 export const HOME_NAV_ITEM: NavItem = {
   id: 'home',
-  label: strings.navigation.home.label,
-  icon: strings.navigation.home.icon,
+  label: strings.nav.home,
+  icon: '🏠', // Fallback icon
   href: '/',
-  description: strings.navigation.home.description
+  description: strings.nav.homeDescription || 'Home'
 };
 
 /**

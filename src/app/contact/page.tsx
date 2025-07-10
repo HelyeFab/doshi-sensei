@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import validator from 'validator';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function ContactPage() {
   const router = useRouter();
@@ -20,6 +20,8 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const strings = useStrings();
 
   // Handle URL parameters for pre-selecting category
   useEffect(() => {
@@ -98,28 +100,28 @@ export default function ContactPage() {
         </div>
         {/* Main Content */}
         <div className="container mx-auto px-4 py-8 min-h-screen">
-          <PageHeader title="Contact Us" />
+          <PageHeader title={strings.contact.title} />
           <main className="max-w-md mx-auto mb-32 md:mb-8 pb-safe">
             <div className="bg-card border border-border rounded-lg p-8 text-center">
               <div className="text-6xl mb-4">✅</div>
               <h2 className="text-xl font-semibold text-foreground mb-4">
-                Message Sent Successfully!
+                {strings.contact.successTitle}
               </h2>
               <p className="text-muted-foreground mb-6">
-                Thank you for contacting us. We'll get back to you as soon as possible.
+                {strings.contact.successMessage}
               </p>
               <div className="space-y-3">
                 <button
                   onClick={() => setShowSuccess(false)}
                   className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
-                  Send Another Message
+                  {strings.contact.sendAnother}
                 </button>
                 <button
                   onClick={() => router.back()}
                   className="w-full px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
                 >
-                  Go Back
+                  {strings.common.back}
                 </button>
               </div>
             </div>
@@ -138,16 +140,16 @@ export default function ContactPage() {
       </div>
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen">
-        <PageHeader title="Contact Us" />
+        <PageHeader title={strings.contact.title} />
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="bg-card border border-border rounded-lg p-6">
             <div className="text-center mb-6">
               <div className="text-4xl mb-4">💬</div>
               <h1 className="text-xl font-semibold text-foreground mb-2">
-                Get in Touch
+                {strings.contact.getInTouch}
               </h1>
               <p className="text-muted-foreground">
-                We'd love to hear from you! Send us a message and we'll respond as soon as possible.
+                {strings.contact.intro}
               </p>
             </div>
             {/* Hidden Netlify form for form detection */}
@@ -156,11 +158,11 @@ export default function ContactPage() {
               <input type="email" name="email" />
               <input type="text" name="subject" />
               <select name="category">
-                <option value="general">General Question</option>
-                <option value="bug">Bug Report</option>
-                <option value="feedback">Feedback</option>
-                <option value="feature">Feature Request</option>
-                <option value="support">Technical Support</option>
+                <option value="general">{strings.contact.form.categories.general}</option>
+                <option value="bug">{strings.contact.form.categories.bug}</option>
+                <option value="feedback">{strings.contact.form.categories.feedback}</option>
+                <option value="feature">{strings.contact.form.categories.feature}</option>
+                <option value="support">{strings.contact.form.categories.support}</option>
               </select>
               <textarea name="message"></textarea>
             </form>
@@ -169,7 +171,7 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                    {strings.forms.name} *
+                    {strings.contact.form.name} *
                   </label>
                   <input
                     type="text"
@@ -179,12 +181,12 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder={strings.forms.placeholders.name}
+                    placeholder={strings.contact.form.placeholders.name}
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                    {strings.forms.email} *
+                    {strings.contact.form.email} *
                   </label>
                   <input
                     type="email"
@@ -194,13 +196,13 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder={strings.forms.placeholders.email}
+                    placeholder={strings.contact.form.placeholders.email}
                   />
                 </div>
               </div>
               <div>
                 <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
-                  Category
+                  {strings.contact.form.category}
                 </label>
                 <select
                   id="category"
@@ -209,16 +211,16 @@ export default function ContactPage() {
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
-                  <option value="general">General Question</option>
-                  <option value="bug">Bug Report</option>
-                  <option value="feedback">Feedback</option>
-                  <option value="feature">Feature Request</option>
-                  <option value="support">Technical Support</option>
+                  <option value="general">{strings.contact.form.categories.general}</option>
+                  <option value="bug">{strings.contact.form.categories.bug}</option>
+                  <option value="feedback">{strings.contact.form.categories.feedback}</option>
+                  <option value="feature">{strings.contact.form.categories.feature}</option>
+                  <option value="support">{strings.contact.form.categories.support}</option>
                 </select>
               </div>
               <div>
                 <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
-                  Subject
+                  {strings.contact.form.subject}
                 </label>
                 <input
                   type="text"
@@ -227,12 +229,12 @@ export default function ContactPage() {
                   value={formData.subject}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Subject (optional)"
+                  placeholder={strings.contact.form.placeholders.subject}
                 />
               </div>
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                  Message *
+                  {strings.contact.form.message} *
                 </label>
                 <textarea
                   id="message"
@@ -242,7 +244,7 @@ export default function ContactPage() {
                   required
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   rows={5}
-                  placeholder="Type your message here..."
+                  placeholder={strings.contact.form.placeholders.message}
                 />
               </div>
               <div className="flex justify-end">
@@ -251,7 +253,7 @@ export default function ContactPage() {
                   disabled={isSubmitting}
                   className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                  {isSubmitting ? strings.contact.sending : strings.contact.sendMessage}
                 </button>
               </div>
             </form>
@@ -262,9 +264,9 @@ export default function ContactPage() {
       {errorMessage && (
         <ConfirmationDialog
           isOpen={!!errorMessage}
-          title="Error"
+          title={strings.errors.general}
           message={errorMessage}
-          confirmText="OK"
+          confirmText={strings.common.ok}
           cancelText=""
           isDestructive={false}
           onConfirm={() => setErrorMessage(null)}

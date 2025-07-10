@@ -5,9 +5,10 @@ import { UserSearch } from '@/components/admin/UserSearch';
 import { UserTable } from '@/components/admin/UserTable';
 import { useState } from 'react';
 import { AdminUserDetails } from '@/types/admin';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function UsersPage() {
+  const strings = useStrings();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<AdminUserDetails | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'free' | 'premium' | 'active'>('all');

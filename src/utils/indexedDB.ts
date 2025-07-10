@@ -215,7 +215,7 @@ export async function initializeDB(): Promise<IDBDatabase> {
 /**
  * Generic function to perform database operations
  */
-async function performDBOperation<T>(
+export async function performDBOperation<T>(
   storeName: keyof DatabaseSchema,
   mode: IDBTransactionMode,
   operation: (store: IDBObjectStore) => IDBRequest<T>

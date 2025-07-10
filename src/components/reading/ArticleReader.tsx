@@ -21,7 +21,7 @@ import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
 import { cleanTextForTTS } from '@/utils/japaneseParser';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -789,7 +789,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                     d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
                   />
                 </svg>
-                <span>{strings.navigation.menu.options}</span>
+                <span>{useStrings().navigation.menu.options}</span>
               </button>
 
               {/* Dropdown Menu */}

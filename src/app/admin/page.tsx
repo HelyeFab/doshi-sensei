@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverview } from '@/components/admin/StatsOverview';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 function QuickAction({ title, description, icon, onClick, loading }: {
   title: string;
@@ -32,6 +32,7 @@ function QuickAction({ title, description, icon, onClick, loading }: {
 }
 
 export default function AdminDashboard() {
+  const strings = useStrings();
   const router = useRouter();
 
   const handleQuickAction = (action: string) => {

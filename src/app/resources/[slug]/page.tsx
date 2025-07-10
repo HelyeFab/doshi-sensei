@@ -9,7 +9,7 @@ import { formatDistanceToNow, format } from 'date-fns';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function ResourcePostPage() {
   const params = useParams();
@@ -171,7 +171,7 @@ export default function ResourcePostPage() {
               )}
               {resource.isPremium && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                  {strings.subscriptions.plans.monthly.name}
+                  {useStrings().subscriptions.plans.monthly.name}
                 </span>
               )}
             </div>

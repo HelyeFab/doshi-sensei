@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useTTS, TTSOptions } from '@/hooks/useTTS';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface TTSButtonProps {
   text: string;
@@ -32,6 +32,7 @@ export function TTSButton({
   tooltip,
   children
 }: TTSButtonProps) {
+  const strings = useStrings();
   const { state, speak } = useTTS();
 
   const handleClick = async () => {

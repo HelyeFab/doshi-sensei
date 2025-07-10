@@ -15,6 +15,7 @@ import { generateFuriganaWithCache } from '@/utils/furigana';
 import Link from 'next/link';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import ListSelectionModal from '@/components/ListSelectionModal';
+import { useStrings } from '@/hooks/useLanguage';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -58,6 +59,7 @@ export default function FavouritesPage() {
   const { subscription, isPremium } = useSubscription2();
   const { feature: listFeature, access: listAccess } = useFeature('word_lists');
   const { canAccess, showAccessPrompt, checkAndTrack } = useAccess();
+  const strings = useStrings();
 
   // Tab management
   const [activeTab, setActiveTab] = useState<TabType>('lists');
@@ -224,10 +226,10 @@ export default function FavouritesPage() {
     setConfirmDialog({
       isOpen: true,
       loading: false,
-      title: 'Delete List',
-      message: 'Are you sure you want to delete this list? This action cannot be undone.',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: strings.tooltips.deleteList,
+      message: strings.favourites.lists.deleteConfirmation,
+      confirmText: strings.tooltips.delete,
+      cancelText: strings.tooltips.cancel,
       isDestructive: true,
       onConfirm: async () => {
         setConfirmDialog((prev) => ({ ...prev, loading: true }));
@@ -241,7 +243,7 @@ export default function FavouritesPage() {
             setListSentences([]);
           }
         } catch (error) {
-          setErrorMessage('Error deleting list. Please try again.');
+          setErrorMessage(strings.favourites.lists.deleteError);
           console.error('Error deleting list:', error);
         } finally {
           setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }));
@@ -301,7 +303,7 @@ export default function FavouritesPage() {
       await ArticleManager.removeBookmark(user.uid, articleId);
       await loadBookmarkedArticles();
     } catch (error) {
-      setErrorMessage('Failed to remove the article bookmark. Please try again.');
+      setErrorMessage(strings.favourites.articles.removeError);
       console.error('Error removing bookmarked article:', error);
     }
   };
@@ -312,7 +314,7 @@ export default function FavouritesPage() {
       await StoryBookmarkManager.removeBookmark(user.uid, storyId);
       await loadBookmarkedStories();
     } catch (error) {
-      setErrorMessage('Failed to remove the story bookmark. Please try again.');
+      setErrorMessage(strings.favourites.stories.removeError);
       console.error('Error removing bookmarked story:', error);
     }
   };
@@ -322,10 +324,10 @@ export default function FavouritesPage() {
       setConfirmDialog({
         isOpen: true,
         loading: false,
-        title: 'Delete All Word Lists',
-        message: 'Are you sure you want to delete all word lists? This action cannot be undone.',
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: strings.favourites.lists.clearAllConfirmation.title,
+        message: strings.favourites.lists.clearAllConfirmation.message,
+        confirmText: strings.tooltips.delete,
+        cancelText: strings.tooltips.cancel,
         isDestructive: true,
         onConfirm: async () => {
           setConfirmDialog((prev) => ({ ...prev, loading: true }));
@@ -338,7 +340,7 @@ export default function FavouritesPage() {
             setListWords([]);
             setListKanji([]);
           } catch (error) {
-            setErrorMessage('Failed to delete all word lists. Please try again.');
+            setErrorMessage(strings.favourites.lists.clearAllError);
             console.error('Error clearing word lists:', error);
           } finally {
             setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }));
@@ -349,10 +351,10 @@ export default function FavouritesPage() {
       setConfirmDialog({
         isOpen: true,
         loading: false,
-        title: 'Remove All Bookmarked Articles',
-        message: 'Are you sure you want to remove all bookmarked articles? This action cannot be undone.',
-        confirmText: 'Remove',
-        cancelText: 'Cancel',
+        title: strings.favourites.articles.clearAllConfirmation.title,
+        message: strings.favourites.articles.clearAllConfirmation.message,
+        confirmText: strings.tooltips.remove,
+        cancelText: strings.tooltips.cancel,
         isDestructive: true,
         onConfirm: async () => {
           setConfirmDialog((prev) => ({ ...prev, loading: true }));
@@ -371,10 +373,10 @@ export default function FavouritesPage() {
               }
               // Always reload from Firestore after deletion
               await loadBookmarkedArticles();
-              if (hadError) setErrorMessage('Some articles could not be removed. Please try again.');
+              if (hadError) setErrorMessage(strings.favourites.articles.clearAllError);
             }
           } catch (error) {
-            setErrorMessage('Failed to remove all bookmarked articles. Please try again.');
+            setErrorMessage(strings.favourites.articles.clearAllError);
             console.error('Error clearing bookmarked articles:', error);
           } finally {
             setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }));
@@ -385,10 +387,10 @@ export default function FavouritesPage() {
       setConfirmDialog({
         isOpen: true,
         loading: false,
-        title: 'Remove All Bookmarked Stories',
-        message: 'Are you sure you want to remove all bookmarked stories? This action cannot be undone.',
-        confirmText: 'Remove',
-        cancelText: 'Cancel',
+        title: strings.favourites.stories.clearAllConfirmation.title,
+        message: strings.favourites.stories.clearAllConfirmation.message,
+        confirmText: strings.tooltips.remove,
+        cancelText: strings.tooltips.cancel,
         isDestructive: true,
         onConfirm: async () => {
           setConfirmDialog((prev) => ({ ...prev, loading: true }));
@@ -405,10 +407,10 @@ export default function FavouritesPage() {
               }
               // Always reload from Firestore after deletion
               await loadBookmarkedStories();
-              if (hadError) setErrorMessage('Some stories could not be removed. Please try again.');
+              if (hadError) setErrorMessage(strings.favourites.stories.clearAllError);
             }
           } catch (error) {
-            setErrorMessage('Failed to remove all bookmarked stories. Please try again.');
+            setErrorMessage(strings.favourites.stories.clearAllError);
             console.error('Error clearing bookmarked stories:', error);
           } finally {
             setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }));
@@ -488,9 +490,9 @@ export default function FavouritesPage() {
       <div className="container mx-auto px-4 pb-20">
         {/* Header */}
         <div className="mb-8">
-          <PageHeader title="⭐ My Favourites" helpKey="favourites" />
+          <PageHeader title={strings.favourites.title} helpKey="favourites" />
           <p className="text-muted-foreground text-center mt-2">
-            Your personal collection of vocabulary lists and bookmarked articles.
+            {strings.favourites.description}
           </p>
         </div>
 
@@ -504,7 +506,7 @@ export default function FavouritesPage() {
                 : 'text-muted-foreground hover:text-foreground'
                 }`}
             >
-              📚 Lists ({wordLists.length})
+              {strings.favourites.tabs.lists} ({wordLists.length})
             </button>
             <button
               onClick={() => setActiveTab('articles')}
@@ -513,7 +515,7 @@ export default function FavouritesPage() {
                 : 'text-muted-foreground hover:text-foreground'
                 }`}
             >
-              📰 Articles ({bookmarkedArticles.length})
+              {strings.favourites.tabs.articles} ({bookmarkedArticles.length})
             </button>
             <button
               onClick={() => setActiveTab('stories')}
@@ -522,7 +524,7 @@ export default function FavouritesPage() {
                 : 'text-muted-foreground hover:text-foreground'
                 }`}
             >
-              📖 Stories ({bookmarkedStories.length})
+              {strings.favourites.tabs.stories} ({bookmarkedStories.length})
             </button>
           </div>
         </div>
@@ -536,10 +538,10 @@ export default function FavouritesPage() {
               <div className="text-center max-w-md mx-auto py-12">
                 <div className="text-6xl mb-4">📚</div>
                 <h3 className="text-xl font-semibold text-foreground mb-4">
-                  No Word Lists Yet
+                  {strings.favourites.lists.emptyState.title}
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Create your first list to start organizing your Japanese vocabulary.
+                  {strings.favourites.lists.emptyState.description}
                 </p>
                 <button
                   onClick={() => handleCreateListClick()}
@@ -548,27 +550,27 @@ export default function FavouritesPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Create Your First List
+                  {strings.favourites.lists.emptyState.createButton}
                 </button>
               </div>
             ) : (
               <>
                 {/* Controls */}
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-foreground">My Word Lists</h2>
+                  <h2 className="text-xl font-semibold text-foreground">{strings.favourites.lists.title}</h2>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleCreateListClick()}
                       className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
                     >
-                      + Create List
+                      + {strings.favourites.lists.actions.createList}
                     </button>
                     {wordLists.length > 0 && (
                       <button
                         onClick={clearAllSaved}
                         className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors text-sm font-medium"
                       >
-                        Clear All
+                        {strings.favourites.lists.actions.clearAll}
                       </button>
                     )}
                   </div>
@@ -658,7 +660,7 @@ export default function FavouritesPage() {
                   onClick={() => handleListDelete(selectedList.id)}
                   className="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors text-sm font-medium"
                 >
-                  Delete List
+                  {strings.tooltips.deleteList}
                 </button>
               </div>
 
@@ -716,17 +718,17 @@ export default function FavouritesPage() {
             <div className="text-center max-w-md mx-auto py-12">
               <div className="text-6xl mb-4">📰</div>
               <h3 className="text-xl font-semibold text-foreground mb-4">
-                No Bookmarked Articles Yet
+                {strings.favourites.articles.emptyState.title}
               </h3>
               <p className="text-muted-foreground mb-6">
-                Start reading Japanese news articles and bookmark the ones you want to revisit later.
-                {!isPremium && ` Free users can bookmark up to 3 articles.`}
+                {strings.favourites.articles.emptyState.description}
+                {!isPremium && ` ${strings.favourites.articles.emptyState.freeLimit}`}
               </p>
               <a
                 href="/news"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
               >
-                📖 Browse Articles
+                📖 {strings.favourites.articles.emptyState.browseButton}
               </a>
             </div>
           ) : (
@@ -735,25 +737,25 @@ export default function FavouritesPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-primary mb-1">{bookmarkedArticles.length}</div>
-                  <div className="text-xs text-muted-foreground">Total Bookmarked</div>
+                  <div className="text-xs text-muted-foreground">{strings.favourites.articles.statistics.totalBookmarked}</div>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-blue-500 mb-1">{categories.length}</div>
-                  <div className="text-xs text-muted-foreground">Categories</div>
+                  <div className="text-xs text-muted-foreground">{strings.favourites.articles.statistics.categories}</div>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-green-500 mb-1">
                     {isPremium ? '∞' : Math.max(0, 3 - bookmarkedArticles.length)}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {isPremium ? 'Unlimited' : 'Remaining'}
+                    {isPremium ? strings.favourites.articles.statistics.unlimited : strings.favourites.articles.statistics.remaining}
                   </div>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-purple-500 mb-1">
                     {Math.round(bookmarkedArticles.reduce((sum, article) => sum + (article.metadata?.estimatedReadingTime || 5), 0))}
                   </div>
-                  <div className="text-xs text-muted-foreground">Minutes to Read</div>
+                  <div className="text-xs text-muted-foreground">{strings.favourites.articles.statistics.minutesToRead}</div>
                 </div>
               </div>
 
@@ -762,14 +764,14 @@ export default function FavouritesPage() {
                 {/* Filter by Category */}
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Filter by Category
+                    {strings.favourites.articles.controls.filterByCategory}
                   </label>
                   <select
                     value={articleFilterCategory}
                     onChange={(e) => setArticleFilterCategory(e.target.value)}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   >
-                    <option value="all">All Categories ({bookmarkedArticles.length})</option>
+                    <option value="all">{strings.favourites.articles.controls.allCategories} ({bookmarkedArticles.length})</option>
                     {categories.map((category, idx) => (
                       <option key={category || idx} value={category}>
                         {category} ({bookmarkedArticles.filter(a => a.articleCategory === category).length})
@@ -781,16 +783,16 @@ export default function FavouritesPage() {
                 {/* Sort By */}
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Sort By
+                    {strings.favourites.articles.controls.sortBy}
                   </label>
                   <select
                     value={articleSortBy}
                     onChange={(e) => setArticleSortBy(e.target.value as 'recent' | 'title' | 'category')}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   >
-                    <option value="recent">Recently Bookmarked</option>
-                    <option value="title">Title (A-Z)</option>
-                    <option value="category">Category</option>
+                    <option value="recent">{strings.favourites.articles.controls.recentlyBookmarked}</option>
+                    <option value="title">{strings.favourites.articles.controls.title}</option>
+                    <option value="category">{strings.favourites.articles.controls.category}</option>
                   </select>
                 </div>
 
@@ -800,7 +802,7 @@ export default function FavouritesPage() {
                     onClick={clearAllSaved}
                     className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors font-medium"
                   >
-                    Clear All Articles
+                    {strings.favourites.articles.controls.clearAllArticles}
                   </button>
                 </div>
               </div>
@@ -858,7 +860,7 @@ export default function FavouritesPage() {
 
                       {/* Bookmark Date */}
                       <div className="text-xs text-muted-foreground">
-                        Bookmarked {article.bookmarkedAt?.toLocaleDateString?.() || ''}
+                        {strings.favourites.articles.bookmarkDate} {article.bookmarkedAt?.toLocaleDateString?.() || ''}
                       </div>
 
                       {/* Actions */}
@@ -867,7 +869,7 @@ export default function FavouritesPage() {
                           href={`/news/${article.contentId}`}
                           className="flex-1 px-3 py-2 bg-primary text-primary-foreground rounded text-sm text-center hover:bg-primary/90 transition-colors"
                         >
-                          📖 Read Article
+                          📖 {strings.favourites.articles.actions.readArticle}
                         </a>
                         <a
                           href={article.articleUrl}
@@ -889,10 +891,10 @@ export default function FavouritesPage() {
                 <div className="text-center py-12">
                   <div className="text-4xl mb-4">🔍</div>
                   <h3 className="text-lg font-medium text-foreground mb-2">
-                    No articles found
+                    {strings.favourites.articles.noResults}
                   </h3>
                   <p className="text-muted-foreground">
-                    Try adjusting your filter settings to see more results.
+                    {strings.favourites.articles.tryAdjustingFilters}
                   </p>
                 </div>
               )}
@@ -909,17 +911,17 @@ export default function FavouritesPage() {
             <div className="text-center max-w-md mx-auto py-12">
               <div className="text-6xl mb-4">📖</div>
               <h3 className="text-xl font-semibold text-foreground mb-4">
-                No Bookmarked Stories Yet
+                {strings.favourites.stories.emptyState.title}
               </h3>
               <p className="text-muted-foreground mb-6">
-                Start reading AI-generated Japanese stories and bookmark the ones you want to revisit later.
-                {!isPremium && ` Free users can bookmark up to 5 stories.`}
+                {strings.favourites.stories.emptyState.description}
+                {!isPremium && ` ${strings.favourites.stories.emptyState.freeLimit}`}
               </p>
               <a
                 href="/stories"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
               >
-                📖 Browse Stories
+                📖 {strings.favourites.stories.emptyState.browseButton}
               </a>
             </div>
           ) : (
@@ -928,25 +930,25 @@ export default function FavouritesPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-primary mb-1">{bookmarkedStories.length}</div>
-                  <div className="text-xs text-muted-foreground">Total Bookmarked</div>
+                  <div className="text-xs text-muted-foreground">{strings.favourites.stories.statistics.totalBookmarked}</div>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-blue-500 mb-1">{themes.length}</div>
-                  <div className="text-xs text-muted-foreground">Themes</div>
+                  <div className="text-xs text-muted-foreground">{strings.favourites.stories.statistics.themes}</div>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-green-500 mb-1">
                     {isPremium ? '∞' : Math.max(0, 5 - bookmarkedStories.length)}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {isPremium ? 'Unlimited' : 'Remaining'}
+                    {isPremium ? strings.favourites.stories.statistics.unlimited : strings.favourites.stories.statistics.remaining}
                   </div>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-purple-500 mb-1">
                     {Math.round(bookmarkedStories.reduce((sum, story) => sum + (story.readingProgress || 0), 0) / bookmarkedStories.length)}
                   </div>
-                  <div className="text-xs text-muted-foreground">Avg Progress %</div>
+                  <div className="text-xs text-muted-foreground">{strings.favourites.stories.statistics.avgProgress}</div>
                 </div>
               </div>
 
@@ -955,14 +957,14 @@ export default function FavouritesPage() {
                 {/* Filter by Theme */}
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Filter by Theme
+                    {strings.favourites.stories.controls.filterByTheme}
                   </label>
                   <select
                     value={storyFilterTheme}
                     onChange={(e) => setStoryFilterTheme(e.target.value)}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   >
-                    <option value="all">All Themes ({bookmarkedStories.length})</option>
+                    <option value="all">{strings.favourites.stories.controls.allThemes} ({bookmarkedStories.length})</option>
                     {themes.map((theme, idx) => (
                       <option key={theme || idx} value={theme}>
                         {theme} ({bookmarkedStories.filter(s => (s.originalContent?.theme || 'Unknown') === theme).length})
@@ -974,16 +976,16 @@ export default function FavouritesPage() {
                 {/* Sort By */}
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Sort By
+                    {strings.favourites.stories.controls.sortBy}
                   </label>
                   <select
                     value={storySortBy}
                     onChange={(e) => setStorySortBy(e.target.value as 'recent' | 'title' | 'theme')}
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   >
-                    <option value="recent">Recently Bookmarked</option>
-                    <option value="title">Title (A-Z)</option>
-                    <option value="theme">Theme</option>
+                    <option value="recent">{strings.favourites.stories.controls.recentlyBookmarked}</option>
+                    <option value="title">{strings.favourites.stories.controls.title}</option>
+                    <option value="theme">{strings.favourites.stories.controls.theme}</option>
                   </select>
                 </div>
 
@@ -993,7 +995,7 @@ export default function FavouritesPage() {
                     onClick={clearAllSaved}
                     className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors font-medium"
                   >
-                    Clear All Stories
+                    {strings.favourites.stories.controls.clearAllStories}
                   </button>
                 </div>
               </div>
@@ -1029,13 +1031,13 @@ export default function FavouritesPage() {
                           {story.contentDifficulty}
                         </span>
                         <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 rounded">
-                          {story.readingProgress || 0}% read
+                          {story.readingProgress || 0}% {strings.favourites.stories.readingProgress}
                         </span>
                       </div>
 
                       {/* Bookmark Date */}
                       <div className="text-xs text-muted-foreground">
-                        Bookmarked {story.bookmarkedAt?.toLocaleDateString?.() || ''}
+                        {strings.favourites.stories.bookmarkDate} {story.bookmarkedAt?.toLocaleDateString?.() || ''}
                       </div>
 
                       {/* Actions */}
@@ -1044,7 +1046,7 @@ export default function FavouritesPage() {
                           href={`/stories/${story.contentId}`}
                           className="flex-1 px-3 py-2 bg-primary text-primary-foreground rounded text-sm text-center hover:bg-primary/90 transition-colors"
                         >
-                          📖 Read Story
+                          📖 {strings.favourites.stories.actions.readStory}
                         </a>
                       </div>
                     </div>
@@ -1057,10 +1059,10 @@ export default function FavouritesPage() {
                 <div className="text-center py-12">
                   <div className="text-4xl mb-4">🔍</div>
                   <h3 className="text-lg font-medium text-foreground mb-2">
-                    No stories found
+                    {strings.favourites.stories.noResults}
                   </h3>
                   <p className="text-muted-foreground">
-                    Try adjusting your filter settings to see more results.
+                    {strings.favourites.stories.tryAdjustingFilters}
                   </p>
                 </div>
               )}
@@ -1132,7 +1134,7 @@ export default function FavouritesPage() {
                 await handleStoryRemove(pendingDeleteStoryId);
                 setPendingDeleteStoryId(null);
               } catch (error) {
-                setSingleStoryDeleteError('Failed to remove the story bookmark. Please try again.');
+                setSingleStoryDeleteError(strings.favourites.stories.removeError);
               } finally {
                 setSingleStoryDeleteLoading(false);
               }
@@ -1239,15 +1241,15 @@ function KanjiCard({ kanji, onKanjiClick, onRemoveClick, showRemoveButton }: Kan
             <div className="text-3xl font-semibold text-foreground">{kanji.kanji}</div>
             <div>
               <div className="text-sm text-muted-foreground">
-                {kanji.on && kanji.on.length > 0 && <div>On: {kanji.on.join(', ')}</div>}
-                {kanji.kun && kanji.kun.length > 0 && <div>Kun: {kanji.kun.join(', ')}</div>}
+                {kanji.on && kanji.on.length > 0 && <div>{strings.kanji.on}: {kanji.on.join(', ')}</div>}
+                {kanji.kun && kanji.kun.length > 0 && <div>{strings.kanji.kun}: {kanji.kun.join(', ')}</div>}
               </div>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">{kanji.meaning}</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="inline-block px-2 py-1 text-xs rounded-full border bg-orange-500/10 text-orange-400 border-orange-500/20">
-              Kanji
+              {strings.kanji.kanji}
             </span>
             {kanji.jlpt && (
               <span className="text-xs text-muted-foreground">{kanji.jlpt}</span>
@@ -1312,7 +1314,7 @@ function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCar
           <div className="mb-2">
             <div className="text-lg font-medium text-foreground japanese-text leading-relaxed">
               {showFurigana && furiganaText ? (
-                <div 
+                <div
                   dangerouslySetInnerHTML={{ __html: furiganaText }}
                   className="ruby-text"
                 />
@@ -1330,23 +1332,23 @@ function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCar
 
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-block px-2 py-1 text-xs rounded-full border bg-green-500/10 text-green-400 border-green-500/20">
-              Sentence
+              {strings.sentence.sentence}
             </span>
             {sentence.source && (
               <span className="text-xs text-muted-foreground">
-                From: {sentence.source.title}
+                {strings.sentence.from}: {sentence.source.title}
               </span>
             )}
-            
+
             {/* Furigana toggle */}
             <button
               onClick={() => setShowFurigana(!showFurigana)}
               className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
-                showFurigana 
-                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                showFurigana
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
-              title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+              title={showFurigana ? strings.furigana.hide : strings.furigana.show}
             >
               {loadingFurigana ? (
                 <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
@@ -1354,7 +1356,7 @@ function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCar
                 'あ'
               )}
               <span className="text-xs">
-                {showFurigana ? 'ON' : 'OFF'}
+                {showFurigana ? strings.furigana.on : strings.furigana.off}
               </span>
             </button>
           </div>
@@ -1402,18 +1404,18 @@ function WordModal({ word, onClose }: WordModalProps) {
 
         <div className="space-y-3">
           <div>
-            <p className="text-sm text-muted-foreground">Reading</p>
+            <p className="text-sm text-muted-foreground">{strings.word.reading}</p>
             <p className="text-lg">{word.reading}</p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">Meaning</p>
+            <p className="text-sm text-muted-foreground">{strings.word.meaning}</p>
             <p className="text-lg">{word.meaning}</p>
           </div>
 
           {word.type && (
             <div>
-              <p className="text-sm text-muted-foreground">Type</p>
+              <p className="text-sm text-muted-foreground">{strings.word.type}</p>
               <p className="text-lg">{word.type}</p>
             </div>
           )}

@@ -1,8 +1,8 @@
-'use client';
+                                              'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -11,14 +11,28 @@ import { PageHeader } from '@/components/PageHeader';
 import EnhancedStorageManager from '@/utils/storage';
 import WordListManager from '@/utils/wordLists';
 import useCloudSync from '@/hooks/useCloudSync';
+import { usePremiumSync } from '@/hooks/usePremiumSync';
+import { SyncStatusIndicator } from '@/components/sync/SyncStatusIndicator';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { AVAILABLE_NAV_ITEMS, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 
 export default function SettingsPage() {
+  const strings = useStrings();
   const { settings, updateSetting, resetSettings } = useSettings();
   const { user } = useAuth();
   const { subscription } = useSubscription2();
-  const { syncStatus, canSync, triggerSync } = useCloudSync();
+  const { syncStatus: oldSyncStatus, canSync } = useCloudSync();
+  const {
+    syncStatus,
+    lastSyncTime,
+    syncProgress,
+    isSyncing: premiumSyncing,
+    syncError,
+    queuedItems,
+    triggerSync: triggerPremiumSync,
+    cancelSync,
+    clearSyncError
+  } = usePremiumSync();
   const [showResetModal, setShowResetModal] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -34,6 +48,11 @@ export default function SettingsPage() {
     message: ''
   });
   const router = useRouter();
+
+  // Ensure strings are loaded
+  if (!strings || !strings.settings) {
+    return <div className="container mx-auto px-4 py-8 text-center">Loading...</div>;
+  }
 
   // Handler functions for new settings
   const handleExportData = async () => {
@@ -196,36 +215,13 @@ export default function SettingsPage() {
 
   // Cloud Sync handlers
   const handleManualSync = async () => {
-    if (!canSync || isSyncing) return;
+    if (!canSync || premiumSyncing) return;
 
-    setIsSyncing(true);
     try {
-      const result = await triggerSync();
-      if (result.success) {
-        setSyncModal({
-          show: true,
-          type: 'success',
-          title: 'Sync Completed',
-          message: 'Your data has been successfully synced across all devices!'
-        });
-      } else {
-        setSyncModal({
-          show: true,
-          type: 'error',
-          title: 'Sync Failed',
-          message: result.error || 'Sync failed due to an unknown error. Please try again.'
-        });
-      }
+      await triggerPremiumSync();
+      // Success/error handling is done in the hook
     } catch (error) {
       console.error('Manual sync failed:', error);
-      setSyncModal({
-        show: true,
-        type: 'error',
-        title: 'Sync Failed',
-        message: 'Unable to sync your data. Please check your internet connection and try again.'
-      });
-    } finally {
-      setIsSyncing(false);
     }
   };
 
@@ -246,7 +242,7 @@ export default function SettingsPage() {
     // Navigate to tutorial if this was a successful tutorial reset
     if (wasTutorialReset) {
       // Use window.location to force a full page reload and ensure OnboardingWrapper detects the parameter
-      router.push('/?tutorial=true');
+      window.location.href = '/?tutorial=true';
     }
   };
 
@@ -433,61 +429,71 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 {canSync ? (
                   <>
-                    {/* Sync Status */}
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${syncStatus.isSyncing
-                          ? 'bg-yellow-500 animate-pulse'
-                          : syncStatus.isOnline
-                            ? 'bg-green-500'
-                            : 'bg-red-500'
-                          }`}></div>
-                        <div>
-                          <div className="text-sm font-medium text-foreground">
-                            {syncStatus.isSyncing
-                              ? strings.settings.syncing
-                              : syncStatus.isOnline
-                                ? strings.settings.connected
-                                : strings.settings.offline}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {syncStatus.lastSyncTime
-                              ? `${strings.settings.lastSynced} ${syncStatus.lastSyncTime.toLocaleTimeString()}`
-                              : strings.settings.neverSynced}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {strings.settings.autoSyncEnabled}
-                      </div>
+                    {/* Enhanced Sync Status Indicator */}
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <SyncStatusIndicator />
                     </div>
 
-                    {/* Manual Sync Button */}
-                    <button
-                      onClick={handleManualSync}
-                      disabled={!syncStatus.isOnline || isSyncing || syncStatus.isSyncing}
-                      className="w-full flex items-center justify-center space-x-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {(isSyncing || syncStatus.isSyncing) ? (
-                        <>
-                          <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
-                          <span>{strings.settings.syncing}</span>
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                          </svg>
-                          <span>{strings.settings.syncNow}</span>
-                        </>
-                      )}
-                    </button>
+                    {/* Sync Progress */}
+                    {syncProgress && (
+                      <div className="p-3 bg-muted/30 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">{syncProgress.operation}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {syncProgress.current}/{syncProgress.total}
+                          </span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div
+                            className="bg-primary h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${(syncProgress.current / syncProgress.total) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Sync Error */}
+                    {syncError && (
+                      <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="text-sm text-destructive font-medium">Sync Error</p>
+                            <p className="text-xs text-destructive/80 mt-1">{syncError}</p>
+                          </div>
+                          <button
+                            onClick={clearSyncError}
+                            className="ml-2 text-destructive/60 hover:text-destructive"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Queued Items */}
+                    {queuedItems > 0 && !premiumSyncing && (
+                      <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                        <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                          {queuedItems} item{queuedItems > 1 ? 's' : ''} waiting to sync
+                        </p>
+                      </div>
+                    )}
+
 
                     {/* Sync Info */}
-                    <div className="pt-2 border-t border-border">
+                    <div className="pt-2 border-t border-border space-y-2">
                       <p className="text-xs text-muted-foreground">
                         {strings.settings.cloudSyncInfo}
                       </p>
+                      <div className="text-xs text-muted-foreground">
+                        • Automatic sync every 30 minutes
+                        <br />
+                        • Background sync when device is idle
+                        <br />
+                        • All your data is encrypted and secure
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -645,9 +651,9 @@ export default function SettingsPage() {
                   {strings.settings.resetAllDataDesc}
                 </p>
                 <ul className="text-muted-foreground text-sm mt-2 space-y-1">
-                  {strings.settings.resetAllDataItems.map((item, index) => (
+                  {strings.settings?.resetAllDataItems?.map((item, index) => (
                     <li key={index}>• {item}</li>
-                  ))}
+                  )) || []}
                 </ul>
                 <p className="text-red-400 font-medium text-sm mt-4">
                   {strings.settings.resetAllDataWarning}
@@ -725,15 +731,13 @@ function ToggleSetting({ label, description, checked, onChange }: ToggleSettingP
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors px-1 ${checked ? 'bg-primary' : 'bg-muted'
-          }`}
+        className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors px-1 ${checked ? 'bg-primary' : 'bg-muted'}`}
         style={{ minWidth: 56 }}
         aria-pressed={checked}
         tabIndex={0}
       >
         <span
-          className={`inline-block h-6 w-6 transform rounded-full bg-background shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'
-            }`}
+          className={`inline-block h-6 w-6 transform rounded-full bg-background shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`}
         />
       </button>
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface AuthErrorModalProps {
   isOpen: boolean;

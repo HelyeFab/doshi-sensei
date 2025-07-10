@@ -9,9 +9,10 @@ import { createResourcePost, generateSlug, extractExcerpt, calculateReadingTime 
 import { marked } from 'marked';
 import QuickResourceCreator from '@/components/admin/QuickResourceCreator';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function NewResourcePage() {
+  const strings = useStrings();
   const router = useRouter();
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();

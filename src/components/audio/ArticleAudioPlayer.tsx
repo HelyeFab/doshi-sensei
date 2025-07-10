@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NewsArticle } from '@/types/news';
 import TTSManager from '@/utils/tts';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import { generateFuriganaWithCache } from '@/utils/furigana';
 
 interface ArticleAudioPlayerProps {
@@ -239,7 +239,7 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
                 d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
               />
             </svg>
-            <h3 className="font-medium text-foreground">{strings.audio.playEntireArticle}</h3>
+            <h3 className="font-medium text-foreground">{useStrings().audio.playEntireArticle}</h3>
           </div>
           {audioMode === 'tts' && (
             <span className="text-sm text-muted-foreground">
@@ -258,7 +258,7 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
                 : 'text-muted-foreground hover:text-foreground'
                 }`}
             >
-              🎵 {strings.audio.originalAudio}
+              🎵 {useStrings().audio.originalAudio}
             </button>
             <button
               onClick={() => switchAudioMode('tts')}
@@ -267,7 +267,7 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
                 : 'text-muted-foreground hover:text-foreground'
                 }`}
             >
-              🗣️ {strings.audio.ttsAudio}
+              🗣️ {useStrings().audio.ttsAudio}
             </button>
           </div>
         )}
@@ -338,7 +338,7 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
               />
             </div>
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
-              <span>{strings.audio.progress}</span>
+              <span>{useStrings().audio.progress}</span>
               <span>{Math.round(progress)}%</span>
             </div>
           </div>

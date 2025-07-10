@@ -6,9 +6,10 @@ import { MoodBoardEditor } from '@/components/admin/mood-boards/MoodBoardEditor'
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useAdminNotifications } from '@/components/admin/AdminNotifications';
 import { useState } from 'react';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 function NewMoodBoardContent() {
+  const strings = useStrings();
   const router = useRouter();
   const { createMoodBoard } = useMoodBoards();
   const [isCreating, setIsCreating] = useState(false);
@@ -77,6 +78,8 @@ function NewMoodBoardContent() {
 }
 
 export default function NewMoodBoardPage() {
+  const strings = useStrings();
+  
   return (
     <AdminLayout title={strings.admin.moodBoards.createBoard}>
       <NewMoodBoardContent />

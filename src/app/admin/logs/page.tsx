@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useAdminLogs } from '@/hooks/useAdminLogs';
 import { AdminLogAction } from '@/types/admin';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import { formatLogAction, getActionSeverity } from '@/utils/adminLogs';
 
 const ACTIONS_PER_PAGE = 20;
 
 export default function AdminLogsPage() {
+  const strings = useStrings();
   const [selectedAction, setSelectedAction] = useState<AdminLogAction | 'all'>('all');
   const [searchUserId, setSearchUserId] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -170,7 +171,7 @@ export default function AdminLogsPage() {
                   setSearchUserId(e.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder={strings.forms.placeholders.enterUserId}
+                placeholder={strings.forms.placeholders.userFilter}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -187,7 +188,7 @@ export default function AdminLogsPage() {
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{strings.forms.errors.errorLoadingLogs}</h3>
+                <h3 className="text-sm font-medium text-red-800">{strings.admin.errorLoadingLogs}</h3>
                 <p className="text-sm text-red-700 mt-1">{error}</p>
               </div>
             </div>

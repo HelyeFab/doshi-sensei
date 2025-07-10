@@ -13,7 +13,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import Link from 'next/link';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function StoriesPage() {
   const router = useRouter();
@@ -27,6 +27,7 @@ export default function StoriesPage() {
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [cachedStoryIds, setCachedStoryIds] = useState<Set<string>>(new Set());
   const [showOfflineOnly, setShowOfflineOnly] = useState(false);
+  const strings = useStrings();
 
   useEffect(() => {
     loadStories();
@@ -115,15 +116,14 @@ export default function StoriesPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title="AI Stories" showBackButton={true} helpKey="stories" />
+        <PageHeader title={strings.stories.title} showBackButton={true} helpKey="stories" />
+        <p className="text-muted-foreground text-center mt-2">
+          {strings.stories.description}
+        </p>
 
         <div className="max-w-6xl mx-auto">
           {/* Description */}
           <div className="mb-8">
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              Read interactive Japanese stories created by AI 🤖, designed for every JLPT level. Each story includes
-              comprehension quizzes, vocabulary tracking, and offline reading capabilities.
-            </p>
             {!isPremium && access && access.limit && access.limit > 0 && !featureLoading && (
               <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="text-primary">
@@ -221,8 +221,22 @@ export default function StoriesPage() {
             </div>
           ) : stories.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">📚</div>
-              <p className="text-xl text-muted-foreground">No stories found for the selected filters.</p>
+              <div className="text-6xl mb-4">📖</div>
+              <h3 className="text-xl font-semibold text-foreground mb-4">
+                {strings.stories.emptyState.title}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                {strings.stories.emptyState.description}
+              </p>
+              <button
+                onClick={() => router.push('/stories/create')}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                {strings.stories.emptyState.createButton}
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

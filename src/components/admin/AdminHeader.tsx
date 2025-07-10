@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -11,6 +11,7 @@ interface AdminHeaderProps {
 export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const strings = useStrings();
 
   // Determine if we should show the back button (not on main admin dashboard)
   const normalizedPath = pathname?.replace(/\/+$/, '');
@@ -34,7 +35,7 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
           <button
             onClick={onMenuClick}
             className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
-            aria-label={strings.navigation.menu.openSidebar}
+            aria-label={strings.navigation.menu?.openSidebar || 'Open sidebar'}
           >
             <svg
               className="w-5 h-5"
@@ -56,8 +57,8 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
             <button
               onClick={() => router.push(getBackDestination())}
               className="p-1 hover:bg-muted rounded transition-colors inline-flex items-center justify-center"
-              aria-label={strings.navigation.menu.backToAdmin}
-              title={strings.navigation.menu.backToDashboard}
+              aria-label={strings.navigation.menu?.backToAdmin || 'Back to admin'}
+              title={strings.navigation.menu?.backToDashboard || 'Back to dashboard'}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -70,7 +71,7 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
           {/* System status moved to left side after title */}
           <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground ml-4">
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <span>{strings.navigation.menu.systemOnline}</span>
+            <span>{strings.navigation.menu?.systemOnline || 'System online'}</span>
           </div>
         </div>
 

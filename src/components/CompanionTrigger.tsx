@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import VirtualCompanion from './VirtualCompanion';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function CompanionTrigger() {
   const { settings, isLoading } = useSettings();
   const [isCompanionOpen, setIsCompanionOpen] = useState(false);
+  const strings = useStrings();
 
   const handleOpenCompanion = () => {
     setIsCompanionOpen(true);

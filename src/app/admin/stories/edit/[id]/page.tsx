@@ -9,9 +9,10 @@ import { Story, StoryPage, StoryQuizQuestion, STORY_THEMES, STORY_TAGS } from "@
 import { JLPTLevel, JLPT_LEVELS } from "@/types/kanji";
 import { storyManager } from "@/utils/storyManager";
 import { marked } from "marked";
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function EditStoryPage() {
+    const strings = useStrings();
     const router = useRouter();
     const params = useParams();
     const { user } = useAuth();

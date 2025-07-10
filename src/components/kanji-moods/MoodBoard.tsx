@@ -9,7 +9,7 @@ import KanjiCard from './KanjiCard';
 import ProgressIndicator from './ProgressIndicator';
 import KanjiStudyModal from './KanjiStudyModal';
 import { UpgradePromptModal } from '@/components/UpgradePromptModal';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface MoodBoardProps {
   board: MoodBoardType;
@@ -18,6 +18,7 @@ interface MoodBoardProps {
 
 export default function MoodBoard({ board, onBack }: MoodBoardProps) {
   const { user } = useAuth();
+  const strings = useStrings();
   const [progress, setProgress] = useState(getBoardProgress(board.id));
   const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);

@@ -7,9 +7,10 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { Story } from '@/types/story';
 import { storyManager } from '@/utils/storyManager';
 import Link from 'next/link';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function AdminStoriesPage() {
+  const strings = useStrings();
   const router = useRouter();
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();

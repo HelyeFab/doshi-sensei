@@ -8,7 +8,7 @@ import {
   updateCompanionHistory,
   CompanionCharacter
 } from '@/utils/virtualCompanion';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface VirtualCompanionProps {
   isOpen: boolean;
@@ -17,6 +17,7 @@ interface VirtualCompanionProps {
 
 export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionProps) {
   const { settings, updateSetting } = useSettings();
+  const strings = useStrings();
   const [character, setCharacter] = useState<CompanionCharacter | null>(null);
   const [quote, setQuote] = useState<string>('');
   const [isAnimated, setIsAnimated] = useState(false);

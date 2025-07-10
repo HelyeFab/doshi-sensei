@@ -116,3 +116,8 @@ export function getPokemonSilhouetteStyle(): React.CSSProperties {
     opacity: 0.8
   };
 }
+
+// Get Pokémon silhouette class name for dark mode support
+export function getPokemonSilhouetteClassName(): string {
+  return 'pokemon-silhouette';
+}

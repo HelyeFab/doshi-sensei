@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, FlashcardQuality, WordType } from '@/types';
 import { getCommonWordsForPractice, searchWords } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -66,6 +66,7 @@ export default function DrillPage() {
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
   const { isPremium, userType } = useSubscription2();
+  const strings = useStrings();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'conjugation' | 'flashcards'>('conjugation');
@@ -795,7 +796,7 @@ export default function DrillPage() {
     if (isLastQuestion && gameStarted && questions.length > 0) {
       setTimeout(async () => {
         await recordDrillSession(newScore);
-        
+
         // Track drill completion analytics
         Analytics.trackDrillCompleted(user?.uid, {
           score: newScore,

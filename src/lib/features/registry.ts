@@ -132,6 +132,63 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
 
+  // Offline Storage Features
+  'offline_articles': {
+    id: 'offline_articles',
+    name: 'Offline Articles',
+    description: 'Cache articles for offline reading',
+    category: 'storage',
+    icon: '📥',
+    limitType: 'total',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      storageType: 'article',
+      maxItems: { guest: 3, free: 3, premium: 50 }
+    }
+  },
+  
+  'offline_stories': {
+    id: 'offline_stories',
+    name: 'Offline Stories',
+    description: 'Cache stories for offline reading',
+    category: 'storage',
+    icon: '📚',
+    limitType: 'total',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      storageType: 'story',
+      maxItems: { guest: 3, free: 3, premium: 50 }
+    }
+  },
+  
+  'resource_caching': {
+    id: 'resource_caching',
+    name: 'Resource Caching',
+    description: 'Cache kanji, verbs, and audio for instant access',
+    category: 'storage',
+    icon: '💾',
+    limitType: 'none',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+  
+  'background_sync': {
+    id: 'background_sync',
+    name: 'Background Sync',
+    description: 'Automatically sync content across devices',
+    category: 'system',
+    icon: '🔄',
+    limitType: 'none',
+    requiresAuth: true,
+    requiresSubscription: true, // Premium only
+    status: 'active'
+  },
+
   
   // System Features
   'cloud_sync': {

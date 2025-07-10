@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lato, Dancing_Script } from "next/font/google";
 import "./globals.css";
-import { strings } from "@/config/strings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
 import { ToastContainer } from "@/components/ui/Toast";
 import { EnvProvider } from "@/components/EnvProvider";
 import MobileMenu from "@/components/MobileMenu";
+import DesktopNavMenu from "@/components/DesktopNavMenu";
 import PWAInstaller from "@/components/PWAInstaller";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
@@ -20,6 +22,7 @@ import JMdictInitializer from "@/components/JMdictInitializer";
 import OfflineNotification from "@/components/OfflineNotification";
 import { ModalProvider } from "@/contexts/ModalContext";
 import { KanjiSelectionProvider } from '@/contexts/KanjiSelectionContext';
+import { CacheSystemInitializer } from '@/components/CacheSystemInitializer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -167,32 +170,38 @@ export default function RootLayout({
         <EnvProvider>
           <KanjiSelectionProvider>
             <SettingsProvider>
-              <AuthProvider>
-                <NotificationProvider>
-                    <AdminProvider>
-                      <ModalProvider>
-                        {/* Use a client component to connect settings to theme */}
-                        <ClientThemeWrapper>
-                          <PWAWrapper>
-                            <OnboardingWrapper>
-                              <div className="min-h-screen bg-background text-foreground">
-                                <OfflineNotification />
-                                <JMdictInitializer />
-                                {children}
-                                <MobileMenu />
-                                <PWAInstaller />
-                                <PWAUpdateNotification />
-                                <FloatingDonateButton />
-                                <CompanionTrigger />
-                                <ToastContainer />
-                              </div>
-                            </OnboardingWrapper>
-                          </PWAWrapper>
-                        </ClientThemeWrapper>
-                      </ModalProvider>
-                    </AdminProvider>
-                </NotificationProvider>
-              </AuthProvider>
+              <LanguageProvider>
+                <AuthProvider>
+                  <UserProfileProvider>
+                    <NotificationProvider>
+                      <AdminProvider>
+                        <ModalProvider>
+                          {/* Use a client component to connect settings to theme */}
+                          <ClientThemeWrapper>
+                            <PWAWrapper>
+                              <OnboardingWrapper>
+                                <div className="min-h-screen bg-background text-foreground">
+                                  <OfflineNotification />
+                                  <JMdictInitializer />
+                                  <CacheSystemInitializer />
+                                  {children}
+                                  <MobileMenu />
+                                  <DesktopNavMenu />
+                                  <PWAInstaller />
+                                  <PWAUpdateNotification />
+                                  <FloatingDonateButton />
+                                  <CompanionTrigger />
+                                  <ToastContainer />
+                                </div>
+                              </OnboardingWrapper>
+                            </PWAWrapper>
+                          </ClientThemeWrapper>
+                        </ModalProvider>
+                      </AdminProvider>
+                    </NotificationProvider>
+                  </UserProfileProvider>
+                </AuthProvider>
+              </LanguageProvider>
             </SettingsProvider>
           </KanjiSelectionProvider>
         </EnvProvider>

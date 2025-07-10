@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -19,6 +19,7 @@ const DONATION_AMOUNTS = [
 
 export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
   const { user } = useAuth();
+  const strings = useStrings();
   const [selectedAmount, setSelectedAmount] = useState(500); // Default $5
   const [customAmount, setCustomAmount] = useState('');
   const [isCustom, setIsCustom] = useState(false);
@@ -228,7 +229,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
               disabled={isLoading}
               className="w-full text-muted-foreground hover:text-foreground border border-border hover:border-primary/30 rounded-xl p-3 transition-colors disabled:opacity-50"
             >
-              Maybe later
+              {strings.subscriptions.maybeLater}
             </button>
           </div>
         </div>
@@ -236,7 +237,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
         {/* Footer */}
         <div className="px-6 pb-6">
           <p className="text-xs text-center text-muted-foreground">
-            Your support helps maintain and improve this free Japanese learning tool. ありがとうございます！
+            {strings.subscriptions.yourSupportHelps}
           </p>
         </div>
       </div>

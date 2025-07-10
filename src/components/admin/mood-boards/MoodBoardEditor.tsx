@@ -6,7 +6,7 @@ import { KanjiEditor } from './KanjiEditor';
 import { MoodBoardPreview } from './MoodBoardPreview';
 import { JsonEditor } from './JsonEditor';
 import { convertImportToMoodBoard, validateMoodBoardImport } from '@/utils/moodBoardConverter';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface MoodBoardEditorProps {
   initialData?: MoodBoard;
@@ -34,6 +34,7 @@ export function MoodBoardEditor({
   onCancel,
   isSaving = false,
 }: MoodBoardEditorProps) {
+  const strings = useStrings();
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     emoji: initialData?.emoji || '🎨',

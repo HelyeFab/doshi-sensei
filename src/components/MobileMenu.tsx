@@ -10,7 +10,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { AVAILABLE_NAV_ITEMS, HOME_NAV_ITEM } from '@/config/navigation';
 import PokedexModal from '@/components/games/PokedexModal';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +22,7 @@ export default function MobileMenu() {
   const { subscription } = useSubscription2();
   const router = useRouter();
   const pathname = usePathname();
+  const strings = useStrings();
 
   // Load Pokemon stats just like in the homepage
   useEffect(() => {
@@ -67,27 +68,27 @@ export default function MobileMenu() {
 
   // Create a simple menu items array like in your image
   const simpleMenuItems = [
-    { label: strings.navigation.home.label, icon: strings.navigation.home.icon, href: '/' },
-    ...(isAdmin ? [{ label: strings.navigation.adminDashboard.label, icon: strings.navigation.adminDashboard.icon, href: '/admin' }] : []),
-    ...(pokemonCaught > 0 ? [{ label: strings.navigation.pokedex.label, icon: strings.navigation.pokedex.icon, href: '#', action: 'pokedex', count: pokemonCaught }] : []),
-    { label: strings.navigation.practice.label, icon: strings.navigation.practice.icon, href: '/practice' },
-    { label: strings.navigation.drill.label, icon: strings.navigation.drill.icon, href: '/drill' },
-    { label: strings.navigation.vocabulary.label, icon: strings.navigation.vocabulary.icon, href: '/vocabulary' },
-    { label: strings.navigation.kanjiBrowser.label, icon: strings.navigation.kanjiBrowser.icon, href: '/kanji-browser' },
-    { label: strings.navigation.kanjiMoods.label, icon: strings.navigation.kanjiMoods.icon, href: '/kanji-moods' },
-    { label: strings.navigation.favourites.label, icon: strings.navigation.favourites.icon, href: '/favourites' },
-    { label: strings.navigation.account.label, icon: strings.navigation.account.icon, href: '/account' },
-    { label: strings.navigation.settings.label, icon: strings.navigation.settings.icon, href: '/settings' },
-    { label: strings.navigation.news.label, icon: strings.navigation.news.icon, href: '/news' },
-    { label: strings.navigation.games.label, icon: strings.navigation.games.icon, href: '/games' },
-    { label: strings.navigation.resources.label, icon: strings.navigation.resources.icon, href: '/resources' },
-    { label: strings.navigation.stories.label, icon: strings.navigation.stories.icon, href: '/stories' },
+    { label: strings.nav.home || 'Home', icon: '🏠', href: '/' },
+    ...(isAdmin ? [{ label: strings.nav.adminDashboard || 'Admin Dashboard', icon: '🛡️', href: '/admin' }] : []),
+    ...(pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
+    { label: strings.nav.practice || 'Practice', icon: '📝', href: '/practice' },
+    { label: strings.nav.drill || 'Drill', icon: '🛠️', href: '/drill' },
+    { label: strings.nav.vocab || 'Vocabulary', icon: '📚', href: '/vocabulary' },
+    { label: strings.nav.kanjiBrowser || 'Kanji Browser', icon: '漢', href: '/kanji-browser' },
+    { label: strings.nav.kanjiMoods || 'Kanji Moods', icon: '🎭', href: '/kanji-moods' },
+    { label: strings.nav.favourites || 'Favourites', icon: '⭐', href: '/favourites' },
+    { label: strings.nav.account || 'Account', icon: '', href: '/account' },
+    { label: strings.nav.settings || 'Settings', icon: '⚙️', href: '/settings' },
+    { label: strings.nav.news || 'News', icon: '📰', href: '/news' },
+    { label: strings.nav.games || 'Games', icon: '🎮', href: '/games' },
+    { label: strings.nav.resources || 'Resources', icon: '📖', href: '/resources' },
+    { label: strings.nav.stories || 'Stories', icon: '/flat-icons/story.svg', href: '/stories' },
   ];
 
   return (
     <>
       {/* Menu Button - Top Right Corner (replaces Pokédex position) */}
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50 md:hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center justify-center w-12 h-12 bg-background/80 backdrop-blur-md rounded-full hover:bg-background/90 transition-all duration-300"
@@ -172,7 +173,7 @@ export default function MobileMenu() {
                 <Link
                   key={index}
                   href={item.href}
-                  onClick={() => handleNavigation(item.href)}
+                  onClick={() => setIsOpen(false)}
                   className={`
                     flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors
                     ${isActive ? 'bg-primary/10 text-primary' : 'text-foreground'}
@@ -190,19 +191,16 @@ export default function MobileMenu() {
           </div>
 
           {/* Footer */}
-          <div className="p-2 border-t border-border flex-shrink-0">
-            <div
-              className="p-4 rounded-lg"
-              style={{
-                backgroundImage: 'linear-gradient(to right bottom, #bb75e9, #9389f7, #6798fb, #39a4f6, #12aceb)'
-              }}
-            >
-              <div className="text-center text-sm text-white">
-                Doshi Sensei
+          <div className="border-t border-border flex-shrink-0">
+            {/* App Info */}
+            <div className="px-4 py-3 bg-muted/50">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <span className="text-lg">🏮</span>
+                <span className="font-medium">{strings.navigation?.app?.name || 'Doshi Sensei'}</span>
               </div>
-              <div className="text-center text-xs text-white mt-1">
-                E.Fabiani ❤️
-              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {strings.navigation?.app?.tagline || 'Master Japanese Conjugations'}
+              </p>
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { JapaneseWord, ConjugationForms, WordList } from '@/types';
 import { searchWords } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
@@ -70,6 +70,7 @@ export default function PracticePage() {
   const { user } = useAuth();
   const { checkAndTrack } = useAccess();
   const { isPremium, userType } = useSubscription2();
+  const strings = useStrings();
   const [activeTab, setActiveTab] = useState<'conjugation' | 'kana'>('kana');
   const [words, setWords] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -265,15 +266,15 @@ export default function PracticePage() {
       });
       return;
     }
-    
+
     // Check if user can play KanaDrop using new system
     const canPlay = await checkAndTrack('kana_drop');
-    
+
     if (!canPlay) {
       // The access system will show the appropriate modal
       return;
     }
-    
+
     setShowKanaDropModal(true);
   };
 
@@ -356,7 +357,7 @@ export default function PracticePage() {
                 </p>
 
                 {/* Chart Type Toggle */}
-                <div className="flex justify-center gap-2">
+                <div className="flex flex-col gap-2 items-center md:flex-row md:justify-center md:gap-2">
                   <button
                     onClick={() => setKanaChartType('hiragana')}
                     className={`px-4 py-2 rounded-lg border transition-colors ${kanaChartType === 'hiragana'
@@ -917,4 +918,155 @@ function VerbEssentials({ word, conjugations }: VerbEssentialsProps) {
       return word.kanji;
     }
   };
+}
+
+// Word Practice Component
+interface WordPracticeProps {
+  word: JapaneseWord;
+  onBack: () => void;
+}
+
+function WordPractice({ word, onBack }: WordPracticeProps) {
+  const strings = useStrings();
+  const conjugationEngine = new ConjugationEngine();
+  const [showRules, setShowRules] = useState(false);
+
+  // Generate conjugations
+  const conjugations = conjugationEngine.conjugate(word);
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Back Button */}
+      <button
+        onClick={onBack}
+        className="mb-6 flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Back to word list</span>
+      </button>
+
+      {/* Word Header */}
+      <div className="bg-card border border-border rounded-lg p-6 mb-6">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-3xl japanese-text font-bold text-foreground mb-2">
+              {word.kanji}
+            </h2>
+            <div className="text-xl japanese-text text-muted-foreground mb-1">
+              {word.kana}
+            </div>
+            <div className="text-muted-foreground">
+              {word.romaji}
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-sm text-muted-foreground mb-1">{word.type}</div>
+            <div className="text-sm text-muted-foreground">{word.jlpt}</div>
+          </div>
+        </div>
+        <div className="text-lg">{word.meaning}</div>
+      </div>
+
+      {/* Rules Toggle */}
+      <div className="mb-6">
+        <button
+          onClick={() => setShowRules(!showRules)}
+          className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+        >
+          <svg
+            className={`w-4 h-4 transition-transform ${showRules ? 'rotate-90' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <span>{showRules ? 'Hide' : 'Show'} conjugation rules</span>
+        </button>
+      </div>
+
+      {/* Conjugation Forms */}
+      <div className="space-y-6">
+        {/* Tense & Polarity */}
+        <ConjugationSection
+          title="Tense & Polarity"
+          forms={[
+            { label: "Present", value: conjugations.present },
+            { label: "Present Negative", value: conjugations.presentNegative },
+            { label: "Past", value: conjugations.past },
+            { label: "Past Negative", value: conjugations.pastNegative },
+            { label: "Present Polite", value: conjugations.presentPolite },
+            { label: "Present Negative Polite", value: conjugations.presentNegativePolite },
+            { label: "Past Polite", value: conjugations.pastPolite },
+            { label: "Past Negative Polite", value: conjugations.pastNegativePolite }
+          ]}
+          showRules={showRules}
+        />
+
+        {/* Forms */}
+        <ConjugationSection
+          title="Forms"
+          forms={[
+            { label: "Te-form", value: conjugations.teForm },
+            { label: "Potential", value: conjugations.potential },
+            { label: "Passive", value: conjugations.passive },
+            { label: "Causative", value: conjugations.causative },
+            { label: "Causative-Passive", value: conjugations.causativePassive },
+            { label: "Imperative", value: conjugations.imperative },
+            { label: "Conditional", value: conjugations.conditional },
+            { label: "Volitional", value: conjugations.volitional }
+          ]}
+          showRules={showRules}
+        />
+
+        {/* Additional Forms */}
+        <ConjugationSection
+          title="Additional Forms"
+          forms={[
+            { label: "Tai-form (want to)", value: conjugations.taiForm },
+            { label: "Negative Te-form", value: conjugations.negativeTeForm },
+            { label: "Provisional", value: conjugations.provisional },
+            { label: "Negative Provisional", value: conjugations.provisionalNegative }
+          ]}
+          showRules={showRules}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Conjugation Section Component
+interface ConjugationSectionProps {
+  title: string;
+  forms: Array<{ label: string; value: string | undefined }>;
+  showRules: boolean;
+}
+
+function ConjugationSection({ title, forms, showRules }: ConjugationSectionProps) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-6">
+      <h3 className="text-lg font-semibold text-foreground mb-4">{title}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {forms.map((form) => (
+          form.value && (
+            <div key={form.label} className="flex justify-between items-baseline">
+              <span className="text-sm text-muted-foreground">{form.label}:</span>
+              <span className="text-lg japanese-text text-foreground font-medium">
+                {form.value}
+              </span>
+            </div>
+          )
+        ))}
+      </div>
+      {showRules && (
+        <div className="mt-4 pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground">
+            Conjugation rules explanation would go here...
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }

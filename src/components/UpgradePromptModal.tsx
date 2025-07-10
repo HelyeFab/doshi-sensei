@@ -4,7 +4,7 @@ import React from 'react';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface UpgradePromptModalProps {
   isOpen: boolean;
@@ -15,6 +15,7 @@ interface UpgradePromptModalProps {
 
 export function UpgradePromptModal({ isOpen, onClose, message, feature }: UpgradePromptModalProps) {
   const { createCheckoutSession } = useSubscription2();
+  const strings = useStrings();
 
   if (!isOpen) return null;
 

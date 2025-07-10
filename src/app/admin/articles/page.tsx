@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { ArticleManagement } from '@/components/admin/ArticleManagement';
 import { ArticleCleanup } from '@/components/admin/ArticleCleanup';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import { getArticleStats, clearCache } from '@/utils/watanocArticles';
 import {
   triggerWatanocScraping,
@@ -18,6 +18,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 export default function ArticlesManagementPage() {
+  const strings = useStrings();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [stats, setStats] = useState<any>(null);
@@ -177,7 +178,7 @@ export default function ArticlesManagementPage() {
   }, []);
 
   return (
-    <AdminLayout title={strings.admin.articles.title}>
+    <AdminLayout title={strings.admin.articlesManagement}>
       <div className="space-y-6">
         {/* Controls */}
         <div className="bg-card rounded-lg p-6 border border-border">

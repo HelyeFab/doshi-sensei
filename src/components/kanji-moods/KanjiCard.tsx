@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { KanjiCardProps } from '@/types/moodBoard';
 import KanjiModal from './KanjiModal';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function KanjiCard({
   kanji,
@@ -11,6 +11,7 @@ export default function KanjiCard({
   onToggleLearned,
 }: KanjiCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const strings = useStrings();
 
   const handleCardClick = () => {
     setIsModalOpen(true);

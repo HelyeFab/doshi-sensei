@@ -8,10 +8,11 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { getResourceColorTheme, getResourceIcon, getCategoryEmoji } from '@/utils/resourceVisuals';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function ResourcesPage() {
   const searchParams = useSearchParams();
+  const strings = useStrings();
   const [resources, setResources] = useState<ResourcePost[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);

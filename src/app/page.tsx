@@ -68,7 +68,7 @@ const FEATURE_CARDS = [
   { title: 'News', icon: '🗞️', href: '/news', description: 'Japanese articles' },
   { title: 'Games', icon: '🎮', href: '/games', description: 'Listening quiz' },
   { title: 'Resources', icon: '✨🎌✨', href: '/resources', description: 'Articles & tips' },
-  { title: 'AI Stories', icon: '📖', href: '/stories', description: 'Interactive tales' }
+  { title: 'AI Stories', icon: '/flat-icons/story.svg', href: '/stories', description: 'Interactive tales' }
 ];
 
 // Predefined color patterns for optimal visual distribution
@@ -669,16 +669,16 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
   const colors = CARD_COLORS[color];
 
   return (
-    <Link href={href}>
+    <Link href={href} className="block">
       <div
-        className={`group relative rounded-2xl p-4 md:p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${colors.bg} ${colors.text} ${colors.shadow}`}
+        className={`group relative rounded-2xl p-4 md:p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer ${colors.bg} ${colors.text} ${colors.shadow}`}
         style={{
           border: '2px solid white',
           boxShadow: `inset 0 0 0 1px ${colors.inset}, 0 4px 12px rgba(0,0,0,0.1)`
         }}
       >
-        {/* Frosted glass overlay effect */}
-        <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        {/* Frosted glass overlay effect - pointer-events-none to prevent click interference */}
+        <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
         <div className="relative flex flex-col items-center text-center space-y-2 md:space-y-3">
           <div className="text-2xl md:text-3xl drop-shadow-sm">
@@ -702,7 +702,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
           </div>
         </div>
 
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110 pointer-events-none">
           <svg className="w-4 h-4 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>

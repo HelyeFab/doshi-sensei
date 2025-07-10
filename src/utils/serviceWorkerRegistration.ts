@@ -1,0 +1,184 @@
+// Service Worker Registration and Management
+
+type Config = {
+  onSuccess?: (registration: ServiceWorkerRegistration) => void;
+  onUpdate?: (registration: ServiceWorkerRegistration) => void;
+  onError?: (error: Error) => void;
+};
+
+const isLocalhost = Boolean(
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '[::1]' ||
+  window.location.hostname.match(
+    /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+  )
+);
+
+export function register(config?: Config) {
+  if ('serviceWorker' in navigator) {
+    // The URL constructor is available in all browsers that support SW.
+    const publicUrl = new URL(process.env.PUBLIC_URL || '', window.location.href);
+    if (publicUrl.origin !== window.location.origin) {
+      // Our service worker won't work if PUBLIC_URL is on a different origin
+      return;
+    }
+
+    window.addEventListener('load', () => {
+      const swUrl = `${process.env.PUBLIC_URL || ''}/service-worker.js`;
+
+      if (isLocalhost) {
+        // This is running on localhost. Let's check if a service worker still exists or not.
+        checkValidServiceWorker(swUrl, config);
+
+        // Add some additional logging to localhost
+        navigator.serviceWorker.ready.then(() => {
+          console.log(
+            'This web app is being served cache-first by a service worker.'
+          );
+        });
+      } else {
+        // Is not localhost. Just register service worker
+        registerValidSW(swUrl, config);
+      }
+    });
+  }
+}
+
+function registerValidSW(swUrl: string, config?: Config) {
+  navigator.serviceWorker
+    .register(swUrl)
+    .then((registration) => {
+      // Track registration for updates
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        if (installingWorker == null) {
+          return;
+        }
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              // At this point, the updated precached content has been fetched,
+              // but the previous service worker will still serve the older
+              // content until all client tabs are closed.
+              console.log(
+                'New content is available and will be used when all tabs are closed.'
+              );
+
+              // Execute callback
+              if (config && config.onUpdate) {
+                config.onUpdate(registration);
+              }
+            } else {
+              // At this point, everything has been precached.
+              console.log('Content is cached for offline use.');
+
+              // Execute callback
+              if (config && config.onSuccess) {
+                config.onSuccess(registration);
+              }
+            }
+          }
+        };
+      };
+    })
+    .catch((error) => {
+      console.error('Error during service worker registration:', error);
+      if (config && config.onError) {
+        config.onError(error);
+      }
+    });
+}
+
+function checkValidServiceWorker(swUrl: string, config?: Config) {
+  // Check if the service worker can be found. If it can't reload the page.
+  fetch(swUrl, {
+    headers: { 'Service-Worker': 'script' },
+  })
+    .then((response) => {
+      // Ensure service worker exists, and that we really are getting a JS file.
+      const contentType = response.headers.get('content-type');
+      if (
+        response.status === 404 ||
+        (contentType != null && contentType.indexOf('javascript') === -1)
+      ) {
+        // No service worker found. Probably a different app. Reload the page.
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.unregister().then(() => {
+            window.location.reload();
+          });
+        });
+      } else {
+        // Service worker found. Proceed as normal.
+        registerValidSW(swUrl, config);
+      }
+    })
+    .catch(() => {
+      console.log('No internet connection found. App is running in offline mode.');
+    });
+}
+
+export function unregister() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        registration.unregister();
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
+  }
+}
+
+// Utility functions for service worker communication
+export async function clearServiceWorkerCache() {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'CLEAR_CACHE'
+    });
+  }
+}
+
+export async function cacheResource(url: string, type: string) {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'CACHE_RESOURCE',
+      resource: { url, type }
+    });
+  }
+}
+
+export async function skipWaiting() {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SKIP_WAITING'
+    });
+  }
+}
+
+// Check if app can work offline
+export function isOfflineReady(): boolean {
+  return 'serviceWorker' in navigator && navigator.serviceWorker.controller !== null;
+}
+
+// Get service worker registration
+export async function getRegistration(): Promise<ServiceWorkerRegistration | undefined> {
+  if ('serviceWorker' in navigator) {
+    return navigator.serviceWorker.ready;
+  }
+  return undefined;
+}
+
+// Request persistent storage (for premium users)
+export async function requestPersistentStorage(): Promise<boolean> {
+  if ('storage' in navigator && 'persist' in navigator.storage) {
+    try {
+      const granted = await navigator.storage.persist();
+      console.log(`Persistent storage ${granted ? 'granted' : 'denied'}`);
+      return granted;
+    } catch (error) {
+      console.error('Error requesting persistent storage:', error);
+      return false;
+    }
+  }
+  return false;
+}

@@ -4,50 +4,63 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { AdminSection } from '@/types/admin';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface SidebarItem {
   id: AdminSection;
-  label: string;
-  icon: string;
+  labelKey: string;
+  iconKey: string;
   href: string;
 }
 
-const sidebarItems: SidebarItem[] = [
+// Define the structure without calling hooks
+const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
   {
     id: 'dashboard',
-    label: strings.navigation.admin.dashboard.label,
-    icon: strings.navigation.admin.dashboard.icon,
+    labelKey: 'dashboard',
+    iconKey: 'dashboard',
     href: '/admin',
   },
   {
     id: 'users',
-    label: strings.navigation.admin.users.label,
-    icon: strings.navigation.admin.users.icon,
+    labelKey: 'users',
+    iconKey: 'users',
     href: '/admin/users',
   },
   {
     id: 'features' as AdminSection,
-    label: strings.navigation.admin.features.label,
-    icon: strings.navigation.admin.features.icon,
+    labelKey: 'features',
+    iconKey: 'features',
     href: '/admin/features',
   },
   {
-    id: 'mood-boards',
-    label: strings.navigation.admin.moodBoards.label,
-    icon: strings.navigation.admin.moodBoards.icon,
+    id: 'mood-boards' as AdminSection,
+    labelKey: 'moodBoards',
+    iconKey: 'moodBoards',
     href: '/admin/mood-boards',
   },
   {
-    id: 'resources',
-    label: strings.navigation.admin.resources.label,
-    icon: strings.navigation.admin.resources.icon,
+    id: 'resources' as AdminSection,
+    labelKey: 'resources',
+    iconKey: 'resources',
     href: '/admin/resources',
   },
   {
-    id: 'logs',
-    label: strings.navigation.admin.logs.label,
-    icon: strings.navigation.admin.logs.icon,
+    id: 'stories' as AdminSection,
+    labelKey: 'stories',
+    iconKey: 'stories',
+    href: '/admin/stories',
+  },
+  {
+    id: 'articles' as AdminSection,
+    labelKey: 'articles',
+    iconKey: 'articles',
+    href: '/admin/articles',
+  },
+  {
+    id: 'activity-logs' as AdminSection,
+    labelKey: 'logs',
+    iconKey: 'logs',
     href: '/admin/logs',
   },
 ];
@@ -60,6 +73,14 @@ interface AdminSidebarProps {
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const { currentSection, setCurrentSection } = useAdmin();
   const pathname = usePathname();
+  const strings = useStrings();
+
+  // Build sidebar items with translated labels
+  const sidebarItems = sidebarItemsConfig.map(item => ({
+    ...item,
+    label: strings.navigation?.admin?.[item.labelKey]?.label || item.labelKey,
+    icon: strings.navigation?.admin?.[item.labelKey]?.icon || '📋',
+  }));
 
   const handleSectionClick = (section: AdminSection) => {
     setCurrentSection(section);
@@ -90,14 +111,14 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <div className="flex items-center gap-3">
               <div className="text-2xl">🎯</div>
               <div>
-                <h1 className="text-lg font-bold text-foreground">{strings.navigation.admin.label}</h1>
-                <p className="text-sm text-muted-foreground">{strings.navigation.app.name}</p>
+                <h1 className="text-lg font-bold text-foreground">{strings.admin?.title || 'Admin'}</h1>
+                <p className="text-sm text-muted-foreground">{strings.appName || 'Doshi Sensei'}</p>
               </div>
             </div>
             <button
               onClick={onClose}
               className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
-              aria-label={strings.navigation.menu.closeSidebar}
+              aria-label="Close sidebar"
             >
               ✕
             </button>
@@ -135,8 +156,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {/* Footer */}
           <div className="p-4 border-t border-border">
             <div className="text-xs text-muted-foreground">
-              <p>{strings.navigation.app.name} {strings.navigation.app.version}</p>
-              <p>Branch: {strings.navigation.app.branch}</p>
+              <p>{strings.appName || 'Doshi Sensei'} v1.0.0</p>
+              <p>Admin Dashboard</p>
             </div>
           </div>
         </div>

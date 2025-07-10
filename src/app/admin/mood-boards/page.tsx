@@ -5,9 +5,10 @@ import { MoodBoardManager } from '@/components/admin/MoodBoardManager';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function MoodBoardsPage() {
+  const strings = useStrings();
   const { moodBoards, loading } = useMoodBoards();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterJLPT, setFilterJLPT] = useState<'all' | 'N5' | 'N4' | 'N3' | 'N2' | 'N1'>('all');

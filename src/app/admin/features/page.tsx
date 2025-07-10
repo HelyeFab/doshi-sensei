@@ -9,9 +9,10 @@ import { EditableFeatureMatrix } from '@/components/admin/feature-matrix/Editabl
 import { FeatureMatrixStats } from '@/components/admin/feature-matrix/FeatureMatrixStats';
 import { useFeatureMatrix } from '@/hooks/useFeatureMatrix';
 import { useNotification } from '@/contexts/NotificationContext';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function AdminFeaturesPage() {
+  const strings = useStrings();
   const router = useRouter();
   const { isAdmin, loading: adminLoading } = useAdmin();
   const { data, isLoading, error, refresh } = useFeatureMatrix();
@@ -26,7 +27,7 @@ export default function AdminFeaturesPage() {
 
   if (adminLoading || isLoading) {
     return (
-      <AdminLayout>
+      <AdminLayout title={strings.admin.featuresManagement}>
         <div className="flex items-center justify-center h-64">
           <div className="text-4xl animate-spin">⏳</div>
         </div>
@@ -40,7 +41,7 @@ export default function AdminFeaturesPage() {
 
   if (error) {
     return (
-      <AdminLayout>
+      <AdminLayout title={strings.admin.featuresManagement}>
         <div className="p-6">
           <div className="bg-destructive/10 text-destructive p-4 rounded-lg">
             <p className="font-semibold">Error loading feature matrix</p>
@@ -112,7 +113,7 @@ export default function AdminFeaturesPage() {
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout title={strings.admin.features.title}>
       <div className="p-6 max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">

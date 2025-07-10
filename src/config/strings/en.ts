@@ -1,4 +1,4 @@
-export const strings = {
+export const en = {
   // App Info
   appName: "Doshi Sensei",
   appDescription: "Master Japanese verb and adjective conjugations",
@@ -9,7 +9,17 @@ export const strings = {
     practice: "Practice",
     drill: "Drill",
     vocab: "Vocabulary",
-    settings: "Settings"
+    settings: "Settings",
+    adminDashboard: "Admin Dashboard",
+    pokedex: "Pokédex",
+    kanjiBrowser: "Kanji Browser",
+    kanjiMoods: "Kanji Moods",
+    favourites: "Favourites",
+    account: "Account",
+    news: "News",
+    games: "Games",
+    resources: "Resources",
+    stories: "Stories"
   },
 
   // Home Screen
@@ -33,6 +43,7 @@ export const strings = {
   // Drill Screen
   drill: {
     title: "Drill Mode",
+    description: "Interactive Japanese verb and adjective conjugation quizzes plus spaced repetition flashcard review. Test your knowledge and improve your Japanese grammar skills.",
     question: "Choose the correct conjugation:",
     correct: "Correct!",
     incorrect: "Incorrect. Try again!",
@@ -287,7 +298,9 @@ export const strings = {
     backToGames: "Back to Games",
     backToArticles: "Back to Articles",
     of: "of",
-    gotIt: "Got it, let me try again"
+    gotIt: "Got it, let me try again",
+    ok: "OK",
+    success: "Success!"
   },
 
   // List compatibility messages
@@ -474,7 +487,8 @@ export const strings = {
     retryMessage: "Please try again",
     retryLater: "Please try again later",
     checkConnection: "Please check your connection",
-    refreshPage: "Please refresh the page"
+    refreshPage: "Please refresh the page",
+    generic: "Error"
   },
 
   // Conjugation Rules
@@ -729,11 +743,8 @@ export const strings = {
     activityLogsDescription: "Track all administrative actions and system changes",
     refresh: "Refresh",
     refreshing: "Refreshing...",
-    recentActivity: "Recent Activity",
     actionsInLast7Days: "Actions in last 7 days",
     mostCommon: "Most Common",
-    systemStatus: "System Status",
-    allSystemsOperational: "All Systems Operational",
     lastChecked: "Last checked",
     filterByAction: "Filter by Action",
     allActions: "All Actions",
@@ -801,9 +812,36 @@ export const strings = {
     totalBoards: "Total Boards",
     activeBoards: "Active Boards",
     mostPopular: "Most Popular",
-    lastUpdated: "Last Updated",
     loading: "Loading...",
     calculating: "Calculating...",
+    save: "Save",
+    cancel: "Cancel",
+    refreshUsers: "Refresh users",
+    editArticle: "Edit article",
+    deleteArticle: "Delete article",
+    refreshMoodBoards: "Refresh mood boards",
+
+    // Statistics
+    stats: {
+      userStatistics: "User Statistics",
+      subscriptionStatistics: "Subscription Statistics",
+      featureUsage: "Feature Usage",
+      failedToLoad: "Failed to load statistics",
+      cards: {
+        totalUsers: "Total Users",
+        newUsersToday: "New Users Today",
+        activeToday: "Active Today",
+        registeredUsers: "Registered Users",
+        freeUsers: "Free Users",
+        premiumUsers: "Premium Users",
+        monthlySubscribers: "Monthly Subscribers",
+        yearlySubscribers: "Yearly Subscribers",
+        drillsToday: "Drills Today",
+        vocabularySearches: "Vocabulary Searches",
+        moodBoardViews: "Mood Board Views",
+        avgSession: "Avg Session (min)"
+      }
+    },
 
     // User Management
     users: {
@@ -893,10 +931,9 @@ export const strings = {
       error: "Error",
       totalPosts: "Total Posts",
       totalViews: "Total Views",
-      title: "Title",
-      status: "Status",
       category: "Category",
       updated: "Updated",
+      status: "Status",
       actions: "Actions"
     },
 
@@ -919,6 +956,46 @@ export const strings = {
       unexpectedError: "An unexpected error occurred",
       errorUpdating: "Error updating mood board",
       failedToUpdateBoard: "Failed to update mood board"
+    },
+
+    // Features
+    features: {
+      title: "Features Management",
+      description: "Manage feature access and limits for different subscription tiers",
+      featureMatrix: "Feature Matrix",
+      editFeature: "Edit Feature",
+      addFeature: "Add Feature",
+      deleteFeature: "Delete Feature",
+      featureName: "Feature Name",
+      featureDescription: "Feature Description",
+      freeLimit: "Free Limit",
+      premiumLimit: "Premium Limit",
+      unlimited: "Unlimited",
+      enabled: "Enabled",
+      disabled: "Disabled",
+      saveChanges: "Save Changes",
+      confirmDelete: "Are you sure you want to delete this feature?",
+      deleteConfirmation: "This action cannot be undone.",
+      success: "Success",
+      featureUpdated: "Feature updated successfully",
+      featureAdded: "Feature added successfully",
+      featureDeleted: "Feature deleted successfully",
+      failedToUpdate: "Failed to update feature",
+      failedToAdd: "Failed to add feature",
+      failedToDelete: "Failed to delete feature",
+      cancel: "Cancel",
+      editModeEnabled: "Edit Mode Enabled",
+      clickToChange: "Click on any limit to change it",
+      exportData: "Export Data",
+      importData: "Import Data",
+      resetToDefaults: "Reset to Defaults",
+      exportCsv: "Export as CSV",
+      exportJson: "Export as JSON",
+      saveMode: "Save Mode",
+      editLimits: "Edit Limits",
+      lastUpdated: "Last updated",
+      editingLimits: "Editing Limits",
+      understandingMatrix: "Understanding the Matrix"
     }
   },
 
@@ -932,6 +1009,17 @@ export const strings = {
     removeStoryConfirm: "Are you sure you want to remove this story from your saved items? This action cannot be undone."
   },
 
+  // Stories
+  stories: {
+    title: "Stories",
+    description: "Interactive AI-generated stories to practice reading comprehension with engaging narratives tailored to your JLPT level.",
+    emptyState: {
+      title: "No Stories Available",
+      description: "Stories are being prepared. Check back soon for exciting Japanese reading adventures!",
+      createButton: "Browse Resources Instead"
+    }
+  },
+
   // Kanji Browser
   kanjiBrowser: {
     title: "Kanji Browser",
@@ -943,11 +1031,6 @@ export const strings = {
   // Practice
   practice: {
     description: "Interactive Japanese verb and adjective conjugation practice with detailed explanations. Study hiragana and katakana charts with pronunciation."
-  },
-
-  // Drill
-  drill: {
-    description: "Interactive Japanese verb and adjective conjugation quizzes plus spaced repetition flashcard review. Test your knowledge and improve your Japanese grammar skills."
   },
 
   // Tooltips and Help Text
@@ -988,6 +1071,7 @@ export const strings = {
     removeBookmark: "Remove bookmark",
     removeFromList: "Remove from list",
     removeImage: "Remove image",
+    remove: "Remove",
     createNewStudyList: "Create New Study List",
     createNewBoard: "Create New Board",
     selectNewKana: "Select New Kana",
@@ -1052,172 +1136,6 @@ export const strings = {
     avgSession: "Avg Session (min)"
   },
 
-  // Form Validation and Input Labels
-  forms: {
-    // Field Labels
-    name: "Name",
-    email: "Email",
-    password: "Password",
-    confirmPassword: "Confirm Password",
-    title: "Title",
-    subtitle: "Subtitle",
-    description: "Description",
-    content: "Content",
-    category: "Category",
-    tags: "Tags",
-    slug: "Slug",
-    image: "Image",
-    imageAlt: "Image Alt Text",
-    url: "URL",
-    search: "Search",
-    subject: "Subject",
-    message: "Message",
-    amount: "Amount",
-    customAmount: "Custom Amount",
-    listName: "List Name",
-    listDescription: "List Description",
-    kanji: "Kanji",
-    meaning: "Meaning",
-    onyomi: "Onyomi",
-    kunyomi: "Kunyomi",
-    example: "Example",
-    moodBoard: "Mood Board",
-    order: "Order",
-    gradient: "Gradient",
-    question: "Question",
-    answer: "Answer",
-    option: "Option",
-    seoTitle: "SEO Title",
-    seoDescription: "SEO Description",
-    // Placeholders
-    placeholders: {
-      name: "Your name",
-      email: "your.email@example.com",
-      password: "Enter your password",
-      confirmPassword: "Confirm your password",
-      title: "Enter title",
-      subtitle: "Optional subtitle",
-      description: "Enter description",
-      content: "Enter content",
-      category: "Select category",
-      tags: "Add tags",
-      slug: "url-friendly-slug",
-      image: "https://example.com/image.jpg",
-      imageAlt: "Descriptive alt text",
-      url: "https://example.com",
-      search: "Search...",
-      searchUsers: "Search users...",
-      searchFeatures: "Search features...",
-      searchResources: "Search resources...",
-      searchKanji: "Search kanji by character, meaning, or reading...",
-      searchJapaneseWords: "Search Japanese words...",
-      searchMoodBoards: "Search mood boards...",
-      subject: "Subject (optional)",
-      message: "Type your message here...",
-      customAmount: "Custom amount",
-      newListName: "New list name...",
-      listDescription: "Brief description of this list...",
-      listNameExample: "e.g., JLPT N5 Verbs, Cooking Terms",
-      kanjiSearch: "Search and add kanji instantly...",
-      kanjiCharacter: "木",
-      kanjiMeaning: "tree",
-      kanjiOnyomi: "もく, ぼく",
-      kanjiKunyomi: "き, こ",
-      kanjiExamples: "木曜日 (Thursday), 木材 (lumber)",
-      moodBoardName: "e.g., Nature",
-      moodBoardDescription: "Enter a description for this mood board...",
-      moodBoardOrder: "0",
-      moodBoardGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      articleId: "Article ID",
-      resourceTitle: "Enter resource title",
-      resourceSubtitle: "Optional subtitle",
-      resourceSlug: "url-friendly-slug",
-      resourceDescription: "Brief description for cards and SEO (auto-generated from content if empty)",
-      resourceContent: "Write your content in Markdown...",
-      resourceImage: "https://example.com/image.jpg",
-      resourceImageAlt: "Descriptive alt text",
-      resourceTags: "Add a tag and press Enter",
-      resourceSeoTitle: "Custom title for search engines (defaults to main title)",
-      resourceSeoDescription: "Custom description for search engines (defaults to excerpt)",
-      storyTitle: "The Adventure Begins",
-      storyJapaneseTitle: "<ruby>冒険<rt>ぼうけん</rt></ruby>が<ruby>始<rt>はじ</rt></ruby>まる",
-      storyDescription: "A young hero embarks on an exciting journey...",
-      storySlug: "the-adventure-begins",
-      storyImageAlt: "Describe the image for screen readers",
-      storyJapaneseContent: "<ruby>昔<rt>むかし</rt></ruby>、<ruby>昔<rt>むかし</rt></ruby>、ある<ruby>所<rt>ところ</rt></ruby>に...",
-      storyEnglishContent: "Once upon a time, in a certain place...",
-      storyQuestion: "What did the main character find?",
-      storyAnswer: "The answer can be found in paragraph 2...",
-      storySeoTitle: "Custom title for search engines (defaults to story title)",
-      storySeoDescription: "Custom description for search engines",
-      kanjiInput: "Type the kanji here...",
-      userFilter: "Enter user ID to filter..."
-    },
-    // Validation Messages
-    validation: {
-      required: "This field is required",
-      invalidEmail: "Please enter a valid email address",
-      invalidPassword: "Password must be at least 6 characters",
-      passwordMismatch: "Passwords do not match",
-      minLength: "Must be at least {min} characters",
-      maxLength: "Must be no more than {max} characters",
-      invalidUrl: "Please enter a valid URL",
-      invalidNumber: "Please enter a valid number",
-      invalidInteger: "Please enter a valid integer",
-      invalidFormat: "Invalid format",
-      invalidFileType: "Invalid file type",
-      fileTooLarge: "File is too large",
-      invalidSlug: "Slug must contain only letters, numbers, and hyphens",
-      invalidKanji: "Please enter a valid kanji character",
-      invalidKana: "Please enter valid kana",
-      invalidReading: "Please enter a valid reading",
-      invalidJLPT: "Please select a valid JLPT level",
-      invalidCategory: "Please select a valid category",
-      invalidTags: "Please enter valid tags",
-      invalidAmount: "Please enter a valid amount",
-      invalidDate: "Please enter a valid date",
-      invalidTime: "Please enter a valid time",
-      invalidPhone: "Please enter a valid phone number",
-      invalidPostalCode: "Please enter a valid postal code",
-      invalidCreditCard: "Please enter a valid credit card number",
-      invalidExpiryDate: "Please enter a valid expiry date",
-      invalidCVV: "Please enter a valid CVV",
-      invalidSSN: "Please enter a valid SSN",
-      invalidZipCode: "Please enter a valid ZIP code",
-      invalidState: "Please enter a valid state",
-      invalidCountry: "Please enter a valid country",
-      invalidCurrency: "Please enter a valid currency amount",
-      invalidPercentage: "Please enter a valid percentage",
-      invalidIPAddress: "Please enter a valid IP address",
-      invalidDomain: "Please enter a valid domain name",
-      invalidUsername: "Username must contain only letters, numbers, and underscores",
-      invalidListName: "List name must be between 1 and 50 characters",
-      invalidDescription: "Description must be between 1 and 500 characters",
-      invalidTitle: "Title must be between 1 and 100 characters",
-      invalidContent: "Content cannot be empty",
-      invalidTagsFormat: "Tags must be separated by commas",
-      invalidImageFormat: "Please select a valid image file (JPG, PNG, GIF)",
-      invalidAudioFormat: "Please select a valid audio file (MP3, WAV, OGG)",
-      invalidVideoFormat: "Please select a valid video file (MP4, AVI, MOV)",
-      invalidDocumentFormat: "Please select a valid document file (PDF, DOC, TXT)",
-      invalidArchiveFormat: "Please select a valid archive file (ZIP, RAR, 7Z)",
-      invalidCodeFormat: "Please select a valid code file (JS, TS, PY, JAVA, CPP)",
-      invalidDataFormat: "Please select a valid data file (JSON, CSV, XML)",
-      invalidConfigFormat: "Please select a valid config file (YAML, TOML, INI)",
-      invalidLogFormat: "Please select a valid log file (LOG, TXT)",
-      invalidBackupFormat: "Please select a valid backup file (BAK, BACKUP)",
-      invalidTemplateFormat: "Please select a valid template file (HTML, CSS, JSX)",
-      invalidStyleFormat: "Please select a valid style file (CSS, SCSS, SASS)",
-      invalidScriptFormat: "Please select a valid script file (JS, TS, PY, SH)",
-      invalidMarkdownFormat: "Please select a valid markdown file (MD, MARKDOWN)",
-      invalidTextFormat: "Please select a valid text file (TXT, RTF, DOC)",
-      invalidSpreadsheetFormat: "Please select a valid spreadsheet file (XLS, XLSX, CSV)",
-      invalidPresentationFormat: "Please select a valid presentation file (PPT, PPTX, PDF)",
-      invalidDatabaseFormat: "Please select a valid database file (DB, SQL, SQLITE)",
-      invalidCertificateFormat: "Please select a valid certificate file (PEM, CRT, KEY)",
-      invalidKeyFormat: "Please select a valid key file (PEM, KEY, P12)"
-    }
-  },
 
   subscriptions: {
     // Plan names and descriptions
@@ -1429,6 +1347,16 @@ export const strings = {
         label: 'Activity Logs',
         icon: '📝',
         description: 'System activity and user logs'
+      },
+      stories: {
+        label: 'Stories',
+        icon: '📖',
+        description: 'Manage interactive stories'
+      },
+      articles: {
+        label: 'Articles',
+        icon: '📰',
+        description: 'Manage news articles'
       }
     },
     // UI elements
@@ -1548,7 +1476,542 @@ export const strings = {
     speedSelector: "Playback speed selector",
     progressBar: "Audio progress bar",
     timeDisplay: "Audio time display"
-  }
+  },
+
+  // Kanji Mood Boards
+  kanjiMoods: {
+    title: "Kanji Mood Boards",
+    subtitle: "Learn Kanji by Theme",
+    description: "Discover kanji organized by meaningful themes and contexts. Each mood board contains related kanji that tell a story together, making them easier to remember and understand.",
+    progress: {
+      title: "Your Progress",
+      totalBoards: "Total Boards",
+      completed: "Completed",
+      totalKanji: "Total Kanji",
+      learned: "Learned"
+    },
+    instructions: {
+      title: "How to Use Mood Boards",
+      step1: {
+        title: "Choose a Theme",
+        description: "Pick a mood board that interests you - Nature, Daily Life, or Numbers"
+      },
+      step2: {
+        title: "Study Each Kanji",
+        description: "Tap kanji cards to see readings and examples. Find connections between them."
+      },
+      step3: {
+        title: "Mark as Learned",
+        description: "Click the circle button when you've mastered a kanji"
+      },
+      step4: {
+        title: "Complete the Board",
+        description: "Learn all 5 kanji to complete the theme and unlock achievements"
+      }
+    },
+    emptyState: {
+      title: "No mood boards available",
+      description: "Mood boards are being prepared. Check back soon!"
+    },
+    availableBoards: "Available Mood Boards"
+  },
+
+  // Favourites
+  favourites: {
+    title: "⭐ My Favourites",
+    description: "Your personal collection of vocabulary lists and bookmarked articles.",
+    tabs: {
+      lists: "📚 Lists",
+      articles: "📰 Articles",
+      stories: "📖 Stories"
+    },
+    lists: {
+      title: "My Word Lists",
+      emptyState: {
+        title: "No Word Lists Yet",
+        description: "Create your first list to start organizing your Japanese vocabulary.",
+        createButton: "Create Your First List"
+      },
+      actions: {
+        createList: "+ Create List",
+        clearAll: "Clear All"
+      },
+      deleteConfirmation: "Are you sure you want to delete this list? This action cannot be undone.",
+      deleteError: "Failed to delete the list. Please try again.",
+      clearAllConfirmation: {
+        title: "Clear All Favourites",
+        message: "Are you sure you want to clear all favourites? This action cannot be undone."
+      },
+      clearAllError: "Failed to clear favourites. Please try again."
+    },
+    articles: {
+      totalBookmarked: "Total Bookmarked",
+      categories: "Categories",
+      minutesToRead: "Minutes to Read",
+      recentlyBookmarked: "Recently Bookmarked",
+      titleAZ: "Title (A-Z)",
+      category: "Category",
+      removeBookmark: "Remove bookmark",
+      viewOriginal: "View original",
+      removeError: "Failed to remove bookmark. Please try again.",
+      clearAllConfirmation: {
+        title: "Clear All Bookmarked Articles",
+        message: "Are you sure you want to clear all bookmarked articles? This action cannot be undone."
+      },
+      clearAllError: "Failed to clear bookmarked articles. Please try again.",
+      emptyState: {
+        title: "No Bookmarked Articles Yet",
+        description: "Start saving interesting articles to build your personal reading collection.",
+        freeLimit: "Free users can bookmark up to 3 articles.",
+        browseButton: "Browse News Articles"
+      },
+      statistics: {
+        totalBookmarked: "Total Bookmarked",
+        categories: "Categories",
+        unlimited: "Unlimited",
+        remaining: "Remaining",
+        minutesToRead: "Minutes to Read"
+      },
+      controls: {
+        filterByCategory: "Filter by Category",
+        allCategories: "All Categories",
+        sortBy: "Sort By",
+        recentlyBookmarked: "Recently Bookmarked",
+        title: "Title (A-Z)",
+        category: "Category",
+        clearAllArticles: "Clear All Articles"
+      },
+      bookmarkDate: "Bookmarked",
+      actionsHeader: "Actions",
+      noResults: "No articles match your current filters.",
+      tryAdjustingFilters: "Try adjusting your filters to see more results.",
+      actions: {
+        readArticle: "Read Article"
+      }
+    },
+    stories: {
+      totalBookmarked: "Total Bookmarked",
+      themes: "Themes",
+      recentlyBookmarked: "Recently Bookmarked",
+      titleAZ: "Title (A-Z)",
+      theme: "Theme",
+      removeBookmark: "Remove bookmark",
+      removeError: "Failed to remove bookmark. Please try again.",
+      clearAllConfirmation: {
+        title: "Clear All Bookmarked Stories", 
+        message: "Are you sure you want to clear all bookmarked stories? This action cannot be undone."
+      },
+      clearAllError: "Failed to clear bookmarked stories. Please try again.",
+      emptyState: {
+        title: "No Bookmarked Stories Yet",
+        description: "Start saving interesting stories to build your personal reading collection.",
+        freeLimit: "Free users can bookmark up to 3 stories.",
+        browseButton: "Browse Stories"
+      },
+      statistics: {
+        totalBookmarked: "Total Bookmarked",
+        themes: "Themes",
+        unlimited: "Unlimited",
+        remaining: "Remaining",
+        minutesToRead: "Minutes to Read",
+        avgProgress: "Average Progress"
+      },
+      controls: {
+        filterByTheme: "Filter by Theme",
+        allThemes: "All Themes",
+        sortBy: "Sort By",
+        recentlyBookmarked: "Recently Bookmarked",
+        title: "Title (A-Z)",
+        theme: "Theme",
+        clearAllStories: "Clear All Stories"
+      },
+      bookmarkDate: "Bookmarked",
+      actionsHeader: "Actions",
+      noResults: "No stories match your current filters.",
+      tryAdjustingFilters: "Try adjusting your filters to see more results.",
+      readingProgress: "Reading Progress",
+      actions: {
+        readStory: "Read Story"
+      }
+    },
+    modals: {
+      removeArticleBookmark: "Remove Article Bookmark",
+      removeStoryBookmark: "Remove Story Bookmark",
+      confirmRemove: "Are you sure you want to remove this from your saved items? This action cannot be undone.",
+      remove: "Remove",
+      cancel: "Cancel"
+    }
+  },
+
+  // Resources
+  resources: {
+    title: "Resources",
+    description: "Articles, tips, and learning resources",
+    filters: {
+      allCategories: "All Categories",
+      featuredOnly: "Featured only"
+    },
+    actions: {
+      readMore: "Read More"
+    },
+    notFound: {
+      title: "Resource Not Found",
+      description: "The resource you're looking for doesn't exist or has been moved."
+    },
+    tags: "Tags"
+  },
+
+  // Contact
+  contact: {
+    title: "Contact Us",
+    description: "Get in touch with our support team",
+    getInTouch: "Get in Touch",
+    intro: "We'd love to hear from you! Send us a message and we'll respond as soon as possible.",
+    successTitle: "Message Sent Successfully!",
+    successMessage: "Thank you for contacting us. We'll get back to you as soon as possible.",
+    sendAnother: "Send Another Message",
+    sending: "Sending...",
+    sendMessage: "Send Message",
+    form: {
+      name: "Name",
+      email: "Email",
+      subject: "Subject",
+      message: "Message",
+      category: "Category",
+      placeholders: {
+        name: "Your name",
+        email: "your.email@example.com",
+        subject: "Subject (optional)",
+        message: "Type your message here..."
+      },
+      categories: {
+        general: "General Question",
+        bug: "Bug Report",
+        feedback: "Feedback",
+        feature: "Feature Request",
+        support: "Technical Support"
+      }
+    }
+  },
+
+
+  // Forms and Labels
+  forms: {
+    // Field Labels
+    labels: {
+      name: "Name",
+      email: "Email",
+      password: "Password",
+      confirmPassword: "Confirm Password",
+      title: "Title",
+      subtitle: "Subtitle",
+      description: "Description",
+      content: "Content",
+      category: "Category",
+      tags: "Tags",
+      slug: "Slug",
+      image: "Image",
+      imageAlt: "Image Alt Text",
+      url: "URL",
+      search: "Search",
+      subject: "Subject",
+      message: "Message",
+      amount: "Amount",
+      customAmount: "Custom Amount",
+      listName: "List Name",
+      listDescription: "List Description",
+      kanji: "Kanji",
+      meaning: "Meaning",
+      onyomi: "Onyomi",
+      kunyomi: "Kunyomi",
+      example: "Example",
+      moodBoard: "Mood Board",
+      order: "Order",
+      gradient: "Gradient",
+      question: "Question",
+      answer: "Answer",
+      option: "Option",
+      seoTitle: "SEO Title",
+      seoDescription: "SEO Description",
+      reading: "Reading",
+      type: "Type",
+      accountStatus: "Account Status",
+      active: "Active",
+      memberSince: "Member Since",
+      chooseAvatar: "Choose your profile thumbnail",
+      continueWithEmail: "Or continue with email",
+      emoji: "Emoji",
+      jlptLevel: "JLPT Level",
+      status: "Status",
+      sortOrder: "Sort Order"
+    },
+    // Placeholders
+    placeholders: {
+      name: "Your name",
+      email: "your.email@example.com",
+      password: "Enter your password",
+      confirmPassword: "Confirm your password",
+      title: "Enter title",
+      subtitle: "Optional subtitle",
+      description: "Enter description",
+      content: "Enter content",
+      category: "Select category",
+      tags: "Add tags",
+      slug: "url-friendly-slug",
+      image: "https://example.com/image.jpg",
+      imageAlt: "Descriptive alt text",
+      url: "https://example.com",
+      search: "Search...",
+      searchUsers: "Search users...",
+      searchFeatures: "Search features...",
+      searchResources: "Search resources...",
+      searchKanji: "Search kanji by character, meaning, or reading...",
+      searchJapaneseWords: "Search Japanese words...",
+      searchMoodBoards: "Search mood boards...",
+      subject: "Subject (optional)",
+      message: "Type your message here...",
+      customAmount: "Custom amount",
+      newListName: "New list name...",
+      listDescription: "Brief description of this list...",
+      listNameExample: "e.g., JLPT N5 Verbs, Cooking Terms",
+      kanjiSearch: "Search and add kanji instantly...",
+      kanjiCharacter: "木",
+      kanjiMeaning: "tree",
+      kanjiOnyomi: "もく, ぼく",
+      kanjiKunyomi: "き, こ",
+      kanjiExamples: "木曜日 (Thursday), 木材 (lumber)",
+      moodBoardName: "e.g., Nature",
+      moodBoardDescription: "Enter a description for this mood board...",
+      moodBoardOrder: "0",
+      moodBoardGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      articleId: "Article ID",
+      resourceTitle: "Enter resource title",
+      resourceSubtitle: "Optional subtitle",
+      resourceSlug: "url-friendly-slug",
+      resourceDescription: "Brief description for cards and SEO (auto-generated from content if empty)",
+      resourceContent: "Write your content in Markdown...",
+      resourceImage: "https://example.com/image.jpg",
+      resourceImageAlt: "Descriptive alt text",
+      resourceTags: "Add a tag and press Enter",
+      resourceSeoTitle: "Custom title for search engines (defaults to main title)",
+      resourceSeoDescription: "Custom description for search engines (defaults to excerpt)",
+      storyTitle: "The Adventure Begins",
+      storyJapaneseTitle: "<ruby>冒険<rt>ぼうけん</rt></ruby>が<ruby>始<rt>はじ</rt></ruby>まる",
+      storyDescription: "A young hero embarks on an exciting journey...",
+      storySlug: "the-adventure-begins",
+      storyImageAlt: "Describe the image for screen readers",
+      storyJapaneseContent: "<ruby>昔<rt>むかし</rt></ruby>、<ruby>昔<rt>むかし</rt></ruby>、ある<ruby>所<rt>ところ</rt></ruby>に...",
+      storyEnglishContent: "Once upon a time, in a certain place...",
+      storyQuestion: "What did the main character find?",
+      storyAnswer: "The answer can be found in paragraph 2...",
+      storySeoTitle: "Custom title for search engines (defaults to story title)",
+      storySeoDescription: "Custom description for search engines",
+      kanjiInput: "Type the kanji here...",
+      userFilter: "Enter user ID to filter...",
+      searchHistory: "Search History",
+      noSearchHistory: "No Search History"
+    },
+    // Validation Messages
+    validation: {
+      required: "This field is required",
+      invalidEmail: "Please enter a valid email address",
+      invalidPassword: "Password must be at least 6 characters",
+      passwordMismatch: "Passwords do not match",
+      minLength: "Must be at least {min} characters",
+      maxLength: "Must be no more than {max} characters",
+      invalidUrl: "Please enter a valid URL",
+      invalidNumber: "Please enter a valid number",
+      invalidInteger: "Please enter a valid integer",
+      invalidFormat: "Invalid format",
+      invalidFileType: "Invalid file type",
+      fileTooLarge: "File is too large",
+      invalidSlug: "Slug must contain only letters, numbers, and hyphens",
+      invalidKanji: "Please enter a valid kanji character",
+      invalidKana: "Please enter valid kana",
+      invalidReading: "Please enter a valid reading",
+      invalidJLPT: "Please select a valid JLPT level",
+      invalidCategory: "Please select a valid category",
+      invalidTags: "Please enter valid tags",
+      invalidAmount: "Please enter a valid amount",
+      invalidDate: "Please enter a valid date",
+      invalidTime: "Please enter a valid time",
+      invalidPhone: "Please enter a valid phone number",
+      invalidPostalCode: "Please enter a valid postal code",
+      invalidCreditCard: "Please enter a valid credit card number",
+      invalidExpiryDate: "Please enter a valid expiry date",
+      invalidCVV: "Please enter a valid CVV",
+      invalidSSN: "Please enter a valid SSN",
+      invalidZipCode: "Please enter a valid ZIP code",
+      invalidState: "Please enter a valid state",
+      invalidCountry: "Please enter a valid country",
+      invalidCurrency: "Please enter a valid currency amount",
+      invalidPercentage: "Please enter a valid percentage",
+      invalidIPAddress: "Please enter a valid IP address",
+      invalidDomain: "Please enter a valid domain name",
+      invalidUsername: "Username must contain only letters, numbers, and underscores",
+      invalidListName: "List name must be between 1 and 50 characters",
+      invalidDescription: "Description must be between 1 and 500 characters",
+      invalidTitle: "Title must be between 1 and 100 characters",
+      invalidContent: "Content cannot be empty",
+      invalidTagsFormat: "Tags must be separated by commas",
+      invalidImageFormat: "Please select a valid image file (JPG, PNG, GIF)",
+      invalidAudioFormat: "Please select a valid audio file (MP3, WAV, OGG)",
+      invalidVideoFormat: "Please select a valid video file (MP4, AVI, MOV)",
+      invalidDocumentFormat: "Please select a valid document file (PDF, DOC, TXT)",
+      invalidArchiveFormat: "Please select a valid archive file (ZIP, RAR, 7Z)",
+      invalidCodeFormat: "Please select a valid code file (JS, TS, PY, JAVA, CPP)",
+      invalidDataFormat: "Please select a valid data file (JSON, CSV, XML)",
+      invalidConfigFormat: "Please select a valid config file (YAML, TOML, INI)",
+      invalidLogFormat: "Please select a valid log file (LOG, TXT)",
+      invalidBackupFormat: "Please select a valid backup file (BAK, BACKUP)",
+      invalidTemplateFormat: "Please select a valid template file (HTML, CSS, JSX)",
+      invalidStyleFormat: "Please select a valid style file (CSS, SCSS, SASS)",
+      invalidScriptFormat: "Please select a valid script file (JS, TS, PY, SH)",
+      invalidMarkdownFormat: "Please select a valid markdown file (MD, MARKDOWN)",
+      invalidTextFormat: "Please select a valid text file (TXT, RTF, DOC)",
+      invalidSpreadsheetFormat: "Please select a valid spreadsheet file (XLS, XLSX, CSV)",
+      invalidPresentationFormat: "Please select a valid presentation file (PPT, PPTX, PDF)",
+      invalidDatabaseFormat: "Please select a valid database file (DB, SQL, SQLITE)",
+      invalidCertificateFormat: "Please select a valid certificate file (PEM, CRT, KEY)",
+      invalidKeyFormat: "Please select a valid key file (PEM, KEY, P12)"
+    },
+    // Actions
+    actions: {
+      deleteEntry: "Delete entry"
+    },
+    // Buttons
+    buttons: {
+      refresh: "Refresh",
+      export: "Export",
+      import: "Import",
+      save: "Save",
+      cancel: "Cancel",
+      delete: "Delete",
+      edit: "Edit",
+      add: "Add",
+      close: "Close",
+      confirm: "Confirm",
+      back: "Back",
+      next: "Next",
+      previous: "Previous",
+      submit: "Submit",
+      reset: "Reset",
+      search: "Search",
+      filter: "Filter",
+      clear: "Clear",
+      download: "Download",
+      upload: "Upload"
+    }
+  },
+
+  // Games
+  games: {
+    modals: {
+      exitSentenceScramble: "Exit Sentence Scramble?",
+      closeGame: "Close Game"
+    },
+    actions: {
+      saveSentenceToList: "Save sentence to list"
+    },
+    modes: {
+      kanjiQuest: {
+        title: "Kanji Quest",
+        description: "Battle with kanji and catch Pokémon as you learn!"
+      },
+      kanaDrop: {
+        title: "Kana Drop",
+        description: "Practice hiragana and katakana in a fun drop game."
+      },
+      listening: {
+        title: "Listening Quiz",
+        description: "Test your Japanese listening skills."
+      },
+      assembly: {
+        title: "Word Assembly",
+        description: "Build Japanese words from kana pieces."
+      },
+      reading: {
+        title: "Reading Challenge",
+        description: "Read and understand Japanese sentences."
+      },
+      matching: {
+        title: "Matching Game",
+        description: "Match words, kanji, or meanings."
+      },
+      sentenceScramble: {
+        title: "Sentence Scramble",
+        description: "Rearrange words to form correct Japanese sentences."
+      }
+    }
+  },
+
+  // Errors
+
+  // Settings Pages Content
+  settingsPages: {
+    pages: {
+      acknowledgments: "Acknowledgments",
+      termsOfService: "Terms of Service",
+      privacyPolicy: "Privacy Policy"
+    },
+    acknowledgments: {
+      sections: {
+        coreTechnologies: "Core Technologies",
+        japaneseLanguageData: "Japanese Language Data",
+        developmentTools: "Development Tools"
+      },
+      technologies: {
+        wanikani: "WaniKani API",
+        typescript: "TypeScript",
+        eslint: "ESLint",
+        prettier: "Prettier",
+        jest: "Jest",
+        netlify: "Netlify"
+      },
+      descriptions: {
+        codeLinting: "Code linting",
+        codeFormatting: "Code formatting",
+        testingFramework: "Testing framework",
+        hostingPlatform: "Hosting platform"
+      },
+      communities: {
+        japaneseLearning: "Japanese Language Learning Community",
+        openSource: "Open Source Contributors",
+        betaTesters: "Beta Testers"
+      },
+      license: "License Information"
+    },
+    termsOfService: {
+      sections: {
+        agreementToTerms: "Agreement to Terms",
+        permittedUse: "Permitted Use",
+        prohibitedActivities: "Prohibited Activities",
+        contentAndData: "Content and Data",
+        disclaimerOfWarranties: "Disclaimer of Warranties",
+        limitationOfLiability: "Limitation of Liability"
+      },
+      subsections: {
+        educationalPurpose: "Educational Purpose",
+        personalUse: "Personal Use",
+        dataExport: "Data Export",
+        reverseEngineering: "Reverse Engineering",
+        commercialRedistribution: "Commercial Redistribution",
+        harmfulActivities: "Harmful Activities",
+        yourData: "Your Data",
+        educationalContent: "Educational Content"
+      }
+    }
+  },
+
+  // Audio
+  audio: {
+    actions: {
+      play: "Play",
+      saveSentenceToList: "Save sentence to list"
+    }
+  },
+
+  // Tooltips
 };
 
-export type StringKeys = keyof typeof strings;
+export type StringKeys = keyof typeof en;

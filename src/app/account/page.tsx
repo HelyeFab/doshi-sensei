@@ -12,8 +12,10 @@ import { ADMIN_EMAIL } from '@/types/admin';
 import Link from 'next/link';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import UserAvatar from '@/components/UserAvatar';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 // List of available SVGs for user thumbnails
 const THUMBNAIL_OPTIONS = [
@@ -54,6 +56,7 @@ export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
   const { subscription, isPremium, userType, isLoading: subLoading } = useSubscription2();
   const { showNotification } = useNotification();
+  const strings = useStrings();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,21 +67,10 @@ export default function AccountPage() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [updatingAvatar, setUpdatingAvatar] = useState(false);
-  const [firestoreUser, setFirestoreUser] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // Fetch Firestore user document on mount and when user changes
-  useEffect(() => {
-    async function fetchFirestoreUser() {
-      if (!user) return;
-      const userRef = doc(db, 'users', user.uid);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        setFirestoreUser(userSnap.data());
-      }
-    }
-    fetchFirestoreUser();
-  }, [user]);
+  
+  // Use the new profile hook
+  const { profile } = useUserProfile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,11 +162,7 @@ export default function AccountPage() {
     try {
       const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, { avatar: img });
-      // Re-fetch Firestore user data after update
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        setFirestoreUser(userSnap.data());
-      }
+      // The realtime listener in UserProfileContext will automatically update
       setShowAvatarModal(false);
     } catch (error) {
       setErrorMessage('Failed to update avatar.');
@@ -219,28 +207,10 @@ export default function AccountPage() {
                   boxShadow: 'inset 0 0 0 1px var(--primary), 0 4px 12px rgba(0,0,0,0.1)'
                 }}
               >
-                <div className="flex items-center space-x-4 mb-6">
+                <div className="flex flex-col items-center md:flex-row md:items-center md:space-x-4 mb-6">
                   {/* User Avatar */}
-                  <div className="relative w-16 h-16">
-                    {firestoreUser?.avatar ? (
-                      <img
-                        src={firestoreUser.avatar}
-                        alt="Profile avatar"
-                        className="w-16 h-16 rounded-full"
-                        style={{ boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' }}
-                      />
-                    ) : user.photoURL ? (
-                      <img
-                        src={user.photoURL}
-                        alt={`${user.displayName || user.email}'s profile`}
-                        className="w-16 h-16 rounded-full"
-                        style={{ boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' }}
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="text-2xl">👤</span>
-                      </div>
-                    )}
+                  <div className="relative mb-2 md:mb-0">
+                    <UserAvatar size="lg" />
                     <button
                       className="absolute"
                       style={{
@@ -262,7 +232,7 @@ export default function AccountPage() {
                       <span role="img" aria-label="Edit">✏️</span>
                     </button>
                   </div>
-                  <div>
+                  <div className="text-center md:text-left">
                     <h2 className="text-xl font-semibold text-foreground">{user.displayName}</h2>
                     <p className="text-muted-foreground">{user.email}</p>
                   </div>
@@ -397,7 +367,7 @@ export default function AccountPage() {
                   <button
                     key={img}
                     onClick={() => handleAvatarSelect(img)}
-                    className={`border-2 rounded-lg p-1 transition-all ${firestoreUser?.avatar === img ? 'border-primary ring-2 ring-primary' : 'border-transparent hover:border-muted'} ${updatingAvatar ? 'opacity-50 pointer-events-none' : ''}`}
+                    className={`border-2 rounded-lg p-1 transition-all ${profile?.avatar === img ? 'border-primary ring-2 ring-primary' : 'border-transparent hover:border-muted'} ${updatingAvatar ? 'opacity-50 pointer-events-none' : ''}`}
                     aria-label="Choose avatar"
                     disabled={updatingAvatar}
                   >

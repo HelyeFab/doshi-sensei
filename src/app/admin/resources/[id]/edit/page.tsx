@@ -10,7 +10,7 @@ import { marked } from 'marked';
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface EditResourcePageProps {
   params: Promise<{
@@ -19,6 +19,7 @@ interface EditResourcePageProps {
 }
 
 export default function EditResourcePage({ params }: EditResourcePageProps) {
+  const strings = useStrings();
   const router = useRouter();
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();

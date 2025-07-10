@@ -13,9 +13,11 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import KanjiQuest from '@/components/games/KanjiQuest';
 import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
 import SentenceScrambleModal from '@/components/games/SentenceScrambleGame/SentenceScrambleModal';
+import KanjiQuestTutorialModal from '@/components/games/KanjiQuestTutorialModal';
 import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
+import { useStrings } from '@/hooks/useLanguage';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -73,66 +75,6 @@ interface AssemblyStats {
 // Daily limit for free users
 const FREE_USER_DAILY_LIMIT = 3;
 
-import { strings } from '@/config/strings';
-
-// Available game modes
-const GAME_MODES: GameMode[] = [
-  {
-    id: 'kanji-quest',
-    title: strings.games.modes.kanjiQuest.title,
-    description: strings.games.modes.kanjiQuest.description,
-    icon: '🎮', // Fallback emoji
-    iconImage: '/pokeball.png',
-    color: 'bg-red-500'
-  },
-  {
-    id: 'kana-drop',
-    title: strings.games.modes.kanaDrop.title,
-    description: strings.games.modes.kanaDrop.description,
-    icon: '🌧️', // Fallback emoji
-    iconImage: '/flat-icons/kana-drop.svg',
-    color: 'bg-cyan-500'
-  },
-  {
-    id: 'listening',
-    title: strings.games.modes.listening.title,
-    description: strings.games.modes.listening.description,
-    icon: '🎧',
-    color: 'bg-blue-500'
-  },
-  {
-    id: 'assembly',
-    title: strings.games.modes.assembly.title,
-    description: strings.games.modes.assembly.description,
-    icon: '🔤',
-    color: 'bg-purple-500'
-  },
-  {
-    id: 'reading',
-    title: strings.games.modes.reading.title,
-    description: strings.games.modes.reading.description,
-    icon: '⚡',
-    color: 'bg-green-500',
-    comingSoon: true
-  },
-  {
-    id: 'matching',
-    title: strings.games.modes.matching.title,
-    description: strings.games.modes.matching.description,
-    icon: '🎯',
-    color: 'bg-red-500',
-    comingSoon: true
-  },
-  {
-    id: 'sentence-scramble',
-    title: strings.games.modes.sentenceScramble.title,
-    description: strings.games.modes.sentenceScramble.description,
-    icon: '🧩',
-    iconImage: '/flat-icons/construction.svg',
-    color: 'bg-orange-500'
-  }
-];
-
 export default function GamesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -188,6 +130,61 @@ export default function GamesPage() {
   const [waitingForKanji, setWaitingForKanji] = useState(false);
   const [showKanaDropModal, setShowKanaDropModal] = useState(false);
   const [showSentenceScrambleModal, setShowSentenceScrambleModal] = useState(false);
+  const [showKanjiQuestTutorial, setShowKanjiQuestTutorial] = useState(false);
+
+  const strings = useStrings();
+
+  const GAME_MODES: GameMode[] = [
+    {
+      id: 'kanji-quest',
+      title: strings.games.modes.kanjiQuest.title,
+      description: strings.games.modes.kanjiQuest.description,
+      icon: '🎮',
+      iconImage: '/pokeball.png',
+      color: 'bg-red-500'
+    },
+    {
+      id: 'kana-drop',
+      title: strings.games.modes.kanaDrop.title,
+      description: strings.games.modes.kanaDrop.description,
+      icon: '🌧️',
+      iconImage: '/flat-icons/kana-drop.svg',
+      color: 'bg-cyan-500'
+    },
+    {
+      id: 'listening',
+      title: strings.games.modes.listening.title,
+      description: strings.games.modes.listening.description,
+      icon: '🎧',
+      iconImage: '/flat-icons/listening.svg',
+      color: 'bg-blue-500'
+    },
+    {
+      id: 'assembly',
+      title: strings.games.modes.assembly.title,
+      description: strings.games.modes.assembly.description,
+      icon: '🔤',
+      iconImage: '/flat-icons/word.svg',
+      color: 'bg-purple-500'
+    },
+    {
+      id: 'matching',
+      title: strings.games.modes.matching.title,
+      description: strings.games.modes.matching.description,
+      icon: '🎯',
+      iconImage: '/flat-icons/matching.svg',
+      color: 'bg-red-500',
+      comingSoon: true
+    },
+    {
+      id: 'sentence-scramble',
+      title: strings.games.modes.sentenceScramble.title,
+      description: strings.games.modes.sentenceScramble.description,
+      icon: '🧩',
+      iconImage: '/flat-icons/construction.svg',
+      color: 'bg-orange-500'
+    }
+  ];
 
   const canPlayMore = isPremium ||
     (currentGameMode === 'assembly' ? assemblyStats.gamesToday < FREE_USER_DAILY_LIMIT : quizStats.questionsToday < FREE_USER_DAILY_LIMIT);
@@ -506,7 +503,8 @@ export default function GamesPage() {
       loadStudyLists();
       loadAssemblyStats();
     } else if (gameMode.id === 'kanji-quest') {
-      setShowKanjiQuestLevelSelect(true);
+      // Show tutorial first
+      setShowKanjiQuestTutorial(true);
     } else if (gameMode.id === 'kana-drop') {
       // Open KanaDrop modal (will handle kana selection internally)
       setShowKanaDropModal(true);
@@ -522,7 +520,7 @@ export default function GamesPage() {
     // Check access using three-pillar system
     const featureId = currentGameMode === 'assembly' ? 'word_assembly' : 'listening_quiz';
     const canPlay = await checkAndTrack(featureId);
-    
+
     if (!canPlay) {
       // Access denied - modals are shown automatically by checkAndTrack
       return;
@@ -594,7 +592,7 @@ export default function GamesPage() {
     setKanjiQuestJlptLevel(level);
     setShowKanjiQuestLevelSelect(false);
     setGameStarted(true);
-    
+
     // Clear kanji selection so KanjiQuest component uses JLPT level kanji
     setCustomKanjiSelection([]);
   };
@@ -809,7 +807,7 @@ export default function GamesPage() {
 
         <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
           <PageHeader
-            title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : "Listening Games"}
+            title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.modes.listening.title}
             showBackButton={true}
             helpKey="games"
             onBackClick={handleBackToGameSelection}
@@ -846,7 +844,7 @@ export default function GamesPage() {
 
       <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
         <PageHeader
-          title={showGameSelection ? strings.games.title : currentGameMode === 'listening' ? "Listening Games" : currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.title}
+          title={showGameSelection ? strings.games.title : currentGameMode === 'listening' ? strings.games.modes.listening.title : currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.title}
           showBackButton={true}
           helpKey="games"
           onBackClick={!showGameSelection ? handleBackToGameSelection : undefined}
@@ -1022,15 +1020,15 @@ export default function GamesPage() {
               <div className="bg-card rounded-lg p-6 border border-border text-center">
                 <div className="mb-4">
                   <div className="text-lg font-semibold text-foreground">
-                    {selectedListIds.length} list{selectedListIds.length !== 1 ? 's' : ''} selected
+                    {selectedListIds.length} list{selectedListIds.length !== 1 ? 's' : ''} {strings.games.selected}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {savedWords.length} total words available
+                    {savedWords.length} {strings.games.totalWordsAvailable}
                     {currentGameMode === 'listening' && savedWords.length < 4 && savedWords.length > 0 && (
-                      <span className="text-destructive ml-1">(Need at least 4 words)</span>
+                      <span className="text-destructive ml-1">({strings.games.needAtLeast4Words})</span>
                     )}
                     {currentGameMode === 'assembly' && savedWords.length === 0 && (
-                      <span className="text-destructive ml-1">(Need at least 1 word)</span>
+                      <span className="text-destructive ml-1">({strings.games.needAtLeast1Word})</span>
                     )}
                   </div>
                 </div>
@@ -1043,10 +1041,10 @@ export default function GamesPage() {
                   className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-xl font-semibold transition-colors"
                 >
                   {!canPlayMore ? strings.games.dailyLimit :
-                    selectedListIds.length === 0 ? 'Select Lists First' :
-                      (currentGameMode === 'listening' && savedWords.length < 4) ? 'Need More Words (4+)' :
-                        (currentGameMode === 'assembly' && savedWords.length === 0) ? 'Need at least 1 word' :
-                          `Start ${currentGameMode === 'assembly' ? 'Assembly' : 'Quiz'} 🎮`}
+                    selectedListIds.length === 0 ? strings.games.selectListsFirst :
+                      (currentGameMode === 'listening' && savedWords.length < 4) ? strings.games.needMoreWords4 :
+                        (currentGameMode === 'assembly' && savedWords.length === 0) ? strings.games.needAtLeast1Word :
+                          `${strings.games.start} ${currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.quiz} 🎮`}
                 </button>
               </div>
             </div>
@@ -1056,10 +1054,10 @@ export default function GamesPage() {
             <div className="text-center py-16">
               <div className="text-8xl mb-6">🎧</div>
               <h2 className="text-3xl font-bold text-foreground mb-4">
-                Ready to Start!
+                {strings.games.readyToStart}
               </h2>
               <p className="text-muted-foreground mb-8 text-lg">
-                Listen to a Japanese word and select the correct written form from the options below.
+                {strings.games.listenAndSelect}
               </p>
 
               <button
@@ -1067,18 +1065,18 @@ export default function GamesPage() {
                 disabled={!canPlayMore}
                 className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-xl font-semibold transition-colors"
               >
-                {canPlayMore ? 'Start Quiz 🎮' : 'Daily Limit Reached 😔'}
+                {canPlayMore ? strings.games.startQuiz : strings.games.dailyLimitReached}
               </button>
 
               <div className="mt-6 space-y-2">
                 <div className="text-sm text-muted-foreground">
-                  📚 Using {savedWords.length} words from {selectedListIds.length} list{selectedListIds.length !== 1 ? 's' : ''}
+                  📚 {strings.games.usingWordsFromLists.replace('{words}', savedWords.length).replace('{lists}', selectedListIds.length)}
                 </div>
                 <button
                   onClick={handleBackToListSelection}
                   className="text-sm text-primary hover:text-primary/80 underline"
                 >
-                  Change Lists
+                  {strings.games.changeLists}
                 </button>
               </div>
             </div>
@@ -1135,7 +1133,7 @@ export default function GamesPage() {
                   </div>
                   <div className={`text-xl font-semibold mb-2 ${isCorrect ? 'text-green-600' : 'text-red-600'
                     }`}>
-                    {isCorrect ? 'Correct!' : 'Incorrect'}
+                    {isCorrect ? strings.games.states.correct : strings.games.states.incorrect}
                   </div>
                   <div className="text-muted-foreground mb-4">
                     <div><strong>{currentQuestion.question.word}</strong> ({currentQuestion.question.reading})</div>
@@ -1389,6 +1387,19 @@ export default function GamesPage() {
             }}
           />
         )}
+
+        {/* Kanji Quest Tutorial Modal */}
+        <KanjiQuestTutorialModal
+          isOpen={showKanjiQuestTutorial}
+          onClose={() => {
+            setShowKanjiQuestTutorial(false);
+            setShowGameSelection(true);
+          }}
+          onStart={() => {
+            setShowKanjiQuestTutorial(false);
+            setShowKanjiQuestLevelSelect(true);
+          }}
+        />
       </div>
     </>
   );

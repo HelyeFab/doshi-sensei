@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface UserSearchProps {
   searchQuery: string;
@@ -16,6 +16,7 @@ export function UserSearch({
   filterType,
   onFilterChange,
 }: UserSearchProps) {
+  const strings = useStrings();
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const filterOptions = [

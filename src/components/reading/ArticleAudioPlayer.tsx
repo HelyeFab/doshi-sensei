@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { NewsArticle } from '@/types/news';
 import TTSManager from '@/utils/tts';
 import { TranslationCache } from '@/utils/translationCache';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface ArticleAudioPlayerProps {
   article: NewsArticle;

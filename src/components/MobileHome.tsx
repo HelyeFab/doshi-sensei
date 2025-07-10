@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 import Image from 'next/image';
 import TypingEffect from './TypingEffect';
 import StatsManager, { UserStats } from '../utils/stats';
@@ -57,14 +57,14 @@ export default function MobileHome() {
             <span className="text-xl font-bold text-primary-foreground japanese-text">動</span>
           </div>
           <h1 className="text-2xl font-bold text-foreground app-name">
-            {strings.appName}
+            {useStrings().appName}
           </h1>
         </div>
         <p className="text-sm text-muted-foreground japanese-text mb-4">
           動詞 先生
         </p>
         <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-          {strings.home.subtitle}
+          {useStrings().home.subtitle}
         </p>
       </div>
 

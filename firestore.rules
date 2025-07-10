@@ -262,6 +262,47 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Premium Sync Collections
+    // User sync manifest - stores metadata about synced resources
+    match /userSync/{userId}/manifest {
+      // Only premium users can read/write their own sync manifest
+      allow read, write: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+    
+    // User synced resources - stores actual cached content
+    match /userSync/{userId}/userResources/{resourceId} {
+      // Only premium users can read their own synced resources
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can create/update resources with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        // Validate resource structure
+        request.resource.data.keys().hasAll(['resource', 'timestamp']) &&
+        request.resource.data.resource.keys().hasAll(['id', 'type', 'data', 'metadata']) &&
+        request.resource.data.resource.type in ['article', 'story', 'kanji', 'verb', 'adjective', 'audio'] &&
+        request.resource.data.resource.metadata.keys().hasAll(['size', 'cachedAt', 'lastAccessed', 'version', 'checksum']) &&
+        request.resource.data.timestamp is timestamp;
+      
+      // Premium users can delete their own resources
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+    
+    // Sync queue for offline operations
+    match /userSync/{userId}/syncQueue/{queueId} {
+      // Premium users can manage their sync queue
+      allow read, write: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

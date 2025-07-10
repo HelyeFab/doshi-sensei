@@ -8,17 +8,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAccess } from '@/hooks/useAccess';
 import { useNotification } from '@/contexts/NotificationContext';
+import { useStrings } from '@/hooks/useLanguage';
 import { X, Play, Clock, Star, RotateCcw } from 'lucide-react';
-import { strings } from '@/config/strings';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { 
-  GameState, 
-  ScrambledSentence, 
-  WordBlock, 
+import {
+  GameState,
+  ScrambledSentence,
+  WordBlock,
   GameStats,
   GAME_CONSTANTS,
   WORD_BLOCK_COLORS,
-  DISTRACTOR_IMAGES 
+  DISTRACTOR_IMAGES
 } from './types';
 
 interface SentenceScrambleModalProps {
@@ -31,6 +31,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
   const { subscription } = useSubscription2();
   const { checkAndTrack } = useAccess();
   const { showNotification } = useNotification();
+  const strings = useStrings();
 
   // Game state
   const [gameState, setGameState] = useState<GameState>({
@@ -56,7 +57,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
   const [flashTimerRef, setFlashTimerRef] = useState<NodeJS.Timeout | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  
+
   // Furigana state
   const [showFurigana, setShowFurigana] = useState(false);
   const [furiganaText, setFuriganaText] = useState<string | null>(null);
@@ -117,7 +118,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
     try {
       setLoading(true);
-      
+
       // Collect sentences from selected lists
       const allSentences: Sentence[] = [];
       for (const list of gameState.selectedLists) {
@@ -132,14 +133,14 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
       // Shuffle and limit sentences
       const shuffledSentences = shuffleArray(allSentences).slice(0, GAME_CONSTANTS.MAX_SENTENCES_PER_GAME);
-      
+
       setGameState(prev => ({
         ...prev,
         phase: 'instructions',
         sentences: shuffledSentences,
         gameStartTime: Date.now(),
       }));
-      
+
     } catch (err) {
       console.error('Error starting game:', err);
       setError('Failed to start game');
@@ -150,12 +151,12 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
   const proceedToFlash = () => {
     setGameState(prev => ({ ...prev, phase: 'sentence-flash' }));
-    
+
     // Reset furigana state for new sentence
     setShowFurigana(false);
     setFuriganaText(null);
     setLoadingFurigana(false);
-    
+
     // Start flash timer
     setFlashTimer(GAME_CONSTANTS.SENTENCE_FLASH_DURATION);
     const timer = setInterval(() => {
@@ -169,7 +170,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         return prev - 100;
       });
     }, 100);
-    
+
     // Store timer reference for cleanup/skip
     setFlashTimerRef(timer);
   };
@@ -211,7 +212,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
   const startCountdown = () => {
     setGameState(prev => ({ ...prev, phase: 'countdown' }));
     setCountdown(GAME_CONSTANTS.COUNTDOWN_DURATION);
-    
+
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
@@ -230,7 +231,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
     // Create scrambled sentence
     const scrambledSentence = createScrambledSentence(currentSentence);
-    
+
     setGameState(prev => ({
       ...prev,
       phase: 'scramble',
@@ -249,14 +250,14 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         return { ...prev, timeRemaining: prev.timeRemaining - 1 };
       });
     }, 1000);
-    
+
     setGameTimer(timer);
   };
 
   const createScrambledSentence = (sentence: Sentence): ScrambledSentence => {
     // Split sentence into words/particles
     const words = tokenizeSentence(sentence.text);
-    
+
     // Create word blocks with unique IDs
     const timestamp = Date.now();
     const wordBlocks: WordBlock[] = words.map((word, index) => ({
@@ -288,7 +289,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
     // Shuffle all blocks (words + distractors) together
     const shuffledBlocks = shuffleArray([...wordBlocks]);
-    
+
     return {
       id: `scrambled-${timestamp}`,
       originalSentence: sentence,
@@ -306,11 +307,11 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
     const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'から', 'まで', 'より'];
     let result: string[] = [];
     let currentWord = '';
-    
+
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
       currentWord += char;
-      
+
       // Check if this character is a particle or punctuation
       if (particles.includes(char) || '。！？'.includes(char)) {
         if (currentWord.length > 1) {
@@ -322,46 +323,46 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         currentWord = '';
       }
     }
-    
+
     if (currentWord) {
       result.push(currentWord);
     }
-    
+
     return result.filter(word => word.trim().length > 0);
   };
 
   const handleBlockClick = (block: WordBlock) => {
     if (!gameState.currentSentence || block.isDistractor) return; // Don't allow clicking distractors
-    
+
     setGameState(prev => {
       if (!prev.currentSentence) return prev;
-      
+
       const updatedSentence = { ...prev.currentSentence };
       updatedSentence.userOrder = [...updatedSentence.userOrder, block];
-      
+
       // Remove block from available blocks
       updatedSentence.wordBlocks = updatedSentence.wordBlocks.filter(b => b.id !== block.id);
-      
+
       return { ...prev, currentSentence: updatedSentence };
     });
   };
 
   const handleSubmitAttempt = () => {
     if (!gameState.currentSentence) return;
-    
+
     const isCorrect = checkSentenceOrder(gameState.currentSentence);
     const newAttempts = gameState.currentSentence.attempts + 1;
-    
+
     setGameState(prev => {
       if (!prev.currentSentence) return prev;
-      
+
       const updatedSentence = { ...prev.currentSentence };
       updatedSentence.attempts = newAttempts;
       updatedSentence.isCorrect = isCorrect;
       updatedSentence.isCompleted = isCorrect || newAttempts >= GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE;
-      
-      return { 
-        ...prev, 
+
+      return {
+        ...prev,
         currentSentence: updatedSentence,
         totalAttempts: prev.totalAttempts + 1,
         totalScore: isCorrect ? prev.totalScore + 1 : prev.totalScore,
@@ -370,11 +371,11 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
     // Show feedback immediately
     setShowFeedback(true);
-    
+
     // Hide feedback and proceed based on result
     setTimeout(() => {
       setShowFeedback(false);
-      
+
       if (isCorrect || newAttempts >= GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE) {
         // Sentence is completed - clear timer and move on
         clearInterval(gameTimer!);
@@ -389,7 +390,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         // Incorrect but still have attempts - reset user order for next attempt
         setGameState(prev => {
           if (!prev.currentSentence) return prev;
-          
+
           const updatedSentence = { ...prev.currentSentence };
           // Reset user order and restore word blocks with unique IDs
           const timestamp = Date.now();
@@ -419,10 +420,10 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
               } as WordBlock);
             }
           }
-          
+
           updatedSentence.wordBlocks = shuffleArray([...originalBlocks]);
           updatedSentence.userOrder = [];
-          
+
           return { ...prev, currentSentence: updatedSentence };
         });
       }
@@ -448,16 +449,16 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
   const handleTimeUp = () => {
     if (!gameState.currentSentence) return;
-    
+
     const newAttempts = gameState.currentSentence.attempts + 1;
-    
+
     setGameState(prev => {
       if (!prev.currentSentence) return prev;
-      
+
       const updatedSentence = { ...prev.currentSentence };
       updatedSentence.attempts = newAttempts;
       updatedSentence.isCompleted = newAttempts >= GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE;
-      
+
       if (updatedSentence.isCompleted) {
         setTimeout(() => {
           if (prev.currentSentenceIndex < prev.sentences.length - 1) {
@@ -467,9 +468,9 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
           }
         }, 1000);
       }
-      
-      return { 
-        ...prev, 
+
+      return {
+        ...prev,
         currentSentence: updatedSentence,
         totalAttempts: prev.totalAttempts + 1,
       };
@@ -479,7 +480,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
   const endGame = () => {
     setGameState(prev => ({ ...prev, phase: 'game-over' }));
     clearInterval(gameTimer!);
-    
+
     showNotification({
       title: 'Game Complete!',
       message: `You completed ${gameState.totalScore} out of ${gameState.sentences.length} sentences!`,
@@ -535,7 +536,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         {/* Header */}
         <div className="p-4 border-b flex items-center justify-between">
           <h2 className="text-xl font-bold flex items-center gap-2">
-            🧩 {strings.games.sentenceScramble.title}
+            🧩 {strings.games.sentenceScramble?.title || 'Sentence Scramble'}
           </h2>
           <button
             onClick={() => setShowExitConfirmation(true)}
@@ -554,10 +555,10 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
       {/* Exit Confirmation Dialog */}
       <ConfirmationDialog
         isOpen={showExitConfirmation}
-        title="Exit Sentence Scramble?"
-        message="Are you sure you want to exit the game? Your current progress will be lost."
-        confirmText="Exit Game"
-        cancelText="Continue Playing"
+        title={strings.games.sentenceScramble?.exitConfirmationTitle || 'Exit Sentence Scramble?'}
+        message={strings.games.sentenceScramble?.exitConfirmationMessage || 'Are you sure you want to exit the game? Your current progress will be lost.'}
+        confirmText={strings.games.sentenceScramble?.exitConfirmationConfirmText || 'Exit Game'}
+        cancelText={strings.games.sentenceScramble?.exitConfirmationCancelText || 'Continue Playing'}
         isDestructive={true}
         onConfirm={() => {
           setShowExitConfirmation(false);
@@ -592,9 +593,9 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">{strings.games.sentenceScramble.selectListsTitle}</h3>
+          <h3 className="text-lg font-semibold mb-2">{strings.games.sentenceScramble?.selectListsTitle || 'Select Lists'}</h3>
           <p className="text-muted-foreground">
-            {strings.games.sentenceScramble.selectListsDescription.replace('{maxLists}', GAME_CONSTANTS.MAX_SELECTED_LISTS.toString())}
+            {strings.games.sentenceScramble?.selectListsDescription || 'Select up to ' + GAME_CONSTANTS.MAX_SELECTED_LISTS + ' lists to include sentences in the game.'}
           </p>
         </div>
 
@@ -612,9 +613,9 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
         {sentenceLists.length === 0 && !loading && (
           <div className="text-center py-8">
-            <p className="text-muted-foreground">{strings.games.sentenceScramble.noListsFound}</p>
+            <p className="text-muted-foreground">{strings.games.sentenceScramble?.noListsFound || 'No sentence lists found.'}</p>
             <p className="text-sm text-muted-foreground mt-2">
-              {strings.games.sentenceScramble.noListsDescription}
+              {strings.games.sentenceScramble?.noListsDescription || 'Please ensure you have added some sentence lists in the settings.'}
             </p>
           </div>
         )}
@@ -661,7 +662,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
               className="px-8 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               <Play className="w-5 h-5" />
-              {strings.games.sentenceScramble.startGame} ({gameState.selectedLists.length} list{gameState.selectedLists.length !== 1 ? 's' : ''})
+              {strings.games.sentenceScramble?.startGame || 'Start Game'} ({gameState.selectedLists.length} list{gameState.selectedLists.length !== 1 ? 's' : ''})
             </button>
           </div>
         )}
@@ -673,38 +674,38 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
     return (
       <div className="space-y-6 text-center">
         <div className="max-w-2xl mx-auto">
-          <h3 className="text-2xl font-bold mb-4">🧩 {strings.games.sentenceScramble.howToPlay}</h3>
-          
+          <h3 className="text-2xl font-bold mb-4">{strings.games.sentenceScramble?.howToPlay || 'How to Play Sentence Scramble'}</h3>
+
           <div className="space-y-4 text-left">
             <div className="flex items-start gap-3">
               <span className="text-2xl">👀</span>
               <div>
-                <h4 className="font-semibold">{strings.games.sentenceScramble.watchSentence}</h4>
-                <p className="text-muted-foreground">{strings.games.sentenceScramble.watchSentenceDesc}</p>
+                <h4 className="font-semibold">{strings.games.sentenceScramble?.watchSentence || 'Watch the Sentence'}</h4>
+                <p className="text-muted-foreground">{strings.games.sentenceScramble?.watchSentenceDesc || 'You will see a scrambled sentence.'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <span className="text-2xl">🔤</span>
               <div>
-                <h4 className="font-semibold">{strings.games.sentenceScramble.rebuildSentence}</h4>
-                <p className="text-muted-foreground">{strings.games.sentenceScramble.rebuildSentenceDesc}</p>
+                <h4 className="font-semibold">{strings.games.sentenceScramble?.rebuildSentence || 'Rebuild the Sentence'}</h4>
+                <p className="text-muted-foreground">{strings.games.sentenceScramble?.rebuildSentenceDesc || 'Your task is to rebuild the sentence by clicking the correct order of words.'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <span className="text-2xl">⏰</span>
               <div>
-                <h4 className="font-semibold">{strings.games.sentenceScramble.beatClock}</h4>
-                <p className="text-muted-foreground">{strings.games.sentenceScramble.beatClockDesc}</p>
+                <h4 className="font-semibold">{strings.games.sentenceScramble?.beatClock || 'Beat the Clock'}</h4>
+                <p className="text-muted-foreground">{strings.games.sentenceScramble?.beatClockDesc || 'You have a limited time to complete each sentence.'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <span className="text-2xl">🎯</span>
               <div>
-                <h4 className="font-semibold">{strings.games.sentenceScramble.scorePoints}</h4>
-                <p className="text-muted-foreground">{strings.games.sentenceScramble.scorePointsDesc}</p>
+                <h4 className="font-semibold">{strings.games.sentenceScramble?.scorePoints || 'Score Points'}</h4>
+                <p className="text-muted-foreground">{strings.games.sentenceScramble?.scorePointsDesc || 'Correctly rebuilt sentences earn points.'}</p>
               </div>
             </div>
           </div>
@@ -715,7 +716,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
           className="px-8 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 mx-auto"
         >
           <Play className="w-5 h-5" />
-          {strings.games.sentenceScramble.startPlaying}
+          {strings.games.sentenceScramble?.startPlaying || 'Start Playing'}
         </button>
       </div>
     );
@@ -723,7 +724,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
   function renderSentenceFlash() {
     const currentSentence = gameState.sentences[gameState.currentSentenceIndex];
-    
+
     return (
       <div className="space-y-6 text-center">
         <div className="mb-4">
@@ -731,10 +732,10 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
             Sentence {gameState.currentSentenceIndex + 1} of {gameState.sentences.length}
           </p>
           <div className="w-full bg-muted rounded-full h-2 mt-2">
-            <div 
+            <div
               className="bg-primary h-2 rounded-full transition-all duration-100"
-              style={{ 
-                width: `${((GAME_CONSTANTS.SENTENCE_FLASH_DURATION - flashTimer) / GAME_CONSTANTS.SENTENCE_FLASH_DURATION) * 100}%` 
+              style={{
+                width: `${((GAME_CONSTANTS.SENTENCE_FLASH_DURATION - flashTimer) / GAME_CONSTANTS.SENTENCE_FLASH_DURATION) * 100}%`
               }}
             />
           </div>
@@ -743,7 +744,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         <div className="bg-muted/30 rounded-xl p-8 min-h-[200px] flex items-center justify-center relative">
           <div className="text-3xl font-medium japanese-text leading-relaxed">
             {showFurigana && furiganaText ? (
-              <div 
+              <div
                 dangerouslySetInnerHTML={{ __html: furiganaText }}
                 className="ruby-text"
               />
@@ -751,13 +752,13 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
               <p>{currentSentence?.text}</p>
             )}
           </div>
-          
+
           {/* Furigana toggle */}
           <button
             onClick={() => setShowFurigana(!showFurigana)}
             className={`absolute top-4 right-4 flex items-center gap-1 px-3 py-2 text-sm rounded transition-colors ${
-              showFurigana 
-                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+              showFurigana
+                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
             title={showFurigana ? 'Hide furigana' : 'Show furigana'}
@@ -775,15 +776,15 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
         <div className="space-y-4">
           <p className="text-lg text-muted-foreground">
-            {strings.games.sentenceScramble.memorizeSentence}
+            {strings.games.sentenceScramble?.memorizeSentence || 'Memorize the sentence before attempting to rebuild it.'}
           </p>
-          
+
           <button
             onClick={skipFlashAndStartCountdown}
             className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 mx-auto"
           >
             <Play className="w-5 h-5" />
-            {strings.games.sentenceScramble.skipReading}
+            {strings.games.sentenceScramble?.skipReading || 'Skip Reading'}
           </button>
         </div>
       </div>
@@ -797,7 +798,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
           <div className="text-8xl font-bold text-primary mb-4 animate-pulse">
             {countdown}
           </div>
-          <p className="text-xl text-muted-foreground">{strings.games.sentenceScramble.getReady}</p>
+          <p className="text-xl text-muted-foreground">{strings.games.sentenceScramble?.getReady || 'Get Ready!'}</p>
         </div>
       </div>
     );
@@ -819,26 +820,24 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
             </div>
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5" />
-              <span>{strings.games.sentenceScramble.attempts}: {gameState.currentSentence.attempts}/{GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE}</span>
+              <span>{strings.games.sentenceScramble?.attempts || 'Attempts'}: {gameState.currentSentence.attempts}/{GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE}</span>
             </div>
           </div>
-          
+
           <p className="text-sm text-muted-foreground">
-            {strings.games.sentenceScramble.sentenceOf
-              .replace('{current}', (gameState.currentSentenceIndex + 1).toString())
-              .replace('{total}', gameState.sentences.length.toString())}
+            {strings.games.sentenceScramble?.sentenceOf || 'Sentence'} {gameState.currentSentenceIndex + 1} of {gameState.sentences.length}
           </p>
         </div>
 
         {/* User's current order */}
         <div className="space-y-2">
-          <h4 className="font-medium">{strings.games.sentenceScramble.yourSentence}</h4>
+          <h4 className="font-medium">{strings.games.sentenceScramble?.yourSentence || 'Your Sentence'}</h4>
           <div className="min-h-[60px] sm:min-h-[80px] bg-muted/30 rounded-lg p-2 sm:p-4 flex flex-wrap gap-2 items-center justify-center sm:justify-start">
             {gameState.currentSentence.userOrder.map((block, index) => (
               <div
                 key={`user-${block.id}`}
                 className="min-w-[50px] max-w-[120px] h-10 sm:h-12 px-2 sm:px-3 py-2 rounded-lg font-medium text-xs sm:text-sm shadow-sm border flex items-center justify-center text-center"
-                style={{ 
+                style={{
                   backgroundColor: block.color,
                   borderColor: `${block.color}88`,
                 }}
@@ -847,25 +846,25 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
               </div>
             ))}
             {gameState.currentSentence.userOrder.length === 0 && (
-              <p className="text-muted-foreground italic">{strings.games.sentenceScramble.clickBlocks}</p>
+              <p className="text-muted-foreground italic">{strings.games.sentenceScramble?.clickBlocks || 'Click the blocks to rebuild the sentence.'}</p>
             )}
           </div>
         </div>
 
         {/* Available blocks */}
         <div className="space-y-2">
-          <h4 className="font-medium">{strings.games.sentenceScramble.availableBlocks}</h4>
+          <h4 className="font-medium">{strings.games.sentenceScramble?.availableBlocks || 'Available Blocks'}</h4>
           <div className="flex flex-wrap gap-2 sm:gap-3 justify-center p-2 sm:p-4 bg-muted/20 rounded-lg min-h-[100px] sm:min-h-[120px]">
             {gameState.currentSentence.wordBlocks.map((block) => (
               <button
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
                 className={`min-w-[50px] max-w-[120px] h-10 sm:h-12 px-2 sm:px-4 py-2 sm:py-3 rounded-lg font-medium shadow-lg transition-all duration-200 border-2 border-opacity-50 flex items-center justify-center text-center ${
-                  block.isDistractor 
-                    ? 'cursor-not-allowed opacity-75 hover:opacity-90' 
+                  block.isDistractor
+                    ? 'cursor-not-allowed opacity-75 hover:opacity-90'
                     : 'hover:scale-105 hover:border-opacity-100'
                 }`}
-                style={{ 
+                style={{
                   backgroundColor: block.color,
                   borderColor: `${block.color}cc`,
                   boxShadow: `0 4px 8px ${block.color}40`,
@@ -874,9 +873,9 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
                 title={block.isDistractor ? "Distractor (not clickable)" : undefined}
               >
                 {block.isDistractor ? (
-                  <img 
-                    src={block.distractorImage} 
-                    alt="distractor" 
+                  <img
+                    src={block.distractorImage}
+                    alt="distractor"
                     className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
                     onError={(e) => {
                       if (process.env.NODE_ENV === 'development') {
@@ -912,7 +911,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
               disabled={showFeedback}
               className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
-              {strings.games.sentenceScramble.submitAnswer}
+              {strings.games.sentenceScramble?.submitAnswer || 'Submit Answer'}
             </button>
           </div>
         )}
@@ -920,8 +919,8 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         {/* Result feedback */}
         {showFeedback && gameState.currentSentence && (
           <div className={`text-center p-4 rounded-lg transition-all duration-300 ${
-            gameState.currentSentence.isCorrect 
-              ? 'bg-green-500/10 text-green-600 border border-green-500/20' 
+            gameState.currentSentence.isCorrect
+              ? 'bg-green-500/10 text-green-600 border border-green-500/20'
               : 'bg-red-500/10 text-red-600 border border-red-500/20'
           }`}>
             <p className="text-lg font-semibold">
@@ -932,7 +931,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
             </p>
             {!gameState.currentSentence.isCorrect && gameState.currentSentence.attempts < GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE && (
               <p className="text-xs mt-2 opacity-75">
-                Try again! {GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE - gameState.currentSentence.attempts} attempts remaining
+                {strings.games.sentenceScramble?.attemptsRemaining || 'Attempts remaining'}: {GAME_CONSTANTS.MAX_ATTEMPTS_PER_SENTENCE - gameState.currentSentence.attempts}
               </p>
             )}
           </div>
@@ -948,26 +947,26 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
     return (
       <div className="space-y-6 text-center">
         <div>
-          <h3 className="text-2xl font-bold mb-2">🎉 {strings.games.sentenceScramble.gameComplete}</h3>
-          <p className="text-muted-foreground">{strings.games.sentenceScramble.greatJob}</p>
+          <h3 className="text-2xl font-bold mb-2">{strings.games.sentenceScramble?.gameComplete || 'Game Complete!'}</h3>
+          <p className="text-muted-foreground">{strings.games.sentenceScramble?.greatJob || 'Great job!'}</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-muted/30 rounded-lg p-4">
             <p className="text-2xl font-bold text-primary">{gameState.totalScore}</p>
-            <p className="text-sm text-muted-foreground">Correct</p>
+            <p className="text-sm text-muted-foreground">{strings.games.sentenceScramble?.correct || 'Correct'}</p>
           </div>
           <div className="bg-muted/30 rounded-lg p-4">
             <p className="text-2xl font-bold text-primary">{gameState.sentences.length}</p>
-            <p className="text-sm text-muted-foreground">Total</p>
+            <p className="text-sm text-muted-foreground">{strings.games.sentenceScramble?.totalSentences || 'Total Sentences'}</p>
           </div>
           <div className="bg-muted/30 rounded-lg p-4">
             <p className="text-2xl font-bold text-primary">{Math.round(accuracy)}%</p>
-            <p className="text-sm text-muted-foreground">Accuracy</p>
+            <p className="text-sm text-muted-foreground">{strings.games.sentenceScramble?.accuracy || 'Accuracy'}</p>
           </div>
           <div className="bg-muted/30 rounded-lg p-4">
             <p className="text-2xl font-bold text-primary">{totalTime}s</p>
-            <p className="text-sm text-muted-foreground">Time</p>
+            <p className="text-sm text-muted-foreground">{strings.games.sentenceScramble?.time || 'Time'}</p>
           </div>
         </div>
 
@@ -977,13 +976,13 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
             className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
           >
             <RotateCcw className="w-5 h-5" />
-            {strings.games.sentenceScramble.playAgain}
+            {strings.games.sentenceScramble?.playAgain || 'Play Again'}
           </button>
           <button
             onClick={handleClose}
             className="px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
           >
-            {strings.common.close}
+            {strings.common?.close || 'Close'}
           </button>
         </div>
       </div>

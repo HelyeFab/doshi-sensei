@@ -6,9 +6,10 @@ import { useFeature } from '@/hooks/useFeature';
 import { useNotification } from '@/contexts/NotificationContext';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 export default function SubscriptionPlans() {
+  const strings = useStrings();
   const { subscription, isPremium, userType, isLoading, createCheckoutSession, cancelSubscription } = useSubscription2();
   const { feature: drillFeature, access: drillAccess } = useFeature('drill_practice');
   const { feature: listFeature, access: listAccess } = useFeature('word_lists');

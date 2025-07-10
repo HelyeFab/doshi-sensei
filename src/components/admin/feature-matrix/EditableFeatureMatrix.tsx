@@ -6,7 +6,7 @@ import { UserType } from '@/lib/entitlements/types';
 import { EditableLimitCell } from './EditableLimitCell';
 import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
 import { useNotification } from '@/contexts/NotificationContext';
-import { strings } from '@/config/strings';
+import { useStrings } from '@/hooks/useLanguage';
 
 interface FeatureAccess {
   allowed: boolean;
@@ -32,6 +32,7 @@ export function EditableFeatureMatrix({
   isEditMode
 }: EditableFeatureMatrixProps) {
   const { showNotification } = useNotification();
+  const strings = useStrings();
   const [editingCell, setEditingCell] = useState<{
     featureId: string;
     userType: UserType;

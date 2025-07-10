@@ -23,29 +23,9 @@ export class FirebaseSyncAdapter {
    * Check if we have connectivity to Firebase
    */
   async checkConnectivity(): Promise<boolean> {
-    // First check browser's online status
-    if (!navigator.onLine) {
-      return false;
-    }
-
-    // Then try a simple Firebase operation with timeout
-    try {
-      // Use a collection that should exist and be accessible
-      const userDoc = doc(firestore, 'users', 'connectivity_test');
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 5000)
-      );
-      
-      await Promise.race([
-        getDoc(userDoc).catch(() => null), // Ignore permission errors
-        timeoutPromise
-      ]);
-      
-      return true;
-    } catch (error) {
-      syncLogger.debug('Connectivity check failed:', error);
-      return false;
-    }
+    // Simply check browser's online status
+    // Firebase will handle its own connection state internally
+    return navigator.onLine;
   }
 
   /**
@@ -66,13 +46,16 @@ export class FirebaseSyncAdapter {
         lastSyncTimestamp: data.lastSyncTimestamp,
         resources: data.resources || {}
       };
-    } catch (error) {
-      console.error('Error fetching user manifest:', error);
-      throw this.createSyncError(
-        'MANIFEST_FETCH_ERROR',
-        'Failed to fetch sync manifest',
-        true
-      );
+    } catch (error: any) {
+      // Handle permission denied errors gracefully
+      if (error.code === 'permission-denied') {
+        syncLogger.debug('Permission denied accessing sync manifest - user may not be premium');
+        return null;
+      }
+      
+      // For other errors, log but don't throw to avoid breaking the app
+      console.warn('Error fetching user manifest:', error);
+      return null;
     }
   }
 

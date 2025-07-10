@@ -41,6 +41,22 @@ const nextConfig: NextConfig = {
       };
     }
     
+    // Reduce file watching load in development
+    if (dev && !isServer) {
+      config.watchOptions = {
+        ignored: [
+          '**/.git/**',
+          '**/node_modules/**',
+          '**/.next/**',
+          '**/dist/**',
+          '**/build/**',
+          '**/coverage/**',
+          '**/.vscode/**',
+          '**/.idea/**',
+        ],
+      };
+    }
+    
     // Fix module not found issues
     config.module.rules.push({
       test: /\.m?js$/,

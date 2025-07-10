@@ -1,5 +1,5 @@
 // Service Worker for Doshi Sensei - Offline Support & Caching
-const CACHE_VERSION = 'v5-' + Date.now(); // Force immediate update with timestamp
+const CACHE_VERSION = 'v6-fixed'; // Fixed version to clear problematic caches
 const CACHE_NAMES = {
   static: `static-cache-${CACHE_VERSION}`,
   dynamic: `dynamic-cache-${CACHE_VERSION}`,
@@ -66,7 +66,10 @@ self.addEventListener('activate', (event) => {
             .filter((cacheName) => !Object.values(CACHE_NAMES).includes(cacheName))
             .map((cacheName) => {
               console.log('[ServiceWorker] Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
+              return caches.delete(cacheName).catch(err => {
+                console.warn('[ServiceWorker] Failed to delete cache:', cacheName, err);
+                // Continue with other deletions
+              });
             })
         );
       }),
@@ -235,6 +238,14 @@ async function handleGeneralRequest(request) {
 // Check if API request should be cached
 function shouldCacheApiRequest(request) {
   const url = new URL(request.url);
+  
+  // Never cache admin or script files
+  if (url.pathname.includes('/admin/') || 
+      url.pathname.includes('/scripts/') || 
+      url.pathname.includes('fix-admin')) {
+    return false;
+  }
+  
   return CACHEABLE_API_PATTERNS.some(pattern => pattern.test(url.pathname));
 }
 

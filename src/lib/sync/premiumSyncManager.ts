@@ -386,7 +386,7 @@ export class PremiumSyncManager {
     const allResources: CachedResource[] = [];
     
     for (const type of types) {
-      const resources = await this.storageManager.getCachedResourcesByType(type);
+      const resources = await this.storageManager.getResourcesByType(type);
       allResources.push(...resources);
     }
     

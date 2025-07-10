@@ -30,13 +30,14 @@ export class FirebaseSyncAdapter {
 
     // Then try a simple Firebase operation with timeout
     try {
-      const testDoc = doc(firestore, '_test_', '_connectivity_');
+      // Use a collection that should exist and be accessible
+      const userDoc = doc(firestore, 'users', 'connectivity_test');
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Timeout')), 5000)
       );
       
       await Promise.race([
-        getDoc(testDoc),
+        getDoc(userDoc).catch(() => null), // Ignore permission errors
         timeoutPromise
       ]);
       
@@ -283,19 +284,6 @@ export class FirebaseSyncAdapter {
     }
   }
 
-  /**
-   * Check if user has network connectivity
-   */
-  async checkConnectivity(): Promise<boolean> {
-    try {
-      // Try a simple Firestore operation
-      const testRef = doc(firestore, 'connectivity_test', 'test');
-      await getDoc(testRef);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
 
   /**
    * Generate a consistent document ID for resources

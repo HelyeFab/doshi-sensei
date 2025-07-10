@@ -1,5 +1,5 @@
 // Service Worker for Doshi Sensei - Offline Support & Caching
-const CACHE_VERSION = 'v2'; // Updated to force new service worker installation
+const CACHE_VERSION = 'v4'; // Updated to force new service worker installation
 const CACHE_NAMES = {
   static: `static-cache-${CACHE_VERSION}`,
   dynamic: `dynamic-cache-${CACHE_VERSION}`,
@@ -252,55 +252,10 @@ self.addEventListener('sync', async (event) => {
   }
 });
 
-// Sync premium content
+// Legacy sync function - redirects to new sync handler
 async function syncPremiumContent() {
-  try {
-    // Get sync queue from IndexedDB
-    const syncQueue = await getSyncQueue();
-    
-    if (!syncQueue || syncQueue.length === 0) {
-      return;
-    }
-    
-    // Only log in development
-    if (self.location.hostname === 'localhost') {
-      console.log('[ServiceWorker] Syncing', syncQueue.length, 'items');
-    }
-    
-    // Process sync queue
-    for (const item of syncQueue) {
-      try {
-        await syncResource(item);
-        await removefromSyncQueue(item.id);
-      } catch (error) {
-        console.error('[ServiceWorker] Failed to sync item:', item.id, error);
-      }
-    }
-  } catch (error) {
-    console.error('[ServiceWorker] Sync failed:', error);
-  }
-}
-
-// Get sync queue from IndexedDB
-async function getSyncQueue() {
-  // This would interact with IndexedDB
-  // For now, using a simple implementation
-  return [];
-}
-
-// Sync a single resource
-async function syncResource(item) {
-  const response = await fetch(`/api/sync/${item.resourceType}/${item.resourceId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(item)
-  });
-  
-  if (!response.ok) {
-    throw new Error(`Sync failed: ${response.status}`);
-  }
+  // Redirect to new sync handler
+  return handlePremiumSync();
 }
 
 // Remove item from sync queue
@@ -396,34 +351,34 @@ async function handlePremiumSync() {
     return;
   }
   
+  // Check if user is premium before attempting sync
+  const isPremium = await checkUserPremiumStatus();
+  if (!isPremium) {
+    // Don't attempt sync for non-premium users
+    return;
+  }
+  
   try {
     // Send message to all clients to trigger sync
     const clients = await self.clients.matchAll({ type: 'window' });
+    
+    let syncTriggered = false;
     
     for (const client of clients) {
       client.postMessage({
         type: 'PREMIUM_SYNC_REQUESTED',
         timestamp: Date.now()
       });
+      syncTriggered = true;
     }
     
-    // Also try to sync directly if we have user context
-    const response = await fetch('/api/sync/trigger', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        source: 'service-worker',
-        timestamp: Date.now()
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Sync API failed: ${response.status}`);
+    if (!syncTriggered) {
+      console.log('[ServiceWorker] No active clients to trigger sync');
+      // The sync will be triggered when a client becomes active
+      return;
     }
     
-    console.log('[ServiceWorker] Premium sync completed successfully');
+    console.log('[ServiceWorker] Premium sync requested to active clients');
   } catch (error) {
     console.error('[ServiceWorker] Premium sync failed:', error);
     throw error; // Re-throw to mark sync as failed

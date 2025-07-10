@@ -29,12 +29,15 @@ export function usePremiumSync(): UsePremiumSyncReturn {
   const syncManagerRef = useRef<PremiumSyncManager | null>(null);
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize sync manager
+  // Initialize sync manager ONLY for premium users
   useEffect(() => {
-    if (!syncManagerRef.current) {
+    if (isPremium && !syncManagerRef.current) {
       syncManagerRef.current = new PremiumSyncManager();
+    } else if (!isPremium && syncManagerRef.current) {
+      // Clean up sync manager if user is no longer premium
+      syncManagerRef.current = null;
     }
-  }, []);
+  }, [isPremium]);
 
   // Initialize sync for premium users
   useEffect(() => {
@@ -106,6 +109,11 @@ export function usePremiumSync(): UsePremiumSyncReturn {
   }, []);
 
   const initializeSync = async (userId: string) => {
+    // Double-check premium status before initializing
+    if (!isPremium) {
+      return;
+    }
+    
     try {
       // Only register sync with service worker if we have network connectivity
       if ('serviceWorker' in navigator && 'SyncManager' in window && navigator.onLine) {

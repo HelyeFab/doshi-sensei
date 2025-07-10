@@ -65,8 +65,10 @@ class PokemonStorageManager {
         },
       });
     } catch (error) {
-      console.error('Failed to initialize Pokemon IndexedDB:', error);
-      throw error;
+      // Don't throw, just log the error
+      console.warn('Failed to initialize Pokemon IndexedDB:', error);
+      // Leave db as null so we can handle it gracefully
+      this.db = null;
     }
   }
 
@@ -77,14 +79,17 @@ class PokemonStorageManager {
     userId: string | null,
     userEmail: string | null
   ): Promise<void> {
-    await this.initDB();
-    if (!this.db) throw new Error('Database not initialized');
-
-    // Create a composite ID combining userId and pokemonId
-    // Use 'guest' as userId for anonymous users
-    const compositeId = `${userId || 'guest'}:${pokemonId}`;
-
     try {
+      await this.initDB();
+      if (!this.db) {
+        console.warn('Database not initialized, cannot save Pokemon');
+        return;
+      }
+
+      // Create a composite ID combining userId and pokemonId
+      // Use 'guest' as userId for anonymous users
+      const compositeId = `${userId || 'guest'}:${pokemonId}`;
+
       await this.db.put('caughtPokemon', {
         id: compositeId,
         pokemonId,
@@ -96,8 +101,8 @@ class PokemonStorageManager {
       });
       console.log(`Saved Pokemon ${pokemonId} for user ${userId || 'guest'}`);
     } catch (error) {
-      console.error('Failed to save Pokemon locally:', error);
-      throw error;
+      // Don't throw, just log the error
+      console.warn('Failed to save Pokemon locally:', error);
     }
   }
 
@@ -117,14 +122,18 @@ class PokemonStorageManager {
   }
 
   async getAllCaughtPokemonLocally(userId: string | null, userEmail: string | null = null): Promise<number[]> {
-    await this.initDB();
-    if (!this.db) throw new Error('Database not initialized');
-
     try {
       // Always return empty for no userId (new/guest)
       if (!userId) {
         return [];
       }
+      
+      await this.initDB();
+      if (!this.db) {
+        console.warn('Database not initialized, returning empty Pokemon list');
+        return [];
+      }
+
       // For authenticated users, get their Pokemon using both ID and email for verification
       const userPokemon = await this.db.getAllFromIndex('caughtPokemon', 'by-user', userId);
       // If email is provided, do the double check
@@ -135,7 +144,8 @@ class PokemonStorageManager {
       }
       return userPokemon.map(p => p.pokemonId);
     } catch (error) {
-      console.error('Failed to get all caught Pokemon locally:', error);
+      // Don't throw errors, just log and return empty array
+      console.warn('Failed to get all caught Pokemon locally:', error);
       return [];
     }
   }

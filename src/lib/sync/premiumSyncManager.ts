@@ -32,6 +32,21 @@ export class PremiumSyncManager {
    * Main sync method - performs full sync for a user
    */
   async performSync(userId: string, progressCallback?: (progress: SyncProgress) => void): Promise<SyncResult> {
+    // Early return if no userId (this should never happen but let's be safe)
+    if (!userId) {
+      return {
+        success: false,
+        resourcesSynced: 0,
+        resourcesDownloaded: 0,
+        resourcesUploaded: 0,
+        conflicts: 0,
+        error: 'No user ID provided',
+        startTime: Date.now(),
+        endTime: Date.now(),
+        syncDuration: 0
+      };
+    }
+    
     if (this.syncInProgress) {
       return {
         success: false,

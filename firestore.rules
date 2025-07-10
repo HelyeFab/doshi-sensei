@@ -11,9 +11,8 @@ service cloud.firestore {
     function isPremiumUser(userId) {
       let userData = get(/databases/$(database)/documents/users/$(userId)).data;
       return userData.subscription != null &&
-        userData.subscription.subscription != null &&
-        userData.subscription.subscription.status == 'active' &&
-        userData.subscription.subscription.plan in ['monthly', 'yearly'];
+        userData.subscription.status == 'active' &&
+        userData.subscription.plan in ['monthly', 'yearly'];
     }
 
     // Helper function to validate bookmark structure

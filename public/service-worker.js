@@ -1,5 +1,5 @@
 // Service Worker for Doshi Sensei - Offline Support & Caching
-const CACHE_VERSION = 'v4'; // Updated to force new service worker installation
+const CACHE_VERSION = 'v5-' + Date.now(); // Force immediate update with timestamp
 const CACHE_NAMES = {
   static: `static-cache-${CACHE_VERSION}`,
   dynamic: `dynamic-cache-${CACHE_VERSION}`,
@@ -28,7 +28,8 @@ const CACHEABLE_API_PATTERNS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[ServiceWorker] Installing...');
+  console.log('[ServiceWorker v5] Installing new version...');
+  console.log('[ServiceWorker] Cache version:', CACHE_VERSION);
   
   event.waitUntil(
     caches.open(CACHE_NAMES.static)

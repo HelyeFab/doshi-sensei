@@ -48,6 +48,8 @@ function registerValidSW(swUrl: string, config?: Config) {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
+      // Force update check immediately
+      registration.update();
       // Track registration for updates
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;

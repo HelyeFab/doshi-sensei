@@ -21,21 +21,21 @@
       "name": "Practice Drills",
       "short_name": "Drills",
       "description": "Start practicing verb conjugations",
-      "url": "/drills?source=pwa",
+      "url": "/drill?source=pwa",
       "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
     },
     {
-      "name": "Study Lists",
-      "short_name": "Study",
-      "description": "Review your study lists",
-      "url": "/study-lists?source=pwa",
+      "name": "Vocabulary",
+      "short_name": "Vocabulary",
+      "description": "Browse Japanese vocabulary",
+      "url": "/vocabulary?source=pwa",
       "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
     },
     {
-      "name": "Dictionary",
-      "short_name": "Dictionary",
-      "description": "Look up Japanese words",
-      "url": "/dictionary?source=pwa",
+      "name": "Games",
+      "short_name": "Games",
+      "description": "Play learning games",
+      "url": "/games?source=pwa",
       "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
     }
   ],

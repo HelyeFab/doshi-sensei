@@ -194,7 +194,7 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
       }));
 
       // Play sentence with TTS using current playback speed
-      await TTSManager.speak(sentence, 'female', controls.playbackSpeed);
+      await TTSManager.speak(sentence, { voice: 'female', speed: controls.playbackSpeed, context: 'article-reading' });
 
       // Reset retry count on success
       setRetryCount(prev => ({

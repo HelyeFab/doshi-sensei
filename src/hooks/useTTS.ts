@@ -78,8 +78,8 @@ export function useTTS(): TTSHookReturn {
         isPlaying: true
       }));
 
-      // Use TTSManager with caching
-      await TTSManager.speak(text, voice, speed);
+      // Use TTSManager with caching and context
+      await TTSManager.speak(text, { voice, speed, context }, speed);
 
       // Speech completed successfully
       setState(prev => ({
@@ -254,6 +254,23 @@ export function useArticleTTS() {
     ...tts,
     speakSentence,
     preloadArticle
+  };
+}
+
+/**
+ * Specialized hook for story TTS with context
+ */
+export function useStoryTTS() {
+  const tts = useTTS();
+  
+  const speakStory = useCallback(async (text: string, options?: Omit<TTSOptions, 'context'>) => {
+    await tts.speak(text, { ...options, context: 'story' });
+  }, [tts]);
+
+  return {
+    ...tts,
+    speakStory,
+    speakSentence: speakStory // Alias for compatibility
   };
 }
 

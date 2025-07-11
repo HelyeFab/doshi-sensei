@@ -169,7 +169,7 @@ export class TTSManager {
    */
   static async speak(
     text: string, 
-    voiceOrOptions?: 'male' | 'female' | { voice?: 'male' | 'female'; provider?: 'google' | 'elevenlabs'; speed?: number },
+    voiceOrOptions?: 'male' | 'female' | { voice?: 'male' | 'female'; provider?: 'google' | 'elevenlabs'; speed?: number; context?: string },
     speed: number = 1.0
   ): Promise<void> {
     try {
@@ -180,6 +180,7 @@ export class TTSManager {
       let voice: 'male' | 'female' = 'male'; // Default to male voice
       let forceProvider: 'google' | 'elevenlabs' | undefined;
       let playbackSpeed = speed;
+      let context: string | undefined;
       
       if (typeof voiceOrOptions === 'string') {
         voice = voiceOrOptions;
@@ -187,6 +188,21 @@ export class TTSManager {
         voice = voiceOrOptions.voice || 'male'; // Default to male voice
         forceProvider = voiceOrOptions.provider;
         playbackSpeed = voiceOrOptions.speed || 1.0;
+        context = voiceOrOptions.context;
+      }
+      
+      // Determine provider based on context if not forced
+      if (!forceProvider && context) {
+        // Use Google TTS for kana, kanji, vocabulary, and games
+        if (context.includes('kanji') || context === 'vocabulary' || context.includes('game') || context === 'kana') {
+          forceProvider = 'google';
+          console.log(`🎯 Using Google TTS for context: ${context}`);
+        }
+        // Use ElevenLabs for articles, stories, and shadowing
+        else if (context === 'article-reading' || context === 'story' || context === 'shadowing') {
+          forceProvider = 'elevenlabs';
+          console.log(`🎯 Using ElevenLabs TTS for context: ${context}`);
+        }
       }
       
       let audioBlob: Blob | null = null;

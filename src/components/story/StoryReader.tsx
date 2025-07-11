@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Story, StoryQuizQuestion } from '@/types/story';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import { useTTS } from '@/hooks/useTTS';
+import { useStoryTTS } from '@/hooks/useTTS';
 import { parseJapaneseText, processTextWithFurigana, cleanTextForTTS } from '@/utils/japaneseParser';
 import { storyManager } from '@/utils/storyManager';
 import { storyOfflineManager } from '@/utils/storyOfflineManager';
@@ -161,7 +161,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
 export default function StoryReader({ story, onComplete, onExit }: StoryReaderProps) {
   const { user } = useAuth();
   const { userType } = useSubscription2();
-  const { speakSentence, isPlaying, isCacheLoading } = useTTS();
+  const { speakSentence, isPlaying, isCacheLoading } = useStoryTTS();
 
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [selectedWord, setSelectedWord] = useState<SelectedWord | null>(null);

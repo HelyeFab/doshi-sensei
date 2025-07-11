@@ -646,8 +646,8 @@ export default function GamesPage() {
     try {
       setAudioLoading(true);
 
-      // Use the existing TTS system
-      await TTSManager.speak(word, 'female');
+      // Use the existing TTS system with game context for Google TTS
+      await TTSManager.speak(word, { voice: 'female', context: 'game-kanji-quest' });
     } catch (error) {
       // TTS Error
       // Fallback to browser TTS

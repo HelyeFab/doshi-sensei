@@ -106,7 +106,7 @@ export default function ArticleAudioPlayer({ article }: ArticleAudioPlayerProps)
 
     try {
       await TTSManager.stop();
-      await TTSManager.speak(sentence, 1.0);
+      await TTSManager.speak(sentence, { voice: 'female', speed: 1.0, context: 'article-reading' });
 
       setControls(prev => ({
         ...prev,

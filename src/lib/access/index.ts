@@ -93,6 +93,7 @@ export class AccessControl {
       'kanji_quest': 'play_games',
       'kana_drop': 'play_games',
       'sentence_scramble': 'play_games',
+      'matching_game': 'play_games',
       'word_lists': 'create_lists',
       'bookmarks': 'create_lists',
       'sentences-bookmark': 'create_lists',

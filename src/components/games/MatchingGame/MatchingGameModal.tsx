@@ -50,6 +50,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
   const [gameStats, setGameStats] = useState<GameStats | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   // Initialize game
   useEffect(() => {
@@ -249,7 +250,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                       <RotateCcw className="w-4 sm:w-5 h-4 sm:h-5" />
                     </button>
                     <button
-                      onClick={onClose}
+                      onClick={() => setShowExitConfirm(true)}
                       className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
                       title="Close game"
                     >

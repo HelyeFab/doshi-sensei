@@ -14,15 +14,16 @@ import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory'
 import { StudyListManager } from '@/utils/studyListManager';
 
 // Add JMdict search utility import (to be implemented)
-import { searchJMdictWords, loadJMdictData } from '@/utils/jmdictLocalSearch';
+import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
 
 export default function VocabularyPage() {
   const { user } = useAuth();
   const { subscription } = useSubscription2();
   const strings = useStrings();
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
-  const [currentSearchResults, setCurrentSearchResults] = useState<JapaneseWord[]>([]);
+  const [currentSearchResults, setCurrentSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
+  const [didYouMean, setDidYouMean] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,11 +79,23 @@ export default function VocabularyPage() {
     try {
       setSearching(true);
       setError(null);
-      let searchResults: JapaneseWord[] = [];
+      setDidYouMean(null);
+      
+      let searchResults: SearchResult[] = [];
       if (searchSource === 'wanikani') {
-        searchResults = await searchWords(term, 30);
+        const results = await searchWords(term, 30);
+        searchResults = results as SearchResult[];
       } else {
         searchResults = await searchJMdictWords(term, 30);
+        // Check for "did you mean" suggestion if using JMdict
+        const suggestion = getDidYouMeanSuggestion(term);
+        if (suggestion && searchResults.length > 0) {
+          // Only show suggestion if we didn't find the exact common word
+          const hasExactCommon = searchResults.some(r => r.isCommon && r.isExactMatch);
+          if (!hasExactCommon) {
+            setDidYouMean(suggestion);
+          }
+        }
       }
 
       setCurrentSearchResults(searchResults);
@@ -295,6 +308,27 @@ export default function VocabularyPage() {
                   ← Back to History
                 </button>
               </div>
+              
+              {/* Did you mean suggestion */}
+              {didYouMean && searchSource === 'jmdict' && (
+                <div className="mb-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                  <p className="text-sm">
+                    <span className="text-muted-foreground">Did you mean: </span>
+                    <button
+                      onClick={() => {
+                        const [kanji] = didYouMean.split(' ');
+                        setSearchTerm(kanji);
+                        handleSearch(kanji);
+                      }}
+                      className="text-primary hover:text-primary/80 font-medium transition-colors"
+                    >
+                      {didYouMean}
+                    </button>
+                    ?
+                  </p>
+                </div>
+              )}
+              
               {currentSearchResults.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {currentSearchResults.map((word) => (
@@ -455,7 +489,7 @@ function SearchLoadingOverlay({ searchTerm }: SearchLoadingOverlayProps) {
 }
 
 interface WordCardProps {
-  word: JapaneseWord;
+  word: SearchResult;
   onWordClick: () => void;
 }
 
@@ -480,11 +514,18 @@ function WordCard({ word, onWordClick }: WordCardProps) {
   return (
     <div
       onClick={onWordClick}
-      className="bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer group"
+      className={`bg-card border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer group ${
+        word.isCommon ? 'border-primary/30 ring-1 ring-primary/10' : 'border-border'
+      }`}
     >
       <div className="flex items-baseline gap-3 mb-2">
         <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">{word.kanji}</h3>
         <span className="text-sm text-muted-foreground">{word.kana}</span>
+        {word.isCommon && (
+          <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full font-medium">
+            Common
+          </span>
+        )}
       </div>
       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{word.meaning}</p>
       <div className="flex items-center justify-between gap-2">

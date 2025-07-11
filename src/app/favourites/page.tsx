@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { JapaneseWord, WordList, StudyList, StudyListType, Kanji, Sentence } from '@/types';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
@@ -120,6 +120,62 @@ export default function FavouritesPage() {
     }
   }, [user, isPremium]); // Added isPremium to trigger reload when subscription status is known
 
+  // Set up real-time sync listener for premium users
+  useEffect(() => {
+    if (!user || !isPremium || !subscription) return;
+
+    // Import Firebase functions
+    const setupRealtimeSync = async () => {
+      const { onSnapshot, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      
+      // Listen to studyLists changes
+      const unsubscribeLists = onSnapshot(
+        doc(db, 'users', user.uid, 'studyLists', 'data'),
+        (snapshot) => {
+          if (snapshot.exists()) {
+            console.log('Real-time update: study lists changed');
+            loadWordLists(); // Reload lists when Firebase data changes
+          }
+        },
+        (error) => {
+          console.error('Real-time sync error:', error);
+        }
+      );
+
+      // Listen to savedStudyItems changes
+      const unsubscribeItems = onSnapshot(
+        doc(db, 'users', user.uid, 'savedStudyItems', 'data'),
+        (snapshot) => {
+          if (snapshot.exists()) {
+            console.log('Real-time update: saved items changed');
+            // If we're viewing a specific list, reload its items
+            if (selectedList) {
+              handleListClick(selectedList);
+            }
+          }
+        },
+        (error) => {
+          console.error('Real-time sync error:', error);
+        }
+      );
+
+      // Cleanup function
+      return () => {
+        unsubscribeLists();
+        unsubscribeItems();
+      };
+    };
+
+    // Set up the listener
+    const cleanupPromise = setupRealtimeSync();
+
+    // Cleanup on unmount
+    return () => {
+      cleanupPromise.then(cleanup => cleanup && cleanup());
+    };
+  }, [user, isPremium, subscription, selectedList, loadWordLists, handleListClick]);
+
   // Load content when tab changes
   useEffect(() => {
     if (activeTab === 'articles' && user && bookmarkedArticles.length === 0) {
@@ -130,7 +186,7 @@ export default function FavouritesPage() {
     }
   }, [activeTab, user]);
 
-  const loadWordLists = async () => {
+  const loadWordLists = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -164,7 +220,7 @@ export default function FavouritesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, isPremium, subscription]);
 
   const handleCreateListClick = async () => {
     // Check if user can create more lists using new access system
@@ -220,7 +276,7 @@ export default function FavouritesPage() {
     }
   };
 
-  const handleListClick = async (list: WordList) => {
+  const handleListClick = useCallback(async (list: WordList) => {
     try {
       setSelectedList(list);
       // Use the unified system to get words, kanji, and sentences from the list
@@ -231,7 +287,7 @@ export default function FavouritesPage() {
     } catch (error) {
       console.error('Error loading list items:', error);
     }
-  };
+  }, []);
 
   const handleListDelete = async (listId: string) => {
     setConfirmDialog({

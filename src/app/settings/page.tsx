@@ -273,7 +273,58 @@ export default function SettingsPage() {
     if (!canSync || premiumSyncing) return;
 
     try {
-      // First sync word lists
+      // Debug: Check what's in localStorage
+      console.log('=== SYNC DEBUG ===');
+      console.log('Old WordLists:', JSON.parse(localStorage.getItem('doshi_sensei_word_lists') || '[]'));
+      console.log('New StudyLists:', JSON.parse(localStorage.getItem('doshi_sensei_study_lists') || '[]'));
+      console.log('Old SavedWords:', JSON.parse(localStorage.getItem('doshi_sensei_saved_words') || '[]'));
+      console.log('New SavedStudyItems:', JSON.parse(localStorage.getItem('doshi_sensei_saved_study_items') || '[]'));
+      
+      // Get study lists and convert to word lists
+      const StudyListManager = (await import('@/utils/studyListManager')).default;
+      const studyLists = await StudyListManager.getAllStudyLists();
+      console.log('Study lists found:', studyLists.length, studyLists.map(l => ({ name: l.name, type: l.type, items: l.itemIds.length })));
+      
+      // Convert study lists to word lists format
+      const wordListsToSync = [];
+      const savedWordsToSync = [];
+      
+      for (const studyList of studyLists) {
+        if (studyList.type === 'words') {
+          // Get items for this list
+          const items = await StudyListManager.getListItems(studyList.id);
+          console.log(`List ${studyList.name} has ${items.words.length} words`);
+          
+          wordListsToSync.push({
+            id: studyList.id,
+            name: studyList.name,
+            description: studyList.description || '',
+            wordIds: items.words.map(w => w.id),
+            createdAt: studyList.createdAt,
+            updatedAt: studyList.updatedAt,
+            color: studyList.color
+          });
+          
+          // Add words to saved words
+          items.words.forEach(word => {
+            if (!savedWordsToSync.find(sw => sw.word.id === word.id)) {
+              savedWordsToSync.push({
+                word,
+                savedAt: new Date()
+              });
+            }
+          });
+        }
+      }
+      
+      console.log('Word lists to sync:', wordListsToSync.length, wordListsToSync.map(l => ({ name: l.name, words: l.wordIds.length })));
+      console.log('Saved words to sync:', savedWordsToSync.length);
+      
+      // Save to old format and sync
+      await WordListManager.saveWordLists(wordListsToSync);
+      await WordListManager.saveSavedWords(savedWordsToSync);
+      
+      // Now sync word lists
       console.log('Syncing word lists...');
       const wordListResult = await WordListManager.syncToCloud(user!, subscription?.status, subscription?.plan);
       if (wordListResult.success) {

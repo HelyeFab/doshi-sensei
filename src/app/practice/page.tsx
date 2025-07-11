@@ -311,7 +311,7 @@ export default function PracticePage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
+      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -320,9 +320,10 @@ export default function PracticePage() {
           }}
         />
 
-        <PageHeader title={strings.practice.title} helpKey="practice" rightAction={kanaDropHeaderButton} />
-
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
+          {/* Page Header */}
+          <PageHeader title={strings.practice?.title || "Practice Mode"} helpKey="practice" />
+          
           {/* Tab Navigation */}
           <div className="flex justify-center mb-8">
             <div className="inline-flex bg-muted rounded-lg p-1">

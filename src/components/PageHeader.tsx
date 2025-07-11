@@ -40,8 +40,8 @@ export function PageHeader({ title, subtitle, showBackButton = true, helpKey, on
           </Link>
         )}
 
-        <div className="flex-1 flex items-center">
-          <h1 className="text-3xl font-bold text-foreground">
+        <div className="flex-1 flex items-center justify-between">
+          <h1 className="text-xl sm:text-3xl font-bold text-foreground">
             {title}
           </h1>
           {helpContent && (

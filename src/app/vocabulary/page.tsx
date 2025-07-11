@@ -13,6 +13,9 @@ import { Analytics } from '@/utils/analytics';
 import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
 import { StudyListManager } from '@/utils/studyListManager';
 
+// Add JMdict search utility import (to be implemented)
+import { searchJMdictWords, loadJMdictData } from '@/utils/jmdictLocalSearch';
+
 export default function VocabularyPage() {
   const { user } = useAuth();
   const { subscription } = useSubscription2();
@@ -28,6 +31,28 @@ export default function VocabularyPage() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [wordToSave, setWordToSave] = useState<JapaneseWord | null>(null);
 
+  // Add state for search source
+  const [searchSource, setSearchSource] = useState<'wanikani' | 'jmdict'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('vocab_search_source') as 'wanikani' | 'jmdict') || 'wanikani';
+    }
+    return 'wanikani';
+  });
+
+  // Load JMdict data on mount if needed
+  useEffect(() => {
+    if (searchSource === 'jmdict') {
+      loadJMdictData();
+    }
+  }, [searchSource]);
+
+  // Persist search source
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vocab_search_source', searchSource);
+    }
+  }, [searchSource]);
+
   useEffect(() => {
     loadSearchHistory();
   }, []);
@@ -41,6 +66,7 @@ export default function VocabularyPage() {
     }
   };
 
+  // Update handleSearch to use selected source
   const handleSearch = async (term: string) => {
     if (!term.trim()) {
       setShowSearchResults(false);
@@ -52,7 +78,12 @@ export default function VocabularyPage() {
     try {
       setSearching(true);
       setError(null);
-      const searchResults = await searchWords(term, 30);
+      let searchResults: JapaneseWord[] = [];
+      if (searchSource === 'wanikani') {
+        searchResults = await searchWords(term, 30);
+      } else {
+        searchResults = await searchJMdictWords(term, 30);
+      }
 
       setCurrentSearchResults(searchResults);
       setCurrentSearchTerm(term);
@@ -191,6 +222,26 @@ export default function VocabularyPage() {
           <p className="text-muted-foreground mb-6 text-center">
             Search Japanese words and browse your search history
           </p>
+
+          {/* Search Source Toggle - moved here */}
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex rounded-lg overflow-hidden border border-border bg-muted">
+              <button
+                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'wanikani' ? 'bg-background text-primary' : 'text-muted-foreground hover:bg-accent/30'}`}
+                onClick={() => setSearchSource('wanikani')}
+                aria-pressed={searchSource === 'wanikani'}
+              >
+                WaniKani
+              </button>
+              <button
+                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'jmdict' ? 'bg-background text-primary' : 'text-muted-foreground hover:bg-accent/30'}`}
+                onClick={() => setSearchSource('jmdict')}
+                aria-pressed={searchSource === 'jmdict'}
+              >
+                JMdict
+              </button>
+            </div>
+          </div>
 
           {/* Search */}
           <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchTerm); }} className="mb-8">

@@ -95,6 +95,19 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     sharedLimitGroup: 'games'
   },
   
+  'matching_game': {
+    id: 'matching_game',
+    name: 'Memory Match',
+    description: 'Match Japanese words with their meanings or readings in a memory game',
+    category: 'games',
+    icon: '🀄',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+    sharedLimitGroup: 'games'
+  },
+  
   // Storage Features
   'word_lists': {
     id: 'word_lists',

@@ -445,3 +445,13 @@ html, body {
   filter: brightness(0) saturate(100%) invert(1);
   opacity: 0.9;
 }
+
+/* 3D Transform utilities for Matching Game */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}

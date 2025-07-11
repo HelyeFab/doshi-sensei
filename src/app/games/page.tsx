@@ -14,6 +14,8 @@ import KanjiQuest from '@/components/games/KanjiQuest';
 import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
 import SentenceScrambleModal from '@/components/games/SentenceScrambleGame/SentenceScrambleModal';
 import KanjiQuestTutorialModal from '@/components/games/KanjiQuestTutorialModal';
+import MatchingGameModal from '@/components/games/MatchingGame/MatchingGameModal';
+import MatchingInstructionScreen from '@/components/games/MatchingGame/InstructionScreen';
 import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
@@ -131,6 +133,8 @@ export default function GamesPage() {
   const [showKanaDropModal, setShowKanaDropModal] = useState(false);
   const [showSentenceScrambleModal, setShowSentenceScrambleModal] = useState(false);
   const [showKanjiQuestTutorial, setShowKanjiQuestTutorial] = useState(false);
+  const [showMatchingGameModal, setShowMatchingGameModal] = useState(false);
+  const [showMatchingInstructions, setShowMatchingInstructions] = useState(false);
 
   const strings = useStrings();
 
@@ -173,8 +177,7 @@ export default function GamesPage() {
       description: strings.games.modes.matching.description,
       icon: '🎯',
       iconImage: '/flat-icons/matching.svg',
-      color: 'bg-red-500',
-      comingSoon: true
+      color: 'bg-red-500'
     },
     {
       id: 'sentence-scramble',
@@ -511,6 +514,10 @@ export default function GamesPage() {
     } else if (gameMode.id === 'sentence-scramble') {
       // Open SentenceScramble modal (will handle list selection internally)
       setShowSentenceScrambleModal(true);
+    } else if (gameMode.id === 'matching') {
+      // Show list selection for matching game
+      setShowListSelection(true);
+      loadStudyLists();
     }
   };
 
@@ -518,11 +525,27 @@ export default function GamesPage() {
     if (selectedListIds.length === 0 || savedWords.length === 0) return;
 
     // Check access using three-pillar system
-    const featureId = currentGameMode === 'assembly' ? 'word_assembly' : 'listening_quiz';
+    let featureId: string;
+    if (currentGameMode === 'assembly') {
+      featureId = 'word_assembly';
+    } else if (currentGameMode === 'matching') {
+      featureId = 'matching_game';
+    } else {
+      featureId = 'listening_quiz';
+    }
+    
     const canPlay = await checkAndTrack(featureId);
 
     if (!canPlay) {
       // Access denied - modals are shown automatically by checkAndTrack
+      return;
+    }
+
+    // For matching game, show instructions first
+    if (currentGameMode === 'matching') {
+      setShowMatchingInstructions(true);
+      setShowListSelection(false);
+      setGameStarted(true); // Set gameStarted to avoid showing intermediate screen
       return;
     }
 
@@ -836,20 +859,16 @@ export default function GamesPage() {
 
   return (
     <>
-      {/* Virtual Companion Section */}
+      {/* Virtual Companion Section - 1/6th of screen height */}
       <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
-        <PageHeader
-          title={showGameSelection ? strings.games.title : currentGameMode === 'listening' ? strings.games.modes.listening.title : currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.title}
-          showBackButton={true}
-          helpKey="games"
-          onBackClick={!showGameSelection ? handleBackToGameSelection : undefined}
-        />
-
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+        {/* Page Header - for mobile consistency */}
+        <PageHeader title={strings.games?.title || "Games"} helpKey="games" />
 
         <div className="max-w-2xl mx-auto">
           {/* Game Selection */}
@@ -964,13 +983,21 @@ export default function GamesPage() {
           {!showGameSelection && showListSelection && (
             <div className="space-y-6">
               <div className="text-center py-8">
-                <div className="text-6xl mb-6">{currentGameMode === 'assembly' ? '🔤' : '🎧'}</div>
+                <div className="text-6xl mb-6">
+                  {currentGameMode === 'assembly' ? '🔤' : currentGameMode === 'matching' ? '🎯' : '🎧'}
+                </div>
                 <h2 className="text-3xl font-bold text-foreground mb-4">
-                  {currentGameMode === 'assembly' ? 'Word Assembly Challenge' : 'Tap What You Hear'}
+                  {currentGameMode === 'assembly'
+                    ? 'Word Assembly Challenge'
+                    : currentGameMode === 'matching'
+                    ? strings.games.modes.matching.title
+                    : 'Tap What You Hear'}
                 </h2>
                 <p className="text-muted-foreground mb-8 text-lg">
                   {currentGameMode === 'assembly'
                     ? 'Select study lists to practice building kana spelling from audio.'
+                    : currentGameMode === 'matching'
+                    ? 'Select study lists containing vocabulary words for the memory game.'
                     : 'Select one or more study lists to include in your listening quiz.'
                   }
                 </p>
@@ -1037,20 +1064,23 @@ export default function GamesPage() {
                   onClick={handleStartQuiz}
                   disabled={!canPlayMore || selectedListIds.length === 0 ||
                     (currentGameMode === 'listening' && savedWords.length < 4) ||
-                    (currentGameMode === 'assembly' && savedWords.length === 0)}
+                    (currentGameMode === 'assembly' && savedWords.length === 0) ||
+                    (currentGameMode === 'matching' && savedWords.length < 5)}
                   className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-xl font-semibold transition-colors"
                 >
                   {!canPlayMore ? strings.games.dailyLimit :
                     selectedListIds.length === 0 ? strings.games.selectListsFirst :
                       (currentGameMode === 'listening' && savedWords.length < 4) ? strings.games.needMoreWords4 :
                         (currentGameMode === 'assembly' && savedWords.length === 0) ? strings.games.needAtLeast1Word :
+                        (currentGameMode === 'matching' && savedWords.length < 5) ? 'Need at least 5 words' :
+                          currentGameMode === 'matching' ? 'Continue' :
                           `${strings.games.start} ${currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.quiz} 🎮`}
                 </button>
               </div>
             </div>
           )}
 
-          {!showGameSelection && !gameStarted && currentGameMode === 'listening' && (
+          {!showGameSelection && !gameStarted && currentGameMode === 'listening' && !showMatchingInstructions && (
             <div className="text-center py-16">
               <div className="text-8xl mb-6">🎧</div>
               <h2 className="text-3xl font-bold text-foreground mb-4">
@@ -1365,6 +1395,23 @@ export default function GamesPage() {
           })()}
         </div>
 
+        {/* Matching Game Instructions */}
+        {!showGameSelection && showMatchingInstructions && (
+          <MatchingInstructionScreen
+            wordCount={savedWords.length}
+            pairCount={savedWords.length >= 10 ? 15 : savedWords.length >= 7 ? 12 : 10}
+            maxWords={15} // Maximum words we'll use from their list
+            onStart={() => {
+              setShowMatchingInstructions(false);
+              setShowMatchingGameModal(true);
+            }}
+            onBack={() => {
+              setShowMatchingInstructions(false);
+              setShowListSelection(true);
+            }}
+          />
+        )}
+
         {/* KanaDrop Modal */}
         {showKanaDropModal && (
           <KanaDropModal
@@ -1385,6 +1432,25 @@ export default function GamesPage() {
               setShowSentenceScrambleModal(false);
               setShowGameSelection(true);
             }}
+          />
+        )}
+
+        {/* Matching Game Modal */}
+        {showMatchingGameModal && (
+          <MatchingGameModal
+            isOpen={showMatchingGameModal}
+            onClose={() => {
+              setShowMatchingGameModal(false);
+              setShowGameSelection(true);
+              setSelectedListIds([]);
+              setSavedWords([]);
+            }}
+            onPlayAgain={() => {
+              setShowMatchingGameModal(false);
+              setShowMatchingInstructions(false);
+              setShowListSelection(true);
+            }}
+            words={savedWords}
           />
         )}
 

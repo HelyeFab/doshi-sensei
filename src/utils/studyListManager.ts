@@ -564,6 +564,53 @@ export class StudyListManager {
   }
 
   /**
+   * Download and sync study lists from Firebase (for premium users)
+   */
+  static async syncFromCloud(user: User | null, subscriptionStatus?: string): Promise<boolean> {
+    if (!user || !CloudSync.canSync(user, subscriptionStatus)) {
+      return false;
+    }
+
+    try {
+      // Download study lists
+      const listsResult = await CloudSync.downloadData<{
+        studyLists: StudyList[];
+        updatedAt: Date;
+      }>(user, 'studyLists', 'data');
+
+      // Download saved items
+      const itemsResult = await CloudSync.downloadData<{
+        savedStudyItems: SavedStudyItem[];
+        updatedAt: Date;
+      }>(user, 'savedStudyItems', 'data');
+
+      if (listsResult.data?.studyLists) {
+        // Convert date strings back to Date objects
+        const lists = listsResult.data.studyLists.map(list => ({
+          ...list,
+          createdAt: new Date(list.createdAt),
+          updatedAt: new Date(list.updatedAt)
+        }));
+        await this.saveStudyListsToStorage(lists);
+      }
+
+      if (itemsResult.data?.savedStudyItems) {
+        // Convert date strings back to Date objects
+        const items = itemsResult.data.savedStudyItems.map(item => ({
+          ...item,
+          savedAt: new Date(item.savedAt)
+        }));
+        await this.saveSavedStudyItemsToStorage(items);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Failed to sync from cloud:', error);
+      return false;
+    }
+  }
+
+  /**
    * Clear all study lists and saved items
    */
   static async clearAllStudyLists(): Promise<void> {

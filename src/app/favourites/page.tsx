@@ -134,7 +134,12 @@ export default function FavouritesPage() {
     try {
       setLoading(true);
       
-      // Simply load study lists - no more syncing or migration needed here
+      // For premium users, sync from cloud first
+      if (user && isPremium) {
+        await StudyListManager.syncFromCloud(user, subscription?.status);
+      }
+      
+      // Then load study lists from localStorage
       const studyLists = await StudyListManager.getAllStudyLists();
       const legacyWordLists: WordList[] = studyLists.map(studyList => ({
         id: studyList.id,

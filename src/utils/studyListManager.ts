@@ -529,10 +529,34 @@ export class StudyListManager {
 
     try {
       const lists = await this.getAllStudyLists();
+      
+      // Sync to new format
       await CloudSync.uploadData(user, 'studyLists', 'data', {
         studyLists: lists,
         updatedAt: new Date()
       });
+      
+      // ALSO sync to old format for compatibility
+      // Convert study lists to word lists format
+      const wordLists = lists
+        .filter(list => list.type === 'words')
+        .map(list => ({
+          id: list.id,
+          name: list.name,
+          description: list.description,
+          wordIds: list.itemIds,
+          createdAt: list.createdAt,
+          updatedAt: list.updatedAt,
+          color: list.color
+        }));
+      
+      if (wordLists.length > 0) {
+        // Import WordListManager dynamically to avoid circular dependency
+        const { default: WordListManager } = await import('./wordLists');
+        await WordListManager.saveWordLists(wordLists);
+        await WordListManager.syncToCloud(user, subscriptionStatus);
+        console.log('Synced to old format for compatibility');
+      }
     } catch (error) {
       console.error('Study lists auto-sync failed:', error);
       // Don't throw - auto-sync should be silent
@@ -549,10 +573,29 @@ export class StudyListManager {
 
     try {
       const items = await this.getSavedStudyItems();
+      
+      // Sync to new format
       await CloudSync.uploadData(user, 'savedStudyItems', 'data', {
         savedStudyItems: items,
         updatedAt: new Date()
       });
+      
+      // ALSO sync to old format for compatibility
+      // Convert saved study items to saved words format
+      const savedWords = items
+        .filter(item => item.type === 'word')
+        .map(item => ({
+          word: item.content as JapaneseWord,
+          savedAt: item.savedAt
+        }));
+      
+      if (savedWords.length > 0) {
+        // Import WordListManager dynamically to avoid circular dependency
+        const { default: WordListManager } = await import('./wordLists');
+        await WordListManager.saveSavedWords(savedWords);
+        // Sync will happen as part of the list sync
+        console.log('Saved words to old format for compatibility');
+      }
     } catch (error) {
       console.error('Saved study items auto-sync failed:', error);
       // Don't throw - auto-sync should be silent

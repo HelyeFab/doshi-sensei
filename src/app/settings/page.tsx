@@ -273,10 +273,33 @@ export default function SettingsPage() {
     if (!canSync || premiumSyncing) return;
 
     try {
+      // First sync word lists
+      console.log('Syncing word lists...');
+      const wordListResult = await WordListManager.syncToCloud(user!, subscription?.status, subscription?.plan);
+      if (wordListResult.success) {
+        console.log('Word lists synced successfully');
+      } else {
+        console.error('Word list sync failed:', wordListResult.error);
+      }
+      
+      // Then trigger premium sync for articles/stories
       await triggerPremiumSync();
-      // Success/error handling is done in the hook
+      
+      // Show success message
+      setSyncModal({
+        show: true,
+        type: 'success',
+        title: 'Sync Complete',
+        message: 'Your data has been synchronized with the cloud.'
+      });
     } catch (error) {
       console.error('Manual sync failed:', error);
+      setSyncModal({
+        show: true,
+        type: 'error',
+        title: 'Sync Failed',
+        message: 'There was an error syncing your data. Please try again.'
+      });
     }
   };
 
@@ -551,6 +574,16 @@ export default function SettingsPage() {
                       </div>
                     )}
 
+
+                    {/* Manual Sync Button */}
+                    <div className="pt-4 border-t border-border">
+                      <LinkButton
+                        label="Sync Now"
+                        description="Manually sync your data with the cloud"
+                        onClick={handleManualSync}
+                        disabled={premiumSyncing}
+                      />
+                    </div>
 
                     {/* Sync Info */}
                     <div className="pt-2 border-t border-border space-y-2">

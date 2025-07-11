@@ -156,44 +156,57 @@ export default function FavouritesPage() {
         if (syncResult.success) {
           console.log('Word lists synced from cloud successfully');
           
-          // IMPORTANT: After syncing from cloud, we need to check if data exists in the old system
-          // and migrate it to the new system
-          const oldWordLists = await WordListManager.getAllWordLists();
-          console.log('Old word lists found:', oldWordLists.length);
+          // After syncing from cloud, migrate data from old to new system
+          console.log('Checking for data migration needs...');
           
-          if (oldWordLists.length > 0) {
-            console.log('Migrating from old WordListManager to new StudyListManager...');
-            // The old data exists, but we need to check if it's already been migrated
-            const currentStudyLists = await StudyListManager.getAllStudyLists();
+          // Get data from both systems
+          const oldWordLists = await WordListManager.getAllWordLists();
+          const currentStudyLists = await StudyListManager.getAllStudyLists();
+          
+          console.log('Migration check:', {
+            oldListsCount: oldWordLists.length,
+            newListsCount: currentStudyLists.length,
+            oldLists: oldWordLists.map(l => ({ name: l.name, items: l.wordIds?.length || 0 })),
+            newLists: currentStudyLists.map(l => ({ name: l.name, type: l.type }))
+          });
+          
+          // If we have old data but no new data, migrate
+          if (oldWordLists.length > 0 && currentStudyLists.length === 0) {
+            console.log('Migrating from old system to new system...');
             
-            if (currentStudyLists.length === 0) {
-              // No study lists exist, so we need to migrate the old data
-              for (const oldList of oldWordLists) {
-                await StudyListManager.createStudyList(
-                  oldList.name,
-                  'words', // Default to words type
-                  oldList.description,
-                  user,
-                  subscription?.status
-                );
-                
-                // Get the newly created list to add items to it
-                const allLists = await StudyListManager.getAllStudyLists();
-                const newList = allLists.find(l => l.name === oldList.name);
-                
-                if (newList && oldList.wordIds && oldList.wordIds.length > 0) {
-                  // Add all the words from the old list to the new list
-                  for (const wordId of oldList.wordIds) {
-                    const savedWords = await WordListManager.getAllSavedWords();
-                    const savedWord = savedWords.find(sw => sw.word.id === wordId);
-                    if (savedWord) {
-                      await StudyListManager.addWordToList(newList.id, savedWord.word);
-                    }
+            // Get all saved words first
+            const allSavedWords = await WordListManager.getAllSavedWords();
+            console.log(`Found ${allSavedWords.length} saved words to migrate`);
+            
+            for (const oldList of oldWordLists) {
+              console.log(`Migrating list: ${oldList.name} with ${oldList.wordIds?.length || 0} words`);
+              
+              // Create the list in new system
+              await StudyListManager.createStudyList(
+                oldList.name,
+                'words',
+                oldList.description,
+                user,
+                subscription?.status
+              );
+              
+              // Get the newly created list
+              const allNewLists = await StudyListManager.getAllStudyLists();
+              const newList = allNewLists.find(l => l.name === oldList.name);
+              
+              if (newList && oldList.wordIds && oldList.wordIds.length > 0) {
+                // Add each word to the new list
+                for (const wordId of oldList.wordIds) {
+                  const savedWord = allSavedWords.find(sw => sw.word.id === wordId);
+                  if (savedWord) {
+                    await StudyListManager.addWordToList(newList.id, savedWord.word);
+                    console.log(`Added word ${savedWord.word.word} to ${newList.name}`);
                   }
                 }
               }
-              console.log('Migration completed!');
             }
+            
+            console.log('Migration completed successfully!');
           }
         } else {
           console.error('Failed to sync from cloud:', syncResult.error);

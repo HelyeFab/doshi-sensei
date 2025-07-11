@@ -136,7 +136,9 @@ export default function FavouritesPage() {
       
       // For premium users, sync from cloud first
       if (user && isPremium) {
-        await StudyListManager.syncFromCloud(user, subscription?.status);
+        console.log('Syncing from cloud for premium user...');
+        const syncSuccess = await StudyListManager.syncFromCloud(user, subscription?.status);
+        console.log('Sync result:', syncSuccess);
       }
       
       // Then load study lists from localStorage

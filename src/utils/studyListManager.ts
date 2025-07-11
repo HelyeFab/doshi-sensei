@@ -585,6 +585,7 @@ export class StudyListManager {
       }>(user, 'savedStudyItems', 'data');
 
       if (listsResult.data?.studyLists) {
+        console.log('Downloaded study lists from Firebase:', listsResult.data.studyLists);
         // Convert date strings back to Date objects
         const lists = listsResult.data.studyLists.map(list => ({
           ...list,
@@ -592,6 +593,9 @@ export class StudyListManager {
           updatedAt: new Date(list.updatedAt)
         }));
         await this.saveStudyListsToStorage(lists);
+        console.log('Saved study lists to localStorage');
+      } else {
+        console.log('No study lists found in Firebase');
       }
 
       if (itemsResult.data?.savedStudyItems) {

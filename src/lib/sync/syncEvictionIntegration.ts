@@ -1,8 +1,8 @@
 import { LRUEvictionEngine } from '@/lib/cache/eviction/lruEvictionEngine';
 import { EnhancedStorageManager2 } from '@/utils/enhancedStorageManager2';
-import { CachedResource, ResourceType } from '@/lib/cache/types';
-import { UserType } from '@/types/user';
-import { useSubscription2 } from '@/hooks/useSubscription2';
+import { CachedResource, ResourceType } from '@/types/cache';
+import { UserType } from '@/types/subscription';
+import { getStorageLimit } from '@/lib/cache/eviction/storageLimits';
 
 /**
  * Integration layer between sync and eviction systems
@@ -36,7 +36,7 @@ export class SyncEvictionIntegration {
   ): Promise<void> {
     // Determine user type if not provided
     const effectiveUserType = userType || (await this.getUserType(userId));
-    
+
     // Check if eviction is required before caching
     const needsEviction = await this.evictionEngine.requiresEviction(
       resource.type as ResourceType,
@@ -46,26 +46,26 @@ export class SyncEvictionIntegration {
 
     if (needsEviction) {
       console.log(`[SyncEviction] Eviction required for ${resource.type} (user: ${effectiveUserType})`);
-      
+
       // Protect this resource temporarily during sync
-      this.evictionEngine.protectResource(resource.id);
-      
+      this.evictionEngine.markActive(resource.id);
+
       try {
         // Perform eviction
         const evictionResult = await this.evictionEngine.enforceLimit(
           resource.type as ResourceType,
           effectiveUserType
         );
-        
+
         if (!evictionResult.success) {
-          console.error('[SyncEviction] Eviction failed:', evictionResult.errors);
-          throw new Error(`Failed to make space for synced resource: ${evictionResult.errors.join(', ')}`);
+          console.error('[SyncEviction] Eviction failed:', evictionResult.error);
+          throw new Error(`Failed to make space for synced resource: ${evictionResult.error || 'Unknown error'}`);
         }
-        
-        console.log(`[SyncEviction] Evicted ${evictionResult.itemsEvicted} items, freed ${evictionResult.bytesFreed} bytes`);
+
+        console.log(`[SyncEviction] Evicted ${evictionResult.evictedCount} items, freed ${evictionResult.freedBytes} bytes`);
       } finally {
         // Unprotect the resource
-        this.evictionEngine.unprotectResource(resource.id);
+        this.evictionEngine.markInactive(resource.id);
       }
     }
 
@@ -96,10 +96,10 @@ export class SyncEvictionIntegration {
     // Process each type
     for (const [type, typeResources] of Object.entries(resourcesByType)) {
       const resourceType = type as ResourceType;
-      
+
       // Calculate total size needed
       const totalSize = typeResources.reduce((sum, r) => sum + r.metadata.size, 0);
-      
+
       // Check if eviction is needed for this batch
       const needsEviction = await this.evictionEngine.requiresEviction(
         resourceType,
@@ -109,22 +109,22 @@ export class SyncEvictionIntegration {
 
       if (needsEviction) {
         // Protect all resources in this batch
-        typeResources.forEach(r => this.evictionEngine.protectResource(r.id));
-        
+        typeResources.forEach(r => this.evictionEngine.markActive(r.id));
+
         try {
           const evictionResult = await this.evictionEngine.enforceLimit(
             resourceType,
             effectiveUserType
           );
-          
+
           if (!evictionResult.success) {
-            result.errors.push(`Failed to evict for ${type}: ${evictionResult.errors.join(', ')}`);
+            result.errors.push(`Failed to evict for ${type}: ${evictionResult.error || 'Unknown error'}`);
             result.failed += typeResources.length;
             continue;
           }
         } finally {
           // Unprotect resources
-          typeResources.forEach(r => this.evictionEngine.unprotectResource(r.id));
+          typeResources.forEach(r => this.evictionEngine.markInactive(r.id));
         }
       }
 
@@ -165,7 +165,7 @@ export class SyncEvictionIntegration {
   ): Promise<boolean> {
     const userType = await this.getUserType(userId);
     const estimatedTotalSize = resourceCount * estimatedSizePerResource;
-    
+
     return this.evictionEngine.requiresEviction(
       resourceType,
       userType,
@@ -184,8 +184,7 @@ export class SyncEvictionIntegration {
     available: Record<ResourceType, { count: number; sizeBytes: number }>;
   }> {
     const userType = await this.getUserType(userId);
-    const stats = await this.evictionEngine.getStorageStats(userType);
-    
+
     const info = {
       userType,
       limits: {} as Record<ResourceType, { count: number; sizeBytes: number }>,
@@ -193,15 +192,27 @@ export class SyncEvictionIntegration {
       available: {} as Record<ResourceType, { count: number; sizeBytes: number }>
     };
 
-    for (const [type, usage] of Object.entries(stats.usage)) {
-      const resourceType = type as ResourceType;
-      const limit = stats.limits[type];
-      
-      info.limits[resourceType] = limit;
-      info.usage[resourceType] = usage;
+    // Define all resource types to check
+    const resourceTypes: ResourceType[] = ['article', 'story', 'kanji', 'verb', 'adjective', 'audio'];
+
+    // Get stats for each resource type
+    for (const resourceType of resourceTypes) {
+      const stats = await this.evictionEngine.getStorageStats(resourceType, userType);
+      const limit = getStorageLimit(userType, resourceType);
+
+      info.limits[resourceType] = {
+        count: limit.count,
+        sizeBytes: limit.sizeBytes
+      };
+
+      info.usage[resourceType] = {
+        count: stats.currentCount,
+        sizeBytes: stats.currentSizeBytes
+      };
+
       info.available[resourceType] = {
-        count: limit.count - usage.count,
-        sizeBytes: limit.sizeBytes - usage.sizeBytes
+        count: limit.count - stats.currentCount,
+        sizeBytes: limit.sizeBytes - stats.currentSizeBytes
       };
     }
 

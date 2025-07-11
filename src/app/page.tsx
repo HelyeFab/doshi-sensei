@@ -67,7 +67,7 @@ const FEATURE_CARDS = [
   { title: 'Settings', icon: '⚙️', href: '/settings', description: 'Customize app' },
   { title: 'News', icon: '🗞️', href: '/news', description: 'Japanese articles' },
   { title: 'Games', icon: '🎮', href: '/games', description: 'Listening quiz' },
-  { title: 'Resources', icon: '✨🎌✨', href: '/resources', description: 'Articles & tips' },
+  { title: 'Resources', icon: '🎌', href: '/resources', description: 'Articles & tips' },
   { title: 'AI Stories', icon: '/flat-icons/story.svg', href: '/stories', description: 'Interactive tales' }
 ];
 
@@ -486,7 +486,11 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                    <span className="text-base md:text-sm text-gray-800">📖</span>
+                    <img 
+                      src="/flat-icons/story.svg" 
+                      alt="Stories" 
+                      className="w-5 h-5 md:w-4 md:h-4 object-contain"
+                    />
                   </div>
                   <div>
                     <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.storiesRead}</div>
@@ -668,8 +672,29 @@ interface FeatureCardProps {
 function FeatureCard({ title, icon, href, color, description }: FeatureCardProps) {
   const colors = CARD_COLORS[color];
 
+  // Add debugging for Settings card navigation
+  const handleClick = (e: React.MouseEvent) => {
+    if (title === 'Settings') {
+      console.log('🔧 Settings card clicked!');
+      console.log('📍 Current URL:', window.location.href);
+      console.log('🎯 Target href:', href);
+      console.log('🖱️ Click event:', e);
+      console.log('🔄 Is default prevented?', e.defaultPrevented);
+      console.log('📱 Event type:', e.type);
+      console.log('🎯 Event target:', e.target);
+      console.log('⏰ Timestamp:', new Date().toISOString());
+      
+      // Check if there's any tutorial state in localStorage
+      const tutorialState = localStorage.getItem('doshi-sensei-tutorial-seen');
+      console.log('📚 Tutorial state in localStorage:', tutorialState);
+      
+      // Log navigation type
+      console.log('🚀 About to navigate to:', href);
+    }
+  };
+
   return (
-    <Link href={href} className="block">
+    <Link href={href} className="block" onClick={handleClick}>
       <div
         className={`group relative rounded-2xl p-4 md:p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer ${colors.bg} ${colors.text} ${colors.shadow}`}
         style={{

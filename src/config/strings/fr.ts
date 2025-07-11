@@ -176,6 +176,7 @@ export const fr = {
 
     // Sections
     virtualCompanion: "Compagnon Virtuel",
+    language: "Langue",
     appearance: "Apparence",
     tutorialLearning: "Tutoriel & Apprentissage",
     goalsProgress: "Objectifs & Progression",
@@ -188,6 +189,10 @@ export const fr = {
     showVirtualCompanion: "Afficher le Compagnon Virtuel",
     showVirtualCompanionDesc: "Afficher le personnage compagnon dans l'application pour l'encouragement",
     virtualCompanionInfo: "Le compagnon virtuel fournit des messages de motivation et ajoute une touche amicale à votre expérience d'apprentissage.",
+
+    // Language
+    languageDesc: "Choisissez votre langue préférée pour l'interface",
+    languageInfo: "Sélectionnez la langue que vous souhaitez utiliser dans toute l'application. D'autres langues seront bientôt ajoutées !",
 
     // Tutorial & Learning
     replayTutorial: "Revoir le Tutoriel",
@@ -1538,7 +1543,7 @@ export const fr = {
         createButton: "Créer Votre Première Liste"
       },
       actions: {
-        createList: "+ Créer une Liste",
+        createList: "Créer une Liste",
         clearAll: "Tout Effacer"
       },
       deleteConfirmation: "Êtes-vous sûr de vouloir supprimer cette liste ? Cette action ne peut pas être annulée.",
@@ -2004,6 +2009,192 @@ export const fr = {
         yourData: "Vos Données",
         educationalContent: "Contenu Éducatif"
       }
+    }
+  },
+
+  // Audio
+  audio: {
+    actions: {
+      play: "Jouer",
+      saveSentenceToList: "Sauvegarder la phrase dans une liste"
+    }
+  },
+
+  // Tutorial/Onboarding
+  tutorial: {
+    // Welcome Screen
+    welcome: {
+      title: "Bienvenue sur Doshi Sensei !",
+      description: "Votre plateforme complète d'apprentissage du japonais avec tout ce dont vous avez besoin pour maîtriser la langue.",
+      emphasis: "Explorons votre nouvel univers d'apprentissage !",
+      features: {
+        header: "🌟 Votre Parcours Japonais Comprend :",
+        conjugations: "🎯 Maîtrisez 127+ formes de conjugaison instantanément",
+        vocabulary: "📚 Construisez votre vocabulaire avec des listes intelligentes", 
+        games: "🎮 Apprenez par les jeux (Kanji Quest vous permet d'attraper 1000+ Pokémon !)",
+        reading: "📰 Lisez de vraies actualités japonaises avec support furigana",
+        kanji: "🈯 Étudiez les kanji avec de magnifiques tableaux d'ambiance",
+        tracking: "📊 Suivez vos progrès dans toutes les activités"
+      },
+      startButton: "Commencer Mon Voyage ! 🚀",
+      footer: "(Aucun apprenant de japonais n'a été submergé dans la création de cette plateforme)"
+    },
+
+    // Learning Paths Screen (New)
+    paths: {
+      title: "Choisissez Votre Chemin d'Apprentissage 🗺️",
+      description: "Doshi Sensei s'adapte à votre style d'apprentissage. Choisissez ce qui vous passionne le plus !",
+      scholar: {
+        title: "📖 L'Érudit",
+        description: "Plongez dans la grammaire et les conjugaisons",
+        features: ["127+ formes de conjugaison", "Explications grammaticales détaillées", "Maîtrise des verbes et adjectifs"]
+      },
+      gamer: {
+        title: "🎮 Le Héros d'Action", 
+        description: "Apprenez par des jeux interactifs",
+        features: ["Kanji Quest : Attrapez 1000+ Pokémon", "Kana Drop : Jeu de blocs tombants", "Jeux d'association et plus"]
+      },
+      reader: {
+        title: "📰 L'Enthousiaste Culturel",
+        description: "Apprenez à travers du contenu réel",
+        features: ["Articles NHK Easy News", "Histoires japonaises", "Outils d'extraction de vocabulaire"]
+      },
+      continueButton: "Je suis prêt ! →"
+    },
+
+    // Conjugation Demo Screen
+    conjugation: {
+      title: "Regardez la Magie Opérer ✨",
+      description: "Notre moteur de conjugaison transforme n'importe quel verbe en",
+      emphasis: "TOUTES ses formes instantanément !",
+      continuation: "Plus besoin de mémoriser des tableaux de conjugaison.",
+      successMessage: "🎉 Incroyable ! D'un mot à la maîtrise complète !",
+      nextButton: "Montrez-moi Plus ! →",
+      demoWord: "manger"
+    },
+
+    // Study Tools Screen (Updated Lists)
+    studyTools: {
+      title: "Votre Arsenal d'Étude Personnel 🎯",
+      description: "Construisez votre propre bibliothèque japonaise avec nos outils intelligents.",
+      emphasis: "Chaque mot que vous sauvegardez fait partie de votre voyage !",
+      vocabularyBrowser: "Navigateur de Vocabulaire",
+      searchPlaceholder: "Rechercher des mots japonais...",
+      searchButton: "Rechercher",
+      saveButton: "Sauvegarder dans la Liste",
+      savedButton: "✓ Sauvegardé !",
+      listsHeader: "Vos Listes d'Étude :",
+      listExample: "Verbes Essentiels",
+      demoButton: "🔍 Voyez-le en Action !",
+      successMessage: "🎯 Parfait ! Vous construisez votre base de données japonaise personnelle !",
+      tip: "Conseil pro : Créez des listes thématiques pour différents sujets - nourriture, voyage, affaires !",
+      continueButton: "Quelle est la Suite ? →",
+      demoWords: {
+        read: "lire",
+        write: "écrire", 
+        speak: "parler"
+      }
+    },
+
+    // Practice Modes Screen
+    practice: {
+      title: "Entraînez-vous Comme un Samouraï ! 🥋",
+      description: "Plusieurs façons de pratiquer gardent l'apprentissage frais et amusant.",
+      studyMode: {
+        name: "Mode Étude",
+        tagline: "(apprentissage paisible)",
+        title: "📚 Mode Étude",
+        subtitle: "Explorez à votre rythme"
+      },
+      drillMode: {
+        name: "Mode Exercice", 
+        tagline: "(testez-vous)",
+        title: "⚡ Mode Exercice",
+        subtitle: "Défiez vos connaissances"
+      },
+      gameMode: {
+        name: "Mode Jeu",
+        tagline: "(apprendre en jouant)",
+        title: "🎮 Mode Jeu", 
+        subtitle: "L'apprentissage déguisé en plaisir"
+      },
+      demoIntro: "Voyons chaque mode en action !",
+      demoButton: "🎬 Commencer la Démo !",
+      forms: {
+        present: "Présent :",
+        past: "Passé :",
+        polite: "Poli :",
+        teForm: "Forme-te :"
+      },
+      studyNote: "📖 Prenez votre temps pour maîtriser chaque forme...",
+      quizHeader: "Quiz Rapide !",
+      quizQuestion: "Quelle est la forme passée ?",
+      correctMessage: "🎉 Excellent ! Vous avez trouvé !",
+      incorrectMessage: "❌ Pas tout à fait ! La réponse était",
+      completionTitle: "Vous avez découvert tous nos modes d'apprentissage !",
+      modeSummary: "Étude = Apprendre • Exercice = Pratiquer • Jeux = Jouer",
+      readyButton: "Je suis Prêt à Commencer ! 🚀",
+      demoWord: "aller"
+    },
+
+    // User Types Screen (New)
+    userTypes: {
+      title: "Votre Parcours d'Apprentissage 🎭",
+      description: "Commencez où vous êtes à l'aise et progressez à votre propre rythme.",
+      guest: {
+        title: "👤 Explorateur Invité",
+        description: "Essayez avant de vous inscrire",
+        features: ["3 jeux par jour", "3 sessions d'exercices quotidiennes", "Parcourir tout le contenu"],
+        limitation: "Progrès non sauvegardés"
+      },
+      free: {
+        title: "🆓 Apprenant Gratuit", 
+        description: "Votre compte personnel",
+        features: ["3 jeux par jour", "3 sessions d'exercices quotidiennes", "Créer 3 listes d'étude", "Sauvegarder 5 favoris"],
+        benefit: "Progrès sauvegardés localement"
+      },
+      premium: {
+        title: "⭐ Érudit Premium",
+        description: "Tout illimité",
+        features: ["Jeux et exercices illimités", "Listes et favoris illimités", "Synchronisation cloud sur tous les appareils", "Support prioritaire"],
+        price: "3,99$/mois ou 39,99$/an"
+      },
+      continueButton: "Choisir Plus Tard →"
+    },
+
+    // Success Screen
+    success: {
+      title: "おめでとう！ Bienvenue dans la Famille Doshi Sensei !",
+      description: "Vous faites maintenant partie d'une communauté grandissante d'apprenants de japonais.",
+      emphasis: "Votre aventure commence maintenant !",
+      checklistHeader: "🎯 Votre Liste de Voyage :",
+      checklistItems: {
+        vocabulary: "✓ Découvrez le vocabulaire japonais",
+        conjugations: "✓ Maîtrisez les conjugaisons de verbes", 
+        games: "✓ Jouez à des jeux d'apprentissage (1000+ Pokémon vous attendent !)",
+        reading: "✓ Lisez du contenu japonais réel",
+        tracking: "✓ Suivez vos progrès quotidiens"
+      },
+      settingsButton: "🎨 Personnaliser Mon Expérience",
+      settingsSubtext: "(Optionnel : Choisissez votre thème)",
+      settingsTitle: "Faites-en le Vôtre ! 🎨",
+      settingsDescription: "Personnalisez votre environnement d'apprentissage",
+      themeHeader: "Choisissez Votre Thème :",
+      themes: {
+        classic: "Classique",
+        ocean: "Océan",
+        forest: "Forêt", 
+        sunset: "Coucher de soleil"
+      },
+      preferencesHeader: "Options d'Affichage :",
+      romajiLabel: "Afficher le Romaji",
+      romajiDescription: "Afficher les guides de prononciation (たべる → taberu)",
+      previewHeader: "Aperçu :",
+      startButton: "🚀 Commencer l'Apprentissage !",
+      startButtonSettings: "Parfait ! Allons-y ! 🎌",
+      settingsNote: "Vous pouvez les changer à tout moment dans les Paramètres",
+      demoWord: "manger",
+      demoRomaji: "taberu"
     }
   },
 

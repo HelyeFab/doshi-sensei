@@ -1,55 +1,74 @@
-import React from 'react';
-import { useLanguageSwitcher } from '@/hooks/useLanguage';
+'use client';
 
-const languageNames: Record<string, string> = {
-  en: 'English',
-  fr: 'Français',
-  ja: '日本語',
-  de: 'Deutsch',
-  es: 'Español',
-  it: 'Italiano',
-  ko: '한국어',
-  zh: '中文'
+import { useLanguageSwitcher } from '@/hooks/useLanguage';
+import { Language } from '@/config/strings';
+
+const languageInfo: Record<Language | 'it' | 'de' | 'es', { name: string; flag: string }> = {
+  en: { name: 'English', flag: '🇬🇧' },
+  fr: { name: 'Français', flag: '🇫🇷' },
+  it: { name: 'Italiano', flag: '🇮🇹' },
+  de: { name: 'Deutsch', flag: '🇩🇪' },
+  es: { name: 'Español', flag: '🇪🇸' },
 };
 
 export function LanguageSelector() {
   const { currentLanguage, changeLanguage, supportedLanguages } = useLanguageSwitcher();
 
   return (
-    <div className="flex items-center gap-2">
-      <label htmlFor="language-select" className="text-sm font-medium">
-        Language:
-      </label>
-      <select
-        id="language-select"
-        value={currentLanguage}
-        onChange={(e) => changeLanguage(e.target.value as any)}
-        className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        {supportedLanguages.map((lang) => (
-          <option key={lang} value={lang}>
-            {languageNames[lang] || lang}
-          </option>
-        ))}
-      </select>
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {supportedLanguages.map((lang) => {
+          const info = languageInfo[lang];
+          const isSelected = currentLanguage === lang;
+
+          return (
+            <button
+              key={lang}
+              onClick={() => changeLanguage(lang)}
+              className={`
+                flex items-center justify-center gap-2 p-3 rounded-lg border transition-all
+                ${isSelected 
+                  ? 'border-primary bg-primary/10 text-primary' 
+                  : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                }
+              `}
+            >
+              <span className="text-2xl">{info.flag}</span>
+              <span className="font-medium">{info.name}</span>
+              {isSelected && <span className="text-primary">✓</span>}
+            </button>
+          );
+        })}
+        
+        {/* Future languages - disabled for now */}
+        {(['it', 'de', 'es'] as const).map((lang) => {
+          const info = languageInfo[lang];
+          
+          return (
+            <button
+              key={lang}
+              disabled
+              className="
+                flex items-center justify-center gap-2 p-3 rounded-lg border
+                border-border/50 bg-muted/20 text-muted-foreground/50 cursor-not-allowed
+                relative overflow-hidden
+              "
+            >
+              <span className="text-2xl opacity-50">{info.flag}</span>
+              <span className="font-medium">{info.name}</span>
+              <span className="absolute inset-0 flex items-center justify-center bg-background/80 text-xs">
+                Coming Soon
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      
+      {supportedLanguages.length < 5 && (
+        <p className="text-sm text-muted-foreground text-center">
+          🌍 More languages coming soon!
+        </p>
+      )}
     </div>
-  );
-}
-
-export function LanguageSelectorCompact() {
-  const { currentLanguage, changeLanguage, supportedLanguages } = useLanguageSwitcher();
-
-  return (
-    <select
-      value={currentLanguage}
-      onChange={(e) => changeLanguage(e.target.value as any)}
-      className="px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-    >
-      {supportedLanguages.map((lang) => (
-        <option key={lang} value={lang}>
-          {lang.toUpperCase()}
-        </option>
-      ))}
-    </select>
   );
 }

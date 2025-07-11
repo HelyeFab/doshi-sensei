@@ -35,6 +35,8 @@ export function useLanguage() {
     // Save to localStorage for persistence
     if (typeof window !== 'undefined') {
       localStorage.setItem('doshi-language', newLanguage);
+      // Reload the page to apply the new language
+      window.location.reload();
     }
   };
 

@@ -26,6 +26,15 @@ export interface JapaneseWord {
   priority?: string;
   examples?: string[];
   frequency?: number;
+  // Tatoeba example sentences
+  exampleSentences?: ExampleSentence[];
+}
+
+// Example sentence from Tatoeba
+export interface ExampleSentence {
+  id: string;
+  japanese: string;
+  english: string | null;
 }
 
 // Conjugation Forms
@@ -407,7 +416,7 @@ export interface Sentence {
   furigana?: string;
   translation?: string;
   source: {
-    type: 'article' | 'story';
+    type: 'article' | 'story' | 'tatoeba';
     id: string;
     title: string;
     url?: string;

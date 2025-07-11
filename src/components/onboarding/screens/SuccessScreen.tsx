@@ -3,21 +3,28 @@
 import { useState } from 'react';
 import { TutorialButton } from '../components/TutorialButton';
 import { ColorScheme } from '@/types';
+import { useStrings } from '@/hooks/useLanguage';
 
 export interface SuccessScreenProps {
   onComplete: () => void;
 }
 
 export function SuccessScreen({ onComplete }: SuccessScreenProps) {
+  const strings = useStrings();
+  const tutorial = strings.tutorial;
   const [settingsShown, setSettingsShown] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<ColorScheme>('default');
   const [showRomaji, setShowRomaji] = useState(true);
 
+  if (!tutorial || !tutorial.success) {
+    return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
+
   const themes: { name: ColorScheme; color: string; label: string }[] = [
-    { name: 'default', color: '#6366f1', label: 'Classic' },
-    { name: 'ocean', color: '#0ea5e9', label: 'Ocean' },
-    { name: 'forest', color: '#22c55e', label: 'Forest' },
-    { name: 'sunset', color: '#f97316', label: 'Sunset' }
+    { name: 'default', color: '#6366f1', label: tutorial.success.themes.classic },
+    { name: 'ocean', color: '#0ea5e9', label: tutorial.success.themes.ocean },
+    { name: 'forest', color: '#22c55e', label: tutorial.success.themes.forest },
+    { name: 'sunset', color: '#f97316', label: tutorial.success.themes.sunset }
   ];
 
   const handleSettingsDemo = () => {
@@ -58,32 +65,36 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
 
           <div className="space-y-4">
             <h1 className="text-3xl font-bold text-foreground">
-              おめでとう！ Congratulations!
+              {tutorial.success.title}
             </h1>
             <p className="text-lg text-muted-foreground max-w-md mx-auto">
-              You're now equipped with the knowledge to conquer Japanese conjugations.
-              <span className="font-semibold text-primary"> The verbs don't stand a chance! </span>
+              {tutorial.success.description}
+              <span className="font-semibold text-primary"> {tutorial.success.emphasis} </span>
             </p>
           </div>
 
           <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-6 space-y-3">
-            <h3 className="font-semibold text-foreground">🎯 You're ready to:</h3>
+            <h3 className="font-semibold text-foreground">{tutorial.success.checklistHeader}</h3>
             <div className="grid grid-cols-1 gap-2 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>Browse and save Japanese vocabulary</span>
+                <span>{tutorial.success.checklistItems.vocabulary}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>Study detailed conjugation patterns</span>
+                <span>{tutorial.success.checklistItems.conjugations}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>Practice with intelligent drills</span>
+                <span>{tutorial.success.checklistItems.games}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>Track your learning progress</span>
+                <span>{tutorial.success.checklistItems.reading}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">✓</span>
+                <span>{tutorial.success.checklistItems.tracking}</span>
               </div>
             </div>
           </div>
@@ -94,10 +105,10 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
               variant="secondary"
               className="mb-2"
             >
-              🎨 Quick Settings Preview
+              {tutorial.success.settingsButton}
             </TutorialButton>
             <p className="text-xs text-muted-foreground">
-              (Optional: Customize your experience)
+              {tutorial.success.settingsSubtext}
             </p>
           </div>
         </div>
@@ -106,16 +117,16 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-foreground mb-2">
-              Make It Yours! 🎨
+              {tutorial.success.settingsTitle}
             </h2>
             <p className="text-muted-foreground">
-              Quick settings to personalize your learning experience
+              {tutorial.success.settingsDescription}
             </p>
           </div>
 
           {/* Theme Selection Demo */}
           <div className="bg-card border border-border rounded-lg p-4">
-            <h3 className="font-medium text-foreground mb-3">Choose Your Vibe:</h3>
+            <h3 className="font-medium text-foreground mb-3">{tutorial.success.themeHeader}</h3>
             <div className="grid grid-cols-2 gap-3">
               {themes.map((theme) => (
                 <button
@@ -196,10 +207,10 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
         ) : (
           <div className="space-y-3">
             <TutorialButton onClick={handleFinish} variant="primary" size="large">
-              Perfect! Let's Start Learning! 🎌
+              {tutorial.success.startButtonSettings}
             </TutorialButton>
             <p className="text-xs text-muted-foreground">
-              You can always change these settings later in the Settings page
+              {tutorial.success.settingsNote}
             </p>
           </div>
         )}

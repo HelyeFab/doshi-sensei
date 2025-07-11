@@ -14,6 +14,7 @@ import useCloudSync from '@/hooks/useCloudSync';
 import { usePremiumSync } from '@/hooks/usePremiumSync';
 import { SyncStatusIndicator } from '@/components/sync/SyncStatusIndicator';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { AVAILABLE_NAV_ITEMS, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 import { CacheCleaner } from '@/utils/cacheCleaner';
 
@@ -383,6 +384,21 @@ export default function SettingsPage() {
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">
                     {strings.settings.virtualCompanionInfo}
+                  </p>
+                </div>
+              </div>
+            </SettingsSection>
+
+            {/* Language Settings */}
+            <SettingsSection title={strings.settings.language}>
+              <div className="space-y-4">
+                <div className="text-sm text-muted-foreground mb-3">
+                  {strings.settings.languageDesc}
+                </div>
+                <LanguageSelector />
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
+                    {strings.settings.languageInfo}
                   </p>
                 </div>
               </div>

@@ -16,6 +16,7 @@ import Link from 'next/link';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import ListSelectionModal from '@/components/ListSelectionModal';
 import { useStrings } from '@/hooks/useLanguage';
+import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -563,7 +564,7 @@ export default function FavouritesPage() {
                       onClick={() => handleCreateListClick()}
                       className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
                     >
-                      + {strings.favourites.lists.actions.createList}
+                      {strings.favourites.lists.actions.createList}
                     </button>
                     {wordLists.length > 0 && (
                       <button
@@ -690,14 +691,16 @@ export default function FavouritesPage() {
                   ))}
 
                   {/* Sentences */}
-                  {listSentences.map((sentence) => (
-                    <SentenceCard
-                      key={sentence.id}
-                      sentence={sentence}
-                      onRemoveClick={() => handleSentenceRemoveFromList(sentence.id)}
-                      showRemoveButton={true}
-                    />
-                  ))}
+                  {listSentences
+                    .filter(sentence => sentence && typeof sentence === 'object' && sentence.id)
+                    .map((sentence) => (
+                      <SentenceCard
+                        key={sentence.id}
+                        sentence={sentence}
+                        onRemoveClick={() => handleSentenceRemoveFromList(sentence.id)}
+                        showRemoveButton={true}
+                      />
+                    ))}
                 </div>
               ) : (
                 <div className="text-center py-12">
@@ -1193,8 +1196,8 @@ function WordCard({ word, onWordClick, onRemoveClick, showRemoveButton }: WordCa
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-baseline gap-3 mb-2">
-            <h3 className="text-lg font-semibold text-foreground">{word.word}</h3>
-            <span className="text-sm text-muted-foreground">{word.reading}</span>
+            <h3 className="text-lg font-semibold text-foreground">{(word as any).word || word.kanji}</h3>
+            <span className="text-sm text-muted-foreground">{(word as any).reading || word.kana}</span>
           </div>
           <p className="text-sm text-muted-foreground mb-2">{word.meaning}</p>
           {word.type && (
@@ -1203,20 +1206,31 @@ function WordCard({ word, onWordClick, onRemoveClick, showRemoveButton }: WordCa
             </span>
           )}
         </div>
-        {showRemoveButton && onRemoveClick && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveClick();
+        <div className="flex items-start gap-2" onClick={(e) => e.stopPropagation()}>
+          <VocabularyTTSButton 
+            word={(word as any).word || word.kanji}
+            size="sm"
+            options={{
+              provider: 'google',
+              voice: 'default',
+              speed: 1.0
             }}
-            className="text-red-400 hover:text-red-600 transition-colors"
-            title="Remove from list"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        )}
+          />
+          {showRemoveButton && onRemoveClick && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemoveClick();
+              }}
+              className="text-red-400 hover:text-red-600 transition-colors"
+              title="Remove from list"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1230,6 +1244,7 @@ interface KanjiCardProps {
 }
 
 function KanjiCard({ kanji, onKanjiClick, onRemoveClick, showRemoveButton }: KanjiCardProps) {
+  const strings = useStrings();
   return (
     <div
       onClick={onKanjiClick}
@@ -1241,15 +1256,15 @@ function KanjiCard({ kanji, onKanjiClick, onRemoveClick, showRemoveButton }: Kan
             <div className="text-3xl font-semibold text-foreground">{kanji.kanji}</div>
             <div>
               <div className="text-sm text-muted-foreground">
-                {kanji.on && kanji.on.length > 0 && <div>{strings.kanji.on}: {kanji.on.join(', ')}</div>}
-                {kanji.kun && kanji.kun.length > 0 && <div>{strings.kanji.kun}: {kanji.kun.join(', ')}</div>}
+                {kanji.on && kanji.on.length > 0 && <div>On: {kanji.on.join(', ')}</div>}
+                {kanji.kun && kanji.kun.length > 0 && <div>Kun: {kanji.kun.join(', ')}</div>}
               </div>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">{kanji.meaning}</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="inline-block px-2 py-1 text-xs rounded-full border bg-orange-500/10 text-orange-400 border-orange-500/20">
-              {strings.kanji.kanji}
+              Kanji
             </span>
             {kanji.jlpt && (
               <span className="text-xs text-muted-foreground">{kanji.jlpt}</span>
@@ -1282,9 +1297,16 @@ interface SentenceCardProps {
 }
 
 function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCardProps) {
+  const strings = useStrings();
   const [showFurigana, setShowFurigana] = useState(false);
   const [furiganaText, setFuriganaText] = useState<string | null>(null);
   const [loadingFurigana, setLoadingFurigana] = useState(false);
+
+  // Safety check for malformed sentence data
+  if (!sentence || typeof sentence !== 'object') {
+    console.error('Invalid sentence data:', sentence);
+    return null;
+  }
 
   // Generate furigana when toggle is enabled
   useEffect(() => {
@@ -1332,13 +1354,24 @@ function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCar
 
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-block px-2 py-1 text-xs rounded-full border bg-green-500/10 text-green-400 border-green-500/20">
-              {strings.sentence.sentence}
+              Sentence
             </span>
             {sentence.source && (
               <span className="text-xs text-muted-foreground">
-                {strings.sentence.from}: {sentence.source.title}
+                From: {sentence.source.title}
               </span>
             )}
+
+            {/* TTS Button */}
+            <TTSButton 
+              text={sentence.text}
+              size="sm"
+              options={{
+                provider: 'elevenlabs',
+                voice: 'male',
+                speed: 1.0
+              }}
+            />
 
             {/* Furigana toggle */}
             <button
@@ -1348,7 +1381,7 @@ function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCar
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
-              title={showFurigana ? strings.furigana.hide : strings.furigana.show}
+              title={showFurigana ? 'Hide furigana' : 'Show furigana'}
             >
               {loadingFurigana ? (
                 <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
@@ -1356,7 +1389,7 @@ function SentenceCard({ sentence, onRemoveClick, showRemoveButton }: SentenceCar
                 'あ'
               )}
               <span className="text-xs">
-                {showFurigana ? strings.furigana.on : strings.furigana.off}
+                {showFurigana ? 'On' : 'Off'}
               </span>
             </button>
           </div>
@@ -1387,11 +1420,12 @@ interface WordModalProps {
 }
 
 function WordModal({ word, onClose }: WordModalProps) {
+  const strings = useStrings();
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
         <div className="flex items-start justify-between mb-4">
-          <h2 className="text-2xl font-bold text-foreground">{word.word}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{word.kanji || (word as any).word}</h2>
           <button
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -1404,18 +1438,18 @@ function WordModal({ word, onClose }: WordModalProps) {
 
         <div className="space-y-3">
           <div>
-            <p className="text-sm text-muted-foreground">{strings.word.reading}</p>
-            <p className="text-lg">{word.reading}</p>
+            <p className="text-sm text-muted-foreground">Reading</p>
+            <p className="text-lg">{word.kana || (word as any).reading}</p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">{strings.word.meaning}</p>
+            <p className="text-sm text-muted-foreground">Meaning</p>
             <p className="text-lg">{word.meaning}</p>
           </div>
 
           {word.type && (
             <div>
-              <p className="text-sm text-muted-foreground">{strings.word.type}</p>
+              <p className="text-sm text-muted-foreground">Type</p>
               <p className="text-lg">{word.type}</p>
             </div>
           )}

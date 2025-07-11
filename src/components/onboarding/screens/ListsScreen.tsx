@@ -2,20 +2,27 @@
 
 import { useState } from 'react';
 import { TutorialButton } from '../components/TutorialButton';
+import { useStrings } from '@/hooks/useLanguage';
 
 export interface ListsScreenProps {
   onNext: () => void;
 }
 
 export function ListsScreen({ onNext }: ListsScreenProps) {
+  const strings = useStrings();
+  const tutorial = strings.tutorial;
   const [demoPhase, setDemoPhase] = useState<'intro' | 'search' | 'save' | 'list' | 'complete'>('intro');
   const [mockSearchTerm, setMockSearchTerm] = useState('');
   const [savedWords, setSavedWords] = useState<string[]>([]);
 
+  if (!tutorial || !tutorial.studyTools) {
+    return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
+
   const demoWords = [
-    { kanji: '読む', kana: 'よむ', meaning: 'to read' },
-    { kanji: '書く', kana: 'かく', meaning: 'to write' },
-    { kanji: '話す', kana: 'はなす', meaning: 'to speak' }
+    { kanji: '読む', kana: 'よむ', meaning: tutorial.studyTools.demoWords.read },
+    { kanji: '書く', kana: 'かく', meaning: tutorial.studyTools.demoWords.write },
+    { kanji: '話す', kana: 'はなす', meaning: tutorial.studyTools.demoWords.speak }
   ];
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -48,11 +55,11 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
     <div className="space-y-6 p-6">
       <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-foreground">
-          Become a Word Collector! 📚
+          {tutorial.studyTools.title}
         </h2>
         <p className="text-muted-foreground">
-          Think of this as Pokémon, but instead of catching creatures, you're catching Japanese words.
-          <span className="font-semibold text-primary"> Gotta learn 'em all! </span>
+          {tutorial.studyTools.description}
+          <span className="font-semibold text-primary"> {tutorial.studyTools.emphasis} </span>
         </p>
       </div>
 
@@ -60,7 +67,7 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         {/* Mock Navigation */}
         <div className="bg-primary/10 border-b border-border px-4 py-2">
-          <div className="text-sm font-medium text-primary">Vocabulary Browser</div>
+          <div className="text-sm font-medium text-primary">{tutorial.studyTools.vocabularyBrowser}</div>
         </div>
 
         <div className="p-4 space-y-4">
@@ -71,7 +78,7 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
                 type="text"
                 value={mockSearchTerm}
                 readOnly
-                placeholder="Search Japanese words..."
+                placeholder={tutorial.studyTools.searchPlaceholder}
                 className="w-full px-3 py-2 border border-input rounded bg-background text-foreground"
               />
               {demoPhase === 'search' && (
@@ -81,7 +88,7 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
               )}
             </div>
             <button className="px-4 py-2 bg-primary text-primary-foreground rounded">
-              Search
+              {tutorial.studyTools.searchButton}
             </button>
           </div>
 
@@ -107,7 +114,7 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
                         : 'bg-primary/20 text-primary border border-primary/40 hover:bg-primary/30'
                     }`}
                   >
-                    {savedWords.includes(word.kanji) ? '✓ Saved!' : 'Save to List'}
+                    {savedWords.includes(word.kanji) ? tutorial.studyTools.savedButton : tutorial.studyTools.saveButton}
                   </button>
                 </div>
               ))}
@@ -117,13 +124,13 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
           {/* Mock List Pill */}
           {(demoPhase === 'list' || demoPhase === 'complete') && (
             <div className="pt-4 border-t border-border">
-              <div className="text-sm text-muted-foreground mb-2">Your Lists:</div>
+              <div className="text-sm text-muted-foreground mb-2">{tutorial.studyTools.listsHeader}</div>
               <div
                 className="inline-flex items-center gap-2 px-3 py-2 bg-blue-500/20 border border-blue-500/40 rounded-full animate-slideIn"
               >
                 <div className="w-3 h-3 rounded-full bg-blue-500"></div>
                 <span className="text-sm font-medium text-blue-400">
-                  Reading Verbs
+                  {tutorial.studyTools.listExample}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   ({savedWords.length})
@@ -141,7 +148,7 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
             onClick={runListDemo}
             variant="secondary"
           >
-            🔍 Show Me How Lists Work!
+            {tutorial.studyTools.demoButton}
           </TutorialButton>
         </div>
       )}
@@ -149,13 +156,13 @@ export function ListsScreen({ onNext }: ListsScreenProps) {
       {demoPhase === 'complete' && (
         <div className="text-center space-y-2">
           <p className="text-primary font-medium">
-            🎯 Perfect! You're now a certified word wrangler!
+            {tutorial.studyTools.successMessage}
           </p>
           <p className="text-sm text-muted-foreground">
-            Pro tip: Words in lists can be used for focused drill sessions
+            {tutorial.studyTools.tip}
           </p>
           <TutorialButton onClick={onNext} variant="primary">
-            Ready for Practice Mode! 💪
+            {tutorial.studyTools.continueButton}
           </TutorialButton>
         </div>
       )}

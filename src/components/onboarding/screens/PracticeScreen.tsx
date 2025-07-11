@@ -4,23 +4,31 @@ import { useState } from 'react';
 import { TutorialButton } from '../components/TutorialButton';
 import { JapaneseWord } from '@/types';
 import { ConjugationEngine } from '@/utils/conjugation';
+import { useStrings } from '@/hooks/useLanguage';
 
 export interface PracticeScreenProps {
   onNext: () => void;
 }
 
 export function PracticeScreen({ onNext }: PracticeScreenProps) {
+  const strings = useStrings();
+  const tutorial = strings.tutorial;
   const [currentMode, setCurrentMode] = useState<'intro' | 'practice' | 'drill' | 'complete'>('intro');
   const [drillQuestion, setDrillQuestion] = useState<any>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [showResult, setShowResult] = useState(false);
+
+  // Safety check
+  if (!tutorial || !tutorial.practice) {
+    return <div>Loading...</div>;
+  }
 
   const demoWord: JapaneseWord = {
     id: 'demo-iku',
     kanji: '行く',
     kana: 'いく',
     romaji: 'iku',
-    meaning: 'to go',
+    meaning: tutorial.practice.demoWord,
     type: 'Irregular',
     jlpt: 'N5',
     tags: ['verb', 'movement']
@@ -54,11 +62,13 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
     <div className="space-y-6 p-6">
       <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-foreground">
-          Two Ways to Master Japanese! 🥋
+          {tutorial.practice.title}
         </h2>
         <p className="text-muted-foreground">
-          Choose your fighter: <span className="font-semibold text-blue-400">Study Mode</span> (the gentle sensei)
-          or <span className="font-semibold text-red-400">Drill Mode</span> (the drill sergeant).
+          {tutorial.practice.description}
+          <span className="font-semibold text-blue-400">{tutorial.practice.studyMode.tagline}</span>
+          {' '}<span className="text-muted-foreground">or</span>{' '}
+          <span className="font-semibold text-red-400">{tutorial.practice.drillMode.tagline}</span>
         </p>
       </div>
 
@@ -70,9 +80,9 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
             : 'border-border hover:border-blue-500/50'
         }`}>
           <div className="text-3xl mb-2">📚</div>
-          <div className="font-medium text-blue-400">Practice Mode</div>
+          <div className="font-medium text-blue-400">{tutorial.practice.studyMode.name}</div>
           <div className="text-xs text-muted-foreground mt-1">
-            Study all conjugations peacefully
+            {tutorial.practice.studyMode.subtitle}
           </div>
         </div>
 
@@ -82,26 +92,26 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
             : 'border-border hover:border-red-500/50'
         }`}>
           <div className="text-3xl mb-2">⚡</div>
-          <div className="font-medium text-red-400">Drill Mode</div>
+          <div className="font-medium text-red-400">{tutorial.practice.drillMode.name}</div>
           <div className="text-xs text-muted-foreground mt-1">
-            Test yourself with quizzes
+            {tutorial.practice.drillMode.subtitle}
           </div>
         </div>
       </div>
 
       {/* Demo Area */}
-      <div className="bg-card border border-border rounded-lg p-6 min-h-[300px]">
+      <div className="bg-card border border-border rounded-lg p-6 min-h-[300px] relative">
         {currentMode === 'intro' && (
           <div className="text-center space-y-4 py-8">
             <div className="text-4xl">🤔</div>
             <p className="text-muted-foreground">
-              Let's see both modes in action with the tricky verb "行く" (to go)
+              {tutorial.practice.demoIntro}
             </p>
             <TutorialButton
               onClick={runPracticeDemo}
               variant="secondary"
             >
-              🎬 Start Demo!
+              {tutorial.practice.demoButton}
             </TutorialButton>
           </div>
         )}
@@ -118,7 +128,12 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {['Present: 行く', 'Past: 行った', 'Polite: 行きます', 'Te-form: 行って'].map((form, index) => (
+              {[
+                `${tutorial.practice.forms.present} 行く`,
+                `${tutorial.practice.forms.past} 行った`,
+                `${tutorial.practice.forms.polite} 行きます`,
+                `${tutorial.practice.forms.teForm} 行って`
+              ].map((form, index) => (
                 <div
                   key={form}
                   className="p-3 bg-blue-500/10 border border-blue-500/20 rounded text-center animate-slideIn"
@@ -135,7 +150,7 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
             </div>
 
             <div className="text-center text-sm text-muted-foreground">
-              📖 Study all forms at your own pace...
+              {tutorial.practice.studyNote}
             </div>
           </div>
         )}
@@ -143,11 +158,11 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
         {currentMode === 'drill' && drillQuestion && (
           <div className="space-y-4 animate-slideIn">
             <div className="text-center">
-              <div className="text-sm text-muted-foreground mb-2">Quiz Time!</div>
+              <div className="text-sm text-muted-foreground mb-2">{tutorial.practice.quizHeader}</div>
               <div className="text-lg mb-4">
                 <span className="japanese-text font-bold">{drillQuestion.word.kanji}</span>
                 <span className="text-muted-foreground mx-2">→</span>
-                <span className="text-red-400 font-bold">Past form?</span>
+                <span className="text-red-400 font-bold">{tutorial.practice.quizQuestion}</span>
               </div>
             </div>
 
@@ -186,8 +201,8 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
                     : 'text-red-400'
                 }`}>
                   {selectedAnswer === drillQuestion.correctAnswer
-                    ? '🎉 Correct! You nailed it!'
-                    : '❌ Close! The answer was ' + drillQuestion.correctAnswer
+                    ? tutorial.practice.correctMessage
+                    : `${tutorial.practice.incorrectMessage} ${drillQuestion.correctAnswer}`
                   }
                 </p>
               </div>
@@ -200,13 +215,13 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
         <div className="text-center space-y-4">
           <div className="text-4xl">🏆</div>
           <p className="text-primary font-medium">
-            Now you've seen both learning styles in action!
+            {tutorial.practice.completionTitle}
           </p>
           <p className="text-sm text-muted-foreground">
-            Practice Mode = detailed study • Drill Mode = quick testing
+            {tutorial.practice.modeSummary}
           </p>
           <TutorialButton onClick={onNext} variant="primary">
-            I'm Ready to Learn! 🚀
+            {tutorial.practice.readyButton}
           </TutorialButton>
         </div>
       )}

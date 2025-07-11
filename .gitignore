@@ -69,3 +69,7 @@ netlify/functions-backup/
 
 scraping-next
 
+# Tatoeba raw data (too large for git)
+tatoeba/
+scripts/process-tatoeba*.js
+

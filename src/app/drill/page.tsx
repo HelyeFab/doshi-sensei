@@ -933,23 +933,25 @@ export default function DrillPage() {
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <PageHeader title={strings.drill.title} helpKey="drill" />
-
-        {((activeTab === 'conjugation' && gameStarted) || (activeTab === 'flashcards' && flashcardGameStarted)) && (
-          <div className="text-right">
-            <div className="text-sm text-muted-foreground">
-              {strings.drill.score}: {activeTab === 'conjugation' ? `${score}/${questions.length}` : `${flashcardScore}/${flashcardQuestions.length}`}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {activeTab === 'conjugation'
-                ? `${currentQuestionIndex + 1} ${strings.common.of} ${questions.length}`
-                : `${currentFlashcardIndex + 1} ${strings.common.of} ${flashcardQuestions.length}`
-              }
-            </div>
-          </div>
-        )}
-      </div>
+        <PageHeader 
+          title={strings.drill.title} 
+          helpKey="drill"
+          rightAction={
+            ((activeTab === 'conjugation' && gameStarted) || (activeTab === 'flashcards' && flashcardGameStarted)) ? (
+              <div className="text-right">
+                <div className="text-sm text-muted-foreground">
+                  {strings.drill.score}: {activeTab === 'conjugation' ? `${score}/${questions.length}` : `${flashcardScore}/${flashcardQuestions.length}`}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {activeTab === 'conjugation'
+                    ? `${currentQuestionIndex + 1} ${strings.common.of} ${questions.length}`
+                    : `${currentFlashcardIndex + 1} ${strings.common.of} ${flashcardQuestions.length}`
+                  }
+                </div>
+              </div>
+            ) : undefined
+          }
+        />
 
       {/* Tab Navigation - Hide when drill game is active */}
       {!gameStarted && !flashcardGameStarted && (

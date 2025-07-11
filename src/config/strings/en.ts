@@ -176,6 +176,7 @@ export const en = {
 
     // Sections
     virtualCompanion: "Virtual Companion",
+    language: "Language",
     appearance: "Appearance",
     tutorialLearning: "Tutorial & Learning",
     goalsProgress: "Goals & Progress",
@@ -188,6 +189,10 @@ export const en = {
     showVirtualCompanion: "Show Virtual Companion",
     showVirtualCompanionDesc: "Display the friendly companion character across the app for encouragement",
     virtualCompanionInfo: "The virtual companion provides motivational messages and adds a friendly touch to your learning experience.",
+
+    // Language
+    languageDesc: "Choose your preferred language for the interface",
+    languageInfo: "Select the language you want to use throughout the app. More languages will be added soon!",
 
     // Tutorial & Learning
     replayTutorial: "Replay Tutorial",
@@ -1533,7 +1538,7 @@ export const en = {
         createButton: "Create Your First List"
       },
       actions: {
-        createList: "+ Create List",
+        createList: "Create List",
         clearAll: "Clear All"
       },
       deleteConfirmation: "Are you sure you want to delete this list? This action cannot be undone.",
@@ -2008,6 +2013,184 @@ export const en = {
     actions: {
       play: "Play",
       saveSentenceToList: "Save sentence to list"
+    }
+  },
+
+  // Tutorial/Onboarding
+  tutorial: {
+    // Welcome Screen
+    welcome: {
+      title: "Welcome to Doshi Sensei!",
+      description: "Your complete Japanese learning platform with everything you need to master the language.",
+      emphasis: "Let's explore your new learning universe!",
+      features: {
+        header: "🌟 Your Japanese Journey Includes:",
+        conjugations: "🎯 Master 127+ conjugation forms instantly",
+        vocabulary: "📚 Build vocabulary with smart study lists", 
+        games: "🎮 Learn through games (Kanji Quest lets you catch 1000+ Pokémon!)",
+        reading: "📰 Read real Japanese news with furigana support",
+        kanji: "🈯 Study kanji with beautiful mood boards",
+        tracking: "📊 Track your progress across all activities"
+      },
+      startButton: "Start My Journey! 🚀",
+      footer: "(No Japanese learners were overwhelmed in the making of this platform)"
+    },
+
+    // Learning Paths Screen (New)
+    paths: {
+      title: "Choose Your Learning Path 🗺️",
+      description: "Doshi Sensei adapts to your learning style. Pick what excites you most!",
+      scholar: {
+        title: "📖 The Scholar",
+        description: "Deep dive into grammar and conjugations",
+        features: ["127+ conjugation forms", "Detailed grammar explanations", "Verb & adjective mastery"]
+      },
+      gamer: {
+        title: "🎮 The Action Hero", 
+        description: "Learn through interactive games",
+        features: ["Kanji Quest: Catch 1000+ Pokémon", "Kana Drop: Falling block game", "Matching games & more"]
+      },
+      reader: {
+        title: "📰 The Culture Enthusiast",
+        description: "Learn through real content",
+        features: ["NHK Easy News articles", "Japanese stories", "Vocabulary extraction tools"]
+      },
+      continueButton: "I'm Ready! →"
+    },
+
+    // Conjugation Demo Screen
+    conjugation: {
+      title: "Watch the Magic Happen ✨",
+      description: "Our conjugation engine transforms any verb into",
+      emphasis: "ALL its forms instantly!",
+      continuation: "No more conjugation tables to memorize.",
+      successMessage: "🎉 Amazing! From one word to complete mastery!",
+      nextButton: "Show Me More! →",
+      demoWord: "to eat"
+    },
+
+    // Study Tools Screen (Updated Lists)
+    studyTools: {
+      title: "Your Personal Study Arsenal 🎯",
+      description: "Build your own Japanese library with our smart tools.",
+      emphasis: "Every word you save becomes part of your journey!",
+      vocabularyBrowser: "Vocabulary Browser",
+      searchPlaceholder: "Search Japanese words...",
+      searchButton: "Search",
+      saveButton: "Save to List",
+      savedButton: "✓ Saved!",
+      listsHeader: "Your Study Lists:",
+      listExample: "Essential Verbs",
+      demoButton: "🔍 See It In Action!",
+      successMessage: "🎯 Perfect! You're building your personal Japanese database!",
+      tip: "Pro tip: Create themed lists for different topics - food, travel, business!",
+      continueButton: "What's Next? →",
+      demoWords: {
+        read: "to read",
+        write: "to write", 
+        speak: "to speak"
+      }
+    },
+
+    // Practice Modes Screen
+    practice: {
+      title: "Train Like a Samurai! 🥋",
+      description: "Multiple ways to practice keeps learning fresh and fun.",
+      studyMode: {
+        name: "Study Mode",
+        tagline: "(peaceful learning)",
+        title: "📚 Study Mode",
+        subtitle: "Explore at your own pace"
+      },
+      drillMode: {
+        name: "Drill Mode", 
+        tagline: "(test yourself)",
+        title: "⚡ Drill Mode",
+        subtitle: "Challenge your knowledge"
+      },
+      gameMode: {
+        name: "Game Mode",
+        tagline: "(learn while playing)",
+        title: "🎮 Game Mode", 
+        subtitle: "Learning disguised as fun"
+      },
+      demoIntro: "Let's see each mode in action!",
+      demoButton: "🎬 Start Demo!",
+      forms: {
+        present: "Present:",
+        past: "Past:",
+        polite: "Polite:",
+        teForm: "Te-form:"
+      },
+      studyNote: "📖 Take your time to master each form...",
+      quizHeader: "Quick Quiz!",
+      quizQuestion: "What's the past form?",
+      correctMessage: "🎉 Excellent! You got it!",
+      incorrectMessage: "❌ Not quite! The answer was",
+      completionTitle: "You've discovered all our learning modes!",
+      modeSummary: "Study = Learn • Drill = Practice • Games = Play",
+      readyButton: "I'm Ready to Start! 🚀",
+      demoWord: "to go"
+    },
+
+    // User Types Screen (New)
+    userTypes: {
+      title: "Your Learning Journey 🎭",
+      description: "Start where you're comfortable and grow at your own pace.",
+      guest: {
+        title: "👤 Guest Explorer",
+        description: "Try before you sign up",
+        features: ["3 games per day", "3 drill sessions daily", "Browse all content"],
+        limitation: "Progress not saved"
+      },
+      free: {
+        title: "🆓 Free Learner", 
+        description: "Your personal account",
+        features: ["3 games per day", "3 drill sessions daily", "Create 3 study lists", "Save 5 bookmarks"],
+        benefit: "Progress saved locally"
+      },
+      premium: {
+        title: "⭐ Premium Scholar",
+        description: "Unlimited everything",
+        features: ["Unlimited games & drills", "Unlimited lists & bookmarks", "Cloud sync across devices", "Priority support"],
+        price: "$3.99/month or $39.99/year"
+      },
+      continueButton: "Choose Later →"
+    },
+
+    // Success Screen
+    success: {
+      title: "おめでとう！ Welcome to the Doshi Sensei Family!",
+      description: "You're now part of a growing community of Japanese learners.",
+      emphasis: "Your adventure begins now!",
+      checklistHeader: "🎯 Your Journey Checklist:",
+      checklistItems: {
+        vocabulary: "✓ Discover Japanese vocabulary",
+        conjugations: "✓ Master verb conjugations", 
+        games: "✓ Play learning games (1000+ Pokémon await!)",
+        reading: "✓ Read real Japanese content",
+        tracking: "✓ Track your daily progress"
+      },
+      settingsButton: "🎨 Personalize My Experience",
+      settingsSubtext: "(Optional: Choose your theme)",
+      settingsTitle: "Make It Yours! 🎨",
+      settingsDescription: "Customize your learning environment",
+      themeHeader: "Choose Your Theme:",
+      themes: {
+        classic: "Classic",
+        ocean: "Ocean",
+        forest: "Forest", 
+        sunset: "Sunset"
+      },
+      preferencesHeader: "Display Options:",
+      romajiLabel: "Show Romaji",
+      romajiDescription: "Display pronunciation guides (たべる → taberu)",
+      previewHeader: "Preview:",
+      startButton: "🚀 Begin Learning!",
+      startButtonSettings: "Perfect! Let's Go! 🎌",
+      settingsNote: "You can change these anytime in Settings",
+      demoWord: "to eat",
+      demoRomaji: "taberu"
     }
   },
 

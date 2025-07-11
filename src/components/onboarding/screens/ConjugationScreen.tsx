@@ -4,20 +4,27 @@ import { useState } from 'react';
 import { AnimatedWord } from '../components/AnimatedWord';
 import { TutorialButton } from '../components/TutorialButton';
 import { JapaneseWord } from '@/types';
+import { useStrings } from '@/hooks/useLanguage';
 
 export interface ConjugationScreenProps {
   onNext: () => void;
 }
 
 export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
+  const strings = useStrings();
+  const tutorial = strings.tutorial;
   const [animationComplete, setAnimationComplete] = useState(false);
+
+  if (!tutorial || !tutorial.conjugation) {
+    return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
 
   const demoWord: JapaneseWord = {
     id: 'demo-taberu',
     kanji: '食べる',
     kana: 'たべる',
     romaji: 'taberu',
-    meaning: 'to eat',
+    meaning: tutorial.conjugation.demoWord,
     type: 'Ichidan',
     jlpt: 'N5',
     tags: ['verb', 'daily']
@@ -27,12 +34,12 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
     <div className="space-y-6 p-6">
       <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-foreground">
-          Watch the Magic Happen ✨
+          {tutorial.conjugation.title}
         </h2>
         <p className="text-muted-foreground">
-          Our conjugation engine is like a grammar wizard—it takes one word and
-          <span className="font-semibold text-primary"> POOF! </span>
-          Transforms it into dozens of forms.
+          {tutorial.conjugation.description}
+          <span className="font-semibold text-primary"> {tutorial.conjugation.emphasis} </span>
+          {tutorial.conjugation.continuation}
         </p>
       </div>
 
@@ -48,10 +55,10 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
       {animationComplete && (
         <div className="text-center space-y-2">
           <p className="text-primary font-medium">
-            🎉 Ta-da! One word became five forms instantly!
+            {tutorial.conjugation.successMessage}
           </p>
           <TutorialButton onClick={onNext} variant="primary">
-            That's Impressive! What's Next? →
+            {tutorial.conjugation.nextButton}
           </TutorialButton>
         </div>
       )}

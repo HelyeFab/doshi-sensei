@@ -10,6 +10,9 @@ import {
   getWordsByJLPTLevelFromWanikani
 } from './wanikaniApi';
 
+// Tatoeba example sentences
+import { batchSearchTatoebaExamples } from './tatoebaSearch';
+
 // WaniKani API initialization - primary source
 const initWanikaniApi = () => {
   // Check for server-side environment variables
@@ -172,8 +175,17 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
     const wanikaniResults = await searchWanikaniVocabulary(query, limit);
 
     if (wanikaniResults.length > 0) {
-      const topResult = wanikaniResults[0];
-      return wanikaniResults;
+      // Add Tatoeba example sentences to the results
+      const wordsToSearch = wanikaniResults.map(word => word.kanji || word.kana);
+      const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
+      
+      // Attach examples to each word
+      const resultsWithExamples = wanikaniResults.map(word => ({
+        ...word,
+        exampleSentences: examplesMap.get(word.kanji || word.kana) || []
+      }));
+      
+      return resultsWithExamples;
     }
 
 
@@ -188,7 +200,17 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
 
       if (jishoResults.data && jishoResults.data.length > 0) {
         const convertedResults = processJishoResponse(jishoResults, limit);
-        return convertedResults;
+        
+        // Add Tatoeba example sentences to Jisho results too
+        const wordsToSearch = convertedResults.map(word => word.kanji || word.kana);
+        const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
+        
+        const resultsWithExamples = convertedResults.map(word => ({
+          ...word,
+          exampleSentences: examplesMap.get(word.kanji || word.kana) || []
+        }));
+        
+        return resultsWithExamples;
       }
     } catch (jishoError) {
       console.warn('Jisho fallback failed:', jishoError);

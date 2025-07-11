@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { JapaneseWord } from '@/types';
@@ -51,6 +51,10 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [musicEnabled, setMusicEnabled] = useState(true); // Music ON by default
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isMusicFirstRender = useRef(true);
 
   // Initialize game
   useEffect(() => {
@@ -58,6 +62,123 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
       startNewGame();
     }
   }, [isOpen]);
+
+  // Fade functions
+  const fadeIn = useCallback((audio: HTMLAudioElement, targetVolume: number = 0.3) => {
+    // Clear any existing fade
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+    }
+    
+    audio.volume = 0;
+    audio.play().then(() => {
+      fadeIntervalRef.current = setInterval(() => {
+        if (audio.volume < targetVolume - 0.01) {
+          audio.volume = Math.min(targetVolume, audio.volume + 0.02);
+        } else {
+          audio.volume = targetVolume;
+          if (fadeIntervalRef.current) {
+            clearInterval(fadeIntervalRef.current);
+            fadeIntervalRef.current = null;
+          }
+        }
+      }, 50);
+    }).catch(err => {
+      console.log('Audio play blocked, will retry on user interaction');
+      // Set up play on first user interaction
+      const playOnInteraction = () => {
+        fadeIn(audio, targetVolume);
+        document.removeEventListener('click', playOnInteraction);
+      };
+      document.addEventListener('click', playOnInteraction, { once: true });
+    });
+  }, []);
+
+  const fadeOut = useCallback((audio: HTMLAudioElement, callback?: () => void) => {
+    // Clear any existing fade
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+    }
+    
+    fadeIntervalRef.current = setInterval(() => {
+      if (audio.volume > 0.01) {
+        audio.volume = Math.max(0, audio.volume - 0.02);
+      } else {
+        audio.volume = 0;
+        audio.pause();
+        if (fadeIntervalRef.current) {
+          clearInterval(fadeIntervalRef.current);
+          fadeIntervalRef.current = null;
+        }
+        if (callback) callback();
+      }
+    }, 50);
+  }, []);
+
+  // Background music management
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Create audio element
+    const audio = new Audio();
+    audio.src = '/sounds/whispers.mp3';
+    audio.loop = true;
+    audio.volume = 0;
+    
+    // Add load event listener to ensure audio is ready
+    audio.addEventListener('loadeddata', () => {
+      console.log('Audio loaded successfully');
+    });
+    
+    audio.addEventListener('error', (e) => {
+      console.error('Audio load error:', e);
+      console.error('Attempted path:', audio.src);
+    });
+    
+    // Store in ref
+    audioRef.current = audio;
+
+    // Start playing if music is enabled (with small delay to ensure setup)
+    const shouldPlayMusic = musicEnabled;
+    setTimeout(() => {
+      if (shouldPlayMusic && audioRef.current) {
+        fadeIn(audioRef.current);
+      }
+    }, 100);
+
+    // Cleanup function
+    return () => {
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current);
+        fadeIntervalRef.current = null;
+      }
+      
+      const audioToClean = audioRef.current;
+      if (audioToClean && !audioToClean.paused) {
+        // Only fade out if playing
+        audioToClean.pause();
+        audioToClean.currentTime = 0;
+      }
+      audioRef.current = null;
+    };
+  }, [isOpen, musicEnabled, fadeIn]); // Include musicEnabled
+
+  // Handle music toggle after initial setup
+  useEffect(() => {
+    // Skip first render since it's handled in the setup
+    if (isMusicFirstRender.current) {
+      isMusicFirstRender.current = false;
+      return;
+    }
+    
+    if (!audioRef.current || !isOpen) return;
+
+    if (musicEnabled) {
+      fadeIn(audioRef.current);
+    } else {
+      fadeOut(audioRef.current);
+    }
+  }, [musicEnabled, fadeIn, fadeOut]);
 
   const startNewGame = useCallback(() => {
     const tiles = createTiles(words, pairCount);
@@ -196,6 +317,10 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
     onClose();
   };
 
+  const toggleMusic = () => {
+    setMusicEnabled(!musicEnabled);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -241,6 +366,17 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                       title={soundEnabled ? "Mute sounds" : "Enable sounds"}
                     >
                       {soundEnabled ? <Volume2 className="w-4 sm:w-5 h-4 sm:h-5" /> : <VolumeX className="w-4 sm:w-5 h-4 sm:h-5" />}
+                    </button>
+                    <button
+                      onClick={toggleMusic}
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
+                      title={musicEnabled ? "Mute music" : "Enable music"}
+                    >
+                      <img 
+                        src="/flat-icons/woman.svg" 
+                        alt="Music toggle" 
+                        className={`w-4 sm:w-5 h-4 sm:h-5 ${!musicEnabled ? 'opacity-50' : ''}`}
+                      />
                     </button>
                     <button
                       onClick={handleReset}

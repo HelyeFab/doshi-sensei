@@ -1,12 +1,20 @@
 'use client';
 
 import { TutorialButton } from '../components/TutorialButton';
+import { useStrings } from '@/hooks/useLanguage';
 
 export interface WelcomeScreenProps {
   onNext: () => void;
 }
 
 export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
+  const strings = useStrings();
+  const tutorial = strings.tutorial;
+
+  if (!tutorial || !tutorial.welcome) {
+    return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col items-center text-center space-y-6 p-8">
       {/* Hero Section */}
@@ -18,18 +26,23 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
       {/* Main Content */}
       <div className="space-y-4 max-w-md">
         <h1 className="text-3xl font-bold text-foreground">
-          Welcome to Doshi Sensei!
+          {tutorial.welcome.title}
         </h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          Japanese verbs are like that friend who changes personality depending on the situation.
-          <span className="font-semibold text-primary"> Don't worry—we speak their language! </span>
+          {tutorial.welcome.description}
+          <span className="font-semibold text-primary"> {tutorial.welcome.emphasis} </span>
         </p>
         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+          <p className="text-sm text-primary font-medium mb-2">
+            {tutorial.welcome.features.header}
+          </p>
           <p className="text-sm text-primary font-medium">
-            🎯 Master 127+ conjugation forms<br/>
-            📚 Create custom study lists<br/>
-            ⚡ Practice with smart drills<br/>
-            🏆 Track your progress like a ninja
+            {tutorial.welcome.features.conjugations}<br/>
+            {tutorial.welcome.features.vocabulary}<br/>
+            {tutorial.welcome.features.games}<br/>
+            {tutorial.welcome.features.reading}<br/>
+            {tutorial.welcome.features.kanji}<br/>
+            {tutorial.welcome.features.tracking}
           </p>
         </div>
       </div>
@@ -41,11 +54,11 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
         size="large"
         className="animate-pulse"
       >
-        Let's Conjugate! 🚀
+        {tutorial.welcome.startButton}
       </TutorialButton>
 
       <p className="text-xs text-muted-foreground">
-        (Don't worry, no verbs were harmed in the making of this tutorial)
+        {tutorial.welcome.footer}
       </p>
     </div>
   );

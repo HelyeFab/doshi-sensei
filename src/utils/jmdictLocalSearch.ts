@@ -1,5 +1,6 @@
 // src/utils/jmdictLocalSearch.ts
 import { JapaneseWord } from '@/types';
+import { batchSearchTatoebaExamples } from './tatoebaSearch';
 
 let jmdictData: any = null;
 let loadingPromise: Promise<void> | null = null;
@@ -258,7 +259,7 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
   results.sort((a, b) => b.score - a.score);
   
   // Convert to JapaneseWord format with extra metadata
-  return results.slice(0, limit).map(({ word, score, matchType }) => {
+  const topResults = results.slice(0, limit).map(({ word, score, matchType }) => {
     const mainKanji = word.kanji[0]?.text || word.kana[0]?.text || '';
     const mainKana = word.kana[0]?.text || '';
     const meaning = word.sense[0]?.gloss?.find((g: any) => g.lang === 'eng')?.text || '';
@@ -285,6 +286,22 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
       matchType
     };
   });
+  
+  // Add Tatoeba example sentences
+  const wordsToSearch = topResults.map(word => word.kanji || word.kana);
+  try {
+    const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
+    
+    // Attach examples to each word
+    return topResults.map(word => ({
+      ...word,
+      exampleSentences: examplesMap.get(word.kanji || word.kana) || []
+    }));
+  } catch (error) {
+    console.error('Failed to fetch Tatoeba examples:', error);
+    // Return results without examples if Tatoeba search fails
+    return topResults;
+  }
 }
 
 // Get the most likely "did you mean" suggestion

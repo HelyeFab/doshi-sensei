@@ -12,6 +12,7 @@ import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
 import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
 import { StudyListManager } from '@/utils/studyListManager';
+import { ExampleSentencesBlock } from '@/components/vocabulary/ExampleSentencesBlock';
 
 // Add JMdict search utility import (to be implemented)
 import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
@@ -31,6 +32,7 @@ export default function VocabularyPage() {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [wordToSave, setWordToSave] = useState<JapaneseWord | null>(null);
+  const [exampleToSave, setExampleToSave] = useState<ExampleSentence | null>(null);
 
   // Add state for search source
   const [searchSource, setSearchSource] = useState<'wanikani' | 'jmdict'>(() => {
@@ -130,42 +132,100 @@ export default function VocabularyPage() {
 
   const handleSaveWord = (word: JapaneseWord) => {
     setWordToSave(word);
+    setExampleToSave(null);
     setShowSaveModal(true);
     setSelectedWord(null); // Close the word detail modal
+  };
+
+  const handleSaveExample = (example: ExampleSentence) => {
+    // Convert example to a word-like object for the save modal
+    const exampleAsWord: JapaneseWord = {
+      id: example.id,
+      kanji: example.japanese,
+      kana: '',
+      romaji: '',
+      meaning: example.english || '',
+      type: 'other',
+      jlpt: 'N5',
+      tags: ['sentence', 'example']
+    };
+    
+    setWordToSave(exampleAsWord);
+    setExampleToSave(example);
+    setShowSaveModal(true);
   };
 
   const handleSaveWordToLists = async (word: JapaneseWord, listIds: string[], newListName?: string) => {
     try {
       let listsToSaveTo = [...listIds];
 
-      // Create new list if specified
-      if (newListName?.trim()) {
-        const newList = await StudyListManager.createStudyList(
-          newListName,
-          'flashcard', // Default to flashcard for words
-          `Created for saving ${word.kanji}`,
+      // Check if we're saving an example sentence
+      if (exampleToSave) {
+        // Create sentence item
+        const sentenceItem = {
+          id: exampleToSave.id,
+          text: exampleToSave.japanese,
+          furigana: '',
+          translation: exampleToSave.english || '',
+          source: {
+            type: 'tatoeba' as const,
+            id: exampleToSave.id,
+            title: 'Tatoeba Example',
+            url: `https://tatoeba.org/en/sentences/show/${exampleToSave.id}`
+          }
+        };
+
+        // Create new list if specified
+        if (newListName?.trim()) {
+          const newList = await StudyListManager.createStudyList(
+            newListName,
+            'sentence',
+            `Created for saving example sentences`,
+            user,
+            subscription?.status
+          );
+          listsToSaveTo.push(newList.id);
+        }
+
+        // Save sentence to selected lists
+        await StudyListManager.addItemToLists(
+          sentenceItem,
+          'sentence',
+          listsToSaveTo,
           user,
           subscription?.status
         );
-        listsToSaveTo.push(newList.id);
-      }
+      } else {
+        // Create new list if specified
+        if (newListName?.trim()) {
+          const newList = await StudyListManager.createStudyList(
+            newListName,
+            'flashcard', // Default to flashcard for words
+            `Created for saving ${word.kanji}`,
+            user,
+            subscription?.status
+          );
+          listsToSaveTo.push(newList.id);
+        }
 
-      // Save word to selected lists
-      await StudyListManager.addItemToLists(
-        word,
-        'word',
-        listsToSaveTo,
-        user,
-        subscription?.status
-      );
+        // Save word to selected lists
+        await StudyListManager.addItemToLists(
+          word,
+          'word',
+          listsToSaveTo,
+          user,
+          subscription?.status
+        );
+      }
 
       setShowSaveModal(false);
       setWordToSave(null);
+      setExampleToSave(null);
 
       // Show success message (optional)
-      console.log('Word saved successfully');
+      console.log(exampleToSave ? 'Sentence saved successfully' : 'Word saved successfully');
     } catch (error) {
-      console.error('Error saving word to lists:', error);
+      console.error('Error saving to lists:', error);
     }
   };
 
@@ -425,6 +485,7 @@ export default function VocabularyPage() {
             word={selectedWord}
             onClose={handleCloseModal}
             onSave={handleSaveWord}
+            onSaveExample={handleSaveExample}
           />
         )}
 
@@ -432,9 +493,11 @@ export default function VocabularyPage() {
         {showSaveModal && wordToSave && (
           <SaveWordModal
             word={wordToSave}
+            isSentence={!!exampleToSave}
             onClose={() => {
               setShowSaveModal(false);
               setWordToSave(null);
+              setExampleToSave(null);
             }}
             onSaveToLists={handleSaveWordToLists}
           />
@@ -544,9 +607,10 @@ interface WordModalProps {
   word: JapaneseWord;
   onClose: () => void;
   onSave: (word: JapaneseWord) => void;
+  onSaveExample?: (example: ExampleSentence) => void;
 }
 
-function WordModal({ word, onClose, onSave }: WordModalProps) {
+function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
   return (
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
@@ -589,6 +653,15 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
             </div>
           )}
 
+          {/* Example Sentences */}
+          {word.exampleSentences && word.exampleSentences.length > 0 && (
+            <ExampleSentencesBlock 
+              word={word.kanji || word.kana}
+              examples={word.exampleSentences}
+              onSaveExample={onSaveExample}
+            />
+          )}
+
           {/* Save Button */}
           <div className="pt-4 border-t border-border">
             <button
@@ -619,11 +692,12 @@ function WordModal({ word, onClose, onSave }: WordModalProps) {
 
 interface SaveWordModalProps {
   word: JapaneseWord;
+  isSentence?: boolean;
   onClose: () => void;
   onSaveToLists: (word: JapaneseWord, listIds: string[], newListName?: string) => Promise<void>;
 }
 
-function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
+function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: SaveWordModalProps) {
   const { user } = useAuth();
   const { subscription } = useSubscription2();
   const { checkAndTrack } = useAccess();
@@ -632,7 +706,7 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [showCreateNew, setShowCreateNew] = useState(false);
   const [newListName, setNewListName] = useState('');
-  const [newListType, setNewListType] = useState<StudyListType>('flashcard');
+  const [newListType, setNewListType] = useState<StudyListType>(isSentence ? 'sentence' : 'flashcard');
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -658,6 +732,10 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
   };
 
   const canAddToList = (listType: StudyListType): boolean => {
+    if (isSentence) {
+      // Sentences can only go in sentence lists
+      return listType === 'sentence';
+    }
     return StudyListManager.canAddToList('word', word, listType);
   };
 
@@ -690,7 +768,7 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
       onClose();
     } catch (err) {
       console.error('Error saving word:', err);
-      setErrors(['Failed to save word to lists']);
+      setErrors([isSentence ? 'Failed to save sentence to lists' : 'Failed to save word to lists']);
     } finally {
       setSaving(false);
     }
@@ -700,7 +778,7 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          Save "{word.kanji}" to Lists
+          {isSentence ? 'Save Example Sentence to Lists' : `Save "${word.kanji}" to Lists`}
         </h3>
 
         {/* Error messages */}
@@ -783,44 +861,64 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
               <div>
                 <label className="block text-xs text-muted-foreground mb-2">List Type:</label>
                 <div className="space-y-2">
-                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
-                    <input
-                      type="radio"
-                      name="listType"
-                      value="flashcard"
-                      checked={newListType === 'flashcard'}
-                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
-                      className="mt-0.5"
-                    />
-                    <div>
-                      <div className="text-sm font-medium text-foreground">Flashcard List</div>
-                      <div className="text-xs text-muted-foreground">For memorization and review (accepts any content)</div>
-                      <div className="text-xs text-green-400 mt-1">✓ Perfect for vocabulary study</div>
-                    </div>
-                  </label>
-
-                  <label className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input ${
-                    !canAddToList('drillable') ? 'opacity-60' : ''
-                  }`}>
-                    <input
-                      type="radio"
-                      name="listType"
-                      value="drillable"
-                      checked={newListType === 'drillable'}
-                      onChange={(e) => setNewListType(e.target.value as StudyListType)}
-                      disabled={!canAddToList('drillable')}
-                      className="mt-0.5"
-                    />
-                    <div>
-                      <div className="text-sm font-medium text-foreground">Drillable List</div>
-                      <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
-                      <div className={`text-xs mt-1 ${
-                        canAddToList('drillable') ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                        {canAddToList('drillable') ? '✓ Can be conjugated' : '⚠️ Cannot be conjugated'}
+                  {isSentence ? (
+                    <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
+                      <input
+                        type="radio"
+                        name="listType"
+                        value="sentence"
+                        checked={true}
+                        disabled
+                        className="mt-0.5"
+                      />
+                      <div>
+                        <div className="text-sm font-medium text-foreground">Sentence List</div>
+                        <div className="text-xs text-muted-foreground">For saving example sentences</div>
+                        <div className="text-xs text-green-400 mt-1">✓ Perfect for context-based learning</div>
                       </div>
-                    </div>
-                  </label>
+                    </label>
+                  ) : (
+                    <>
+                      <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
+                        <input
+                          type="radio"
+                          name="listType"
+                          value="flashcard"
+                          checked={newListType === 'flashcard'}
+                          onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                          className="mt-0.5"
+                        />
+                        <div>
+                          <div className="text-sm font-medium text-foreground">Flashcard List</div>
+                          <div className="text-xs text-muted-foreground">For memorization and review (accepts any content)</div>
+                          <div className="text-xs text-green-400 mt-1">✓ Perfect for vocabulary study</div>
+                        </div>
+                      </label>
+
+                      <label className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input ${
+                        !canAddToList('drillable') ? 'opacity-60' : ''
+                      }`}>
+                        <input
+                          type="radio"
+                          name="listType"
+                          value="drillable"
+                          checked={newListType === 'drillable'}
+                          onChange={(e) => setNewListType(e.target.value as StudyListType)}
+                          disabled={!canAddToList('drillable')}
+                          className="mt-0.5"
+                        />
+                        <div>
+                          <div className="text-sm font-medium text-foreground">Drillable List</div>
+                          <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
+                          <div className={`text-xs mt-1 ${
+                            canAddToList('drillable') ? 'text-green-400' : 'text-red-400'
+                          }`}>
+                            {canAddToList('drillable') ? '✓ Can be conjugated' : '⚠️ Cannot be conjugated'}
+                          </div>
+                        </div>
+                      </label>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -839,7 +937,7 @@ function SaveWordModal({ word, onClose, onSaveToLists }: SaveWordModalProps) {
             disabled={(selectedLists.length === 0 && !newListName.trim()) || saving}
             className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? 'Saving...' : 'Save Word'}
+            {saving ? 'Saving...' : isSentence ? 'Save Sentence' : 'Save Word'}
           </button>
         </div>
       </div>

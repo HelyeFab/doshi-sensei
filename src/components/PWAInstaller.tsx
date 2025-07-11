@@ -34,8 +34,21 @@ export default function PWAInstaller() {
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstallButton(true);
-      pwaAnalytics.trackEvent('install_prompt_shown');
+      
+      // Check if we should show the prompt (once per day)
+      const lastPromptTime = localStorage.getItem('pwa-prompt-last-shown');
+      const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const now = Date.now();
+      
+      if (!lastPromptTime || (now - parseInt(lastPromptTime)) > ONE_DAY) {
+        setShowInstallButton(true);
+        localStorage.setItem('pwa-prompt-last-shown', now.toString());
+        pwaAnalytics.trackEvent('install_prompt_shown');
+      } else {
+        // Prompt was shown within the last 24 hours, don't show it
+        console.log('PWA prompt throttled - shown within last 24 hours');
+        pwaAnalytics.trackEvent('install_prompt_throttled');
+      }
     };
 
     // Listen for app installed event
@@ -109,7 +122,12 @@ export default function PWAInstaller() {
           </div>
           <div className="flex gap-2 ml-3">
             <button
-              onClick={() => setShowInstallButton(false)}
+              onClick={() => {
+                setShowInstallButton(false);
+                // Update the last shown time when user clicks "Maybe later"
+                localStorage.setItem('pwa-prompt-last-shown', Date.now().toString());
+                pwaAnalytics.trackEvent('install_prompt_dismissed_maybe_later');
+              }}
               className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
               Maybe later

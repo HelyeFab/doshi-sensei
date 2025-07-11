@@ -40,16 +40,18 @@ export function PageHeader({ title, subtitle, showBackButton = true, helpKey, on
           </Link>
         )}
 
-        <div className="flex-1 flex items-center justify-between">
+        <div className="flex-1 flex items-center justify-between gap-4">
           <h1 className="text-xl sm:text-3xl font-bold text-foreground">
             {title}
           </h1>
           {helpContent && (
-            <PageHelpIcon
-              title={helpContent.title}
-              description={helpContent.description}
-              tips={helpContent.tips}
-            />
+            <div className="ml-auto">
+              <PageHelpIcon
+                title={helpContent.title}
+                description={helpContent.description}
+                tips={helpContent.tips}
+              />
+            </div>
           )}
         </div>
         {rightAction && (

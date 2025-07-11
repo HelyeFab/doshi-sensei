@@ -153,7 +153,7 @@ export function TTSButton({
 // Specialized TTS buttons for different contexts
 
 interface VocabularyTTSButtonProps extends Omit<TTSButtonProps, 'options' | 'text'> {
-  word: string;
+  word: string | { kanji?: string; kana?: string; word?: string };
   kana?: string;
   voice?: 'male' | 'female';
   speed?: number;
@@ -166,10 +166,23 @@ export function VocabularyTTSButton({
   speed = 1.0,
   ...props
 }: VocabularyTTSButtonProps) {
+  // Handle both string and object word types
+  let textToSpeak: string;
+  let reading: string | undefined;
+  
+  if (typeof word === 'string') {
+    textToSpeak = word;
+    reading = kana;
+  } else {
+    // If word is an object, prioritize kanji, then word field, then kana
+    textToSpeak = word.kanji || word.word || word.kana || '';
+    reading = word.kana || kana;
+  }
+  
   return (
     <TTSButton
-      text={word}
-      reading={kana}
+      text={textToSpeak}
+      reading={reading}
       options={{ voice, speed, context: 'vocabulary' }}
       {...props}
     />

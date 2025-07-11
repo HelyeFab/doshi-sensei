@@ -6,7 +6,7 @@ export interface Sentence {
   furigana?: string;
   translation?: string;
   source: {
-    type: 'article' | 'story';
+    type: 'article' | 'story' | 'tatoeba';
     id: string;
     title: string;
     url?: string;

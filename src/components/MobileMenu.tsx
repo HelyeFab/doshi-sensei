@@ -71,17 +71,17 @@ export default function MobileMenu() {
     { label: strings.nav.home || 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: strings.nav.adminDashboard || 'Admin Dashboard', icon: '🛡️', href: '/admin' }] : []),
     ...(pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
-    { label: strings.nav.practice || 'Practice', icon: '📝', href: '/practice' },
-    { label: strings.nav.drill || 'Drill', icon: '🛠️', href: '/drill' },
-    { label: strings.nav.vocab || 'Vocabulary', icon: '📚', href: '/vocabulary' },
+    { label: strings.nav.practice || 'Practice', icon: '📚', href: '/practice' },
+    { label: strings.nav.drill || 'Drill', icon: '⚡', href: '/drill' },
+    { label: strings.nav.vocab || 'Vocabulary', icon: '📖', href: '/vocabulary' },
     { label: strings.nav.kanjiBrowser || 'Kanji Browser', icon: '漢', href: '/kanji-browser' },
-    { label: strings.nav.kanjiMoods || 'Kanji Moods', icon: '🎭', href: '/kanji-moods' },
+    { label: strings.nav.kanjiMoods || 'Kanji Moods', icon: '🗺️', href: '/kanji-moods' },
     { label: strings.nav.favourites || 'Favourites', icon: '⭐', href: '/favourites' },
-    { label: strings.nav.account || 'Account', icon: '', href: '/account' },
+    { label: strings.nav.account || 'Account', icon: '👤', href: '/account' },
     { label: strings.nav.settings || 'Settings', icon: '⚙️', href: '/settings' },
-    { label: strings.nav.news || 'News', icon: '📰', href: '/news' },
+    { label: strings.nav.news || 'News', icon: '🗞️', href: '/news' },
     { label: strings.nav.games || 'Games', icon: '🎮', href: '/games' },
-    { label: strings.nav.resources || 'Resources', icon: '📖', href: '/resources' },
+    { label: strings.nav.resources || 'Resources', icon: '🎌', href: '/resources' },
     { label: strings.nav.stories || 'Stories', icon: '/flat-icons/story.svg', href: '/stories' },
   ];
 
@@ -198,9 +198,6 @@ export default function MobileMenu() {
                 <span className="text-lg">🏮</span>
                 <span className="font-medium">{strings.navigation?.app?.name || 'Doshi Sensei'}</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {strings.navigation?.app?.tagline || 'Master Japanese Conjugations'}
-              </p>
             </div>
           </div>
         </div>

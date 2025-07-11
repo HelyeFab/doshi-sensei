@@ -215,10 +215,12 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
    * Get all resources of a specific type
    */
   static async getResourcesByType(type: string): Promise<CachedResource[]> {
+    console.log(`[Storage] getResourcesByType called for type: ${type}`);
     try {
       const resources: CachedResource[] = [];
 
       await performDBOperation('apiCache', 'readonly', (store) => {
+        console.log(`[Storage] Opening cursor for type: ${type}`);
         return new Promise<void>((resolve, reject) => {
           const request = store.openCursor();
 

@@ -91,7 +91,15 @@ export class PremiumSyncManager {
       
       let localManifest, remoteManifest;
       try {
-        localManifest = await this.getLocalManifest(userId);
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout fetching local manifest')), 30000)
+        );
+        
+        localManifest = await Promise.race([
+          this.getLocalManifest(userId),
+          timeoutPromise
+        ]);
         console.log('[Sync] Local manifest fetched:', localManifest);
       } catch (error) {
         console.error('[Sync] Error fetching local manifest:', error);
@@ -167,9 +175,14 @@ export class PremiumSyncManager {
    * Cancel ongoing sync
    */
   cancelSync(): void {
+    console.log('[Sync] Canceling sync');
     if (this.currentSyncController) {
       this.currentSyncController.abort();
     }
+    // Reset sync state
+    this.syncInProgress = false;
+    this.syncProgressCallback = undefined;
+    this.currentSyncController = undefined;
   }
 
   /**
@@ -412,14 +425,23 @@ export class PremiumSyncManager {
    * Get all local cached resources
    */
   private async getAllLocalResources(): Promise<CachedResource[]> {
+    console.log('[Sync] getAllLocalResources called');
     const types = ['article', 'story', 'audio', 'kanji', 'verb', 'adjective'] as const;
     const allResources: CachedResource[] = [];
     
     for (const type of types) {
-      const resources = await this.storageManager.getResourcesByType(type);
-      allResources.push(...resources);
+      try {
+        console.log(`[Sync] Fetching resources of type: ${type}`);
+        const resources = await this.storageManager.getResourcesByType(type);
+        console.log(`[Sync] Found ${resources.length} ${type} resources`);
+        allResources.push(...resources);
+      } catch (error) {
+        console.error(`[Sync] Error fetching ${type} resources:`, error);
+        // Continue with other types even if one fails
+      }
     }
     
+    console.log(`[Sync] Total resources found: ${allResources.length}`);
     return allResources;
   }
 

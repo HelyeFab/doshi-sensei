@@ -402,12 +402,14 @@ export class PremiumSyncManager {
     };
     
     for (const resource of resources) {
-      manifest.resources[resource.id] = {
-        type: resource.type,
-        version: resource.metadata.version,
-        checksum: resource.metadata.checksum,
-        lastModified: resource.metadata.lastAccessed
-      };
+      if (resource && resource.id && resource.metadata) {
+        manifest.resources[resource.id] = {
+          type: resource.type,
+          version: resource.metadata.version || 1,
+          checksum: resource.metadata.checksum || '',
+          lastModified: resource.metadata.lastAccessed || Date.now()
+        };
+      }
     }
     
     return manifest;

@@ -321,9 +321,36 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
    * Transform API cache data to CachedResource format
    */
   private static transformToCachedResource(cached: any): CachedResource | null {
-    if (!cached || !cached.response) return null;
+    if (!cached) return null;
 
-    return cached.response as CachedResource;
+    // If it has a response property, use that (from getCachedResource)
+    if (cached.response) {
+      return cached.response as CachedResource;
+    }
+
+    // Otherwise, try to construct from the raw data (from getResourcesByType)
+    if (cached.data && cached.id && cached.endpoint) {
+      try {
+        return {
+          id: cached.id,
+          type: cached.endpoint as ResourceType,
+          data: cached.data,
+          metadata: {
+            size: cached.size || 0,
+            cachedAt: cached.timestamp || cached.cacheDate || Date.now(),
+            lastAccessed: cached.timestamp || cached.cacheDate || Date.now(),
+            expiresAt: cached.expiryDate || Date.now() + 86400000,
+            version: 1,
+            checksum: cached.checksum || ''
+          }
+        };
+      } catch (error) {
+        console.error('Error transforming cached resource:', error);
+        return null;
+      }
+    }
+
+    return null;
   }
 
   /**

@@ -138,6 +138,16 @@ export default function FavouritesPage() {
     try {
       setLoading(true);
       
+      // Debug logging
+      console.log('LoadWordLists called:', {
+        user: !!user,
+        userEmail: user?.email,
+        canSync,
+        syncAttempted,
+        isPremium,
+        subscription
+      });
+      
       // For premium users, sync from cloud first (only once per session)
       if (user && canSync && !syncAttempted) {
         setSyncAttempted(true);
@@ -145,9 +155,55 @@ export default function FavouritesPage() {
         const syncResult = await performFullWordListSync();
         if (syncResult.success) {
           console.log('Word lists synced from cloud successfully');
+          
+          // IMPORTANT: After syncing from cloud, we need to check if data exists in the old system
+          // and migrate it to the new system
+          const oldWordLists = await WordListManager.getAllWordLists();
+          console.log('Old word lists found:', oldWordLists.length);
+          
+          if (oldWordLists.length > 0) {
+            console.log('Migrating from old WordListManager to new StudyListManager...');
+            // The old data exists, but we need to check if it's already been migrated
+            const currentStudyLists = await StudyListManager.getAllStudyLists();
+            
+            if (currentStudyLists.length === 0) {
+              // No study lists exist, so we need to migrate the old data
+              for (const oldList of oldWordLists) {
+                await StudyListManager.createStudyList(
+                  oldList.name,
+                  'words', // Default to words type
+                  oldList.description,
+                  user,
+                  subscription?.status
+                );
+                
+                // Get the newly created list to add items to it
+                const allLists = await StudyListManager.getAllStudyLists();
+                const newList = allLists.find(l => l.name === oldList.name);
+                
+                if (newList && oldList.wordIds && oldList.wordIds.length > 0) {
+                  // Add all the words from the old list to the new list
+                  for (const wordId of oldList.wordIds) {
+                    const savedWords = await WordListManager.getAllSavedWords();
+                    const savedWord = savedWords.find(sw => sw.word.id === wordId);
+                    if (savedWord) {
+                      await StudyListManager.addWordToList(newList.id, savedWord.word);
+                    }
+                  }
+                }
+              }
+              console.log('Migration completed!');
+            }
+          }
         } else {
           console.error('Failed to sync from cloud:', syncResult.error);
         }
+      } else {
+        console.log('Skipping sync:', {
+          noUser: !user,
+          cantSync: !canSync,
+          alreadyAttempted: syncAttempted
+        });
       }
       
       // Load unified study lists and convert them to legacy format for compatibility

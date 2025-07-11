@@ -262,8 +262,16 @@ service cloud.firestore {
     }
 
     // Premium Sync Collections
+    // User sync document
+    match /userSync/{userId} {
+      // Only premium users can read/write their own sync document
+      allow read, write: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+    
     // User sync manifest - stores metadata about synced resources
-    match /userSync/{userId}/manifest {
+    match /userSync/{userId}/manifest/data {
       // Only premium users can read/write their own sync manifest
       allow read, write: if request.auth != null && 
         request.auth.uid == userId && 

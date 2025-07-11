@@ -33,7 +33,15 @@ export class FirebaseSyncAdapter {
    */
   async getUserManifest(userId: string): Promise<SyncManifest | null> {
     try {
-      const manifestRef = doc(firestore, this.SYNC_COLLECTION, userId, 'manifest');
+      // Create the user sync document first if it doesn't exist
+      const userSyncRef = doc(firestore, this.SYNC_COLLECTION, userId);
+      await setDoc(userSyncRef, { 
+        userId, 
+        createdAt: Timestamp.now() 
+      }, { merge: true });
+      
+      // Now get the manifest from subcollection
+      const manifestRef = doc(firestore, this.SYNC_COLLECTION, userId, 'manifest', 'data');
       const manifestDoc = await getDoc(manifestRef);
       
       if (!manifestDoc.exists()) {
@@ -64,7 +72,15 @@ export class FirebaseSyncAdapter {
    */
   async saveUserManifest(userId: string, manifest: SyncManifest): Promise<void> {
     try {
-      const manifestRef = doc(firestore, this.SYNC_COLLECTION, userId, 'manifest');
+      // Ensure user sync document exists
+      const userSyncRef = doc(firestore, this.SYNC_COLLECTION, userId);
+      await setDoc(userSyncRef, { 
+        userId, 
+        updatedAt: Timestamp.now() 
+      }, { merge: true });
+      
+      // Save manifest in subcollection
+      const manifestRef = doc(firestore, this.SYNC_COLLECTION, userId, 'manifest', 'data');
       await setDoc(manifestRef, {
         ...manifest,
         updatedAt: Timestamp.now()

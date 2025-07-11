@@ -10,7 +10,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import WordListManager from '@/utils/wordLists';
+import StudyListManager from '@/utils/studyListManager';
 import StatsManager from '@/utils/stats';
 import TTSManager from '@/utils/tts';
 import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
@@ -656,8 +656,21 @@ function WordCard({ word, onSelect }: WordCardProps) {
 
   const loadWordLists = async () => {
     try {
-      const lists = await WordListManager.getAllWordLists();
-      setWordLists(lists);
+      // Load study lists and convert to legacy format for compatibility
+      const studyLists = await StudyListManager.getAllStudyLists();
+      const legacyWordLists: WordList[] = studyLists
+        .filter(list => list.type === 'flashcard' || list.type === 'drillable') // Only word lists
+        .map(studyList => ({
+          id: studyList.id,
+          name: studyList.name,
+          description: studyList.description,
+          wordIds: studyList.itemIds,
+          createdAt: studyList.createdAt,
+          updatedAt: studyList.updatedAt,
+          color: studyList.color,
+          isConjugable: studyList.type === 'drillable'
+        }));
+      setWordLists(legacyWordLists);
     } catch (err) {
       console.error('Error loading word lists:', err);
     }
@@ -704,7 +717,14 @@ function WordCard({ word, onSelect }: WordCardProps) {
     }
 
     try {
-      await WordListManager.createWordList(newListName.trim());
+      // Create flashcard list by default (can store any words)
+      await StudyListManager.createStudyList(
+        newListName.trim(),
+        'flashcard',
+        undefined,
+        user,
+        isPremium ? 'active' : undefined
+      );
       // Usage tracking is handled automatically by checkAndTrack
       setNewListName('');
       await loadWordLists(); // Reload lists
@@ -720,7 +740,13 @@ function WordCard({ word, onSelect }: WordCardProps) {
       setIsSaving(true);
 
       // Add word to selected lists
-      await WordListManager.saveWordToLists(word, selectedLists);
+      await StudyListManager.addItemToLists(
+        word,
+        'word',
+        selectedLists,
+        user,
+        isPremium ? 'active' : undefined
+      );
 
       setShowSaveModal(false);
       setSelectedLists([]);

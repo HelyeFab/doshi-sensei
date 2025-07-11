@@ -9,8 +9,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { clearProgress } from '@/utils/storage';
 import { PageHeader } from '@/components/PageHeader';
 import EnhancedStorageManager from '@/utils/storage';
-import WordListManager from '@/utils/wordLists';
-import useCloudSync from '@/hooks/useCloudSync';
+import StudyListManager from '@/utils/studyListManager';
 import { usePremiumSync } from '@/hooks/usePremiumSync';
 import { SyncStatusIndicator } from '@/components/sync/SyncStatusIndicator';
 import { ThemeSelector } from '@/components/ThemeSelector';
@@ -22,8 +21,8 @@ export default function SettingsPage() {
   const strings = useStrings();
   const { settings, updateSetting, resetSettings } = useSettings();
   const { user } = useAuth();
-  const { subscription } = useSubscription2();
-  const { syncStatus: oldSyncStatus, canSync } = useCloudSync();
+  const { subscription, isPremium } = useSubscription2();
+  const canSync = isPremium;
   const {
     syncStatus,
     lastSyncTime,
@@ -63,15 +62,17 @@ export default function SettingsPage() {
   const handleExportData = async () => {
     try {
       // Export all user data
-      const wordListsData = await WordListManager.exportWordLists();
+      const studyLists = await StudyListManager.getAllStudyLists();
+      const savedItems = await StudyListManager.getSavedStudyItems();
       const statsData = await import('@/utils/stats').then(m => m.StatsManager.exportStats());
 
       const exportData = {
-        wordLists: JSON.parse(wordListsData),
+        studyLists,
+        savedStudyItems: savedItems,
         stats: JSON.parse(statsData),
         settings,
         exportedAt: new Date().toISOString(),
-        version: '1.0.0'
+        version: '2.0.0'
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -106,8 +107,18 @@ export default function SettingsPage() {
         const text = await file.text();
         const data = JSON.parse(text);
 
-        if (data.wordLists) {
-          await WordListManager.importWordLists(JSON.stringify(data.wordLists));
+        // Import study lists if available (new format)
+        if (data.studyLists && data.savedStudyItems) {
+          // Clear existing data first
+          await StudyListManager.clearAllStudyLists();
+          
+          // Import new data
+          localStorage.setItem('doshi_sensei_study_lists', JSON.stringify(data.studyLists));
+          localStorage.setItem('doshi_sensei_saved_study_items', JSON.stringify(data.savedStudyItems));
+        }
+        // Handle legacy format
+        else if (data.wordLists) {
+          console.warn('Legacy import format detected - manual migration required');
         }
 
         setSyncModal({
@@ -273,65 +284,11 @@ export default function SettingsPage() {
     if (!canSync || premiumSyncing) return;
 
     try {
-      // Debug: Check what's in localStorage
-      console.log('=== SYNC DEBUG ===');
-      console.log('Old WordLists:', JSON.parse(localStorage.getItem('doshi_sensei_word_lists') || '[]'));
-      console.log('New StudyLists:', JSON.parse(localStorage.getItem('doshi_sensei_study_lists') || '[]'));
-      console.log('Old SavedWords:', JSON.parse(localStorage.getItem('doshi_sensei_saved_words') || '[]'));
-      console.log('New SavedStudyItems:', JSON.parse(localStorage.getItem('doshi_sensei_saved_study_items') || '[]'));
+      console.log('Starting manual sync...');
       
-      // Get study lists and convert to word lists
-      const StudyListManager = (await import('@/utils/studyListManager')).default;
-      const studyLists = await StudyListManager.getAllStudyLists();
-      console.log('Study lists found:', studyLists.length, studyLists.map(l => ({ name: l.name, type: l.type, items: l.itemIds.length })));
-      
-      // Convert study lists to word lists format
-      const wordListsToSync = [];
-      const savedWordsToSync = [];
-      
-      for (const studyList of studyLists) {
-        if (studyList.type === 'words') {
-          // Get items for this list
-          const items = await StudyListManager.getListItems(studyList.id);
-          console.log(`List ${studyList.name} has ${items.words.length} words`);
-          
-          wordListsToSync.push({
-            id: studyList.id,
-            name: studyList.name,
-            description: studyList.description || '',
-            wordIds: items.words.map(w => w.id),
-            createdAt: studyList.createdAt,
-            updatedAt: studyList.updatedAt,
-            color: studyList.color
-          });
-          
-          // Add words to saved words
-          items.words.forEach(word => {
-            if (!savedWordsToSync.find(sw => sw.word.id === word.id)) {
-              savedWordsToSync.push({
-                word,
-                savedAt: new Date()
-              });
-            }
-          });
-        }
-      }
-      
-      console.log('Word lists to sync:', wordListsToSync.length, wordListsToSync.map(l => ({ name: l.name, words: l.wordIds.length })));
-      console.log('Saved words to sync:', savedWordsToSync.length);
-      
-      // Save to old format and sync
-      await WordListManager.saveWordLists(wordListsToSync);
-      await WordListManager.saveSavedWords(savedWordsToSync);
-      
-      // Now sync word lists
-      console.log('Syncing word lists...');
-      const wordListResult = await WordListManager.syncToCloud(user!, subscription?.status, subscription?.plan);
-      if (wordListResult.success) {
-        console.log('Word lists synced successfully');
-      } else {
-        console.error('Word list sync failed:', wordListResult.error);
-      }
+      // Sync study lists (all types: words, sentences, kanji, drillable)
+      await StudyListManager.autoSyncLists(user, subscription?.status);
+      await StudyListManager.autoSyncItems(user, subscription?.status);
       
       // Then trigger premium sync for articles/stories
       await triggerPremiumSync();
@@ -383,16 +340,16 @@ export default function SettingsPage() {
       // Clear all data from EnhancedStorageManager (settings, progress, recently viewed, etc.)
       await EnhancedStorageManager.clearAllData();
 
-      // Clear word lists and saved words
-      await WordListManager.clearAllWordLists();
+      // Clear study lists and saved items
+      await StudyListManager.clearAllStudyLists();
 
       // Clear any remaining localStorage items
       const keysToCheck = [
         'doshi_sensei_settings',
         'doshi_sensei_progress',
         'doshi_sensei_recent_words',
-        'doshi_sensei_word_lists',
-        'doshi_sensei_saved_words'
+        'doshi_sensei_study_lists',
+        'doshi_sensei_saved_study_items'
       ];
 
       keysToCheck.forEach(key => {

@@ -14,7 +14,7 @@ import {
   isCardDueForReview
 } from './spacedRepetition';
 import { DatabaseManager } from './indexedDB';
-import WordListManager from './wordLists';
+import StudyListManager from './studyListManager';
 
 /**
  * Core Flashcard Engine
@@ -243,7 +243,13 @@ export class FlashcardManager {
     config: FlashcardSessionConfig
   ): Promise<FlashcardQuestion[]> {
     // Get words from selected lists
-    const words = await WordListManager.getWordsFromLists(config.wordListIds);
+    let words: JapaneseWord[] = [];
+    for (const listId of config.wordListIds) {
+      const { words: listWords } = await StudyListManager.getItemsInList(listId);
+      words = [...words, ...listWords];
+    }
+    // Remove duplicates
+    words = Array.from(new Map(words.map(w => [w.id, w])).values());
 
     if (words.length === 0) {
       return [];

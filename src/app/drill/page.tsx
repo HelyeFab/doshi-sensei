@@ -14,7 +14,6 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
 import StudyListManager from '@/utils/studyListManager';
-import WordListManager from '@/utils/wordLists';
 import KanjiListManager from '@/utils/kanjiListManager';
 import StatsManager from '@/utils/stats';
 import flashcardManager, { FlashcardQuestion, FlashcardSessionConfig } from '@/utils/flashcards';
@@ -369,12 +368,6 @@ export default function DrillPage() {
       // Load unified study lists and convert them to legacy format for compatibility
       const studyLists = await StudyListManager.getAllStudyLists();
 
-      // Also try loading from legacy WordListManager as fallback
-      let legacyLists: WordList[] = [];
-      try {
-        legacyLists = await WordListManager.getAllWordLists();
-      } catch (legacyErr) {
-      }
 
       const legacyWordLists: WordList[] = studyLists.map(studyList => ({
         id: studyList.id,
@@ -387,20 +380,12 @@ export default function DrillPage() {
         isConjugable: studyList.type === 'drillable'
       }));
 
-      // Combine unified lists with any legacy lists
-      const combinedLists = [...legacyWordLists, ...legacyLists];
-
-      setWordLists(combinedLists);
+      // Use the converted lists
+      setWordLists(legacyWordLists);
     } catch (err) {
       console.error('Error loading word lists:', err);
-      // Try fallback to legacy system only
-      try {
-        const legacyLists = await WordListManager.getAllWordLists();
-        setWordLists(legacyLists);
-      } catch (fallbackErr) {
-        console.error('Error loading legacy word lists:', fallbackErr);
-        setWordLists([]);
-      }
+      // No lists available
+      setWordLists([]);
     }
   }, []);
 

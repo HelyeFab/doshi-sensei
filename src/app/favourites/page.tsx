@@ -9,7 +9,6 @@ import { useFeature } from '@/hooks/useFeature';
 import { useAccess } from '@/hooks/useAccess';
 import ArticleManager from '@/utils/articleManager';
 import StudyListManager from '@/utils/studyListManager';
-import WordListManager from '@/utils/wordLists';
 import { StoryBookmarkManager } from '@/utils/storyBookmarkManager';
 import { generateFuriganaWithCache } from '@/utils/furigana';
 import Link from 'next/link';
@@ -17,7 +16,6 @@ import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import ListSelectionModal from '@/components/ListSelectionModal';
 import { useStrings } from '@/hooks/useLanguage';
 import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
-import { useCloudSync } from '@/hooks/useCloudSync';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -62,7 +60,6 @@ export default function FavouritesPage() {
   const { feature: listFeature, access: listAccess } = useFeature('word_lists');
   const { canAccess, showAccessPrompt, checkAndTrack } = useAccess();
   const strings = useStrings();
-  const { performFullWordListSync, canSync } = useCloudSync();
 
   // Tab management
   const [activeTab, setActiveTab] = useState<TabType>('lists');
@@ -90,7 +87,6 @@ export default function FavouritesPage() {
   const [loading, setLoading] = useState(true);
   const [articlesLoading, setArticlesLoading] = useState(false);
   const [storiesLoading, setStoriesLoading] = useState(false);
-  const [syncAttempted, setSyncAttempted] = useState(false);
 
   // Add state for the confirmation dialog
   const [confirmDialog, setConfirmDialog] = useState({
@@ -122,7 +118,7 @@ export default function FavouritesPage() {
       loadBookmarkedArticles();
       loadBookmarkedStories();
     }
-  }, [user, canSync]); // Added canSync dependency
+  }, [user]);
 
   // Load content when tab changes
   useEffect(() => {
@@ -138,134 +134,7 @@ export default function FavouritesPage() {
     try {
       setLoading(true);
       
-      // Debug logging
-      console.log('LoadWordLists called:', {
-        user: !!user,
-        userEmail: user?.email,
-        canSync,
-        syncAttempted,
-        isPremium,
-        subscription
-      });
-      
-      // For premium users, sync from cloud first (only once per session)
-      if (user && canSync && !syncAttempted) {
-        setSyncAttempted(true);
-        console.log('Syncing word lists from cloud...');
-        
-        // Add detailed logging before sync
-        const preSync = {
-          localStorage: localStorage.getItem('doshi_sensei_word_lists'),
-          parsedLists: JSON.parse(localStorage.getItem('doshi_sensei_word_lists') || '[]')
-        };
-        console.log('Pre-sync localStorage state:', preSync);
-        
-        // Let's directly check what's in Firebase
-        try {
-          const { db } = await import('@/lib/firebase');
-          const { doc, getDoc } = await import('firebase/firestore');
-          
-          const wordListsDoc = await getDoc(doc(db, 'users', user.uid, 'wordLists', 'data'));
-          const savedWordsDoc = await getDoc(doc(db, 'users', user.uid, 'savedWords', 'data'));
-          
-          console.log('Direct Firebase query results:', {
-            wordListsExists: wordListsDoc.exists(),
-            wordListsData: wordListsDoc.exists() ? wordListsDoc.data() : null,
-            savedWordsExists: savedWordsDoc.exists(),
-            savedWordsData: savedWordsDoc.exists() ? savedWordsDoc.data() : null
-          });
-        } catch (error) {
-          console.error('Error querying Firebase directly:', error);
-        }
-        
-        const syncResult = await performFullWordListSync();
-        
-        // Add detailed logging after sync
-        const postSync = {
-          localStorage: localStorage.getItem('doshi_sensei_word_lists'),
-          parsedLists: JSON.parse(localStorage.getItem('doshi_sensei_word_lists') || '[]')
-        };
-        console.log('Post-sync localStorage state:', postSync);
-        
-        if (syncResult.success) {
-          console.log('Word lists synced from cloud successfully');
-          
-          // After syncing from cloud, migrate data from old to new system
-          console.log('Checking for data migration needs...');
-          
-          // Get data from both systems
-          const oldWordLists = await WordListManager.getAllWordLists();
-          const currentStudyLists = await StudyListManager.getAllStudyLists();
-          
-          console.log('Migration check:', {
-            oldListsCount: oldWordLists.length,
-            newListsCount: currentStudyLists.length,
-            oldLists: oldWordLists.map(l => ({ name: l.name, items: l.wordIds?.length || 0 })),
-            newLists: currentStudyLists.map(l => ({ name: l.name, type: l.type }))
-          });
-          
-          // Check if we need to sync missing lists
-          if (oldWordLists.length > 0) {
-            console.log('Checking for missing lists to sync...');
-            
-            // Get all saved words first
-            const allSavedWords = await WordListManager.getAllSavedWords();
-            console.log(`Found ${allSavedWords.length} saved words available`);
-            
-            // Find lists that exist in old system but not in new system
-            const existingNewListNames = currentStudyLists.map(l => l.name.toLowerCase());
-            const listsToMigrate = oldWordLists.filter(oldList => 
-              !existingNewListNames.includes(oldList.name.toLowerCase())
-            );
-            
-            if (listsToMigrate.length > 0) {
-              console.log(`Found ${listsToMigrate.length} lists to migrate:`, listsToMigrate.map(l => l.name));
-              
-              for (const oldList of listsToMigrate) {
-                console.log(`Migrating list: ${oldList.name} with ${oldList.wordIds?.length || 0} words`);
-                
-                // Create the list in new system
-                await StudyListManager.createStudyList(
-                  oldList.name,
-                  'words',
-                  oldList.description,
-                  user,
-                  subscription?.status
-                );
-                
-                // Get the newly created list
-                const allNewLists = await StudyListManager.getAllStudyLists();
-                const newList = allNewLists.find(l => l.name === oldList.name);
-                
-                if (newList && oldList.wordIds && oldList.wordIds.length > 0) {
-                  // Add each word to the new list
-                  for (const wordId of oldList.wordIds) {
-                    const savedWord = allSavedWords.find(sw => sw.word.id === wordId);
-                    if (savedWord) {
-                      await StudyListManager.addWordToList(newList.id, savedWord.word);
-                      console.log(`Added word ${savedWord.word.word} to ${newList.name}`);
-                    }
-                  }
-                }
-              }
-              
-              console.log('Migration completed successfully!');
-            } else {
-              console.log('All lists already exist in new system');
-            }
-          }
-        } else {
-          console.error('Failed to sync from cloud:', syncResult.error);
-        }
-      } else {
-        console.log('Skipping sync:', {
-          noUser: !user,
-          cantSync: !canSync,
-          alreadyAttempted: syncAttempted
-        });
-      }
-      
-      // Load unified study lists and convert them to legacy format for compatibility
+      // Simply load study lists - no more syncing or migration needed here
       const studyLists = await StudyListManager.getAllStudyLists();
       const legacyWordLists: WordList[] = studyLists.map(studyList => ({
         id: studyList.id,

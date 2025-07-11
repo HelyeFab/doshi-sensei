@@ -17,6 +17,7 @@ import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import ListSelectionModal from '@/components/ListSelectionModal';
 import { useStrings } from '@/hooks/useLanguage';
 import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
+import { useCloudSync } from '@/hooks/useCloudSync';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -61,6 +62,7 @@ export default function FavouritesPage() {
   const { feature: listFeature, access: listAccess } = useFeature('word_lists');
   const { canAccess, showAccessPrompt, checkAndTrack } = useAccess();
   const strings = useStrings();
+  const { performFullWordListSync, canSync } = useCloudSync();
 
   // Tab management
   const [activeTab, setActiveTab] = useState<TabType>('lists');
@@ -88,6 +90,7 @@ export default function FavouritesPage() {
   const [loading, setLoading] = useState(true);
   const [articlesLoading, setArticlesLoading] = useState(false);
   const [storiesLoading, setStoriesLoading] = useState(false);
+  const [syncAttempted, setSyncAttempted] = useState(false);
 
   // Add state for the confirmation dialog
   const [confirmDialog, setConfirmDialog] = useState({
@@ -119,7 +122,7 @@ export default function FavouritesPage() {
       loadBookmarkedArticles();
       loadBookmarkedStories();
     }
-  }, [user]);
+  }, [user, canSync]); // Added canSync dependency
 
   // Load content when tab changes
   useEffect(() => {
@@ -134,6 +137,19 @@ export default function FavouritesPage() {
   const loadWordLists = async () => {
     try {
       setLoading(true);
+      
+      // For premium users, sync from cloud first (only once per session)
+      if (user && canSync && !syncAttempted) {
+        setSyncAttempted(true);
+        console.log('Syncing word lists from cloud...');
+        const syncResult = await performFullWordListSync();
+        if (syncResult.success) {
+          console.log('Word lists synced from cloud successfully');
+        } else {
+          console.error('Failed to sync from cloud:', syncResult.error);
+        }
+      }
+      
       // Load unified study lists and convert them to legacy format for compatibility
       const studyLists = await StudyListManager.getAllStudyLists();
       const legacyWordLists: WordList[] = studyLists.map(studyList => ({

@@ -568,10 +568,17 @@ export class StudyListManager {
    */
   static async syncFromCloud(user: User | null, subscriptionStatus?: string): Promise<boolean> {
     if (!user || !CloudSync.canSync(user, subscriptionStatus)) {
+      console.log('Cannot sync:', { user: !!user, subscriptionStatus });
       return false;
     }
 
     try {
+      console.log('Starting sync from cloud for user:', user.uid);
+      
+      // Clear existing data first to avoid conflicts
+      await this.clearAllStudyLists();
+      console.log('Cleared existing localStorage data');
+      
       // Download study lists
       const listsResult = await CloudSync.downloadData<{
         studyLists: StudyList[];

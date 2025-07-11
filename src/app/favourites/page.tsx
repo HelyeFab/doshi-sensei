@@ -118,7 +118,7 @@ export default function FavouritesPage() {
       loadBookmarkedArticles();
       loadBookmarkedStories();
     }
-  }, [user]);
+  }, [user, isPremium]); // Added isPremium to trigger reload when subscription status is known
 
   // Load content when tab changes
   useEffect(() => {
@@ -135,9 +135,12 @@ export default function FavouritesPage() {
       setLoading(true);
       
       // For premium users, sync from cloud first
-      if (user && isPremium) {
-        console.log('Syncing from cloud for premium user...');
-        const syncSuccess = await StudyListManager.syncFromCloud(user, subscription?.status);
+      if (user && isPremium && subscription) {
+        console.log('Syncing from cloud for premium user...', {
+          user: user.uid,
+          status: subscription.status
+        });
+        const syncSuccess = await StudyListManager.syncFromCloud(user, subscription.status);
         console.log('Sync result:', syncSuccess);
       }
       

@@ -219,30 +219,23 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
     try {
       const resources: CachedResource[] = [];
 
-      await performDBOperation('apiCache', 'readonly', (store) => {
-        console.log(`[Storage] Opening cursor for type: ${type}`);
-        return new Promise<void>((resolve, reject) => {
-          const request = store.openCursor();
-
-          request.onsuccess = (event) => {
-            const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
-            if (cursor) {
-              const item = cursor.value;
-              if (item && item.endpoint === type) {
-                const resource = this.transformToCachedResource(item);
-                if (resource) {
-                  resources.push(resource);
-                }
-              }
-              cursor.continue();
-            } else {
-              resolve();
-            }
-          };
-
-          request.onerror = () => reject(request.error);
-        });
-      });
+      // Get all items and filter in memory since performDBOperation expects IDBRequest
+      const allItems = await performDBOperation('apiCache', 'readonly', (store) => 
+        store.getAll()
+      );
+      
+      console.log(`[Storage] Filtering ${allItems.length} items for type: ${type}`);
+      
+      for (const item of allItems) {
+        if (item && item.endpoint === type) {
+          const resource = this.transformToCachedResource(item);
+          if (resource) {
+            resources.push(resource);
+          }
+        }
+      }
+      
+      console.log(`[Storage] Found ${resources.length} resources of type: ${type}`);
 
       return resources;
     } catch (error) {
@@ -256,26 +249,29 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
    */
   static async clearResourcesByType(type: string): Promise<void> {
     try {
-      await performDBOperation('apiCache', 'readwrite', (store) => {
-        return new Promise<void>((resolve, reject) => {
-          const request = store.openCursor();
-
-          request.onsuccess = (event) => {
-            const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
-            if (cursor) {
-              const item = cursor.value;
-              if (item && item.endpoint === type) {
-                cursor.delete();
-              }
-              cursor.continue();
-            } else {
-              resolve();
-            }
-          };
-
-          request.onerror = () => reject(request.error);
+      // Get all items first
+      const allItems = await performDBOperation('apiCache', 'readonly', (store) => 
+        store.getAll()
+      );
+      
+      // Filter items to delete
+      const itemsToDelete = allItems.filter(item => item && item.endpoint === type);
+      
+      if (itemsToDelete.length > 0) {
+        // Delete each item
+        const db = await initializeDB();
+        const transaction = db.transaction(['apiCache'], 'readwrite');
+        const store = transaction.objectStore('apiCache');
+        
+        await new Promise<void>((resolve, reject) => {
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error);
+          
+          itemsToDelete.forEach(item => {
+            store.delete(item.id);
+          });
         });
-      });
+      }
     } catch (error) {
       console.error('Error clearing resources by type:', error);
       throw error;

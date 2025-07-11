@@ -432,7 +432,16 @@ export class PremiumSyncManager {
     for (const type of types) {
       try {
         console.log(`[Sync] Fetching resources of type: ${type}`);
-        const resources = await this.storageManager.getResourcesByType(type);
+        // Add timeout for each type to prevent hanging
+        const timeoutPromise = new Promise<CachedResource[]>((_, reject) => 
+          setTimeout(() => reject(new Error(`Timeout fetching ${type} resources`)), 5000)
+        );
+        
+        const resources = await Promise.race([
+          this.storageManager.getResourcesByType(type),
+          timeoutPromise
+        ]);
+        
         console.log(`[Sync] Found ${resources.length} ${type} resources`);
         allResources.push(...resources);
       } catch (error) {

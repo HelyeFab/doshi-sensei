@@ -1,0 +1,106 @@
+// Proposed improvements for handling sync failures
+
+interface SyncFailure {
+  resourceType: string;
+  error: Error;
+  timestamp: number;
+  retryCount: number;
+}
+
+class PremiumSyncManager {
+  private syncFailures: Map<string, SyncFailure> = new Map();
+  
+  /**
+   * Better approach with retry logic
+   */
+  private async getAllLocalResourcesWithRetry(): Promise<{
+    resources: CachedResource[];
+    failures: SyncFailure[];
+  }> {
+    const allResources: CachedResource[] = [];
+    const failures: SyncFailure[] = [];
+    
+    for (const type of types) {
+      const previousFailure = this.syncFailures.get(type);
+      
+      // Skip if we've failed too many times recently
+      if (previousFailure && 
+          previousFailure.retryCount >= 3 && 
+          Date.now() - previousFailure.timestamp < 3600000) { // 1 hour
+        console.log(`[Sync] Skipping ${type} due to repeated failures`);
+        failures.push(previousFailure);
+        continue;
+      }
+      
+      try {
+        const resources = await this.fetchWithTimeout(type);
+        allResources.push(...resources);
+        
+        // Clear failure record on success
+        this.syncFailures.delete(type);
+        
+      } catch (error) {
+        // Record the failure
+        const failure: SyncFailure = {
+          resourceType: type,
+          error: error as Error,
+          timestamp: Date.now(),
+          retryCount: (previousFailure?.retryCount || 0) + 1
+        };
+        
+        this.syncFailures.set(type, failure);
+        failures.push(failure);
+        
+        // Queue for background retry
+        this.queueFailedResourceType(type);
+      }
+    }
+    
+    return { resources: allResources, failures };
+  }
+  
+  /**
+   * Queue failed resource types for retry
+   */
+  private queueFailedResourceType(type: string): void {
+    // Add to a retry queue that attempts sync in background
+    this.retryQueue.add({
+      type: 'resource_fetch',
+      resourceType: type,
+      attemptAt: Date.now() + 300000, // Retry in 5 minutes
+      priority: 'low'
+    });
+  }
+  
+  /**
+   * Background retry process (runs periodically)
+   */
+  async processRetryQueue(): Promise<void> {
+    const now = Date.now();
+    
+    for (const item of this.retryQueue) {
+      if (item.attemptAt <= now) {
+        try {
+          const resources = await this.storageManager.getResourcesByType(item.resourceType);
+          
+          // Successfully fetched! Now sync just these resources
+          await this.syncResourceBatch(resources);
+          
+          // Remove from retry queue
+          this.retryQueue.delete(item);
+          
+        } catch (error) {
+          // Update retry time with exponential backoff
+          item.attemptAt = now + (300000 * Math.pow(2, item.retryCount));
+          item.retryCount++;
+          
+          if (item.retryCount > 5) {
+            // Give up after 5 retries and notify user
+            this.notifyUserOfSyncIssue(item.resourceType);
+            this.retryQueue.delete(item);
+          }
+        }
+      }
+    }
+  }
+}

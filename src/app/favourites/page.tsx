@@ -160,6 +160,24 @@ export default function FavouritesPage() {
         };
         console.log('Pre-sync localStorage state:', preSync);
         
+        // Let's directly check what's in Firebase
+        try {
+          const { db } = await import('@/lib/firebase');
+          const { doc, getDoc } = await import('firebase/firestore');
+          
+          const wordListsDoc = await getDoc(doc(db, 'users', user.uid, 'wordLists', 'data'));
+          const savedWordsDoc = await getDoc(doc(db, 'users', user.uid, 'savedWords', 'data'));
+          
+          console.log('Direct Firebase query results:', {
+            wordListsExists: wordListsDoc.exists(),
+            wordListsData: wordListsDoc.exists() ? wordListsDoc.data() : null,
+            savedWordsExists: savedWordsDoc.exists(),
+            savedWordsData: savedWordsDoc.exists() ? savedWordsDoc.data() : null
+          });
+        } catch (error) {
+          console.error('Error querying Firebase directly:', error);
+        }
+        
         const syncResult = await performFullWordListSync();
         
         // Add detailed logging after sync

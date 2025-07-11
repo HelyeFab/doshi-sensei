@@ -203,7 +203,7 @@ export class FirebaseSyncAdapter {
   async downloadAllUserResources(userId: string): Promise<CachedResource[]> {
     try {
       const q = query(
-        collection(firestore, this.RESOURCES_COLLECTION),
+        collection(firestore, this.SYNC_COLLECTION, userId, 'userResources'),
         where('userId', '==', userId)
       );
       

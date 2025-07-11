@@ -1,5 +1,5 @@
 // Service Worker for Doshi Sensei - Offline Support & Caching
-const CACHE_VERSION = 'v6-fixed'; // Fixed version to clear problematic caches
+const CACHE_VERSION = 'v7-production-fix'; // Fixed missing resources and Firebase sync
 const CACHE_NAMES = {
   static: `static-cache-${CACHE_VERSION}`,
   dynamic: `dynamic-cache-${CACHE_VERSION}`,
@@ -14,7 +14,14 @@ const STATIC_ASSETS = [
   '/offline.html',
   '/favicon.ico',
   '/doshi.png',
-  '/manifest.json'
+  '/manifest.json',
+  '/flat-icons/story.svg',
+  '/flat-icons/word.svg',
+  '/flat-icons/listening.svg',
+  '/flat-icons/magnifying-glass.svg',
+  '/flat-icons/matching.svg',
+  '/flat-icons/kana-drop.svg',
+  '/flat-icons/construction.svg'
 ];
 
 // API endpoints patterns to cache
@@ -87,6 +94,16 @@ self.addEventListener('fetch', (event) => {
   
   // Skip non-GET requests
   if (request.method !== 'GET') {
+    return;
+  }
+  
+  // Skip preload requests to avoid warnings
+  if (request.mode === 'no-cors' && request.destination === 'empty') {
+    return;
+  }
+  
+  // Skip Next.js internal requests
+  if (url.pathname.startsWith('/_next/') || url.pathname.includes('.next/')) {
     return;
   }
   

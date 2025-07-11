@@ -223,7 +223,7 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
           const request = store.openCursor();
 
           request.onsuccess = (event) => {
-            const cursor = (event.target as IDBCursorWithValue);
+            const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
             if (cursor) {
               const item = cursor.value;
               if (item && item.endpoint === type) {
@@ -259,7 +259,7 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
           const request = store.openCursor();
 
           request.onsuccess = (event) => {
-            const cursor = (event.target as IDBCursorWithValue);
+            const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
             if (cursor) {
               const item = cursor.value;
               if (item && item.endpoint === type) {

@@ -152,7 +152,23 @@ export default function FavouritesPage() {
       if (user && canSync && !syncAttempted) {
         setSyncAttempted(true);
         console.log('Syncing word lists from cloud...');
+        
+        // Add detailed logging before sync
+        const preSync = {
+          localStorage: localStorage.getItem('doshi_sensei_word_lists'),
+          parsedLists: JSON.parse(localStorage.getItem('doshi_sensei_word_lists') || '[]')
+        };
+        console.log('Pre-sync localStorage state:', preSync);
+        
         const syncResult = await performFullWordListSync();
+        
+        // Add detailed logging after sync
+        const postSync = {
+          localStorage: localStorage.getItem('doshi_sensei_word_lists'),
+          parsedLists: JSON.parse(localStorage.getItem('doshi_sensei_word_lists') || '[]')
+        };
+        console.log('Post-sync localStorage state:', postSync);
+        
         if (syncResult.success) {
           console.log('Word lists synced from cloud successfully');
           
@@ -170,43 +186,55 @@ export default function FavouritesPage() {
             newLists: currentStudyLists.map(l => ({ name: l.name, type: l.type }))
           });
           
-          // If we have old data but no new data, migrate
-          if (oldWordLists.length > 0 && currentStudyLists.length === 0) {
-            console.log('Migrating from old system to new system...');
+          // Check if we need to sync missing lists
+          if (oldWordLists.length > 0) {
+            console.log('Checking for missing lists to sync...');
             
             // Get all saved words first
             const allSavedWords = await WordListManager.getAllSavedWords();
-            console.log(`Found ${allSavedWords.length} saved words to migrate`);
+            console.log(`Found ${allSavedWords.length} saved words available`);
             
-            for (const oldList of oldWordLists) {
-              console.log(`Migrating list: ${oldList.name} with ${oldList.wordIds?.length || 0} words`);
+            // Find lists that exist in old system but not in new system
+            const existingNewListNames = currentStudyLists.map(l => l.name.toLowerCase());
+            const listsToMigrate = oldWordLists.filter(oldList => 
+              !existingNewListNames.includes(oldList.name.toLowerCase())
+            );
+            
+            if (listsToMigrate.length > 0) {
+              console.log(`Found ${listsToMigrate.length} lists to migrate:`, listsToMigrate.map(l => l.name));
               
-              // Create the list in new system
-              await StudyListManager.createStudyList(
-                oldList.name,
-                'words',
-                oldList.description,
-                user,
-                subscription?.status
-              );
-              
-              // Get the newly created list
-              const allNewLists = await StudyListManager.getAllStudyLists();
-              const newList = allNewLists.find(l => l.name === oldList.name);
-              
-              if (newList && oldList.wordIds && oldList.wordIds.length > 0) {
-                // Add each word to the new list
-                for (const wordId of oldList.wordIds) {
-                  const savedWord = allSavedWords.find(sw => sw.word.id === wordId);
-                  if (savedWord) {
-                    await StudyListManager.addWordToList(newList.id, savedWord.word);
-                    console.log(`Added word ${savedWord.word.word} to ${newList.name}`);
+              for (const oldList of listsToMigrate) {
+                console.log(`Migrating list: ${oldList.name} with ${oldList.wordIds?.length || 0} words`);
+                
+                // Create the list in new system
+                await StudyListManager.createStudyList(
+                  oldList.name,
+                  'words',
+                  oldList.description,
+                  user,
+                  subscription?.status
+                );
+                
+                // Get the newly created list
+                const allNewLists = await StudyListManager.getAllStudyLists();
+                const newList = allNewLists.find(l => l.name === oldList.name);
+                
+                if (newList && oldList.wordIds && oldList.wordIds.length > 0) {
+                  // Add each word to the new list
+                  for (const wordId of oldList.wordIds) {
+                    const savedWord = allSavedWords.find(sw => sw.word.id === wordId);
+                    if (savedWord) {
+                      await StudyListManager.addWordToList(newList.id, savedWord.word);
+                      console.log(`Added word ${savedWord.word.word} to ${newList.name}`);
+                    }
                   }
                 }
               }
+              
+              console.log('Migration completed successfully!');
+            } else {
+              console.log('All lists already exist in new system');
             }
-            
-            console.log('Migration completed successfully!');
           }
         } else {
           console.error('Failed to sync from cloud:', syncResult.error);

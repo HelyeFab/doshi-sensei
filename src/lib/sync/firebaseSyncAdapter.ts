@@ -45,16 +45,20 @@ export class FirebaseSyncAdapter {
       const manifestDoc = await getDoc(manifestRef);
       
       if (!manifestDoc.exists()) {
+        console.log('[Sync] No manifest found for user, returning null');
         return null;
       }
 
       const data = manifestDoc.data();
+      console.log('[Sync] Manifest data retrieved:', data);
       return {
         userId: data.userId,
         lastSyncTimestamp: data.lastSyncTimestamp,
         resources: data.resources || {}
       };
     } catch (error: any) {
+      console.error('[Sync] Error in getUserManifest:', error);
+      
       // Handle permission denied errors gracefully
       if (error.code === 'permission-denied') {
         syncLogger.debug('Permission denied accessing sync manifest - user may not be premium');

@@ -32,6 +32,7 @@ export class PremiumSyncManager {
    * Main sync method - performs full sync for a user
    */
   async performSync(userId: string, progressCallback?: (progress: SyncProgress) => void): Promise<SyncResult> {
+    console.log('[Sync] performSync called with userId:', userId);
     // Early return if no userId (this should never happen but let's be safe)
     if (!userId) {
       return {
@@ -86,10 +87,24 @@ export class PremiumSyncManager {
 
       // Get local and remote manifests
       this.reportProgress(0, 4, 'Fetching sync manifests');
-      const [localManifest, remoteManifest] = await Promise.all([
-        this.getLocalManifest(userId),
-        this.firebaseAdapter.getUserManifest(userId)
-      ]);
+      console.log('[Sync] Starting to fetch manifests for user:', userId);
+      
+      let localManifest, remoteManifest;
+      try {
+        localManifest = await this.getLocalManifest(userId);
+        console.log('[Sync] Local manifest fetched:', localManifest);
+      } catch (error) {
+        console.error('[Sync] Error fetching local manifest:', error);
+        throw error;
+      }
+      
+      try {
+        remoteManifest = await this.firebaseAdapter.getUserManifest(userId);
+        console.log('[Sync] Remote manifest fetched:', remoteManifest);
+      } catch (error) {
+        console.error('[Sync] Error fetching remote manifest:', error);
+        throw error;
+      }
 
       // If no remote manifest exists, this is first sync
       if (!remoteManifest) {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { PageHeader } from '@/components/PageHeader';
 import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord, StudyList } from '@/types';
@@ -899,9 +900,11 @@ export default function GamesPage() {
                     <div className="flex items-start space-x-4">
                       <div className={`w-12 h-12 rounded-lg ${gameMode.color} flex items-center justify-center text-2xl p-2`}>
                         {gameMode.iconImage ? (
-                          <img
+                          <Image
                             src={gameMode.iconImage}
                             alt={gameMode.title}
+                            width={32}
+                            height={32}
                             className="w-full h-full object-contain"
                           />
                         ) : (

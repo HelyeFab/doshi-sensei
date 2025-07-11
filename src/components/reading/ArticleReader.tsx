@@ -16,8 +16,17 @@ import { generateFuriganaForArticle, generateFuriganaForArticleParagraphs, check
 import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioPlayer';
+import dynamic from 'next/dynamic';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
+
+// Dynamic import to avoid SSR issues
+const EnhancedArticleAudioPlayer = dynamic(
+  () => import('@/components/audio/EnhancedArticleAudioPlayer'),
+  { 
+    ssr: false,
+    loading: () => <div className="h-24 bg-muted/50 rounded-lg animate-pulse" />
+  }
+);
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
 import { cleanTextForTTS } from '@/utils/japaneseParser';

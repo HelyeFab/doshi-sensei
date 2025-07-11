@@ -15,8 +15,17 @@ import { lookupWord } from '@/utils/dictionaryLookup';
 import { StoryBookmarkManager } from '@/utils/storyBookmarkManager';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
-import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioPlayer';
+import dynamic from 'next/dynamic';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
+
+// Dynamic import to avoid SSR issues
+const EnhancedArticleAudioPlayer = dynamic(
+  () => import('@/components/audio/EnhancedArticleAudioPlayer'),
+  { 
+    ssr: false,
+    loading: () => <div className="h-24 bg-muted/50 rounded-lg animate-pulse" />
+  }
+);
 
 interface StoryReaderProps {
   story: Story;

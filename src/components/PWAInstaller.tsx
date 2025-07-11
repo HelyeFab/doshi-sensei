@@ -55,19 +55,26 @@ export default function PWAInstaller() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === 'accepted') {
-      setShowInstallButton(false);
-      pwaAnalytics.trackEvent('install_accepted');
-    } else {
-      pwaAnalytics.trackEvent('install_dismissed');
+    if (!deferredPrompt) {
+      console.warn('Install prompt is not available');
+      return;
     }
 
-    setDeferredPrompt(null);
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+
+      if (outcome === 'accepted') {
+        setShowInstallButton(false);
+        pwaAnalytics.trackEvent('install_accepted');
+      } else {
+        pwaAnalytics.trackEvent('install_dismissed');
+      }
+    } catch (error) {
+      console.error('Error showing install prompt:', error);
+    } finally {
+      setDeferredPrompt(null);
+    }
   };
 
   // Register service worker

@@ -1,7 +1,15 @@
 'use client';
 
 import { NewsArticle } from '@/types/news';
-import EnhancedArticleAudioPlayer from '@/components/audio/EnhancedArticleAudioPlayer';
+import dynamic from 'next/dynamic';
+
+const EnhancedArticleAudioPlayer = dynamic(
+  () => import('@/components/audio/EnhancedArticleAudioPlayer'),
+  { 
+    ssr: false,
+    loading: () => <div className="h-24 bg-muted/50 rounded-lg animate-pulse" />
+  }
+);
 
 // Example of how to use the improved audio player
 export default function ArticleWithImprovedAudio({ article }: { article: NewsArticle }) {

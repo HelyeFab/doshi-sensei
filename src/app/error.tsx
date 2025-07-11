@@ -14,17 +14,29 @@ export default function Error({
     // Log the error to console for debugging
     console.error('Application error:', error);
     
-    // If this is a webpack-related error, try to recover
-    if (error.message?.includes('Cannot read properties of undefined') && 
-        error.message?.includes('call')) {
+    // If this is a webpack-related error or PWA-related error, try to recover
+    if ((error.message?.includes('Cannot read properties of undefined') && 
+        error.message?.includes('call')) || 
+        error.message?.includes('beforeInstallPromptEvent')) {
       // Clear service worker cache if available
       if (typeof window !== 'undefined' && 'caches' in window) {
         caches.keys().then(names => {
           names.forEach(name => {
-            if (name.includes('workbox') || name.includes('next')) {
-              caches.delete(name);
-            }
+            caches.delete(name);
           });
+        }).catch(err => {
+          console.error('Error clearing caches:', err);
+        });
+      }
+      
+      // Unregister service workers
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => {
+            registration.unregister();
+          });
+        }).catch(err => {
+          console.error('Error unregistering service workers:', err);
         });
       }
     }
@@ -42,16 +54,31 @@ export default function Error({
         </p>
         <div className="space-y-4">
           <button
-            onClick={() => {
+            onClick={async () => {
               // Clear cache and reload
               if (typeof window !== 'undefined') {
-                if ('caches' in window) {
-                  caches.keys().then(names => {
-                    Promise.all(names.map(name => caches.delete(name))).then(() => {
-                      window.location.reload();
-                    });
-                  });
-                } else {
+                try {
+                  // Clear all caches
+                  if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                  }
+                  
+                  // Unregister all service workers
+                  if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(reg => reg.unregister()));
+                  }
+                  
+                  // Clear local storage PWA data
+                  localStorage.removeItem('doshi_pwa_metrics');
+                  localStorage.removeItem('doshi_pwa_events');
+                  
+                  // Force reload
+                  window.location.reload();
+                } catch (err) {
+                  console.error('Error clearing data:', err);
+                  // Try to reload anyway
                   window.location.reload();
                 }
               }

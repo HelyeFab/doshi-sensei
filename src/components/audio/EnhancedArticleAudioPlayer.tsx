@@ -29,6 +29,8 @@ interface AudioCache {
 }
 
 export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlayerProps) {
+  const strings = useStrings();
+  
   const [controls, setControls] = useState<AudioControls>({
     isPlaying: false,
     isPaused: false,

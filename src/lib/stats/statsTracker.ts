@@ -634,10 +634,16 @@ export class StatsTracker {
    */
   private async saveDailyActivity(date: string, activity: DailyActivity): Promise<void> {
     try {
+      // Don't include the date as a separate field since it's already the key
+      const activityToSave = {
+        ...activity,
+        date // Ensure date is included in the object
+      };
+      
       await EnhancedStorageManager2.saveToStore(
         StatsTracker.ACTIVITIES_STORE,
         date,
-        activity
+        activityToSave
       );
     } catch (error) {
       console.error(`❌ [StatsTracker] Error saving daily activity for ${date}:`, error);
@@ -723,12 +729,46 @@ export class StatsTracker {
           // Final sanitization: use JSON stringify/parse to remove any undefined values
           const finalSanitized = JSON.parse(JSON.stringify(sanitizedActivity));
           
+          // Debug: Check for any remaining issues
+          const debugStr = JSON.stringify(finalSanitized);
+          if (debugStr.includes('undefined') || debugStr.includes('null,"')) {
+            console.warn(`⚠️ [StatsTracker] Potential issue with activity for ${date}`);
+            console.warn('Sanitized data:', finalSanitized);
+          }
+          
           await setDoc(activityRef, finalSanitized);
         } catch (error) {
           console.error(`❌ [StatsTracker] Error saving activity for ${date}:`, error);
           console.error('Activity data:', sanitizedActivity);
           // Log the stringified version to see what might be wrong
           console.error('Stringified:', JSON.stringify(sanitizedActivity, null, 2));
+          
+          // Try to identify the problematic field
+          if (error.message && error.message.includes('undefined')) {
+            console.error('Checking for undefined values...');
+            const checkForUndefined = (obj, path = '') => {
+              for (const key in obj) {
+                const value = obj[key];
+                const currentPath = path ? `${path}.${key}` : key;
+                
+                if (value === undefined) {
+                  console.error(`Found undefined at: ${currentPath}`);
+                } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+                  checkForUndefined(value, currentPath);
+                } else if (Array.isArray(value)) {
+                  value.forEach((item, index) => {
+                    if (item === undefined) {
+                      console.error(`Found undefined at: ${currentPath}[${index}]`);
+                    } else if (item && typeof item === 'object') {
+                      checkForUndefined(item, `${currentPath}[${index}]`);
+                    }
+                  });
+                }
+              }
+            };
+            
+            checkForUndefined(sanitizedActivity);
+          }
         }
       }
       
@@ -851,9 +891,11 @@ export class StatsTracker {
    * Ensure all fields are defined in a daily activity object
    * This fixes issues with older activities missing new fields
    */
-  private sanitizeDailyActivity(activity: DailyActivity): DailyActivity {
+  private sanitizeDailyActivity(activity: any): DailyActivity {
+    // Remove any 'id' field that might have been added by storage
+    const { id, ...activityWithoutId } = activity;
     // Sanitize individual activity events to ensure no undefined values
-    const sanitizedActivities = (activity.activities || []).map(event => {
+    const sanitizedActivities = (activityWithoutId.activities || []).map(event => {
       // Build details object with only defined values
       const cleanDetails: any = {};
       
@@ -898,21 +940,21 @@ export class StatsTracker {
     });
 
     return {
-      date: activity.date || '',
+      date: activityWithoutId.date || '',
       activities: sanitizedActivities,
       summary: {
-        totalActivities: activity.summary?.totalActivities || 0,
-        drillsCompleted: activity.summary?.drillsCompleted || 0,
-        storiesRead: activity.summary?.storiesRead || 0,
-        articlesRead: activity.summary?.articlesRead || 0,
-        kanjiStudied: activity.summary?.kanjiStudied || 0,
-        gamesPlayed: activity.summary?.gamesPlayed || 0,
-        vocabStudied: activity.summary?.vocabStudied || 0,
-        flashcardsReviewed: activity.summary?.flashcardsReviewed || 0,
-        practiceSessionsCompleted: activity.summary?.practiceSessionsCompleted || 0,
-        totalScore: activity.summary?.totalScore || 0,
-        totalCorrect: activity.summary?.totalCorrect || 0,
-        totalQuestions: activity.summary?.totalQuestions || 0
+        totalActivities: activityWithoutId.summary?.totalActivities || 0,
+        drillsCompleted: activityWithoutId.summary?.drillsCompleted || 0,
+        storiesRead: activityWithoutId.summary?.storiesRead || 0,
+        articlesRead: activityWithoutId.summary?.articlesRead || 0,
+        kanjiStudied: activityWithoutId.summary?.kanjiStudied || 0,
+        gamesPlayed: activityWithoutId.summary?.gamesPlayed || 0,
+        vocabStudied: activityWithoutId.summary?.vocabStudied || 0,
+        flashcardsReviewed: activityWithoutId.summary?.flashcardsReviewed || 0,
+        practiceSessionsCompleted: activityWithoutId.summary?.practiceSessionsCompleted || 0,
+        totalScore: activityWithoutId.summary?.totalScore || 0,
+        totalCorrect: activityWithoutId.summary?.totalCorrect || 0,
+        totalQuestions: activityWithoutId.summary?.totalQuestions || 0
       }
     };
   }

@@ -99,7 +99,7 @@ export default function PracticePage() {
     }
   }, [activeTab]);
 
-  // Load saved kana selection
+  // Load saved kana selection and set initial romaji state based on screen size
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedHiragana = localStorage.getItem('kana-study-selection-hiragana');
@@ -110,6 +110,8 @@ export default function PracticePage() {
       if (savedKatakana) {
         setSelectedKatakana(new Set(JSON.parse(savedKatakana)));
       }
+      // Set romaji visibility based on screen size
+      setShowRomaji(window.innerWidth >= 768);
     }
   }, []);
 

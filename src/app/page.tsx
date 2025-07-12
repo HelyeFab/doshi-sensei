@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -487,7 +486,7 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                    <Image 
+                    <img 
                       src="/flat-icons/story.svg" 
                       alt="Stories" 
                       width={20}
@@ -711,7 +710,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
         <div className="relative flex flex-col items-center text-center space-y-2 md:space-y-3">
           <div className="text-2xl md:text-3xl drop-shadow-sm">
             {icon.startsWith('/') ? (
-              <Image
+              <img
                 src={icon}
                 alt={title}
                 width={40}

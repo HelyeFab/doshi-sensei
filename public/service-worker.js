@@ -1,5 +1,5 @@
 // Service Worker for Doshi Sensei - Offline Support & Caching
-const CACHE_VERSION = 'v8-indexeddb-fix'; // Fixed IndexedDB hanging and SVG caching
+const CACHE_VERSION = 'v9-svg-fix'; // Force cache refresh for SVG loading issues
 const CACHE_NAMES = {
   static: `static-cache-${CACHE_VERSION}`,
   dynamic: `dynamic-cache-${CACHE_VERSION}`,

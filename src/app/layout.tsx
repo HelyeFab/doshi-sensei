@@ -23,6 +23,7 @@ import OfflineNotification from "@/components/OfflineNotification";
 import { ModalProvider } from "@/contexts/ModalContext";
 import { KanjiSelectionProvider } from '@/contexts/KanjiSelectionContext';
 import { CacheSystemInitializer } from '@/components/CacheSystemInitializer';
+import { StatsDebugPanel } from '@/components/stats/StatsDebugPanel';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -192,6 +193,7 @@ export default function RootLayout({
                                   <FloatingDonateButton />
                                   <CompanionTrigger />
                                   <ToastContainer />
+                                  <StatsDebugPanel />
                                 </div>
                               </OnboardingWrapper>
                             </PWAWrapper>

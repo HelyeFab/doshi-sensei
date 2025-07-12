@@ -58,6 +58,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     href: '/admin/articles',
   },
   {
+    id: 'activities' as AdminSection,
+    labelKey: 'activities',
+    iconKey: 'activities',
+    href: '/admin/activities',
+  },
+  {
     id: 'activity-logs' as AdminSection,
     labelKey: 'logs',
     iconKey: 'logs',

@@ -187,15 +187,21 @@ export class PracticeCache {
         return;
       }
 
-      // Load fresh data from JMDict
+      // Load fresh data from JMDict (already sorted by commonality)
       const [verbs, adjectives] = await Promise.all([
         getJMdictPracticeWords('verbs', 200),
         getJMdictPracticeWords('adjectives', 200)
       ]);
 
-      // Combine and shuffle
-      const commonWords = [...verbs.slice(0, 100), ...adjectives.slice(0, 100)];
-      commonWords.sort(() => Math.random() - 0.5);
+      // Combine, keeping the most common words
+      // Interleave verbs and adjectives to have variety
+      const commonWords: JapaneseWord[] = [];
+      const maxLength = Math.max(verbs.length, adjectives.length);
+      
+      for (let i = 0; i < Math.min(100, maxLength); i++) {
+        if (i < verbs.length) commonWords.push(verbs[i]);
+        if (i < adjectives.length) commonWords.push(adjectives[i]);
+      }
 
       if (commonWords.length > 0) {
         // Cache all categories

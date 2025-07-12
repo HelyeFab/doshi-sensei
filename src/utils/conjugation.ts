@@ -23,12 +23,14 @@ export class ConjugationEngine {
 
   // Comprehensive Ichidan verb conjugations (る-verbs)
   private static conjugateIchidan(word: JapaneseWord): ConjugationForms {
-    const kanjiStem = word.kanji.slice(0, -1); // Remove る from kanji
-    const kanaStem = word.kana.slice(0, -1); // Remove る from kana
+    const kanji = word.kanji || word.word || '';
+    const kanjiStem = kanji.slice(0, -1); // Remove る from kanji
+    const kana = word.kana || word.kanji || word.word || ''; // Fallback to kanji/word if kana is undefined
+    const kanaStem = kana.slice(0, -1); // Remove る from kana
 
     return {
       // Basic Plain Forms
-      present: word.kanji,
+      present: kanji,
       past: kanjiStem + 'た',
       negative: kanjiStem + 'ない',
       pastNegative: kanjiStem + 'なかった',
@@ -132,8 +134,8 @@ export class ConjugationEngine {
 
   // Comprehensive Godan verb conjugations (う-verbs)
   private static conjugateGodan(word: JapaneseWord): ConjugationForms {
-    const kana = word.kana;
-    const kanji = word.kanji;
+    const kanji = word.kanji || word.word || '';
+    const kana = word.kana || word.kanji || word.word || ''; // Fallback to kanji/word if kana is undefined
     const lastChar = kana.slice(-1);
     const kanaStem = kana.slice(0, -1);
     const kanjiStem = kanji.slice(0, -1);
@@ -383,11 +385,11 @@ export class ConjugationEngine {
 
   // Comprehensive irregular verb conjugations
   private static conjugateIrregular(word: JapaneseWord): ConjugationForms {
-    const kana = word.kana;
-    const kanji = word.kanji;
+    const kanji = word.kanji || word.word || '';
+    const kana = word.kana || word.kanji || word.word || '';
 
     // Handle suru verbs
-    if (kana === 'する' || kana.endsWith('する')) {
+    if (kana === 'する' || (kana && kana.endsWith('する'))) {
       const kanaPrefix = kana.slice(0, -2);
       const kanjiPrefix = kanji.slice(0, -2);
 
@@ -609,11 +611,12 @@ export class ConjugationEngine {
 
   // i-adjective conjugations
   private static conjugateIAdjective(word: JapaneseWord): ConjugationForms {
-    const stem = word.kanji.slice(0, -1); // Remove い
+    const kanji = word.kanji || word.word || '';
+    const stem = kanji.slice(0, -1); // Remove い
 
     return {
       // Basic Forms
-      present: word.kanji,
+      present: kanji,
       past: stem + 'かった',
       negative: stem + 'くない',
       pastNegative: stem + 'くなかった',
@@ -664,7 +667,7 @@ export class ConjugationEngine {
 
   // na-adjective conjugations
   private static conjugateNaAdjective(word: JapaneseWord): ConjugationForms {
-    const stem = word.kanji;
+    const stem = word.kanji || word.word || '';
 
     return {
       // Basic Forms
@@ -878,16 +881,31 @@ export function getRandomConjugationForm(wordType: WordType): keyof ConjugationF
 export function generateQuestionStem(word: JapaneseWord, targetForm: keyof ConjugationForms): string {
   // Create a partial conjugation to show the stem
   switch (word.type) {
-    case 'Ichidan':
-      return word.kana.slice(0, -1) + '？';
-    case 'Godan':
+    case 'Ichidan': {
+      const kana = word.kana || word.kanji || word.word || '';
+      if (!kana) return '？';
+      return kana.slice(0, -1) + '？';
+    }
+    case 'Godan': {
       // For Godan verbs, show the full word since conjugation changes the ending vowel
-      return word.kana + '？';
-    case 'i-adjective':
-      return word.kana.slice(0, -1) + '？';
-    case 'na-adjective':
-      return word.kana + '？';
-    default:
-      return word.kana + '？';
+      const kana = word.kana || word.kanji || word.word || '';
+      if (!kana) return '？';
+      return kana + '？';
+    }
+    case 'i-adjective': {
+      const kana = word.kana || word.kanji || word.word || '';
+      if (!kana) return '？';
+      return kana.slice(0, -1) + '？';
+    }
+    case 'na-adjective': {
+      const kana = word.kana || word.kanji || word.word || '';
+      if (!kana) return '？';
+      return kana + '？';
+    }
+    default: {
+      const kana = word.kana || word.kanji || word.word || '';
+      if (!kana) return '？';
+      return kana + '？';
+    }
   }
 }

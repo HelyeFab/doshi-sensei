@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { KanaCharacter, kanaData } from '@/data/kanaData';
 import TTSManager from '@/utils/tts';
+import { trackKanaPractice } from '@/lib/stats/trackingEvents';
 
 interface KanaStudyModalProps {
   isOpen: boolean;
@@ -90,6 +91,12 @@ export default function KanaStudyModal({ isOpen, onClose, selectedKanaIds, study
     } else {
       // Study session complete
       const studyTime = Math.round((Date.now() - sessionStartTime) / 1000);
+      
+      // Track practice session in stats system with proper parameters
+      trackKanaPractice(studyType, studyItems.length, correctCount, studyTime).catch(error => {
+        console.error('Failed to track kana study session:', error);
+      });
+      
       onClose(true);
     }
   };

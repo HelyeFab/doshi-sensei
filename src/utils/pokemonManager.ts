@@ -2,6 +2,7 @@ import { doc, setDoc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { pokemonStorage } from './pokemonStorage';
 import { User } from 'firebase/auth';
+import { trackPokemonCaught } from '@/lib/stats/trackingEvents';
 
 interface PokemonCatch {
   pokemonId: number;
@@ -43,6 +44,11 @@ class PokemonManager {
 
     // Always save to IndexedDB for offline access with user identification
     await pokemonStorage.savePokemonLocally(pokemonId, jlptLevel, kanjiIds, userId, userEmail);
+
+    // Track Pokemon catch in stats system
+    await trackPokemonCaught(pokemonId.toString(), `Pokemon #${pokemonId}`).catch(error => {
+      console.error('Failed to track Pokemon catch:', error);
+    });
 
     // For premium users, also save to Firebase
     if (user && isPremium) {

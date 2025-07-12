@@ -16,7 +16,7 @@ import { safeNavigator, runInBrowser } from './browserCheck';
 // Database configuration
 const DB_CONFIG: DatabaseConfig = {
   name: 'DoshiSenseiDB',
-  version: 4, // Updated for unified study list system
+  version: 5, // Updated for stats system v2
   stores: {
     settings: {
       keyPath: 'id',
@@ -156,6 +156,21 @@ const DB_CONFIG: DatabaseConfig = {
       indexes: [
         { name: 'itemType', keyPath: 'itemType' },
         { name: 'savedAt', keyPath: 'savedAt' }
+      ]
+    },
+    // Stats v2 stores
+    statsV2: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'lastUpdated', keyPath: 'lastUpdated' },
+        { name: 'version', keyPath: 'version' }
+      ]
+    },
+    dailyActivities: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'date', keyPath: 'date' },
+        { name: 'totalActivities', keyPath: 'summary.totalActivities' }
       ]
     }
   }

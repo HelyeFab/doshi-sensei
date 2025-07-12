@@ -22,7 +22,7 @@ import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 // Dynamic import to avoid SSR issues
 const EnhancedArticleAudioPlayer = dynamic(
   () => import('@/components/audio/EnhancedArticleAudioPlayer'),
-  { 
+  {
     ssr: false,
     loading: () => <div className="h-24 bg-muted/50 rounded-lg animate-pulse" />
   }
@@ -31,6 +31,7 @@ import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText'
 import { PageHeader } from '@/components/PageHeader';
 import { cleanTextForTTS } from '@/utils/japaneseParser';
 import { useStrings } from '@/hooks/useLanguage';
+import { trackArticleRead } from '@/lib/stats/trackingEvents';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -535,6 +536,14 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       );
 
       setReadingProgress(progress);
+
+      // Track article completion when progress reaches 100%
+      if (progress >= 100 && readingProgress < 100) {
+        const readingTime = Math.ceil((Date.now() - readingStartTime.getTime()) / 60000); // in minutes
+        trackArticleRead(article.id, article.title, readingTime).catch(error => {
+          console.error('Failed to track article read:', error);
+        });
+      }
     }
   };
 

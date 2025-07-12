@@ -1,4 +1,18 @@
-import { JapaneseWord } from '@/types';
+import { JapaneseWord, JLPTLevel } from '@/types';
+
+// Priority tags indicating common usage - higher weight for more common tags
+const PRIORITY_SCORES: Record<string, number> = {
+  'news1': 500,
+  'ichi1': 400,
+  'spec1': 300,
+  'gai1': 200,
+  'news2': 150,
+  'ichi2': 120,
+  'spec2': 100,
+  'gai2': 80,
+  'nf01': 70, 'nf02': 65, 'nf03': 60, 'nf04': 55, 'nf05': 50,
+  'nf06': 45, 'nf07': 40, 'nf08': 35, 'nf09': 30, 'nf10': 25
+};
 
 // JMdict-simplified types
 interface JMdictWord {
@@ -33,6 +47,69 @@ interface JMdict {
 let practiceVerbsCache: JapaneseWord[] | null = null;
 let practiceAdjectivesCache: JapaneseWord[] | null = null;
 let jmdictLoaded = false;
+
+/**
+ * Get priority score based on tags
+ */
+function getPriorityScore(tags: string[]): number {
+  let maxScore = 0;
+  for (const tag of tags) {
+    if (PRIORITY_SCORES[tag]) {
+      maxScore = Math.max(maxScore, PRIORITY_SCORES[tag]);
+    }
+  }
+  return maxScore;
+}
+
+/**
+ * Get word length score (prefer simpler words)
+ */
+function getWordLengthScore(word: JMdictWord): number {
+  // Prefer shorter, simpler words
+  const kanjiLength = word.kanji[0]?.text?.length || 0;
+  const kanaLength = word.kana[0]?.text?.length || 0;
+  const minLength = Math.min(kanjiLength || 999, kanaLength || 999);
+  
+  if (minLength === 1) return 100;
+  if (minLength === 2) return 80;
+  if (minLength === 3) return 60;
+  if (minLength === 4) return 40;
+  if (minLength === 5) return 20;
+  return 0;
+}
+
+/**
+ * Calculate commonality score for a word
+ */
+function getCommonalityScore(word: JMdictWord): number {
+  let score = 0;
+  
+  // Get all tags from kanji and kana entries
+  const tags: string[] = [
+    ...(word.kanji?.flatMap(k => k.tags || []) || []),
+    ...(word.kana?.flatMap(k => k.tags || []) || [])
+  ];
+  
+  // Priority tag score
+  score += getPriorityScore(tags);
+  
+  // Word length score (prefer simpler words)
+  score += getWordLengthScore(word);
+  
+  // Penalty for words with too many senses (likely less common)
+  if (word.sense?.length > 5) {
+    score -= 50 * (word.sense.length - 5);
+  }
+  
+  // Bonus for common kanji/kana forms
+  const hasCommonKanji = word.kanji?.some(k => k.common) || false;
+  const hasCommonKana = word.kana?.some(k => k.common) || false;
+  if (hasCommonKanji || hasCommonKana) {
+    score += 200;
+  }
+  
+  return score;
+}
 
 /**
  * Map JMdict part of speech tags to our word types
@@ -132,16 +209,27 @@ function convertToJapaneseWord(word: JMdictWord): JapaneseWord | null {
     godanEnding = getGodanEnding(mainForm, primarySense.partOfSpeech);
   }
   
+  // Calculate commonality score
+  const commonalityScore = getCommonalityScore(word);
+  
   return {
     id: word.id,
-    word: mainForm,
+    kanji: mainForm,
+    kana: kanaText || mainForm, // Use kana text or fallback to main form
+    romaji: '', // Would need romanization library
+    meaning: meanings.join('; '),
+    english: meanings.join('; '), // Some places expect 'english' property
+    type: wordType as JapaneseWord['type'],
+    jlpt: 5 as JLPTLevel, // Default, could be enhanced with JLPT data
+    tags: [], // Could add tags based on frequency
+    word: mainForm, // Keep for backward compatibility
     reading: reading,
     meanings: meanings,
-    type: wordType as JapaneseWord['type'],
-    jlptLevel: 5, // Default, could be enhanced with JLPT data
-    frequency: kanjiForm?.common || kanaForm?.common ? 1000 : 5000, // Common words get higher priority
+    jlptLevel: 5,
+    frequency: commonalityScore, // Use commonality score as frequency
     kanaReading: kanaText,
-    godanEnding: godanEnding
+    godanEnding: godanEnding,
+    commonalityScore: commonalityScore // Store the actual score
   };
 }
 
@@ -176,9 +264,9 @@ export async function loadJMdictForPractice(): Promise<void> {
       }
     }
     
-    // Sort by frequency (common words first)
-    verbs.sort((a, b) => a.frequency - b.frequency);
-    adjectives.sort((a, b) => a.frequency - b.frequency);
+    // Sort by frequency (higher score = more common, so reverse order)
+    verbs.sort((a, b) => b.frequency - a.frequency);
+    adjectives.sort((a, b) => b.frequency - a.frequency);
     
     // Cache the results
     practiceVerbsCache = verbs;
@@ -186,6 +274,20 @@ export async function loadJMdictForPractice(): Promise<void> {
     jmdictLoaded = true;
     
     console.log(`Processed ${verbs.length} verbs and ${adjectives.length} adjectives for practice`);
+    
+    // Log top 5 most common verbs and adjectives
+    console.log('Top 5 most common verbs:', verbs.slice(0, 5).map(v => ({
+      word: v.kanji,
+      kana: v.kana,
+      meaning: v.meaning,
+      score: v.frequency
+    })));
+    console.log('Top 5 most common adjectives:', adjectives.slice(0, 5).map(a => ({
+      word: a.kanji,
+      kana: a.kana,
+      meaning: a.meaning,
+      score: a.frequency
+    })));
   } catch (error) {
     console.error('Failed to load JMdict for practice:', error);
     throw error;
@@ -215,11 +317,14 @@ export async function getJMdictPracticeWords(
     pool = [...(practiceVerbsCache || []), ...(practiceAdjectivesCache || [])];
   }
   
-  // Shuffle the pool for variety
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  // Take top common words (already sorted by frequency)
+  const topWords = pool.slice(0, limit * 2); // Get more than needed for variety
+  
+  // Add some randomization while keeping most common words more likely to appear
+  const shuffled = topWords.sort(() => Math.random() - 0.3); // Slight shuffle, not complete randomization
   
   // Return requested amount
-  return shuffled.slice(0, Math.min(limit, shuffled.length));
+  return shuffled.slice(0, Math.min(limit, topWords.length));
 }
 
 /**

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AppSettings } from '@/types';
+import { SettingsManager } from '@/utils/indexedDB';
 
 // Default settings
 const defaultSettings: AppSettings = {
@@ -53,17 +54,43 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load settings from localStorage on mount
+  // Load settings from IndexedDB on mount
   useEffect(() => {
-    const loadSettings = () => {
+    const loadSettings = async () => {
       try {
-        const savedSettings = localStorage.getItem(SETTINGS_KEY);
+        // First try to load from IndexedDB
+        const savedSettings = await SettingsManager.loadSettings();
+        
         if (savedSettings) {
-          const parsedSettings = JSON.parse(savedSettings) as AppSettings;
-          setSettings(parsedSettings);
+          // Ensure theme is explicitly set if saved
+          if (savedSettings.theme && savedSettings.theme !== 'system') {
+            console.log(`[Settings] Loading saved theme from IndexedDB: ${savedSettings.theme}`);
+          }
+          setSettings(savedSettings);
+        } else {
+          // Migration: Check localStorage for existing settings
+          const localStorageSettings = localStorage.getItem(SETTINGS_KEY);
+          if (localStorageSettings) {
+            try {
+              const parsedSettings = JSON.parse(localStorageSettings) as AppSettings;
+              console.log(`[Settings] Migrating settings from localStorage to IndexedDB`);
+              
+              // Save to IndexedDB
+              await SettingsManager.saveSettings(parsedSettings);
+              setSettings(parsedSettings);
+              
+              // Clean up localStorage after successful migration
+              localStorage.removeItem(SETTINGS_KEY);
+              localStorage.removeItem('doshi_sensei_theme');
+            } catch (e) {
+              console.error('Error migrating settings from localStorage:', e);
+            }
+          }
         }
       } catch (error) {
-        console.error('Error loading settings:', error);
+        console.error('Error loading settings from IndexedDB:', error);
+        // Fallback to defaults if IndexedDB fails
+        setSettings(defaultSettings);
       } finally {
         setIsLoading(false);
       }
@@ -77,12 +104,16 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     setSettings(prevSettings => {
       const newSettings = { ...prevSettings, [key]: value };
 
-      // Save to localStorage
-      try {
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
-      } catch (error) {
-        console.error('Error saving settings:', error);
-      }
+      // Save to IndexedDB asynchronously
+      SettingsManager.saveSettings(newSettings)
+        .then(() => {
+          if (key === 'theme') {
+            console.log(`[Settings] Saved theme preference to IndexedDB: ${value}`);
+          }
+        })
+        .catch(error => {
+          console.error('Error saving settings to IndexedDB:', error);
+        });
 
       return newSettings;
     });
@@ -92,12 +123,14 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const resetSettings = () => {
     setSettings(defaultSettings);
 
-    // Save to localStorage
-    try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaultSettings));
-    } catch (error) {
-      console.error('Error saving settings:', error);
-    }
+    // Save to IndexedDB
+    SettingsManager.saveSettings(defaultSettings)
+      .then(() => {
+        console.log('[Settings] Reset settings saved to IndexedDB');
+      })
+      .catch(error => {
+        console.error('Error saving reset settings to IndexedDB:', error);
+      });
   };
 
   return (

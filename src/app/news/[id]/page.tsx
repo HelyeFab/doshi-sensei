@@ -103,7 +103,7 @@ export default function ArticlePage() {
     }
 
     return (
-        <div className="min-h-screen bg-background py-8">
+        <div className="min-h-screen">
             <ArticleReader
                 article={article}
                 onBack={handleExit}

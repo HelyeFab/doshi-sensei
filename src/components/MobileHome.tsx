@@ -26,24 +26,44 @@ export default function MobileHome() {
 
   // Initialize StatsManager with user context AND load stats
   useEffect(() => {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`📱 [${debugTimestamp}] MobileHome: StatsManager useEffect triggered`);
+    console.log(`📱 [${debugTimestamp}] MobileHome: Dependencies - user:`, user?.uid || 'none', 'subscription:', subscription?.status || 'none');
+    
     if (user) {
       const canSync = subscription?.status === 'active';
+      console.log(`📱 [${debugTimestamp}] MobileHome: Setting user context, canSync:`, canSync);
       StatsManager.setUser(user, canSync);
     } else {
+      console.log(`📱 [${debugTimestamp}] MobileHome: No user, setting null`);
       StatsManager.setUser(null, false);
     }
 
     // Load stats after setting up user context
+    console.log(`📱 [${debugTimestamp}] MobileHome: Calling loadStats()`);
     loadStats();
   }, [user, subscription]);
 
   const loadStats = async () => {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`📱 [${debugTimestamp}] MobileHome: loadStats() called`);
+    console.log(`📱 [${debugTimestamp}] MobileHome: Current state - loading:`, loading);
+    
     try {
+      console.log(`📱 [${debugTimestamp}] MobileHome: Getting user stats...`);
       const userStats = await StatsManager.getUserStats();
-      setStats(userStats);
+      console.log(`📱 [${debugTimestamp}] MobileHome: User stats received:`, JSON.stringify(userStats, null, 2));
+      
+      console.log(`📱 [${debugTimestamp}] MobileHome: Updating component state...`);
+      setStats(prevStats => {
+        console.log(`📱 [${debugTimestamp}] MobileHome: Previous stats:`, JSON.stringify(prevStats, null, 2));
+        console.log(`📱 [${debugTimestamp}] MobileHome: New stats:`, JSON.stringify(userStats, null, 2));
+        return userStats;
+      });
     } catch (err) {
-      console.error('Error loading stats:', err);
+      console.error(`📱 [${debugTimestamp}] MobileHome: Error loading stats:`, err);
     } finally {
+      console.log(`📱 [${debugTimestamp}] MobileHome: Setting loading to false`);
       setLoading(false);
     }
   };

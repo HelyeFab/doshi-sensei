@@ -250,18 +250,18 @@ export default function PracticePage() {
   }, [selectedHiragana, selectedKatakana]);
 
   const handleStartKanaDrop = async () => {
-    if (getSelectedKanaData.length === 0) {
+    if (getSelectedKanaData.length < 5) {
       showNotification({
-        title: 'No Characters Selected',
-        message: 'Please select some kana characters to play Kana Drop!',
+        title: 'Not Enough Characters',
+        message: 'Please select at least 5 kana characters to play Kana Drop!',
         type: 'info'
       });
       return;
     }
-    if (getSelectedKanaData.length > 10) {
+    if (getSelectedKanaData.length > 8) {
       showNotification({
         title: 'Too Many Characters',
-        message: 'Please select up to 10 characters for Kana Drop.',
+        message: 'Please select between 5 and 8 characters for Kana Drop.',
         type: 'info'
       });
       return;
@@ -279,19 +279,6 @@ export default function PracticePage() {
   };
 
   const allKanaSelected = selectedHiragana.size + selectedKatakana.size === getBasicKana().length;
-
-  // Add this rightAction for the header
-  const kanaDropHeaderButton = (selectedHiragana.size + selectedKatakana.size) <= 10 && (selectedHiragana.size + selectedKatakana.size) > 0 && (
-    <button
-      onClick={handleStartKanaDrop}
-      className="ml-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
-    >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-      </svg>
-      <span>Kana Drop</span>
-    </button>
-  );
 
   if (selectedWord) {
     return <WordPractice word={selectedWord} onBack={handleBackToList} />;
@@ -380,27 +367,34 @@ export default function PracticePage() {
                 </div>
 
                 {/* Options and Study Button */}
-                <div className="flex flex-wrap items-center justify-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={showRomaji}
-                      onChange={(e) => setShowRomaji(e.target.checked)}
-                      className="rounded border-input"
-                    />
-                    <span className="text-sm">Show Romaji</span>
-                  </label>
+                <div className="flex flex-col gap-4">
+                  {/* Romaji toggle - hidden on mobile */}
+                  <div className="hidden md:flex justify-center">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showRomaji}
+                        onChange={(e) => setShowRomaji(e.target.checked)}
+                        className="rounded border-input"
+                      />
+                      <span className="text-sm">Show Romaji</span>
+                    </label>
+                  </div>
 
                   {(selectedHiragana.size > 0 || selectedKatakana.size > 0) && (
                     <>
-                      <button
-                        onClick={handleClearKanaSelection}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Clear Selection ({selectedHiragana.size + selectedKatakana.size})
-                      </button>
+                      {/* Clear selection button */}
+                      <div className="flex justify-center">
+                        <button
+                          onClick={handleClearKanaSelection}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Clear Selection ({selectedHiragana.size + selectedKatakana.size})
+                        </button>
+                      </div>
 
-                      <div className="flex items-center gap-2">
+                      {/* Study type selector */}
+                      <div className="flex justify-center">
                         <select
                           value={kanaStudyType}
                           onChange={(e) => setKanaStudyType(e.target.value as 'hiragana' | 'katakana' | 'both')}
@@ -410,18 +404,27 @@ export default function PracticePage() {
                           <option value="katakana">Study Katakana</option>
                           <option value="both">Study Both</option>
                         </select>
+                      </div>
 
+                      {/* Study and Kana Drop buttons */}
+                      <div className="flex justify-center gap-2">
                         <button
                           onClick={handleStartKanaStudy}
-                          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+                          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm md:text-base"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                            />
-                          </svg>
-                          <span>Start Study ({selectedHiragana.size + selectedKatakana.size} selected)</span>
+                          Start Study ({selectedHiragana.size + selectedKatakana.size} selected)
                         </button>
+
+                        {/* Kana Drop button for 5-8 selected characters */}
+                        {(selectedHiragana.size + selectedKatakana.size) >= 5 && 
+                         (selectedHiragana.size + selectedKatakana.size) <= 8 && (
+                          <button
+                            onClick={handleStartKanaDrop}
+                            className="px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors text-sm md:text-base"
+                          >
+                            Kana Drop Game
+                          </button>
+                        )}
                       </div>
                     </>
                   )}
@@ -466,9 +469,9 @@ export default function PracticePage() {
                 />
               )}
 
-              {(selectedHiragana.size + selectedKatakana.size) > 8 && (selectedHiragana.size + selectedKatakana.size) <= 10 && (
-                <div className="my-4 p-4 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center">
-                  <strong>Tip:</strong> You have selected {selectedHiragana.size + selectedKatakana.size} characters. The maximum for Kana Drop is 10.
+              {(selectedHiragana.size + selectedKatakana.size) > 8 && (
+                <div className="my-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-lg text-center">
+                  <strong>Note:</strong> You have selected {selectedHiragana.size + selectedKatakana.size} characters. Kana Drop requires between 5-8 characters.
                 </div>
               )}
 

@@ -97,10 +97,21 @@
   status = 200
 
 # Scheduled Functions
-# Article cleanup runs every day at 2 AM UTC (disabled - function doesn't exist)
-# [functions]
-#   [functions."article-cleanup"]
-#     schedule = "0 2 * * *"
+[functions]
+  # Daily news scraping - runs at 6 AM JST (9 PM UTC previous day)
+  [functions."scrape-news-scheduled"]
+    schedule = "0 21 * * *"
+  
+  # Alternative times if you want multiple daily scrapes:
+  # Morning scrape at 6 AM JST (9 PM UTC)
+  # [functions."scrape-news-morning"]
+  #   schedule = "0 21 * * *"
+  
+  # Evening scrape at 6 PM JST (9 AM UTC)
+  # [functions."scrape-news-evening"]
+  #   schedule = "0 9 * * *"
+
+# Note: The scrape-news-scheduled function supports both HTTP and scheduled triggers
 
 # Development server configuration
 [dev]
@@ -108,5 +119,3 @@
   port = 8888
   targetPort = 3002
   autoLaunch = false
-
-# Functions are now HTTP endpoints, not scheduled

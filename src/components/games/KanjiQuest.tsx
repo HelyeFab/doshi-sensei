@@ -11,6 +11,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useTTS } from '@/hooks/useTTS';
+import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 
 // Types
 interface StudySession {
@@ -1145,6 +1146,12 @@ export default function KanjiQuest({
     });
 
     if (passed) {
+      // Track game completion in stats system
+      const timeTaken = Math.floor((Date.now() - new Date(session.startTime).getTime()) / 1000);
+      trackGamePlayed('Kanji Quest', score, timeTaken).catch(error => {
+        console.error('Failed to track game completion:', error);
+      });
+
       // Mark kanji as completed
       onKanjiCompleted(session.kanji.map(k => k.id));
 

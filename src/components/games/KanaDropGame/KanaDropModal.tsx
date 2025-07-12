@@ -14,6 +14,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import KanaChart from '@/components/kana/KanaChart';
 import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
+import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 
 interface KanaDropModalProps {
   isOpen: boolean;
@@ -260,6 +261,11 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       
       // Usage tracking is now handled automatically by checkAndTrack
       setHasIncrementedUsage(true);
+      
+      // Track game completion in stats system
+      trackGamePlayed('Kana Drop', gameState.score, timeTaken).catch(error => {
+        console.error('Failed to track game completion:', error);
+      });
       
       // Play victory sound
       getGameAudioManager().playSound('victory').catch(() => {

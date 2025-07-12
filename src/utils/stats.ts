@@ -45,39 +45,65 @@ export class StatsManager {
    * Initialize with user context for cloud sync
    */
   static setUser(user: User | null, canSync: boolean = false): void {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`👤 [${debugTimestamp}] setUser() called`);
+    console.log(`👤 [${debugTimestamp}] User ID:`, user?.uid || 'none');
+    console.log(`👤 [${debugTimestamp}] Can sync:`, canSync);
+    console.log(`👤 [${debugTimestamp}] Previous user:`, this.currentUser?.uid || 'none');
+    console.log(`👤 [${debugTimestamp}] Previous sync state:`, this.hasCloudSync);
+    
     this.currentUser = user;
     this.hasCloudSync = canSync;
+    
+    console.log(`👤 [${debugTimestamp}] User context updated`);
   }
 
   /**
    * Get current user statistics with cloud sync
    */
   static async getUserStats(): Promise<UserStats> {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`🔍 [${debugTimestamp}] getUserStats() called`);
+    console.log(`🔍 [${debugTimestamp}] Current user:`, this.currentUser?.uid || 'none');
+    console.log(`🔍 [${debugTimestamp}] Has cloud sync:`, this.hasCloudSync);
 
     try {
       // Always load local stats first for immediate response
       const localStats = this.getLocalStats();
+      console.log(`🔍 [${debugTimestamp}] Local stats loaded:`, localStats ? 'Found' : 'Not found');
+      if (localStats) {
+        console.log(`🔍 [${debugTimestamp}] Local stats data:`, JSON.stringify(localStats, null, 2));
+      }
 
       // If user is logged in and has cloud sync, try to sync in background
       if (this.currentUser && this.hasCloudSync) {
+        console.log(`🔍 [${debugTimestamp}] Starting background cloud sync`);
 
         // Don't wait for cloud sync - do it in background
         this.backgroundCloudSync(localStats).catch((error: Error) => {
-          console.error('❌ Background cloud sync failed:', error);
+          console.error(`❌ [${debugTimestamp}] Background cloud sync failed:`, error);
         });
       } else if (this.currentUser && !this.hasCloudSync) {
+        console.log(`🔍 [${debugTimestamp}] User logged in but no cloud sync permission`);
+      } else {
+        console.log(`🔍 [${debugTimestamp}] No user logged in, using local only`);
       }
 
       // Return local stats immediately or create initial stats
       if (localStats) {
+        console.log(`🔍 [${debugTimestamp}] Returning existing local stats`);
         return localStats;
       } else {
+        console.log(`🔍 [${debugTimestamp}] No local stats found, creating initial stats`);
         const initialStats = this.createInitialStats();
+        console.log(`🔍 [${debugTimestamp}] Initial stats created:`, JSON.stringify(initialStats, null, 2));
         return initialStats;
       }
     } catch (error) {
-      console.error('❌ Error loading user stats:', error);
-      return this.createInitialStats();
+      console.error(`❌ [${debugTimestamp}] Error loading user stats:`, error);
+      const fallbackStats = this.createInitialStats();
+      console.log(`🔍 [${debugTimestamp}] Returning fallback stats:`, JSON.stringify(fallbackStats, null, 2));
+      return fallbackStats;
     }
   }
 
@@ -85,9 +111,16 @@ export class StatsManager {
    * Load stats from Firebase cloud
    */
   private static async loadStatsFromCloud(): Promise<UserStats | null> {
-    if (!this.currentUser || !this.hasCloudSync) return null;
+    const debugTimestamp = new Date().toISOString();
+    console.log(`☁️ [${debugTimestamp}] loadStatsFromCloud() called`);
+    
+    if (!this.currentUser || !this.hasCloudSync) {
+      console.log(`☁️ [${debugTimestamp}] No user or cloud sync, returning null`);
+      return null;
+    }
 
     try {
+      console.log(`☁️ [${debugTimestamp}] Downloading from cloud...`);
       const { data } = await CloudSync.downloadData<UserStats>(
         this.currentUser,
         STATS_COLLECTION,
@@ -95,11 +128,16 @@ export class StatsManager {
       );
 
       if (data) {
+        console.log(`☁️ [${debugTimestamp}] Cloud stats loaded:`, JSON.stringify(data, null, 2));
+        StatsDebugger.logEvent('cloud-stats-loaded', 'StatsManager', data);
         return data;
       }
+      console.log(`☁️ [${debugTimestamp}] No cloud data found`);
+      StatsDebugger.logEvent('cloud-stats-empty', 'StatsManager');
       return null;
     } catch (error) {
-      console.error('Error loading stats from cloud:', error);
+      console.error(`☁️ [${debugTimestamp}] Error loading stats from cloud:`, error);
+      StatsDebugger.logEvent('cloud-stats-error', 'StatsManager', { error: error instanceof Error ? error.message : 'Unknown error' });
       return null;
     }
   }
@@ -108,16 +146,26 @@ export class StatsManager {
    * Save stats to both local and cloud
    */
   private static async saveStats(stats: UserStats): Promise<void> {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`💾 [${debugTimestamp}] saveStats() called`);
+    console.log(`💾 [${debugTimestamp}] Stats to save:`, JSON.stringify(stats, null, 2));
+    
     try {
       // Save locally first
+      console.log(`💾 [${debugTimestamp}] Saving locally...`);
       await this.saveStatsLocally(stats);
+      console.log(`💾 [${debugTimestamp}] Local save complete`);
 
       // Save to cloud if user is logged in and has sync
       if (this.currentUser && this.hasCloudSync) {
+        console.log(`💾 [${debugTimestamp}] Saving to cloud...`);
         await this.saveStatsToCloud(stats);
+        console.log(`💾 [${debugTimestamp}] Cloud save complete`);
+      } else {
+        console.log(`💾 [${debugTimestamp}] Skipping cloud save (no user or sync)`);
       }
     } catch (error) {
-      console.error('Error saving stats:', error);
+      console.error(`💾 [${debugTimestamp}] Error saving stats:`, error);
       throw error;
     }
   }
@@ -238,13 +286,18 @@ export class StatsManager {
    * Does not block app loading
    */
   private static async backgroundCloudSync(localStats: UserStats | null): Promise<void> {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`🔄 [${debugTimestamp}] backgroundCloudSync() started`);
+    
     if (!this.currentUser || !this.hasCloudSync) {
+      console.log(`🔄 [${debugTimestamp}] No user or sync, exiting background sync`);
       return;
     }
 
     const SYNC_TIMEOUT = 10000; // 10 seconds timeout
 
     try {
+      console.log(`🔄 [${debugTimestamp}] Local stats present:`, localStats ? 'Yes' : 'No');
 
       // Create a timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -252,32 +305,53 @@ export class StatsManager {
       });
 
       // Race between cloud sync and timeout
+      console.log(`🔄 [${debugTimestamp}] Starting cloud load race (timeout: ${SYNC_TIMEOUT}ms)`);
       const cloudStats = await Promise.race([
         this.loadStatsFromCloudWithRetry(),
         timeoutPromise
       ]);
+      
+      console.log(`🔄 [${debugTimestamp}] Cloud stats loaded:`, cloudStats ? 'Yes' : 'No');
+      if (cloudStats) {
+        console.log(`🔄 [${debugTimestamp}] Cloud stats data:`, JSON.stringify(cloudStats, null, 2));
+      }
 
       if (cloudStats && localStats) {
         // Compare and merge if needed
+        console.log(`🔄 [${debugTimestamp}] Both local and cloud stats exist, resolving conflict...`);
         const resolution = CloudSync.resolveConflict(localStats, cloudStats);
+        console.log(`🔄 [${debugTimestamp}] Conflict resolution:`, resolution);
 
         if (resolution === 'cloud') {
           // Cloud data is newer, update local
+          console.log(`🔄 [${debugTimestamp}] Cloud data is newer, updating local`);
           await this.saveStatsLocally(cloudStats);
+          console.log(`🔄 [${debugTimestamp}] Local update complete`);
         } else if (resolution === 'local') {
           // Local data is newer, upload to cloud
+          console.log(`🔄 [${debugTimestamp}] Local data is newer, uploading to cloud`);
           await this.saveStatsToCloudWithRetry(localStats);
+          console.log(`🔄 [${debugTimestamp}] Cloud upload complete`);
+        } else {
+          console.log(`🔄 [${debugTimestamp}] Data requires merging (not implemented in background sync)`);
         }
       } else if (cloudStats && !localStats) {
         // No local data, save cloud data locally
+        console.log(`🔄 [${debugTimestamp}] No local data, saving cloud data locally`);
         await this.saveStatsLocally(cloudStats);
+        console.log(`🔄 [${debugTimestamp}] Local save complete`);
       } else if (localStats && !cloudStats) {
         // No cloud data, upload local data
+        console.log(`🔄 [${debugTimestamp}] No cloud data, uploading local data`);
         await this.saveStatsToCloudWithRetry(localStats);
+        console.log(`🔄 [${debugTimestamp}] Cloud upload complete`);
+      } else {
+        console.log(`🔄 [${debugTimestamp}] No data to sync`);
       }
 
+      console.log(`🔄 [${debugTimestamp}] Background sync completed successfully`);
     } catch (error) {
-      console.error('❌ Background cloud sync failed:', error);
+      console.error(`❌ [${debugTimestamp}] Background cloud sync failed:`, error);
       // Don't throw - this is background sync, app should continue normally
     }
   }
@@ -335,15 +409,29 @@ export class StatsManager {
    * Get local stats without cloud sync
    */
   private static getLocalStats(): UserStats | null {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`📱 [${debugTimestamp}] getLocalStats() called`);
+    
     try {
       if (typeof window === 'undefined') {
+        console.log(`📱 [${debugTimestamp}] Server-side rendering, no localStorage`);
         return null; // No localStorage on server
       }
+      
       const statsData = localStorage.getItem(STATS_KEY);
-      if (!statsData) return null;
-      return JSON.parse(statsData) as UserStats;
+      console.log(`📱 [${debugTimestamp}] localStorage key:`, STATS_KEY);
+      console.log(`📱 [${debugTimestamp}] localStorage data exists:`, statsData ? 'Yes' : 'No');
+      
+      if (!statsData) {
+        console.log(`📱 [${debugTimestamp}] No local stats found in localStorage`);
+        return null;
+      }
+      
+      const parsedStats = JSON.parse(statsData) as UserStats;
+      console.log(`📱 [${debugTimestamp}] Parsed local stats:`, JSON.stringify(parsedStats, null, 2));
+      return parsedStats;
     } catch (error) {
-      console.error('Error loading local stats:', error);
+      console.error(`📱 [${debugTimestamp}] Error loading local stats:`, error);
       return null;
     }
   }

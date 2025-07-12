@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverview } from '@/components/admin/StatsOverview';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
+import { StatsRecovery } from '@/components/admin/StatsRecovery';
 import { useStrings } from '@/hooks/useLanguage';
 
 function QuickAction({ title, description, icon, onClick, loading }: {
@@ -83,6 +84,9 @@ export default function AdminDashboard() {
 
         {/* Article Monitoring Dashboard */}
         <ArticleMonitoringDashboard />
+
+        {/* Stats Recovery Tool */}
+        <StatsRecovery />
 
         {/* Quick actions */}
         <div>

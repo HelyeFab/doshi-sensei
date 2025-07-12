@@ -15,9 +15,11 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
 import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
-import StatsManager from '@/utils/stats';
+import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
 import flashcardManager, { FlashcardQuestion, FlashcardSessionConfig } from '@/utils/flashcards';
 import FlashcardCard from '@/components/flashcards/FlashcardCard';
+import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
+import { PracticeCache } from '@/utils/practiceCache';
 
 // Structured Data for Drill Page
 const drillStructuredData = {
@@ -403,7 +405,8 @@ export default function DrillPage() {
     await Promise.all([loadWordLists(), loadKanjiLists()]);
   }, [loadWordLists, loadKanjiLists]);
 
-  const loadQuestionsForWord = useCallback((word: JapaneseWord) => {
+  const loadQuestionsForWord = useCallback(async (word: JapaneseWord) => {
+    console.log('loadQuestionsForWord called with:', word);
     try {
       setLoading(true);
       const forms: (keyof ConjugationForms)[] = [
@@ -416,6 +419,8 @@ export default function DrillPage() {
         return conjugations[form] !== undefined;
       });
 
+      console.log('Applicable forms:', applicableForms);
+
       const selectedForms = shuffleArray([...applicableForms]).slice(0, 5);
       const conjugations = ConjugationEngine.conjugate(word);
       const drillQuestions = selectedForms.map(form => {
@@ -426,6 +431,7 @@ export default function DrillPage() {
         return generateDrillQuestion(word, form, correctAnswer);
       });
 
+      console.log('Generated questions:', drillQuestions);
       setQuestions(drillQuestions);
     } catch (error) {
       console.error('Error loading questions for word:', error);
@@ -553,7 +559,7 @@ export default function DrillPage() {
       }
 
       // If kanji lookup fails, try kana lookup
-      if (word.kanji !== word.kana) {
+      if (word.kana && word.kanji !== word.kana) {
         const kanaResults = await searchWords(word.kana, 1);
         if (kanaResults.length > 0) {
           const kanaWord = kanaResults[0];
@@ -573,11 +579,11 @@ export default function DrillPage() {
 
   // Pattern-based word type classification (fallback when API fails)
   const fixWordTypeByPattern = (word: JapaneseWord): JapaneseWord => {
-    const kana = word.kana;
+    const kana = word.kana || word.kanji; // Fallback to kanji if kana is undefined
     const kanji = word.kanji;
 
     // Common verb patterns
-    if (kana.endsWith('る')) {
+    if (kana && kana.endsWith('る')) {
       // Check for ichidan verb patterns
       const ichidanEndings = ['える', 'いる', 'きる', 'ぎる', 'じる', 'ちる', 'にる', 'びる', 'みる', 'りる'];
       if (ichidanEndings.some(ending => kana.endsWith(ending))) {
@@ -589,18 +595,18 @@ export default function DrillPage() {
 
     // Godan verb endings
     const godanEndings = ['う', 'く', 'ぐ', 'す', 'つ', 'ぬ', 'ぶ', 'む'];
-    if (godanEndings.some(ending => kana.endsWith(ending))) {
+    if (kana && godanEndings.some(ending => kana.endsWith(ending))) {
       return { ...word, type: 'Godan' };
     }
 
     // i-adjective pattern
-    if (kana.endsWith('い') && !kana.endsWith('しい') && !kanji.includes('綺麗') && !kanji.includes('嫌い')) {
+    if (kana && kana.endsWith('い') && !kana.endsWith('しい') && !kanji.includes('綺麗') && !kanji.includes('嫌い')) {
       return { ...word, type: 'i-adjective' };
     }
 
     // Common irregular verbs
     const irregularVerbs = ['する', 'くる', '来る', 'いく', '行く'];
-    if (irregularVerbs.includes(kanji) || irregularVerbs.includes(kana)) {
+    if (irregularVerbs.includes(kanji) || (kana && irregularVerbs.includes(kana))) {
       return { ...word, type: 'Irregular' };
     }
 
@@ -672,6 +678,11 @@ export default function DrillPage() {
         localStorage.setItem('doshi_sensei_system_initialized', 'true');
       }
       loadAllLists();
+      
+      // Preload practice cache for quick drill preview
+      PracticeCache.preloadCache().catch(err => {
+        console.error('Error preloading practice cache:', err);
+      });
     };
 
     initializeSystem();
@@ -689,25 +700,29 @@ export default function DrillPage() {
   }, [wordLists, kanjiLists]);
 
   useEffect(() => {
-    if (settingsLoading) return;
+    const loadInitialQuestions = async () => {
+      if (settingsLoading) return;
 
-    if (typeof window !== 'undefined') {
-      const storedWord = sessionStorage.getItem('drillWord');
-      if (storedWord) {
-        try {
-          const word = JSON.parse(storedWord);
-          loadQuestionsForWord(word);
-          sessionStorage.removeItem('drillWord');
-        } catch (err) {
-          console.error('Error parsing stored word:', err);
+      if (typeof window !== 'undefined') {
+        const storedWord = sessionStorage.getItem('drillWord');
+        if (storedWord) {
+          try {
+            const word = JSON.parse(storedWord);
+            await loadQuestionsForWord(word);
+            sessionStorage.removeItem('drillWord');
+          } catch (err) {
+            console.error('Error parsing stored word:', err);
+            loadQuestions();
+          }
+        } else {
           loadQuestions();
         }
       } else {
         loadQuestions();
       }
-    } else {
-      loadQuestions();
-    }
+    };
+
+    loadInitialQuestions();
   }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists, loadQuestions, loadQuestionsForWord]);
 
   // Load flashcard questions when lists or card direction change
@@ -825,11 +840,15 @@ export default function DrillPage() {
   };
 
   const startGame = async () => {
+    console.log('startGame called');
     // Check if user can do drill
     const canDo = await checkAndTrack('drill_practice');
+    console.log('Can do drill:', canDo);
     if (!canDo) {
+      console.log('User cannot do drill, returning');
       return;
     }
+    console.log('Setting gameStarted to true');
     setGameStarted(true);
   };
 
@@ -848,7 +867,7 @@ export default function DrillPage() {
 
     try {
       const wordsStudied = questions.map(q => q.word.id);
-      await StatsManager.recordDrillSession(questions.length, actualScore, wordsStudied);
+      await trackDrillCompleted('conjugation-drill', questions.length, actualScore, wordsStudied);
 
       // Usage tracking is now handled automatically by checkAndTrack
     } catch (err) {
@@ -1127,6 +1146,19 @@ export default function DrillPage() {
                     Start Conjugation Drill
                   </button>
                 </div>
+                
+                {/* Quick Drill Preview - Show pre-selected words for random mode */}
+                {drillMode === 'random' && (
+                  <QuickDrillPreview 
+                    onSelectWord={async (word) => {
+                      console.log('Drill page: onSelectWord called with:', word);
+                      await loadQuestionsForWord(word);
+                      console.log('Drill page: Questions loaded');
+                      await startGame();
+                      console.log('Drill page: Game started');
+                    }}
+                  />
+                )}
               </div>
             ) : isFinished ? (
               // Results Screen
@@ -1161,12 +1193,16 @@ export default function DrillPage() {
                     <span className="text-2xl japanese-text font-medium text-card-foreground mr-3">
                       {currentQuestion.word.kanji}
                     </span>
-                    <span className="text-lg japanese-text text-muted-foreground mr-3">
-                      ({currentQuestion.word.kana})
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      "{currentQuestion.word.meaning}"
-                    </span>
+                    {currentQuestion.word.kana && (
+                      <span className="text-lg japanese-text text-muted-foreground mr-3">
+                        ({currentQuestion.word.kana})
+                      </span>
+                    )}
+                    {(currentQuestion.word.meaning || currentQuestion.word.english) && (
+                      <span className="text-sm text-muted-foreground">
+                        "{currentQuestion.word.meaning || currentQuestion.word.english}"
+                      </span>
+                    )}
                   </div>
                   <div className="text-xl text-foreground mb-2">
                     {(strings.conjugation.forms as Record<string, string>)[currentQuestion.targetForm]} form:

@@ -11,6 +11,8 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 import { colorPalettes } from '@/utils/themes';
+import { StatsDebugSummary } from '@/components/debug/StatsDebugSummary';
+import { StatsBar } from '@/components/stats/StatsBar';
 
 // Structured Data for SEO
 const structuredData = {
@@ -43,17 +45,6 @@ const structuredData = {
   "softwareVersion": "1.0"
 };
 
-interface UserStats {
-  drillsCompleted: number;
-  accuracy: number;
-  streak: number;
-  totalDaysUsed: number;
-  kanjiStudySessions: number;
-  kanjiAccuracy: number;
-  totalKanjiLearned: number;
-  pokemonCaught: number;
-  storiesRead: number;
-}
 
 // Feature cards data
 const FEATURE_CARDS = [
@@ -101,18 +92,6 @@ export default function Home() {
   const { profile } = useUserProfile();
   const { subscription } = useSubscription2();
   const { settings } = useSettings();
-  const [stats, setStats] = useState<UserStats>({
-    drillsCompleted: 0,
-    accuracy: 0,
-    streak: 0,
-    totalDaysUsed: 0,
-    kanjiStudySessions: 0,
-    kanjiAccuracy: 0,
-    totalKanjiLearned: 0,
-    pokemonCaught: 0,
-    storiesRead: 0
-  });
-  const [loading, setLoading] = useState(true);
   const [showPokedexModal, setShowPokedexModal] = useState(false);
 
   // Use predefined color patterns for better visual distribution
@@ -147,142 +126,6 @@ export default function Home() {
     });
   }, [settings.colorScheme]);
 
-  // Load Pokédex count separately to ensure it's always available
-  useEffect(() => {
-    const loadPokemonCount = async () => {
-      try {
-        // Only run on client side
-        if (typeof window === 'undefined') return;
-        
-        // Get user premium status
-        const isPremiumUser = subscription?.status === 'active' &&
-          (subscription?.plan === 'monthly' ||
-            subscription?.plan === 'yearly');
-
-        // Get caught Pokemon from IndexedDB and cloud if premium
-        const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
-
-        // Removed debug logging to prevent console spam
-
-        if (caughtPokemon.length > 0) {
-          setStats(prev => ({ ...prev, pokemonCaught: caughtPokemon.length }));
-        }
-      } catch (error) {
-        console.error('Error loading Pokémon count:', error);
-        // No fallback needed, will display 0
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      loadPokemonCount();
-    }
-  }, [profile?.uid, subscription?.status, subscription?.plan]);
-
-  // Initialize StatsManager with user context AND load stats
-  useEffect(() => {
-    const loadStatsManager = async () => {
-      try {
-        // Only run on client side
-        if (typeof window === 'undefined') return;
-        
-        const { default: StatsManager } = await import('@/utils/stats');
-
-        if (profile) {
-          const canSync = subscription?.status === 'active';
-          StatsManager.setUser(profile, canSync);
-        } else {
-          StatsManager.setUser(null, false);
-        }
-
-        // Load stats after setting up user context
-        loadStats();
-      } catch (error) {
-        console.error('Error loading StatsManager:', error);
-        setLoading(false);
-      }
-    };
-
-    loadStatsManager();
-  }, [profile, subscription]);
-
-  useEffect(() => {
-    // Only run on client side
-    if (typeof window === 'undefined') return;
-    
-    // Reload stats when page becomes visible/focused
-    const handleFocus = () => {
-      loadStats();
-    };
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        loadStats();
-      }
-    };
-
-    // Listen for when user returns to this tab/page
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Cleanup event listeners
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
-
-  const loadStats = async () => {
-    try {
-      // Only run on client side
-      if (typeof window === 'undefined') return;
-      
-      const { default: StatsManager } = await import('@/utils/stats');
-      const { storyManager } = await import('@/utils/storyManager');
-      const userStats = await StatsManager.getUserStats();
-
-      // Get Pokémon count from both sources
-      let pokemonCount = 0;
-      try {
-        const isPremiumUser = subscription?.status === 'active' &&
-          (subscription?.plan === 'monthly' ||
-            subscription?.plan === 'yearly');
-
-        const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
-        pokemonCount = caughtPokemon.length;
-      } catch (error) {
-        // Error loading Pokémon in loadStats
-        console.error('Error loading Pokémon in loadStats:', error);
-      }
-
-      // Get story stats with error handling
-      let storyStats = { totalStoriesRead: 0 };
-      if (profile) {
-        try {
-          storyStats = await storyManager.getUserStoryStats(profile.uid);
-        } catch (error) {
-          // Silently fail if Firebase permissions are not set up
-          console.warn('Could not fetch story stats:', error);
-        }
-      }
-
-      setStats(prevStats => ({
-        drillsCompleted: userStats.drillsCompleted,
-        accuracy: Math.round(userStats.accuracy),
-        streak: userStats.currentStreak,
-        totalDaysUsed: userStats.totalDaysUsed,
-        kanjiStudySessions: userStats.kanjiStudySessions || 0,
-        kanjiAccuracy: Math.round(userStats.kanjiAccuracy || 0),
-        totalKanjiLearned: userStats.totalKanjiLearned || 0,
-        pokemonCaught: pokemonCount || prevStats.pokemonCaught, // Keep previous count if new data is 0
-        storiesRead: storyStats.totalStoriesRead || 0
-      }));
-    } catch (err) {
-      console.error('Error loading stats:', err);
-      // Don't reset stats on error - keep previous values
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Get user's first name only - memoized to prevent hydration issues
   const [displayName, setDisplayName] = useState('Friend');
@@ -406,139 +249,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Minimal Stats Bar */}
-          <div
-            className="backdrop-blur-md rounded-lg p-4 md:p-5 mb-8 transition-all duration-300"
-            style={{
-              border: '2px solid white',
-              boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
-              background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
-            }}
-            suppressHydrationWarning
-          >
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">
-              {/* Streak Badge */}
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 md:w-8 md:h-8 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm text-gray-800">🔥</span>
-                </div>
-                <div>
-                  <div className="text-sm md:text-xs text-gray-700">Streak</div>
-                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : `${stats.streak} days`}</div>
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-gray-400/30" />
-
-              {/* Drills */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm text-gray-800">⚡</span>
-                </div>
-                <div>
-                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.drillsCompleted}</div>
-                  <div className="text-sm md:text-xs text-gray-700">Drills</div>
-                </div>
-              </div>
-
-              {/* Sessions */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm text-gray-800">漢</span>
-                </div>
-                <div>
-                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.kanjiStudySessions}</div>
-                  <div className="text-sm md:text-xs text-gray-700">Sessions</div>
-                </div>
-              </div>
-
-              {/* Learned */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <span className="text-base md:text-sm text-gray-800">📚</span>
-                </div>
-                <div>
-                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.totalKanjiLearned}</div>
-                  <div className="text-sm md:text-xs text-gray-700">Learned</div>
-                </div>
-              </div>
-
-              {/* Pokemon */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center p-1">
-                  <img
-                    src="/pokeball.png"
-                    alt="Pokéball"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div>
-                  <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.pokemonCaught}</div>
-                  <div className="text-sm md:text-xs text-gray-700">Pokémon</div>
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-gray-400/30" />
-
-              {/* Stories Read */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
-                    <img 
-                      src="/flat-icons/root-icons/story.svg" 
-                      alt="Stories" 
-                      width={20}
-                      height={20}
-                      className="w-5 h-5 md:w-4 md:h-4 object-contain"
-                    />
-                  </div>
-                  <div>
-                    <div className="text-base md:text-sm font-semibold text-gray-900">{loading ? '...' : stats.storiesRead}</div>
-                    <div className="text-sm md:text-xs text-gray-700">Stories</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div className="hidden md:block h-8 w-px bg-gray-400/30" />
-
-              {/* Overall Accuracy */}
-              <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
-                <div className="relative w-10 h-10">
-                  <svg className="w-full h-full -rotate-90">
-                    <circle
-                      cx="20"
-                      cy="20"
-                      r="16"
-                      stroke="gray"
-                      strokeWidth="3"
-                      fill="none"
-                      opacity="0.2"
-                    />
-                    <circle
-                      cx="20"
-                      cy="20"
-                      r="16"
-                      stroke="gray"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeDasharray={`${loading ? 0 : (Math.max(stats.accuracy, stats.kanjiAccuracy) / 100) * 100} 100`}
-                      strokeLinecap="round"
-                      className={`transition-all duration-500`}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-semibold text-gray-800">{loading ? '...' : `${Math.round((stats.accuracy + stats.kanjiAccuracy) / 2)}%`}</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-700">Avg Accuracy</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* New Stats Bar Component */}
+          <StatsBar className="mb-8" />
         </main>
       </div>
 
@@ -548,6 +260,9 @@ export default function Home() {
         onClose={() => setShowPokedexModal(false)}
         userId={profile?.uid}
       />
+      
+      {/* Debug Summary - Only in development */}
+      {process.env.NODE_ENV === 'development' && <StatsDebugSummary />}
     </>
   );
 }

@@ -269,17 +269,36 @@ export class CloudSync {
     localData: T,
     cloudData: T
   ): 'local' | 'cloud' | 'merge' {
+    const debugTimestamp = new Date().toISOString();
+    console.log(`⚔️ [${debugTimestamp}] CloudSync.resolveConflict() called`);
+    console.log(`⚔️ [${debugTimestamp}] Local data exists:`, !!localData);
+    console.log(`⚔️ [${debugTimestamp}] Cloud data exists:`, !!cloudData);
+    
     // If no cloud data, use local
-    if (!cloudData) return 'local';
+    if (!cloudData) {
+      console.log(`⚔️ [${debugTimestamp}] Resolution: local (no cloud data)`);
+      return 'local';
+    }
 
     // If no local data, use cloud
-    if (!localData) return 'cloud';
+    if (!localData) {
+      console.log(`⚔️ [${debugTimestamp}] Resolution: cloud (no local data)`);
+      return 'cloud';
+    }
+
+    console.log(`⚔️ [${debugTimestamp}] Local updatedAt:`, localData.updatedAt);
+    console.log(`⚔️ [${debugTimestamp}] Cloud updatedAt:`, cloudData.updatedAt);
 
     // Compare timestamps - cloud wins if newer
     const localTime = localData.updatedAt?.toDate?.() || new Date(0);
     const cloudTime = cloudData.updatedAt?.toDate?.() || new Date(0);
+    
+    console.log(`⚔️ [${debugTimestamp}] Local time:`, localTime.toISOString());
+    console.log(`⚔️ [${debugTimestamp}] Cloud time:`, cloudTime.toISOString());
 
-    return cloudTime > localTime ? 'cloud' : 'local';
+    const resolution = cloudTime > localTime ? 'cloud' : 'local';
+    console.log(`⚔️ [${debugTimestamp}] Resolution: ${resolution} (based on timestamp comparison)`);
+    return resolution;
   }
 
   /**

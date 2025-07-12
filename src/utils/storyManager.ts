@@ -16,6 +16,7 @@ import {
 import { db } from '@/lib/firebase';
 import { Story, StoryProgress, StoryStats } from '@/types/story';
 import { JLPTLevel } from '@/types/kanji';
+import { trackStoryRead } from '@/lib/stats/trackingEvents';
 
 class StoryManager {
   private readonly STORIES_COLLECTION = 'stories';
@@ -211,6 +212,10 @@ class StoryManager {
       const progressId = `${userId}_${storyId}`;
       const progressRef = doc(db, this.PROGRESS_COLLECTION, progressId);
 
+      // Get story details for tracking
+      const story = await this.getStory(storyId);
+      const storyTitle = story?.title || 'Unknown Story';
+
       await setDoc(progressRef, {
         storyId,
         userId,
@@ -225,6 +230,9 @@ class StoryManager {
       await updateDoc(storyRef, {
         completionCount: increment(1)
       });
+
+      // Track story completion in stats system
+      await trackStoryRead(storyId, storyTitle);
 
       // Update user stats
       await this.updateUserStoryStats(userId);

@@ -253,12 +253,39 @@ service cloud.firestore {
       allow read: if request.auth != null &&
         (isAdmin() || request.auth.uid == userId);
 
-      // Users can create/update their own stats
-      allow create, update: if request.auth != null &&
+      // Users can create/update their own stats with validation
+      allow create: if request.auth != null &&
         request.auth.uid == userId;
+        
+      allow update: if request.auth != null &&
+        request.auth.uid == userId &&
+        // Validate stats structure on updates
+        request.resource.data.keys().hasAll(['version', 'userId', 'lastUpdated']) &&
+        request.resource.data.version == '2.0' &&
+        request.resource.data.userId == userId &&
+        request.resource.data.lastUpdated is timestamp;
 
       // Only admin can delete stats
       allow delete: if isAdmin();
+      
+      // Daily activities subcollection
+      match /dailyActivities/{date} {
+        // Users can read their own daily activities
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create/update their own daily activities
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['date', 'activities', 'summary']) &&
+          request.resource.data.date is string &&
+          request.resource.data.activities is list &&
+          request.resource.data.summary is map;
+        
+        // Users can delete their own old activities
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
     }
 
     // Premium Sync Collections

@@ -508,6 +508,60 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
     // Fall back to parent storage
     return super.loadSettings();
   }
+
+  /**
+   * Generic store access methods for StatsTracker
+   */
+  static async getFromStore(storeName: string, key: string): Promise<any> {
+    if (!isIndexedDBAvailable()) {
+      // Fallback to localStorage
+      const data = localStorage.getItem(`${storeName}_${key}`);
+      return data ? JSON.parse(data) : null;
+    }
+
+    try {
+      const db = await initializeDB();
+      
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.get(key);
+        
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error(`Error getting from store ${storeName}:`, error);
+      // Fallback to localStorage
+      const data = localStorage.getItem(`${storeName}_${key}`);
+      return data ? JSON.parse(data) : null;
+    }
+  }
+
+  static async saveToStore(storeName: string, key: string, value: any): Promise<void> {
+    if (!isIndexedDBAvailable()) {
+      // Fallback to localStorage
+      localStorage.setItem(`${storeName}_${key}`, JSON.stringify(value));
+      return;
+    }
+
+    try {
+      const db = await initializeDB();
+      
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.put({ ...value, id: key });
+        
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error(`Error saving to store ${storeName}:`, error);
+      // Fallback to localStorage
+      localStorage.setItem(`${storeName}_${key}`, JSON.stringify(value));
+    }
+  }
 }
 
 // Export as default

@@ -1362,6 +1362,11 @@ export const en = {
         label: 'Articles',
         icon: '📰',
         description: 'Manage news articles'
+      },
+      activities: {
+        label: 'Activity Tracking',
+        icon: '📊',
+        description: 'Configure and monitor activity tracking'
       }
     },
     // UI elements

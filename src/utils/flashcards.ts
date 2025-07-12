@@ -15,6 +15,7 @@ import {
 } from './spacedRepetition';
 import { DatabaseManager } from './indexedDB';
 import StudyListManager from './studyListManager';
+import { trackFlashcardReviewed } from '@/lib/stats/trackingEvents';
 
 /**
  * Core Flashcard Engine
@@ -201,6 +202,11 @@ export class FlashcardManager {
       session.cardsReviewed = cardsReviewed;
       session.cardsCorrect = cardsCorrect;
       await this.dbManager.put('flashcardSessions', session);
+      
+      // Track flashcard session in stats system
+      // For now, we'll just log the session completion
+      // TODO: Add a proper trackFlashcardSession function to trackingEvents
+      console.log(`Flashcard session completed: ${cardsCorrect}/${cardsReviewed} correct`);
     }
   }
 

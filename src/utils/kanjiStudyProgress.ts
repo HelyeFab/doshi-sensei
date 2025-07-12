@@ -16,6 +16,7 @@ import {
   updateFlashcardProgress 
 } from './spacedRepetition';
 import { StatsManager } from './stats';
+import { trackKanjiStudy } from '@/lib/stats/trackingEvents';
 
 export interface KanjiStudyResult {
   boardId: string;
@@ -386,6 +387,14 @@ export async function saveStudySession(session: KanjiStudySession): Promise<void
 
     // Update stats
     await StatsManager.recordKanjiStudySession(
+      session.totalQuestions,
+      session.correctAnswers
+    );
+
+    // Track in new stats system
+    await trackKanjiStudy(
+      session.boardId,
+      session.boardTitle,
       session.totalQuestions,
       session.correctAnswers
     );

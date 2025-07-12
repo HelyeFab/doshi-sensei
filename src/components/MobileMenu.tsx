@@ -11,6 +11,7 @@ import { pokemonManager } from '@/utils/pokemonManager';
 import { AVAILABLE_NAV_ITEMS, HOME_NAV_ITEM } from '@/config/navigation';
 import PokedexModal from '@/components/games/PokedexModal';
 import { useStrings } from '@/hooks/useLanguage';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,7 @@ export default function MobileMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const strings = useStrings();
+  const { canInstall, isInstalled, isInstalling, install } = usePWAInstall();
 
   // Load Pokemon stats just like in the homepage
   useEffect(() => {
@@ -188,6 +190,27 @@ export default function MobileMenu() {
                 </Link>
               );
             })}
+            
+            {/* Install App Option */}
+            {canInstall && !isInstalled && (
+              <button
+                onClick={async () => {
+                  setIsOpen(false);
+                  await install();
+                }}
+                disabled={isInstalling}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left border-t border-border"
+              >
+                <img 
+                  src="/flat-icons/root-icons/smartphone.svg" 
+                  alt="Install" 
+                  className="w-5 h-5 object-contain" 
+                />
+                <span className="font-medium">
+                  {isInstalling ? 'Installing...' : 'Install Doshi Sensei'}
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Footer */}

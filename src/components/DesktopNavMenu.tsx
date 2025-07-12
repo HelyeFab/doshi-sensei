@@ -11,6 +11,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
 
 interface NavItem {
   label: string;
@@ -30,6 +31,7 @@ export default function DesktopNavMenu() {
   const { subscription } = useSubscription2();
   const pathname = usePathname();
   const strings = useStrings();
+  const { canInstall, isInstalled, isInstalling, install } = usePWAInstall();
   
   // Load Pokemon stats just like in the mobile menu
   useEffect(() => {
@@ -149,6 +151,27 @@ export default function DesktopNavMenu() {
                   </Link>
                 );
               })}
+              
+              {/* Install App Option */}
+              {canInstall && !isInstalled && (
+                <button
+                  onClick={async () => {
+                    setIsOpen(false);
+                    await install();
+                  }}
+                  disabled={isInstalling}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                >
+                  <img 
+                    src="/flat-icons/root-icons/phone-installation.svg" 
+                    alt="Install" 
+                    className="w-5 h-5 object-contain" 
+                  />
+                  <span className="font-medium">
+                    {isInstalling ? 'Installing...' : 'Install Doshi Sensei'}
+                  </span>
+                </button>
+              )}
             </div>
 
             {/* Divider */}

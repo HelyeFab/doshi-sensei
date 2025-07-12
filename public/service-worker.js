@@ -1,5 +1,5 @@
 // Service Worker for Doshi Sensei - Offline Support & Caching
-const CACHE_VERSION = 'v9-svg-fix'; // Force cache refresh for SVG loading issues
+const CACHE_VERSION = 'v10-update-fix'; // Fixed update mechanism
 const CACHE_NAMES = {
   static: `static-cache-${CACHE_VERSION}`,
   dynamic: `dynamic-cache-${CACHE_VERSION}`,
@@ -35,8 +35,9 @@ const CACHEABLE_API_PATTERNS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[ServiceWorker v5] Installing new version...');
+  console.log('[ServiceWorker] Installing new version...');
   console.log('[ServiceWorker] Cache version:', CACHE_VERSION);
+  console.log('[ServiceWorker] Installation time:', new Date().toISOString());
   
   event.waitUntil(
     caches.open(CACHE_NAMES.static)
@@ -295,8 +296,11 @@ async function removefromSyncQueue(id) {
 
 // Message handler for cache management
 self.addEventListener('message', (event) => {
-  if (event.data.type === 'SKIP_WAITING') {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[ServiceWorker] Received SKIP_WAITING message');
     self.skipWaiting();
+    // Claim all clients immediately
+    self.clients.claim();
   }
   
   if (event.data.type === 'CLEAR_CACHE') {

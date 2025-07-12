@@ -31,7 +31,7 @@ const ICON_COLLECTIONS = [
     icons: ['007-giraffe.png']
   },
   {
-    path: '/flat-icons/',
+    path: '/flat-icons/root-icons/',
     icons: ['construction.svg', 'kana-drop.svg', 'listening.svg', 'magnifying-glass.svg', 'matching.svg', 'story.svg', 'word.svg']
   }
 ];

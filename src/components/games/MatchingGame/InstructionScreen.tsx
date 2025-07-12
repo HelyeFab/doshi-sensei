@@ -25,7 +25,7 @@ export default function InstructionScreen({ wordCount, pairCount, maxWords, onSt
       <div className="text-center mb-8">
         <div className="w-24 h-24 mx-auto mb-4 bg-red-500 rounded-lg flex items-center justify-center">
           <img
-            src="/flat-icons/matching.svg"
+            src="/flat-icons/root-icons/matching.svg"
             alt="Matching Game"
             className="w-16 h-16 object-contain"
           />

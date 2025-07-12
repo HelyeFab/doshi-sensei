@@ -373,7 +373,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                       title={musicEnabled ? "Mute music" : "Enable music"}
                     >
                       <img 
-                        src="/flat-icons/woman.svg" 
+                        src="/flat-icons/root-icons/woman.svg" 
                         alt="Music toggle" 
                         className={`w-4 sm:w-5 h-4 sm:h-5 ${!musicEnabled ? 'opacity-50' : ''}`}
                       />

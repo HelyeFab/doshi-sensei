@@ -68,7 +68,7 @@ const FEATURE_CARDS = [
   { title: 'News', icon: '🗞️', href: '/news', description: 'Japanese articles' },
   { title: 'Games', icon: '🎮', href: '/games', description: 'Listening quiz' },
   { title: 'Resources', icon: '🎌', href: '/resources', description: 'Articles & tips' },
-  { title: 'AI Stories', icon: '/flat-icons/story.svg', href: '/stories', description: 'Interactive tales' }
+  { title: 'AI Stories', icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: 'Interactive tales' }
 ];
 
 // Predefined color patterns for optimal visual distribution
@@ -487,7 +487,7 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
                     <img 
-                      src="/flat-icons/story.svg" 
+                      src="/flat-icons/root-icons/story.svg" 
                       alt="Stories" 
                       width={20}
                       height={20}

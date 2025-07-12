@@ -441,7 +441,7 @@ export default function KanjiBrowserPage() {
               aria-label="Search"
               style={{ lineHeight: 0 }}
             >
-              <img src="/flat-icons/magnifying-glass.svg" alt="Search" className="w-6 h-6" />
+              <img src="/flat-icons/root-icons/magnifying-glass.svg" alt="Search" className="w-6 h-6" />
             </button>
           </form>
         </div>

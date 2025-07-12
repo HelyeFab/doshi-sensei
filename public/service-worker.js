@@ -15,13 +15,13 @@ const STATIC_ASSETS = [
   '/favicon.ico',
   '/doshi.png',
   '/manifest.json',
-  '/flat-icons/story.svg',
-  '/flat-icons/word.svg',
-  '/flat-icons/listening.svg',
-  '/flat-icons/magnifying-glass.svg',
-  '/flat-icons/matching.svg',
-  '/flat-icons/kana-drop.svg',
-  '/flat-icons/construction.svg'
+  '/flat-icons/root-icons/story.svg',
+  '/flat-icons/root-icons/word.svg',
+  '/flat-icons/root-icons/listening.svg',
+  '/flat-icons/root-icons/magnifying-glass.svg',
+  '/flat-icons/root-icons/matching.svg',
+  '/flat-icons/root-icons/kana-drop.svg',
+  '/flat-icons/root-icons/construction.svg'
 ];
 
 // API endpoints patterns to cache

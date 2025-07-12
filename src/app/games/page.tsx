@@ -152,7 +152,7 @@ export default function GamesPage() {
       title: strings.games.modes.kanaDrop.title,
       description: strings.games.modes.kanaDrop.description,
       icon: '🌧️',
-      iconImage: '/flat-icons/kana-drop.svg',
+      iconImage: '/flat-icons/root-icons/kana-drop.svg',
       color: 'bg-cyan-500'
     },
     {
@@ -160,7 +160,7 @@ export default function GamesPage() {
       title: strings.games.modes.listening.title,
       description: strings.games.modes.listening.description,
       icon: '🎧',
-      iconImage: '/flat-icons/listening.svg',
+      iconImage: '/flat-icons/root-icons/listening.svg',
       color: 'bg-blue-500'
     },
     {
@@ -168,7 +168,7 @@ export default function GamesPage() {
       title: strings.games.modes.assembly.title,
       description: strings.games.modes.assembly.description,
       icon: '🔤',
-      iconImage: '/flat-icons/word.svg',
+      iconImage: '/flat-icons/root-icons/word.svg',
       color: 'bg-purple-500'
     },
     {
@@ -176,7 +176,7 @@ export default function GamesPage() {
       title: strings.games.modes.matching.title,
       description: strings.games.modes.matching.description,
       icon: '🎯',
-      iconImage: '/flat-icons/matching.svg',
+      iconImage: '/flat-icons/root-icons/matching.svg',
       color: 'bg-red-500'
     },
     {
@@ -184,7 +184,7 @@ export default function GamesPage() {
       title: strings.games.modes.sentenceScramble.title,
       description: strings.games.modes.sentenceScramble.description,
       icon: '🧩',
-      iconImage: '/flat-icons/construction.svg',
+      iconImage: '/flat-icons/root-icons/construction.svg',
       color: 'bg-orange-500'
     }
   ];

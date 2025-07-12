@@ -68,7 +68,7 @@ export default function DesktopNavMenu() {
     { label: strings.nav.news || 'News', icon: '🗞️', href: '/news' },
     { label: strings.nav.games || 'Games', icon: '🎮', href: '/games' },
     { label: strings.nav.resources || 'Resources', icon: '🎌', href: '/resources' },
-    { label: strings.nav.stories || 'Stories', icon: '/flat-icons/story.svg', href: '/stories' },
+    { label: strings.nav.stories || 'Stories', icon: '/flat-icons/root-icons/story.svg', href: '/stories' },
   ];
 
   return (

@@ -336,7 +336,7 @@ export default function VocabularyPage() {
                 {searching ? (
                   <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
                 ) : (
-                  <img src="/flat-icons/magnifying-glass.svg" alt="Search" className="w-6 h-6" />
+                  <img src="/flat-icons/root-icons/magnifying-glass.svg" alt="Search" className="w-6 h-6" />
                 )}
               </button>
             </div>

@@ -7,9 +7,9 @@ After multiple attempts to fix the sync functionality, critical errors persist i
 
 ### 1. 404 Errors for Static Assets
 ```
-GET https://doshisensei.com/flat-icons/story.svg 404 (Not Found)
+GET https://doshisensei.com/flat-icons/root-icons/story.svg 404 (Not Found)
 ```
-- File exists at `/public/flat-icons/story.svg`
+- File exists at `/public/flat-icons/root-icons/story.svg`
 - Service worker is intercepting the request
 - Multiple cache version updates haven't resolved it
 

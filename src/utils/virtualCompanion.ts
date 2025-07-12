@@ -24,7 +24,7 @@ export const ALL_CHARACTERS = [
   { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/006-leopard.svg', name: 'Leopard', category: 'wild-animals' },
   { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg', name: 'Giraffe', category: 'wild-animals' },
   { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/008-koala.svg', name: 'Koala', category: 'wild-animals' },
-  { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/009-panda bear.svg', name: 'Panda', category: 'wild-animals' },
+  { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/009-panda-bear.svg', name: 'Panda', category: 'wild-animals' },
   { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/010-tiger.svg', name: 'Tiger', category: 'wild-animals' },
   { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/012-sloth.svg', name: 'Sloth', category: 'wild-animals' },
   { path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/013-hippopotamus.svg', name: 'Hippo', category: 'wild-animals' },
@@ -51,10 +51,10 @@ export const ALL_CHARACTERS = [
   // Emotion Characters (Watermelons)
   { path: '/flat-icons/17517790-summer-watermelon/svg/001-happy.svg', name: 'Happy Melon', category: 'emotions' },
   { path: '/flat-icons/17517790-summer-watermelon/svg/002-love.svg', name: 'Love Melon', category: 'emotions' },
-  { path: '/flat-icons/17517790-summer-watermelon/svg/011-laugh emoji.svg', name: 'Laughing Melon', category: 'emotions' },
+  { path: '/flat-icons/17517790-summer-watermelon/svg/011-laugh-emoji.svg', name: 'Laughing Melon', category: 'emotions' },
   { path: '/flat-icons/17517790-summer-watermelon/svg/013-wow.svg', name: 'Amazed Melon', category: 'emotions' },
   { path: '/flat-icons/17517790-summer-watermelon/svg/014-angel.svg', name: 'Angel Melon', category: 'emotions' },
-  { path: '/flat-icons/17517790-summer-watermelon/svg/018-valentin day.svg', name: 'Valentine Melon', category: 'emotions' },
+  { path: '/flat-icons/17517790-summer-watermelon/svg/018-valentin-day.svg', name: 'Valentine Melon', category: 'emotions' },
   { path: '/flat-icons/17517790-summer-watermelon/svg/020-ok.svg', name: 'OK Melon', category: 'emotions' },
 
   // Educational Characters
@@ -66,8 +66,8 @@ export const ALL_CHARACTERS = [
   { path: '/flat-icons/4341021-education/svg/049-mortarboard.svg', name: 'Graduate Cap', category: 'education' },
   { path: '/flat-icons/4341021-education/svg/029-telescope.svg', name: 'Explorer Telescope', category: 'education' },
   { path: '/flat-icons/4341021-education/svg/048-microscope.svg', name: 'Curious Microscope', category: 'education' },
-  { path: '/flat-icons/4341021-education/svg/044-color palette.svg', name: 'Creative Palette', category: 'education' },
-  { path: '/flat-icons/4341021-education/svg/018-paper plane.svg', name: 'Dream Plane', category: 'education' }
+  { path: '/flat-icons/4341021-education/svg/044-color-palette.svg', name: 'Creative Palette', category: 'education' },
+  { path: '/flat-icons/4341021-education/svg/018-paper-plane.svg', name: 'Dream Plane', category: 'education' }
 ];
 
 // Encouraging quotes (mix of Japanese learning and general motivation)

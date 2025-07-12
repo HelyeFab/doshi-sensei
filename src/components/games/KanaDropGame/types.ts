@@ -73,7 +73,7 @@ export const DISTRACTOR_IMAGES = [
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/006-leopard.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/008-koala.svg',
-  '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/009-panda bear.svg',
+  '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/009-panda-bear.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/010-tiger.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/012-sloth.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/013-hippopotamus.svg',
@@ -86,10 +86,10 @@ export const DISTRACTOR_IMAGES = [
   // Emotions - working in virtual companion
   '/flat-icons/17517790-summer-watermelon/svg/001-happy.svg',
   '/flat-icons/17517790-summer-watermelon/svg/002-love.svg',
-  '/flat-icons/17517790-summer-watermelon/svg/011-laugh emoji.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/011-laugh-emoji.svg',
   '/flat-icons/17517790-summer-watermelon/svg/013-wow.svg',
   '/flat-icons/17517790-summer-watermelon/svg/014-angel.svg',
-  '/flat-icons/17517790-summer-watermelon/svg/018-valentin day.svg',
+  '/flat-icons/17517790-summer-watermelon/svg/018-valentin-day.svg',
   '/flat-icons/17517790-summer-watermelon/svg/020-ok.svg',
   
   // Numbers only (removing problematic alphabet SVGs)

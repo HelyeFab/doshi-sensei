@@ -4,7 +4,7 @@
 const ICON_COLLECTIONS = [
   {
     path: '/flat-icons/17517790-summer-watermelon/svg/',
-    icons: ['001-happy.svg', '002-love.svg', '011-laugh emoji.svg', '013-wow.svg', '014-angel.svg', '018-valentin day.svg', '020-ok.svg']
+    icons: ['001-happy.svg', '002-love.svg', '011-laugh-emoji.svg', '013-wow.svg', '014-angel.svg', '018-valentin-day.svg', '020-ok.svg']
   },
   {
     path: '/flat-icons/1752632-pokemon/png/',
@@ -20,11 +20,11 @@ const ICON_COLLECTIONS = [
   },
   {
     path: '/flat-icons/4341021-education/svg/',
-    icons: ['011-book.svg', '012-laptop.svg', '017-dictionary.svg', '018-paper plane.svg', '025-medal.svg', '029-telescope.svg', '037-trophy.svg', '044-color palette.svg', '048-microscope.svg', '049-mortarboard.svg']
+    icons: ['011-book.svg', '012-laptop.svg', '017-dictionary.svg', '018-paper-plane.svg', '025-medal.svg', '029-telescope.svg', '037-trophy.svg', '044-color-palette.svg', '048-microscope.svg', '049-mortarboard.svg']
   },
   {
     path: '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/',
-    icons: ['001-raccoon.svg', '002-zebra.svg', '003-bear.svg', '004-cheetah.svg', '005-fox.svg', '006-leopard.svg', '007-giraffe.svg', '008-koala.svg', '009-panda bear.svg', '010-tiger.svg', '012-sloth.svg', '013-hippopotamus.svg', '014-rhinoceros.svg', '015-monkey.svg', '016-deer.svg', '019-lion.svg', '020-elephant.svg']
+    icons: ['001-raccoon.svg', '002-zebra.svg', '003-bear.svg', '004-cheetah.svg', '005-fox.svg', '006-leopard.svg', '007-giraffe.svg', '008-koala.svg', '009-panda-bear.svg', '010-tiger.svg', '012-sloth.svg', '013-hippopotamus.svg', '014-rhinoceros.svg', '015-monkey.svg', '016-deer.svg', '019-lion.svg', '020-elephant.svg']
   },
   {
     path: '/flat-icons/8376275-wild-animals-flat-1-of-1/png/',

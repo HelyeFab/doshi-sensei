@@ -51,6 +51,21 @@
     Content-Type = "image/svg+xml"
 
 # Serve static files before the catch-all redirect
+# Handle root-level SVGs in flat-icons
+[[redirects]]
+  from = "/flat-icons/*.svg"
+  to = "/flat-icons/:splat.svg"
+  status = 200
+  force = true
+
+# Handle nested SVGs in flat-icons subdirectories
+[[redirects]]
+  from = "/flat-icons/**/*.svg"
+  to = "/flat-icons/:splat.svg"
+  status = 200
+  force = true
+
+# Handle all flat-icons assets
 [[redirects]]
   from = "/flat-icons/*"
   to = "/flat-icons/:splat"

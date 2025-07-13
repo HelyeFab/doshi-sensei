@@ -1,0 +1,54 @@
+'use client';
+
+import { strings } from '../../config/strings/strings';
+
+export function TestModal() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: strings.string_14,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: 'white',
+          padding: strings.string_10,
+          borderRadius: strings.string_11,
+          maxWidth: strings.string_12,
+          width: '90%',
+          textAlign: 'center',
+          border: strings.solid,
+        }}
+      >
+        <h1 style={{ fontSize: strings.string_1, fontWeight: 'bold', marginBottom: strings.string_4, color: '#333' }}>
+          🎌 Welcome to Doshi Sensei!
+        </h1>
+        <p style={{ marginBottom: strings.string_4, color: '#666' }}>
+          This is a test modal to verify rendering works.
+        </p>
+        <button
+          style={{
+            backgroundColor: strings.string_6,
+            color: 'white',
+            padding: strings.string_7,
+            borderRadius: strings.string_8,
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: strings.string_9,
+          }}
+        >
+          Test Button
+        </button>
+      </div>
+    </div>
+  );
+}

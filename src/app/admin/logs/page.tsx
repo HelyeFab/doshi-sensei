@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useAdminLogs } from '@/hooks/useAdminLogs';
 import { AdminLogAction } from '@/types/admin';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { formatLogAction, getActionSeverity } from '@/utils/adminLogs';
 
 const ACTIONS_PER_PAGE = 20;

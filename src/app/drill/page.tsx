@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, FlashcardQuality, WordType } from '@/types';
 import { getCommonWordsForPractice, searchWords } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { PageHeader } from '@/components/PageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';

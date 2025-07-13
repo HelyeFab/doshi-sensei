@@ -5,7 +5,7 @@ import Confetti from 'react-confetti';
 import { useEffect, useState } from 'react';
 import { GameStats } from './types';
 import { getPerformanceMessage } from './gameUtils';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface VictoryScreenProps {
   stats: GameStats;

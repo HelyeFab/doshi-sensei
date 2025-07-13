@@ -6,7 +6,7 @@ import { KanjiEditor } from './KanjiEditor';
 import { MoodBoardPreview } from './MoodBoardPreview';
 import { JsonEditor } from './JsonEditor';
 import { convertImportToMoodBoard, validateMoodBoardImport } from '@/utils/moodBoardConverter';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface MoodBoardEditorProps {
   initialData?: MoodBoard;

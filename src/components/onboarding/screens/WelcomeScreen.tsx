@@ -1,7 +1,7 @@
 'use client';
 
 import { TutorialButton } from '../components/TutorialButton';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export interface WelcomeScreenProps {
   onNext: () => void;

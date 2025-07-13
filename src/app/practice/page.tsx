@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { JapaneseWord, ConjugationForms, WordList } from '@/types';
 import { searchWords } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';

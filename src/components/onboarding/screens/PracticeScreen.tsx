@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { TutorialButton } from '../components/TutorialButton';
 import { JapaneseWord } from '@/types';
 import { ConjugationEngine } from '@/utils/conjugation';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export interface PracticeScreenProps {
   onNext: () => void;

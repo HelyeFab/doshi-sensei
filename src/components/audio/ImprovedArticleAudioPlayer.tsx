@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NewsArticle } from '@/types/news';
 import ArticleTTSManager from '@/utils/articleTTS';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface ArticleAudioPlayerProps {
   article: NewsArticle;

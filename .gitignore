@@ -73,3 +73,5 @@ scraping-next
 tatoeba/
 scripts/process-tatoeba*.js
 
+translation-scripts/
+

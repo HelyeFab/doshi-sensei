@@ -11,7 +11,8 @@ import {
   updateDoc,
   increment,
   serverTimestamp,
-  Timestamp
+  Timestamp,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Story, StoryProgress, StoryStats } from '@/types/story';
@@ -353,6 +354,17 @@ class StoryManager {
       });
     } catch (error) {
       console.error('Error getting all stories (admin):', error);
+      throw error;
+    }
+  }
+
+  // Delete a story by ID (admin only)
+  async deleteStory(storyId: string): Promise<void> {
+    try {
+      const storyRef = doc(db, this.STORIES_COLLECTION, storyId);
+      await deleteDoc(storyRef);
+    } catch (error) {
+      console.error('Error deleting story:', error);
       throw error;
     }
   }

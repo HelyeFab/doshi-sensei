@@ -6,7 +6,7 @@ import { UserType } from '@/lib/entitlements/types';
 import { EditableLimitCell } from './EditableLimitCell';
 import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
 import { useNotification } from '@/contexts/NotificationContext';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface FeatureAccess {
   allowed: boolean;

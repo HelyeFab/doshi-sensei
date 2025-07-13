@@ -1,0 +1,1599 @@
+'use client';
+
+import { strings } from '../../config/strings/strings';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, FlashcardQuality, WordType } from '@/types';
+import { getCommonWordsForPractice, searchWords } from '@/utils/api';
+import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
+import { useStrings } from '@/hooks/useLanguage';
+import { PageHeader } from '@/components/PageHeader';
+import { useSettings } from '@/contexts/SettingsContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { Analytics } from '@/utils/analytics';
+import StudyListManager from '@/utils/studyListManager';
+import KanjiListManager from '@/utils/kanjiListManager';
+import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
+import flashcardManager, { FlashcardQuestion, FlashcardSessionConfig } from '@/utils/flashcards';
+import FlashcardCard from '@/components/flashcards/FlashcardCard';
+import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
+import { PracticeCache } from '@/utils/practiceCache';
+
+// Structured Data for Drill Page
+const drillStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": strings.japanese_conjugation_quiz_flashcard_review,
+  "description": strings.interactive_japanese_verb_and_adjective,
+  "url": "https://doshisensei.com/drill",
+  "educationallevel": [strings.beginner, strings.intermediate, strings.advanced],
+  "learningresourcetype": strings.quiz,
+  "about": {
+    "@type": "Thing",
+    "name": strings.japanese_language,
+    "description": strings.japanese_verb_and_vocabulary_testing
+  },
+  "teaches": [
+    strings.japanese_verb_conjugation,
+    strings.grammar_pattern_recognition,
+    strings.vocabulary_memorization,
+    strings.spaced_repetition_learning,
+    strings.jlpt_preparation,
+    strings.interactive_japanese_practice
+  ],
+  "educationalrole": strings.student,
+  "typicalagerange": "13-65",
+  "interactivitytype": strings.active,
+  "isaccessibleforfree": true,
+  "inlanguage": "en",
+  "keywords": [
+    strings.japanese_quiz,
+    strings.verb_conjugation_test,
+    strings.japanese_grammar_drill,
+    strings.flashcard_review,
+    strings.spaced_repetition,
+    strings.jlpt_practice,
+    strings.japanese_learning_quiz,
+    strings.vocabulary_review
+  ]
+};
+
+export default function DrillPage() {
+  const router = useRouter();
+  const { settings, isLoading: settingsLoading } = useSettings();
+  const { user } = useAuth();
+  const { checkAndTrack } = useAccess();
+  const { feature, access, remaining, isLoading: featureLoading } = useFeature(strings.string_118);
+  const { isPremium, userType } = useSubscription2();
+  const strings = useStrings();
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'conjugation' | 'flashcards'>('conjugation');
+
+  // Conjugation drill state
+  const [questions, setQuestions] = useState<DrillQuestion[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [score, setScore] = useState(0);
+  const [showRules, setShowRules] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [wordTypeFilter, setWordTypeFilter] = useState<'all' | 'verbs' | 'adjectives'>('all');
+  const [wordLists, setWordLists] = useState<WordList[]>([]);
+  const [kanjiLists, setKanjiLists] = useState<KanjiList[]>([]);
+  const [allLists, setAllLists] = useState<(WordList | KanjiList)[]>([]);
+  const [conjugableLists, setConjugableLists] = useState<WordList[]>([]);
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [drillMode, setDrillMode] = useState<'random' | 'lists'>('random');
+  const [autoAdvance, setAutoAdvance] = useState(false);
+
+  // Flashcard state
+  const [flashcardQuestions, setFlashcardQuestions] = useState<FlashcardQuestion[]>([]);
+  const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
+  const [flashcardLoading, setFlashcardLoading] = useState(false);
+  const [flashcardGameStarted, setFlashcardGameStarted] = useState(false);
+  const [flashcardScore, setFlashcardScore] = useState(0);
+  const [flashcardSession, setFlashcardSession] = useState<any>(null);
+  const [flashcardStats, setFlashcardStats] = useState<any>(null);
+  const [showHints, setShowHints] = useState(false);
+  const [cardDirection, setCardDirection] = useState<'kanji-first' | 'english-first' | 'mixed'>('mixed');
+  const [dueCards, setDueCards] = useState<any[]>([]);
+  const [immediateCards, setImmediateCards] = useState<any[]>([]);
+  const [studyRecommendations, setStudyRecommendations] = useState<any>(null);
+
+  // Initialize flashcard manager with user
+  useEffect(() => {
+    if (user) {
+      flashcardManager.setUser(user.uid);
+      loadFlashcardStats();
+    }
+  }, [user]);
+
+  const loadFlashcardStats = async () => {
+    if (!user) return;
+    try {
+      const stats = await flashcardManager.getStudyStats();
+      setFlashcardStats(stats);
+
+      // Load both due cards and immediate review cards
+      const { dueCards: actualDueCards, immediateCards: immediateReviewCards } = await flashcardManager.getAllReviewCards();
+      setDueCards(actualDueCards);
+      setImmediateCards(immediateReviewCards);
+
+      // Load study recommendations
+      const allProgress = await flashcardManager.getAllFlashcardProgress();
+      const { getStudyRecommendations } = await import('@/utils/spacedRepetition');
+      const recommendations = getStudyRecommendations(allProgress);
+      setStudyRecommendations(recommendations);
+    } catch (error) {
+      console.error(strings.error_loading_flashcard, error);
+    }
+  };
+
+  const loadFlashcardQuestions = async () => {
+    if (!user || selectedLists.length === 0) return;
+
+    try {
+      setFlashcardLoading(true);
+
+      // Get all words and kanji from unified study lists
+      let allWords: JapaneseWord[] = [];
+
+      for (const listId of selectedLists) {
+        const { words: listWords, kanji: listKanji } = await StudyListManager.getItemsInList(listId);
+
+        // Add words directly
+        allWords = [...allWords, ...listWords];
+
+        // Convert kanji to JapaneseWord format for flashcards
+        const kanjiAsWords: JapaneseWord[] = listKanji.map(kanji => ({
+          id: `kanji_${kanji.kanji}`,
+          kanji: kanji.kanji,
+          kana: kanji.onyomi.length > 0 ? kanji.onyomi[0] : kanji.kunyomi[0],
+          romaji: '', // Not needed for flashcards
+          meaning: kanji.meaning,
+          type: 'noun', // Default type for kanji
+          jlpt: kanji.jlpt || strings.string_33,
+          frequency: 0,
+          tags: ['kanji'] // Required property
+        }));
+        allWords = [...allWords, ...kanjiAsWords];
+      }
+
+
+      if (allWords.length === 0) {
+        setFlashcardQuestions([]);
+        return;
+      }
+
+      // Create flashcard questions manually since we have mixed content
+      const shuffledWords = allWords.sort(() => Math.random() - 0.5);
+      const limitedWords = shuffledWords.slice(0, 20);
+
+      const questions: FlashcardQuestion[] = limitedWords.map(word => {
+        let cardType: 'kanji-to-meaning' | 'meaning-to-kanji';
+
+        // Determine card type based on user preference
+        if (cardDirection === 'kanji-first') {
+          cardType = 'kanji-to-meaning';
+        } else if (cardDirection === 'english-first') {
+          cardType = 'meaning-to-kanji';
+        } else {
+          // Mixed mode - random selection
+          cardType = Math.random() < 0.5 ? 'kanji-to-meaning' : 'meaning-to-kanji';
+        }
+
+        return {
+          word,
+          cardType,
+          question: cardType === 'kanji-to-meaning' ? word.kanji : word.meaning,
+          answer: cardType === 'kanji-to-meaning' ? word.meaning : word.kanji,
+          hint: word.kana
+        };
+      });
+
+      setFlashcardQuestions(questions);
+
+      if (questions.length > 0) {
+        const config: FlashcardSessionConfig = {
+          wordListIds: selectedLists,
+          maxCards: 20,
+          cardTypes: ['kanji-to-meaning', 'meaning-to-kanji'],
+          reviewDueOnly: false
+        };
+        const session = await flashcardManager.createSession(config);
+        setFlashcardSession(session);
+      }
+    } catch (error) {
+      console.error(strings.error_loading_flashcard, error);
+    } finally {
+      setFlashcardLoading(false);
+    }
+  };
+
+  const handleFlashcardAnswer = async (quality: FlashcardQuality, responseTime: number) => {
+    if (!flashcardSession || !flashcardQuestions[currentFlashcardIndex]) return;
+
+    const currentQuestion = flashcardQuestions[currentFlashcardIndex];
+    const wasCorrect = quality >= 3;
+
+    try {
+      // Determine card type for advanced algorithm
+      const cardType = currentQuestion.word.id.startsWith(strings.string_156) ? 'kanji' :
+                      currentQuestion.word.tags?.includes('grammar') ? 'grammar' : 'word';
+
+      // Get or create progress with proper card type
+      const currentProgress = await flashcardManager.getOrCreateFlashcardProgress(
+        currentQuestion.word.id,
+        cardType
+      );
+
+      // Update flashcard progress
+      const updatedProgress = await flashcardManager.updateProgress(
+        currentQuestion.word.id,
+        quality,
+        responseTime
+      );
+
+      // Record the review
+      await flashcardManager.recordReview(
+        flashcardSession.id,
+        currentQuestion.word.id,
+        currentQuestion.cardType,
+        quality,
+        responseTime,
+        wasCorrect,
+        updatedProgress.interval,
+        updatedProgress.interval
+      );
+
+      // Update score
+      if (wasCorrect) {
+        setFlashcardScore(prev => prev + 1);
+      }
+
+      // Move to next card or finish session
+      if (currentFlashcardIndex < flashcardQuestions.length - 1) {
+        setCurrentFlashcardIndex(prev => prev + 1);
+      } else {
+        // Session completed
+        await flashcardManager.completeSession(
+          flashcardSession.id,
+          flashcardQuestions.length,
+          flashcardScore + (wasCorrect ? 1 : 0)
+        );
+        setFlashcardGameStarted(false);
+      }
+    } catch (error) {
+      console.error(strings.error_handling_flashcard, error);
+    }
+  };
+
+  const startFlashcardSession = () => {
+    setFlashcardGameStarted(true);
+    setCurrentFlashcardIndex(0);
+    setFlashcardScore(0);
+  };
+
+  const restartFlashcardSession = () => {
+    setFlashcardGameStarted(false);
+    setCurrentFlashcardIndex(0);
+    setFlashcardScore(0);
+    loadFlashcardQuestions();
+  };
+
+  // Existing conjugation drill functions
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const generateDrillQuestion = (
+    word: JapaneseWord,
+    targetForm: keyof ConjugationForms,
+    correctAnswer: string
+  ): DrillQuestion => {
+    const stem = generateQuestionStem(word, targetForm);
+    const distractors = generateDistractors(word, targetForm, correctAnswer);
+    const options = shuffleArray([correctAnswer, ...distractors]);
+
+    return {
+      id: `${word.id}-${targetForm}`,
+      word,
+      targetForm,
+      stem,
+      correctAnswer,
+      options,
+      rule: ConjugationEngine.getConjugationRule(word.type, targetForm)
+    };
+  };
+
+  const generateDistractors = (word: JapaneseWord, targetForm: keyof ConjugationForms, correctAnswer: string): string[] => {
+
+    const conjugations = ConjugationEngine.conjugate(word);
+
+    const allForms = Object.values(conjugations).filter(form => form && form !== correctAnswer);
+
+    const distractors: string[] = [];
+
+    // Add conjugation forms as distractors
+    for (let i = 0; i < Math.min(4, allForms.length); i++) {
+      if (!distractors.includes(allForms[i])) {
+        distractors.push(allForms[i]);
+      }
+    }
+
+    // Generate artificial distractors if needed
+    while (distractors.length < 4) {
+      const kanjiStem = word.kanji.slice(0, -1);
+      const endings = ['る', 'た', strings.string_37, strings.string_38, 'て', 'ぬ', 'ば', strings.string_39, strings.string_40];
+
+      for (let ending of endings) {
+        if (distractors.length >= 4) break;
+
+        const distractor = kanjiStem + ending;
+        if (!distractors.includes(distractor) &&
+            distractor !== correctAnswer &&
+            !allForms.includes(distractor) &&
+            distractor !== word.kanji) {
+          distractors.push(distractor);
+        }
+      }
+
+      // Emergency fallback
+      if (distractors.length < 4) {
+        const emergency = [`${kanjiStem}XX`, `${kanjiStem}YY`, `${kanjiStem}ZZ`];
+        for (let emerg of emergency) {
+          if (distractors.length >= 4) break;
+          if (!distractors.includes(emerg)) {
+            distractors.push(emerg);
+          }
+        }
+      }
+
+      break; // Prevent infinite loop
+    }
+
+    return distractors.slice(0, 4); // Return exactly 4 distractors
+  };
+
+  const loadWordLists = useCallback(async () => {
+    try {
+
+      // Load unified study lists and convert them to legacy format for compatibility
+      const studyLists = await StudyListManager.getAllStudyLists();
+
+
+      const legacyWordLists: WordList[] = studyLists.map(studyList => ({
+        id: studyList.id,
+        name: studyList.name,
+        description: studyList.description,
+        wordIds: studyList.itemIds,
+        createdAt: studyList.createdAt,
+        updatedAt: studyList.updatedAt,
+        color: studyList.color,
+        isConjugable: studyList.type === 'drillable'
+      }));
+
+      // Use the converted lists
+      setWordLists(legacyWordLists);
+    } catch (err) {
+      console.error(strings.error_loading_word, err);
+      // No lists available
+      setWordLists([]);
+    }
+  }, []);
+
+  const loadKanjiLists = useCallback(async () => {
+    try {
+      // For now, load legacy kanji lists until we fully migrate
+      const lists = await KanjiListManager.getAllKanjiLists();
+      setKanjiLists(lists);
+    } catch (err) {
+      console.error(strings.error_loading_kanji, err);
+    }
+  }, []);
+
+  const loadAllLists = useCallback(async () => {
+    await Promise.all([loadWordLists(), loadKanjiLists()]);
+  }, [loadWordLists, loadKanjiLists]);
+
+  const loadQuestionsForWord = useCallback(async (word: JapaneseWord) => {
+    console.log(strings.loadquestionsforword_called, word);
+    try {
+      setLoading(true);
+      const forms: (keyof ConjugationForms)[] = [
+        'present', 'past', 'negative', strings.pastnegative,
+        'polite', strings.politepast, strings.teform
+      ];
+
+      const applicableForms = forms.filter(form => {
+        const conjugations = ConjugationEngine.conjugate(word);
+        return conjugations[form] !== undefined;
+      });
+
+      console.log(strings.applicable, applicableForms);
+
+      const selectedForms = shuffleArray([...applicableForms]).slice(0, 5);
+      const conjugations = ConjugationEngine.conjugate(word);
+      const drillQuestions = selectedForms.map(form => {
+        const correctAnswer = conjugations[form];
+        if (!correctAnswer) {
+          return generateDrillQuestion(word, 'present', conjugations.present);
+        }
+        return generateDrillQuestion(word, form, correctAnswer);
+      });
+
+      console.log(strings.generated, drillQuestions);
+      setQuestions(drillQuestions);
+    } catch (error) {
+      console.error(strings.error_loading_questions_for, error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const loadQuestions = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      let words: JapaneseWord[] = [];
+
+      if (drillMode === 'lists' && selectedLists.length > 0) {
+        // Use the new unified system to get words from lists
+        for (const listId of selectedLists) {
+          const { words: listWords } = await StudyListManager.getItemsInList(listId);
+          words = [...words, ...listWords];
+        }
+
+
+        if (words.length === 0) {
+          setQuestions([]);
+          return;
+        }
+
+        // Debug: log word types before filtering
+        words.forEach((word, index) => {
+        });
+
+        // Keep track of all words before filtering
+        const allWords = [...words];
+
+        // Filter for conjugable words using strict validation
+        const originalCount = words.length;
+        words = words.filter(word => {
+          // Check for explicit conjugable types
+          const conjugableTypes: WordType[] = [strings.ichidan, strings.godan, strings.irregular, 'i-adjective', 'na-adjective'];
+          if (conjugableTypes.includes(word.type)) {
+            return true;
+          }
+
+          // For words that might be misclassified, try to fix them via API lookup
+          return false; // We'll handle API lookup separately
+        });
+
+
+        // If we have few or no conjugable words, try to fix misclassified ones
+        if (words.length < 5) {
+          const remainingWords = allWords.filter((w: JapaneseWord) => !words.includes(w));
+
+          for (const word of remainingWords.slice(0, 10)) { // Limit API calls
+            try {
+              const fixedWord = await fixWordType(word);
+              const conjugableTypes: WordType[] = [strings.ichidan, strings.godan, strings.irregular, 'i-adjective', 'na-adjective'];
+              if (conjugableTypes.includes(fixedWord.type)) {
+                words.push(fixedWord);
+              }
+            } catch (error) {
+              console.error(`Failed to fix word type for ${word.kanji}:`, error);
+            }
+          }
+        }
+
+
+        if (words.length === 0) {
+          setQuestions([]);
+          return;
+        }
+      } else {
+        words = await getCommonWordsForPractice();
+      }
+
+      const filteredWords = words.filter(word => {
+        if (wordTypeFilter === 'verbs') {
+          return word.type === strings.ichidan || word.type === strings.godan || word.type === strings.irregular;
+        } else if (wordTypeFilter === 'adjectives') {
+          return word.type === 'i-adjective' || word.type === 'na-adjective';
+        }
+        return true;
+      });
+
+      if (filteredWords.length === 0) {
+        setQuestions([]);
+        return;
+      }
+
+      const shuffledWords = shuffleArray(filteredWords);
+      const drillQuestions = await generateDrillQuestions(shuffledWords, settings.dailyGoal);
+      setQuestions(drillQuestions);
+    } catch (error) {
+      console.error(strings.error_loading, error);
+      setQuestions([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [drillMode, selectedLists, settings.dailyGoal, wordTypeFilter]);
+
+  // Enhanced word type lookup with pattern matching fallback
+  const fixWordTypeWithAPI = async (word: JapaneseWord): Promise<JapaneseWord> => {
+    if (word.type === strings.ichidan || word.type === strings.godan || word.type === strings.irregular || word.type === 'i-adjective' || word.type === 'na-adjective') {
+      return word; // Already correctly classified
+    }
+
+
+    // First try pattern-based classification (faster and doesn't rely on API)
+    const patternFixedWord = fixWordTypeByPattern(word);
+    if (patternFixedWord.type !== word.type) {
+      return patternFixedWord;
+    }
+
+    // If pattern matching didn't work, try API lookup (with better error handling)
+    try {
+      // Use existing searchWords API to get authoritative word type
+      const apiResults = await searchWords(word.kanji, 1);
+
+      if (apiResults.length > 0) {
+        const apiWord = apiResults[0];
+
+        // If API gives us a conjugable type, use it
+        if ([strings.ichidan, strings.godan, strings.irregular, 'i-adjective', 'na-adjective'].includes(apiWord.type)) {
+          return { ...word, type: apiWord.type };
+        }
+      }
+
+      // If kanji lookup fails, try kana lookup
+      if (word.kana && word.kanji !== word.kana) {
+        const kanaResults = await searchWords(word.kana, 1);
+        if (kanaResults.length > 0) {
+          const kanaWord = kanaResults[0];
+
+          if ([strings.ichidan, strings.godan, strings.irregular, 'i-adjective', 'na-adjective'].includes(kanaWord.type)) {
+            return { ...word, type: kanaWord.type };
+          }
+        }
+      }
+
+    } catch (error) {
+      console.error(`🔧 API lookup failed for ${word.kanji} (${word.kana}):`, error);
+    }
+
+    return word; // No change needed or API failed
+  };
+
+  // Pattern-based word type classification (fallback when API fails)
+  const fixWordTypeByPattern = (word: JapaneseWord): JapaneseWord => {
+    const kana = word.kana || word.kanji; // Fallback to kanji if kana is undefined
+    const kanji = word.kanji;
+
+    // Common verb patterns
+    if (kana && kana.endsWith('る')) {
+      // Check for ichidan verb patterns
+      const ichidanEndings = [strings.string_69, strings.string_70, strings.string_71, strings.string_72, strings.string_73, strings.string_74, strings.string_75, strings.string_76, strings.string_77, strings.string_78];
+      if (ichidanEndings.some(ending => kana.endsWith(ending))) {
+        return { ...word, type: strings.ichidan };
+      }
+      // Could be godan る verb
+      return { ...word, type: strings.godan };
+    }
+
+    // Godan verb endings
+    const godanEndings = ['う', 'く', 'ぐ', 'す', 'つ', 'ぬ', 'ぶ', 'む'];
+    if (kana && godanEndings.some(ending => kana.endsWith(ending))) {
+      return { ...word, type: strings.godan };
+    }
+
+    // i-adjective pattern
+    if (kana && kana.endsWith('い') && !kana.endsWith(strings.string_82) && !kanji.includes(strings.string_93) && !kanji.includes(strings.string_84)) {
+      return { ...word, type: 'i-adjective' };
+    }
+
+    // Common irregular verbs
+    const irregularVerbs = [strings.string_85, strings.string_86, strings.string_87, strings.string_88, strings.string_89];
+    if (irregularVerbs.includes(kanji) || (kana && irregularVerbs.includes(kana))) {
+      return { ...word, type: strings.irregular };
+    }
+
+    // Common na-adjectives (these are often misclassified as nouns)
+    const commonNaAdjectives = [
+      strings.string_91, strings.string_92, strings.string_93, strings.string_94, strings.string_95, strings.string_96, strings.string_97, strings.string_98, strings.string_99, strings.string_100,
+      strings.string_101, strings.string_102, strings.string_103, strings.string_104, strings.string_105, strings.string_106, strings.string_107, strings.string_108, strings.string_109
+    ];
+    if (commonNaAdjectives.includes(kanji)) {
+      return { ...word, type: 'na-adjective' };
+    }
+
+    return word; // No pattern match found
+  };
+
+  // Cache for API lookups to avoid repeated calls
+  const wordTypeCache = new Map<string, JapaneseWord>();
+
+  // Wrapper that uses cache for performance
+  const fixWordType = async (word: JapaneseWord): Promise<JapaneseWord> => {
+    const cacheKey = `${word.kanji}-${word.kana}`;
+
+    if (wordTypeCache.has(cacheKey)) {
+      return wordTypeCache.get(cacheKey)!;
+    }
+
+    const fixedWord = await fixWordTypeWithAPI(word);
+    wordTypeCache.set(cacheKey, fixedWord);
+    return fixedWord;
+  };
+
+  const generateDrillQuestions = async (words: JapaneseWord[], targetCount: number): Promise<DrillQuestion[]> => {
+    const questions: DrillQuestion[] = [];
+
+    for (let i = 0; i < targetCount; i++) {
+      // Cycle through words if we need more questions than words available
+      const originalWord = words[i % words.length];
+      const word = await fixWordType(originalWord); // Fix word type before conjugation
+
+      const targetForm = getRandomConjugationForm(word.type);
+      const conjugations = ConjugationEngine.conjugate(word);
+      const correctAnswer = conjugations[targetForm];
+
+
+      // Skip words that have empty/invalid conjugations
+      if (!correctAnswer || correctAnswer.trim() === '') {
+
+        // Try present form as fallback
+        if (conjugations.present && conjugations.present.trim() !== '') {
+          questions.push(generateDrillQuestion(word, 'present', conjugations.present));
+        } else {
+          // Skip this word entirely if no valid conjugations exist
+          continue;
+        }
+      } else {
+        questions.push(generateDrillQuestion(word, targetForm, correctAnswer));
+      }
+    }
+
+    return questions;
+  };
+
+  useEffect(() => {
+    const initializeSystem = async () => {
+      // Only initialize if we haven't already done so
+      const hasInitialized = localStorage.getItem(strings.string_111);
+      if (!hasInitialized) {
+        await StudyListManager.initializeNewSystem();
+        localStorage.setItem(strings.string_111, 'true');
+      }
+      loadAllLists();
+      
+      // Preload practice cache for quick drill preview
+      PracticeCache.preloadCache().catch(err => {
+        console.error(strings.error_preloading_practice, err);
+      });
+    };
+
+    initializeSystem();
+  }, [loadAllLists]);
+
+  // Update computed states after lists are loaded
+  useEffect(() => {
+    // Create unified list for flashcards (all lists)
+    const unified = [...wordLists, ...kanjiLists];
+    setAllLists(unified);
+
+    // Filter only conjugable word lists for conjugation drills
+    const conjugableOnly = wordLists.filter(list => list.isConjugable);
+    setConjugableLists(conjugableOnly);
+  }, [wordLists, kanjiLists]);
+
+  useEffect(() => {
+    const loadInitialQuestions = async () => {
+      if (settingsLoading) return;
+
+      if (typeof window !== 'undefined') {
+        const storedWord = sessionStorage.getItem(strings.drillword);
+        if (storedWord) {
+          try {
+            const word = JSON.parse(storedWord);
+            await loadQuestionsForWord(word);
+            sessionStorage.removeItem(strings.drillword);
+          } catch (err) {
+            console.error(strings.error_parsing_stored, err);
+            loadQuestions();
+          }
+        } else {
+          loadQuestions();
+        }
+      } else {
+        loadQuestions();
+      }
+    };
+
+    loadInitialQuestions();
+  }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists, loadQuestions, loadQuestionsForWord]);
+
+  // Load flashcard questions when lists or card direction change
+  useEffect(() => {
+    if (activeTab === 'flashcards' && selectedLists.length > 0) {
+      loadFlashcardQuestions();
+    }
+  }, [activeTab, selectedLists, cardDirection]);
+
+  // Ensure lists are loaded when switching to flashcard tab
+  useEffect(() => {
+    if (activeTab === 'flashcards') {
+
+      // Force load all lists immediately when switching to flashcards
+      const forceLoadLists = async () => {
+
+        // Load the lists directly and update state immediately
+        try {
+          const [loadedWordLists, loadedKanjiLists] = await Promise.all([
+            (async () => {
+              const studyLists = await StudyListManager.getAllStudyLists();
+              const legacyWordLists = studyLists.map(studyList => ({
+                id: studyList.id,
+                name: studyList.name,
+                description: studyList.description,
+                wordIds: studyList.itemIds,
+                createdAt: studyList.createdAt,
+                updatedAt: studyList.updatedAt,
+                color: studyList.color,
+                isConjugable: studyList.type === 'drillable'
+              }));
+              setWordLists(legacyWordLists);
+              return legacyWordLists;
+            })(),
+            (async () => {
+              const lists = await KanjiListManager.getAllKanjiLists();
+              setKanjiLists(lists);
+              return lists;
+            })()
+          ]);
+
+          // Immediately update allLists with the combined results
+          const combinedLists = [...loadedWordLists, ...loadedKanjiLists];
+          setAllLists(combinedLists);
+
+          // Also update conjugableLists
+          const conjugableOnly = loadedWordLists.filter(list => list.isConjugable);
+          setConjugableLists(conjugableOnly);
+
+        } catch (error) {
+          console.error(strings.error_force_loading, error);
+        }
+      };
+
+      forceLoadLists();
+    }
+  }, [activeTab]);
+
+  const handleAnswerSelect = async (answer: string) => {
+    if (showResult) return;
+
+    setSelectedAnswer(answer);
+    setShowResult(true);
+
+    const newScore = answer === currentQuestion.correctAnswer ? score + 1 : score;
+    if (answer === currentQuestion.correctAnswer) {
+      setScore(newScore);
+    }
+
+    const isLastQuestion = currentQuestionIndex >= questions.length - 1;
+    if (isLastQuestion && gameStarted && questions.length > 0) {
+      setTimeout(async () => {
+        await recordDrillSession(newScore);
+
+        // Track drill completion analytics
+        Analytics.trackDrillCompleted(user?.uid, {
+          score: newScore,
+          totalQuestions: questions.length,
+          accuracy: Math.round((newScore / questions.length) * 100),
+          mode: drillMode,
+          completedAt: new Date().toISOString(),
+        });
+      }, 100);
+    }
+
+    // Auto-advance to next question if enabled
+    if (autoAdvance && !isLastQuestion) {
+      setTimeout(() => {
+        handleNextQuestion();
+      }, 2000); // Wait 2 seconds before advancing
+    }
+  };
+
+  const handleNextQuestion = async () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedAnswer(null);
+      setShowResult(false);
+      setShowRules(false);
+    } else {
+      if (gameStarted && questions.length > 0) {
+        await recordDrillSession();
+      }
+    }
+  };
+
+  const handleRestart = () => {
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setScore(0);
+    setShowRules(false);
+    setGameStarted(false);
+    loadQuestions();
+  };
+
+  const startGame = async () => {
+    console.log(strings.startgame_called);
+    // Check if user can do drill
+    const canDo = await checkAndTrack(strings.string_118);
+    console.log(strings.can_do, canDo);
+    if (!canDo) {
+      console.log(strings.user_cannot_do_returning);
+      return;
+    }
+    console.log(strings.setting_gamestarted_to_true);
+    setGameStarted(true);
+  };
+
+  const handleListToggle = (listId: string) => {
+
+    setSelectedLists(prev => {
+      const newSelection = prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId];
+      return newSelection;
+    });
+  };
+
+  const recordDrillSession = async (finalScore?: number) => {
+    const actualScore = finalScore !== undefined ? finalScore : score;
+
+    try {
+      const wordsStudied = questions.map(q => q.word.id);
+      await trackDrillCompleted('conjugation-drill', questions.length, actualScore, wordsStudied);
+
+      // Usage tracking is now handled automatically by checkAndTrack
+    } catch (err) {
+      console.error(strings.error_recording_drill, err);
+    }
+  };
+
+  // Check drill limits
+  if (!featureLoading && access && !access.allowed && remaining === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="text-6xl mb-4">⚡</div>
+          <h3 className="text-xl font-semibold text-foreground mb-4">
+            Daily Drill Limit Reached
+          </h3>
+          <p className="text-muted-foreground mb-6">
+            You've completed {access.usage || 0} out of {access.limit || 3} drills today.
+          </p>
+          <button
+            onClick={() => router.push(strings.string_128)}
+            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+          >
+            Upgrade Plan
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading && activeTab === 'conjugation') {
+    return (
+      <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">{strings.common.loading}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const isFinished = currentQuestionIndex >= questions.length - 1 && showResult;
+  const flashcardFinished = currentFlashcardIndex >= flashcardQuestions.length && flashcardGameStarted;
+
+  return (
+    <>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+
+        {/* Virtual Companion Button positioned within this section */}
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(drillStructuredData),
+          }}
+        />
+
+        {/* Header */}
+        <PageHeader 
+          title={strings.drill.title} 
+          helpKey="drill"
+          rightAction={
+            ((activeTab === 'conjugation' && gameStarted) || (activeTab === 'flashcards' && flashcardGameStarted)) ? (
+              <div className="text-right">
+                <div className="text-sm text-muted-foreground">
+                  {strings.drill.score}: {activeTab === 'conjugation' ? `${score}/${questions.length}` : `${flashcardScore}/${flashcardQuestions.length}`}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {activeTab === 'conjugation'
+                    ? `${currentQuestionIndex + 1} ${strings.common.of} ${questions.length}`
+                    : `${currentFlashcardIndex + 1} ${strings.common.of} ${flashcardQuestions.length}`
+                  }
+                </div>
+              </div>
+            ) : undefined
+          }
+        />
+
+      {/* Tab Navigation - Hide when drill game is active */}
+      {!gameStarted && !flashcardGameStarted && (
+        <div className="flex justify-center mb-8">
+          <div className="bg-muted p-1 rounded-lg inline-flex">
+            <button
+              onClick={() => setActiveTab('conjugation')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'conjugation'
+                  ? strings.string_134
+                  : strings.string_133
+              }`}
+            >
+              ⚡ Conjugation Drills
+            </button>
+            <button
+              onClick={() => setActiveTab('flashcards')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
+                activeTab === 'flashcards'
+                  ? strings.string_134
+                  : strings.string_133
+              }`}
+            >
+              🎴 Flashcard Review
+              {dueCards.length > 0 && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  {dueCards.length > 99 ? '99+' : dueCards.length}
+                </div>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
+        {activeTab === 'conjugation' ? (
+          // Conjugation Drills Content
+          <>
+            {questions.length === 0 ? (
+              <div className="text-center max-w-md mx-auto">
+                <div className="text-6xl mb-4">📚</div>
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  {drillMode === 'lists' && selectedLists.length === 0
+                    ? strings.select_lists_to_drill
+                    : drillMode === 'lists'
+                    ? strings.no_conjugable_words_found
+                    : strings.failed_to_load_data}
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {drillMode === 'lists' && selectedLists.length === 0
+                    ? strings.please_select_at_least_one
+                    : drillMode === 'lists'
+                    ? strings.the_selected_lists_contain_only
+                    : strings.unable_to_load_practice_please}
+                </p>
+                <button
+                  onClick={loadQuestions}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  {strings.common.retry}
+                </button>
+              </div>
+            ) : !gameStarted ? (
+              // Start Screen
+              <div className="text-center py-12">
+                <div className="bg-card border border-border rounded-lg p-8 mb-8">
+                  <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
+                    Ready to practice?
+                  </h2>
+                  <p className="text-muted-foreground mb-4">
+                    Test your knowledge with {questions.length} conjugation questions
+                  </p>
+                  <div className="bg-muted/50 rounded-lg p-3 mb-6">
+                    <div className="text-sm text-muted-foreground">
+                      <span className="text-primary font-medium">Daily Goal:</span> {settings.dailyGoal} questions
+                      <span className="ml-2 text-xs">(Change in Settings)</span>
+                    </div>
+                  </div>
+
+                  {/* Drill Mode Selection */}
+                  <div className="mb-6">
+                    <div className="text-sm text-muted-foreground mb-3">Drill Mode:</div>
+                    <div className="flex gap-2 justify-center flex-wrap mb-4">
+                      <button
+                        onClick={() => setDrillMode('random')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          drillMode === 'random'
+                            ? strings.string_221
+                            : strings.string_220
+                        }`}
+                      >
+                        Random Words
+                      </button>
+                      <button
+                        onClick={() => setDrillMode('lists')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          drillMode === 'lists'
+                            ? strings.string_221
+                            : strings.string_220
+                        }`}
+                      >
+                        My Lists ({conjugableLists.length})
+                      </button>
+                    </div>
+
+                    {/* List Selection - Only Conjugable Lists */}
+                    {drillMode === 'lists' && (
+                      <div className="mb-4">
+                        {conjugableLists.length > 0 ? (
+                          <div className="space-y-3">
+                            <div className="text-sm text-muted-foreground">Select conjugable lists to drill:</div>
+                            <div className="max-h-48 overflow-y-auto space-y-2">
+                              {conjugableLists.map((list) => (
+                                <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLists.includes(list.id)}
+                                    onChange={() => handleListToggle(list.id)}
+                                    className="rounded border-border"
+                                  />
+                                  <div className="flex items-center gap-2 flex-1">
+                                    <div
+                                      className="w-3 h-3 rounded-full"
+                                      style={{ backgroundColor: list.color }}
+                                    ></div>
+                                    <span className="text-sm text-foreground">{list.name}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      ({list.wordIds.length} words)
+                                    </span>
+                                    {list.isConjugable && (
+                                      <span className="text-xs text-green-400">✓ conjugable</span>
+                                    )}
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
+                            No conjugable lists found. Create vocabulary lists with verbs and adjectives to use conjugation drills.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Word Type Filter */}
+                  <div className="mb-6">
+                    <div className="text-sm text-muted-foreground mb-3">Practice with:</div>
+                    <div className="flex gap-2 justify-center flex-wrap">
+                      {(['all', 'verbs', 'adjectives'] as const).map((filter) => (
+                        <button
+                          key={filter}
+                          onClick={() => setWordTypeFilter(filter)}
+                          className={`px-4 py-2 rounded-lg border transition-colors ${
+                            wordTypeFilter === filter
+                              ? strings.string_221
+                              : strings.string_220
+                          }`}
+                        >
+                          {filter === 'all' ? strings.all_types :
+                           filter === 'verbs' ? strings.verbs_only : strings.adjectives_only}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Auto-Advance Toggle */}
+                  <div className="mb-6">
+                    <label className="flex items-center justify-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={autoAdvance}
+                        onChange={(e) => setAutoAdvance(e.target.checked)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm text-foreground">Auto-advance to next question</span>
+                      <span className="text-xs text-muted-foreground">(automatically moves to next after 2 seconds)</span>
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={startGame}
+                    disabled={drillMode === 'lists' && selectedLists.length === 0}
+                    className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Start Conjugation Drill
+                  </button>
+                </div>
+                
+                {/* Quick Drill Preview - Show pre-selected words for random mode */}
+                {drillMode === 'random' && (
+                  <QuickDrillPreview 
+                    onSelectWord={async (word) => {
+                      console.log(strings.drill_onselectword_called, word);
+                      await loadQuestionsForWord(word);
+                      console.log(strings.drill_questions_loaded);
+                      await startGame();
+                      console.log(strings.drill_game_started);
+                    }}
+                  />
+                )}
+              </div>
+            ) : isFinished ? (
+              // Results Screen
+              <div className="text-center py-12">
+                <div className="bg-card border border-border rounded-lg p-8">
+                  <h2 className="text-3xl font-semibold mb-4 text-card-foreground">
+                    {strings.common.success}
+                  </h2>
+                  <div className="text-6xl font-bold text-primary mb-2">
+                    {score}/{questions.length}
+                  </div>
+                  <div className="text-lg text-muted-foreground mb-4">
+                    {Math.round((score / questions.length) * 100)}% accuracy
+                  </div>
+                  <button
+                    onClick={handleRestart}
+                    className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Question Screen
+              <div className="bg-card border border-border rounded-lg p-6 mb-6">
+                {/* Question */}
+                <div className="text-center mb-8">
+                  <div className="text-sm text-muted-foreground mb-2">
+                    {strings.drill.question}
+                  </div>
+                  <div className="mb-4">
+                    <span className="text-2xl japanese-text font-medium text-card-foreground mr-3">
+                      {currentQuestion.word.kanji}
+                    </span>
+                    {currentQuestion.word.kana && (
+                      <span className="text-lg japanese-text text-muted-foreground mr-3">
+                        ({currentQuestion.word.kana})
+                      </span>
+                    )}
+                    {(currentQuestion.word.meaning || currentQuestion.word.english) && (
+                      <span className="text-sm text-muted-foreground">
+                        "{currentQuestion.word.meaning || currentQuestion.word.english}"
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xl text-foreground mb-2">
+                    {(strings.conjugation.forms as Record<string, string>)[currentQuestion.targetForm]} form:
+                  </div>
+                  <div className="text-3xl japanese-text font-bold text-primary">
+                    {currentQuestion.stem}
+                  </div>
+                </div>
+
+                {/* Options */}
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  {currentQuestion.options.map((option, index) => {
+                    const isSelected = selectedAnswer === option;
+                    const isCorrect = option === currentQuestion.correctAnswer;
+                    const isIncorrect = showResult && isSelected && !isCorrect;
+
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => handleAnswerSelect(option)}
+                        disabled={showResult}
+                        className={`p-4 rounded-lg border text-left transition-all ${
+                          showResult
+                            ? isCorrect
+                              ? strings.string_194
+                              : isIncorrect
+                              ? strings.string_193
+                              : strings.string_192
+                            : isSelected
+                            ? strings.string_191
+                            : strings.string_190
+                        }`}
+                      >
+                        <span className="japanese-text text-lg font-medium">
+                          {option}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Result */}
+                {showResult && (
+                  <div className="text-center mb-6">
+                    <div className={`text-lg font-medium mb-2 ${
+                      selectedAnswer === currentQuestion.correctAnswer
+                        ? strings.string_196
+                        : strings.string_195
+                    }`}>
+                      {selectedAnswer === currentQuestion.correctAnswer
+                        ? strings.drill.correct
+                        : strings.drill.incorrect}
+                    </div>
+
+                    {selectedAnswer !== currentQuestion.correctAnswer && (
+                      <div className="text-muted-foreground">
+                        {strings.drill.showAnswer}: <span className="japanese-text font-medium text-foreground">{currentQuestion.correctAnswer}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Rules */}
+                <div className="border-t border-border pt-4">
+                  <button
+                    onClick={() => setShowRules(!showRules)}
+                    className="text-primary hover:text-primary/80 transition-colors text-sm font-medium"
+                  >
+                    {showRules ? strings.drill.hideRules : strings.drill.showRules}
+                  </button>
+
+                  {showRules && (
+                    <div className="mt-3 p-3 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground">
+                        <strong>{strings.verbTypes[currentQuestion.word.type.toLowerCase().replace('-', '') as keyof typeof strings.verbTypes]}:</strong>
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {currentQuestion.rule}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Next Button */}
+                {showResult && (
+                  <div className="text-center mt-6">
+                    <button
+                      onClick={handleNextQuestion}
+                      className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    >
+                      {currentQuestionIndex < questions.length - 1 ? strings.drill.nextQuestion : strings.finish}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          // Flashcard Review Content
+          <>
+            {flashcardLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading flashcards...</p>
+              </div>
+            ) : allLists.length === 0 ? (
+              <div className="text-center max-w-md mx-auto">
+                <div className="text-6xl mb-4">🎴</div>
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  No Lists Found
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  No lists found. Please create some study lists first.
+                </p>
+                <button
+                  onClick={() => setActiveTab('conjugation')}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  Try Conjugation Drills
+                </button>
+              </div>
+            ) : !flashcardGameStarted ? (
+              <div className="space-y-6">
+                {/* Study Dashboard */}
+                {flashcardStats && (
+                  <div className="bg-card border border-border rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
+                      📊 Study Dashboard
+                    </h3>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{flashcardStats.total}</div>
+                        <div className="text-xs text-muted-foreground">Total Cards</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-500">{dueCards.length}</div>
+                        <div className="text-xs text-muted-foreground">Due Today</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-500">{flashcardStats.overallAccuracy}%</div>
+                        <div className="text-xs text-muted-foreground">Accuracy</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-500">{flashcardStats.avgStability}d</div>
+                        <div className="text-xs text-muted-foreground">Avg Stability</div>
+                      </div>
+                    </div>
+
+                    {dueCards.length > 0 && (
+                      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                          <span className="text-red-400 font-medium text-sm">
+                            {dueCards.length} cards ready for review!
+                          </span>
+                        </div>
+                        <div className="text-xs text-red-300">
+                          Regular review is key to long-term retention. Don't let your memories fade!
+                        </div>
+                      </div>
+                    )}
+
+                    {studyRecommendations && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div className="bg-muted/50 rounded-lg p-3">
+                          <div className="text-muted-foreground mb-1">Recommended Session</div>
+                          <div className="font-medium">{studyRecommendations.recommendedSessionSize} cards</div>
+                          <div className="text-xs text-muted-foreground">{studyRecommendations.optimalStudyTime}</div>
+                        </div>
+                        <div className="bg-muted/50 rounded-lg p-3">
+                          <div className="text-muted-foreground mb-1">Focus Areas</div>
+                          <div className="font-medium text-xs">
+                            {studyRecommendations.focusAreas.length > 0
+                              ? studyRecommendations.focusAreas.slice(0, 2).join(', ')
+                              : strings.keep_up_the_good}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="bg-card border border-border rounded-lg p-8">
+                  <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
+                    Ready for flashcard review?
+                  </h2>
+                  <p className="text-muted-foreground mb-4">
+                    Select lists to create flashcards for review
+                  </p>
+
+                  {/* List Selection for Flashcards */}
+                  <div className="mb-6">
+                    {allLists.length > 0 ? (
+                      <div className="space-y-3">
+                        <div className="text-sm text-muted-foreground">
+                          Select lists to review:
+                          {dueCards.length > 0 && (
+                            <span className="ml-2 text-red-400 text-xs">
+                              ⚠️ Lists with 🔴 contain cards due for review
+                            </span>
+                          )}
+                        </div>
+                        <div className="max-h-48 overflow-y-auto space-y-2">
+                          {allLists.map((list) => {
+                            const isKanjiList = strings.kanjiids in list;
+
+                            // Check if this list actually contains due cards
+                            const listItemIds = isKanjiList ? (list as KanjiList).kanjiIds : (list as WordList).wordIds;
+
+
+                            // Count how many due cards this list contains
+                            const listDueCards = dueCards.filter(dueCard => {
+                              const hasDirectMatch = listItemIds.includes(dueCard.wordId);
+                              const hasKanjiMatch = dueCard.wordId.startsWith(strings.string_156) &&
+                                                   listItemIds.includes(dueCard.wordId.replace(strings.string_156, ''));
+                              return hasDirectMatch || hasKanjiMatch;
+                            });
+
+                            const listHasDueCards = listDueCards.length > 0;
+
+                            return (
+                              <label key={list.id} className={`flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50 ${
+                                listHasDueCards && dueCards.length > 0 ? strings.border : ''
+                              }`}>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedLists.includes(list.id)}
+                                  onChange={() => handleListToggle(list.id)}
+                                  className="rounded border-border"
+                                />
+                                <div className="flex items-center gap-2 flex-1">
+                                  {dueCards.length > 0 && listHasDueCards && (
+                                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                  )}
+                                  <div
+                                    className="w-3 h-3 rounded-full"
+                                    style={{ backgroundColor: list.color }}
+                                  ></div>
+                                  <span className="text-sm text-foreground">{list.name}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    ({isKanjiList ? (list as KanjiList).kanjiIds.length + strings.kanji : (list as WordList).wordIds.length + strings.words})
+                                  </span>
+                                  <span className="text-xs text-blue-400">
+                                    {isKanjiList ? strings.string_159 : '📚'}
+                                  </span>
+                                  {dueCards.length > 0 && listHasDueCards && (
+                                    <span className="text-xs text-red-400 font-medium">
+                                      📅 Has due cards
+                                    </span>
+                                  )}
+                                </div>
+                              </label>
+                            );
+                          })}
+                        </div>
+
+                        {dueCards.length > 0 && (
+                          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-sm">
+                            <div className="text-blue-400 font-medium mb-1">💡 How Due Cards Work:</div>
+                            <div className="text-blue-300 text-xs space-y-1">
+                              <div>• Due cards come from your existing lists (words/kanji you've already studied)</div>
+                              <div>• The spaced repetition algorithm schedules when each card needs review</div>
+                              <div>• Select any list containing cards you've studied before to see due cards</div>
+                              <div>• New cards (never studied) won't appear as "due"</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
+                        No lists found. Create lists in the Vocabulary or Kanji sections.
+                      </div>
+                    )}
+                  </div>
+
+                  {selectedLists.length > 0 && flashcardQuestions.length > 0 && (
+                    <p className="text-muted-foreground mb-4">
+                      Ready to review {flashcardQuestions.length} cards from your selected lists
+                    </p>
+                  )}
+
+                  {/* Card Direction Selection */}
+                  <div className="mb-6">
+                    <div className="text-sm text-muted-foreground mb-3">Card Direction:</div>
+                    <div className="flex gap-2 justify-center flex-wrap mb-4">
+                      <button
+                        onClick={() => setCardDirection('kanji-first')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          cardDirection === 'kanji-first'
+                            ? strings.string_221
+                            : strings.string_220
+                        }`}
+                      >
+                        漢字 → English
+                      </button>
+                      <button
+                        onClick={() => setCardDirection('english-first')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          cardDirection === 'english-first'
+                            ? strings.string_221
+                            : strings.string_220
+                        }`}
+                      >
+                        English → 漢字
+                      </button>
+                      <button
+                        onClick={() => setCardDirection('mixed')}
+                        className={`px-4 py-2 rounded-lg border transition-colors ${
+                          cardDirection === 'mixed'
+                            ? strings.string_221
+                            : strings.string_220
+                        }`}
+                      >
+                        Mixed
+                      </button>
+                    </div>
+                    <div className="text-xs text-muted-foreground text-center">
+                      {cardDirection === 'kanji-first'
+                        ? strings.show_japanese_guess_english_meaning
+                        : cardDirection === 'english-first'
+                        ? strings.show_english_guess_japanese_characters
+                        : strings.random_mix_of_both_directions}
+                    </div>
+                  </div>
+
+                  {/* Hint Toggle */}
+                  <div className="mb-6">
+                    <label className="flex items-center justify-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showHints}
+                        onChange={(e) => setShowHints(e.target.checked)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm text-foreground">Show hints on flashcards</span>
+                      <span className="text-xs text-muted-foreground">(reading/pronunciation help)</span>
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={startFlashcardSession}
+                    disabled={selectedLists.length === 0}
+                    className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Start Review Session
+                  </button>
+                </div>
+              </div>
+            ) : flashcardFinished ? (
+              <div className="text-center py-12">
+                <div className="bg-card border border-border rounded-lg p-8">
+                  <h2 className="text-3xl font-semibold mb-4 text-card-foreground">
+                    Review Complete! 🎉
+                  </h2>
+                  <div className="text-6xl font-bold text-primary mb-2">
+                    {flashcardScore}/{flashcardQuestions.length}
+                  </div>
+                  <div className="text-lg text-muted-foreground mb-4">
+                    {Math.round((flashcardScore / flashcardQuestions.length) * 100)}% accuracy
+                  </div>
+                  <div className="space-y-3">
+                    <button
+                      onClick={restartFlashcardSession}
+                      className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium mr-3"
+                    >
+                      Review Again
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('conjugation')}
+                      className="bg-secondary text-secondary-foreground px-6 py-3 rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+                    >
+                      Try Conjugation Drills
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Flashcard Session
+              <FlashcardCard
+                question={flashcardQuestions[currentFlashcardIndex]}
+                onAnswer={handleFlashcardAnswer}
+                showHint={showHints}
+              />
+            )}
+          </>
+        )}
+      </main>
+    </div>
+    </>
+  );
+}

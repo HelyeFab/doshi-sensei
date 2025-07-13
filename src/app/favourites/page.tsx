@@ -14,7 +14,7 @@ import { generateFuriganaWithCache } from '@/utils/furigana';
 import Link from 'next/link';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import ListSelectionModal from '@/components/ListSelectionModal';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
 
 // Structured Data for Favourites

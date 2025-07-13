@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import { searchWords } from '@/utils/api';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';

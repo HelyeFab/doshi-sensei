@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NewsArticle } from '@/types/news';
 import TTSManager from '@/utils/tts';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { generateFuriganaWithCache } from '@/utils/furigana';
 
 interface ArticleAudioPlayerProps {

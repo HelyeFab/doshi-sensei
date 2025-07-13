@@ -4,7 +4,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { AdminSection } from '@/types/admin';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface SidebarItem {
   id: AdminSection;

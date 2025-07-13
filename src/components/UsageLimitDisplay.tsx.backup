@@ -1,0 +1,142 @@
+'use client';
+
+import { strings } from '../config/strings/strings';
+
+import React from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+
+interface UsageLimitDisplayProps {
+  type: 'drills' | 'lists';
+  className?: string;
+}
+
+export function UsageLimitDisplay({ type, className = '' }: UsageLimitDisplayProps) {
+  const { user } = useAuth();
+  const { userType } = useSubscription2();
+  const drillFeature = useFeature(strings.string_11);
+  const listFeature = useFeature(strings.string_12);
+
+  if (type === 'drills') {
+    const { access } = drillFeature;
+    if (!access) return null;
+
+    const maxDrills = access.limit;
+    const currentUsage = access.limit === -1 ? 0 : access.used;
+
+    if (maxDrills === -1) {
+      return (
+        <div className={`text-sm text-green-400 ${className}`}>
+          <span className="font-medium">Drills:</span> Unlimited ✨
+        </div>
+      );
+    }
+
+    return (
+      <div className={`text-sm text-muted-foreground ${className}`}>
+        <span className="font-medium">Drills today:</span> {currentUsage}/{maxDrills}
+        {currentUsage >= maxDrills && (
+          <span className="text-red-400 ml-2">• Limit reached</span>
+        )}
+      </div>
+    );
+  }
+
+  if (type === 'lists') {
+    const { access } = listFeature;
+    
+    if (!user) {
+      return (
+        <div className={`text-sm text-muted-foreground ${className}`}>
+          <span className="text-orange-400">• Login required to create lists</span>
+        </div>
+      );
+    }
+
+    if (!access) return null;
+
+    const maxLists = access.limit;
+    const currentUsage = access.limit === -1 ? 0 : access.used;
+
+    if (maxLists === -1) {
+      return (
+        <div className={`text-sm text-green-400 ${className}`}>
+          <span className="font-medium">Lists:</span> Unlimited ✨
+        </div>
+      );
+    }
+
+    return (
+      <div className={`text-sm text-muted-foreground ${className}`}>
+        <span className="font-medium">Lists:</span> {currentUsage}/{maxLists}
+        {currentUsage >= maxLists && (
+          <span className="text-red-400 ml-2">• Limit reached</span>
+        )}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+interface UsageProgressBarProps {
+  type: 'drills' | 'lists';
+  className?: string;
+}
+
+export function UsageProgressBar({ type, className = '' }: UsageProgressBarProps) {
+  const { user } = useAuth();
+  const { userType } = useSubscription2();
+  const drillFeature = useFeature(strings.string_11);
+  const listFeature = useFeature(strings.string_12);
+
+  let current = 0;
+  let max = 0;
+  let color = 'bg-primary';
+
+  if (type === 'drills') {
+    const { access } = drillFeature;
+    if (!access) return null;
+    
+    max = access.limit;
+    current = access.limit === -1 ? 0 : access.used;
+  } else if (type === 'lists') {
+    if (!user) {
+      max = 1; // Show as blocked
+      current = 1;
+      color = strings.string_14;
+    } else {
+      const { access } = listFeature;
+      if (!access) return null;
+      
+      max = access.limit;
+      current = access.limit === -1 ? 0 : access.used;
+    }
+  }
+
+  if (max === -1) {
+    return (
+      <div className={`w-full bg-green-100 dark:bg-green-900/30 rounded-full h-2 ${className}`}>
+        <div className="bg-green-500 h-2 rounded-full w-full"></div>
+      </div>
+    );
+  }
+
+  const percentage = max > 0 ? Math.min((current / max) * 100, 100) : 0;
+
+  if (percentage >= 100) {
+    color = strings.string_15;
+  } else if (percentage >= 80) {
+    color = strings.string_14;
+  }
+
+  return (
+    <div className={`w-full bg-muted rounded-full h-2 ${className}`}>
+      <div
+        className={`${color} h-2 rounded-full transition-all duration-300`}
+        style={{ width: `${percentage}%` }}
+      ></div>
+    </div>
+  );
+}

@@ -1,0 +1,78 @@
+'use client';
+
+import { strings } from '../config/strings/strings';
+
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { safeNavigator, runInBrowser } from '@/utils/browserCheck';
+
+export default function OfflineNotification() {
+  const [isOnline, setIsOnline] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
+
+  useEffect(() => {
+    const updateOnlineStatus = () => {
+      const online = safeNavigator?.onLine ?? true;
+      setIsOnline(online);
+      
+      if (!online) {
+        setShowNotification(true);
+      } else if (showNotification) {
+        // Show "back online" message briefly
+        setTimeout(() => setShowNotification(false), 3000);
+      }
+    };
+
+    // Check initial status
+    updateOnlineStatus();
+
+    // Add event listeners
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus);
+      window.removeEventListener('offline', updateOnlineStatus);
+    };
+  }, [showNotification]);
+
+  return (
+    <AnimatePresence>
+      {showNotification && (
+        <motion.div
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -100, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 text-center ${
+            isOnline 
+              ? strings.string_7 
+              : strings.string_6
+          }`}
+        >
+          <div className="flex items-center justify-center gap-2">
+            {isOnline ? (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M15 19l-7-7 7-7" 
+                  />
+                </svg>
+                <span className="font-medium">You're back online!</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="" 
+                  />
+                </svg>
+                <span className="font-medium">No internet connection. Some features may be limited.</span>
+              </>
+            )}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

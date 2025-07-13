@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { TutorialButton } from '../components/TutorialButton';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export interface ListsScreenProps {
   onNext: () => void;

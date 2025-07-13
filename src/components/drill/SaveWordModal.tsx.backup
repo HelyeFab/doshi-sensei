@@ -1,0 +1,264 @@
+'use client';
+
+import { strings } from '../../config/strings/strings';
+
+import { useState, useEffect } from 'react';
+import { JapaneseWord, StudyList, StudyListType } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { useStrings } from '@/hooks/useLanguage';
+import StudyListManager from '@/utils/studyListManager';
+
+interface SaveWordModalProps {
+  word: JapaneseWord;
+  onClose: () => void;
+  onSaveComplete?: () => void;
+}
+
+export function SaveWordModal({ word, onClose, onSaveComplete }: SaveWordModalProps) {
+  const { user } = useAuth();
+  const strings = useStrings();
+  const [studyLists, setStudyLists] = useState<StudyList[]>([]);
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [showCreateNew, setShowCreateNew] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [newListType, setNewListType] = useState<StudyListType>('flashcard');
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  // Load unified study lists
+  useEffect(() => {
+    const loadStudyLists = async () => {
+      try {
+        const lists = await StudyListManager.getAllStudyLists();
+        setStudyLists(lists);
+      } catch (error) {
+        console.error(strings.error_loading_study, error);
+      }
+    };
+    loadStudyLists();
+  }, []);
+
+  const handleToggleList = (listId: string) => {
+    setSelectedLists(prev =>
+      prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId]
+    );
+  };
+
+  const canAddToList = (listType: StudyListType): boolean => {
+    return StudyListManager.canAddToList('word', word, listType);
+  };
+
+  const getValidationMessage = (listType: StudyListType, canAdd: boolean): string => {
+    if (!canAdd) {
+      if (listType === 'drillable') {
+        return `Cannot be added: Word cannot be conjugated`;
+      }
+      return `Cannot be added: Incompatible list type`;
+    }
+
+    if (listType === 'flashcard') {
+      return `Compatible: For flashcard review`;
+    }
+
+    if (listType === 'drillable') {
+      return `Compatible: For conjugation practice`;
+    }
+
+    return `Compatible`;
+  };
+
+  const handleSave = async () => {
+    if (selectedLists.length === 0 && !newListName.trim()) return;
+
+    try {
+      setSaving(true);
+      setErrors([]);
+
+      // Create new list if needed
+      let listsToSaveTo = [...selectedLists];
+      if (newListName.trim() && showCreateNew) {
+        try {
+          const newList = await StudyListManager.createStudyList({
+            name: newListName.trim(),
+            type: newListType,
+            description: '',
+            color: '#' + Math.floor(Math.random()*16777215).toString(16),
+          });
+          listsToSaveTo.push(newList.id);
+        } catch (error) {
+          console.error(strings.error_creating_new, error);
+          setErrors(prev => [...prev, strings.failed_to_create_new_list]);
+        }
+      }
+
+      // Save word to selected lists
+      let successCount = 0;
+      for (const listId of listsToSaveTo) {
+        try {
+          await StudyListManager.addItemToList(listId, word.id, 'word');
+          successCount++;
+        } catch (error) {
+          console.error(`Error adding to list ${listId}:`, error);
+        }
+      }
+
+      if (successCount > 0) {
+        onSaveComplete?.();
+        onClose();
+      } else {
+        setErrors([strings.failed_to_save_word_to]);
+      }
+    } catch (err) {
+      console.error(strings.error_saving, err);
+      setErrors([strings.failed_to_save_word_to]);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <h3 className="text-lg font-semibold text-card-foreground mb-4">
+          Save "{word.kanji || word.kana}" to Lists
+        </h3>
+
+        {/* Error messages */}
+        {errors.length > 0 && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+            <div className="text-sm text-red-400">
+              {errors.map((error, index) => (
+                <div key={index}>• {error}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {studyLists.length > 0 && (
+          <div className="space-y-3 mb-4">
+            <h4 className="text-sm font-medium text-muted-foreground">Select existing lists:</h4>
+            {studyLists.map((list) => {
+              const canAdd = canAddToList(list.type);
+              
+              return (
+                <label
+                  key={list.id}
+                  className={`block cursor-pointer p-3 rounded-lg border transition-colors ${
+                    selectedLists.includes(list.id)
+                      ? strings.string_15
+                      : strings.string_14
+                  } ${!canAdd ? strings.string_16 : ''}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedLists.includes(list.id)}
+                      onChange={() => canAdd && handleToggleList(list.id)}
+                      disabled={!canAdd}
+                      className="mt-1 rounded border-border"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: list.color }}
+                        />
+                        <span className="font-medium">{list.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          ({list.type})
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {getValidationMessage(list.type, canAdd)}
+                      </p>
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Create new list section */}
+        {!showCreateNew ? (
+          <button
+            onClick={() => setShowCreateNew(true)}
+            className="w-full text-center text-sm text-primary hover:text-primary/80 transition-colors mb-4"
+          >
+            + Create new list
+          </button>
+        ) : (
+          <div className="border border-border rounded-lg p-4 mb-4">
+            <h4 className="text-sm font-medium mb-3">Create new list:</h4>
+            <input
+              type="text"
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+              placeholder={strings.list_name}
+              className="w-full px-3 py-2 bg-background border border-input rounded-lg text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
+              autoFocus
+            />
+            <div className="space-y-2">
+              <label className="block">
+                <input
+                  type="radio"
+                  name={strings.listtype}
+                  value="flashcard"
+                  checked={newListType === 'flashcard'}
+                  onChange={() => setNewListType('flashcard')}
+                  className="mr-2"
+                />
+                <span className="text-sm">
+                  Flashcard List
+                  <span className="text-xs text-muted-foreground ml-1">
+                    (for spaced repetition review)
+                  </span>
+                </span>
+              </label>
+              {canAddToList('drillable') && (
+                <label className="block">
+                  <input
+                    type="radio"
+                    name={strings.listtype}
+                    value="drillable"
+                    checked={newListType === 'drillable'}
+                    onChange={() => setNewListType('drillable')}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">
+                    Conjugation List
+                    <span className={`text-xs ml-1 ${
+                      canAddToList('drillable') ? strings.string_27 : strings.string_26
+                    }`}>
+                      {canAddToList('drillable') ? strings.can_be_conjugated : strings.cannot_be_conjugated}
+                    </span>
+                  </span>
+                </label>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleSave}
+            disabled={saving || (selectedLists.length === 0 && !newListName.trim())}
+            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? strings.string_30 : strings.save}
+          </button>
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

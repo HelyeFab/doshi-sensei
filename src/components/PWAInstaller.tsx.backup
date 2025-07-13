@@ -1,0 +1,148 @@
+'use client';
+
+import { strings } from '../config/strings/strings';
+
+import { useEffect, useState } from 'react';
+import { safeNavigator, runInBrowser } from '@/utils/browserCheck';
+import { pwaAnalytics } from '@/utils/pwaAnalytics';
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
+declare global {
+  interface WindowEventMap {
+    beforeinstallprompt: BeforeInstallPromptEvent;
+  }
+}
+
+export default function PWAInstaller() {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    // Check if app is already installed
+    const isStandalone = window.matchMedia(strings.string_0).matches;
+    const isIOS = /iPad|iPhone|iPod/.test(safeNavigator?.userAgent || '');
+    const isInStandaloneMode = (safeNavigator as any)?.standalone;
+
+    if (isStandalone || (isIOS && isInStandaloneMode)) {
+      setIsInstalled(true);
+    }
+
+    // Listen for the beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      
+      // Check if we should show the prompt (once per day)
+      const lastPromptTime = localStorage.getItem('pwa-prompt-last-shown');
+      const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const now = Date.now();
+      
+      if (!lastPromptTime || (now - parseInt(lastPromptTime)) > ONE_DAY) {
+        setShowInstallButton(true);
+        localStorage.setItem('pwa-prompt-last-shown', now.toString());
+        pwaAnalytics.trackEvent(strings.string_3);
+      } else {
+        // Prompt was shown within the last 24 hours, don't show it
+        console.log(strings.pwa_prompt_throttled_shown_within);
+        pwaAnalytics.trackEvent(strings.string_2);
+      }
+    };
+
+    // Listen for app installed event
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setShowInstallButton(false);
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      console.warn(strings.install_prompt_is_not_available);
+      return;
+    }
+
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+
+      if (outcome === 'accepted') {
+        setShowInstallButton(false);
+        pwaAnalytics.trackEvent(strings.string_6);
+      } else {
+        pwaAnalytics.trackEvent(strings.string_5);
+      }
+    } catch (error) {
+      console.error(strings.error_showing_install, error);
+    } finally {
+      setDeferredPrompt(null);
+    }
+  };
+
+  // Register service worker
+  useEffect(() => {
+    runInBrowser(() => {
+      if (safeNavigator && 'serviceWorker' in safeNavigator && process.env.NODE_ENV === 'production') {
+        safeNavigator.serviceWorker
+          .register(strings.string_8)
+          .then((registration) => {
+          })
+          .catch((registrationError) => {
+          });
+      }
+    });
+  }, []);
+
+  if (isInstalled || !showInstallButton) {
+    return null;
+  }
+
+  return (
+    <div className="fixed bottom-20 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              Install Doshi Sensei
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Add to home screen for easy access
+            </p>
+          </div>
+          <div className="flex gap-2 ml-3">
+            <button
+              onClick={() => {
+                setShowInstallButton(false);
+                // Update the last shown time when user clicks "Maybe later"
+                localStorage.setItem('pwa-prompt-last-shown', Date.now().toString());
+                pwaAnalytics.trackEvent(strings.string_12);
+              }}
+              className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              Maybe later
+            </button>
+            <button
+              onClick={handleInstallClick}
+              className="px-3 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Install
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

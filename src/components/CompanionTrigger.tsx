@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import VirtualCompanion from './VirtualCompanion';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function CompanionTrigger() {
   const { settings, isLoading } = useSettings();

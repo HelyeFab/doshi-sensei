@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import StudyListManager from '@/utils/studyListManager';
 
 interface SaveWordModalProps {

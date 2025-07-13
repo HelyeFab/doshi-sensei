@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import validator from 'validator';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function ContactPage() {
   const router = useRouter();

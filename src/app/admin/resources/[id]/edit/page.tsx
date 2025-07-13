@@ -10,7 +10,7 @@ import { marked } from 'marked';
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface EditResourcePageProps {
   params: Promise<{

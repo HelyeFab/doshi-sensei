@@ -1,0 +1,899 @@
+Key,Original Text,File,Line,Type
+"app.page.0_col","0 && col","src/app/page.tsx",354,jsx
+"app.layout.doshi_sensei","Doshi Sensei","src/app/layout.tsx",145,prop
+"app.layout.telephoneno","telephone=no","src/app/layout.tsx",146,prop
+"app.layout.browserconfigxml","/browserconfig.xml","src/app/layout.tsx",148,prop
+"app.error.","🚧","src/app/error.tsx",48,jsx
+"vocabulary.page.did_you_mean","Did you mean:","src/app/vocabulary/page.tsx",376,jsx
+"vocabulary.page.search_history","Search History","src/app/vocabulary/page.tsx",412,jsx
+"vocabulary.page.","📚","src/app/vocabulary/page.tsx",425,jsx
+"vocabulary.page.select_existing_lists","Select existing lists:","src/app/vocabulary/page.tsx",797,jsx
+"vocabulary.page.list_type","List Type:","src/app/vocabulary/page.tsx",862,jsx
+"vocabulary.page.sentence_list","Sentence List","src/app/vocabulary/page.tsx",875,jsx
+"vocabulary.page.for_saving_example_sentences","For saving example sentences","src/app/vocabulary/page.tsx",876,jsx
+"vocabulary.page._perfect_for_contextbased_lear","✓ Perfect for context-based learning","src/app/vocabulary/page.tsx",877,jsx
+"vocabulary.page.flashcard_list","Flashcard List","src/app/vocabulary/page.tsx",892,jsx
+"vocabulary.page.for_memorization_and_review_ac","For memorization and review (accepts any content)","src/app/vocabulary/page.tsx",893,jsx
+"vocabulary.page._perfect_for_vocabulary_study","✓ Perfect for vocabulary study","src/app/vocabulary/page.tsx",894,jsx
+"vocabulary.page.drillable_list","Drillable List","src/app/vocabulary/page.tsx",911,jsx
+"vocabulary.page.for_conjugation_practice_verbs","For conjugation practice (verbs & adjectives only)","src/app/vocabulary/page.tsx",912,jsx
+"vocabulary.page.delete_entry","Delete entry","src/app/vocabulary/page.tsx",467,prop
+"vocabulary.page.new_list_name","New list name...","src/app/vocabulary/page.tsx",856,prop
+"test-three-pillar-integration.page.threepillar_integration_test","Three-Pillar Integration Test","src/app/test-three-pillar-integration/page.tsx",229,jsx
+"test-three-pillar-integration.page.user_status","User Status","src/app/test-three-pillar-integration/page.tsx",238,jsx
+"test-three-pillar-integration.page.type","Type:","src/app/test-three-pillar-integration/page.tsx",242,jsx
+"test-three-pillar-integration.page.premium","Premium:","src/app/test-three-pillar-integration/page.tsx",246,jsx
+"test-three-pillar-integration.page.subscription","Subscription:","src/app/test-three-pillar-integration/page.tsx",252,jsx
+"test-three-pillar-integration.page.feature_access","Feature Access","src/app/test-three-pillar-integration/page.tsx",262,jsx
+"test-three-pillar-integration.page.feature","Feature:","src/app/test-three-pillar-integration/page.tsx",266,jsx
+"test-three-pillar-integration.page.status","Status:","src/app/test-three-pillar-integration/page.tsx",270,jsx
+"test-three-pillar-integration.page.limit","Limit:","src/app/test-three-pillar-integration/page.tsx",276,jsx
+"test-three-pillar-integration.page.storage_status","Storage Status","src/app/test-three-pillar-integration/page.tsx",284,jsx
+"test-three-pillar-integration.page.cached","Cached:","src/app/test-three-pillar-integration/page.tsx",288,jsx
+"test-three-pillar-integration.page.size","Size:","src/app/test-three-pillar-integration/page.tsx",294,jsx
+"test-three-pillar-integration.page.usage","Usage:","src/app/test-three-pillar-integration/page.tsx",298,jsx
+"test-three-pillar-integration.page.storage_visualization","Storage Visualization","src/app/test-three-pillar-integration/page.tsx",310,jsx
+"test-three-pillar-integration.page.integration_tests","Integration Tests","src/app/test-three-pillar-integration/page.tsx",320,jsx
+"test-three-pillar-integration.page.test_results","Test Results","src/app/test-three-pillar-integration/page.tsx",353,jsx
+"test-three-pillar-integration.page.no_tests_run_yet_click_run_all","No tests run yet. Click ""Run All Tests"" to begin.","src/app/test-three-pillar-integration/page.tsx",356,jsx
+"test-shadowing.page.shadowing_practice_test","Shadowing Practice Test","src/app/test-shadowing/page.tsx",39,jsx
+"test-shadowing.page.sample_article","Sample Article","src/app/test-shadowing/page.tsx",43,jsx
+"test-shadowing.page.about_shadowing_practice","About Shadowing Practice","src/app/test-shadowing/page.tsx",55,jsx
+"test-shadowing.page._listen_to_each_sentence_one_a","• Listen to each sentence one at a time","src/app/test-shadowing/page.tsx",57,jsx
+"test-shadowing.page._repeat_the_sentence_during_th","• Repeat the sentence during the pause","src/app/test-shadowing/page.tsx",58,jsx
+"test-shadowing.page._adjust_speed_and_repeat_count","• Adjust speed and repeat count to match your level","src/app/test-shadowing/page.tsx",59,jsx
+"test-shadowing.page._navigate_between_sentences_wi","• Navigate between sentences with previous/next buttons","src/app/test-shadowing/page.tsx",60,jsx
+"test-shadowing.page._click_on_any_sentence_in_the_","• Click on any sentence in the list to jump to it","src/app/test-shadowing/page.tsx",61,jsx
+"test-eviction.page.lru_eviction_test","LRU Eviction Test","src/app/test-eviction/page.tsx",115,jsx
+"test-eviction.page.user_information","User Information","src/app/test-eviction/page.tsx",119,jsx
+"test-eviction.page.user_type","User Type:","src/app/test-eviction/page.tsx",121,jsx
+"test-eviction.page.current_count","Current Count:","src/app/test-eviction/page.tsx",122,jsx
+"test-eviction.page.max_allowed","Max Allowed:","src/app/test-eviction/page.tsx",123,jsx
+"test-eviction.page.storage_used","Storage Used:","src/app/test-eviction/page.tsx",126,jsx
+"test-eviction.page.utilization","Utilization:","src/app/test-eviction/page.tsx",127,jsx
+"test-eviction.page.storage_status","Storage Status","src/app/test-eviction/page.tsx",135,jsx
+"test-eviction.page.test_actions","Test Actions","src/app/test-eviction/page.tsx",141,jsx
+"test-eviction.page.cached_articles","Cached Articles","src/app/test-eviction/page.tsx",164,jsx
+"test-eviction.page.test_results","Test Results","src/app/test-eviction/page.tsx",196,jsx
+"test-eviction.page.no_test_results_yet_try_cachin","No test results yet. Try caching some articles!","src/app/test-eviction/page.tsx",199,jsx
+"test-eviction.page.how_to_test_eviction","How to Test Eviction","src/app/test-eviction/page.tsx",212,jsx
+"test-eviction.page.start_by_caching_a_few_article","Start by caching a few articles to see the storage limits","src/app/test-eviction/page.tsx",214,jsx
+"test-eviction.page.once_you_reach_the_limit_3_for","Once you reach the limit (3 for free users), new articles will trigger eviction","src/app/test-eviction/page.tsx",215,jsx
+"test-eviction.page.mark_an_article_as_active_to_p","Mark an article as ""active"" to protect it from eviction","src/app/test-eviction/page.tsx",216,jsx
+"test-eviction.page.try_caching_large_articles_to_","Try caching large articles to trigger size-based eviction","src/app/test-eviction/page.tsx",217,jsx
+"test-eviction.page.watch_the_storage_indicator_to","Watch the storage indicator to see utilization changes","src/app/test-eviction/page.tsx",218,jsx
+"test-eviction.page.check_the_console_for_detailed","Check the console for detailed eviction logs","src/app/test-eviction/page.tsx",219,jsx
+"test-cache.page.cache_system_test_page","Cache System Test Page","src/app/test-cache/page.tsx",135,jsx
+"test-cache.page.system_status","System Status","src/app/test-cache/page.tsx",139,jsx
+"test-cache.page.user_type","User Type:","src/app/test-cache/page.tsx",143,jsx
+"test-cache.page.current_cached_articles","Current Cached Articles:","src/app/test-cache/page.tsx",144,jsx
+"test-cache.page.cache_statistics","Cache Statistics","src/app/test-cache/page.tsx",153,jsx
+"test-cache.page.test_controls","Test Controls","src/app/test-cache/page.tsx",165,jsx
+"test-cache.page.test_results","Test Results","src/app/test-cache/page.tsx",209,jsx
+"test-cache.page.no_test_results_yet_click_the_","No test results yet. Click the buttons above to start testing.","src/app/test-cache/page.tsx",212,jsx
+"test-cache.page.testing_instructions","Testing Instructions:","src/app/test-cache/page.tsx",225,jsx
+"test-cache.page.click_cache_test_article_to_ca","Click ""Cache Test Article"" to cache an article","src/app/test-cache/page.tsx",227,jsx
+"test-cache.page.try_caching_multiple_articles_","Try caching multiple articles to test the limit enforcement","src/app/test-cache/page.tsx",228,jsx
+"test-cache.page.click_get_cached_article_to_ve","Click ""Get Cached Article"" to verify retrieval works","src/app/test-cache/page.tsx",229,jsx
+"test-cache.page.open_devtools_application_serv","Open DevTools → Application → Service Workers to verify SW is active","src/app/test-cache/page.tsx",230,jsx
+"test-cache.page.go_offline_devtools_network_of","Go offline (DevTools → Network → Offline) and test cached content","src/app/test-cache/page.tsx",231,jsx
+"test-cache.page.test_as_different_user_types_t","Test as different user types to verify limits work correctly","src/app/test-cache/page.tsx",232,jsx
+"stories.page.","📖","src/app/stories/page.tsx",263,jsx
+"stories.page.","💾","src/app/stories/page.tsx",269,jsx
+"stories.page.","📄","src/app/stories/page.tsx",290,jsx
+"stories.page.want_unlimited_stories","Want unlimited stories?","src/app/stories/page.tsx",311,jsx
+"[slug].page.loading_story","Loading story...","src/app/stories/[slug]/page.tsx",98,jsx
+"settings.page.loading","Loading...","src/app/settings/page.tsx",58,jsx
+"settings.page.sync_error","Sync Error","src/app/settings/page.tsx",561,jsx
+"settings.page.","☁️","src/app/settings/page.tsx",626,jsx
+"settings.page.100","1.0.0","src/app/settings/page.tsx",703,jsx
+"settings.page.20250612","2025.06.12","src/app/settings/page.tsx",707,jsx
+"settings.page.","⚠️","src/app/settings/page.tsx",769,jsx
+"settings.page.","🧹","src/app/settings/page.tsx",818,jsx
+"settings.page.current_cache","Current Cache:","src/app/settings/page.tsx",829,jsx
+"settings.page.sync_now","Sync Now","src/app/settings/page.tsx",589,prop
+"settings.page.manually_sync_your_data_with_t","Manually sync your data with the cloud","src/app/settings/page.tsx",590,prop
+"settings.page.clear_browser_cache","Clear Browser Cache","src/app/settings/page.tsx",613,prop
+"settings.page.fix_sync_issues_by_clearing_ca","Fix sync issues by clearing cached data","src/app/settings/page.tsx",614,prop
+"terms-of-service.page.","📋","src/app/settings/terms-of-service/page.tsx",14,jsx
+"terms-of-service.page.agreement_to_terms","Agreement to Terms","src/app/settings/terms-of-service/page.tsx",24,jsx
+"terms-of-service.page.permitted_use","Permitted Use","src/app/settings/terms-of-service/page.tsx",32,jsx
+"terms-of-service.page.educational_purpose","Educational Purpose","src/app/settings/terms-of-service/page.tsx",37,jsx
+"terms-of-service.page.personal_use","Personal Use","src/app/settings/terms-of-service/page.tsx",46,jsx
+"terms-of-service.page.data_export","Data Export","src/app/settings/terms-of-service/page.tsx",55,jsx
+"terms-of-service.page.prohibited_activities","Prohibited Activities","src/app/settings/terms-of-service/page.tsx",65,jsx
+"terms-of-service.page.reverse_engineering","Reverse Engineering","src/app/settings/terms-of-service/page.tsx",70,jsx
+"terms-of-service.page.commercial_redistribution","Commercial Redistribution","src/app/settings/terms-of-service/page.tsx",79,jsx
+"terms-of-service.page.harmful_activities","Harmful Activities","src/app/settings/terms-of-service/page.tsx",88,jsx
+"terms-of-service.page.content_and_data","Content and Data","src/app/settings/terms-of-service/page.tsx",98,jsx
+"terms-of-service.page.your_data","Your Data","src/app/settings/terms-of-service/page.tsx",101,jsx
+"terms-of-service.page.educational_content","Educational Content","src/app/settings/terms-of-service/page.tsx",108,jsx
+"terms-of-service.page.disclaimer_of_warranties","Disclaimer of Warranties","src/app/settings/terms-of-service/page.tsx",118,jsx
+"terms-of-service.page.limitation_of_liability","Limitation of Liability","src/app/settings/terms-of-service/page.tsx",129,jsx
+"terms-of-service.page.open_source_components","Open Source Components","src/app/settings/terms-of-service/page.tsx",140,jsx
+"terms-of-service.page.changes_to_terms","Changes to Terms","src/app/settings/terms-of-service/page.tsx",148,jsx
+"terms-of-service.page.","🎌","src/app/settings/terms-of-service/page.tsx",170,jsx
+"terms-of-service.page.terms_of_service","Terms of Service","src/app/settings/terms-of-service/page.tsx",8,prop
+"privacy-policy.page.","🔒","src/app/settings/privacy-policy/page.tsx",14,jsx
+"privacy-policy.page.privacy_commitment","Privacy Commitment","src/app/settings/privacy-policy/page.tsx",24,jsx
+"privacy-policy.page.data_storage","Data Storage","src/app/settings/privacy-policy/page.tsx",32,jsx
+"privacy-policy.page.local_storage_only","Local Storage Only","src/app/settings/privacy-policy/page.tsx",37,jsx
+"privacy-policy.page.no_server_storage","No Server Storage","src/app/settings/privacy-policy/page.tsx",46,jsx
+"privacy-policy.page.you_control_your_data","You Control Your Data","src/app/settings/privacy-policy/page.tsx",55,jsx
+"privacy-policy.page.what_we_dont_collect","What We Don't Collect","src/app/settings/privacy-policy/page.tsx",65,jsx
+"privacy-policy.page.personal_information","Personal Information","src/app/settings/privacy-policy/page.tsx",70,jsx
+"privacy-policy.page.usage_analytics","Usage Analytics","src/app/settings/privacy-policy/page.tsx",79,jsx
+"privacy-policy.page.thirdparty_sharing","Third-party Sharing","src/app/settings/privacy-policy/page.tsx",88,jsx
+"privacy-policy.page.local_data_types","Local Data Types","src/app/settings/privacy-policy/page.tsx",98,jsx
+"privacy-policy.page.learning_progress_and_statisti","Learning progress and statistics","src/app/settings/privacy-policy/page.tsx",105,jsx
+"privacy-policy.page.custom_word_lists_and_saved_wo","Custom word lists and saved words","src/app/settings/privacy-policy/page.tsx",109,jsx
+"privacy-policy.page.app_settings_and_preferences","App settings and preferences","src/app/settings/privacy-policy/page.tsx",113,jsx
+"privacy-policy.page.recently_viewed_words_history","Recently viewed words history","src/app/settings/privacy-policy/page.tsx",117,jsx
+"privacy-policy.page.","🙏","src/app/settings/privacy-policy/page.tsx",137,jsx
+"privacy-policy.page.privacy_policy","Privacy Policy","src/app/settings/privacy-policy/page.tsx",8,prop
+"acknowledgments.page.","🙏","src/app/settings/acknowledgments/page.tsx",14,jsx
+"acknowledgments.page.core_technologies","Core Technologies","src/app/settings/acknowledgments/page.tsx",24,jsx
+"acknowledgments.page.","⚛️","src/app/settings/acknowledgments/page.tsx",27,jsx
+"acknowledgments.page.wanikani_api","WaniKani API","src/app/settings/acknowledgments/page.tsx",29,jsx
+"acknowledgments.page.","📚","src/app/settings/acknowledgments/page.tsx",88,jsx
+"acknowledgments.page.japanese_language_data","Japanese Language Data","src/app/settings/acknowledgments/page.tsx",67,jsx
+"acknowledgments.page.","🇯🇵","src/app/settings/acknowledgments/page.tsx",70,jsx
+"acknowledgments.page.jishoorg","Jisho.org","src/app/settings/acknowledgments/page.tsx",90,jsx
+"acknowledgments.page.primary_data_source","Primary Data Source:","src/app/settings/acknowledgments/page.tsx",107,jsx
+"acknowledgments.page.development_tools","Development Tools","src/app/settings/acknowledgments/page.tsx",116,jsx
+"acknowledgments.page.code_linting","Code linting","src/app/settings/acknowledgments/page.tsx",120,jsx
+"acknowledgments.page.code_formatting","Code formatting","src/app/settings/acknowledgments/page.tsx",124,jsx
+"acknowledgments.page.testing_framework","Testing framework","src/app/settings/acknowledgments/page.tsx",128,jsx
+"acknowledgments.page.hosting_platform","Hosting platform","src/app/settings/acknowledgments/page.tsx",132,jsx
+"acknowledgments.page.community_inspiration","Community & Inspiration","src/app/settings/acknowledgments/page.tsx",138,jsx
+"acknowledgments.page.japanese_language_learning_com","Japanese Language Learning Community","src/app/settings/acknowledgments/page.tsx",144,jsx
+"acknowledgments.page.open_source_contributors","Open Source Contributors","src/app/settings/acknowledgments/page.tsx",153,jsx
+"acknowledgments.page.beta_testers","Beta Testers","src/app/settings/acknowledgments/page.tsx",162,jsx
+"acknowledgments.page.license_information","License Information","src/app/settings/acknowledgments/page.tsx",171,jsx
+"acknowledgments.page.","❤️","src/app/settings/acknowledgments/page.tsx",184,jsx
+"resources.page.category","Category:","src/app/resources/page.tsx",141,jsx
+"resources.page.all_categories","All Categories","src/app/resources/page.tsx",147,jsx
+"resources.page.featured_only","Featured only","src/app/resources/page.tsx",161,jsx
+"resources.page.","📚","src/app/resources/page.tsx",185,jsx
+"resources.page.","📝","src/app/resources/page.tsx",190,jsx
+"resources.page.","📖","src/app/resources/page.tsx",356,jsx
+"resources.page.","🕒","src/app/resources/page.tsx",360,jsx
+"resources.page.read_more","Read More","src/app/resources/page.tsx",387,jsx
+"resources.page.search_resources","Search resources...","src/app/resources/page.tsx",126,prop
+"resources.page.resource_icon","Resource icon","src/app/resources/page.tsx",301,prop
+"[slug].page.","📖","src/app/resources/[slug]/page.tsx",89,jsx
+"[slug].page.loading_resource","Loading resource...","src/app/resources/[slug]/page.tsx",90,jsx
+"[slug].page.","📄","src/app/resources/[slug]/page.tsx",107,jsx
+"[slug].page.resource_not_found","Resource Not Found","src/app/resources/[slug]/page.tsx",105,prop
+"practice.page.show_romaji","Show Romaji","src/app/practice/page.tsx",382,jsx
+"practice.page.study_hiragana","Study Hiragana","src/app/practice/page.tsx",405,jsx
+"practice.page.study_katakana","Study Katakana","src/app/practice/page.tsx",406,jsx
+"practice.page.study_both","Study Both","src/app/practice/page.tsx",407,jsx
+"practice.page.note","Note:","src/app/practice/page.tsx",476,jsx
+"practice.page.warning","Warning:","src/app/practice/page.tsx",482,jsx
+"practice.page.filter_by_word_type","Filter by Word Type:","src/app/practice/page.tsx",570,jsx
+"practice.page.click_to_view_conjugations","Click to view conjugations","src/app/practice/page.tsx",826,jsx
+"practice.page.save_to_list","Save to List","src/app/practice/page.tsx",774,prop
+"practice.page.select_lists","Select lists:","src/app/practice/page.tsx",877,jsx
+"practice.page.back_to_word_list","Back to word list","src/app/practice/page.tsx",979,jsx
+"practice.page.create_new_list","Create new list...","src/app/practice/page.tsx",861,prop
+"practice.page.tense_polarity","Tense & Polarity","src/app/practice/page.tsx",1026,prop
+"practice.page.additional_forms","Additional Forms","src/app/practice/page.tsx",1058,prop
+"offline.page._practice_conjugations","• Practice conjugations","src/app/offline/page.tsx",46,jsx
+"offline.page._review_vocabulary","• Review vocabulary","src/app/offline/page.tsx",47,jsx
+"offline.page._access_cached_content","• Access cached content","src/app/offline/page.tsx",48,jsx
+"offline.page._view_your_progress","• View your progress","src/app/offline/page.tsx",49,jsx
+"offline.page._dictionary_lookups","• Dictionary lookups","src/app/offline/page.tsx",57,jsx
+"offline.page._new_content_updates","• New content updates","src/app/offline/page.tsx",58,jsx
+"offline.page._wanikani_integration","• WaniKani integration","src/app/offline/page.tsx",59,jsx
+"offline.page._data_synchronization","• Data synchronization","src/app/offline/page.tsx",60,jsx
+"news.page.","📰","src/app/news/page.tsx",479,jsx
+"news.page.","🔄","src/app/news/page.tsx",256,jsx
+"news.page._and","🌐 and","src/app/news/page.tsx",402,jsx
+"news.page.","⚠️","src/app/news/page.tsx",436,jsx
+"news.page.error_loading_articles","Error Loading Articles","src/app/news/page.tsx",438,jsx
+"news.page.japanese_news_articles","Japanese News Articles","src/app/news/page.tsx",396,prop
+"[id].page.loading_article","Loading article...","src/app/news/[id]/page.tsx",95,jsx
+"kanji-moods.page.loading_mood_boards","Loading mood boards...","src/app/kanji-moods/page.tsx",53,jsx
+"kanji-moods.page.","🗺️","src/app/kanji-moods/page.tsx",87,jsx
+"kanji-moods.page.your_progress","Your Progress","src/app/kanji-moods/page.tsx",102,jsx
+"kanji-moods.page.total_boards","Total Boards","src/app/kanji-moods/page.tsx",106,jsx
+"kanji-moods.page.total_kanji","Total Kanji","src/app/kanji-moods/page.tsx",116,jsx
+"kanji-moods.page.","📚","src/app/kanji-moods/page.tsx",147,jsx
+"kanji-moods.page.","🚀","src/app/kanji-moods/page.tsx",162,jsx
+"kanji-moods.page.choose_a_theme","Choose a Theme","src/app/kanji-moods/page.tsx",172,jsx
+"kanji-moods.page.study_each_kanji","Study Each Kanji","src/app/kanji-moods/page.tsx",183,jsx
+"kanji-moods.page.mark_as_learned","Mark as Learned","src/app/kanji-moods/page.tsx",196,jsx
+"kanji-moods.page.complete_the_board","Complete the Board","src/app/kanji-moods/page.tsx",207,jsx
+"kanji-moods.page.kanji_mood_boards","Kanji Mood Boards","src/app/kanji-moods/page.tsx",82,prop
+"[boardId].page.loading_mood_board","Loading mood board...","src/app/kanji-moods/[boardId]/page.tsx",71,jsx
+"kanji-browser.page.pokball","Pokéball","src/app/kanji-browser/page.tsx",416,prop
+"games.page.","🎮","src/app/games/page.tsx",878,jsx
+"games.page.loading_games","Loading games...","src/app/games/page.tsx",816,jsx
+"games.page.","🎧","src/app/games/page.tsx",1121,jsx
+"games.page.","🔤","src/app/games/page.tsx",1191,jsx
+"games.page.build_the_kana","Build the Kana:","src/app/games/page.tsx",1208,jsx
+"games.page.click_kana_segments_below_to_b","Click kana segments below to build the word","src/app/games/page.tsx",1213,jsx
+"games.page.available_kana","Available Kana:","src/app/games/page.tsx",1230,jsx
+"games.page.pokball","Pokéball","src/app/games/page.tsx",1374,prop
+"favourites.page.loading_your_collections","Loading your collections...","src/app/favourites/page.tsx",530,jsx
+"favourites.page.","📚","src/app/favourites/page.tsx",606,jsx
+"favourites.page.","📝","src/app/favourites/page.tsx",773,jsx
+"favourites.page.no_items_in_this_list_yet","No items in this list yet","src/app/favourites/page.tsx",774,jsx
+"favourites.page.loading_your_bookmarked_articl","Loading your bookmarked articles...","src/app/favourites/page.tsx",783,jsx
+"favourites.page.","📰","src/app/favourites/page.tsx",788,jsx
+"favourites.page.","🔍","src/app/favourites/page.tsx",1129,jsx
+"favourites.page.loading_your_bookmarked_storie","Loading your bookmarked stories...","src/app/favourites/page.tsx",976,jsx
+"favourites.page.","📖","src/app/favourites/page.tsx",981,jsx
+"favourites.page.0_","0 &&","src/app/favourites/page.tsx",1326,jsx
+"favourites.page.delete_list","Delete list","src/app/favourites/page.tsx",670,prop
+"favourites.page.remove_bookmark","Remove bookmark","src/app/favourites/page.tsx",1088,prop
+"favourites.page.view_original","View original","src/app/favourites/page.tsx",948,prop
+"favourites.page.create_new_study_list","Create New Study List","src/app/favourites/page.tsx",1155,prop
+"favourites.page.remove_article_bookmark","Remove Article Bookmark","src/app/favourites/page.tsx",1175,prop
+"favourites.page.are_you_sure_you_want_to_remov","Are you sure you want to remove this article from your saved items? This action cannot be undone.","src/app/favourites/page.tsx",1176,prop
+"favourites.page.remove_story_bookmark","Remove Story Bookmark","src/app/favourites/page.tsx",1193,prop
+"favourites.page.remove_from_list","Remove from list","src/app/favourites/page.tsx",1471,prop
+"drill.page.","📚","src/app/drill/page.tsx",1000,jsx
+"drill.page.daily_goal","Daily Goal:","src/app/drill/page.tsx",1034,jsx
+"drill.page.change_in_settings","(Change in Settings)","src/app/drill/page.tsx",1035,jsx
+"drill.page.drill_mode","Drill Mode:","src/app/drill/page.tsx",1041,jsx
+"drill.page.select_conjugable_lists_to_dri","Select conjugable lists to drill:","src/app/drill/page.tsx",1070,jsx
+"drill.page._conjugable","✓ conjugable","src/app/drill/page.tsx",1090,jsx
+"drill.page.practice_with","Practice with:","src/app/drill/page.tsx",1108,jsx
+"drill.page.autoadvance_to_next_question","Auto-advance to next question","src/app/drill/page.tsx",1136,jsx
+"drill.page.automatically_moves_to_next_af","(automatically moves to next after 2 seconds)","src/app/drill/page.tsx",1137,jsx
+"drill.page.loading_flashcards","Loading flashcards...","src/app/drill/page.tsx",1309,jsx
+"drill.page.","🎴","src/app/drill/page.tsx",1313,jsx
+"drill.page.total_cards","Total Cards","src/app/drill/page.tsx",1339,jsx
+"drill.page.due_today","Due Today","src/app/drill/page.tsx",1343,jsx
+"drill.page.avg_stability","Avg Stability","src/app/drill/page.tsx",1351,jsx
+"drill.page.recommended_session","Recommended Session","src/app/drill/page.tsx",1372,jsx
+"drill.page.focus_areas","Focus Areas","src/app/drill/page.tsx",1377,jsx
+"drill.page._how_due_cards_work","💡 How Due Cards Work:","src/app/drill/page.tsx",1465,jsx
+"drill.page._due_cards_come_from_your_exis","• Due cards come from your existing lists (words/kanji you've already studied)","src/app/drill/page.tsx",1467,jsx
+"drill.page._the_spaced_repetition_algorit","• The spaced repetition algorithm schedules when each card needs review","src/app/drill/page.tsx",1468,jsx
+"drill.page._select_any_list_containing_ca","• Select any list containing cards you've studied before to see due cards","src/app/drill/page.tsx",1469,jsx
+"drill.page._new_cards_never_studied_wont_","• New cards (never studied) won't appear as ""due""","src/app/drill/page.tsx",1470,jsx
+"drill.page.card_direction","Card Direction:","src/app/drill/page.tsx",1490,jsx
+"drill.page.show_hints_on_flashcards","Show hints on flashcards","src/app/drill/page.tsx",1541,jsx
+"drill.page.readingpronunciation_help","(reading/pronunciation help)","src/app/drill/page.tsx",1542,jsx
+"diagnose-articles.page.loading","Loading...","src/app/diagnose-articles/page.tsx",135,jsx
+"diagnose-articles.page.article_diagnosis","Article Diagnosis","src/app/diagnose-articles/page.tsx",144,jsx
+"diagnose-articles.page.check_specific_article","Check Specific Article","src/app/diagnose-articles/page.tsx",148,jsx
+"diagnose-articles.page.title","Title:","src/app/diagnose-articles/page.tsx",171,jsx
+"diagnose-articles.page.fields","Fields:","src/app/diagnose-articles/page.tsx",172,jsx
+"diagnose-articles.page.content","Content:","src/app/diagnose-articles/page.tsx",173,jsx
+"diagnose-articles.page.body","Body:","src/app/diagnose-articles/page.tsx",174,jsx
+"diagnose-articles.page.text","Text:","src/app/diagnose-articles/page.tsx",175,jsx
+"diagnose-articles.page.summary","Summary:","src/app/diagnose-articles/page.tsx",176,jsx
+"diagnose-articles.page.sample","Sample:","src/app/diagnose-articles/page.tsx",177,jsx
+"diagnose-articles.page.full_data_click_to_expand","Full Data (click to expand)","src/app/diagnose-articles/page.tsx",179,jsx
+"diagnose-articles.page.sample_articles","Sample Articles","src/app/diagnose-articles/page.tsx",206,jsx
+"diagnose-articles.page.article_id","Article ID","src/app/diagnose-articles/page.tsx",155,prop
+"contact.page.","💬","src/app/contact/page.tsx",147,jsx
+"admin.page.","📊","src/app/admin/page.tsx",173,jsx
+"new.page.loading","Loading...","src/app/admin/stories/new/page.tsx",491,jsx
+"new.page.create_new_story","Create New Story","src/app/admin/stories/new/page.tsx",518,jsx
+"new.page.import_story_from_json","Import Story from JSON","src/app/admin/stories/new/page.tsx",557,jsx
+"new.page.validation_errors","Validation Errors:","src/app/admin/stories/new/page.tsx",598,jsx
+"new.page.warnings","Warnings:","src/app/admin/stories/new/page.tsx",609,jsx
+"new.page.json_file_should_contain","JSON file should contain:","src/app/admin/stories/new/page.tsx",619,jsx
+"new.page.story_title_in_english_and_jap","Story title in English and Japanese","src/app/admin/stories/new/page.tsx",621,jsx
+"new.page.jlpt_level_and_theme","JLPT level and theme","src/app/admin/stories/new/page.tsx",622,jsx
+"new.page.pages_with_japanese_text_with_","Pages with Japanese text (with ruby tags) and English translations","src/app/admin/stories/new/page.tsx",623,jsx
+"new.page.optional_quiz_questions_tags_a","Optional: Quiz questions, tags, and SEO information","src/app/admin/stories/new/page.tsx",624,jsx
+"new.page.basic_information","Basic Information","src/app/admin/stories/new/page.tsx",634,jsx
+"new.page.english_title_","English Title *","src/app/admin/stories/new/page.tsx",638,jsx
+"new.page.japanese_title_with_furigana_","Japanese Title (with furigana) *","src/app/admin/stories/new/page.tsx",652,jsx
+"new.page.jlpt_level","JLPT Level","src/app/admin/stories/new/page.tsx",681,jsx
+"new.page.url_slug","URL Slug","src/app/admin/stories/new/page.tsx",707,jsx
+"new.page.cover_image","Cover Image","src/app/admin/stories/new/page.tsx",720,jsx
+"new.page.pages_overview","Pages Overview","src/app/admin/stories/new/page.tsx",750,jsx
+"new.page.","📷","src/app/admin/stories/new/page.tsx",809,jsx
+"new.page.","🖼️","src/app/admin/stories/new/page.tsx",811,jsx
+"new.page.image_alt_text_for_accessibili","Image Alt Text (for accessibility)","src/app/admin/stories/new/page.tsx",841,jsx
+"new.page.japanese_text_with_ruby_tags_","Japanese Text (with ruby tags) *","src/app/admin/stories/new/page.tsx",878,jsx
+"new.page.","むかし","src/app/admin/stories/new/page.tsx",884,jsx
+"new.page.","、ある","src/app/admin/stories/new/page.tsx",884,jsx
+"new.page.","ところ","src/app/admin/stories/new/page.tsx",884,jsx
+"new.page.english_translation_","English Translation *","src/app/admin/stories/new/page.tsx",889,jsx
+"new.page.correct_answer","Correct Answer","src/app/admin/stories/new/page.tsx",976,jsx
+"new.page.explanation_optional","Explanation (optional)","src/app/admin/stories/new/page.tsx",989,jsx
+"new.page.select_a_tag","Select a tag...","src/app/admin/stories/new/page.tsx",1020,jsx
+"new.page.publishing_options","Publishing Options","src/app/admin/stories/new/page.tsx",1058,jsx
+"new.page.seo_title","SEO Title","src/app/admin/stories/new/page.tsx",1078,jsx
+"new.page.seo_description","SEO Description","src/app/admin/stories/new/page.tsx",1089,jsx
+"new.page.publish_date","Publish Date","src/app/admin/stories/new/page.tsx",1103,jsx
+"new.page.back_to_stories_list","Back to Stories List","src/app/admin/stories/new/page.tsx",512,prop
+"new.page.remove_image","Remove image","src/app/admin/stories/new/page.tsx",834,prop
+"new.page.describe_the_image_for_screen_","Describe the image for screen readers","src/app/admin/stories/new/page.tsx",847,prop
+"new.page.rubyrtrtrubyrubyrtrtrubyrubyrt","<ruby>昔<rt>むかし</rt></ruby>、<ruby>昔<rt>むかし</rt></ruby>、ある<ruby>所<rt>ところ</rt></ruby>に...","src/app/admin/stories/new/page.tsx",884,prop
+"new.page.once_upon_a_time_in_a_certain_","Once upon a time, in a certain place...","src/app/admin/stories/new/page.tsx",895,prop
+"new.page.what_did_the_main_character_fi","What did the main character find?","src/app/admin/stories/new/page.tsx",951,prop
+"new.page.the_answer_can_be_found_in_par","The answer can be found in paragraph 2...","src/app/admin/stories/new/page.tsx",995,prop
+"new.page.custom_title_for_search_engine","Custom title for search engines (defaults to story title)","src/app/admin/stories/new/page.tsx",1084,prop
+"new.page.custom_description_for_search_","Custom description for search engines","src/app/admin/stories/new/page.tsx",1095,prop
+"[id].page.loading","Loading...","src/app/admin/stories/edit/[id]/page.tsx",192,jsx
+"[id].page.edit_story","Edit Story","src/app/admin/stories/edit/[id]/page.tsx",218,jsx
+"[id].page.title_en","Title (EN)","src/app/admin/stories/edit/[id]/page.tsx",228,jsx
+"[id].page.title_ja","Title (JA)","src/app/admin/stories/edit/[id]/page.tsx",240,jsx
+"[id].page.url_slug","URL Slug","src/app/admin/stories/edit/[id]/page.tsx",252,jsx
+"[id].page.jlpt_level","JLPT Level","src/app/admin/stories/edit/[id]/page.tsx",258,jsx
+"[id].page.cover_image","Cover Image","src/app/admin/stories/edit/[id]/page.tsx",284,jsx
+"[id].page.pages_overview","Pages Overview","src/app/admin/stories/edit/[id]/page.tsx",291,jsx
+"[id].page.add_page","Add Page","src/app/admin/stories/edit/[id]/page.tsx",310,button
+"[id].page.","📷","src/app/admin/stories/edit/[id]/page.tsx",315,jsx
+"[id].page._",") : (","src/app/admin/stories/edit/[id]/page.tsx",322,jsx
+"[id].page.","🖼️","src/app/admin/stories/edit/[id]/page.tsx",315,jsx
+"[id].page.image_alt_text_for_accessibili","Image Alt Text (for accessibility)","src/app/admin/stories/edit/[id]/page.tsx",322,jsx
+"[id].page.japanese_text_","Japanese Text *","src/app/admin/stories/edit/[id]/page.tsx",325,jsx
+"[id].page.english_translation_","English Translation *","src/app/admin/stories/edit/[id]/page.tsx",329,jsx
+"[id].page.1_","1 && (","src/app/admin/stories/edit/[id]/page.tsx",332,jsx
+"[id].page.remove_this_page","Remove This Page","src/app/admin/stories/edit/[id]/page.tsx",332,jsx
+"[id].page.quiz_questions","Quiz Questions","src/app/admin/stories/edit/[id]/page.tsx",337,jsx
+"[id].page.back_to_stories_list","Back to Stories List","src/app/admin/stories/edit/[id]/page.tsx",212,prop
+"[id].page.remove_image","Remove image","src/app/admin/stories/edit/[id]/page.tsx",322,prop
+"[id].page.describe_the_image_for_screen_","Describe the image for screen readers","src/app/admin/stories/edit/[id]/page.tsx",322,prop
+"[id].page.","むかしむかし、あるところに...","src/app/admin/stories/edit/[id]/page.tsx",326,prop
+"[id].page.once_upon_a_time_in_a_certain_","Once upon a time, in a certain place...","src/app/admin/stories/edit/[id]/page.tsx",330,prop
+"new.page.loading","Loading...","src/app/admin/resources/new/page.tsx",266,jsx
+"new.page.create_new_resource","Create New Resource","src/app/admin/resources/new/page.tsx",276,jsx
+"new.page.write_and_publish_a_new_blog_p","Write and publish a new blog post or resource","src/app/admin/resources/new/page.tsx",277,jsx
+"new.page._quick_tip","ℹ️ Quick tip:","src/app/admin/resources/new/page.tsx",303,jsx
+"new.page.only_fields_marked_with","Only fields marked with","src/app/admin/resources/new/page.tsx",303,jsx
+"new.page.basic_information","Basic Information","src/app/admin/resources/new/page.tsx",310,jsx
+"new.page.title_","Title *","src/app/admin/resources/new/page.tsx",314,jsx
+"new.page.url_slug","URL Slug","src/app/admin/resources/new/page.tsx",341,jsx
+"new.page.select_category","Select category","src/app/admin/resources/new/page.tsx",359,jsx
+"new.page.featured_image","Featured Image","src/app/admin/resources/new/page.tsx",428,jsx
+"new.page.max_file_size_5mb_supported_fo","Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP","src/app/admin/resources/new/page.tsx",465,jsx
+"new.page.or_use_url","or use URL","src/app/admin/resources/new/page.tsx",473,jsx
+"new.page.image_url","Image URL","src/app/admin/resources/new/page.tsx",479,jsx
+"new.page.image_alt_text","Image Alt Text","src/app/admin/resources/new/page.tsx",491,jsx
+"new.page.preview","Preview:","src/app/admin/resources/new/page.tsx",504,jsx
+"new.page.publishing_options","Publishing Options","src/app/admin/resources/new/page.tsx",567,jsx
+"new.page.scheduled_for","Scheduled For","src/app/admin/resources/new/page.tsx",585,jsx
+"new.page.featured_post","Featured post","src/app/admin/resources/new/page.tsx",604,jsx
+"new.page.premium_content","Premium content","src/app/admin/resources/new/page.tsx",614,jsx
+"new.page.seo_title","SEO Title","src/app/admin/resources/new/page.tsx",624,jsx
+"new.page.seo_description","SEO Description","src/app/admin/resources/new/page.tsx",636,jsx
+"new.page.optional_subtitle","Optional subtitle","src/app/admin/resources/new/page.tsx",334,prop
+"new.page.brief_description_for_cards_an","Brief description for cards and SEO (auto-generated from content if empty)","src/app/admin/resources/new/page.tsx",374,prop
+"new.page.descriptive_alt_text","Descriptive alt text","src/app/admin/resources/new/page.tsx",497,prop
+"new.page.add_a_tag_and_press_enter","Add a tag and press Enter","src/app/admin/resources/new/page.tsx",533,prop
+"new.page.custom_title_for_search_engine","Custom title for search engines (defaults to main title)","src/app/admin/resources/new/page.tsx",630,prop
+"new.page.custom_description_for_search_","Custom description for search engines (defaults to excerpt)","src/app/admin/resources/new/page.tsx",642,prop
+"edit.page.loading","Loading...","src/app/admin/resources/[id]/edit/page.tsx",236,jsx
+"edit.page.resource_not_found","Resource not found","src/app/admin/resources/[id]/edit/page.tsx",240,jsx
+"edit.page.edit_resource","Edit Resource","src/app/admin/resources/[id]/edit/page.tsx",250,jsx
+"edit.page.basic_information","Basic Information","src/app/admin/resources/[id]/edit/page.tsx",279,jsx
+"edit.page.title_","Title *","src/app/admin/resources/[id]/edit/page.tsx",283,jsx
+"edit.page.url_slug","URL Slug","src/app/admin/resources/[id]/edit/page.tsx",308,jsx
+"edit.page.select_category","Select category","src/app/admin/resources/[id]/edit/page.tsx",326,jsx
+"edit.page.featured_image","Featured Image","src/app/admin/resources/[id]/edit/page.tsx",393,jsx
+"edit.page.max_file_size_5mb_supported_fo","Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP","src/app/admin/resources/[id]/edit/page.tsx",424,jsx
+"edit.page.or_use_url","or use URL","src/app/admin/resources/[id]/edit/page.tsx",432,jsx
+"edit.page.image_url","Image URL","src/app/admin/resources/[id]/edit/page.tsx",438,jsx
+"edit.page.image_alt_text","Image Alt Text","src/app/admin/resources/[id]/edit/page.tsx",450,jsx
+"edit.page.preview","Preview:","src/app/admin/resources/[id]/edit/page.tsx",463,jsx
+"edit.page.publishing_options","Publishing Options","src/app/admin/resources/[id]/edit/page.tsx",526,jsx
+"edit.page.scheduled_for","Scheduled For","src/app/admin/resources/[id]/edit/page.tsx",544,jsx
+"edit.page.featured_post","Featured post","src/app/admin/resources/[id]/edit/page.tsx",563,jsx
+"edit.page.premium_content","Premium content","src/app/admin/resources/[id]/edit/page.tsx",573,jsx
+"edit.page.seo_title","SEO Title","src/app/admin/resources/[id]/edit/page.tsx",583,jsx
+"edit.page.seo_description","SEO Description","src/app/admin/resources/[id]/edit/page.tsx",595,jsx
+"edit.page.optional_subtitle","Optional subtitle","src/app/admin/resources/[id]/edit/page.tsx",301,prop
+"edit.page.brief_description_for_cards_an","Brief description for cards and SEO","src/app/admin/resources/[id]/edit/page.tsx",341,prop
+"edit.page.descriptive_alt_text","Descriptive alt text","src/app/admin/resources/[id]/edit/page.tsx",456,prop
+"edit.page.add_a_tag_and_press_enter","Add a tag and press Enter","src/app/admin/resources/[id]/edit/page.tsx",492,prop
+"edit.page.custom_title_for_search_engine","Custom title for search engines","src/app/admin/resources/[id]/edit/page.tsx",589,prop
+"edit.page.custom_description_for_search_","Custom description for search engines","src/app/admin/resources/[id]/edit/page.tsx",601,prop
+"mood-boards.page.","📊","src/app/admin/mood-boards/page.tsx",204,jsx
+"mood-boards.page.","🎯","src/app/admin/mood-boards/page.tsx",216,jsx
+"mood-boards.page.","📈","src/app/admin/mood-boards/page.tsx",228,jsx
+"mood-boards.page.","🕒","src/app/admin/mood-boards/page.tsx",240,jsx
+"logs.page.loading_logs","Loading logs...","src/app/admin/logs/page.tsx",207,jsx
+"logs.page.no_logs_found_matching_your_cr","No logs found matching your criteria.","src/app/admin/logs/page.tsx",211,jsx
+"logs.page.view_details","View details","src/app/admin/logs/page.tsx",264,jsx
+"logs.page.no_details","No details","src/app/admin/logs/page.tsx",270,jsx
+"features.page.error_loading_feature_matrix","Error loading feature matrix","src/app/admin/features/page.tsx",47,jsx
+"features.page.","🔄","src/app/admin/features/page.tsx",145,jsx
+"features.page.","📥","src/app/admin/features/page.tsx",151,jsx
+"features.page._click_on_any_number_to_edit_t","• Click on any number to edit the limit","src/app/admin/features/page.tsx",204,jsx
+"features.page._use_1_for_unlimited_access","• Use -1 for unlimited access","src/app/admin/features/page.tsx",205,jsx
+"features.page._changes_are_saved_immediately","• Changes are saved immediately to the database","src/app/admin/features/page.tsx",206,jsx
+"features.page._users_will_see_updated_limits","• Users will see updated limits on their next action","src/app/admin/features/page.tsx",207,jsx
+"features.page._consider_user_behavior_patter","• Consider user behavior patterns when adjusting limits","src/app/admin/features/page.tsx",208,jsx
+"features.page._this_matrix_shows_all_feature","• This matrix shows all features available in Doshi Sensei and their access levels","src/app/admin/features/page.tsx",212,jsx
+"features.page._limits_are_enforced_automatic","• Limits are enforced automatically by the new access control system","src/app/admin/features/page.tsx",213,jsx
+"features.page._shared_limit_groups_like_game","• Shared limit groups (like games) use the same counter for all features in the group","src/app/admin/features/page.tsx",214,jsx
+"features.page._planned_features_are_shown_fo","• Planned features are shown for future development reference","src/app/admin/features/page.tsx",215,jsx
+"features.page._click_edit_limits_to_dynamica","• Click ""Edit Limits"" to dynamically adjust user limits","src/app/admin/features/page.tsx",216,jsx
+"debug.page.indexeddb","IndexedDB:","src/app/admin/debug/page.tsx",252,jsx
+"debug.page.firebase","Firebase:","src/app/admin/debug/page.tsx",255,jsx
+"debug.page.localstorage","LocalStorage:","src/app/admin/debug/page.tsx",258,jsx
+"debug.page.stats_debug_panel","Stats Debug Panel","src/app/admin/debug/page.tsx",293,jsx
+"debug.page.console_monitor","Console Monitor","src/app/admin/debug/page.tsx",294,jsx
+"debug.page.debug_tools","Debug Tools","src/app/admin/debug/page.tsx",187,prop
+"articles.page.","🚀","src/app/admin/articles/page.tsx",232,jsx
+"articles.page._todaii_news","📚 Todaii News:","src/app/admin/articles/page.tsx",372,jsx
+"articles.page._watanoc_only","🏯 Watanoc Only:","src/app/admin/articles/page.tsx",375,jsx
+"articles.page.management_tools","Management Tools","src/app/admin/articles/page.tsx",381,jsx
+"articles.page._refresh_stats","📊 Refresh Stats:","src/app/admin/articles/page.tsx",384,jsx
+"articles.page._clear_cache","🗑️ Clear Cache:","src/app/admin/articles/page.tsx",387,jsx
+"articles.page._run_diagnostics","🔍 Run Diagnostics:","src/app/admin/articles/page.tsx",390,jsx
+"articles.page._delete_articles","🗑️ Delete Articles:","src/app/admin/articles/page.tsx",393,jsx
+"articles.page._pro_tip","💡 Pro Tip:","src/app/admin/articles/page.tsx",400,jsx
+"activities.page.loading_activity_tracking","Loading activity tracking...","src/app/admin/activities/page.tsx",259,jsx
+"activities.page.activity_tracking_management","Activity Tracking Management","src/app/admin/activities/page.tsx",269,jsx
+"activities.page.configure_and_monitor_activity","Configure and monitor activity types tracked by the stats system","src/app/admin/activities/page.tsx",270,jsx
+"activities.page.activity_types","Activity Types","src/app/admin/activities/page.tsx",276,jsx
+"activities.page.add_new_activity_type","Add New Activity Type","src/app/admin/activities/page.tsx",287,jsx
+"activities.page.recent_activities_last_50","Recent Activities (Last 50)","src/app/admin/activities/page.tsx",452,jsx
+"activities.page.user_activity_viewer","User Activity Viewer","src/app/admin/activities/page.tsx",509,jsx
+"activities.page.view_all_activities_for_a_spec","View all activities for a specific user, organized by day","src/app/admin/activities/page.tsx",510,jsx
+"activities.page.note_only_premium_users_have_c","Note: Only premium users have cloud-synced activity data","src/app/admin/activities/page.tsx",595,jsx
+"activities.page.implementation_guide","Implementation Guide","src/app/admin/activities/page.tsx",603,jsx
+"activities.page.add_the_activity_type_configur","Add the activity type configuration above","src/app/admin/activities/page.tsx",608,jsx
+"activities.page.create_a_tracking_function_in","Create a tracking function in","src/app/admin/activities/page.tsx",609,jsx
+"activities.page.srclibstatstrackingeventsts","/src/lib/stats/trackingEvents.ts","src/app/admin/activities/page.tsx",609,jsx
+"activities.page.add_the_corresponding_field_to","Add the corresponding field to","src/app/admin/activities/page.tsx",610,jsx
+"activities.page.update_the_stats_processing_lo","Update the stats processing logic in","src/app/admin/activities/page.tsx",611,jsx
+"activities.page.statstrackerts","statsTracker.ts","src/app/admin/activities/page.tsx",611,jsx
+"activities.page.import_and_call_your_tracking_","Import and call your tracking function where the activity occurs","src/app/admin/activities/page.tsx",612,jsx
+"activities.page.type_id_eg","Type ID (e.g.,","src/app/admin/activities/page.tsx",291,prop
+"activities.page.display_name","Display Name","src/app/admin/activities/page.tsx",298,prop
+"activities.page.icon_emoji","Icon (emoji)","src/app/admin/activities/page.tsx",305,prop
+"activities.page.stats_field_name","Stats Field Name","src/app/admin/activities/page.tsx",312,prop
+"activities.page.enter_user_id_eg_wawmetfq0dcov","Enter User ID (e.g., WawMEtfq0dcoVPMr3nuwpFAzr9F2)","src/app/admin/activities/page.tsx",516,prop
+"account.page.","✏️","src/app/account/page.tsx",245,jsx
+"account.page.account_status","Account Status","src/app/account/page.tsx",256,jsx
+"account.page.member_since","Member Since","src/app/account/page.tsx",260,jsx
+"account.page.","🛡️","src/app/account/page.tsx",273,jsx
+"account.page.choose_your_profile_thumbnail","Choose your profile thumbnail","src/app/account/page.tsx",377,jsx
+"account.page.updating","Updating...","src/app/account/page.tsx",391,jsx
+"account.page.","🏮","src/app/account/page.tsx",435,jsx
+"account.page.or_continue_with_email","Or continue with email","src/app/account/page.tsx",471,jsx
+"account.page.edit_avatar","Edit avatar","src/app/account/page.tsx",242,prop
+"account.page.close_avatar_picker","Close avatar picker","src/app/account/page.tsx",371,prop
+"account.page.choose_avatar","Choose avatar","src/app/account/page.tsx",384,prop
+"account.page.avatar_option","avatar option","src/app/account/page.tsx",387,prop
+"components.UsageLimitDisplay.drills","Drills:","src/components/UsageLimitDisplay.tsx",29,jsx
+"components.UsageLimitDisplay.drills_today","Drills today:","src/components/UsageLimitDisplay.tsx",36,jsx
+"components.UsageLimitDisplay._limit_reached","• Limit reached","src/components/UsageLimitDisplay.tsx",72,jsx
+"components.UsageLimitDisplay._login_required_to_create_list","• Login required to create lists","src/components/UsageLimitDisplay.tsx",50,jsx
+"components.UsageLimitDisplay.lists","Lists:","src/components/UsageLimitDisplay.tsx",70,jsx
+"components.ThemeSelector.choose_your_theme","Choose Your Theme","src/components/ThemeSelector.tsx",85,jsx
+"components.ThemeSelector.color_scheme","Color Scheme","src/components/ThemeSelector.tsx",124,jsx
+"components.SubscriptionPlans.month","/month","src/components/SubscriptionPlans.tsx",164,jsx
+"components.SubscriptionPlans.year","/year","src/components/SubscriptionPlans.tsx",200,jsx
+"components.SubscriptionPlans.","⚠️","src/components/SubscriptionPlans.tsx",231,jsx
+"components.SubscriptionPlans.free_plan_limitations","Free Plan Limitations","src/components/SubscriptionPlans.tsx",233,jsx
+"components.SubscriptionPlans._no_cloud_sync_across_devices","• No cloud sync across devices","src/components/SubscriptionPlans.tsx",237,jsx
+"components.SubscriptionPlans._local_storage_only","• Local storage only","src/components/SubscriptionPlans.tsx",238,jsx
+"components.SubscriptionPlans.cancel_subscription","Cancel Subscription?","src/components/SubscriptionPlans.tsx",252,jsx
+"components.SplashScreen.doshi_sensei","Doshi Sensei","src/components/SplashScreen.tsx",54,prop
+"components.ResourceCacheDemo.resource_caching_demo","Resource Caching Demo","src/components/ResourceCacheDemo.tsx",227,jsx
+"components.ResourceCacheDemo.resource_caching_is_not_availa","Resource caching is not available for your account type.","src/components/ResourceCacheDemo.tsx",220,jsx
+"components.ResourceCacheDemo.kanji_caching","Kanji Caching","src/components/ResourceCacheDemo.tsx",244,jsx
+"components.ResourceCacheDemo.verb_caching","Verb Caching","src/components/ResourceCacheDemo.tsx",265,jsx
+"components.ResourceCacheDemo.adjective_caching","Adjective Caching","src/components/ResourceCacheDemo.tsx",286,jsx
+"components.ResourceCacheDemo.audio_caching","Audio Caching","src/components/ResourceCacheDemo.tsx",307,jsx
+"components.ResourceCacheDemo.cache_statistics","Cache Statistics","src/components/ResourceCacheDemo.tsx",329,jsx
+"components.ResourceCacheDemo.current_cache_stats","Current Cache Stats:","src/components/ResourceCacheDemo.tsx",349,jsx
+"components.PageHelpIcon.tips","Tips:","src/components/PageHelpIcon.tsx",60,jsx
+"components.PageHelpIcon.page_help","Page help","src/components/PageHelpIcon.tsx",33,prop
+"components.PageHeader.go_back","Go back","src/components/PageHeader.tsx",35,prop
+"components.OfflineNotification.youre_back_online","You're back online!","src/components/OfflineNotification.tsx",59,jsx
+"components.OfflineNotification.no_internet_connection_some_fe","No internet connection. Some features may be limited.","src/components/OfflineNotification.tsx",68,jsx
+"components.MobileMenu.","🏮","src/components/MobileMenu.tsx",195,jsx
+"components.MobileMenu.toggle_menu","Toggle menu","src/components/MobileMenu.tsx",75,prop
+"components.MobileMenu.close_menu","Close menu","src/components/MobileMenu.tsx",110,prop
+"components.MobileHome.doshi_sensei","Doshi Sensei","src/components/MobileHome.tsx",95,prop
+"components.MobileHome.days_used","Days Used","src/components/MobileHome.tsx",108,prop
+"components.LoginPromptModal.","🔑","src/components/LoginPromptModal.tsx",31,jsx
+"components.ListSelectionModal.eg_jlpt_n5_verbs_cooking_terms","e.g., JLPT N5 Verbs, Cooking Terms","src/components/ListSelectionModal.tsx",177,prop
+"components.ListSelectionModal.brief_description_of_this_list","Brief description of this list...","src/components/ListSelectionModal.tsx",190,prop
+"components.ErrorBoundarySubscription.","⚠️","src/components/ErrorBoundarySubscription.tsx",75,jsx
+"components.ErrorBoundarySubscription.guest_access_available","Guest Access Available:","src/components/ErrorBoundarySubscription.tsx",86,jsx
+"components.DonationModal.processing","Processing...","src/components/DonationModal.tsx",190,jsx
+"components.DesktopNavMenu.","🏮","src/components/DesktopNavMenu.tsx",167,jsx
+"components.CompanionTrigger.virtual_companion","Virtual Companion","src/components/CompanionTrigger.tsx",44,prop
+"vocabulary.ExampleSentencesBlock.save_sentence","Save sentence","src/components/vocabulary/ExampleSentencesBlock.tsx",78,prop
+"ui.Toast.close_notification","Close notification","src/components/ui/Toast.tsx",82,prop
+"ui.ConfirmationDialog.","🎯","src/components/ui/ConfirmationDialog.tsx",145,jsx
+"story.StoryReader.reading_settings","Reading Settings","src/components/story/StoryReader.tsx",672,jsx
+"story.StoryReader.font_size","Font Size","src/components/story/StoryReader.tsx",89,jsx
+"story.StoryReader.show_furigana","Show Furigana","src/components/story/StoryReader.tsx",108,jsx
+"story.StoryReader.highlight_vocabulary","Highlight Vocabulary","src/components/story/StoryReader.tsx",123,jsx
+"story.StoryReader.highlight_mode","Highlight Mode","src/components/story/StoryReader.tsx",139,jsx
+"story.StoryReader.story_quiz","Story Quiz","src/components/story/StoryReader.tsx",475,jsx
+"story.StoryReader.back_to_stories","Back to Stories","src/components/story/StoryReader.tsx",591,jsx
+"story.StoryReader.","🔊","src/components/story/StoryReader.tsx",620,jsx
+"story.StoryReader.play_audio","Play Audio","src/components/story/StoryReader.tsx",622,jsx
+"story.StoryReader.listen_to_this_page","Listen to this page","src/components/story/StoryReader.tsx",623,jsx
+"story.StoryReader.","🎯","src/components/story/StoryReader.tsx",635,jsx
+"story.StoryReader.comprehension_quiz","Comprehension Quiz","src/components/story/StoryReader.tsx",637,jsx
+"story.StoryReader.test_your_understanding","Test your understanding","src/components/story/StoryReader.tsx",638,jsx
+"story.StoryReader.","⚙️","src/components/story/StoryReader.tsx",670,jsx
+"story.StoryReader.font_size_furigana_etc","Font size, furigana, etc.","src/components/story/StoryReader.tsx",673,jsx
+"story.StoryReader.translation","Translation:","src/components/story/StoryReader.tsx",784,jsx
+"stats.StatsDebugPanel.streak","Streak:","src/components/stats/StatsDebugPanel.tsx",108,jsx
+"stats.StatsDebugPanel.total_days","Total Days:","src/components/stats/StatsDebugPanel.tsx",111,jsx
+"stats.StatsDebugPanel.drills","Drills:","src/components/stats/StatsDebugPanel.tsx",114,jsx
+"stats.StatsDebugPanel.stories","Stories:","src/components/stats/StatsDebugPanel.tsx",117,jsx
+"stats.StatsDebugPanel.accuracy","Accuracy:","src/components/stats/StatsDebugPanel.tsx",120,jsx
+"stats.StatsDebugPanel.version","Version:","src/components/stats/StatsDebugPanel.tsx",123,jsx
+"stats.StatsDebugPanel.enable_debug_mode","Enable debug mode","src/components/stats/StatsDebugPanel.tsx",77,prop
+"stats.StatsDebugPanel.close_debug_panel","Close debug panel","src/components/stats/StatsDebugPanel.tsx",93,prop
+"stats.StatsBar.pokball","Pokéball","src/components/stats/StatsBar.tsx",108,prop
+"stats.StatsBar.pokmon","Pokémon","src/components/stats/StatsBar.tsx",112,prop
+"stats.StatsBar.active_days","Active Days","src/components/stats/StatsBar.tsx",178,prop
+"reading.ComprehensionQuiz.","📚","src/components/reading/ComprehensionQuiz.tsx",148,jsx
+"reading.ComprehensionQuiz.","理解度テストを準備中...","src/components/reading/ComprehensionQuiz.tsx",149,jsx
+"reading.ComprehensionQuiz.","正答数","src/components/reading/ComprehensionQuiz.tsx",186,jsx
+"reading.ComprehensionQuiz.","所要時間","src/components/reading/ComprehensionQuiz.tsx",192,jsx
+"reading.ComprehensionQuiz.","回答結果","src/components/reading/ComprehensionQuiz.tsx",199,jsx
+"reading.ComprehensionQuiz._","• 記事をもう一度ゆっくり読み返してみましょう","src/components/reading/ComprehensionQuiz.tsx",239,jsx
+"reading.ComprehensionQuiz._","• 分からない単語を辞書で調べてみましょう","src/components/reading/ComprehensionQuiz.tsx",240,jsx
+"reading.ComprehensionQuiz._","• 同じレベルの記事をもっと読んで慣れましょう","src/components/reading/ComprehensionQuiz.tsx",241,jsx
+"reading.ComprehensionQuiz.","理解度テスト","src/components/reading/ComprehensionQuiz.tsx",272,jsx
+"reading.ComprehensionQuiz.","💡","src/components/reading/ComprehensionQuiz.tsx",385,jsx
+"reading.ComprehensionQuiz.","解説","src/components/reading/ComprehensionQuiz.tsx",387,jsx
+"reading.ArticleReader._textincludes","') && text.includes('","src/components/reading/ArticleReader.tsx",39,jsx
+"reading.ArticleReader.","漢字","src/components/reading/ArticleReader.tsx",43,jsx
+"reading.ArticleReader.","かんじ","src/components/reading/ArticleReader.tsx",43,jsx
+"reading.ArticleReader.1","$1","src/components/reading/ArticleReader.tsx",621,jsx
+"reading.ArticleReader.2","$2","src/components/reading/ArticleReader.tsx",45,jsx
+"reading.ArticleReader.searching","Searching...","src/components/reading/ArticleReader.tsx",142,jsx
+"reading.ArticleReader.reading_settings","Reading Settings","src/components/reading/ArticleReader.tsx",879,jsx
+"reading.ArticleReader.highlight_mode","Highlight Mode:","src/components/reading/ArticleReader.tsx",288,jsx
+"reading.ArticleReader._100_readingprogress","= 100 && readingProgress","src/components/reading/ArticleReader.tsx",541,jsx
+"reading.ArticleReader.back_to_articles","Back to Articles","src/components/reading/ArticleReader.tsx",796,jsx
+"reading.ArticleReader.","📚","src/components/reading/ArticleReader.tsx",824,jsx
+"reading.ArticleReader.audio_reader","Audio Reader","src/components/reading/ArticleReader.tsx",826,jsx
+"reading.ArticleReader.open_immersive_reading_mode","Open immersive reading mode","src/components/reading/ArticleReader.tsx",827,jsx
+"reading.ArticleReader.","🎯","src/components/reading/ArticleReader.tsx",1170,jsx
+"reading.ArticleReader.comprehension_quiz","Comprehension Quiz","src/components/reading/ArticleReader.tsx",842,jsx
+"reading.ArticleReader.","⚙️","src/components/reading/ArticleReader.tsx",877,jsx
+"reading.ArticleReader.font_size_furigana_etc","Font size, furigana, etc.","src/components/reading/ArticleReader.tsx",880,jsx
+"reading.ArticleReader.processing_content","Processing content...","src/components/reading/ArticleReader.tsx",995,jsx
+"reading.ArticleReader.","⚠️","src/components/reading/ArticleReader.tsx",1076,jsx
+"reading.ArticleAudioPlayer._0_index","= 0 && index","src/components/reading/ArticleAudioPlayer.tsx",285,jsx
+"reading.ArticleAudioPlayer._audio_reader","📚 Audio Reader","src/components/reading/ArticleAudioPlayer.tsx",320,jsx
+"reading.ArticleAudioPlayer._sentences","📝 Sentences","src/components/reading/ArticleAudioPlayer.tsx",336,jsx
+"reading.ArticleAudioPlayer._key_vocabulary","📚 Key Vocabulary","src/components/reading/ArticleAudioPlayer.tsx",413,jsx
+"reading.ArticleAudioPlayer.05x","0.5x","src/components/reading/ArticleAudioPlayer.tsx",499,jsx
+"reading.ArticleAudioPlayer.075x","0.75x","src/components/reading/ArticleAudioPlayer.tsx",500,jsx
+"reading.ArticleAudioPlayer.10x","1.0x","src/components/reading/ArticleAudioPlayer.tsx",501,jsx
+"reading.ArticleAudioPlayer.125x","1.25x","src/components/reading/ArticleAudioPlayer.tsx",502,jsx
+"reading.ArticleAudioPlayer.15x","1.5x","src/components/reading/ArticleAudioPlayer.tsx",503,jsx
+"reading.ArticleAudioPlayer.20x","2.0x","src/components/reading/ArticleAudioPlayer.tsx",504,jsx
+"onboarding.OnboardingModal.close_tutorial","Close tutorial","src/components/onboarding/OnboardingModal.tsx",104,prop
+"onboarding.OnboardingModal.previous_screen","Previous screen","src/components/onboarding/OnboardingModal.tsx",143,prop
+"onboarding.OnboardingModal.next_screen","Next screen","src/components/onboarding/OnboardingModal.tsx",160,prop
+"screens.WelcomeScreen.loading","Loading...","src/components/onboarding/screens/WelcomeScreen.tsx",15,jsx
+"screens.WelcomeScreen.","🗾","src/components/onboarding/screens/WelcomeScreen.tsx",22,jsx
+"screens.SuccessScreen.loading","Loading...","src/components/onboarding/screens/SuccessScreen.tsx",20,jsx
+"screens.SuccessScreen.","🎌","src/components/onboarding/screens/SuccessScreen.tsx",61,jsx
+"screens.SuccessScreen.","🌟","src/components/onboarding/screens/SuccessScreen.tsx",62,jsx
+"screens.SuccessScreen.learning_preferences","Learning Preferences:","src/components/onboarding/screens/SuccessScreen.tsx",156,jsx
+"screens.SuccessScreen.show_romaji","Show Romaji","src/components/onboarding/screens/SuccessScreen.tsx",159,jsx
+"screens.SuccessScreen.preview","Preview:","src/components/onboarding/screens/SuccessScreen.tsx",187,jsx
+"screens.SuccessScreen.to_eat","""to eat""","src/components/onboarding/screens/SuccessScreen.tsx",195,jsx
+"screens.PracticeScreen.loading","Loading...","src/components/onboarding/screens/PracticeScreen.tsx",23,jsx
+"screens.PracticeScreen.","📚","src/components/onboarding/screens/PracticeScreen.tsx",82,jsx
+"screens.PracticeScreen.","🤔","src/components/onboarding/screens/PracticeScreen.tsx",106,jsx
+"screens.PracticeScreen.","🏆","src/components/onboarding/screens/PracticeScreen.tsx",216,jsx
+"screens.ListsScreen.loading","Loading...","src/components/onboarding/screens/ListsScreen.tsx",19,jsx
+"screens.ConjugationScreen.loading","Loading...","src/components/onboarding/screens/ConjugationScreen.tsx",19,jsx
+"kanji-moods.MoodBoard.","🎉","src/components/kanji-moods/MoodBoard.tsx",175,jsx
+"kanji-moods.MoodBoard.congratulations_youve_complete","Congratulations! You've completed this mood board!","src/components/kanji-moods/MoodBoard.tsx",176,jsx
+"kanji-moods.MoodBoard.","💡","src/components/kanji-moods/MoodBoard.tsx",201,jsx
+"kanji-moods.MoodBoard._click_the_study_button_to_tes","• Click the Study button to test your knowledge of all kanji","src/components/kanji-moods/MoodBoard.tsx",205,jsx
+"kanji-moods.MoodBoard._tap_any_kanji_card_to_see_its","• Tap any kanji card to see its readings and example words","src/components/kanji-moods/MoodBoard.tsx",206,jsx
+"kanji-moods.MoodBoard._mark_kanji_as_learned_by_clic","• Mark kanji as learned by clicking the circle button","src/components/kanji-moods/MoodBoard.tsx",207,jsx
+"kanji-moods.MoodBoard._try_to_find_connections_betwe","• Try to find connections between kanji in this theme","src/components/kanji-moods/MoodBoard.tsx",208,jsx
+"kanji-moods.MoodBoard._practice_writing_the_kanji_to","• Practice writing the kanji to improve memorization","src/components/kanji-moods/MoodBoard.tsx",209,jsx
+"kanji-moods.KanjiStudyModal.","🎉","src/components/kanji-moods/KanjiStudyModal.tsx",433,jsx
+"kanji-moods.KanjiStudyModal.study_session_complete","Study Session Complete!","src/components/kanji-moods/KanjiStudyModal.tsx",434,jsx
+"kanji-moods.KanjiModal.",".*?","src/components/kanji-moods/KanjiModal.tsx",70,jsx
+"kanji-moods.KanjiModal.","ふりがな","src/components/kanji-moods/KanjiModal.tsx",199,jsx
+"kanji-moods.KanjiModal.close_modal","Close modal","src/components/kanji-moods/KanjiModal.tsx",99,prop
+"kanji-moods.KanjiModal.play_pronunciation","Play pronunciation","src/components/kanji-moods/KanjiModal.tsx",126,prop
+"kanji-moods.KanjiModal.toggle_furigana","Toggle furigana","src/components/kanji-moods/KanjiModal.tsx",205,prop
+"kanji.KanjiModal.no_onyomi_readings","No on'yomi readings","src/components/kanji/KanjiModal.tsx",128,jsx
+"kanji.KanjiModal.no_kunyomi_readings","No kun'yomi readings","src/components/kanji/KanjiModal.tsx",156,jsx
+"kanji.KanjiModal.add_to_study_session","Add to Study Session","src/components/kanji/KanjiModal.tsx",186,jsx
+"kana.KanaStudyModal.what_is_the_romaji_for_this_ch","What is the romaji for this character?","src/components/kana/KanaStudyModal.tsx",181,jsx
+"kana.KanaStudyModal.did_you_get_it_right","Did you get it right?","src/components/kana/KanaStudyModal.tsx",202,jsx
+"games.PokedexModal.pokdex","Pokédex","src/components/games/PokedexModal.tsx",313,prop
+"games.PokedexModal.caught_on","Caught on","src/components/games/PokedexModal.tsx",472,jsx
+"games.PokedexModal.no_pokmon","No Pokémon","src/components/games/PokedexModal.tsx",180,prop
+"games.PokedexModal.load_more","Load more","src/components/games/PokedexModal.tsx",265,prop
+"games.PokedexModal.pokball","Pokéball","src/components/games/PokedexModal.tsx",321,prop
+"games.KanjiQuestTutorialModal.","💡","src/components/games/KanjiQuestTutorialModal.tsx",202,jsx
+"games.KanjiQuestTutorialModal._multiple_readings_are_shown_t","• Multiple readings are shown together (up to 4)","src/components/games/KanjiQuestTutorialModal.tsx",205,jsx
+"games.KanjiQuestTutorialModal._each_kanji_appears_multiple_t","• Each kanji appears multiple times until fully mastered","src/components/games/KanjiQuestTutorialModal.tsx",206,jsx
+"games.KanjiQuestTutorialModal._wrong_answers_dont_progress_y","• Wrong answers don't progress - you must get it right!","src/components/games/KanjiQuestTutorialModal.tsx",207,jsx
+"games.KanjiQuestTutorialModal._the_number_of_encounters_tota","• The number of encounters = total questions for all kanji","src/components/games/KanjiQuestTutorialModal.tsx",208,jsx
+"games.KanjiQuestTutorialModal.maybe_later","Maybe Later","src/components/games/KanjiQuestTutorialModal.tsx",223,jsx
+"games.KanjiQuestTutorialModal.lets_battle","Let's Battle!","src/components/games/KanjiQuestTutorialModal.tsx",231,jsx
+"games.KanjiQuest.daily_limit_reached","Daily Limit Reached!","src/components/games/KanjiQuest.tsx",1364,jsx
+"games.KanjiQuest.no_kanji_provided","No Kanji Provided","src/components/games/KanjiQuest.tsx",1385,jsx
+"games.KanjiQuest.select_kanji_to_battle","Select Kanji to Battle","src/components/games/KanjiQuest.tsx",1401,jsx
+"games.KanjiQuest.choose_35_kanji_to_practice_wi","Choose 3-5 kanji to practice with","src/components/games/KanjiQuest.tsx",1419,jsx
+"games.KanjiQuest.a_wild_pokmon_appeared","A wild Pokémon appeared!","src/components/games/KanjiQuest.tsx",1654,jsx
+"games.KanjiQuest.battle_arena","Battle Arena","src/components/games/KanjiQuest.tsx",1774,jsx
+"games.KanjiQuest.lv50","Lv.50","src/components/games/KanjiQuest.tsx",1854,jsx
+"games.KanjiQuest.","🥋","src/components/games/KanjiQuest.tsx",1987,jsx
+"games.KanjiQuest.kanji_defeated","Kanji Defeated!","src/components/games/KanjiQuest.tsx",2071,jsx
+"games.KanjiQuest.incorrect","Incorrect!","src/components/games/KanjiQuest.tsx",2117,jsx
+"games.KanjiQuest.the_correct_answer_was","The correct answer was:","src/components/games/KanjiQuest.tsx",2120,jsx
+"games.KanjiQuest.readings","Readings:","src/components/games/KanjiQuest.tsx",2137,jsx
+"games.KanjiQuest.this_kanji_is_used_in_vocabula","This kanji is used in vocabulary words","src/components/games/KanjiQuest.tsx",2148,jsx
+"games.KanjiQuest.study_phase","Study Phase","src/components/games/KanjiQuest.tsx",2312,jsx
+"games.KanjiQuest.sample_words","Sample Words","src/components/games/KanjiQuest.tsx",2395,jsx
+"games.KanjiQuest.training_ground_quiz","Training Ground Quiz","src/components/games/KanjiQuest.tsx",2469,jsx
+"games.KanjiQuest.gotcha_","Gotcha! 🎉","src/components/games/KanjiQuest.tsx",2578,jsx
+"games.KanjiQuest.pokball","Pokéball","src/components/games/KanjiQuest.tsx",1361,prop
+"games.KanjiQuest.wild_pokmon","Wild Pokémon","src/components/games/KanjiQuest.tsx",1888,prop
+"games.KanjiQuest.wrong_answer","Wrong answer","src/components/games/KanjiQuest.tsx",2114,prop
+"games.KanjiQuest.answer_icon","Answer icon","src/components/games/KanjiQuest.tsx",2278,prop
+"games.KanjiQuest.caught_pokmon","Caught Pokémon","src/components/games/KanjiQuest.tsx",2621,prop
+"games.KanjiQuest.escaped_pokmon","Escaped Pokémon","src/components/games/KanjiQuest.tsx",2663,prop
+"SentenceScrambleGame.SentenceScrambleModal.loading","Loading...","src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",588,jsx
+"SentenceScrambleGame.SentenceScrambleModal.","👀","src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",681,jsx
+"SentenceScrambleGame.SentenceScrambleModal.","🔤","src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",689,jsx
+"SentenceScrambleGame.SentenceScrambleModal.","🎯","src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",889,jsx
+"MatchingGame.VictoryScreen.moves_to_complete","Moves to Complete","src/components/games/MatchingGame/VictoryScreen.tsx",84,jsx
+"MatchingGame.Tile.","💥","src/components/games/MatchingGame/Tile.tsx",135,jsx
+"MatchingGame.Tile.tile_back","Tile back","src/components/games/MatchingGame/Tile.tsx",51,prop
+"MatchingGame.MatchingGameModal.reset_game","Reset game","src/components/games/MatchingGame/MatchingGameModal.tsx",377,prop
+"MatchingGame.MatchingGameModal.close_game","Close game","src/components/games/MatchingGame/MatchingGameModal.tsx",384,prop
+"MatchingGame.InstructionScreen.","🎮","src/components/games/MatchingGame/InstructionScreen.tsx",44,jsx
+"MatchingGame.InstructionScreen.1","1.","src/components/games/MatchingGame/InstructionScreen.tsx",49,jsx
+"MatchingGame.InstructionScreen.tap_any_tile_to_reveal_whats_h","Tap any tile to reveal what's hidden underneath","src/components/games/MatchingGame/InstructionScreen.tsx",50,jsx
+"MatchingGame.InstructionScreen.2","2.","src/components/games/MatchingGame/InstructionScreen.tsx",53,jsx
+"MatchingGame.InstructionScreen._same_word_twice","• Same word twice","src/components/games/MatchingGame/InstructionScreen.tsx",56,jsx
+"MatchingGame.InstructionScreen._word_and_its_reading_kana","• Word and its reading (kana)","src/components/games/MatchingGame/InstructionScreen.tsx",57,jsx
+"MatchingGame.InstructionScreen._word_and_its_meaning","• Word and its meaning","src/components/games/MatchingGame/InstructionScreen.tsx",58,jsx
+"MatchingGame.InstructionScreen.3","3.","src/components/games/MatchingGame/InstructionScreen.tsx",63,jsx
+"MatchingGame.InstructionScreen.clear_all_pairs_to_win_the_gam","Clear all pairs to win the game!","src/components/games/MatchingGame/InstructionScreen.tsx",64,jsx
+"MatchingGame.InstructionScreen.4","4.","src/components/games/MatchingGame/InstructionScreen.tsx",67,jsx
+"MatchingGame.InstructionScreen.try_to_complete_with_as_few_mo","Try to complete with as few moves as possible","src/components/games/MatchingGame/InstructionScreen.tsx",68,jsx
+"MatchingGame.InstructionScreen.pairs_to_match","Pairs to Match","src/components/games/MatchingGame/InstructionScreen.tsx",77,jsx
+"MatchingGame.InstructionScreen._tip","💡 Tip:","src/components/games/MatchingGame/InstructionScreen.tsx",84,jsx
+"MatchingGame.InstructionScreen._note","ℹ️ Note:","src/components/games/MatchingGame/InstructionScreen.tsx",92,jsx
+"MatchingGame.InstructionScreen.matching_game","Matching Game","src/components/games/MatchingGame/InstructionScreen.tsx",29,prop
+"KanaDropGame.VictoryScreen.victory","Victory!","src/components/games/KanaDropGame/VictoryScreen.tsx",63,jsx
+"KanaDropGame.VictoryScreen.youve_mastered_the_kana_challe","You've mastered the kana challenge!","src/components/games/KanaDropGame/VictoryScreen.tsx",64,jsx
+"KanaDropGame.VictoryScreen.final_score","Final Score","src/components/games/KanaDropGame/VictoryScreen.tsx",69,jsx
+"KanaDropGame.VictoryScreen.time_taken","Time Taken","src/components/games/KanaDropGame/VictoryScreen.tsx",73,jsx
+"KanaDropGame.VictoryScreen.total_clicks","Total Clicks","src/components/games/KanaDropGame/VictoryScreen.tsx",81,jsx
+"KanaDropGame.KanaDropModal.select_kana_for_kana_drop","Select Kana for Kana Drop","src/components/games/KanaDropGame/KanaDropModal.tsx",456,jsx
+"KanaDropGame.KanaDropModal.show_romaji","Show Romaji","src/components/games/KanaDropGame/KanaDropModal.tsx",504,jsx
+"KanaDropGame.KanaDropModal.how_to_play_kana_drop","How to Play Kana Drop","src/components/games/KanaDropGame/KanaDropModal.tsx",585,jsx
+"KanaDropGame.KanaDropModal._score","• Score","src/components/games/KanaDropGame/KanaDropModal.tsx",587,jsx
+"KanaDropGame.KanaDropModal.100_points","100 points","src/components/games/KanaDropGame/KanaDropModal.tsx",587,jsx
+"KanaDropGame.KanaDropModal.to_win","to win!","src/components/games/KanaDropGame/KanaDropModal.tsx",587,jsx
+"KanaDropGame.KanaDropModal._click_any_falling_kana_that_m","• Click any falling kana that matches your selected characters.","src/components/games/KanaDropGame/KanaDropModal.tsx",588,jsx
+"KanaDropGame.KanaDropModal._avoid_clicking_distractors_im","• Avoid clicking distractors (images or symbols).","src/components/games/KanaDropGame/KanaDropModal.tsx",589,jsx
+"KanaDropGame.KanaDropModal._each_correct_kana","• Each correct kana:","src/components/games/KanaDropGame/KanaDropModal.tsx",590,jsx
+"KanaDropGame.KanaDropModal.5","+5","src/components/games/KanaDropGame/KanaDropModal.tsx",771,jsx
+"KanaDropGame.KanaDropModal._each_distractor","• Each distractor:","src/components/games/KanaDropGame/KanaDropModal.tsx",591,jsx
+"KanaDropGame.KanaDropModal._each_wrong_kana","• Each wrong kana:","src/components/games/KanaDropGame/KanaDropModal.tsx",592,jsx
+"KanaDropGame.KanaDropModal.your_selected_kana","Your Selected Kana:","src/components/games/KanaDropGame/KanaDropModal.tsx",595,jsx
+"KanaDropGame.KanaDropModal.selected_kana","Selected Kana:","src/components/games/KanaDropGame/KanaDropModal.tsx",758,jsx
+"KanaDropGame.KanaDropModal.correct_kana","Correct kana","src/components/games/KanaDropGame/KanaDropModal.tsx",772,jsx
+"KanaDropGame.KanaDropModal.missed_target_wrong_kana","Missed target / Wrong kana","src/components/games/KanaDropGame/KanaDropModal.tsx",776,jsx
+"KanaDropGame.KanaDropModal.distractor_click","Distractor click","src/components/games/KanaDropGame/KanaDropModal.tsx",780,jsx
+"KanaDropGame.KanaDropModal.game_paused","Game Paused","src/components/games/KanaDropGame/KanaDropModal.tsx",827,jsx
+"KanaDropGame.KanaDropModal.close_game","Close Game","src/components/games/KanaDropGame/KanaDropModal.tsx",685,prop
+"KanaDropGame.GameCanvas.game_over","Game Over!","src/components/games/KanaDropGame/GameCanvas.tsx",369,jsx
+"flashcards.FlashcardCard.tap_to_flip","Tap to flip","src/components/flashcards/FlashcardCard.tsx",131,jsx
+"drill.SaveWordModal.select_existing_lists","Select existing lists:","src/components/drill/SaveWordModal.tsx",139,jsx
+"drill.SaveWordModal.create_new_list","Create new list:","src/components/drill/SaveWordModal.tsx",192,jsx
+"drill.SaveWordModal.list_name","List name","src/components/drill/SaveWordModal.tsx",197,prop
+"drill.QuickDrillPreview.loading_common_words","Loading common words...","src/components/drill/QuickDrillPreview.tsx",121,jsx
+"drill.QuickDrillPreview.quick_start","Quick Start","src/components/drill/QuickDrillPreview.tsx",136,jsx
+"drill.QuickDrillPreview.refresh_words","Refresh words","src/components/drill/QuickDrillPreview.tsx",144,prop
+"drill.QuickDrillPreview.save_to_list","Save to list","src/components/drill/QuickDrillPreview.tsx",202,prop
+"debug.StatsDebugSummary.0_timediff","0 && timeDiff","src/components/debug/StatsDebugSummary.tsx",103,jsx
+"debug.StatsDebugSummary.stats_loading_debug_summary","Stats Loading Debug Summary","src/components/debug/StatsDebugSummary.tsx",129,jsx
+"debug.StatsDebugSummary.load_sequence","Load Sequence","src/components/debug/StatsDebugSummary.tsx",153,jsx
+"debug.StatsDebugSummary.all_events","All Events","src/components/debug/StatsDebugSummary.tsx",163,jsx
+"cache.StorageIndicator.size","Size:","src/components/cache/StorageIndicator.tsx",77,jsx
+"cache.StorageIndicator.usage","Usage:","src/components/cache/StorageIndicator.tsx",81,jsx
+"audio.ShadowingAudioPlayer.shadowing_practice","Shadowing Practice","src/components/audio/ShadowingAudioPlayer.tsx",515,jsx
+"audio.ShadowingAudioPlayer.show_furigana","Show Furigana","src/components/audio/ShadowingAudioPlayer.tsx",587,jsx
+"audio.ShadowingAudioPlayer.display_reading_assistance_abo","Display reading assistance above kanji","src/components/audio/ShadowingAudioPlayer.tsx",588,jsx
+"audio.ShadowingAudioPlayer.no_sentence_available","No sentence available","src/components/audio/ShadowingAudioPlayer.tsx",629,jsx
+"audio.ShadowingAudioPlayer.listen_to_each_sentence_and_re","Listen to each sentence and repeat it during the pause.","src/components/audio/ShadowingAudioPlayer.tsx",693,jsx
+"audio.ShadowingAudioPlayer.adjust_settings_to_match_your_","Adjust settings to match your learning pace.","src/components/audio/ShadowingAudioPlayer.tsx",694,jsx
+"audio.ShadowingAudioPlayer.all_sentences","All Sentences","src/components/audio/ShadowingAudioPlayer.tsx",701,jsx
+"audio.ShadowingAudioPlayer.select_existing_lists","Select existing lists:","src/components/audio/ShadowingAudioPlayer.tsx",751,jsx
+"audio.ShadowingAudioPlayer.sentence_list","Sentence List","src/components/audio/ShadowingAudioPlayer.tsx",811,jsx
+"audio.ShadowingAudioPlayer.for_shadowing_practice_sentenc","For shadowing practice (sentences only)","src/components/audio/ShadowingAudioPlayer.tsx",812,jsx
+"audio.ShadowingAudioPlayer._perfect_for_shadowing_practic","✓ Perfect for shadowing practice","src/components/audio/ShadowingAudioPlayer.tsx",813,jsx
+"audio.ShadowingAudioPlayer.save_sentence_to_list","Save sentence to list","src/components/audio/ShadowingAudioPlayer.tsx",623,prop
+"audio.ShadowingAudioPlayer.new_list_name","New list name...","src/components/audio/ShadowingAudioPlayer.tsx",806,prop
+"audio.ImprovedArticleAudioPlayer.listen_to_article","Listen to Article","src/components/audio/ImprovedArticleAudioPlayer.tsx",329,jsx
+"audio.ImprovedArticleAudioPlayer.05x","0.5x","src/components/audio/ImprovedArticleAudioPlayer.tsx",498,jsx
+"audio.ImprovedArticleAudioPlayer.075x","0.75x","src/components/audio/ImprovedArticleAudioPlayer.tsx",499,jsx
+"audio.ImprovedArticleAudioPlayer.125x","1.25x","src/components/audio/ImprovedArticleAudioPlayer.tsx",501,jsx
+"audio.ImprovedArticleAudioPlayer.15x","1.5x","src/components/audio/ImprovedArticleAudioPlayer.tsx",502,jsx
+"audio.EnhancedArticleAudioPlayer.speed","Speed:","src/components/audio/EnhancedArticleAudioPlayer.tsx",642,jsx
+"audio.EnhancedArticleAudioPlayer.05x","0.5x","src/components/audio/EnhancedArticleAudioPlayer.tsx",648,jsx
+"audio.EnhancedArticleAudioPlayer.075x","0.75x","src/components/audio/EnhancedArticleAudioPlayer.tsx",649,jsx
+"audio.EnhancedArticleAudioPlayer.125x","1.25x","src/components/audio/EnhancedArticleAudioPlayer.tsx",651,jsx
+"audio.EnhancedArticleAudioPlayer.15x","1.5x","src/components/audio/EnhancedArticleAudioPlayer.tsx",652,jsx
+"audio.EnhancedArticleAudioPlayer.volume","Volume:","src/components/audio/EnhancedArticleAudioPlayer.tsx",658,jsx
+"audio.ArticleAudioPlayer._sentenceslength_sentenceindex","= sentences.length || sentenceIndex","src/components/audio/ArticleAudioPlayer.tsx",99,jsx
+"admin.UserTable.","⚠️","src/components/admin/UserTable.tsx",164,jsx
+"admin.UserTable.","👤","src/components/admin/UserTable.tsx",206,jsx
+"admin.UserTable.refresh_users","Refresh users","src/components/admin/UserTable.tsx",193,prop
+"admin.UserSearch.advanced_filters","Advanced Filters","src/components/admin/UserSearch.tsx",122,jsx
+"admin.UserSearch.any_time","Any time","src/components/admin/UserSearch.tsx",142,jsx
+"admin.UserSearch.this_week","This week","src/components/admin/UserSearch.tsx",144,jsx
+"admin.UserSearch.this_month","This month","src/components/admin/UserSearch.tsx",145,jsx
+"admin.UserSearch.this_year","This year","src/components/admin/UserSearch.tsx",133,jsx
+"admin.UserSearch.all_subscriptions","All subscriptions","src/components/admin/UserSearch.tsx",154,jsx
+"admin.UserSearch.newest_first","Newest first","src/components/admin/UserSearch.tsx",166,jsx
+"admin.UserSearch.oldest_first","Oldest first","src/components/admin/UserSearch.tsx",167,jsx
+"admin.UserSearch.most_active","Most active","src/components/admin/UserSearch.tsx",168,jsx
+"admin.UserSearch.email_az","Email A-Z","src/components/admin/UserSearch.tsx",169,jsx
+"admin.UserSearch.filter","Filter:","src/components/admin/UserSearch.tsx",186,jsx
+"admin.UserDetailsModal.account_status","Account Status","src/components/admin/UserDetailsModal.tsx",105,jsx
+"admin.UserDetailsModal.status","Status:","src/components/admin/UserDetailsModal.tsx",108,jsx
+"admin.UserDetailsModal.registered","Registered:","src/components/admin/UserDetailsModal.tsx",114,jsx
+"admin.UserDetailsModal.last_login","Last Login:","src/components/admin/UserDetailsModal.tsx",118,jsx
+"admin.UserDetailsModal.plan","Plan:","src/components/admin/UserDetailsModal.tsx",128,jsx
+"admin.UserDetailsModal.billing","Billing:","src/components/admin/UserDetailsModal.tsx",134,jsx
+"admin.UserDetailsModal.renewal","Renewal:","src/components/admin/UserDetailsModal.tsx",139,jsx
+"admin.UserDetailsModal.usage_limits","Usage & Limits","src/components/admin/UserDetailsModal.tsx",152,jsx
+"admin.UserDetailsModal.word_lists","Word Lists:","src/components/admin/UserDetailsModal.tsx",156,jsx
+"admin.UserDetailsModal.drills_today","Drills Today:","src/components/admin/UserDetailsModal.tsx",162,jsx
+"admin.UserDetailsModal.cloud_sync","Cloud Sync:","src/components/admin/UserDetailsModal.tsx",170,jsx
+"admin.UserDetailsModal.data_saving","Data Saving:","src/components/admin/UserDetailsModal.tsx",176,jsx
+"admin.UserDetailsModal.admin_actions","Admin Actions","src/components/admin/UserDetailsModal.tsx",188,jsx
+"admin.UserDetailsModal.recent_activity","Recent Activity","src/components/admin/UserDetailsModal.tsx",208,jsx
+"admin.UserDetailsModal.close_modal","Close modal","src/components/admin/UserDetailsModal.tsx",76,prop
+"admin.StatsOverview.","⚠️","src/components/admin/StatsOverview.tsx",64,jsx
+"admin.StatsOverview.user_statistics","User Statistics","src/components/admin/StatsOverview.tsx",85,jsx
+"admin.StatsOverview.subscription_statistics","Subscription Statistics","src/components/admin/StatsOverview.tsx",119,jsx
+"admin.StatsOverview.feature_usage","Feature Usage","src/components/admin/StatsOverview.tsx",151,jsx
+"admin.StatsOverview.total_users","Total Users","src/components/admin/StatsOverview.tsx",88,prop
+"admin.StatsOverview.new_users_today","New Users Today","src/components/admin/StatsOverview.tsx",96,prop
+"admin.StatsOverview.active_today","Active Today","src/components/admin/StatsOverview.tsx",102,prop
+"admin.StatsOverview.registered_users","Registered Users","src/components/admin/StatsOverview.tsx",108,prop
+"admin.StatsOverview.free_users","Free Users","src/components/admin/StatsOverview.tsx",122,prop
+"admin.StatsOverview.premium_users","Premium Users","src/components/admin/StatsOverview.tsx",128,prop
+"admin.StatsOverview.monthly_subscribers","Monthly Subscribers","src/components/admin/StatsOverview.tsx",136,prop
+"admin.StatsOverview.yearly_subscribers","Yearly Subscribers","src/components/admin/StatsOverview.tsx",142,prop
+"admin.StatsOverview.drills_today","Drills Today","src/components/admin/StatsOverview.tsx",154,prop
+"admin.StatsOverview.vocabulary_searches","Vocabulary Searches","src/components/admin/StatsOverview.tsx",160,prop
+"admin.StatsOverview.mood_board_views","Mood Board Views","src/components/admin/StatsOverview.tsx",166,prop
+"admin.StatsOverview.avg_session_min","Avg Session (min)","src/components/admin/StatsOverview.tsx",172,prop
+"admin.StatsDebugPanel.error_loading_stats","Error loading stats","src/components/admin/StatsDebugPanel.tsx",89,jsx
+"admin.StatsDebugPanel.current_streak","Current Streak","src/components/admin/StatsDebugPanel.tsx",102,jsx
+"admin.StatsDebugPanel.total_activities","Total Activities","src/components/admin/StatsDebugPanel.tsx",114,jsx
+"admin.StatsDebugPanel.overall_accuracy","Overall Accuracy","src/components/admin/StatsDebugPanel.tsx",126,jsx
+"admin.StatsDebugPanel.last_active","Last Active","src/components/admin/StatsDebugPanel.tsx",138,jsx
+"admin.StatsDebugPanel.activity_breakdown","Activity Breakdown","src/components/admin/StatsDebugPanel.tsx",154,jsx
+"admin.StatsDebugPanel.detailed_breakdown_of_all_trac","Detailed breakdown of all tracked activities","src/components/admin/StatsDebugPanel.tsx",155,jsx
+"admin.StatsDebugPanel.kanji_study","Kanji Study","src/components/admin/StatsDebugPanel.tsx",172,jsx
+"admin.StatsDebugPanel.practice_sessions","Practice Sessions","src/components/admin/StatsDebugPanel.tsx",188,jsx
+"admin.StatsDebugPanel.learning_progress","Learning Progress","src/components/admin/StatsDebugPanel.tsx",198,jsx
+"admin.StatsDebugPanel.cumulative_learning_metrics","Cumulative learning metrics","src/components/admin/StatsDebugPanel.tsx",199,jsx
+"admin.StatsDebugPanel.kanji_learned","Kanji Learned","src/components/admin/StatsDebugPanel.tsx",204,jsx
+"admin.StatsDebugPanel.words_learned","Words Learned","src/components/admin/StatsDebugPanel.tsx",208,jsx
+"admin.StatsDebugPanel.pokemon_caught","Pokemon Caught","src/components/admin/StatsDebugPanel.tsx",212,jsx
+"admin.StatsDebugPanel.total_score","Total Score","src/components/admin/StatsDebugPanel.tsx",216,jsx
+"admin.StatsDebugPanel.questions_answered","Questions Answered","src/components/admin/StatsDebugPanel.tsx",220,jsx
+"admin.StatsDebugPanel.correct_answers","Correct Answers","src/components/admin/StatsDebugPanel.tsx",224,jsx
+"admin.StatsDebugPanel.debug_actions","Debug Actions","src/components/admin/StatsDebugPanel.tsx",234,jsx
+"admin.StatsDebugPanel.tools_for_debugging_and_managi","Tools for debugging and managing stats data","src/components/admin/StatsDebugPanel.tsx",235,jsx
+"admin.StatsDebugPanel.stats_metadata","Stats Metadata","src/components/admin/StatsDebugPanel.tsx",262,jsx
+"admin.StatsDebugPanel.technical_information_about_th","Technical information about the stats system","src/components/admin/StatsDebugPanel.tsx",263,jsx
+"admin.StatsDebugPanel.user_id","User ID","src/components/admin/StatsDebugPanel.tsx",268,jsx
+"admin.StatsDebugPanel.stats_version","Stats Version","src/components/admin/StatsDebugPanel.tsx",272,jsx
+"admin.StatsDebugPanel.last_updated","Last Updated","src/components/admin/StatsDebugPanel.tsx",276,jsx
+"admin.StatsDebugPanel.loading_state","Loading State","src/components/admin/StatsDebugPanel.tsx",280,jsx
+"admin.StatsDebugPanel.error_state","Error State","src/components/admin/StatsDebugPanel.tsx",286,jsx
+"admin.QuickResourceCreator.","🔍","src/components/admin/QuickResourceCreator.tsx",145,jsx
+"admin.QuickResourceCreator.regenerate_visuals","Regenerate visuals","src/components/admin/QuickResourceCreator.tsx",112,prop
+"admin.QuickResourceCreator.resource_icon","Resource icon","src/components/admin/QuickResourceCreator.tsx",175,prop
+"admin.QuickResourceCreator.open_original","Open original","src/components/admin/QuickResourceCreator.tsx",210,prop
+"admin.PremiumUpgradeButton.upgrading","Upgrading...","src/components/admin/PremiumUpgradeButton.tsx",130,jsx
+"admin.PremiumUpgradeButton.399month","$3.99/month","src/components/admin/PremiumUpgradeButton.tsx",158,jsx
+"admin.PremiumUpgradeButton.3999year","$39.99/year","src/components/admin/PremiumUpgradeButton.tsx",173,jsx
+"admin.PremiumUpgradeButton.save_2_months","Save 2 months!","src/components/admin/PremiumUpgradeButton.tsx",174,jsx
+"admin.MoodBoardManager.","⚠️","src/components/admin/MoodBoardManager.tsx",146,jsx
+"admin.MoodBoardManager.latest_updated","Latest Updated","src/components/admin/MoodBoardManager.tsx",180,jsx
+"admin.MoodBoardManager.oldest_updated","Oldest Updated","src/components/admin/MoodBoardManager.tsx",181,jsx
+"admin.MoodBoardManager.title_az","Title A-Z","src/components/admin/MoodBoardManager.tsx",182,jsx
+"admin.MoodBoardManager.title_za","Title Z-A","src/components/admin/MoodBoardManager.tsx",183,jsx
+"admin.MoodBoardManager.jlpt_level_n5n1","JLPT Level (N5→N1)","src/components/admin/MoodBoardManager.tsx",184,jsx
+"admin.MoodBoardManager.jlpt_level_n1n5","JLPT Level (N1→N5)","src/components/admin/MoodBoardManager.tsx",185,jsx
+"admin.MoodBoardManager.most_kanji","Most Kanji","src/components/admin/MoodBoardManager.tsx",186,jsx
+"admin.MoodBoardManager.least_kanji","Least Kanji","src/components/admin/MoodBoardManager.tsx",187,jsx
+"admin.MoodBoardManager.","🎨","src/components/admin/MoodBoardManager.tsx",206,jsx
+"admin.MoodBoardManager.refresh_mood_boards","Refresh mood boards","src/components/admin/MoodBoardManager.tsx",193,prop
+"admin.ArticleMonitoringDashboard.","📊","src/components/admin/ArticleMonitoringDashboard.tsx",186,jsx
+"admin.ArticleMonitoringDashboard.","🔄","src/components/admin/ArticleMonitoringDashboard.tsx",359,jsx
+"admin.ArticleMonitoringDashboard.","⚠️","src/components/admin/ArticleMonitoringDashboard.tsx",369,jsx
+"admin.ArticleMonitoringDashboard.","🗄️","src/components/admin/ArticleMonitoringDashboard.tsx",215,jsx
+"admin.ArticleMonitoringDashboard.maint","Maint.","src/components/admin/ArticleMonitoringDashboard.tsx",227,jsx
+"admin.ArticleMonitoringDashboard.total_articles","Total Articles","src/components/admin/ArticleMonitoringDashboard.tsx",236,jsx
+"admin.ArticleMonitoringDashboard.","📚","src/components/admin/ArticleMonitoringDashboard.tsx",239,jsx
+"admin.ArticleMonitoringDashboard.total_bookmarks","Total Bookmarks","src/components/admin/ArticleMonitoringDashboard.tsx",248,jsx
+"admin.ArticleMonitoringDashboard.","📈","src/components/admin/ArticleMonitoringDashboard.tsx",251,jsx
+"admin.ArticleMonitoringDashboard.avg_reading_time","Avg Reading Time","src/components/admin/ArticleMonitoringDashboard.tsx",260,jsx
+"admin.ArticleMonitoringDashboard.","⏱️","src/components/admin/ArticleMonitoringDashboard.tsx",263,jsx
+"admin.ArticleMonitoringDashboard.expiring_soon","Expiring Soon","src/components/admin/ArticleMonitoringDashboard.tsx",272,jsx
+"admin.ArticleMonitoringDashboard.jlpt_level_distribution","JLPT Level Distribution","src/components/admin/ArticleMonitoringDashboard.tsx",284,jsx
+"admin.ArticleMonitoringDashboard.source_distribution","Source Distribution","src/components/admin/ArticleMonitoringDashboard.tsx",303,jsx
+"admin.ArticleMonitoringDashboard.maintenance_operations","Maintenance Operations","src/components/admin/ArticleMonitoringDashboard.tsx",322,jsx
+"admin.ArticleMonitoringDashboard.article_cleanup","Article Cleanup","src/components/admin/ArticleMonitoringDashboard.tsx",326,jsx
+"admin.ArticleMonitoringDashboard.force_refresh","Force Refresh","src/components/admin/ArticleMonitoringDashboard.tsx",347,jsx
+"admin.ArticleManagement.edit_article","Edit Article","src/components/admin/ArticleManagement.tsx",104,jsx
+"admin.ArticleManagement.jlpt_level","JLPT Level","src/components/admin/ArticleManagement.tsx",155,jsx
+"admin.ArticleManagement.reading_time_min","Reading Time (min)","src/components/admin/ArticleManagement.tsx",187,jsx
+"admin.ArticleManagement.source_url","Source URL","src/components/admin/ArticleManagement.tsx",202,jsx
+"admin.ArticleManagement.tags_commaseparated","Tags (comma-separated)","src/components/admin/ArticleManagement.tsx",214,jsx
+"admin.ArticleManagement.loading_articles","Loading articles...","src/components/admin/ArticleManagement.tsx",675,jsx
+"admin.ArticleManagement.","📰","src/components/admin/ArticleManagement.tsx",679,jsx
+"admin.ArticleManagement.no_articles_found","No articles found","src/components/admin/ArticleManagement.tsx",680,jsx
+"admin.ArticleManagement.tag1_tag2_tag3","tag1, tag2, tag3","src/components/admin/ArticleManagement.tsx",221,prop
+"admin.ArticleManagement.edit_article","Edit article","src/components/admin/ArticleManagement.tsx",303,prop
+"admin.ArticleManagement.delete_article","Delete article","src/components/admin/ArticleManagement.tsx",310,prop
+"admin.ArticleCleanup.test_article_cleanup","Test Article Cleanup","src/components/admin/ArticleCleanup.tsx",162,jsx
+"admin.ArticleCleanup.test_article_statistics","Test Article Statistics","src/components/admin/ArticleCleanup.tsx",175,jsx
+"admin.ArticleCleanup.total_test_articles","Total Test Articles:","src/components/admin/ArticleCleanup.tsx",178,jsx
+"admin.ArticleCleanup.date_range","Date Range:","src/components/admin/ArticleCleanup.tsx",183,jsx
+"admin.ArticleCleanup.by_category","By Category:","src/components/admin/ArticleCleanup.tsx",190,jsx
+"admin.ArticleCleanup.title_patterns","Title patterns:","src/components/admin/ArticleCleanup.tsx",213,jsx
+"admin.ArticleCleanup.categories","Categories:","src/components/admin/ArticleCleanup.tsx",216,jsx
+"admin.ArticleCleanup.tags","Tags:","src/components/admin/ArticleCleanup.tsx",219,jsx
+"admin.ArticleCleanup.content_patterns","Content patterns:","src/components/admin/ArticleCleanup.tsx",222,jsx
+"admin.ArticleCleanup.duplicate_articles","Duplicate Articles","src/components/admin/ArticleCleanup.tsx",282,jsx
+"admin.ArticleCleanup.delete_all_test_articles","Delete All Test Articles","src/components/admin/ArticleCleanup.tsx",322,prop
+"admin.ArticleCleanup.delete_duplicate_articles","Delete Duplicate Articles","src/components/admin/ArticleCleanup.tsx",334,prop
+"admin.AdminSidebar.","🎯","src/components/admin/AdminSidebar.tsx",126,jsx
+"admin.AdminSidebar.admin_dashboard","Admin Dashboard","src/components/admin/AdminSidebar.tsx",174,jsx
+"admin.AdminSidebar.close_sidebar","Close sidebar","src/components/admin/AdminSidebar.tsx",135,prop
+"admin.AdminGuard.","🚫","src/components/admin/AdminGuard.tsx",93,jsx
+"mood-boards.MoodBoardPreview.status","Status:","src/components/admin/mood-boards/MoodBoardPreview.tsx",85,jsx
+"mood-boards.MoodBoardPreview.sort_order","Sort Order:","src/components/admin/mood-boards/MoodBoardPreview.tsx",91,jsx
+"mood-boards.MoodBoardPreview.created","Created:","src/components/admin/mood-boards/MoodBoardPreview.tsx",94,jsx
+"mood-boards.MoodBoardPreview.updated","Updated:","src/components/admin/mood-boards/MoodBoardPreview.tsx",99,jsx
+"mood-boards.MoodBoardEditor.lineargradient135deg_667eea_0_","linear-gradient(135deg, #667eea 0%, #764ba2 100%)","src/components/admin/mood-boards/MoodBoardEditor.tsx",430,prop
+"mood-boards.KanjiSearchInput.","🔍","src/components/admin/mood-boards/KanjiSearchInput.tsx",137,jsx
+"mood-boards.KanjiSearchInput.try_searching_by_meaning_readi","Try searching by meaning, reading, or character","src/components/admin/mood-boards/KanjiSearchInput.tsx",139,jsx
+"mood-boards.KanjiSearchInput.0_","0 &&","src/components/admin/mood-boards/KanjiSearchInput.tsx",161,jsx
+"mood-boards.KanjiEditor.quick_add_from_search","Quick Add from Search","src/components/admin/mood-boards/KanjiEditor.tsx",100,jsx
+"mood-boards.KanjiEditor.add_new_kanji","Add New Kanji","src/components/admin/mood-boards/KanjiEditor.tsx",186,jsx
+"mood-boards.KanjiEditor.search_and_add_kanji_instantly","Search and add kanji instantly...","src/components/admin/mood-boards/KanjiEditor.tsx",103,prop
+"mood-boards.KanjiEditor._","もく, ぼく","src/components/admin/mood-boards/KanjiEditor.tsx",224,prop
+"mood-boards.KanjiEditor._","き, こ","src/components/admin/mood-boards/KanjiEditor.tsx",237,prop
+"mood-boards.KanjiEditor._thursday_lumber","木曜日 (Thursday), 木材 (lumber)","src/components/admin/mood-boards/KanjiEditor.tsx",250,prop
+"mood-boards.JsonEditor.json_editor","JSON Editor","src/components/admin/mood-boards/JsonEditor.tsx",198,jsx
+"mood-boards.JsonEditor.json_parse_error","JSON Parse Error:","src/components/admin/mood-boards/JsonEditor.tsx",225,jsx
+"mood-boards.JsonEditor.validation_errors","Validation Errors:","src/components/admin/mood-boards/JsonEditor.tsx",231,jsx
+"mood-boards.JsonEditor.required_fields","Required Fields:","src/components/admin/mood-boards/JsonEditor.tsx",278,jsx
+"mood-boards.JsonEditor._string_mood_board_title","- String: Mood board title","src/components/admin/mood-boards/JsonEditor.tsx",280,jsx
+"mood-boards.JsonEditor._string_emoji_character_12_cha","- String: Emoji character (1-2 chars)","src/components/admin/mood-boards/JsonEditor.tsx",281,jsx
+"mood-boards.JsonEditor._string_one_of_n5_n4_n3_n2_n1","- String: One of ""N5"", ""N4"", ""N3"", ""N2"", ""N1""","src/components/admin/mood-boards/JsonEditor.tsx",282,jsx
+"mood-boards.JsonEditor._string_css_gradient_or_color","- String: CSS gradient or color","src/components/admin/mood-boards/JsonEditor.tsx",283,jsx
+"mood-boards.JsonEditor._string_description_text","- String: Description text","src/components/admin/mood-boards/JsonEditor.tsx",284,jsx
+"mood-boards.JsonEditor._array_array_of_kanji_objects","- Array: Array of kanji objects","src/components/admin/mood-boards/JsonEditor.tsx",285,jsx
+"mood-boards.JsonEditor._boolean_whether_visible_to_us","- Boolean: Whether visible to users","src/components/admin/mood-boards/JsonEditor.tsx",286,jsx
+"mood-boards.JsonEditor.kanji_object_structure","Kanji Object Structure:","src/components/admin/mood-boards/JsonEditor.tsx",290,jsx
+"feature-matrix.FeatureMatrixTable._not_available","❌ Not Available","src/components/admin/feature-matrix/FeatureMatrixTable.tsx",228,jsx
+"feature-matrix.FeatureMatrixTable._available","✅ Available","src/components/admin/feature-matrix/FeatureMatrixTable.tsx",229,jsx
+"feature-matrix.FeatureMatrixTable._unlimited","∞ Unlimited","src/components/admin/feature-matrix/FeatureMatrixTable.tsx",230,jsx
+"feature-matrix.FeatureMatrixTable.numbers_dailytotal_limits","Numbers = Daily/Total Limits","src/components/admin/feature-matrix/FeatureMatrixTable.tsx",231,jsx
+"feature-matrix.FeatureMatrixTable.search_features","Search features...","src/components/admin/feature-matrix/FeatureMatrixTable.tsx",178,prop
+"feature-matrix.EditableFeatureMatrix.","✏️","src/components/admin/feature-matrix/EditableFeatureMatrix.tsx",167,jsx

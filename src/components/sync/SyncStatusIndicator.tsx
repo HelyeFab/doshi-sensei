@@ -4,7 +4,7 @@ import React from 'react';
 import { usePremiumSync } from '@/hooks/usePremiumSync';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { formatDistanceToNow } from 'date-fns';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export function SyncStatusIndicator() {
   const strings = useStrings();

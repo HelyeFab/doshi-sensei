@@ -9,7 +9,7 @@ import { createTiles, checkMatch } from './gameUtils';
 import GameGrid from './GameGrid';
 import VictoryScreen from './VictoryScreen';
 import { useGameTTS } from '@/hooks/useTTS';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface MatchingGameModalProps {
   isOpen: boolean;

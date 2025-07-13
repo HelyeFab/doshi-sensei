@@ -10,7 +10,7 @@ import { JLPTLevel, JLPT_LEVELS } from '@/types/kanji';
 import { storyManager } from '@/utils/storyManager';
 import { marked } from 'marked';
 import { validateStoryJson, parseStoryJson, StoryJsonImport } from '@/utils/storyJsonValidator';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface StoryFormData {
   title: string;

@@ -698,7 +698,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
               {/* Story content */}
               <div className="bg-card rounded-lg p-4 md:p-8 border border-border">
                 {/* Story header */}
-                <header className="mb-8">
+                <header className="mb-6">
                   <div className="inline-block">
                     <h1 className={`font-bold text-foreground mb-4 px-6 py-4 rounded-2xl inline-block pastel-bubble-bg ${settings.fontSize === 'xlarge' ? 'text-3xl' :
                       settings.fontSize === 'large' ? 'text-2xl' :
@@ -709,7 +709,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                   </div>
 
                   {/* Story metadata */}
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
+                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                     <span>📄 Page {currentPageIndex + 1} of {story.pages.length}</span>
                     <span>📊 {story.jlptLevel}</span>
                     <span>🏷️ {story.theme}</span>
@@ -717,21 +717,26 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
                   </div>
                 </header>
 
-                {/* Page Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Image */}
-                  <div className="relative">
-                    {currentPage.imageUrl && currentPage.imageUrl.trim() !== '' && (
-                      <img
-                        src={currentPage.imageUrl}
-                        alt={currentPage.imageAlt || `Page ${currentPage.pageNumber}`}
-                        className="w-full rounded-lg shadow-lg"
-                      />
+                {/* Page Content - Image and Text side by side on desktop */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                  {/* Image Column - Left side on desktop */}
+                  <div className="relative order-2 lg:order-1">
+                    {currentPage.imageUrl && currentPage.imageUrl.trim() !== '' ? (
+                      <div className="sticky top-4">
+                        <img
+                          src={currentPage.imageUrl}
+                          alt={currentPage.imageAlt || `Page ${currentPage.pageNumber}`}
+                          className="w-full rounded-lg shadow-lg object-cover"
+                          style={{ maxHeight: '600px' }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="hidden lg:block" /> // Empty space on desktop when no image
                     )}
                   </div>
 
-                  {/* Text */}
-                  <div className="space-y-4 relative">
+                  {/* Text Column - Right side on desktop */}
+                  <div className="space-y-4 relative order-1 lg:order-2">
                     {/* Audio Player - moved inside text column */}
                     <div className="space-y-2 mb-6">
                       <EnhancedArticleAudioPlayer 

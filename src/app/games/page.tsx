@@ -19,7 +19,7 @@ import MatchingInstructionScreen from '@/components/games/MatchingGame/Instructi
 import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AnimatedWord } from '../components/AnimatedWord';
 import { TutorialButton } from '../components/TutorialButton';
 import { JapaneseWord } from '@/types';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export interface ConjugationScreenProps {
   onNext: () => void;

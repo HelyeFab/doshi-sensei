@@ -9,7 +9,7 @@ import { EditableFeatureMatrix } from '@/components/admin/feature-matrix/Editabl
 import { FeatureMatrixStats } from '@/components/admin/feature-matrix/FeatureMatrixStats';
 import { useFeatureMatrix } from '@/hooks/useFeatureMatrix';
 import { useNotification } from '@/contexts/NotificationContext';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function AdminFeaturesPage() {
   const strings = useStrings();

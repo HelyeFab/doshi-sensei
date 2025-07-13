@@ -29,7 +29,71 @@ export const en = {
     practiceButton: "Practice Conjugations",
     drillButton: "Drill Mode",
     vocabButton: "Browse Vocabulary",
-    settingsButton: "Settings"
+    settingsButton: "Settings",
+    greeting: "Hello", // Will be followed by user's name
+    readyToPractice: "Ready to practice some Japanese?",
+    featureCards: {
+      practice: {
+        title: "Practice",
+        icon: "📚",
+        description: "Learn conjugations"
+      },
+      drill: {
+        title: "Drill",
+        icon: "⚡",
+        description: "Quick practice"
+      },
+      vocabulary: {
+        title: "Vocabulary",
+        icon: "📖",
+        description: "Browse words"
+      },
+      kanji: {
+        title: "Kanji",
+        icon: "漢",
+        description: "Study kanji"
+      },
+      moodBoards: {
+        title: "Mood Boards",
+        icon: "🗺️",
+        description: "Learn by theme"
+      },
+      savedItems: {
+        title: "Saved Items",
+        icon: "⭐",
+        description: "Your collection"
+      },
+      account: {
+        title: "Account",
+        icon: "👤",
+        description: "Profile & stats"
+      },
+      settings: {
+        title: "Settings",
+        icon: "⚙️",
+        description: "Customize app"
+      },
+      news: {
+        title: "News",
+        icon: "🗞️",
+        description: "Japanese articles"
+      },
+      games: {
+        title: "Games",
+        icon: "🎮",
+        description: "Listening quiz"
+      },
+      resources: {
+        title: "Resources",
+        icon: "🎌",
+        description: "Articles & tips"
+      },
+      stories: {
+        title: "AI Stories",
+        icon: "/flat-icons/root-icons/story.svg",
+        description: "Interactive tales"
+      }
+    }
   },
 
   // Practice Screen
@@ -796,6 +860,86 @@ export const en = {
     createNewStory: "Create New Story",
     noStoriesCreatedYet: "No stories created yet.",
     createYourFirstStory: "Create your first story",
+    
+    // AI Story Generation
+    aiStoryGeneration: {
+      title: "AI Story Generator",
+      subtitle: "Create educational Japanese stories with AI",
+      generateWithAI: "Generate with AI",
+      generatingStory: "Generating story...",
+      generationSteps: {
+        characterSheet: "Creating characters",
+        outline: "Planning story outline",
+        pages: "Writing pages",
+        images: "Generating illustrations",
+        quiz: "Creating comprehension quiz",
+        complete: "Story ready for review"
+      },
+      form: {
+        selectTheme: "Select Theme",
+        selectJlptLevel: "Select JLPT Level",
+        numberOfPages: "Number of Pages",
+        pagesRange: "Between 1 and 10 pages",
+        useExistingCharacters: "Use Existing Characters",
+        selectCharacterSheet: "Select Character Sheet",
+        createNewCharacters: "Create New Characters",
+        generateStory: "Generate Story",
+        regeneratePage: "Regenerate Page",
+        regenerateText: "Regenerate Text",
+        regenerateImage: "Regenerate Image",
+        acceptPage: "Accept Page",
+        characterSheetOptions: {
+          saveForReuse: "Save these characters for future stories",
+          characterSheetName: "Character Sheet Name"
+        }
+      },
+      preview: {
+        title: "Story Preview",
+        characterSheet: "Character Sheet",
+        mainCharacter: "Main Character",
+        supportingCharacters: "Supporting Characters",
+        setting: "Setting",
+        visualStyle: "Visual Style",
+        storyOutline: "Story Outline",
+        page: "Page",
+        editBeforeGenerating: "Edit outline before generating pages",
+        startGeneration: "Start Generation",
+        generatingPage: "Generating page {{current}} of {{total}}",
+        reviewStory: "Review Story",
+        publishStory: "Publish Story",
+        saveAsDraft: "Save as Draft",
+        discardStory: "Discard Story"
+      },
+      errors: {
+        generationFailed: "Story generation failed",
+        pageGenerationFailed: "Failed to generate page {{page}}",
+        imageGenerationFailed: "Image generation failed, continuing without image",
+        quizGenerationFailed: "Quiz generation failed",
+        openAiKeyMissing: "OpenAI API key not configured",
+        rateLimitExceeded: "Rate limit exceeded. Please try again later.",
+        invalidTheme: "Please select a valid theme",
+        invalidLevel: "Please select a valid JLPT level",
+        invalidPageCount: "Page count must be between 1 and 10"
+      },
+      success: {
+        storyGenerated: "Story generated successfully!",
+        storyPublished: "Story published successfully!",
+        storySavedAsDraft: "Story saved as draft",
+        characterSheetSaved: "Character sheet saved for future use"
+      },
+      warnings: {
+        imageGenerationPartial: "Some images could not be generated",
+        contentFiltered: "Content was filtered for safety. Regenerating...",
+        highCost: "This generation may incur significant API costs"
+      },
+      metadata: {
+        aiGenerated: "AI Generated",
+        generatedBy: "Generated by",
+        generatedOn: "Generated on",
+        tokensUsed: "Tokens used",
+        estimatedCost: "Estimated cost"
+      }
+    },
     title: "Title",
     jlpt: "JLPT",
     theme: "Theme",

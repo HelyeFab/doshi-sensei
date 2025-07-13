@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverview } from '@/components/admin/StatsOverview';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';

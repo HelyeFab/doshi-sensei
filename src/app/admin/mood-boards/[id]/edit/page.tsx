@@ -7,7 +7,7 @@ import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useAdminNotifications } from '@/components/admin/AdminNotifications';
 import { useState, useEffect } from 'react';
 import { MoodBoard } from '@/types/moodBoard';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function EditMoodBoardPage() {
   const strings = useStrings();

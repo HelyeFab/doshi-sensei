@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { getResourceColorTheme, getResourceIcon, getCategoryEmoji } from '@/utils/resourceVisuals';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function ResourcesPage() {
   const searchParams = useSearchParams();

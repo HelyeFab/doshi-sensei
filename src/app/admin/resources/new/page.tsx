@@ -9,7 +9,7 @@ import { createResourcePost, generateSlug, extractExcerpt, calculateReadingTime 
 import { marked } from 'marked';
 import QuickResourceCreator from '@/components/admin/QuickResourceCreator';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function NewResourcePage() {
   const strings = useStrings();

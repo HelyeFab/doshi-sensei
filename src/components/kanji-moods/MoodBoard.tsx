@@ -9,7 +9,7 @@ import KanjiCard from './KanjiCard';
 import ProgressIndicator from './ProgressIndicator';
 import KanjiStudyModal from './KanjiStudyModal';
 import { UpgradePromptModal } from '@/components/UpgradePromptModal';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface MoodBoardProps {
   board: MoodBoardType;

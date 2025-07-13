@@ -5,7 +5,7 @@ import { MoodBoardManager } from '@/components/admin/MoodBoardManager';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function MoodBoardsPage() {
   const strings = useStrings();

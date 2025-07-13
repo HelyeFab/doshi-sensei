@@ -1,0 +1,115 @@
+'use client';
+
+import { strings } from '../../../config/strings/strings';
+
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { NewsArticle } from '@/types/news';
+import { getArticleById } from '@/utils/watanocArticles';
+import ArticleReader from '@/components/reading/ArticleReader';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAccess } from '@/hooks/useAccess';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+
+export default function ArticlePage() {
+    const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
+    const { checkAndTrack } = useAccess();
+    const { isPremium, userType } = useSubscription2();
+    const [article, setArticle] = useState<NewsArticle | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [canRead, setCanRead] = useState(true);
+    const params = useParams();
+    const articleId = typeof params?.id === 'string'
+        ? params.id
+        : Array.isArray(params?.id)
+            ? params.id[0]
+            : undefined;
+
+    useEffect(() => {
+        loadArticle();
+    }, [articleId, authLoading]);
+
+    const loadArticle = async () => {
+        // Wait for auth to be ready
+        if (authLoading) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            if (!articleId) {
+                router.push(strings.string_10);
+                return;
+            }
+
+            // Check if user can read articles using new system
+            const canAccess = await checkAndTrack(strings.string_1);
+            setCanRead(canAccess);
+
+            if (!canAccess) {
+                // The access system will show the appropriate modal
+                router.push(strings.string_10);
+                return;
+            }
+
+            // Load article from Firebase
+            console.log(strings.loading, articleId);
+            const loadedArticle = await getArticleById(articleId);
+
+            if (!loadedArticle) {
+                console.error(strings.article_not, articleId);
+                router.push(strings.string_10);
+                return;
+            }
+
+            console.log(strings.article, {
+                id: loadedArticle.id,
+                hasContent: !!loadedArticle.content,
+                contentLength: loadedArticle.content?.length || 0,
+                title: loadedArticle.title
+            });
+
+            setArticle(loadedArticle);
+            // Usage tracking is handled automatically by checkAndTrack
+        } catch (error) {
+            console.error(strings.error_loading, error);
+            router.push(strings.string_10);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleComplete = () => {
+        router.push(strings.string_10);
+    };
+
+    const handleExit = () => {
+        router.push(strings.string_10);
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading article...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!article || !canRead) {
+        return null;
+    }
+
+    return (
+        <div className="min-h-screen">
+            <ArticleReader
+                article={article}
+                onBack={handleExit}
+            />
+        </div>
+    );
+}

@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, XCircle, AlertCircle, RefreshCw, Info, HelpCircle } from 'lucide-react';
 import { SimpleTooltip } from '@/components/ui/tooltip';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function AdminDebugPage() {
   const { user } = useAuth();

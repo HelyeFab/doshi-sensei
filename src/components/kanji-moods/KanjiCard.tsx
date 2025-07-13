@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { KanjiCardProps } from '@/types/moodBoard';
 import KanjiModal from './KanjiModal';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function KanjiCard({
   kanji,

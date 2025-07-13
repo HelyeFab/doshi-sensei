@@ -44,3 +44,12 @@ export function useTypedStrings() {
   const { strings } = useLanguageContext();
   return strings;
 }
+
+/**
+ * Hook for getting strings without language switching
+ * This is the correct hook to use for accessing strings in components
+ */
+export function useStrings() {
+  const { strings } = useLanguageContext();
+  return strings;
+}

@@ -6,7 +6,7 @@ import { MoodBoardEditor } from '@/components/admin/mood-boards/MoodBoardEditor'
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useAdminNotifications } from '@/components/admin/AdminNotifications';
 import { useState } from 'react';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 function NewMoodBoardContent() {
   const strings = useStrings();

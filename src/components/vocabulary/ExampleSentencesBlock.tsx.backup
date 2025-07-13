@@ -1,0 +1,136 @@
+'use client';
+
+import { strings } from '../../config/strings/strings';
+
+import { useState } from 'react';
+import { ExampleSentence, JapaneseWord } from '@/types';
+import { TTSButton } from '@/components/ui/TTSButton';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface ExampleSentencesBlockProps {
+  word: string;
+  examples: ExampleSentence[];
+  maxVisible?: number;
+  onSaveExample?: (example: ExampleSentence) => void;
+}
+
+export function ExampleSentencesBlock({ word, examples, maxVisible = 3, onSaveExample }: ExampleSentencesBlockProps) {
+  const [showAll, setShowAll] = useState(false);
+  const { user } = useAuth();
+  
+  if (!examples || examples.length === 0) {
+    return null;
+  }
+
+  const visibleExamples = showAll ? examples : examples.slice(0, maxVisible);
+  const hasMore = examples.length > maxVisible;
+
+  const handleSaveClick = (example: ExampleSentence) => {
+    if (!user) {
+      alert(strings.please_sign_in_to_save);
+      return;
+    }
+
+    if (onSaveExample) {
+      onSaveExample(example);
+    }
+  };
+
+  return (
+    <div className="mt-4 space-y-2">
+      <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+        Example Sentences
+      </h4>
+      
+      <div className="space-y-3">
+        {visibleExamples.map((example) => (
+          <div
+            key={example.id}
+            className="bg-muted/30 rounded-lg p-3 space-y-2 border border-border/50"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-foreground flex-1">
+                    {highlightWord(example.japanese, word)}
+                  </p>
+                  <TTSButton 
+                    text={example.japanese}
+                    size="sm"
+                    options={{
+                      provider: 'elevenlabs',
+                      voice: 'male',
+                      speed: 1.0
+                    }}
+                  />
+                </div>
+                {example.english && (
+                  <p className="text-sm text-muted-foreground">
+                    {example.english}
+                  </p>
+                )}
+              </div>
+              
+              <button
+                onClick={() => handleSaveClick(example)}
+                className="text-muted-foreground hover:text-primary transition-colors p-1 rounded"
+                title={strings.save_sentence}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {hasMore && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+        >
+          {showAll ? (
+            <>
+              Show less
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </>
+          ) : (
+            <>
+              Show {examples.length - maxVisible} more
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </>
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Helper function to highlight the searched word in the sentence
+function highlightWord(sentence: string, word: string): React.ReactNode {
+  if (!word) return sentence;
+  
+  const parts = sentence.split(new RegExp(`(${word})`, 'gi'));
+  
+  return (
+    <>
+      {parts.map((part, index) => 
+        part.toLowerCase() === word.toLowerCase() ? (
+          <span key={index} className="text-primary font-semibold">
+            {part}
+          </span>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}

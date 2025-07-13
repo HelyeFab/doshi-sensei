@@ -1,0 +1,271 @@
+'use client';
+
+import { strings } from '../../config/strings/strings';
+
+import React, { useEffect, useCallback, useState } from 'react';
+import { KanjiItem } from '@/types/moodBoard';
+import { useKanjiTTS } from '@/hooks/useTTS';
+import { generateFuriganaWithCache } from '@/utils/furigana';
+
+interface KanjiModalProps {
+  kanji: KanjiItem | null;
+  isOpen: boolean;
+  onClose: () => void;
+  isLearned: boolean;
+  onToggleLearned: (char: string) => void;
+}
+
+export default function KanjiModal({
+  kanji,
+  isOpen,
+  onClose,
+  isLearned,
+  onToggleLearned,
+}: KanjiModalProps) {
+  const [showFurigana, setShowFurigana] = useState(false);
+  const [processedExamples, setProcessedExamples] = useState<string[]>([]);
+  const { speak, isLoading: isTTSLoading, isPlaying } = useKanjiTTS();
+
+  // Handle escape key
+  const handleEscape = useCallback((e: KeyboardEvent) => {
+    if (e.key === strings.escape) {
+      onClose();
+    }
+  }, [onClose]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, handleEscape]);
+
+  // Process examples with furigana when needed
+  useEffect(() => {
+    if (!kanji || !showFurigana) {
+      setProcessedExamples([]);
+      return;
+    }
+
+    const processExamples = async () => {
+      const processed = await Promise.all(
+        kanji.examples.map(example => generateFuriganaWithCache(stripRubyTags(example)))
+      );
+      setProcessedExamples(processed);
+    };
+
+    processExamples();
+  }, [kanji, showFurigana]);
+
+  if (!isOpen || !kanji) return null;
+
+  // Strip ruby tags from examples
+  const stripRubyTags = (text: string): string => {
+    return text
+      .replace(/<ruby>/g, '')
+      .replace(/<\/ruby>/g, '')
+      .replace(/<rt>.*?<\/rt>/g, '')
+      .replace(/<rb>/g, '')
+      .replace(/<\/rb>/g, '');
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const handleToggleLearned = () => {
+    onToggleLearned(kanji.char);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn"
+      onClick={handleBackdropClick}
+    >
+      {/* Backdrop with gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-600/30 via-gray-700/40 to-gray-800/50 dark:from-black/50 dark:via-black/60 dark:to-black/70 backdrop-blur-sm" />
+
+      {/* Modal */}
+      <div className="relative w-full max-w-lg bg-card rounded-2xl shadow-2xl animate-slideUp">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 transition-colors"
+          aria-label={strings.close_modal}
+        >
+          <svg
+            className="w-5 h-5 text-muted-foreground"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M5 13l4 4L19 7"></path>
+          </svg>
+        </button>
+
+        <div className="p-8">
+          {/* Kanji Character with TTS */}
+          <div className="text-center mb-8">
+            <div className="relative inline-block">
+              <div className="text-8xl font-bold text-foreground mb-4">
+                {kanji.char}
+              </div>
+              {/* TTS Button */}
+              <button
+                onClick={() => speak(kanji.char, kanji.readings.kun[0] || kanji.readings.on[0] || kanji.char)}
+                disabled={isTTSLoading || isPlaying}
+                className="absolute -right-12 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
+                aria-label={strings.play_pronunciation}
+              >
+                {isTTSLoading ? (
+                  <svg className="animate-spin h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+                  </svg>
+                ) : isPlaying ? (
+                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            <div className="text-2xl font-medium text-foreground">
+              {kanji.meaning}
+            </div>
+          </div>
+
+          {/* Readings */}
+          <div className="space-y-6 mb-8">
+            {/* On'yomi */}
+            {kanji.readings.on.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  On'yomi (音読み)
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {kanji.readings.on.map((reading, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg text-lg font-medium"
+                    >
+                      {reading}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Kun'yomi */}
+            {kanji.readings.kun.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  Kun'yomi (訓読み)
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {kanji.readings.kun.map((reading, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg text-lg font-medium"
+                    >
+                      {reading}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Examples with Furigana Toggle */}
+          {kanji.examples.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Examples
+                </h3>
+                {/* Furigana Toggle */}
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <span className="text-sm text-muted-foreground">ふりがな</span>
+                  <button
+                    onClick={() => setShowFurigana(!showFurigana)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      showFurigana ? 'bg-primary' : 'bg-muted'
+                    }`}
+                    aria-label={strings.toggle_furigana}
+                  >
+                    <span
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                        showFurigana ? strings.string_17 : strings.string_16
+                      }`}
+                    />
+                  </button>
+                </label>
+              </div>
+              <div className="space-y-3">
+                {kanji.examples.map((example, index) => (
+                  <div
+                    key={index}
+                    className="p-4 bg-muted/50 rounded-lg"
+                  >
+                    <p 
+                      className="text-foreground text-lg"
+                      dangerouslySetInnerHTML={{
+                        __html: showFurigana && processedExamples[index] 
+                          ? processedExamples[index] 
+                          : stripRubyTags(example)
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Difficulty indicator */}
+          <div className="mb-8">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Difficulty
+            </h3>
+            <div className="flex gap-1">
+              {[...Array(5)].map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-8 rounded-full transition-colors ${
+                    index < kanji.difficulty
+                      ? strings.string_20
+                      : 'bg-muted'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Mark as learned button */}
+          <button
+            onClick={handleToggleLearned}
+            className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] ${
+              isLearned
+                ? strings.string_24
+                : strings.string_23
+            }`}
+          >
+            {isLearned ? strings.learned : strings.mark_as_learned}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { TutorialButton } from '../components/TutorialButton';
 import { ColorScheme } from '@/types';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export interface SuccessScreenProps {
   onComplete: () => void;

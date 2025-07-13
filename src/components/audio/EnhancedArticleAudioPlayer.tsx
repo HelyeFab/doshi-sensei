@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { NewsArticle } from '@/types/news';
 import ArticleTTSManager from '@/utils/articleTTS';
 import { ChevronDown, Play, Pause, Square, Volume2, Settings } from 'lucide-react';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface ArticleAudioPlayerProps {
   article: NewsArticle;

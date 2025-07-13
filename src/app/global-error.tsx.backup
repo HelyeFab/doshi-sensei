@@ -1,0 +1,52 @@
+'use client';
+
+import { strings } from '../config/strings/strings';
+
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    <html>
+      <body>
+        <div style={{
+          minHeight: strings.string_11,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: strings.string_12,
+          fontFamily: strings.string_13
+        }}>
+          <div style={{ textAlign: 'center', maxWidth: strings.string_10 }}>
+            <h1 style={{ fontSize: strings.string_4, marginBottom: strings.string_12 }}>
+              Critical Application Error
+            </h1>
+            <p style={{ marginBottom: strings.string_4, color: '#666' }}>
+              The application encountered a critical error and needs to restart.
+            </p>
+            <button
+              onClick={() => {
+                // Force hard reload
+                window.location.href = '/';
+              }}
+              style={{
+                padding: strings.string_6,
+                backgroundColor: strings.string_7,
+                color: 'white',
+                border: 'none',
+                borderRadius: strings.string_8,
+                cursor: 'pointer',
+                fontSize: strings.string_12
+              }}
+            >
+              Restart Application
+            </button>
+          </div>
+        </div>
+      </body>
+    </html>
+  );
+}

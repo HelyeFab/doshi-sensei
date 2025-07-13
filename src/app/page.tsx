@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useStrings } from '@/contexts/LanguageContext';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 import { colorPalettes } from '@/utils/themes';
@@ -45,21 +46,7 @@ const structuredData = {
 };
 
 
-// Feature cards data
-const FEATURE_CARDS = [
-  { title: 'Practice', icon: '📚', href: '/practice', description: 'Learn conjugations' },
-  { title: 'Drill', icon: '⚡', href: '/drill', description: 'Quick practice' },
-  { title: 'Vocabulary', icon: '📖', href: '/vocabulary', description: 'Browse words' },
-  { title: 'Kanji', icon: '漢', href: '/kanji-browser', description: 'Study kanji' },
-  { title: 'Mood Boards', icon: '🗺️', href: '/kanji-moods', description: 'Learn by theme' },
-  { title: 'Saved Items', icon: '⭐', href: '/favourites', description: 'Your collection' },
-  { title: 'Account', icon: '👤', href: '/account', description: 'Profile & stats' },
-  { title: 'Settings', icon: '⚙️', href: '/settings', description: 'Customize app' },
-  { title: 'News', icon: '🗞️', href: '/news', description: 'Japanese articles' },
-  { title: 'Games', icon: '🎮', href: '/games', description: 'Listening quiz' },
-  { title: 'Resources', icon: '🎌', href: '/resources', description: 'Articles & tips' },
-  { title: 'AI Stories', icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: 'Interactive tales' }
-];
+// Feature cards will be generated from strings
 
 // Predefined color patterns for optimal visual distribution
 const MOBILE_COLOR_PATTERN: CardColor[] = [
@@ -91,7 +78,29 @@ export default function Home() {
   const { profile } = useUserProfile();
   const { subscription } = useSubscription2();
   const { settings } = useSettings();
+  const strings = useStrings();
   const [showPokedexModal, setShowPokedexModal] = useState(false);
+
+  // Ensure strings are loaded
+  if (!strings || !strings.home || !strings.home.featureCards) {
+    return <div className="container mx-auto px-4 py-8 text-center">Loading...</div>;
+  }
+
+  // Generate feature cards from strings
+  const FEATURE_CARDS = [
+    { title: strings.home.featureCards.practice.title, icon: strings.home.featureCards.practice.icon, href: '/practice', description: strings.home.featureCards.practice.description },
+    { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
+    { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
+    { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
+    { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
+    { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description },
+    { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
+    { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description },
+    { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
+    { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description },
+    { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
+    { title: strings.home.featureCards.stories.title, icon: strings.home.featureCards.stories.icon, href: '/stories', description: strings.home.featureCards.stories.description }
+  ];
 
   // Use predefined color patterns for better visual distribution
   const mobileColors = MOBILE_COLOR_PATTERN;
@@ -99,7 +108,7 @@ export default function Home() {
 
   // For mobile, override the Resources card icon to only show the flag
   const mobileFeatureCards = FEATURE_CARDS.map(card =>
-    card.title === 'Resources'
+    card.title === strings.home.featureCards.resources.title
       ? { ...card, icon: '🎌' }
       : card
   );
@@ -196,7 +205,7 @@ export default function Home() {
               />
             ) : null}
             <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2" suppressHydrationWarning>
-              Hello {displayName}!
+              {strings.home.greeting} {displayName}!
               <span
                 className="inline-block animate-pulse origin-[70%_70%]"
                 style={{
@@ -209,7 +218,7 @@ export default function Home() {
             </h1>
           </div>
           <p className="text-base md:text-lg text-muted-foreground">
-            Ready to practice some Japanese?
+            {strings.home.readyToPractice}
           </p>
         </header>
 
@@ -388,7 +397,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
 
   // Add debugging for Settings card navigation
   const handleClick = (e: React.MouseEvent) => {
-    if (title === 'Settings') {
+    if (href === '/settings') {
       console.log('🔧 Settings card clicked!');
       console.log('📍 Current URL:', window.location.href);
       console.log('🎯 Target href:', href);

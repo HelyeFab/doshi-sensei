@@ -9,7 +9,7 @@ import { formatDistanceToNow, format } from 'date-fns';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function ResourcePostPage() {
   const params = useParams();

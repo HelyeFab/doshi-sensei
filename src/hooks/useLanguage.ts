@@ -50,15 +50,6 @@ export function useLanguage() {
 }
 
 /**
- * Hook for getting strings without language switching
- * Useful for components that don't need language switching
- */
-export function useStrings() {
-  const { strings } = useLanguage();
-  return strings;
-}
-
-/**
  * Hook for language switching functionality
  * Useful for language selector components
  */

@@ -13,7 +13,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import Link from 'next/link';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function StoriesPage() {
   const router = useRouter();

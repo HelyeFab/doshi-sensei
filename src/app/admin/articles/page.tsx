@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { ArticleManagement } from '@/components/admin/ArticleManagement';
 import { ArticleCleanup } from '@/components/admin/ArticleCleanup';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { getArticleStats, clearCache } from '@/utils/watanocArticles';
 import {
   triggerWatanocScraping,

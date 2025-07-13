@@ -9,7 +9,7 @@ import { Story, StoryPage, StoryQuizQuestion, STORY_THEMES, STORY_TAGS } from "@
 import { JLPTLevel, JLPT_LEVELS } from "@/types/kanji";
 import { storyManager } from "@/utils/storyManager";
 import { marked } from "marked";
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function EditStoryPage() {
     const strings = useStrings();

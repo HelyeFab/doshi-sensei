@@ -8,7 +8,7 @@ import {
   updateCompanionHistory,
   CompanionCharacter
 } from '@/utils/virtualCompanion';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface VirtualCompanionProps {
   isOpen: boolean;

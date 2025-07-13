@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useTTS, TTSOptions } from '@/hooks/useTTS';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface TTSButtonProps {
   text: string;

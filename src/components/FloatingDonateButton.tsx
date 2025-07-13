@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import DonationModal from './DonationModal';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function FloatingDonateButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);

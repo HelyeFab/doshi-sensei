@@ -9,7 +9,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { AVAILABLE_NAV_ITEMS, HOME_NAV_ITEM } from '@/config/navigation';
 import PokedexModal from '@/components/games/PokedexModal';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useStats } from '@/hooks/useStats';
 

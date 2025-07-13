@@ -30,7 +30,7 @@ const EnhancedArticleAudioPlayer = dynamic(
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
 import { PageHeader } from '@/components/PageHeader';
 import { cleanTextForTTS } from '@/utils/japaneseParser';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { trackArticleRead } from '@/lib/stats/trackingEvents';
 
 // Ruby tag parser for enhanced reading

@@ -8,7 +8,7 @@ import { ResourceListItem, ResourceStats, RESOURCE_CATEGORIES } from '@/types/re
 import { getAllResourcePosts, deleteResourcePost, getResourceStats } from '@/utils/resources';
 import { formatDistanceToNow } from 'date-fns';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function AdminResourcesPage() {
   const strings = useStrings();

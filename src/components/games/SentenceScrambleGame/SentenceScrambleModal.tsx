@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAccess } from '@/hooks/useAccess';
 import { useNotification } from '@/contexts/NotificationContext';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import { X, Play, Clock, Star, RotateCcw } from 'lucide-react';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import {

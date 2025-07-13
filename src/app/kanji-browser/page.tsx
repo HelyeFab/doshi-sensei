@@ -15,7 +15,7 @@ import KanjiQuestTutorialModal from '@/components/games/KanjiQuestTutorialModal'
 import { useNotification } from '@/contexts/NotificationContext';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {

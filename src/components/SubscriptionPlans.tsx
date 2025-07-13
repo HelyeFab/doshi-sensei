@@ -6,7 +6,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useNotification } from '@/contexts/NotificationContext';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function SubscriptionPlans() {
   const strings = useStrings();

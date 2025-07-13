@@ -1,0 +1,110 @@
+'use client';
+
+import { strings } from '../../../config/strings/strings';
+
+import { MoodBoard } from '@/types/moodBoard';
+
+interface MoodBoardPreviewProps {
+  moodBoard: MoodBoard;
+  onClose: () => void;
+}
+
+export function MoodBoardPreview({ moodBoard, onClose }: MoodBoardPreviewProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="relative w-full max-w-4xl bg-card border border-border rounded-lg shadow-xl overflow-hidden">
+        {/* Header */}
+        <div 
+          className="relative h-40 flex items-center justify-center overflow-hidden"
+          style={{ background: moodBoard.background }}
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 bg-black/20 backdrop-blur-sm text-white rounded-full hover:bg-black/30 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="" />
+            </svg>
+          </button>
+          
+          <div className="text-center">
+            <div className="text-6xl mb-2">{moodBoard.emoji}</div>
+            <h2 className="text-2xl font-bold text-white drop-shadow-lg">
+              {moodBoard.title}
+            </h2>
+            <p className="text-sm text-white/90 mt-1">
+              JLPT {moodBoard.jlpt} • {moodBoard.kanji.length} Kanji
+            </p>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div className="p-6 border-b border-border">
+          <p className="text-muted-foreground">{moodBoard.description}</p>
+        </div>
+
+        {/* Kanji Grid */}
+        <div className="p-6 max-h-96 overflow-y-auto">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
+            Kanji Characters
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {moodBoard.kanji.map((kanji, index) => (
+              <div
+                key={index}
+                className="bg-muted/50 border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <div className="text-3xl font-bold text-center text-primary mb-2">
+                  {kanji.char}
+                </div>
+                <p className="text-sm text-center font-medium text-foreground">
+                  {kanji.meaning}
+                </p>
+                {(kanji.readings.on.length > 0 || kanji.readings.kun.length > 0) && (
+                  <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                    {kanji.readings.on.length > 0 && (
+                      <p>On: {kanji.readings.on.join(', ')}</p>
+                    )}
+                    {kanji.readings.kun.length > 0 && (
+                      <p>Kun: {kanji.readings.kun.join(', ')}</p>
+                    )}
+                  </div>
+                )}
+                <div className="mt-2 text-center">
+                  <span className="text-xs text-muted-foreground">
+                    {'⭐'.repeat(kanji.difficulty)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Metadata */}
+        <div className="p-6 bg-muted/30 border-t border-border">
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <div>
+              <span className="font-medium">Status:</span>{' '}
+              <span className={moodBoard.isActive ? strings.string_10 : strings.string_9}>
+                {moodBoard.isActive ? strings.active : strings.inactive}
+              </span>
+            </div>
+            <div>
+              <span className="font-medium">Sort Order:</span> {moodBoard.sortOrder ?? 0}
+            </div>
+            <div>
+              <span className="font-medium">Created:</span>{' '}
+              {moodBoard.createdAt.toLocaleDateString()}
+            </div>
+            {moodBoard.updatedAt && (
+              <div>
+                <span className="font-medium">Updated:</span>{' '}
+                {moodBoard.updatedAt.toLocaleDateString()}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

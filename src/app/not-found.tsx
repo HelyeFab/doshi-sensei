@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function NotFound() {
   const { errors, common } = useStrings();

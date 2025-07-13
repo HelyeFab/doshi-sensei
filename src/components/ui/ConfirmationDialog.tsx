@@ -8,7 +8,7 @@ const DISTRACTOR_IMAGES = [
   '/flat-icons/188915-pokemon-go/png/smartphone.png',
   '/flat-icons/188915-pokemon-go/png/pokedex.png',
   '/flat-icons/188915-pokemon-go/png/pokeball.png',
-  
+
   // Farm Animals
   '/flat-icons/4193242-animals/svg/002-buffalo.svg',
   '/flat-icons/4193242-animals/svg/003-flamingo.svg',
@@ -22,7 +22,7 @@ const DISTRACTOR_IMAGES = [
   '/flat-icons/4193242-animals/svg/019-llama.svg',
   '/flat-icons/4193242-animals/svg/020-goat.svg',
   '/flat-icons/4193242-animals/svg/026-squirrel.svg',
-  
+
   // Wild Animals
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/001-raccoon.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/002-zebra.svg',
@@ -41,7 +41,7 @@ const DISTRACTOR_IMAGES = [
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/016-deer.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/019-lion.svg',
   '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/020-elephant.svg',
-  
+
   // Emotions
   '/flat-icons/17517790-summer-watermelon/svg/001-happy.svg',
   '/flat-icons/17517790-summer-watermelon/svg/002-love.svg',
@@ -50,7 +50,7 @@ const DISTRACTOR_IMAGES = [
   '/flat-icons/17517790-summer-watermelon/svg/014-angel.svg',
   '/flat-icons/17517790-summer-watermelon/svg/018-valentin-day.svg',
   '/flat-icons/17517790-summer-watermelon/svg/020-ok.svg',
-  
+
   // Numbers
   '/flat-icons/4019664-alphabet-and-numbers/svg/035-1.svg',
   '/flat-icons/4019664-alphabet-and-numbers/svg/036-2.svg',
@@ -112,7 +112,7 @@ export default function ConfirmationDialog({
             const numDistractors = 1; // Show 1 distractor
             const shuffled = [...DISTRACTOR_IMAGES].sort(() => 0.5 - Math.random());
             setSelectedDistractors(shuffled.slice(0, numDistractors));
-            
+
             // Select random pastel background
             const randomBackground = pastelBackgrounds[Math.floor(Math.random() * pastelBackgrounds.length)];
             setDistractorBackground(randomBackground);
@@ -124,38 +124,11 @@ export default function ConfirmationDialog({
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-card border border-border rounded-lg max-w-md w-full overflow-hidden">
-                {/* Distractor decoration header */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 border-b border-border">
-                    <div className="flex items-center justify-center">
-                        {selectedDistractors.map((imagePath, index) => (
-                            <div
-                                key={index}
-                                className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-xl border border-white/30 flex items-center justify-center ${distractorBackground || 'bg-gradient-to-br from-pink-200 to-pink-300'}`}
-                            >
-                                <img
-                                    src={imagePath}
-                                    alt="decoration"
-                                    className="w-7 h-7 sm:w-8 sm:h-8 object-contain opacity-80"
-                                    onError={(e) => {
-                                        // Fallback to emoji
-                                        const target = e.target as HTMLImageElement;
-                                        target.style.display = 'none';
-                                        const parent = target.parentElement;
-                                        if (parent) {
-                                            parent.innerHTML = '<span class="text-lg sm:text-xl drop-shadow-sm">🎯</span>';
-                                        }
-                                    }}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
+                {/* Remove the decorative header with distractor images */}
                 {/* Main content */}
                 <div className="p-6">
                     <h3 className="text-lg font-semibold text-foreground mb-4">{title}</h3>
                     <p className="text-muted-foreground mb-6">{message}</p>
-                    
                     {/* Button section */}
                     <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
                         <button
@@ -174,7 +147,6 @@ export default function ConfirmationDialog({
                         </button>
                     </div>
                 </div>
-
                 {/* Simple decoration footer */}
                 <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 h-2 border-t border-border">
                 </div>

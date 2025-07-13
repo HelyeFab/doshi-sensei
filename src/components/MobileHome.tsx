@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 import Image from 'next/image';
 import TypingEffect from './TypingEffect';
 import StatsManager, { UserStats } from '../utils/stats';

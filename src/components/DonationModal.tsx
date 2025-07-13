@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface DonationModalProps {
   isOpen: boolean;

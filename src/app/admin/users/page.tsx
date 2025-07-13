@@ -5,7 +5,7 @@ import { UserSearch } from '@/components/admin/UserSearch';
 import { UserTable } from '@/components/admin/UserTable';
 import { useState } from 'react';
 import { AdminUserDetails } from '@/types/admin';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 export default function UsersPage() {
   const strings = useStrings();

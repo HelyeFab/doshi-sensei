@@ -4,7 +4,7 @@ import React from 'react';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface UpgradePromptModalProps {
   isOpen: boolean;

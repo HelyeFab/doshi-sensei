@@ -1,0 +1,6288 @@
+[
+  {
+    "original": "0 && col",
+    "key": "app.page.0_col",
+    "file": "src/app/page.tsx",
+    "line": 354,
+    "type": "jsx"
+  },
+  {
+    "original": "Doshi Sensei",
+    "key": "app.layout.doshi_sensei",
+    "file": "src/app/layout.tsx",
+    "line": 145,
+    "type": "prop"
+  },
+  {
+    "original": "telephone=no",
+    "key": "app.layout.telephoneno",
+    "file": "src/app/layout.tsx",
+    "line": 146,
+    "type": "prop"
+  },
+  {
+    "original": "/browserconfig.xml",
+    "key": "app.layout.browserconfigxml",
+    "file": "src/app/layout.tsx",
+    "line": 148,
+    "type": "prop"
+  },
+  {
+    "original": "🚧",
+    "key": "app.error.",
+    "file": "src/app/error.tsx",
+    "line": 48,
+    "type": "jsx"
+  },
+  {
+    "original": "Did you mean:",
+    "key": "vocabulary.page.did_you_mean",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 376,
+    "type": "jsx"
+  },
+  {
+    "original": "Search History",
+    "key": "vocabulary.page.search_history",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 412,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "vocabulary.page.",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 425,
+    "type": "jsx"
+  },
+  {
+    "original": "Select existing lists:",
+    "key": "vocabulary.page.select_existing_lists",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 797,
+    "type": "jsx"
+  },
+  {
+    "original": "List Type:",
+    "key": "vocabulary.page.list_type",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 862,
+    "type": "jsx"
+  },
+  {
+    "original": "Sentence List",
+    "key": "vocabulary.page.sentence_list",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 875,
+    "type": "jsx"
+  },
+  {
+    "original": "For saving example sentences",
+    "key": "vocabulary.page.for_saving_example_sentences",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 876,
+    "type": "jsx"
+  },
+  {
+    "original": "✓ Perfect for context-based learning",
+    "key": "vocabulary.page._perfect_for_contextbased_lear",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 877,
+    "type": "jsx"
+  },
+  {
+    "original": "Flashcard List",
+    "key": "vocabulary.page.flashcard_list",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 892,
+    "type": "jsx"
+  },
+  {
+    "original": "For memorization and review (accepts any content)",
+    "key": "vocabulary.page.for_memorization_and_review_ac",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 893,
+    "type": "jsx"
+  },
+  {
+    "original": "✓ Perfect for vocabulary study",
+    "key": "vocabulary.page._perfect_for_vocabulary_study",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 894,
+    "type": "jsx"
+  },
+  {
+    "original": "Drillable List",
+    "key": "vocabulary.page.drillable_list",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 911,
+    "type": "jsx"
+  },
+  {
+    "original": "For conjugation practice (verbs & adjectives only)",
+    "key": "vocabulary.page.for_conjugation_practice_verbs",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 912,
+    "type": "jsx"
+  },
+  {
+    "original": "Delete entry",
+    "key": "vocabulary.page.delete_entry",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 467,
+    "type": "prop"
+  },
+  {
+    "original": "New list name...",
+    "key": "vocabulary.page.new_list_name",
+    "file": "src/app/vocabulary/page.tsx",
+    "line": 856,
+    "type": "prop"
+  },
+  {
+    "original": "Three-Pillar Integration Test",
+    "key": "test-three-pillar-integration.page.threepillar_integration_test",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 229,
+    "type": "jsx"
+  },
+  {
+    "original": "User Status",
+    "key": "test-three-pillar-integration.page.user_status",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 238,
+    "type": "jsx"
+  },
+  {
+    "original": "Type:",
+    "key": "test-three-pillar-integration.page.type",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 242,
+    "type": "jsx"
+  },
+  {
+    "original": "Premium:",
+    "key": "test-three-pillar-integration.page.premium",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 246,
+    "type": "jsx"
+  },
+  {
+    "original": "Subscription:",
+    "key": "test-three-pillar-integration.page.subscription",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 252,
+    "type": "jsx"
+  },
+  {
+    "original": "Feature Access",
+    "key": "test-three-pillar-integration.page.feature_access",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 262,
+    "type": "jsx"
+  },
+  {
+    "original": "Feature:",
+    "key": "test-three-pillar-integration.page.feature",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 266,
+    "type": "jsx"
+  },
+  {
+    "original": "Status:",
+    "key": "test-three-pillar-integration.page.status",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 270,
+    "type": "jsx"
+  },
+  {
+    "original": "Limit:",
+    "key": "test-three-pillar-integration.page.limit",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 276,
+    "type": "jsx"
+  },
+  {
+    "original": "Storage Status",
+    "key": "test-three-pillar-integration.page.storage_status",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 284,
+    "type": "jsx"
+  },
+  {
+    "original": "Cached:",
+    "key": "test-three-pillar-integration.page.cached",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 288,
+    "type": "jsx"
+  },
+  {
+    "original": "Size:",
+    "key": "test-three-pillar-integration.page.size",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 294,
+    "type": "jsx"
+  },
+  {
+    "original": "Usage:",
+    "key": "test-three-pillar-integration.page.usage",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 298,
+    "type": "jsx"
+  },
+  {
+    "original": "Storage Visualization",
+    "key": "test-three-pillar-integration.page.storage_visualization",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 310,
+    "type": "jsx"
+  },
+  {
+    "original": "Integration Tests",
+    "key": "test-three-pillar-integration.page.integration_tests",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 320,
+    "type": "jsx"
+  },
+  {
+    "original": "Test Results",
+    "key": "test-three-pillar-integration.page.test_results",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 353,
+    "type": "jsx"
+  },
+  {
+    "original": "No tests run yet. Click \"Run All Tests\" to begin.",
+    "key": "test-three-pillar-integration.page.no_tests_run_yet_click_run_all",
+    "file": "src/app/test-three-pillar-integration/page.tsx",
+    "line": 356,
+    "type": "jsx"
+  },
+  {
+    "original": "Shadowing Practice Test",
+    "key": "test-shadowing.page.shadowing_practice_test",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 39,
+    "type": "jsx"
+  },
+  {
+    "original": "Sample Article",
+    "key": "test-shadowing.page.sample_article",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 43,
+    "type": "jsx"
+  },
+  {
+    "original": "About Shadowing Practice",
+    "key": "test-shadowing.page.about_shadowing_practice",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 55,
+    "type": "jsx"
+  },
+  {
+    "original": "• Listen to each sentence one at a time",
+    "key": "test-shadowing.page._listen_to_each_sentence_one_a",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 57,
+    "type": "jsx"
+  },
+  {
+    "original": "• Repeat the sentence during the pause",
+    "key": "test-shadowing.page._repeat_the_sentence_during_th",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 58,
+    "type": "jsx"
+  },
+  {
+    "original": "• Adjust speed and repeat count to match your level",
+    "key": "test-shadowing.page._adjust_speed_and_repeat_count",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 59,
+    "type": "jsx"
+  },
+  {
+    "original": "• Navigate between sentences with previous/next buttons",
+    "key": "test-shadowing.page._navigate_between_sentences_wi",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 60,
+    "type": "jsx"
+  },
+  {
+    "original": "• Click on any sentence in the list to jump to it",
+    "key": "test-shadowing.page._click_on_any_sentence_in_the_",
+    "file": "src/app/test-shadowing/page.tsx",
+    "line": 61,
+    "type": "jsx"
+  },
+  {
+    "original": "LRU Eviction Test",
+    "key": "test-eviction.page.lru_eviction_test",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 115,
+    "type": "jsx"
+  },
+  {
+    "original": "User Information",
+    "key": "test-eviction.page.user_information",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 119,
+    "type": "jsx"
+  },
+  {
+    "original": "User Type:",
+    "key": "test-eviction.page.user_type",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 121,
+    "type": "jsx"
+  },
+  {
+    "original": "Current Count:",
+    "key": "test-eviction.page.current_count",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 122,
+    "type": "jsx"
+  },
+  {
+    "original": "Max Allowed:",
+    "key": "test-eviction.page.max_allowed",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 123,
+    "type": "jsx"
+  },
+  {
+    "original": "Storage Used:",
+    "key": "test-eviction.page.storage_used",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 126,
+    "type": "jsx"
+  },
+  {
+    "original": "Utilization:",
+    "key": "test-eviction.page.utilization",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 127,
+    "type": "jsx"
+  },
+  {
+    "original": "Storage Status",
+    "key": "test-eviction.page.storage_status",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 135,
+    "type": "jsx"
+  },
+  {
+    "original": "Test Actions",
+    "key": "test-eviction.page.test_actions",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 141,
+    "type": "jsx"
+  },
+  {
+    "original": "Cached Articles",
+    "key": "test-eviction.page.cached_articles",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 164,
+    "type": "jsx"
+  },
+  {
+    "original": "Test Results",
+    "key": "test-eviction.page.test_results",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 196,
+    "type": "jsx"
+  },
+  {
+    "original": "No test results yet. Try caching some articles!",
+    "key": "test-eviction.page.no_test_results_yet_try_cachin",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 199,
+    "type": "jsx"
+  },
+  {
+    "original": "How to Test Eviction",
+    "key": "test-eviction.page.how_to_test_eviction",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 212,
+    "type": "jsx"
+  },
+  {
+    "original": "Start by caching a few articles to see the storage limits",
+    "key": "test-eviction.page.start_by_caching_a_few_article",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 214,
+    "type": "jsx"
+  },
+  {
+    "original": "Once you reach the limit (3 for free users), new articles will trigger eviction",
+    "key": "test-eviction.page.once_you_reach_the_limit_3_for",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 215,
+    "type": "jsx"
+  },
+  {
+    "original": "Mark an article as \"active\" to protect it from eviction",
+    "key": "test-eviction.page.mark_an_article_as_active_to_p",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 216,
+    "type": "jsx"
+  },
+  {
+    "original": "Try caching large articles to trigger size-based eviction",
+    "key": "test-eviction.page.try_caching_large_articles_to_",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 217,
+    "type": "jsx"
+  },
+  {
+    "original": "Watch the storage indicator to see utilization changes",
+    "key": "test-eviction.page.watch_the_storage_indicator_to",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 218,
+    "type": "jsx"
+  },
+  {
+    "original": "Check the console for detailed eviction logs",
+    "key": "test-eviction.page.check_the_console_for_detailed",
+    "file": "src/app/test-eviction/page.tsx",
+    "line": 219,
+    "type": "jsx"
+  },
+  {
+    "original": "Cache System Test Page",
+    "key": "test-cache.page.cache_system_test_page",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 135,
+    "type": "jsx"
+  },
+  {
+    "original": "System Status",
+    "key": "test-cache.page.system_status",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 139,
+    "type": "jsx"
+  },
+  {
+    "original": "User Type:",
+    "key": "test-cache.page.user_type",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 143,
+    "type": "jsx"
+  },
+  {
+    "original": "Current Cached Articles:",
+    "key": "test-cache.page.current_cached_articles",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 144,
+    "type": "jsx"
+  },
+  {
+    "original": "Cache Statistics",
+    "key": "test-cache.page.cache_statistics",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 153,
+    "type": "jsx"
+  },
+  {
+    "original": "Test Controls",
+    "key": "test-cache.page.test_controls",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 165,
+    "type": "jsx"
+  },
+  {
+    "original": "Test Results",
+    "key": "test-cache.page.test_results",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 209,
+    "type": "jsx"
+  },
+  {
+    "original": "No test results yet. Click the buttons above to start testing.",
+    "key": "test-cache.page.no_test_results_yet_click_the_",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 212,
+    "type": "jsx"
+  },
+  {
+    "original": "Testing Instructions:",
+    "key": "test-cache.page.testing_instructions",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 225,
+    "type": "jsx"
+  },
+  {
+    "original": "Click \"Cache Test Article\" to cache an article",
+    "key": "test-cache.page.click_cache_test_article_to_ca",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 227,
+    "type": "jsx"
+  },
+  {
+    "original": "Try caching multiple articles to test the limit enforcement",
+    "key": "test-cache.page.try_caching_multiple_articles_",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 228,
+    "type": "jsx"
+  },
+  {
+    "original": "Click \"Get Cached Article\" to verify retrieval works",
+    "key": "test-cache.page.click_get_cached_article_to_ve",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 229,
+    "type": "jsx"
+  },
+  {
+    "original": "Open DevTools → Application → Service Workers to verify SW is active",
+    "key": "test-cache.page.open_devtools_application_serv",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 230,
+    "type": "jsx"
+  },
+  {
+    "original": "Go offline (DevTools → Network → Offline) and test cached content",
+    "key": "test-cache.page.go_offline_devtools_network_of",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 231,
+    "type": "jsx"
+  },
+  {
+    "original": "Test as different user types to verify limits work correctly",
+    "key": "test-cache.page.test_as_different_user_types_t",
+    "file": "src/app/test-cache/page.tsx",
+    "line": 232,
+    "type": "jsx"
+  },
+  {
+    "original": "📖",
+    "key": "stories.page.",
+    "file": "src/app/stories/page.tsx",
+    "line": 263,
+    "type": "jsx"
+  },
+  {
+    "original": "💾",
+    "key": "stories.page.",
+    "file": "src/app/stories/page.tsx",
+    "line": 269,
+    "type": "jsx"
+  },
+  {
+    "original": "📄",
+    "key": "stories.page.",
+    "file": "src/app/stories/page.tsx",
+    "line": 290,
+    "type": "jsx"
+  },
+  {
+    "original": "Want unlimited stories?",
+    "key": "stories.page.want_unlimited_stories",
+    "file": "src/app/stories/page.tsx",
+    "line": 311,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading story...",
+    "key": "[slug].page.loading_story",
+    "file": "src/app/stories/[slug]/page.tsx",
+    "line": 98,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading...",
+    "key": "settings.page.loading",
+    "file": "src/app/settings/page.tsx",
+    "line": 58,
+    "type": "jsx"
+  },
+  {
+    "original": "Sync Error",
+    "key": "settings.page.sync_error",
+    "file": "src/app/settings/page.tsx",
+    "line": 561,
+    "type": "jsx"
+  },
+  {
+    "original": "☁️",
+    "key": "settings.page.",
+    "file": "src/app/settings/page.tsx",
+    "line": 626,
+    "type": "jsx"
+  },
+  {
+    "original": "1.0.0",
+    "key": "settings.page.100",
+    "file": "src/app/settings/page.tsx",
+    "line": 703,
+    "type": "jsx"
+  },
+  {
+    "original": "2025.06.12",
+    "key": "settings.page.20250612",
+    "file": "src/app/settings/page.tsx",
+    "line": 707,
+    "type": "jsx"
+  },
+  {
+    "original": "⚠️",
+    "key": "settings.page.",
+    "file": "src/app/settings/page.tsx",
+    "line": 769,
+    "type": "jsx"
+  },
+  {
+    "original": "🧹",
+    "key": "settings.page.",
+    "file": "src/app/settings/page.tsx",
+    "line": 818,
+    "type": "jsx"
+  },
+  {
+    "original": "Current Cache:",
+    "key": "settings.page.current_cache",
+    "file": "src/app/settings/page.tsx",
+    "line": 829,
+    "type": "jsx"
+  },
+  {
+    "original": "Sync Now",
+    "key": "settings.page.sync_now",
+    "file": "src/app/settings/page.tsx",
+    "line": 589,
+    "type": "prop"
+  },
+  {
+    "original": "Manually sync your data with the cloud",
+    "key": "settings.page.manually_sync_your_data_with_t",
+    "file": "src/app/settings/page.tsx",
+    "line": 590,
+    "type": "prop"
+  },
+  {
+    "original": "Clear Browser Cache",
+    "key": "settings.page.clear_browser_cache",
+    "file": "src/app/settings/page.tsx",
+    "line": 613,
+    "type": "prop"
+  },
+  {
+    "original": "Fix sync issues by clearing cached data",
+    "key": "settings.page.fix_sync_issues_by_clearing_ca",
+    "file": "src/app/settings/page.tsx",
+    "line": 614,
+    "type": "prop"
+  },
+  {
+    "original": "📋",
+    "key": "terms-of-service.page.",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 14,
+    "type": "jsx"
+  },
+  {
+    "original": "Agreement to Terms",
+    "key": "terms-of-service.page.agreement_to_terms",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 24,
+    "type": "jsx"
+  },
+  {
+    "original": "Permitted Use",
+    "key": "terms-of-service.page.permitted_use",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 32,
+    "type": "jsx"
+  },
+  {
+    "original": "Educational Purpose",
+    "key": "terms-of-service.page.educational_purpose",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 37,
+    "type": "jsx"
+  },
+  {
+    "original": "Personal Use",
+    "key": "terms-of-service.page.personal_use",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 46,
+    "type": "jsx"
+  },
+  {
+    "original": "Data Export",
+    "key": "terms-of-service.page.data_export",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 55,
+    "type": "jsx"
+  },
+  {
+    "original": "Prohibited Activities",
+    "key": "terms-of-service.page.prohibited_activities",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 65,
+    "type": "jsx"
+  },
+  {
+    "original": "Reverse Engineering",
+    "key": "terms-of-service.page.reverse_engineering",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 70,
+    "type": "jsx"
+  },
+  {
+    "original": "Commercial Redistribution",
+    "key": "terms-of-service.page.commercial_redistribution",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 79,
+    "type": "jsx"
+  },
+  {
+    "original": "Harmful Activities",
+    "key": "terms-of-service.page.harmful_activities",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 88,
+    "type": "jsx"
+  },
+  {
+    "original": "Content and Data",
+    "key": "terms-of-service.page.content_and_data",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 98,
+    "type": "jsx"
+  },
+  {
+    "original": "Your Data",
+    "key": "terms-of-service.page.your_data",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 101,
+    "type": "jsx"
+  },
+  {
+    "original": "Educational Content",
+    "key": "terms-of-service.page.educational_content",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 108,
+    "type": "jsx"
+  },
+  {
+    "original": "Disclaimer of Warranties",
+    "key": "terms-of-service.page.disclaimer_of_warranties",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 118,
+    "type": "jsx"
+  },
+  {
+    "original": "Limitation of Liability",
+    "key": "terms-of-service.page.limitation_of_liability",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 129,
+    "type": "jsx"
+  },
+  {
+    "original": "Open Source Components",
+    "key": "terms-of-service.page.open_source_components",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 140,
+    "type": "jsx"
+  },
+  {
+    "original": "Changes to Terms",
+    "key": "terms-of-service.page.changes_to_terms",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 148,
+    "type": "jsx"
+  },
+  {
+    "original": "🎌",
+    "key": "terms-of-service.page.",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 170,
+    "type": "jsx"
+  },
+  {
+    "original": "Terms of Service",
+    "key": "terms-of-service.page.terms_of_service",
+    "file": "src/app/settings/terms-of-service/page.tsx",
+    "line": 8,
+    "type": "prop"
+  },
+  {
+    "original": "🔒",
+    "key": "privacy-policy.page.",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 14,
+    "type": "jsx"
+  },
+  {
+    "original": "Privacy Commitment",
+    "key": "privacy-policy.page.privacy_commitment",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 24,
+    "type": "jsx"
+  },
+  {
+    "original": "Data Storage",
+    "key": "privacy-policy.page.data_storage",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 32,
+    "type": "jsx"
+  },
+  {
+    "original": "Local Storage Only",
+    "key": "privacy-policy.page.local_storage_only",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 37,
+    "type": "jsx"
+  },
+  {
+    "original": "No Server Storage",
+    "key": "privacy-policy.page.no_server_storage",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 46,
+    "type": "jsx"
+  },
+  {
+    "original": "You Control Your Data",
+    "key": "privacy-policy.page.you_control_your_data",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 55,
+    "type": "jsx"
+  },
+  {
+    "original": "What We Don't Collect",
+    "key": "privacy-policy.page.what_we_dont_collect",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 65,
+    "type": "jsx"
+  },
+  {
+    "original": "Personal Information",
+    "key": "privacy-policy.page.personal_information",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 70,
+    "type": "jsx"
+  },
+  {
+    "original": "Usage Analytics",
+    "key": "privacy-policy.page.usage_analytics",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 79,
+    "type": "jsx"
+  },
+  {
+    "original": "Third-party Sharing",
+    "key": "privacy-policy.page.thirdparty_sharing",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 88,
+    "type": "jsx"
+  },
+  {
+    "original": "Local Data Types",
+    "key": "privacy-policy.page.local_data_types",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 98,
+    "type": "jsx"
+  },
+  {
+    "original": "Learning progress and statistics",
+    "key": "privacy-policy.page.learning_progress_and_statisti",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 105,
+    "type": "jsx"
+  },
+  {
+    "original": "Custom word lists and saved words",
+    "key": "privacy-policy.page.custom_word_lists_and_saved_wo",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 109,
+    "type": "jsx"
+  },
+  {
+    "original": "App settings and preferences",
+    "key": "privacy-policy.page.app_settings_and_preferences",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 113,
+    "type": "jsx"
+  },
+  {
+    "original": "Recently viewed words history",
+    "key": "privacy-policy.page.recently_viewed_words_history",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 117,
+    "type": "jsx"
+  },
+  {
+    "original": "🙏",
+    "key": "privacy-policy.page.",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 137,
+    "type": "jsx"
+  },
+  {
+    "original": "Privacy Policy",
+    "key": "privacy-policy.page.privacy_policy",
+    "file": "src/app/settings/privacy-policy/page.tsx",
+    "line": 8,
+    "type": "prop"
+  },
+  {
+    "original": "🙏",
+    "key": "acknowledgments.page.",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 14,
+    "type": "jsx"
+  },
+  {
+    "original": "Core Technologies",
+    "key": "acknowledgments.page.core_technologies",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 24,
+    "type": "jsx"
+  },
+  {
+    "original": "⚛️",
+    "key": "acknowledgments.page.",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 27,
+    "type": "jsx"
+  },
+  {
+    "original": "WaniKani API",
+    "key": "acknowledgments.page.wanikani_api",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 29,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "acknowledgments.page.",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 88,
+    "type": "jsx"
+  },
+  {
+    "original": "Japanese Language Data",
+    "key": "acknowledgments.page.japanese_language_data",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 67,
+    "type": "jsx"
+  },
+  {
+    "original": "🇯🇵",
+    "key": "acknowledgments.page.",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 70,
+    "type": "jsx"
+  },
+  {
+    "original": "Jisho.org",
+    "key": "acknowledgments.page.jishoorg",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 90,
+    "type": "jsx"
+  },
+  {
+    "original": "Primary Data Source:",
+    "key": "acknowledgments.page.primary_data_source",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 107,
+    "type": "jsx"
+  },
+  {
+    "original": "Development Tools",
+    "key": "acknowledgments.page.development_tools",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 116,
+    "type": "jsx"
+  },
+  {
+    "original": "Code linting",
+    "key": "acknowledgments.page.code_linting",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 120,
+    "type": "jsx"
+  },
+  {
+    "original": "Code formatting",
+    "key": "acknowledgments.page.code_formatting",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 124,
+    "type": "jsx"
+  },
+  {
+    "original": "Testing framework",
+    "key": "acknowledgments.page.testing_framework",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 128,
+    "type": "jsx"
+  },
+  {
+    "original": "Hosting platform",
+    "key": "acknowledgments.page.hosting_platform",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 132,
+    "type": "jsx"
+  },
+  {
+    "original": "Community & Inspiration",
+    "key": "acknowledgments.page.community_inspiration",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 138,
+    "type": "jsx"
+  },
+  {
+    "original": "Japanese Language Learning Community",
+    "key": "acknowledgments.page.japanese_language_learning_com",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 144,
+    "type": "jsx"
+  },
+  {
+    "original": "Open Source Contributors",
+    "key": "acknowledgments.page.open_source_contributors",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 153,
+    "type": "jsx"
+  },
+  {
+    "original": "Beta Testers",
+    "key": "acknowledgments.page.beta_testers",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 162,
+    "type": "jsx"
+  },
+  {
+    "original": "License Information",
+    "key": "acknowledgments.page.license_information",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 171,
+    "type": "jsx"
+  },
+  {
+    "original": "❤️",
+    "key": "acknowledgments.page.",
+    "file": "src/app/settings/acknowledgments/page.tsx",
+    "line": 184,
+    "type": "jsx"
+  },
+  {
+    "original": "Category:",
+    "key": "resources.page.category",
+    "file": "src/app/resources/page.tsx",
+    "line": 141,
+    "type": "jsx"
+  },
+  {
+    "original": "All Categories",
+    "key": "resources.page.all_categories",
+    "file": "src/app/resources/page.tsx",
+    "line": 147,
+    "type": "jsx"
+  },
+  {
+    "original": "Featured only",
+    "key": "resources.page.featured_only",
+    "file": "src/app/resources/page.tsx",
+    "line": 161,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "resources.page.",
+    "file": "src/app/resources/page.tsx",
+    "line": 185,
+    "type": "jsx"
+  },
+  {
+    "original": "📝",
+    "key": "resources.page.",
+    "file": "src/app/resources/page.tsx",
+    "line": 190,
+    "type": "jsx"
+  },
+  {
+    "original": "📖",
+    "key": "resources.page.",
+    "file": "src/app/resources/page.tsx",
+    "line": 356,
+    "type": "jsx"
+  },
+  {
+    "original": "🕒",
+    "key": "resources.page.",
+    "file": "src/app/resources/page.tsx",
+    "line": 360,
+    "type": "jsx"
+  },
+  {
+    "original": "Read More",
+    "key": "resources.page.read_more",
+    "file": "src/app/resources/page.tsx",
+    "line": 387,
+    "type": "jsx"
+  },
+  {
+    "original": "Search resources...",
+    "key": "resources.page.search_resources",
+    "file": "src/app/resources/page.tsx",
+    "line": 126,
+    "type": "prop"
+  },
+  {
+    "original": "Resource icon",
+    "key": "resources.page.resource_icon",
+    "file": "src/app/resources/page.tsx",
+    "line": 301,
+    "type": "prop"
+  },
+  {
+    "original": "📖",
+    "key": "[slug].page.",
+    "file": "src/app/resources/[slug]/page.tsx",
+    "line": 89,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading resource...",
+    "key": "[slug].page.loading_resource",
+    "file": "src/app/resources/[slug]/page.tsx",
+    "line": 90,
+    "type": "jsx"
+  },
+  {
+    "original": "📄",
+    "key": "[slug].page.",
+    "file": "src/app/resources/[slug]/page.tsx",
+    "line": 107,
+    "type": "jsx"
+  },
+  {
+    "original": "Resource Not Found",
+    "key": "[slug].page.resource_not_found",
+    "file": "src/app/resources/[slug]/page.tsx",
+    "line": 105,
+    "type": "prop"
+  },
+  {
+    "original": "Show Romaji",
+    "key": "practice.page.show_romaji",
+    "file": "src/app/practice/page.tsx",
+    "line": 382,
+    "type": "jsx"
+  },
+  {
+    "original": "Study Hiragana",
+    "key": "practice.page.study_hiragana",
+    "file": "src/app/practice/page.tsx",
+    "line": 405,
+    "type": "jsx"
+  },
+  {
+    "original": "Study Katakana",
+    "key": "practice.page.study_katakana",
+    "file": "src/app/practice/page.tsx",
+    "line": 406,
+    "type": "jsx"
+  },
+  {
+    "original": "Study Both",
+    "key": "practice.page.study_both",
+    "file": "src/app/practice/page.tsx",
+    "line": 407,
+    "type": "jsx"
+  },
+  {
+    "original": "Note:",
+    "key": "practice.page.note",
+    "file": "src/app/practice/page.tsx",
+    "line": 476,
+    "type": "jsx"
+  },
+  {
+    "original": "Warning:",
+    "key": "practice.page.warning",
+    "file": "src/app/practice/page.tsx",
+    "line": 482,
+    "type": "jsx"
+  },
+  {
+    "original": "Filter by Word Type:",
+    "key": "practice.page.filter_by_word_type",
+    "file": "src/app/practice/page.tsx",
+    "line": 570,
+    "type": "jsx"
+  },
+  {
+    "original": "Click to view conjugations",
+    "key": "practice.page.click_to_view_conjugations",
+    "file": "src/app/practice/page.tsx",
+    "line": 826,
+    "type": "jsx"
+  },
+  {
+    "original": "Save to List",
+    "key": "practice.page.save_to_list",
+    "file": "src/app/practice/page.tsx",
+    "line": 774,
+    "type": "prop"
+  },
+  {
+    "original": "Select lists:",
+    "key": "practice.page.select_lists",
+    "file": "src/app/practice/page.tsx",
+    "line": 877,
+    "type": "jsx"
+  },
+  {
+    "original": "Back to word list",
+    "key": "practice.page.back_to_word_list",
+    "file": "src/app/practice/page.tsx",
+    "line": 979,
+    "type": "jsx"
+  },
+  {
+    "original": "Create new list...",
+    "key": "practice.page.create_new_list",
+    "file": "src/app/practice/page.tsx",
+    "line": 861,
+    "type": "prop"
+  },
+  {
+    "original": "Tense & Polarity",
+    "key": "practice.page.tense_polarity",
+    "file": "src/app/practice/page.tsx",
+    "line": 1026,
+    "type": "prop"
+  },
+  {
+    "original": "Additional Forms",
+    "key": "practice.page.additional_forms",
+    "file": "src/app/practice/page.tsx",
+    "line": 1058,
+    "type": "prop"
+  },
+  {
+    "original": "• Practice conjugations",
+    "key": "offline.page._practice_conjugations",
+    "file": "src/app/offline/page.tsx",
+    "line": 46,
+    "type": "jsx"
+  },
+  {
+    "original": "• Review vocabulary",
+    "key": "offline.page._review_vocabulary",
+    "file": "src/app/offline/page.tsx",
+    "line": 47,
+    "type": "jsx"
+  },
+  {
+    "original": "• Access cached content",
+    "key": "offline.page._access_cached_content",
+    "file": "src/app/offline/page.tsx",
+    "line": 48,
+    "type": "jsx"
+  },
+  {
+    "original": "• View your progress",
+    "key": "offline.page._view_your_progress",
+    "file": "src/app/offline/page.tsx",
+    "line": 49,
+    "type": "jsx"
+  },
+  {
+    "original": "• Dictionary lookups",
+    "key": "offline.page._dictionary_lookups",
+    "file": "src/app/offline/page.tsx",
+    "line": 57,
+    "type": "jsx"
+  },
+  {
+    "original": "• New content updates",
+    "key": "offline.page._new_content_updates",
+    "file": "src/app/offline/page.tsx",
+    "line": 58,
+    "type": "jsx"
+  },
+  {
+    "original": "• WaniKani integration",
+    "key": "offline.page._wanikani_integration",
+    "file": "src/app/offline/page.tsx",
+    "line": 59,
+    "type": "jsx"
+  },
+  {
+    "original": "• Data synchronization",
+    "key": "offline.page._data_synchronization",
+    "file": "src/app/offline/page.tsx",
+    "line": 60,
+    "type": "jsx"
+  },
+  {
+    "original": "📰",
+    "key": "news.page.",
+    "file": "src/app/news/page.tsx",
+    "line": 479,
+    "type": "jsx"
+  },
+  {
+    "original": "🔄",
+    "key": "news.page.",
+    "file": "src/app/news/page.tsx",
+    "line": 256,
+    "type": "jsx"
+  },
+  {
+    "original": "🌐 and",
+    "key": "news.page._and",
+    "file": "src/app/news/page.tsx",
+    "line": 402,
+    "type": "jsx"
+  },
+  {
+    "original": "⚠️",
+    "key": "news.page.",
+    "file": "src/app/news/page.tsx",
+    "line": 436,
+    "type": "jsx"
+  },
+  {
+    "original": "Error Loading Articles",
+    "key": "news.page.error_loading_articles",
+    "file": "src/app/news/page.tsx",
+    "line": 438,
+    "type": "jsx"
+  },
+  {
+    "original": "Japanese News Articles",
+    "key": "news.page.japanese_news_articles",
+    "file": "src/app/news/page.tsx",
+    "line": 396,
+    "type": "prop"
+  },
+  {
+    "original": "Loading article...",
+    "key": "[id].page.loading_article",
+    "file": "src/app/news/[id]/page.tsx",
+    "line": 95,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading mood boards...",
+    "key": "kanji-moods.page.loading_mood_boards",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 53,
+    "type": "jsx"
+  },
+  {
+    "original": "🗺️",
+    "key": "kanji-moods.page.",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 87,
+    "type": "jsx"
+  },
+  {
+    "original": "Your Progress",
+    "key": "kanji-moods.page.your_progress",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 102,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Boards",
+    "key": "kanji-moods.page.total_boards",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 106,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Kanji",
+    "key": "kanji-moods.page.total_kanji",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 116,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "kanji-moods.page.",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 147,
+    "type": "jsx"
+  },
+  {
+    "original": "🚀",
+    "key": "kanji-moods.page.",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 162,
+    "type": "jsx"
+  },
+  {
+    "original": "Choose a Theme",
+    "key": "kanji-moods.page.choose_a_theme",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 172,
+    "type": "jsx"
+  },
+  {
+    "original": "Study Each Kanji",
+    "key": "kanji-moods.page.study_each_kanji",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 183,
+    "type": "jsx"
+  },
+  {
+    "original": "Mark as Learned",
+    "key": "kanji-moods.page.mark_as_learned",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 196,
+    "type": "jsx"
+  },
+  {
+    "original": "Complete the Board",
+    "key": "kanji-moods.page.complete_the_board",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 207,
+    "type": "jsx"
+  },
+  {
+    "original": "Kanji Mood Boards",
+    "key": "kanji-moods.page.kanji_mood_boards",
+    "file": "src/app/kanji-moods/page.tsx",
+    "line": 82,
+    "type": "prop"
+  },
+  {
+    "original": "Loading mood board...",
+    "key": "[boardId].page.loading_mood_board",
+    "file": "src/app/kanji-moods/[boardId]/page.tsx",
+    "line": 71,
+    "type": "jsx"
+  },
+  {
+    "original": "Pokéball",
+    "key": "kanji-browser.page.pokball",
+    "file": "src/app/kanji-browser/page.tsx",
+    "line": 416,
+    "type": "prop"
+  },
+  {
+    "original": "🎮",
+    "key": "games.page.",
+    "file": "src/app/games/page.tsx",
+    "line": 878,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading games...",
+    "key": "games.page.loading_games",
+    "file": "src/app/games/page.tsx",
+    "line": 816,
+    "type": "jsx"
+  },
+  {
+    "original": "🎧",
+    "key": "games.page.",
+    "file": "src/app/games/page.tsx",
+    "line": 1121,
+    "type": "jsx"
+  },
+  {
+    "original": "🔤",
+    "key": "games.page.",
+    "file": "src/app/games/page.tsx",
+    "line": 1191,
+    "type": "jsx"
+  },
+  {
+    "original": "Build the Kana:",
+    "key": "games.page.build_the_kana",
+    "file": "src/app/games/page.tsx",
+    "line": 1208,
+    "type": "jsx"
+  },
+  {
+    "original": "Click kana segments below to build the word",
+    "key": "games.page.click_kana_segments_below_to_b",
+    "file": "src/app/games/page.tsx",
+    "line": 1213,
+    "type": "jsx"
+  },
+  {
+    "original": "Available Kana:",
+    "key": "games.page.available_kana",
+    "file": "src/app/games/page.tsx",
+    "line": 1230,
+    "type": "jsx"
+  },
+  {
+    "original": "Pokéball",
+    "key": "games.page.pokball",
+    "file": "src/app/games/page.tsx",
+    "line": 1374,
+    "type": "prop"
+  },
+  {
+    "original": "Loading your collections...",
+    "key": "favourites.page.loading_your_collections",
+    "file": "src/app/favourites/page.tsx",
+    "line": 530,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "favourites.page.",
+    "file": "src/app/favourites/page.tsx",
+    "line": 606,
+    "type": "jsx"
+  },
+  {
+    "original": "📝",
+    "key": "favourites.page.",
+    "file": "src/app/favourites/page.tsx",
+    "line": 773,
+    "type": "jsx"
+  },
+  {
+    "original": "No items in this list yet",
+    "key": "favourites.page.no_items_in_this_list_yet",
+    "file": "src/app/favourites/page.tsx",
+    "line": 774,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading your bookmarked articles...",
+    "key": "favourites.page.loading_your_bookmarked_articl",
+    "file": "src/app/favourites/page.tsx",
+    "line": 783,
+    "type": "jsx"
+  },
+  {
+    "original": "📰",
+    "key": "favourites.page.",
+    "file": "src/app/favourites/page.tsx",
+    "line": 788,
+    "type": "jsx"
+  },
+  {
+    "original": "🔍",
+    "key": "favourites.page.",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1129,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading your bookmarked stories...",
+    "key": "favourites.page.loading_your_bookmarked_storie",
+    "file": "src/app/favourites/page.tsx",
+    "line": 976,
+    "type": "jsx"
+  },
+  {
+    "original": "📖",
+    "key": "favourites.page.",
+    "file": "src/app/favourites/page.tsx",
+    "line": 981,
+    "type": "jsx"
+  },
+  {
+    "original": "0 &&",
+    "key": "favourites.page.0_",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1326,
+    "type": "jsx"
+  },
+  {
+    "original": "Delete list",
+    "key": "favourites.page.delete_list",
+    "file": "src/app/favourites/page.tsx",
+    "line": 670,
+    "type": "prop"
+  },
+  {
+    "original": "Remove bookmark",
+    "key": "favourites.page.remove_bookmark",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1088,
+    "type": "prop"
+  },
+  {
+    "original": "View original",
+    "key": "favourites.page.view_original",
+    "file": "src/app/favourites/page.tsx",
+    "line": 948,
+    "type": "prop"
+  },
+  {
+    "original": "Create New Study List",
+    "key": "favourites.page.create_new_study_list",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1155,
+    "type": "prop"
+  },
+  {
+    "original": "Remove Article Bookmark",
+    "key": "favourites.page.remove_article_bookmark",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1175,
+    "type": "prop"
+  },
+  {
+    "original": "Are you sure you want to remove this article from your saved items? This action cannot be undone.",
+    "key": "favourites.page.are_you_sure_you_want_to_remov",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1176,
+    "type": "prop"
+  },
+  {
+    "original": "Remove Story Bookmark",
+    "key": "favourites.page.remove_story_bookmark",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1193,
+    "type": "prop"
+  },
+  {
+    "original": "Remove from list",
+    "key": "favourites.page.remove_from_list",
+    "file": "src/app/favourites/page.tsx",
+    "line": 1471,
+    "type": "prop"
+  },
+  {
+    "original": "📚",
+    "key": "drill.page.",
+    "file": "src/app/drill/page.tsx",
+    "line": 1000,
+    "type": "jsx"
+  },
+  {
+    "original": "Daily Goal:",
+    "key": "drill.page.daily_goal",
+    "file": "src/app/drill/page.tsx",
+    "line": 1034,
+    "type": "jsx"
+  },
+  {
+    "original": "(Change in Settings)",
+    "key": "drill.page.change_in_settings",
+    "file": "src/app/drill/page.tsx",
+    "line": 1035,
+    "type": "jsx"
+  },
+  {
+    "original": "Drill Mode:",
+    "key": "drill.page.drill_mode",
+    "file": "src/app/drill/page.tsx",
+    "line": 1041,
+    "type": "jsx"
+  },
+  {
+    "original": "Select conjugable lists to drill:",
+    "key": "drill.page.select_conjugable_lists_to_dri",
+    "file": "src/app/drill/page.tsx",
+    "line": 1070,
+    "type": "jsx"
+  },
+  {
+    "original": "✓ conjugable",
+    "key": "drill.page._conjugable",
+    "file": "src/app/drill/page.tsx",
+    "line": 1090,
+    "type": "jsx"
+  },
+  {
+    "original": "Practice with:",
+    "key": "drill.page.practice_with",
+    "file": "src/app/drill/page.tsx",
+    "line": 1108,
+    "type": "jsx"
+  },
+  {
+    "original": "Auto-advance to next question",
+    "key": "drill.page.autoadvance_to_next_question",
+    "file": "src/app/drill/page.tsx",
+    "line": 1136,
+    "type": "jsx"
+  },
+  {
+    "original": "(automatically moves to next after 2 seconds)",
+    "key": "drill.page.automatically_moves_to_next_af",
+    "file": "src/app/drill/page.tsx",
+    "line": 1137,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading flashcards...",
+    "key": "drill.page.loading_flashcards",
+    "file": "src/app/drill/page.tsx",
+    "line": 1309,
+    "type": "jsx"
+  },
+  {
+    "original": "🎴",
+    "key": "drill.page.",
+    "file": "src/app/drill/page.tsx",
+    "line": 1313,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Cards",
+    "key": "drill.page.total_cards",
+    "file": "src/app/drill/page.tsx",
+    "line": 1339,
+    "type": "jsx"
+  },
+  {
+    "original": "Due Today",
+    "key": "drill.page.due_today",
+    "file": "src/app/drill/page.tsx",
+    "line": 1343,
+    "type": "jsx"
+  },
+  {
+    "original": "Avg Stability",
+    "key": "drill.page.avg_stability",
+    "file": "src/app/drill/page.tsx",
+    "line": 1351,
+    "type": "jsx"
+  },
+  {
+    "original": "Recommended Session",
+    "key": "drill.page.recommended_session",
+    "file": "src/app/drill/page.tsx",
+    "line": 1372,
+    "type": "jsx"
+  },
+  {
+    "original": "Focus Areas",
+    "key": "drill.page.focus_areas",
+    "file": "src/app/drill/page.tsx",
+    "line": 1377,
+    "type": "jsx"
+  },
+  {
+    "original": "💡 How Due Cards Work:",
+    "key": "drill.page._how_due_cards_work",
+    "file": "src/app/drill/page.tsx",
+    "line": 1465,
+    "type": "jsx"
+  },
+  {
+    "original": "• Due cards come from your existing lists (words/kanji you've already studied)",
+    "key": "drill.page._due_cards_come_from_your_exis",
+    "file": "src/app/drill/page.tsx",
+    "line": 1467,
+    "type": "jsx"
+  },
+  {
+    "original": "• The spaced repetition algorithm schedules when each card needs review",
+    "key": "drill.page._the_spaced_repetition_algorit",
+    "file": "src/app/drill/page.tsx",
+    "line": 1468,
+    "type": "jsx"
+  },
+  {
+    "original": "• Select any list containing cards you've studied before to see due cards",
+    "key": "drill.page._select_any_list_containing_ca",
+    "file": "src/app/drill/page.tsx",
+    "line": 1469,
+    "type": "jsx"
+  },
+  {
+    "original": "• New cards (never studied) won't appear as \"due\"",
+    "key": "drill.page._new_cards_never_studied_wont_",
+    "file": "src/app/drill/page.tsx",
+    "line": 1470,
+    "type": "jsx"
+  },
+  {
+    "original": "Card Direction:",
+    "key": "drill.page.card_direction",
+    "file": "src/app/drill/page.tsx",
+    "line": 1490,
+    "type": "jsx"
+  },
+  {
+    "original": "Show hints on flashcards",
+    "key": "drill.page.show_hints_on_flashcards",
+    "file": "src/app/drill/page.tsx",
+    "line": 1541,
+    "type": "jsx"
+  },
+  {
+    "original": "(reading/pronunciation help)",
+    "key": "drill.page.readingpronunciation_help",
+    "file": "src/app/drill/page.tsx",
+    "line": 1542,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading...",
+    "key": "diagnose-articles.page.loading",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 135,
+    "type": "jsx"
+  },
+  {
+    "original": "Article Diagnosis",
+    "key": "diagnose-articles.page.article_diagnosis",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 144,
+    "type": "jsx"
+  },
+  {
+    "original": "Check Specific Article",
+    "key": "diagnose-articles.page.check_specific_article",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 148,
+    "type": "jsx"
+  },
+  {
+    "original": "Title:",
+    "key": "diagnose-articles.page.title",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 171,
+    "type": "jsx"
+  },
+  {
+    "original": "Fields:",
+    "key": "diagnose-articles.page.fields",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 172,
+    "type": "jsx"
+  },
+  {
+    "original": "Content:",
+    "key": "diagnose-articles.page.content",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 173,
+    "type": "jsx"
+  },
+  {
+    "original": "Body:",
+    "key": "diagnose-articles.page.body",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 174,
+    "type": "jsx"
+  },
+  {
+    "original": "Text:",
+    "key": "diagnose-articles.page.text",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 175,
+    "type": "jsx"
+  },
+  {
+    "original": "Summary:",
+    "key": "diagnose-articles.page.summary",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 176,
+    "type": "jsx"
+  },
+  {
+    "original": "Sample:",
+    "key": "diagnose-articles.page.sample",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 177,
+    "type": "jsx"
+  },
+  {
+    "original": "Full Data (click to expand)",
+    "key": "diagnose-articles.page.full_data_click_to_expand",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 179,
+    "type": "jsx"
+  },
+  {
+    "original": "Sample Articles",
+    "key": "diagnose-articles.page.sample_articles",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 206,
+    "type": "jsx"
+  },
+  {
+    "original": "Article ID",
+    "key": "diagnose-articles.page.article_id",
+    "file": "src/app/diagnose-articles/page.tsx",
+    "line": 155,
+    "type": "prop"
+  },
+  {
+    "original": "💬",
+    "key": "contact.page.",
+    "file": "src/app/contact/page.tsx",
+    "line": 147,
+    "type": "jsx"
+  },
+  {
+    "original": "📊",
+    "key": "admin.page.",
+    "file": "src/app/admin/page.tsx",
+    "line": 173,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading...",
+    "key": "new.page.loading",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 491,
+    "type": "jsx"
+  },
+  {
+    "original": "Create New Story",
+    "key": "new.page.create_new_story",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 518,
+    "type": "jsx"
+  },
+  {
+    "original": "Import Story from JSON",
+    "key": "new.page.import_story_from_json",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 557,
+    "type": "jsx"
+  },
+  {
+    "original": "Validation Errors:",
+    "key": "new.page.validation_errors",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 598,
+    "type": "jsx"
+  },
+  {
+    "original": "Warnings:",
+    "key": "new.page.warnings",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 609,
+    "type": "jsx"
+  },
+  {
+    "original": "JSON file should contain:",
+    "key": "new.page.json_file_should_contain",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 619,
+    "type": "jsx"
+  },
+  {
+    "original": "Story title in English and Japanese",
+    "key": "new.page.story_title_in_english_and_jap",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 621,
+    "type": "jsx"
+  },
+  {
+    "original": "JLPT level and theme",
+    "key": "new.page.jlpt_level_and_theme",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 622,
+    "type": "jsx"
+  },
+  {
+    "original": "Pages with Japanese text (with ruby tags) and English translations",
+    "key": "new.page.pages_with_japanese_text_with_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 623,
+    "type": "jsx"
+  },
+  {
+    "original": "Optional: Quiz questions, tags, and SEO information",
+    "key": "new.page.optional_quiz_questions_tags_a",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 624,
+    "type": "jsx"
+  },
+  {
+    "original": "Basic Information",
+    "key": "new.page.basic_information",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 634,
+    "type": "jsx"
+  },
+  {
+    "original": "English Title *",
+    "key": "new.page.english_title_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 638,
+    "type": "jsx"
+  },
+  {
+    "original": "Japanese Title (with furigana) *",
+    "key": "new.page.japanese_title_with_furigana_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 652,
+    "type": "jsx"
+  },
+  {
+    "original": "JLPT Level",
+    "key": "new.page.jlpt_level",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 681,
+    "type": "jsx"
+  },
+  {
+    "original": "URL Slug",
+    "key": "new.page.url_slug",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 707,
+    "type": "jsx"
+  },
+  {
+    "original": "Cover Image",
+    "key": "new.page.cover_image",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 720,
+    "type": "jsx"
+  },
+  {
+    "original": "Pages Overview",
+    "key": "new.page.pages_overview",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 750,
+    "type": "jsx"
+  },
+  {
+    "original": "📷",
+    "key": "new.page.",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 809,
+    "type": "jsx"
+  },
+  {
+    "original": "🖼️",
+    "key": "new.page.",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 811,
+    "type": "jsx"
+  },
+  {
+    "original": "Image Alt Text (for accessibility)",
+    "key": "new.page.image_alt_text_for_accessibili",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 841,
+    "type": "jsx"
+  },
+  {
+    "original": "Japanese Text (with ruby tags) *",
+    "key": "new.page.japanese_text_with_ruby_tags_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 878,
+    "type": "jsx"
+  },
+  {
+    "original": "むかし",
+    "key": "new.page.",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 884,
+    "type": "jsx"
+  },
+  {
+    "original": "、ある",
+    "key": "new.page.",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 884,
+    "type": "jsx"
+  },
+  {
+    "original": "ところ",
+    "key": "new.page.",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 884,
+    "type": "jsx"
+  },
+  {
+    "original": "English Translation *",
+    "key": "new.page.english_translation_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 889,
+    "type": "jsx"
+  },
+  {
+    "original": "Correct Answer",
+    "key": "new.page.correct_answer",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 976,
+    "type": "jsx"
+  },
+  {
+    "original": "Explanation (optional)",
+    "key": "new.page.explanation_optional",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 989,
+    "type": "jsx"
+  },
+  {
+    "original": "Select a tag...",
+    "key": "new.page.select_a_tag",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 1020,
+    "type": "jsx"
+  },
+  {
+    "original": "Publishing Options",
+    "key": "new.page.publishing_options",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 1058,
+    "type": "jsx"
+  },
+  {
+    "original": "SEO Title",
+    "key": "new.page.seo_title",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 1078,
+    "type": "jsx"
+  },
+  {
+    "original": "SEO Description",
+    "key": "new.page.seo_description",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 1089,
+    "type": "jsx"
+  },
+  {
+    "original": "Publish Date",
+    "key": "new.page.publish_date",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 1103,
+    "type": "jsx"
+  },
+  {
+    "original": "Back to Stories List",
+    "key": "new.page.back_to_stories_list",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 512,
+    "type": "prop"
+  },
+  {
+    "original": "Remove image",
+    "key": "new.page.remove_image",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 834,
+    "type": "prop"
+  },
+  {
+    "original": "Describe the image for screen readers",
+    "key": "new.page.describe_the_image_for_screen_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 847,
+    "type": "prop"
+  },
+  {
+    "original": "<ruby>昔<rt>むかし</rt></ruby>、<ruby>昔<rt>むかし</rt></ruby>、ある<ruby>所<rt>ところ</rt></ruby>に...",
+    "key": "new.page.rubyrtrtrubyrubyrtrtrubyrubyrt",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 884,
+    "type": "prop"
+  },
+  {
+    "original": "Once upon a time, in a certain place...",
+    "key": "new.page.once_upon_a_time_in_a_certain_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 895,
+    "type": "prop"
+  },
+  {
+    "original": "What did the main character find?",
+    "key": "new.page.what_did_the_main_character_fi",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 951,
+    "type": "prop"
+  },
+  {
+    "original": "The answer can be found in paragraph 2...",
+    "key": "new.page.the_answer_can_be_found_in_par",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 995,
+    "type": "prop"
+  },
+  {
+    "original": "Custom title for search engines (defaults to story title)",
+    "key": "new.page.custom_title_for_search_engine",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 1084,
+    "type": "prop"
+  },
+  {
+    "original": "Custom description for search engines",
+    "key": "new.page.custom_description_for_search_",
+    "file": "src/app/admin/stories/new/page.tsx",
+    "line": 1095,
+    "type": "prop"
+  },
+  {
+    "original": "Loading...",
+    "key": "[id].page.loading",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 192,
+    "type": "jsx"
+  },
+  {
+    "original": "Edit Story",
+    "key": "[id].page.edit_story",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 218,
+    "type": "jsx"
+  },
+  {
+    "original": "Title (EN)",
+    "key": "[id].page.title_en",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 228,
+    "type": "jsx"
+  },
+  {
+    "original": "Title (JA)",
+    "key": "[id].page.title_ja",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 240,
+    "type": "jsx"
+  },
+  {
+    "original": "URL Slug",
+    "key": "[id].page.url_slug",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 252,
+    "type": "jsx"
+  },
+  {
+    "original": "JLPT Level",
+    "key": "[id].page.jlpt_level",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 258,
+    "type": "jsx"
+  },
+  {
+    "original": "Cover Image",
+    "key": "[id].page.cover_image",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 284,
+    "type": "jsx"
+  },
+  {
+    "original": "Pages Overview",
+    "key": "[id].page.pages_overview",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 291,
+    "type": "jsx"
+  },
+  {
+    "original": "Add Page",
+    "key": "[id].page.add_page",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 310,
+    "type": "button"
+  },
+  {
+    "original": "📷",
+    "key": "[id].page.",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 315,
+    "type": "jsx"
+  },
+  {
+    "original": ") : (",
+    "key": "[id].page._",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 322,
+    "type": "jsx"
+  },
+  {
+    "original": "🖼️",
+    "key": "[id].page.",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 315,
+    "type": "jsx"
+  },
+  {
+    "original": "Image Alt Text (for accessibility)",
+    "key": "[id].page.image_alt_text_for_accessibili",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 322,
+    "type": "jsx"
+  },
+  {
+    "original": "Japanese Text *",
+    "key": "[id].page.japanese_text_",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 325,
+    "type": "jsx"
+  },
+  {
+    "original": "English Translation *",
+    "key": "[id].page.english_translation_",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 329,
+    "type": "jsx"
+  },
+  {
+    "original": "1 && (",
+    "key": "[id].page.1_",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 332,
+    "type": "jsx"
+  },
+  {
+    "original": "Remove This Page",
+    "key": "[id].page.remove_this_page",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 332,
+    "type": "jsx"
+  },
+  {
+    "original": "Quiz Questions",
+    "key": "[id].page.quiz_questions",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 337,
+    "type": "jsx"
+  },
+  {
+    "original": "Back to Stories List",
+    "key": "[id].page.back_to_stories_list",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 212,
+    "type": "prop"
+  },
+  {
+    "original": "Remove image",
+    "key": "[id].page.remove_image",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 322,
+    "type": "prop"
+  },
+  {
+    "original": "Describe the image for screen readers",
+    "key": "[id].page.describe_the_image_for_screen_",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 322,
+    "type": "prop"
+  },
+  {
+    "original": "むかしむかし、あるところに...",
+    "key": "[id].page.",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 326,
+    "type": "prop"
+  },
+  {
+    "original": "Once upon a time, in a certain place...",
+    "key": "[id].page.once_upon_a_time_in_a_certain_",
+    "file": "src/app/admin/stories/edit/[id]/page.tsx",
+    "line": 330,
+    "type": "prop"
+  },
+  {
+    "original": "Loading...",
+    "key": "new.page.loading",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 266,
+    "type": "jsx"
+  },
+  {
+    "original": "Create New Resource",
+    "key": "new.page.create_new_resource",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 276,
+    "type": "jsx"
+  },
+  {
+    "original": "Write and publish a new blog post or resource",
+    "key": "new.page.write_and_publish_a_new_blog_p",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 277,
+    "type": "jsx"
+  },
+  {
+    "original": "ℹ️ Quick tip:",
+    "key": "new.page._quick_tip",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 303,
+    "type": "jsx"
+  },
+  {
+    "original": "Only fields marked with",
+    "key": "new.page.only_fields_marked_with",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 303,
+    "type": "jsx"
+  },
+  {
+    "original": "Basic Information",
+    "key": "new.page.basic_information",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 310,
+    "type": "jsx"
+  },
+  {
+    "original": "Title *",
+    "key": "new.page.title_",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 314,
+    "type": "jsx"
+  },
+  {
+    "original": "URL Slug",
+    "key": "new.page.url_slug",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 341,
+    "type": "jsx"
+  },
+  {
+    "original": "Select category",
+    "key": "new.page.select_category",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 359,
+    "type": "jsx"
+  },
+  {
+    "original": "Featured Image",
+    "key": "new.page.featured_image",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 428,
+    "type": "jsx"
+  },
+  {
+    "original": "Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP",
+    "key": "new.page.max_file_size_5mb_supported_fo",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 465,
+    "type": "jsx"
+  },
+  {
+    "original": "or use URL",
+    "key": "new.page.or_use_url",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 473,
+    "type": "jsx"
+  },
+  {
+    "original": "Image URL",
+    "key": "new.page.image_url",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 479,
+    "type": "jsx"
+  },
+  {
+    "original": "Image Alt Text",
+    "key": "new.page.image_alt_text",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 491,
+    "type": "jsx"
+  },
+  {
+    "original": "Preview:",
+    "key": "new.page.preview",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 504,
+    "type": "jsx"
+  },
+  {
+    "original": "Publishing Options",
+    "key": "new.page.publishing_options",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 567,
+    "type": "jsx"
+  },
+  {
+    "original": "Scheduled For",
+    "key": "new.page.scheduled_for",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 585,
+    "type": "jsx"
+  },
+  {
+    "original": "Featured post",
+    "key": "new.page.featured_post",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 604,
+    "type": "jsx"
+  },
+  {
+    "original": "Premium content",
+    "key": "new.page.premium_content",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 614,
+    "type": "jsx"
+  },
+  {
+    "original": "SEO Title",
+    "key": "new.page.seo_title",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 624,
+    "type": "jsx"
+  },
+  {
+    "original": "SEO Description",
+    "key": "new.page.seo_description",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 636,
+    "type": "jsx"
+  },
+  {
+    "original": "Optional subtitle",
+    "key": "new.page.optional_subtitle",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 334,
+    "type": "prop"
+  },
+  {
+    "original": "Brief description for cards and SEO (auto-generated from content if empty)",
+    "key": "new.page.brief_description_for_cards_an",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 374,
+    "type": "prop"
+  },
+  {
+    "original": "Descriptive alt text",
+    "key": "new.page.descriptive_alt_text",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 497,
+    "type": "prop"
+  },
+  {
+    "original": "Add a tag and press Enter",
+    "key": "new.page.add_a_tag_and_press_enter",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 533,
+    "type": "prop"
+  },
+  {
+    "original": "Custom title for search engines (defaults to main title)",
+    "key": "new.page.custom_title_for_search_engine",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 630,
+    "type": "prop"
+  },
+  {
+    "original": "Custom description for search engines (defaults to excerpt)",
+    "key": "new.page.custom_description_for_search_",
+    "file": "src/app/admin/resources/new/page.tsx",
+    "line": 642,
+    "type": "prop"
+  },
+  {
+    "original": "Loading...",
+    "key": "edit.page.loading",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 236,
+    "type": "jsx"
+  },
+  {
+    "original": "Resource not found",
+    "key": "edit.page.resource_not_found",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 240,
+    "type": "jsx"
+  },
+  {
+    "original": "Edit Resource",
+    "key": "edit.page.edit_resource",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 250,
+    "type": "jsx"
+  },
+  {
+    "original": "Basic Information",
+    "key": "edit.page.basic_information",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 279,
+    "type": "jsx"
+  },
+  {
+    "original": "Title *",
+    "key": "edit.page.title_",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 283,
+    "type": "jsx"
+  },
+  {
+    "original": "URL Slug",
+    "key": "edit.page.url_slug",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 308,
+    "type": "jsx"
+  },
+  {
+    "original": "Select category",
+    "key": "edit.page.select_category",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 326,
+    "type": "jsx"
+  },
+  {
+    "original": "Featured Image",
+    "key": "edit.page.featured_image",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 393,
+    "type": "jsx"
+  },
+  {
+    "original": "Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP",
+    "key": "edit.page.max_file_size_5mb_supported_fo",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 424,
+    "type": "jsx"
+  },
+  {
+    "original": "or use URL",
+    "key": "edit.page.or_use_url",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 432,
+    "type": "jsx"
+  },
+  {
+    "original": "Image URL",
+    "key": "edit.page.image_url",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 438,
+    "type": "jsx"
+  },
+  {
+    "original": "Image Alt Text",
+    "key": "edit.page.image_alt_text",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 450,
+    "type": "jsx"
+  },
+  {
+    "original": "Preview:",
+    "key": "edit.page.preview",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 463,
+    "type": "jsx"
+  },
+  {
+    "original": "Publishing Options",
+    "key": "edit.page.publishing_options",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 526,
+    "type": "jsx"
+  },
+  {
+    "original": "Scheduled For",
+    "key": "edit.page.scheduled_for",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 544,
+    "type": "jsx"
+  },
+  {
+    "original": "Featured post",
+    "key": "edit.page.featured_post",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 563,
+    "type": "jsx"
+  },
+  {
+    "original": "Premium content",
+    "key": "edit.page.premium_content",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 573,
+    "type": "jsx"
+  },
+  {
+    "original": "SEO Title",
+    "key": "edit.page.seo_title",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 583,
+    "type": "jsx"
+  },
+  {
+    "original": "SEO Description",
+    "key": "edit.page.seo_description",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 595,
+    "type": "jsx"
+  },
+  {
+    "original": "Optional subtitle",
+    "key": "edit.page.optional_subtitle",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 301,
+    "type": "prop"
+  },
+  {
+    "original": "Brief description for cards and SEO",
+    "key": "edit.page.brief_description_for_cards_an",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 341,
+    "type": "prop"
+  },
+  {
+    "original": "Descriptive alt text",
+    "key": "edit.page.descriptive_alt_text",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 456,
+    "type": "prop"
+  },
+  {
+    "original": "Add a tag and press Enter",
+    "key": "edit.page.add_a_tag_and_press_enter",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 492,
+    "type": "prop"
+  },
+  {
+    "original": "Custom title for search engines",
+    "key": "edit.page.custom_title_for_search_engine",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 589,
+    "type": "prop"
+  },
+  {
+    "original": "Custom description for search engines",
+    "key": "edit.page.custom_description_for_search_",
+    "file": "src/app/admin/resources/[id]/edit/page.tsx",
+    "line": 601,
+    "type": "prop"
+  },
+  {
+    "original": "📊",
+    "key": "mood-boards.page.",
+    "file": "src/app/admin/mood-boards/page.tsx",
+    "line": 204,
+    "type": "jsx"
+  },
+  {
+    "original": "🎯",
+    "key": "mood-boards.page.",
+    "file": "src/app/admin/mood-boards/page.tsx",
+    "line": 216,
+    "type": "jsx"
+  },
+  {
+    "original": "📈",
+    "key": "mood-boards.page.",
+    "file": "src/app/admin/mood-boards/page.tsx",
+    "line": 228,
+    "type": "jsx"
+  },
+  {
+    "original": "🕒",
+    "key": "mood-boards.page.",
+    "file": "src/app/admin/mood-boards/page.tsx",
+    "line": 240,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading logs...",
+    "key": "logs.page.loading_logs",
+    "file": "src/app/admin/logs/page.tsx",
+    "line": 207,
+    "type": "jsx"
+  },
+  {
+    "original": "No logs found matching your criteria.",
+    "key": "logs.page.no_logs_found_matching_your_cr",
+    "file": "src/app/admin/logs/page.tsx",
+    "line": 211,
+    "type": "jsx"
+  },
+  {
+    "original": "View details",
+    "key": "logs.page.view_details",
+    "file": "src/app/admin/logs/page.tsx",
+    "line": 264,
+    "type": "jsx"
+  },
+  {
+    "original": "No details",
+    "key": "logs.page.no_details",
+    "file": "src/app/admin/logs/page.tsx",
+    "line": 270,
+    "type": "jsx"
+  },
+  {
+    "original": "Error loading feature matrix",
+    "key": "features.page.error_loading_feature_matrix",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 47,
+    "type": "jsx"
+  },
+  {
+    "original": "🔄",
+    "key": "features.page.",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 145,
+    "type": "jsx"
+  },
+  {
+    "original": "📥",
+    "key": "features.page.",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 151,
+    "type": "jsx"
+  },
+  {
+    "original": "• Click on any number to edit the limit",
+    "key": "features.page._click_on_any_number_to_edit_t",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 204,
+    "type": "jsx"
+  },
+  {
+    "original": "• Use -1 for unlimited access",
+    "key": "features.page._use_1_for_unlimited_access",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 205,
+    "type": "jsx"
+  },
+  {
+    "original": "• Changes are saved immediately to the database",
+    "key": "features.page._changes_are_saved_immediately",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 206,
+    "type": "jsx"
+  },
+  {
+    "original": "• Users will see updated limits on their next action",
+    "key": "features.page._users_will_see_updated_limits",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 207,
+    "type": "jsx"
+  },
+  {
+    "original": "• Consider user behavior patterns when adjusting limits",
+    "key": "features.page._consider_user_behavior_patter",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 208,
+    "type": "jsx"
+  },
+  {
+    "original": "• This matrix shows all features available in Doshi Sensei and their access levels",
+    "key": "features.page._this_matrix_shows_all_feature",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 212,
+    "type": "jsx"
+  },
+  {
+    "original": "• Limits are enforced automatically by the new access control system",
+    "key": "features.page._limits_are_enforced_automatic",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 213,
+    "type": "jsx"
+  },
+  {
+    "original": "• Shared limit groups (like games) use the same counter for all features in the group",
+    "key": "features.page._shared_limit_groups_like_game",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 214,
+    "type": "jsx"
+  },
+  {
+    "original": "• Planned features are shown for future development reference",
+    "key": "features.page._planned_features_are_shown_fo",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 215,
+    "type": "jsx"
+  },
+  {
+    "original": "• Click \"Edit Limits\" to dynamically adjust user limits",
+    "key": "features.page._click_edit_limits_to_dynamica",
+    "file": "src/app/admin/features/page.tsx",
+    "line": 216,
+    "type": "jsx"
+  },
+  {
+    "original": "IndexedDB:",
+    "key": "debug.page.indexeddb",
+    "file": "src/app/admin/debug/page.tsx",
+    "line": 252,
+    "type": "jsx"
+  },
+  {
+    "original": "Firebase:",
+    "key": "debug.page.firebase",
+    "file": "src/app/admin/debug/page.tsx",
+    "line": 255,
+    "type": "jsx"
+  },
+  {
+    "original": "LocalStorage:",
+    "key": "debug.page.localstorage",
+    "file": "src/app/admin/debug/page.tsx",
+    "line": 258,
+    "type": "jsx"
+  },
+  {
+    "original": "Stats Debug Panel",
+    "key": "debug.page.stats_debug_panel",
+    "file": "src/app/admin/debug/page.tsx",
+    "line": 293,
+    "type": "jsx"
+  },
+  {
+    "original": "Console Monitor",
+    "key": "debug.page.console_monitor",
+    "file": "src/app/admin/debug/page.tsx",
+    "line": 294,
+    "type": "jsx"
+  },
+  {
+    "original": "Debug Tools",
+    "key": "debug.page.debug_tools",
+    "file": "src/app/admin/debug/page.tsx",
+    "line": 187,
+    "type": "prop"
+  },
+  {
+    "original": "🚀",
+    "key": "articles.page.",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 232,
+    "type": "jsx"
+  },
+  {
+    "original": "📚 Todaii News:",
+    "key": "articles.page._todaii_news",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 372,
+    "type": "jsx"
+  },
+  {
+    "original": "🏯 Watanoc Only:",
+    "key": "articles.page._watanoc_only",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 375,
+    "type": "jsx"
+  },
+  {
+    "original": "Management Tools",
+    "key": "articles.page.management_tools",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 381,
+    "type": "jsx"
+  },
+  {
+    "original": "📊 Refresh Stats:",
+    "key": "articles.page._refresh_stats",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 384,
+    "type": "jsx"
+  },
+  {
+    "original": "🗑️ Clear Cache:",
+    "key": "articles.page._clear_cache",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 387,
+    "type": "jsx"
+  },
+  {
+    "original": "🔍 Run Diagnostics:",
+    "key": "articles.page._run_diagnostics",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 390,
+    "type": "jsx"
+  },
+  {
+    "original": "🗑️ Delete Articles:",
+    "key": "articles.page._delete_articles",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 393,
+    "type": "jsx"
+  },
+  {
+    "original": "💡 Pro Tip:",
+    "key": "articles.page._pro_tip",
+    "file": "src/app/admin/articles/page.tsx",
+    "line": 400,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading activity tracking...",
+    "key": "activities.page.loading_activity_tracking",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 259,
+    "type": "jsx"
+  },
+  {
+    "original": "Activity Tracking Management",
+    "key": "activities.page.activity_tracking_management",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 269,
+    "type": "jsx"
+  },
+  {
+    "original": "Configure and monitor activity types tracked by the stats system",
+    "key": "activities.page.configure_and_monitor_activity",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 270,
+    "type": "jsx"
+  },
+  {
+    "original": "Activity Types",
+    "key": "activities.page.activity_types",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 276,
+    "type": "jsx"
+  },
+  {
+    "original": "Add New Activity Type",
+    "key": "activities.page.add_new_activity_type",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 287,
+    "type": "jsx"
+  },
+  {
+    "original": "Recent Activities (Last 50)",
+    "key": "activities.page.recent_activities_last_50",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 452,
+    "type": "jsx"
+  },
+  {
+    "original": "User Activity Viewer",
+    "key": "activities.page.user_activity_viewer",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 509,
+    "type": "jsx"
+  },
+  {
+    "original": "View all activities for a specific user, organized by day",
+    "key": "activities.page.view_all_activities_for_a_spec",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 510,
+    "type": "jsx"
+  },
+  {
+    "original": "Note: Only premium users have cloud-synced activity data",
+    "key": "activities.page.note_only_premium_users_have_c",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 595,
+    "type": "jsx"
+  },
+  {
+    "original": "Implementation Guide",
+    "key": "activities.page.implementation_guide",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 603,
+    "type": "jsx"
+  },
+  {
+    "original": "Add the activity type configuration above",
+    "key": "activities.page.add_the_activity_type_configur",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 608,
+    "type": "jsx"
+  },
+  {
+    "original": "Create a tracking function in",
+    "key": "activities.page.create_a_tracking_function_in",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 609,
+    "type": "jsx"
+  },
+  {
+    "original": "/src/lib/stats/trackingEvents.ts",
+    "key": "activities.page.srclibstatstrackingeventsts",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 609,
+    "type": "jsx"
+  },
+  {
+    "original": "Add the corresponding field to",
+    "key": "activities.page.add_the_corresponding_field_to",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 610,
+    "type": "jsx"
+  },
+  {
+    "original": "Update the stats processing logic in",
+    "key": "activities.page.update_the_stats_processing_lo",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 611,
+    "type": "jsx"
+  },
+  {
+    "original": "statsTracker.ts",
+    "key": "activities.page.statstrackerts",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 611,
+    "type": "jsx"
+  },
+  {
+    "original": "Import and call your tracking function where the activity occurs",
+    "key": "activities.page.import_and_call_your_tracking_",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 612,
+    "type": "jsx"
+  },
+  {
+    "original": "Type ID (e.g.,",
+    "key": "activities.page.type_id_eg",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 291,
+    "type": "prop"
+  },
+  {
+    "original": "Display Name",
+    "key": "activities.page.display_name",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 298,
+    "type": "prop"
+  },
+  {
+    "original": "Icon (emoji)",
+    "key": "activities.page.icon_emoji",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 305,
+    "type": "prop"
+  },
+  {
+    "original": "Stats Field Name",
+    "key": "activities.page.stats_field_name",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 312,
+    "type": "prop"
+  },
+  {
+    "original": "Enter User ID (e.g., WawMEtfq0dcoVPMr3nuwpFAzr9F2)",
+    "key": "activities.page.enter_user_id_eg_wawmetfq0dcov",
+    "file": "src/app/admin/activities/page.tsx",
+    "line": 516,
+    "type": "prop"
+  },
+  {
+    "original": "✏️",
+    "key": "account.page.",
+    "file": "src/app/account/page.tsx",
+    "line": 245,
+    "type": "jsx"
+  },
+  {
+    "original": "Account Status",
+    "key": "account.page.account_status",
+    "file": "src/app/account/page.tsx",
+    "line": 256,
+    "type": "jsx"
+  },
+  {
+    "original": "Member Since",
+    "key": "account.page.member_since",
+    "file": "src/app/account/page.tsx",
+    "line": 260,
+    "type": "jsx"
+  },
+  {
+    "original": "🛡️",
+    "key": "account.page.",
+    "file": "src/app/account/page.tsx",
+    "line": 273,
+    "type": "jsx"
+  },
+  {
+    "original": "Choose your profile thumbnail",
+    "key": "account.page.choose_your_profile_thumbnail",
+    "file": "src/app/account/page.tsx",
+    "line": 377,
+    "type": "jsx"
+  },
+  {
+    "original": "Updating...",
+    "key": "account.page.updating",
+    "file": "src/app/account/page.tsx",
+    "line": 391,
+    "type": "jsx"
+  },
+  {
+    "original": "🏮",
+    "key": "account.page.",
+    "file": "src/app/account/page.tsx",
+    "line": 435,
+    "type": "jsx"
+  },
+  {
+    "original": "Or continue with email",
+    "key": "account.page.or_continue_with_email",
+    "file": "src/app/account/page.tsx",
+    "line": 471,
+    "type": "jsx"
+  },
+  {
+    "original": "Edit avatar",
+    "key": "account.page.edit_avatar",
+    "file": "src/app/account/page.tsx",
+    "line": 242,
+    "type": "prop"
+  },
+  {
+    "original": "Close avatar picker",
+    "key": "account.page.close_avatar_picker",
+    "file": "src/app/account/page.tsx",
+    "line": 371,
+    "type": "prop"
+  },
+  {
+    "original": "Choose avatar",
+    "key": "account.page.choose_avatar",
+    "file": "src/app/account/page.tsx",
+    "line": 384,
+    "type": "prop"
+  },
+  {
+    "original": "avatar option",
+    "key": "account.page.avatar_option",
+    "file": "src/app/account/page.tsx",
+    "line": 387,
+    "type": "prop"
+  },
+  {
+    "original": "Drills:",
+    "key": "components.UsageLimitDisplay.drills",
+    "file": "src/components/UsageLimitDisplay.tsx",
+    "line": 29,
+    "type": "jsx"
+  },
+  {
+    "original": "Drills today:",
+    "key": "components.UsageLimitDisplay.drills_today",
+    "file": "src/components/UsageLimitDisplay.tsx",
+    "line": 36,
+    "type": "jsx"
+  },
+  {
+    "original": "• Limit reached",
+    "key": "components.UsageLimitDisplay._limit_reached",
+    "file": "src/components/UsageLimitDisplay.tsx",
+    "line": 72,
+    "type": "jsx"
+  },
+  {
+    "original": "• Login required to create lists",
+    "key": "components.UsageLimitDisplay._login_required_to_create_list",
+    "file": "src/components/UsageLimitDisplay.tsx",
+    "line": 50,
+    "type": "jsx"
+  },
+  {
+    "original": "Lists:",
+    "key": "components.UsageLimitDisplay.lists",
+    "file": "src/components/UsageLimitDisplay.tsx",
+    "line": 70,
+    "type": "jsx"
+  },
+  {
+    "original": "Choose Your Theme",
+    "key": "components.ThemeSelector.choose_your_theme",
+    "file": "src/components/ThemeSelector.tsx",
+    "line": 85,
+    "type": "jsx"
+  },
+  {
+    "original": "Color Scheme",
+    "key": "components.ThemeSelector.color_scheme",
+    "file": "src/components/ThemeSelector.tsx",
+    "line": 124,
+    "type": "jsx"
+  },
+  {
+    "original": "/month",
+    "key": "components.SubscriptionPlans.month",
+    "file": "src/components/SubscriptionPlans.tsx",
+    "line": 164,
+    "type": "jsx"
+  },
+  {
+    "original": "/year",
+    "key": "components.SubscriptionPlans.year",
+    "file": "src/components/SubscriptionPlans.tsx",
+    "line": 200,
+    "type": "jsx"
+  },
+  {
+    "original": "⚠️",
+    "key": "components.SubscriptionPlans.",
+    "file": "src/components/SubscriptionPlans.tsx",
+    "line": 231,
+    "type": "jsx"
+  },
+  {
+    "original": "Free Plan Limitations",
+    "key": "components.SubscriptionPlans.free_plan_limitations",
+    "file": "src/components/SubscriptionPlans.tsx",
+    "line": 233,
+    "type": "jsx"
+  },
+  {
+    "original": "• No cloud sync across devices",
+    "key": "components.SubscriptionPlans._no_cloud_sync_across_devices",
+    "file": "src/components/SubscriptionPlans.tsx",
+    "line": 237,
+    "type": "jsx"
+  },
+  {
+    "original": "• Local storage only",
+    "key": "components.SubscriptionPlans._local_storage_only",
+    "file": "src/components/SubscriptionPlans.tsx",
+    "line": 238,
+    "type": "jsx"
+  },
+  {
+    "original": "Cancel Subscription?",
+    "key": "components.SubscriptionPlans.cancel_subscription",
+    "file": "src/components/SubscriptionPlans.tsx",
+    "line": 252,
+    "type": "jsx"
+  },
+  {
+    "original": "Doshi Sensei",
+    "key": "components.SplashScreen.doshi_sensei",
+    "file": "src/components/SplashScreen.tsx",
+    "line": 54,
+    "type": "prop"
+  },
+  {
+    "original": "Resource Caching Demo",
+    "key": "components.ResourceCacheDemo.resource_caching_demo",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 227,
+    "type": "jsx"
+  },
+  {
+    "original": "Resource caching is not available for your account type.",
+    "key": "components.ResourceCacheDemo.resource_caching_is_not_availa",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 220,
+    "type": "jsx"
+  },
+  {
+    "original": "Kanji Caching",
+    "key": "components.ResourceCacheDemo.kanji_caching",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 244,
+    "type": "jsx"
+  },
+  {
+    "original": "Verb Caching",
+    "key": "components.ResourceCacheDemo.verb_caching",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 265,
+    "type": "jsx"
+  },
+  {
+    "original": "Adjective Caching",
+    "key": "components.ResourceCacheDemo.adjective_caching",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 286,
+    "type": "jsx"
+  },
+  {
+    "original": "Audio Caching",
+    "key": "components.ResourceCacheDemo.audio_caching",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 307,
+    "type": "jsx"
+  },
+  {
+    "original": "Cache Statistics",
+    "key": "components.ResourceCacheDemo.cache_statistics",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 329,
+    "type": "jsx"
+  },
+  {
+    "original": "Current Cache Stats:",
+    "key": "components.ResourceCacheDemo.current_cache_stats",
+    "file": "src/components/ResourceCacheDemo.tsx",
+    "line": 349,
+    "type": "jsx"
+  },
+  {
+    "original": "Tips:",
+    "key": "components.PageHelpIcon.tips",
+    "file": "src/components/PageHelpIcon.tsx",
+    "line": 60,
+    "type": "jsx"
+  },
+  {
+    "original": "Page help",
+    "key": "components.PageHelpIcon.page_help",
+    "file": "src/components/PageHelpIcon.tsx",
+    "line": 33,
+    "type": "prop"
+  },
+  {
+    "original": "Go back",
+    "key": "components.PageHeader.go_back",
+    "file": "src/components/PageHeader.tsx",
+    "line": 35,
+    "type": "prop"
+  },
+  {
+    "original": "You're back online!",
+    "key": "components.OfflineNotification.youre_back_online",
+    "file": "src/components/OfflineNotification.tsx",
+    "line": 59,
+    "type": "jsx"
+  },
+  {
+    "original": "No internet connection. Some features may be limited.",
+    "key": "components.OfflineNotification.no_internet_connection_some_fe",
+    "file": "src/components/OfflineNotification.tsx",
+    "line": 68,
+    "type": "jsx"
+  },
+  {
+    "original": "🏮",
+    "key": "components.MobileMenu.",
+    "file": "src/components/MobileMenu.tsx",
+    "line": 195,
+    "type": "jsx"
+  },
+  {
+    "original": "Toggle menu",
+    "key": "components.MobileMenu.toggle_menu",
+    "file": "src/components/MobileMenu.tsx",
+    "line": 75,
+    "type": "prop"
+  },
+  {
+    "original": "Close menu",
+    "key": "components.MobileMenu.close_menu",
+    "file": "src/components/MobileMenu.tsx",
+    "line": 110,
+    "type": "prop"
+  },
+  {
+    "original": "Doshi Sensei",
+    "key": "components.MobileHome.doshi_sensei",
+    "file": "src/components/MobileHome.tsx",
+    "line": 95,
+    "type": "prop"
+  },
+  {
+    "original": "Days Used",
+    "key": "components.MobileHome.days_used",
+    "file": "src/components/MobileHome.tsx",
+    "line": 108,
+    "type": "prop"
+  },
+  {
+    "original": "🔑",
+    "key": "components.LoginPromptModal.",
+    "file": "src/components/LoginPromptModal.tsx",
+    "line": 31,
+    "type": "jsx"
+  },
+  {
+    "original": "e.g., JLPT N5 Verbs, Cooking Terms",
+    "key": "components.ListSelectionModal.eg_jlpt_n5_verbs_cooking_terms",
+    "file": "src/components/ListSelectionModal.tsx",
+    "line": 177,
+    "type": "prop"
+  },
+  {
+    "original": "Brief description of this list...",
+    "key": "components.ListSelectionModal.brief_description_of_this_list",
+    "file": "src/components/ListSelectionModal.tsx",
+    "line": 190,
+    "type": "prop"
+  },
+  {
+    "original": "⚠️",
+    "key": "components.ErrorBoundarySubscription.",
+    "file": "src/components/ErrorBoundarySubscription.tsx",
+    "line": 75,
+    "type": "jsx"
+  },
+  {
+    "original": "Guest Access Available:",
+    "key": "components.ErrorBoundarySubscription.guest_access_available",
+    "file": "src/components/ErrorBoundarySubscription.tsx",
+    "line": 86,
+    "type": "jsx"
+  },
+  {
+    "original": "Processing...",
+    "key": "components.DonationModal.processing",
+    "file": "src/components/DonationModal.tsx",
+    "line": 190,
+    "type": "jsx"
+  },
+  {
+    "original": "🏮",
+    "key": "components.DesktopNavMenu.",
+    "file": "src/components/DesktopNavMenu.tsx",
+    "line": 167,
+    "type": "jsx"
+  },
+  {
+    "original": "Virtual Companion",
+    "key": "components.CompanionTrigger.virtual_companion",
+    "file": "src/components/CompanionTrigger.tsx",
+    "line": 44,
+    "type": "prop"
+  },
+  {
+    "original": "Save sentence",
+    "key": "vocabulary.ExampleSentencesBlock.save_sentence",
+    "file": "src/components/vocabulary/ExampleSentencesBlock.tsx",
+    "line": 78,
+    "type": "prop"
+  },
+  {
+    "original": "Close notification",
+    "key": "ui.Toast.close_notification",
+    "file": "src/components/ui/Toast.tsx",
+    "line": 82,
+    "type": "prop"
+  },
+  {
+    "original": "🎯",
+    "key": "ui.ConfirmationDialog.",
+    "file": "src/components/ui/ConfirmationDialog.tsx",
+    "line": 145,
+    "type": "jsx"
+  },
+  {
+    "original": "Reading Settings",
+    "key": "story.StoryReader.reading_settings",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 672,
+    "type": "jsx"
+  },
+  {
+    "original": "Font Size",
+    "key": "story.StoryReader.font_size",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 89,
+    "type": "jsx"
+  },
+  {
+    "original": "Show Furigana",
+    "key": "story.StoryReader.show_furigana",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 108,
+    "type": "jsx"
+  },
+  {
+    "original": "Highlight Vocabulary",
+    "key": "story.StoryReader.highlight_vocabulary",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 123,
+    "type": "jsx"
+  },
+  {
+    "original": "Highlight Mode",
+    "key": "story.StoryReader.highlight_mode",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 139,
+    "type": "jsx"
+  },
+  {
+    "original": "Story Quiz",
+    "key": "story.StoryReader.story_quiz",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 475,
+    "type": "jsx"
+  },
+  {
+    "original": "Back to Stories",
+    "key": "story.StoryReader.back_to_stories",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 591,
+    "type": "jsx"
+  },
+  {
+    "original": "🔊",
+    "key": "story.StoryReader.",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 620,
+    "type": "jsx"
+  },
+  {
+    "original": "Play Audio",
+    "key": "story.StoryReader.play_audio",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 622,
+    "type": "jsx"
+  },
+  {
+    "original": "Listen to this page",
+    "key": "story.StoryReader.listen_to_this_page",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 623,
+    "type": "jsx"
+  },
+  {
+    "original": "🎯",
+    "key": "story.StoryReader.",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 635,
+    "type": "jsx"
+  },
+  {
+    "original": "Comprehension Quiz",
+    "key": "story.StoryReader.comprehension_quiz",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 637,
+    "type": "jsx"
+  },
+  {
+    "original": "Test your understanding",
+    "key": "story.StoryReader.test_your_understanding",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 638,
+    "type": "jsx"
+  },
+  {
+    "original": "⚙️",
+    "key": "story.StoryReader.",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 670,
+    "type": "jsx"
+  },
+  {
+    "original": "Font size, furigana, etc.",
+    "key": "story.StoryReader.font_size_furigana_etc",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 673,
+    "type": "jsx"
+  },
+  {
+    "original": "Translation:",
+    "key": "story.StoryReader.translation",
+    "file": "src/components/story/StoryReader.tsx",
+    "line": 784,
+    "type": "jsx"
+  },
+  {
+    "original": "Streak:",
+    "key": "stats.StatsDebugPanel.streak",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 108,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Days:",
+    "key": "stats.StatsDebugPanel.total_days",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 111,
+    "type": "jsx"
+  },
+  {
+    "original": "Drills:",
+    "key": "stats.StatsDebugPanel.drills",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 114,
+    "type": "jsx"
+  },
+  {
+    "original": "Stories:",
+    "key": "stats.StatsDebugPanel.stories",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 117,
+    "type": "jsx"
+  },
+  {
+    "original": "Accuracy:",
+    "key": "stats.StatsDebugPanel.accuracy",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 120,
+    "type": "jsx"
+  },
+  {
+    "original": "Version:",
+    "key": "stats.StatsDebugPanel.version",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 123,
+    "type": "jsx"
+  },
+  {
+    "original": "Enable debug mode",
+    "key": "stats.StatsDebugPanel.enable_debug_mode",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 77,
+    "type": "prop"
+  },
+  {
+    "original": "Close debug panel",
+    "key": "stats.StatsDebugPanel.close_debug_panel",
+    "file": "src/components/stats/StatsDebugPanel.tsx",
+    "line": 93,
+    "type": "prop"
+  },
+  {
+    "original": "Pokéball",
+    "key": "stats.StatsBar.pokball",
+    "file": "src/components/stats/StatsBar.tsx",
+    "line": 108,
+    "type": "prop"
+  },
+  {
+    "original": "Pokémon",
+    "key": "stats.StatsBar.pokmon",
+    "file": "src/components/stats/StatsBar.tsx",
+    "line": 112,
+    "type": "prop"
+  },
+  {
+    "original": "Active Days",
+    "key": "stats.StatsBar.active_days",
+    "file": "src/components/stats/StatsBar.tsx",
+    "line": 178,
+    "type": "prop"
+  },
+  {
+    "original": "📚",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 148,
+    "type": "jsx"
+  },
+  {
+    "original": "理解度テストを準備中...",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 149,
+    "type": "jsx"
+  },
+  {
+    "original": "正答数",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 186,
+    "type": "jsx"
+  },
+  {
+    "original": "所要時間",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 192,
+    "type": "jsx"
+  },
+  {
+    "original": "回答結果",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 199,
+    "type": "jsx"
+  },
+  {
+    "original": "• 記事をもう一度ゆっくり読み返してみましょう",
+    "key": "reading.ComprehensionQuiz._",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 239,
+    "type": "jsx"
+  },
+  {
+    "original": "• 分からない単語を辞書で調べてみましょう",
+    "key": "reading.ComprehensionQuiz._",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 240,
+    "type": "jsx"
+  },
+  {
+    "original": "• 同じレベルの記事をもっと読んで慣れましょう",
+    "key": "reading.ComprehensionQuiz._",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 241,
+    "type": "jsx"
+  },
+  {
+    "original": "理解度テスト",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 272,
+    "type": "jsx"
+  },
+  {
+    "original": "💡",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 385,
+    "type": "jsx"
+  },
+  {
+    "original": "解説",
+    "key": "reading.ComprehensionQuiz.",
+    "file": "src/components/reading/ComprehensionQuiz.tsx",
+    "line": 387,
+    "type": "jsx"
+  },
+  {
+    "original": "') && text.includes('",
+    "key": "reading.ArticleReader._textincludes",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 39,
+    "type": "jsx"
+  },
+  {
+    "original": "漢字",
+    "key": "reading.ArticleReader.",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 43,
+    "type": "jsx"
+  },
+  {
+    "original": "かんじ",
+    "key": "reading.ArticleReader.",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 43,
+    "type": "jsx"
+  },
+  {
+    "original": "$1",
+    "key": "reading.ArticleReader.1",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 621,
+    "type": "jsx"
+  },
+  {
+    "original": "$2",
+    "key": "reading.ArticleReader.2",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 45,
+    "type": "jsx"
+  },
+  {
+    "original": "Searching...",
+    "key": "reading.ArticleReader.searching",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 142,
+    "type": "jsx"
+  },
+  {
+    "original": "Reading Settings",
+    "key": "reading.ArticleReader.reading_settings",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 879,
+    "type": "jsx"
+  },
+  {
+    "original": "Highlight Mode:",
+    "key": "reading.ArticleReader.highlight_mode",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 288,
+    "type": "jsx"
+  },
+  {
+    "original": "= 100 && readingProgress",
+    "key": "reading.ArticleReader._100_readingprogress",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 541,
+    "type": "jsx"
+  },
+  {
+    "original": "Back to Articles",
+    "key": "reading.ArticleReader.back_to_articles",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 796,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "reading.ArticleReader.",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 824,
+    "type": "jsx"
+  },
+  {
+    "original": "Audio Reader",
+    "key": "reading.ArticleReader.audio_reader",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 826,
+    "type": "jsx"
+  },
+  {
+    "original": "Open immersive reading mode",
+    "key": "reading.ArticleReader.open_immersive_reading_mode",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 827,
+    "type": "jsx"
+  },
+  {
+    "original": "🎯",
+    "key": "reading.ArticleReader.",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 1170,
+    "type": "jsx"
+  },
+  {
+    "original": "Comprehension Quiz",
+    "key": "reading.ArticleReader.comprehension_quiz",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 842,
+    "type": "jsx"
+  },
+  {
+    "original": "⚙️",
+    "key": "reading.ArticleReader.",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 877,
+    "type": "jsx"
+  },
+  {
+    "original": "Font size, furigana, etc.",
+    "key": "reading.ArticleReader.font_size_furigana_etc",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 880,
+    "type": "jsx"
+  },
+  {
+    "original": "Processing content...",
+    "key": "reading.ArticleReader.processing_content",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 995,
+    "type": "jsx"
+  },
+  {
+    "original": "⚠️",
+    "key": "reading.ArticleReader.",
+    "file": "src/components/reading/ArticleReader.tsx",
+    "line": 1076,
+    "type": "jsx"
+  },
+  {
+    "original": "= 0 && index",
+    "key": "reading.ArticleAudioPlayer._0_index",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 285,
+    "type": "jsx"
+  },
+  {
+    "original": "📚 Audio Reader",
+    "key": "reading.ArticleAudioPlayer._audio_reader",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 320,
+    "type": "jsx"
+  },
+  {
+    "original": "📝 Sentences",
+    "key": "reading.ArticleAudioPlayer._sentences",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 336,
+    "type": "jsx"
+  },
+  {
+    "original": "📚 Key Vocabulary",
+    "key": "reading.ArticleAudioPlayer._key_vocabulary",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 413,
+    "type": "jsx"
+  },
+  {
+    "original": "0.5x",
+    "key": "reading.ArticleAudioPlayer.05x",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 499,
+    "type": "jsx"
+  },
+  {
+    "original": "0.75x",
+    "key": "reading.ArticleAudioPlayer.075x",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 500,
+    "type": "jsx"
+  },
+  {
+    "original": "1.0x",
+    "key": "reading.ArticleAudioPlayer.10x",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 501,
+    "type": "jsx"
+  },
+  {
+    "original": "1.25x",
+    "key": "reading.ArticleAudioPlayer.125x",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 502,
+    "type": "jsx"
+  },
+  {
+    "original": "1.5x",
+    "key": "reading.ArticleAudioPlayer.15x",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 503,
+    "type": "jsx"
+  },
+  {
+    "original": "2.0x",
+    "key": "reading.ArticleAudioPlayer.20x",
+    "file": "src/components/reading/ArticleAudioPlayer.tsx",
+    "line": 504,
+    "type": "jsx"
+  },
+  {
+    "original": "Close tutorial",
+    "key": "onboarding.OnboardingModal.close_tutorial",
+    "file": "src/components/onboarding/OnboardingModal.tsx",
+    "line": 104,
+    "type": "prop"
+  },
+  {
+    "original": "Previous screen",
+    "key": "onboarding.OnboardingModal.previous_screen",
+    "file": "src/components/onboarding/OnboardingModal.tsx",
+    "line": 143,
+    "type": "prop"
+  },
+  {
+    "original": "Next screen",
+    "key": "onboarding.OnboardingModal.next_screen",
+    "file": "src/components/onboarding/OnboardingModal.tsx",
+    "line": 160,
+    "type": "prop"
+  },
+  {
+    "original": "Loading...",
+    "key": "screens.WelcomeScreen.loading",
+    "file": "src/components/onboarding/screens/WelcomeScreen.tsx",
+    "line": 15,
+    "type": "jsx"
+  },
+  {
+    "original": "🗾",
+    "key": "screens.WelcomeScreen.",
+    "file": "src/components/onboarding/screens/WelcomeScreen.tsx",
+    "line": 22,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading...",
+    "key": "screens.SuccessScreen.loading",
+    "file": "src/components/onboarding/screens/SuccessScreen.tsx",
+    "line": 20,
+    "type": "jsx"
+  },
+  {
+    "original": "🎌",
+    "key": "screens.SuccessScreen.",
+    "file": "src/components/onboarding/screens/SuccessScreen.tsx",
+    "line": 61,
+    "type": "jsx"
+  },
+  {
+    "original": "🌟",
+    "key": "screens.SuccessScreen.",
+    "file": "src/components/onboarding/screens/SuccessScreen.tsx",
+    "line": 62,
+    "type": "jsx"
+  },
+  {
+    "original": "Learning Preferences:",
+    "key": "screens.SuccessScreen.learning_preferences",
+    "file": "src/components/onboarding/screens/SuccessScreen.tsx",
+    "line": 156,
+    "type": "jsx"
+  },
+  {
+    "original": "Show Romaji",
+    "key": "screens.SuccessScreen.show_romaji",
+    "file": "src/components/onboarding/screens/SuccessScreen.tsx",
+    "line": 159,
+    "type": "jsx"
+  },
+  {
+    "original": "Preview:",
+    "key": "screens.SuccessScreen.preview",
+    "file": "src/components/onboarding/screens/SuccessScreen.tsx",
+    "line": 187,
+    "type": "jsx"
+  },
+  {
+    "original": "\"to eat\"",
+    "key": "screens.SuccessScreen.to_eat",
+    "file": "src/components/onboarding/screens/SuccessScreen.tsx",
+    "line": 195,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading...",
+    "key": "screens.PracticeScreen.loading",
+    "file": "src/components/onboarding/screens/PracticeScreen.tsx",
+    "line": 23,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "screens.PracticeScreen.",
+    "file": "src/components/onboarding/screens/PracticeScreen.tsx",
+    "line": 82,
+    "type": "jsx"
+  },
+  {
+    "original": "🤔",
+    "key": "screens.PracticeScreen.",
+    "file": "src/components/onboarding/screens/PracticeScreen.tsx",
+    "line": 106,
+    "type": "jsx"
+  },
+  {
+    "original": "🏆",
+    "key": "screens.PracticeScreen.",
+    "file": "src/components/onboarding/screens/PracticeScreen.tsx",
+    "line": 216,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading...",
+    "key": "screens.ListsScreen.loading",
+    "file": "src/components/onboarding/screens/ListsScreen.tsx",
+    "line": 19,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading...",
+    "key": "screens.ConjugationScreen.loading",
+    "file": "src/components/onboarding/screens/ConjugationScreen.tsx",
+    "line": 19,
+    "type": "jsx"
+  },
+  {
+    "original": "🎉",
+    "key": "kanji-moods.MoodBoard.",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 175,
+    "type": "jsx"
+  },
+  {
+    "original": "Congratulations! You've completed this mood board!",
+    "key": "kanji-moods.MoodBoard.congratulations_youve_complete",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 176,
+    "type": "jsx"
+  },
+  {
+    "original": "💡",
+    "key": "kanji-moods.MoodBoard.",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 201,
+    "type": "jsx"
+  },
+  {
+    "original": "• Click the Study button to test your knowledge of all kanji",
+    "key": "kanji-moods.MoodBoard._click_the_study_button_to_tes",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 205,
+    "type": "jsx"
+  },
+  {
+    "original": "• Tap any kanji card to see its readings and example words",
+    "key": "kanji-moods.MoodBoard._tap_any_kanji_card_to_see_its",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 206,
+    "type": "jsx"
+  },
+  {
+    "original": "• Mark kanji as learned by clicking the circle button",
+    "key": "kanji-moods.MoodBoard._mark_kanji_as_learned_by_clic",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 207,
+    "type": "jsx"
+  },
+  {
+    "original": "• Try to find connections between kanji in this theme",
+    "key": "kanji-moods.MoodBoard._try_to_find_connections_betwe",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 208,
+    "type": "jsx"
+  },
+  {
+    "original": "• Practice writing the kanji to improve memorization",
+    "key": "kanji-moods.MoodBoard._practice_writing_the_kanji_to",
+    "file": "src/components/kanji-moods/MoodBoard.tsx",
+    "line": 209,
+    "type": "jsx"
+  },
+  {
+    "original": "🎉",
+    "key": "kanji-moods.KanjiStudyModal.",
+    "file": "src/components/kanji-moods/KanjiStudyModal.tsx",
+    "line": 433,
+    "type": "jsx"
+  },
+  {
+    "original": "Study Session Complete!",
+    "key": "kanji-moods.KanjiStudyModal.study_session_complete",
+    "file": "src/components/kanji-moods/KanjiStudyModal.tsx",
+    "line": 434,
+    "type": "jsx"
+  },
+  {
+    "original": ".*?",
+    "key": "kanji-moods.KanjiModal.",
+    "file": "src/components/kanji-moods/KanjiModal.tsx",
+    "line": 70,
+    "type": "jsx"
+  },
+  {
+    "original": "ふりがな",
+    "key": "kanji-moods.KanjiModal.",
+    "file": "src/components/kanji-moods/KanjiModal.tsx",
+    "line": 199,
+    "type": "jsx"
+  },
+  {
+    "original": "Close modal",
+    "key": "kanji-moods.KanjiModal.close_modal",
+    "file": "src/components/kanji-moods/KanjiModal.tsx",
+    "line": 99,
+    "type": "prop"
+  },
+  {
+    "original": "Play pronunciation",
+    "key": "kanji-moods.KanjiModal.play_pronunciation",
+    "file": "src/components/kanji-moods/KanjiModal.tsx",
+    "line": 126,
+    "type": "prop"
+  },
+  {
+    "original": "Toggle furigana",
+    "key": "kanji-moods.KanjiModal.toggle_furigana",
+    "file": "src/components/kanji-moods/KanjiModal.tsx",
+    "line": 205,
+    "type": "prop"
+  },
+  {
+    "original": "No on'yomi readings",
+    "key": "kanji.KanjiModal.no_onyomi_readings",
+    "file": "src/components/kanji/KanjiModal.tsx",
+    "line": 128,
+    "type": "jsx"
+  },
+  {
+    "original": "No kun'yomi readings",
+    "key": "kanji.KanjiModal.no_kunyomi_readings",
+    "file": "src/components/kanji/KanjiModal.tsx",
+    "line": 156,
+    "type": "jsx"
+  },
+  {
+    "original": "Add to Study Session",
+    "key": "kanji.KanjiModal.add_to_study_session",
+    "file": "src/components/kanji/KanjiModal.tsx",
+    "line": 186,
+    "type": "jsx"
+  },
+  {
+    "original": "What is the romaji for this character?",
+    "key": "kana.KanaStudyModal.what_is_the_romaji_for_this_ch",
+    "file": "src/components/kana/KanaStudyModal.tsx",
+    "line": 181,
+    "type": "jsx"
+  },
+  {
+    "original": "Did you get it right?",
+    "key": "kana.KanaStudyModal.did_you_get_it_right",
+    "file": "src/components/kana/KanaStudyModal.tsx",
+    "line": 202,
+    "type": "jsx"
+  },
+  {
+    "original": "Pokédex",
+    "key": "games.PokedexModal.pokdex",
+    "file": "src/components/games/PokedexModal.tsx",
+    "line": 313,
+    "type": "prop"
+  },
+  {
+    "original": "Caught on",
+    "key": "games.PokedexModal.caught_on",
+    "file": "src/components/games/PokedexModal.tsx",
+    "line": 472,
+    "type": "jsx"
+  },
+  {
+    "original": "No Pokémon",
+    "key": "games.PokedexModal.no_pokmon",
+    "file": "src/components/games/PokedexModal.tsx",
+    "line": 180,
+    "type": "prop"
+  },
+  {
+    "original": "Load more",
+    "key": "games.PokedexModal.load_more",
+    "file": "src/components/games/PokedexModal.tsx",
+    "line": 265,
+    "type": "prop"
+  },
+  {
+    "original": "Pokéball",
+    "key": "games.PokedexModal.pokball",
+    "file": "src/components/games/PokedexModal.tsx",
+    "line": 321,
+    "type": "prop"
+  },
+  {
+    "original": "💡",
+    "key": "games.KanjiQuestTutorialModal.",
+    "file": "src/components/games/KanjiQuestTutorialModal.tsx",
+    "line": 202,
+    "type": "jsx"
+  },
+  {
+    "original": "• Multiple readings are shown together (up to 4)",
+    "key": "games.KanjiQuestTutorialModal._multiple_readings_are_shown_t",
+    "file": "src/components/games/KanjiQuestTutorialModal.tsx",
+    "line": 205,
+    "type": "jsx"
+  },
+  {
+    "original": "• Each kanji appears multiple times until fully mastered",
+    "key": "games.KanjiQuestTutorialModal._each_kanji_appears_multiple_t",
+    "file": "src/components/games/KanjiQuestTutorialModal.tsx",
+    "line": 206,
+    "type": "jsx"
+  },
+  {
+    "original": "• Wrong answers don't progress - you must get it right!",
+    "key": "games.KanjiQuestTutorialModal._wrong_answers_dont_progress_y",
+    "file": "src/components/games/KanjiQuestTutorialModal.tsx",
+    "line": 207,
+    "type": "jsx"
+  },
+  {
+    "original": "• The number of encounters = total questions for all kanji",
+    "key": "games.KanjiQuestTutorialModal._the_number_of_encounters_tota",
+    "file": "src/components/games/KanjiQuestTutorialModal.tsx",
+    "line": 208,
+    "type": "jsx"
+  },
+  {
+    "original": "Maybe Later",
+    "key": "games.KanjiQuestTutorialModal.maybe_later",
+    "file": "src/components/games/KanjiQuestTutorialModal.tsx",
+    "line": 223,
+    "type": "jsx"
+  },
+  {
+    "original": "Let's Battle!",
+    "key": "games.KanjiQuestTutorialModal.lets_battle",
+    "file": "src/components/games/KanjiQuestTutorialModal.tsx",
+    "line": 231,
+    "type": "jsx"
+  },
+  {
+    "original": "Daily Limit Reached!",
+    "key": "games.KanjiQuest.daily_limit_reached",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1364,
+    "type": "jsx"
+  },
+  {
+    "original": "No Kanji Provided",
+    "key": "games.KanjiQuest.no_kanji_provided",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1385,
+    "type": "jsx"
+  },
+  {
+    "original": "Select Kanji to Battle",
+    "key": "games.KanjiQuest.select_kanji_to_battle",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1401,
+    "type": "jsx"
+  },
+  {
+    "original": "Choose 3-5 kanji to practice with",
+    "key": "games.KanjiQuest.choose_35_kanji_to_practice_wi",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1419,
+    "type": "jsx"
+  },
+  {
+    "original": "A wild Pokémon appeared!",
+    "key": "games.KanjiQuest.a_wild_pokmon_appeared",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1654,
+    "type": "jsx"
+  },
+  {
+    "original": "Battle Arena",
+    "key": "games.KanjiQuest.battle_arena",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1774,
+    "type": "jsx"
+  },
+  {
+    "original": "Lv.50",
+    "key": "games.KanjiQuest.lv50",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1854,
+    "type": "jsx"
+  },
+  {
+    "original": "🥋",
+    "key": "games.KanjiQuest.",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1987,
+    "type": "jsx"
+  },
+  {
+    "original": "Kanji Defeated!",
+    "key": "games.KanjiQuest.kanji_defeated",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2071,
+    "type": "jsx"
+  },
+  {
+    "original": "Incorrect!",
+    "key": "games.KanjiQuest.incorrect",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2117,
+    "type": "jsx"
+  },
+  {
+    "original": "The correct answer was:",
+    "key": "games.KanjiQuest.the_correct_answer_was",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2120,
+    "type": "jsx"
+  },
+  {
+    "original": "Readings:",
+    "key": "games.KanjiQuest.readings",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2137,
+    "type": "jsx"
+  },
+  {
+    "original": "This kanji is used in vocabulary words",
+    "key": "games.KanjiQuest.this_kanji_is_used_in_vocabula",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2148,
+    "type": "jsx"
+  },
+  {
+    "original": "Study Phase",
+    "key": "games.KanjiQuest.study_phase",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2312,
+    "type": "jsx"
+  },
+  {
+    "original": "Sample Words",
+    "key": "games.KanjiQuest.sample_words",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2395,
+    "type": "jsx"
+  },
+  {
+    "original": "Training Ground Quiz",
+    "key": "games.KanjiQuest.training_ground_quiz",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2469,
+    "type": "jsx"
+  },
+  {
+    "original": "Gotcha! 🎉",
+    "key": "games.KanjiQuest.gotcha_",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2578,
+    "type": "jsx"
+  },
+  {
+    "original": "Pokéball",
+    "key": "games.KanjiQuest.pokball",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1361,
+    "type": "prop"
+  },
+  {
+    "original": "Wild Pokémon",
+    "key": "games.KanjiQuest.wild_pokmon",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 1888,
+    "type": "prop"
+  },
+  {
+    "original": "Wrong answer",
+    "key": "games.KanjiQuest.wrong_answer",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2114,
+    "type": "prop"
+  },
+  {
+    "original": "Answer icon",
+    "key": "games.KanjiQuest.answer_icon",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2278,
+    "type": "prop"
+  },
+  {
+    "original": "Caught Pokémon",
+    "key": "games.KanjiQuest.caught_pokmon",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2621,
+    "type": "prop"
+  },
+  {
+    "original": "Escaped Pokémon",
+    "key": "games.KanjiQuest.escaped_pokmon",
+    "file": "src/components/games/KanjiQuest.tsx",
+    "line": 2663,
+    "type": "prop"
+  },
+  {
+    "original": "Loading...",
+    "key": "SentenceScrambleGame.SentenceScrambleModal.loading",
+    "file": "src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",
+    "line": 588,
+    "type": "jsx"
+  },
+  {
+    "original": "👀",
+    "key": "SentenceScrambleGame.SentenceScrambleModal.",
+    "file": "src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",
+    "line": 681,
+    "type": "jsx"
+  },
+  {
+    "original": "🔤",
+    "key": "SentenceScrambleGame.SentenceScrambleModal.",
+    "file": "src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",
+    "line": 689,
+    "type": "jsx"
+  },
+  {
+    "original": "🎯",
+    "key": "SentenceScrambleGame.SentenceScrambleModal.",
+    "file": "src/components/games/SentenceScrambleGame/SentenceScrambleModal.tsx",
+    "line": 889,
+    "type": "jsx"
+  },
+  {
+    "original": "Moves to Complete",
+    "key": "MatchingGame.VictoryScreen.moves_to_complete",
+    "file": "src/components/games/MatchingGame/VictoryScreen.tsx",
+    "line": 84,
+    "type": "jsx"
+  },
+  {
+    "original": "💥",
+    "key": "MatchingGame.Tile.",
+    "file": "src/components/games/MatchingGame/Tile.tsx",
+    "line": 135,
+    "type": "jsx"
+  },
+  {
+    "original": "Tile back",
+    "key": "MatchingGame.Tile.tile_back",
+    "file": "src/components/games/MatchingGame/Tile.tsx",
+    "line": 51,
+    "type": "prop"
+  },
+  {
+    "original": "Reset game",
+    "key": "MatchingGame.MatchingGameModal.reset_game",
+    "file": "src/components/games/MatchingGame/MatchingGameModal.tsx",
+    "line": 377,
+    "type": "prop"
+  },
+  {
+    "original": "Close game",
+    "key": "MatchingGame.MatchingGameModal.close_game",
+    "file": "src/components/games/MatchingGame/MatchingGameModal.tsx",
+    "line": 384,
+    "type": "prop"
+  },
+  {
+    "original": "🎮",
+    "key": "MatchingGame.InstructionScreen.",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 44,
+    "type": "jsx"
+  },
+  {
+    "original": "1.",
+    "key": "MatchingGame.InstructionScreen.1",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 49,
+    "type": "jsx"
+  },
+  {
+    "original": "Tap any tile to reveal what's hidden underneath",
+    "key": "MatchingGame.InstructionScreen.tap_any_tile_to_reveal_whats_h",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 50,
+    "type": "jsx"
+  },
+  {
+    "original": "2.",
+    "key": "MatchingGame.InstructionScreen.2",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 53,
+    "type": "jsx"
+  },
+  {
+    "original": "• Same word twice",
+    "key": "MatchingGame.InstructionScreen._same_word_twice",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 56,
+    "type": "jsx"
+  },
+  {
+    "original": "• Word and its reading (kana)",
+    "key": "MatchingGame.InstructionScreen._word_and_its_reading_kana",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 57,
+    "type": "jsx"
+  },
+  {
+    "original": "• Word and its meaning",
+    "key": "MatchingGame.InstructionScreen._word_and_its_meaning",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 58,
+    "type": "jsx"
+  },
+  {
+    "original": "3.",
+    "key": "MatchingGame.InstructionScreen.3",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 63,
+    "type": "jsx"
+  },
+  {
+    "original": "Clear all pairs to win the game!",
+    "key": "MatchingGame.InstructionScreen.clear_all_pairs_to_win_the_gam",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 64,
+    "type": "jsx"
+  },
+  {
+    "original": "4.",
+    "key": "MatchingGame.InstructionScreen.4",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 67,
+    "type": "jsx"
+  },
+  {
+    "original": "Try to complete with as few moves as possible",
+    "key": "MatchingGame.InstructionScreen.try_to_complete_with_as_few_mo",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 68,
+    "type": "jsx"
+  },
+  {
+    "original": "Pairs to Match",
+    "key": "MatchingGame.InstructionScreen.pairs_to_match",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 77,
+    "type": "jsx"
+  },
+  {
+    "original": "💡 Tip:",
+    "key": "MatchingGame.InstructionScreen._tip",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 84,
+    "type": "jsx"
+  },
+  {
+    "original": "ℹ️ Note:",
+    "key": "MatchingGame.InstructionScreen._note",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 92,
+    "type": "jsx"
+  },
+  {
+    "original": "Matching Game",
+    "key": "MatchingGame.InstructionScreen.matching_game",
+    "file": "src/components/games/MatchingGame/InstructionScreen.tsx",
+    "line": 29,
+    "type": "prop"
+  },
+  {
+    "original": "Victory!",
+    "key": "KanaDropGame.VictoryScreen.victory",
+    "file": "src/components/games/KanaDropGame/VictoryScreen.tsx",
+    "line": 63,
+    "type": "jsx"
+  },
+  {
+    "original": "You've mastered the kana challenge!",
+    "key": "KanaDropGame.VictoryScreen.youve_mastered_the_kana_challe",
+    "file": "src/components/games/KanaDropGame/VictoryScreen.tsx",
+    "line": 64,
+    "type": "jsx"
+  },
+  {
+    "original": "Final Score",
+    "key": "KanaDropGame.VictoryScreen.final_score",
+    "file": "src/components/games/KanaDropGame/VictoryScreen.tsx",
+    "line": 69,
+    "type": "jsx"
+  },
+  {
+    "original": "Time Taken",
+    "key": "KanaDropGame.VictoryScreen.time_taken",
+    "file": "src/components/games/KanaDropGame/VictoryScreen.tsx",
+    "line": 73,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Clicks",
+    "key": "KanaDropGame.VictoryScreen.total_clicks",
+    "file": "src/components/games/KanaDropGame/VictoryScreen.tsx",
+    "line": 81,
+    "type": "jsx"
+  },
+  {
+    "original": "Select Kana for Kana Drop",
+    "key": "KanaDropGame.KanaDropModal.select_kana_for_kana_drop",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 456,
+    "type": "jsx"
+  },
+  {
+    "original": "Show Romaji",
+    "key": "KanaDropGame.KanaDropModal.show_romaji",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 504,
+    "type": "jsx"
+  },
+  {
+    "original": "How to Play Kana Drop",
+    "key": "KanaDropGame.KanaDropModal.how_to_play_kana_drop",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 585,
+    "type": "jsx"
+  },
+  {
+    "original": "• Score",
+    "key": "KanaDropGame.KanaDropModal._score",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 587,
+    "type": "jsx"
+  },
+  {
+    "original": "100 points",
+    "key": "KanaDropGame.KanaDropModal.100_points",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 587,
+    "type": "jsx"
+  },
+  {
+    "original": "to win!",
+    "key": "KanaDropGame.KanaDropModal.to_win",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 587,
+    "type": "jsx"
+  },
+  {
+    "original": "• Click any falling kana that matches your selected characters.",
+    "key": "KanaDropGame.KanaDropModal._click_any_falling_kana_that_m",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 588,
+    "type": "jsx"
+  },
+  {
+    "original": "• Avoid clicking distractors (images or symbols).",
+    "key": "KanaDropGame.KanaDropModal._avoid_clicking_distractors_im",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 589,
+    "type": "jsx"
+  },
+  {
+    "original": "• Each correct kana:",
+    "key": "KanaDropGame.KanaDropModal._each_correct_kana",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 590,
+    "type": "jsx"
+  },
+  {
+    "original": "+5",
+    "key": "KanaDropGame.KanaDropModal.5",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 771,
+    "type": "jsx"
+  },
+  {
+    "original": "• Each distractor:",
+    "key": "KanaDropGame.KanaDropModal._each_distractor",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 591,
+    "type": "jsx"
+  },
+  {
+    "original": "• Each wrong kana:",
+    "key": "KanaDropGame.KanaDropModal._each_wrong_kana",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 592,
+    "type": "jsx"
+  },
+  {
+    "original": "Your Selected Kana:",
+    "key": "KanaDropGame.KanaDropModal.your_selected_kana",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 595,
+    "type": "jsx"
+  },
+  {
+    "original": "Selected Kana:",
+    "key": "KanaDropGame.KanaDropModal.selected_kana",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 758,
+    "type": "jsx"
+  },
+  {
+    "original": "Correct kana",
+    "key": "KanaDropGame.KanaDropModal.correct_kana",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 772,
+    "type": "jsx"
+  },
+  {
+    "original": "Missed target / Wrong kana",
+    "key": "KanaDropGame.KanaDropModal.missed_target_wrong_kana",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 776,
+    "type": "jsx"
+  },
+  {
+    "original": "Distractor click",
+    "key": "KanaDropGame.KanaDropModal.distractor_click",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 780,
+    "type": "jsx"
+  },
+  {
+    "original": "Game Paused",
+    "key": "KanaDropGame.KanaDropModal.game_paused",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 827,
+    "type": "jsx"
+  },
+  {
+    "original": "Close Game",
+    "key": "KanaDropGame.KanaDropModal.close_game",
+    "file": "src/components/games/KanaDropGame/KanaDropModal.tsx",
+    "line": 685,
+    "type": "prop"
+  },
+  {
+    "original": "Game Over!",
+    "key": "KanaDropGame.GameCanvas.game_over",
+    "file": "src/components/games/KanaDropGame/GameCanvas.tsx",
+    "line": 369,
+    "type": "jsx"
+  },
+  {
+    "original": "Tap to flip",
+    "key": "flashcards.FlashcardCard.tap_to_flip",
+    "file": "src/components/flashcards/FlashcardCard.tsx",
+    "line": 131,
+    "type": "jsx"
+  },
+  {
+    "original": "Select existing lists:",
+    "key": "drill.SaveWordModal.select_existing_lists",
+    "file": "src/components/drill/SaveWordModal.tsx",
+    "line": 139,
+    "type": "jsx"
+  },
+  {
+    "original": "Create new list:",
+    "key": "drill.SaveWordModal.create_new_list",
+    "file": "src/components/drill/SaveWordModal.tsx",
+    "line": 192,
+    "type": "jsx"
+  },
+  {
+    "original": "List name",
+    "key": "drill.SaveWordModal.list_name",
+    "file": "src/components/drill/SaveWordModal.tsx",
+    "line": 197,
+    "type": "prop"
+  },
+  {
+    "original": "Loading common words...",
+    "key": "drill.QuickDrillPreview.loading_common_words",
+    "file": "src/components/drill/QuickDrillPreview.tsx",
+    "line": 121,
+    "type": "jsx"
+  },
+  {
+    "original": "Quick Start",
+    "key": "drill.QuickDrillPreview.quick_start",
+    "file": "src/components/drill/QuickDrillPreview.tsx",
+    "line": 136,
+    "type": "jsx"
+  },
+  {
+    "original": "Refresh words",
+    "key": "drill.QuickDrillPreview.refresh_words",
+    "file": "src/components/drill/QuickDrillPreview.tsx",
+    "line": 144,
+    "type": "prop"
+  },
+  {
+    "original": "Save to list",
+    "key": "drill.QuickDrillPreview.save_to_list",
+    "file": "src/components/drill/QuickDrillPreview.tsx",
+    "line": 202,
+    "type": "prop"
+  },
+  {
+    "original": "0 && timeDiff",
+    "key": "debug.StatsDebugSummary.0_timediff",
+    "file": "src/components/debug/StatsDebugSummary.tsx",
+    "line": 103,
+    "type": "jsx"
+  },
+  {
+    "original": "Stats Loading Debug Summary",
+    "key": "debug.StatsDebugSummary.stats_loading_debug_summary",
+    "file": "src/components/debug/StatsDebugSummary.tsx",
+    "line": 129,
+    "type": "jsx"
+  },
+  {
+    "original": "Load Sequence",
+    "key": "debug.StatsDebugSummary.load_sequence",
+    "file": "src/components/debug/StatsDebugSummary.tsx",
+    "line": 153,
+    "type": "jsx"
+  },
+  {
+    "original": "All Events",
+    "key": "debug.StatsDebugSummary.all_events",
+    "file": "src/components/debug/StatsDebugSummary.tsx",
+    "line": 163,
+    "type": "jsx"
+  },
+  {
+    "original": "Size:",
+    "key": "cache.StorageIndicator.size",
+    "file": "src/components/cache/StorageIndicator.tsx",
+    "line": 77,
+    "type": "jsx"
+  },
+  {
+    "original": "Usage:",
+    "key": "cache.StorageIndicator.usage",
+    "file": "src/components/cache/StorageIndicator.tsx",
+    "line": 81,
+    "type": "jsx"
+  },
+  {
+    "original": "Shadowing Practice",
+    "key": "audio.ShadowingAudioPlayer.shadowing_practice",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 515,
+    "type": "jsx"
+  },
+  {
+    "original": "Show Furigana",
+    "key": "audio.ShadowingAudioPlayer.show_furigana",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 587,
+    "type": "jsx"
+  },
+  {
+    "original": "Display reading assistance above kanji",
+    "key": "audio.ShadowingAudioPlayer.display_reading_assistance_abo",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 588,
+    "type": "jsx"
+  },
+  {
+    "original": "No sentence available",
+    "key": "audio.ShadowingAudioPlayer.no_sentence_available",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 629,
+    "type": "jsx"
+  },
+  {
+    "original": "Listen to each sentence and repeat it during the pause.",
+    "key": "audio.ShadowingAudioPlayer.listen_to_each_sentence_and_re",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 693,
+    "type": "jsx"
+  },
+  {
+    "original": "Adjust settings to match your learning pace.",
+    "key": "audio.ShadowingAudioPlayer.adjust_settings_to_match_your_",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 694,
+    "type": "jsx"
+  },
+  {
+    "original": "All Sentences",
+    "key": "audio.ShadowingAudioPlayer.all_sentences",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 701,
+    "type": "jsx"
+  },
+  {
+    "original": "Select existing lists:",
+    "key": "audio.ShadowingAudioPlayer.select_existing_lists",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 751,
+    "type": "jsx"
+  },
+  {
+    "original": "Sentence List",
+    "key": "audio.ShadowingAudioPlayer.sentence_list",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 811,
+    "type": "jsx"
+  },
+  {
+    "original": "For shadowing practice (sentences only)",
+    "key": "audio.ShadowingAudioPlayer.for_shadowing_practice_sentenc",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 812,
+    "type": "jsx"
+  },
+  {
+    "original": "✓ Perfect for shadowing practice",
+    "key": "audio.ShadowingAudioPlayer._perfect_for_shadowing_practic",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 813,
+    "type": "jsx"
+  },
+  {
+    "original": "Save sentence to list",
+    "key": "audio.ShadowingAudioPlayer.save_sentence_to_list",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 623,
+    "type": "prop"
+  },
+  {
+    "original": "New list name...",
+    "key": "audio.ShadowingAudioPlayer.new_list_name",
+    "file": "src/components/audio/ShadowingAudioPlayer.tsx",
+    "line": 806,
+    "type": "prop"
+  },
+  {
+    "original": "Listen to Article",
+    "key": "audio.ImprovedArticleAudioPlayer.listen_to_article",
+    "file": "src/components/audio/ImprovedArticleAudioPlayer.tsx",
+    "line": 329,
+    "type": "jsx"
+  },
+  {
+    "original": "0.5x",
+    "key": "audio.ImprovedArticleAudioPlayer.05x",
+    "file": "src/components/audio/ImprovedArticleAudioPlayer.tsx",
+    "line": 498,
+    "type": "jsx"
+  },
+  {
+    "original": "0.75x",
+    "key": "audio.ImprovedArticleAudioPlayer.075x",
+    "file": "src/components/audio/ImprovedArticleAudioPlayer.tsx",
+    "line": 499,
+    "type": "jsx"
+  },
+  {
+    "original": "1.25x",
+    "key": "audio.ImprovedArticleAudioPlayer.125x",
+    "file": "src/components/audio/ImprovedArticleAudioPlayer.tsx",
+    "line": 501,
+    "type": "jsx"
+  },
+  {
+    "original": "1.5x",
+    "key": "audio.ImprovedArticleAudioPlayer.15x",
+    "file": "src/components/audio/ImprovedArticleAudioPlayer.tsx",
+    "line": 502,
+    "type": "jsx"
+  },
+  {
+    "original": "Speed:",
+    "key": "audio.EnhancedArticleAudioPlayer.speed",
+    "file": "src/components/audio/EnhancedArticleAudioPlayer.tsx",
+    "line": 642,
+    "type": "jsx"
+  },
+  {
+    "original": "0.5x",
+    "key": "audio.EnhancedArticleAudioPlayer.05x",
+    "file": "src/components/audio/EnhancedArticleAudioPlayer.tsx",
+    "line": 648,
+    "type": "jsx"
+  },
+  {
+    "original": "0.75x",
+    "key": "audio.EnhancedArticleAudioPlayer.075x",
+    "file": "src/components/audio/EnhancedArticleAudioPlayer.tsx",
+    "line": 649,
+    "type": "jsx"
+  },
+  {
+    "original": "1.25x",
+    "key": "audio.EnhancedArticleAudioPlayer.125x",
+    "file": "src/components/audio/EnhancedArticleAudioPlayer.tsx",
+    "line": 651,
+    "type": "jsx"
+  },
+  {
+    "original": "1.5x",
+    "key": "audio.EnhancedArticleAudioPlayer.15x",
+    "file": "src/components/audio/EnhancedArticleAudioPlayer.tsx",
+    "line": 652,
+    "type": "jsx"
+  },
+  {
+    "original": "Volume:",
+    "key": "audio.EnhancedArticleAudioPlayer.volume",
+    "file": "src/components/audio/EnhancedArticleAudioPlayer.tsx",
+    "line": 658,
+    "type": "jsx"
+  },
+  {
+    "original": "= sentences.length || sentenceIndex",
+    "key": "audio.ArticleAudioPlayer._sentenceslength_sentenceindex",
+    "file": "src/components/audio/ArticleAudioPlayer.tsx",
+    "line": 99,
+    "type": "jsx"
+  },
+  {
+    "original": "⚠️",
+    "key": "admin.UserTable.",
+    "file": "src/components/admin/UserTable.tsx",
+    "line": 164,
+    "type": "jsx"
+  },
+  {
+    "original": "👤",
+    "key": "admin.UserTable.",
+    "file": "src/components/admin/UserTable.tsx",
+    "line": 206,
+    "type": "jsx"
+  },
+  {
+    "original": "Refresh users",
+    "key": "admin.UserTable.refresh_users",
+    "file": "src/components/admin/UserTable.tsx",
+    "line": 193,
+    "type": "prop"
+  },
+  {
+    "original": "Advanced Filters",
+    "key": "admin.UserSearch.advanced_filters",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 122,
+    "type": "jsx"
+  },
+  {
+    "original": "Any time",
+    "key": "admin.UserSearch.any_time",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 142,
+    "type": "jsx"
+  },
+  {
+    "original": "This week",
+    "key": "admin.UserSearch.this_week",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 144,
+    "type": "jsx"
+  },
+  {
+    "original": "This month",
+    "key": "admin.UserSearch.this_month",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 145,
+    "type": "jsx"
+  },
+  {
+    "original": "This year",
+    "key": "admin.UserSearch.this_year",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 133,
+    "type": "jsx"
+  },
+  {
+    "original": "All subscriptions",
+    "key": "admin.UserSearch.all_subscriptions",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 154,
+    "type": "jsx"
+  },
+  {
+    "original": "Newest first",
+    "key": "admin.UserSearch.newest_first",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 166,
+    "type": "jsx"
+  },
+  {
+    "original": "Oldest first",
+    "key": "admin.UserSearch.oldest_first",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 167,
+    "type": "jsx"
+  },
+  {
+    "original": "Most active",
+    "key": "admin.UserSearch.most_active",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 168,
+    "type": "jsx"
+  },
+  {
+    "original": "Email A-Z",
+    "key": "admin.UserSearch.email_az",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 169,
+    "type": "jsx"
+  },
+  {
+    "original": "Filter:",
+    "key": "admin.UserSearch.filter",
+    "file": "src/components/admin/UserSearch.tsx",
+    "line": 186,
+    "type": "jsx"
+  },
+  {
+    "original": "Account Status",
+    "key": "admin.UserDetailsModal.account_status",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 105,
+    "type": "jsx"
+  },
+  {
+    "original": "Status:",
+    "key": "admin.UserDetailsModal.status",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 108,
+    "type": "jsx"
+  },
+  {
+    "original": "Registered:",
+    "key": "admin.UserDetailsModal.registered",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 114,
+    "type": "jsx"
+  },
+  {
+    "original": "Last Login:",
+    "key": "admin.UserDetailsModal.last_login",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 118,
+    "type": "jsx"
+  },
+  {
+    "original": "Plan:",
+    "key": "admin.UserDetailsModal.plan",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 128,
+    "type": "jsx"
+  },
+  {
+    "original": "Billing:",
+    "key": "admin.UserDetailsModal.billing",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 134,
+    "type": "jsx"
+  },
+  {
+    "original": "Renewal:",
+    "key": "admin.UserDetailsModal.renewal",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 139,
+    "type": "jsx"
+  },
+  {
+    "original": "Usage & Limits",
+    "key": "admin.UserDetailsModal.usage_limits",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 152,
+    "type": "jsx"
+  },
+  {
+    "original": "Word Lists:",
+    "key": "admin.UserDetailsModal.word_lists",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 156,
+    "type": "jsx"
+  },
+  {
+    "original": "Drills Today:",
+    "key": "admin.UserDetailsModal.drills_today",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 162,
+    "type": "jsx"
+  },
+  {
+    "original": "Cloud Sync:",
+    "key": "admin.UserDetailsModal.cloud_sync",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 170,
+    "type": "jsx"
+  },
+  {
+    "original": "Data Saving:",
+    "key": "admin.UserDetailsModal.data_saving",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 176,
+    "type": "jsx"
+  },
+  {
+    "original": "Admin Actions",
+    "key": "admin.UserDetailsModal.admin_actions",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 188,
+    "type": "jsx"
+  },
+  {
+    "original": "Recent Activity",
+    "key": "admin.UserDetailsModal.recent_activity",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 208,
+    "type": "jsx"
+  },
+  {
+    "original": "Close modal",
+    "key": "admin.UserDetailsModal.close_modal",
+    "file": "src/components/admin/UserDetailsModal.tsx",
+    "line": 76,
+    "type": "prop"
+  },
+  {
+    "original": "⚠️",
+    "key": "admin.StatsOverview.",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 64,
+    "type": "jsx"
+  },
+  {
+    "original": "User Statistics",
+    "key": "admin.StatsOverview.user_statistics",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 85,
+    "type": "jsx"
+  },
+  {
+    "original": "Subscription Statistics",
+    "key": "admin.StatsOverview.subscription_statistics",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 119,
+    "type": "jsx"
+  },
+  {
+    "original": "Feature Usage",
+    "key": "admin.StatsOverview.feature_usage",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 151,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Users",
+    "key": "admin.StatsOverview.total_users",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 88,
+    "type": "prop"
+  },
+  {
+    "original": "New Users Today",
+    "key": "admin.StatsOverview.new_users_today",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 96,
+    "type": "prop"
+  },
+  {
+    "original": "Active Today",
+    "key": "admin.StatsOverview.active_today",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 102,
+    "type": "prop"
+  },
+  {
+    "original": "Registered Users",
+    "key": "admin.StatsOverview.registered_users",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 108,
+    "type": "prop"
+  },
+  {
+    "original": "Free Users",
+    "key": "admin.StatsOverview.free_users",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 122,
+    "type": "prop"
+  },
+  {
+    "original": "Premium Users",
+    "key": "admin.StatsOverview.premium_users",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 128,
+    "type": "prop"
+  },
+  {
+    "original": "Monthly Subscribers",
+    "key": "admin.StatsOverview.monthly_subscribers",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 136,
+    "type": "prop"
+  },
+  {
+    "original": "Yearly Subscribers",
+    "key": "admin.StatsOverview.yearly_subscribers",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 142,
+    "type": "prop"
+  },
+  {
+    "original": "Drills Today",
+    "key": "admin.StatsOverview.drills_today",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 154,
+    "type": "prop"
+  },
+  {
+    "original": "Vocabulary Searches",
+    "key": "admin.StatsOverview.vocabulary_searches",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 160,
+    "type": "prop"
+  },
+  {
+    "original": "Mood Board Views",
+    "key": "admin.StatsOverview.mood_board_views",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 166,
+    "type": "prop"
+  },
+  {
+    "original": "Avg Session (min)",
+    "key": "admin.StatsOverview.avg_session_min",
+    "file": "src/components/admin/StatsOverview.tsx",
+    "line": 172,
+    "type": "prop"
+  },
+  {
+    "original": "Error loading stats",
+    "key": "admin.StatsDebugPanel.error_loading_stats",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 89,
+    "type": "jsx"
+  },
+  {
+    "original": "Current Streak",
+    "key": "admin.StatsDebugPanel.current_streak",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 102,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Activities",
+    "key": "admin.StatsDebugPanel.total_activities",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 114,
+    "type": "jsx"
+  },
+  {
+    "original": "Overall Accuracy",
+    "key": "admin.StatsDebugPanel.overall_accuracy",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 126,
+    "type": "jsx"
+  },
+  {
+    "original": "Last Active",
+    "key": "admin.StatsDebugPanel.last_active",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 138,
+    "type": "jsx"
+  },
+  {
+    "original": "Activity Breakdown",
+    "key": "admin.StatsDebugPanel.activity_breakdown",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 154,
+    "type": "jsx"
+  },
+  {
+    "original": "Detailed breakdown of all tracked activities",
+    "key": "admin.StatsDebugPanel.detailed_breakdown_of_all_trac",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 155,
+    "type": "jsx"
+  },
+  {
+    "original": "Kanji Study",
+    "key": "admin.StatsDebugPanel.kanji_study",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 172,
+    "type": "jsx"
+  },
+  {
+    "original": "Practice Sessions",
+    "key": "admin.StatsDebugPanel.practice_sessions",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 188,
+    "type": "jsx"
+  },
+  {
+    "original": "Learning Progress",
+    "key": "admin.StatsDebugPanel.learning_progress",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 198,
+    "type": "jsx"
+  },
+  {
+    "original": "Cumulative learning metrics",
+    "key": "admin.StatsDebugPanel.cumulative_learning_metrics",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 199,
+    "type": "jsx"
+  },
+  {
+    "original": "Kanji Learned",
+    "key": "admin.StatsDebugPanel.kanji_learned",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 204,
+    "type": "jsx"
+  },
+  {
+    "original": "Words Learned",
+    "key": "admin.StatsDebugPanel.words_learned",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 208,
+    "type": "jsx"
+  },
+  {
+    "original": "Pokemon Caught",
+    "key": "admin.StatsDebugPanel.pokemon_caught",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 212,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Score",
+    "key": "admin.StatsDebugPanel.total_score",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 216,
+    "type": "jsx"
+  },
+  {
+    "original": "Questions Answered",
+    "key": "admin.StatsDebugPanel.questions_answered",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 220,
+    "type": "jsx"
+  },
+  {
+    "original": "Correct Answers",
+    "key": "admin.StatsDebugPanel.correct_answers",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 224,
+    "type": "jsx"
+  },
+  {
+    "original": "Debug Actions",
+    "key": "admin.StatsDebugPanel.debug_actions",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 234,
+    "type": "jsx"
+  },
+  {
+    "original": "Tools for debugging and managing stats data",
+    "key": "admin.StatsDebugPanel.tools_for_debugging_and_managi",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 235,
+    "type": "jsx"
+  },
+  {
+    "original": "Stats Metadata",
+    "key": "admin.StatsDebugPanel.stats_metadata",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 262,
+    "type": "jsx"
+  },
+  {
+    "original": "Technical information about the stats system",
+    "key": "admin.StatsDebugPanel.technical_information_about_th",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 263,
+    "type": "jsx"
+  },
+  {
+    "original": "User ID",
+    "key": "admin.StatsDebugPanel.user_id",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 268,
+    "type": "jsx"
+  },
+  {
+    "original": "Stats Version",
+    "key": "admin.StatsDebugPanel.stats_version",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 272,
+    "type": "jsx"
+  },
+  {
+    "original": "Last Updated",
+    "key": "admin.StatsDebugPanel.last_updated",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 276,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading State",
+    "key": "admin.StatsDebugPanel.loading_state",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 280,
+    "type": "jsx"
+  },
+  {
+    "original": "Error State",
+    "key": "admin.StatsDebugPanel.error_state",
+    "file": "src/components/admin/StatsDebugPanel.tsx",
+    "line": 286,
+    "type": "jsx"
+  },
+  {
+    "original": "🔍",
+    "key": "admin.QuickResourceCreator.",
+    "file": "src/components/admin/QuickResourceCreator.tsx",
+    "line": 145,
+    "type": "jsx"
+  },
+  {
+    "original": "Regenerate visuals",
+    "key": "admin.QuickResourceCreator.regenerate_visuals",
+    "file": "src/components/admin/QuickResourceCreator.tsx",
+    "line": 112,
+    "type": "prop"
+  },
+  {
+    "original": "Resource icon",
+    "key": "admin.QuickResourceCreator.resource_icon",
+    "file": "src/components/admin/QuickResourceCreator.tsx",
+    "line": 175,
+    "type": "prop"
+  },
+  {
+    "original": "Open original",
+    "key": "admin.QuickResourceCreator.open_original",
+    "file": "src/components/admin/QuickResourceCreator.tsx",
+    "line": 210,
+    "type": "prop"
+  },
+  {
+    "original": "Upgrading...",
+    "key": "admin.PremiumUpgradeButton.upgrading",
+    "file": "src/components/admin/PremiumUpgradeButton.tsx",
+    "line": 130,
+    "type": "jsx"
+  },
+  {
+    "original": "$3.99/month",
+    "key": "admin.PremiumUpgradeButton.399month",
+    "file": "src/components/admin/PremiumUpgradeButton.tsx",
+    "line": 158,
+    "type": "jsx"
+  },
+  {
+    "original": "$39.99/year",
+    "key": "admin.PremiumUpgradeButton.3999year",
+    "file": "src/components/admin/PremiumUpgradeButton.tsx",
+    "line": 173,
+    "type": "jsx"
+  },
+  {
+    "original": "Save 2 months!",
+    "key": "admin.PremiumUpgradeButton.save_2_months",
+    "file": "src/components/admin/PremiumUpgradeButton.tsx",
+    "line": 174,
+    "type": "jsx"
+  },
+  {
+    "original": "⚠️",
+    "key": "admin.MoodBoardManager.",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 146,
+    "type": "jsx"
+  },
+  {
+    "original": "Latest Updated",
+    "key": "admin.MoodBoardManager.latest_updated",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 180,
+    "type": "jsx"
+  },
+  {
+    "original": "Oldest Updated",
+    "key": "admin.MoodBoardManager.oldest_updated",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 181,
+    "type": "jsx"
+  },
+  {
+    "original": "Title A-Z",
+    "key": "admin.MoodBoardManager.title_az",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 182,
+    "type": "jsx"
+  },
+  {
+    "original": "Title Z-A",
+    "key": "admin.MoodBoardManager.title_za",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 183,
+    "type": "jsx"
+  },
+  {
+    "original": "JLPT Level (N5→N1)",
+    "key": "admin.MoodBoardManager.jlpt_level_n5n1",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 184,
+    "type": "jsx"
+  },
+  {
+    "original": "JLPT Level (N1→N5)",
+    "key": "admin.MoodBoardManager.jlpt_level_n1n5",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 185,
+    "type": "jsx"
+  },
+  {
+    "original": "Most Kanji",
+    "key": "admin.MoodBoardManager.most_kanji",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 186,
+    "type": "jsx"
+  },
+  {
+    "original": "Least Kanji",
+    "key": "admin.MoodBoardManager.least_kanji",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 187,
+    "type": "jsx"
+  },
+  {
+    "original": "🎨",
+    "key": "admin.MoodBoardManager.",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 206,
+    "type": "jsx"
+  },
+  {
+    "original": "Refresh mood boards",
+    "key": "admin.MoodBoardManager.refresh_mood_boards",
+    "file": "src/components/admin/MoodBoardManager.tsx",
+    "line": 193,
+    "type": "prop"
+  },
+  {
+    "original": "📊",
+    "key": "admin.ArticleMonitoringDashboard.",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 186,
+    "type": "jsx"
+  },
+  {
+    "original": "🔄",
+    "key": "admin.ArticleMonitoringDashboard.",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 359,
+    "type": "jsx"
+  },
+  {
+    "original": "⚠️",
+    "key": "admin.ArticleMonitoringDashboard.",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 369,
+    "type": "jsx"
+  },
+  {
+    "original": "🗄️",
+    "key": "admin.ArticleMonitoringDashboard.",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 215,
+    "type": "jsx"
+  },
+  {
+    "original": "Maint.",
+    "key": "admin.ArticleMonitoringDashboard.maint",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 227,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Articles",
+    "key": "admin.ArticleMonitoringDashboard.total_articles",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 236,
+    "type": "jsx"
+  },
+  {
+    "original": "📚",
+    "key": "admin.ArticleMonitoringDashboard.",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 239,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Bookmarks",
+    "key": "admin.ArticleMonitoringDashboard.total_bookmarks",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 248,
+    "type": "jsx"
+  },
+  {
+    "original": "📈",
+    "key": "admin.ArticleMonitoringDashboard.",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 251,
+    "type": "jsx"
+  },
+  {
+    "original": "Avg Reading Time",
+    "key": "admin.ArticleMonitoringDashboard.avg_reading_time",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 260,
+    "type": "jsx"
+  },
+  {
+    "original": "⏱️",
+    "key": "admin.ArticleMonitoringDashboard.",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 263,
+    "type": "jsx"
+  },
+  {
+    "original": "Expiring Soon",
+    "key": "admin.ArticleMonitoringDashboard.expiring_soon",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 272,
+    "type": "jsx"
+  },
+  {
+    "original": "JLPT Level Distribution",
+    "key": "admin.ArticleMonitoringDashboard.jlpt_level_distribution",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 284,
+    "type": "jsx"
+  },
+  {
+    "original": "Source Distribution",
+    "key": "admin.ArticleMonitoringDashboard.source_distribution",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 303,
+    "type": "jsx"
+  },
+  {
+    "original": "Maintenance Operations",
+    "key": "admin.ArticleMonitoringDashboard.maintenance_operations",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 322,
+    "type": "jsx"
+  },
+  {
+    "original": "Article Cleanup",
+    "key": "admin.ArticleMonitoringDashboard.article_cleanup",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 326,
+    "type": "jsx"
+  },
+  {
+    "original": "Force Refresh",
+    "key": "admin.ArticleMonitoringDashboard.force_refresh",
+    "file": "src/components/admin/ArticleMonitoringDashboard.tsx",
+    "line": 347,
+    "type": "jsx"
+  },
+  {
+    "original": "Edit Article",
+    "key": "admin.ArticleManagement.edit_article",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 104,
+    "type": "jsx"
+  },
+  {
+    "original": "JLPT Level",
+    "key": "admin.ArticleManagement.jlpt_level",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 155,
+    "type": "jsx"
+  },
+  {
+    "original": "Reading Time (min)",
+    "key": "admin.ArticleManagement.reading_time_min",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 187,
+    "type": "jsx"
+  },
+  {
+    "original": "Source URL",
+    "key": "admin.ArticleManagement.source_url",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 202,
+    "type": "jsx"
+  },
+  {
+    "original": "Tags (comma-separated)",
+    "key": "admin.ArticleManagement.tags_commaseparated",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 214,
+    "type": "jsx"
+  },
+  {
+    "original": "Loading articles...",
+    "key": "admin.ArticleManagement.loading_articles",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 675,
+    "type": "jsx"
+  },
+  {
+    "original": "📰",
+    "key": "admin.ArticleManagement.",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 679,
+    "type": "jsx"
+  },
+  {
+    "original": "No articles found",
+    "key": "admin.ArticleManagement.no_articles_found",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 680,
+    "type": "jsx"
+  },
+  {
+    "original": "tag1, tag2, tag3",
+    "key": "admin.ArticleManagement.tag1_tag2_tag3",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 221,
+    "type": "prop"
+  },
+  {
+    "original": "Edit article",
+    "key": "admin.ArticleManagement.edit_article",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 303,
+    "type": "prop"
+  },
+  {
+    "original": "Delete article",
+    "key": "admin.ArticleManagement.delete_article",
+    "file": "src/components/admin/ArticleManagement.tsx",
+    "line": 310,
+    "type": "prop"
+  },
+  {
+    "original": "Test Article Cleanup",
+    "key": "admin.ArticleCleanup.test_article_cleanup",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 162,
+    "type": "jsx"
+  },
+  {
+    "original": "Test Article Statistics",
+    "key": "admin.ArticleCleanup.test_article_statistics",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 175,
+    "type": "jsx"
+  },
+  {
+    "original": "Total Test Articles:",
+    "key": "admin.ArticleCleanup.total_test_articles",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 178,
+    "type": "jsx"
+  },
+  {
+    "original": "Date Range:",
+    "key": "admin.ArticleCleanup.date_range",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 183,
+    "type": "jsx"
+  },
+  {
+    "original": "By Category:",
+    "key": "admin.ArticleCleanup.by_category",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 190,
+    "type": "jsx"
+  },
+  {
+    "original": "Title patterns:",
+    "key": "admin.ArticleCleanup.title_patterns",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 213,
+    "type": "jsx"
+  },
+  {
+    "original": "Categories:",
+    "key": "admin.ArticleCleanup.categories",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 216,
+    "type": "jsx"
+  },
+  {
+    "original": "Tags:",
+    "key": "admin.ArticleCleanup.tags",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 219,
+    "type": "jsx"
+  },
+  {
+    "original": "Content patterns:",
+    "key": "admin.ArticleCleanup.content_patterns",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 222,
+    "type": "jsx"
+  },
+  {
+    "original": "Duplicate Articles",
+    "key": "admin.ArticleCleanup.duplicate_articles",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 282,
+    "type": "jsx"
+  },
+  {
+    "original": "Delete All Test Articles",
+    "key": "admin.ArticleCleanup.delete_all_test_articles",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 322,
+    "type": "prop"
+  },
+  {
+    "original": "Delete Duplicate Articles",
+    "key": "admin.ArticleCleanup.delete_duplicate_articles",
+    "file": "src/components/admin/ArticleCleanup.tsx",
+    "line": 334,
+    "type": "prop"
+  },
+  {
+    "original": "🎯",
+    "key": "admin.AdminSidebar.",
+    "file": "src/components/admin/AdminSidebar.tsx",
+    "line": 126,
+    "type": "jsx"
+  },
+  {
+    "original": "Admin Dashboard",
+    "key": "admin.AdminSidebar.admin_dashboard",
+    "file": "src/components/admin/AdminSidebar.tsx",
+    "line": 174,
+    "type": "jsx"
+  },
+  {
+    "original": "Close sidebar",
+    "key": "admin.AdminSidebar.close_sidebar",
+    "file": "src/components/admin/AdminSidebar.tsx",
+    "line": 135,
+    "type": "prop"
+  },
+  {
+    "original": "🚫",
+    "key": "admin.AdminGuard.",
+    "file": "src/components/admin/AdminGuard.tsx",
+    "line": 93,
+    "type": "jsx"
+  },
+  {
+    "original": "Status:",
+    "key": "mood-boards.MoodBoardPreview.status",
+    "file": "src/components/admin/mood-boards/MoodBoardPreview.tsx",
+    "line": 85,
+    "type": "jsx"
+  },
+  {
+    "original": "Sort Order:",
+    "key": "mood-boards.MoodBoardPreview.sort_order",
+    "file": "src/components/admin/mood-boards/MoodBoardPreview.tsx",
+    "line": 91,
+    "type": "jsx"
+  },
+  {
+    "original": "Created:",
+    "key": "mood-boards.MoodBoardPreview.created",
+    "file": "src/components/admin/mood-boards/MoodBoardPreview.tsx",
+    "line": 94,
+    "type": "jsx"
+  },
+  {
+    "original": "Updated:",
+    "key": "mood-boards.MoodBoardPreview.updated",
+    "file": "src/components/admin/mood-boards/MoodBoardPreview.tsx",
+    "line": 99,
+    "type": "jsx"
+  },
+  {
+    "original": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    "key": "mood-boards.MoodBoardEditor.lineargradient135deg_667eea_0_",
+    "file": "src/components/admin/mood-boards/MoodBoardEditor.tsx",
+    "line": 430,
+    "type": "prop"
+  },
+  {
+    "original": "🔍",
+    "key": "mood-boards.KanjiSearchInput.",
+    "file": "src/components/admin/mood-boards/KanjiSearchInput.tsx",
+    "line": 137,
+    "type": "jsx"
+  },
+  {
+    "original": "Try searching by meaning, reading, or character",
+    "key": "mood-boards.KanjiSearchInput.try_searching_by_meaning_readi",
+    "file": "src/components/admin/mood-boards/KanjiSearchInput.tsx",
+    "line": 139,
+    "type": "jsx"
+  },
+  {
+    "original": "0 &&",
+    "key": "mood-boards.KanjiSearchInput.0_",
+    "file": "src/components/admin/mood-boards/KanjiSearchInput.tsx",
+    "line": 161,
+    "type": "jsx"
+  },
+  {
+    "original": "Quick Add from Search",
+    "key": "mood-boards.KanjiEditor.quick_add_from_search",
+    "file": "src/components/admin/mood-boards/KanjiEditor.tsx",
+    "line": 100,
+    "type": "jsx"
+  },
+  {
+    "original": "Add New Kanji",
+    "key": "mood-boards.KanjiEditor.add_new_kanji",
+    "file": "src/components/admin/mood-boards/KanjiEditor.tsx",
+    "line": 186,
+    "type": "jsx"
+  },
+  {
+    "original": "Search and add kanji instantly...",
+    "key": "mood-boards.KanjiEditor.search_and_add_kanji_instantly",
+    "file": "src/components/admin/mood-boards/KanjiEditor.tsx",
+    "line": 103,
+    "type": "prop"
+  },
+  {
+    "original": "もく, ぼく",
+    "key": "mood-boards.KanjiEditor._",
+    "file": "src/components/admin/mood-boards/KanjiEditor.tsx",
+    "line": 224,
+    "type": "prop"
+  },
+  {
+    "original": "き, こ",
+    "key": "mood-boards.KanjiEditor._",
+    "file": "src/components/admin/mood-boards/KanjiEditor.tsx",
+    "line": 237,
+    "type": "prop"
+  },
+  {
+    "original": "木曜日 (Thursday), 木材 (lumber)",
+    "key": "mood-boards.KanjiEditor._thursday_lumber",
+    "file": "src/components/admin/mood-boards/KanjiEditor.tsx",
+    "line": 250,
+    "type": "prop"
+  },
+  {
+    "original": "JSON Editor",
+    "key": "mood-boards.JsonEditor.json_editor",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 198,
+    "type": "jsx"
+  },
+  {
+    "original": "JSON Parse Error:",
+    "key": "mood-boards.JsonEditor.json_parse_error",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 225,
+    "type": "jsx"
+  },
+  {
+    "original": "Validation Errors:",
+    "key": "mood-boards.JsonEditor.validation_errors",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 231,
+    "type": "jsx"
+  },
+  {
+    "original": "Required Fields:",
+    "key": "mood-boards.JsonEditor.required_fields",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 278,
+    "type": "jsx"
+  },
+  {
+    "original": "- String: Mood board title",
+    "key": "mood-boards.JsonEditor._string_mood_board_title",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 280,
+    "type": "jsx"
+  },
+  {
+    "original": "- String: Emoji character (1-2 chars)",
+    "key": "mood-boards.JsonEditor._string_emoji_character_12_cha",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 281,
+    "type": "jsx"
+  },
+  {
+    "original": "- String: One of \"N5\", \"N4\", \"N3\", \"N2\", \"N1\"",
+    "key": "mood-boards.JsonEditor._string_one_of_n5_n4_n3_n2_n1",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 282,
+    "type": "jsx"
+  },
+  {
+    "original": "- String: CSS gradient or color",
+    "key": "mood-boards.JsonEditor._string_css_gradient_or_color",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 283,
+    "type": "jsx"
+  },
+  {
+    "original": "- String: Description text",
+    "key": "mood-boards.JsonEditor._string_description_text",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 284,
+    "type": "jsx"
+  },
+  {
+    "original": "- Array: Array of kanji objects",
+    "key": "mood-boards.JsonEditor._array_array_of_kanji_objects",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 285,
+    "type": "jsx"
+  },
+  {
+    "original": "- Boolean: Whether visible to users",
+    "key": "mood-boards.JsonEditor._boolean_whether_visible_to_us",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 286,
+    "type": "jsx"
+  },
+  {
+    "original": "Kanji Object Structure:",
+    "key": "mood-boards.JsonEditor.kanji_object_structure",
+    "file": "src/components/admin/mood-boards/JsonEditor.tsx",
+    "line": 290,
+    "type": "jsx"
+  },
+  {
+    "original": "❌ Not Available",
+    "key": "feature-matrix.FeatureMatrixTable._not_available",
+    "file": "src/components/admin/feature-matrix/FeatureMatrixTable.tsx",
+    "line": 228,
+    "type": "jsx"
+  },
+  {
+    "original": "✅ Available",
+    "key": "feature-matrix.FeatureMatrixTable._available",
+    "file": "src/components/admin/feature-matrix/FeatureMatrixTable.tsx",
+    "line": 229,
+    "type": "jsx"
+  },
+  {
+    "original": "∞ Unlimited",
+    "key": "feature-matrix.FeatureMatrixTable._unlimited",
+    "file": "src/components/admin/feature-matrix/FeatureMatrixTable.tsx",
+    "line": 230,
+    "type": "jsx"
+  },
+  {
+    "original": "Numbers = Daily/Total Limits",
+    "key": "feature-matrix.FeatureMatrixTable.numbers_dailytotal_limits",
+    "file": "src/components/admin/feature-matrix/FeatureMatrixTable.tsx",
+    "line": 231,
+    "type": "jsx"
+  },
+  {
+    "original": "Search features...",
+    "key": "feature-matrix.FeatureMatrixTable.search_features",
+    "file": "src/components/admin/feature-matrix/FeatureMatrixTable.tsx",
+    "line": 178,
+    "type": "prop"
+  },
+  {
+    "original": "✏️",
+    "key": "feature-matrix.EditableFeatureMatrix.",
+    "file": "src/components/admin/feature-matrix/EditableFeatureMatrix.tsx",
+    "line": 167,
+    "type": "jsx"
+  }
+]

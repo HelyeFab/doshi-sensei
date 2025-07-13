@@ -15,7 +15,7 @@ import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import UserAvatar from '@/components/UserAvatar';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 // List of available SVGs for user thumbnails
 const THUMBNAIL_OPTIONS = [

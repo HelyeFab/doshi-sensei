@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
 
 interface UserSearchProps {
   searchQuery: string;

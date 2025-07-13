@@ -12,7 +12,7 @@
 - Triggered when user taps **“Start Wild Encounter”**
 - Show: “A wild Pokémon appeared!” with animation/sprite
 - Pokémon is randomly selected from full pool (1–1025)
-- **5-8 kanji** are selected by the user from current JLPT level (minimum 5, maximum 8)
+- **3-5 kanji** are selected by the user from current JLPT level (minimum 3, maximum 5)
 
 ### 2. Study Phase
 For each of the selected kanji:
@@ -114,7 +114,7 @@ For each of the selected kanji:
 - **Colorful tutorial modal** displayed when user clicks Kanji Quest button
 - Uses Pokemon flat icons from `/flat-icons/1752632-pokemon/` for visual appeal
 - Explains the new systematic question system with 4 steps:
-  1. Select 5-8 kanji team
+  1. Select 3-5 kanji team
   2. Wild encounters with random kanji appearances
   3. Battle through all question types (on'yomi, kun'yomi, meaning)
   4. Catch Pokemon upon successful completion

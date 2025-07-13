@@ -348,7 +348,11 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
         className="absolute top-4 left-4 z-30 p-2 rounded-lg bg-background/80 hover:bg-background border border-border transition-colors"
         title={soundEnabled ? "Disable Sound" : "Enable Sound"}
       >
-        {soundEnabled ? "🔊" : "🔇"}
+        <img 
+          src="/flat-icons/root-icons/volume.svg" 
+          alt={soundEnabled ? "Mute" : "Unmute"} 
+          className={`w-5 h-5 ${!soundEnabled ? 'opacity-50' : 'opacity-100'} transition-opacity`}
+        />
       </button>
 
       {/* Score Display */}

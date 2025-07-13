@@ -9,9 +9,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { useStats } from '@/hooks/useStats';
 
 interface NavItem {
   label: string;
@@ -24,7 +24,6 @@ interface NavItem {
 export default function DesktopNavMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showPokedex, setShowPokedex] = useState(false);
-  const [pokemonCaught, setPokemonCaught] = useState(0);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   const { profile } = useUserProfile();
@@ -32,22 +31,7 @@ export default function DesktopNavMenu() {
   const pathname = usePathname();
   const strings = useStrings();
   const { canInstall, isInstalled, isInstalling, install } = usePWAInstall();
-  
-  // Load Pokemon stats just like in the mobile menu
-  useEffect(() => {
-    const loadPokemonCount = async () => {
-      try {
-        const isPremiumUser = subscription?.status === 'active' &&
-          (subscription?.plan === 'monthly' ||
-            subscription?.plan === 'yearly');
-        const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
-        setPokemonCaught(caughtPokemon.length);
-      } catch (error) {
-        console.error('Error loading Pokémon count in DesktopNavMenu:', error);
-      }
-    };
-    loadPokemonCount();
-  }, [profile?.uid, subscription?.status, subscription?.plan]);
+  const { stats } = useStats();
 
   const togglePokedex = () => {
     setIsOpen(false);
@@ -58,7 +42,7 @@ export default function DesktopNavMenu() {
   const menuItems = [
     { label: strings.nav.home || 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: strings.nav.adminDashboard || 'Admin Dashboard', icon: '🛡️', href: '/admin' }] : []),
-    ...(pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
+    ...(stats.pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: stats.pokemonCaught }] : []),
     { label: strings.nav.practice || 'Practice', icon: '📚', href: '/practice' },
     { label: strings.nav.drill || 'Drill', icon: '⚡', href: '/drill' },
     { label: strings.nav.vocab || 'Vocabulary', icon: '📖', href: '/vocabulary' },

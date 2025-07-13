@@ -88,6 +88,11 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Admin configuration collection
+    match /admin/{document} {
+      allow read, write: if isAdmin();
+    }
+
     // Analytics collection - admin read access, authenticated users can write events
     match /analytics/{analyticsId} {
       // Allow admin to read all analytics data

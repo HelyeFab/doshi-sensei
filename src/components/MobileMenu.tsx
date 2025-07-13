@@ -7,16 +7,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import { pokemonManager } from '@/utils/pokemonManager';
 import { AVAILABLE_NAV_ITEMS, HOME_NAV_ITEM } from '@/config/navigation';
 import PokedexModal from '@/components/games/PokedexModal';
 import { useStrings } from '@/hooks/useLanguage';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { useStats } from '@/hooks/useStats';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showPokedex, setShowPokedex] = useState(false);
-  const [pokemonCaught, setPokemonCaught] = useState(0);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   const { profile } = useUserProfile();
@@ -25,33 +24,8 @@ export default function MobileMenu() {
   const pathname = usePathname();
   const strings = useStrings();
   const { canInstall, isInstalled, isInstalling, install } = usePWAInstall();
+  const { stats } = useStats();
 
-  // Load Pokemon stats just like in the homepage
-  useEffect(() => {
-    const loadPokemonCount = async () => {
-      try {
-        // Get user premium status
-        const isPremiumUser = subscription?.status === 'active' &&
-          (subscription?.plan === 'monthly' ||
-            subscription?.plan === 'yearly');
-
-        // Get caught Pokemon from IndexedDB and cloud if premium
-        const caughtPokemon = await pokemonManager.getCaughtPokemon(profile, isPremiumUser);
-
-        console.log('🎮 MobileMenu Pokemon count:', caughtPokemon.length);
-        setPokemonCaught(caughtPokemon.length);
-      } catch (error) {
-        console.error('Error loading Pokémon count in MobileMenu:', error);
-      }
-    };
-
-    loadPokemonCount();
-
-    // Test both menu SVG paths
-    console.log('🧪 Testing menu SVG paths:');
-    console.log('📍 Current path:', window.location.origin + '/menu.svg');
-    console.log('📍 Original path:', window.location.origin + '/flat-icons/menu.svg');
-  }, [profile?.uid, subscription?.status, subscription?.plan]);
 
   // Close menu when route changes
   useEffect(() => {
@@ -72,7 +46,7 @@ export default function MobileMenu() {
   const simpleMenuItems = [
     { label: strings.nav.home || 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: strings.nav.adminDashboard || 'Admin Dashboard', icon: '🛡️', href: '/admin' }] : []),
-    ...(pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: pokemonCaught }] : []),
+    ...(stats.pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: stats.pokemonCaught }] : []),
     { label: strings.nav.practice || 'Practice', icon: '📚', href: '/practice' },
     { label: strings.nav.drill || 'Drill', icon: '⚡', href: '/drill' },
     { label: strings.nav.vocab || 'Vocabulary', icon: '📖', href: '/vocabulary' },

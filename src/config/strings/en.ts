@@ -1001,6 +1001,77 @@ export const en = {
       lastUpdated: "Last updated",
       editingLimits: "Editing Limits",
       understandingMatrix: "Understanding the Matrix"
+    },
+
+    // Debug Tools
+    debug: {
+      title: "Debug Tools",
+      description: "Advanced debugging tools for system diagnostics and troubleshooting",
+      
+      // System Status Section
+      systemStatus: {
+        title: "System Status",
+        description: "Checks the health of browser storage systems and Firebase connection",
+        indexedDB: {
+          title: "IndexedDB",
+          tooltip: "Browser database for offline storage. Stores user stats, progress, and cached data locally."
+        },
+        firebase: {
+          title: "Firebase",
+          tooltip: "Cloud database and authentication service. Handles user accounts, real-time sync, and cloud backups."
+        },
+        localStorage: {
+          title: "LocalStorage",
+          tooltip: "Simple browser storage for preferences. Stores app settings and small user preferences."
+        }
+      },
+      
+      // Stats Debug Panel
+      statsPanel: {
+        title: "Stats Debug Panel",
+        description: "Displays comprehensive user statistics, allows data export, and provides stats management tools",
+        export: "Export Debug Data",
+        refresh: "Refresh Stats",
+        forceSync: "Force Cloud Sync",
+        clearStats: "Clear All Stats",
+        clearWarning: "⚠️ This will permanently delete ALL stats data. This cannot be undone."
+      },
+      
+      // Console Monitor
+      consoleMonitor: {
+        title: "Console Monitor",
+        description: "Captures and displays stats-related console logs to help identify loading issues and race conditions"
+      },
+      
+      // Quick Debug Actions
+      quickActions: {
+        title: "Quick Debug Actions",
+        description: "Common debugging utilities for troubleshooting issues",
+        logDebugInfo: {
+          title: "Log Debug Info",
+          tooltip: "Logs current user, environment, and storage information to the browser console"
+        },
+        exportSystemInfo: {
+          title: "Export System Info",
+          tooltip: "Downloads a JSON file with current system information including user details and browser environment"
+        },
+        refreshStatus: {
+          title: "Refresh Status",
+          tooltip: "Re-run all system health checks"
+        },
+        clearAllCaches: {
+          title: "Clear All Caches",
+          tooltip: "⚠️ Clears all browser storage including IndexedDB, localStorage, and sessionStorage. Use with caution!"
+        }
+      },
+      
+      // Error Messages
+      errors: {
+        details: "Error Details:",
+        indexedDBError: "IndexedDB check failed",
+        firebaseError: "Firebase connection failed",
+        localStorageError: "LocalStorage check failed"
+      }
     }
   },
 

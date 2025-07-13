@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ResourcePost, ResourceSearchFilters, RESOURCE_CATEGORIES } from '@/types/resources';
-import { getPublishedResourcePosts } from '@/utils/resources';
+import { ResourcePost, ResourceSearchFilters } from '@/types/resources';
+import { getPublishedResourcePosts, getResourceCategoriesAndTags } from '@/utils/resources';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
@@ -21,6 +21,7 @@ export default function ResourcesPage() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [categoryFilter, setCategoryFilter] = useState<string>(searchParams.get('category') || '');
   const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
   const loadResources = useCallback(async (isLoadMore = false) => {
     try {
@@ -62,6 +63,15 @@ export default function ResourcesPage() {
   useEffect(() => {
     loadResources();
   }, [searchQuery, categoryFilter, featuredOnly]);
+
+  // Load available categories and tags
+  useEffect(() => {
+    const loadCategories = async () => {
+      const categories = await getResourceCategoriesAndTags();
+      setAvailableCategories(categories);
+    };
+    loadCategories();
+  }, []);
 
   // Handle search
   const handleSearch = (e: React.FormEvent) => {
@@ -135,7 +145,7 @@ export default function ResourcesPage() {
                   className="px-3 py-1 border border-border rounded-lg bg-background text-foreground text-sm"
                 >
                   <option value="">All Categories</option>
-                  {RESOURCE_CATEGORIES.map(category => (
+                  {availableCategories.map(category => (
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </select>
@@ -187,17 +197,70 @@ export default function ResourcesPage() {
             </div>
           ) : (
             <>
-              {/* Resource Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {/* Resource Cards Grid - Instagram Style */}
+              <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4 mb-8">
                 {resources.map((resource) => {
                   const colorTheme = getResourceColorTheme(resource.id);
                   const categoryEmoji = getCategoryEmoji(resource.category, resource.tags);
                   const iconPath = getResourceIcon(resource.id);
 
+                  // Render pill-style resources
+                  if (resource.isPillStyle) {
+                    return (
+                      <div key={resource.id} className="break-inside-avoid">
+                        <Link
+                          href={`/resources/${resource.slug}`}
+                          className={`block ${colorTheme.bg} ${colorTheme.border} ${colorTheme.shadow} rounded-full border-2 p-4 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] group`}
+                        >
+                          <div className="flex items-center gap-3">
+                            {/* Icon or Emoji */}
+                            <div className="flex-shrink-0">
+                              <div className="w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl shadow-md border border-white/50">
+                                {categoryEmoji}
+                              </div>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              <h3 className={`font-bold ${colorTheme.text} ${colorTheme.textShadow} truncate`}>
+                                {resource.title}
+                              </h3>
+                              {resource.category && (
+                                <span className={`text-xs ${colorTheme.text} ${colorTheme.textShadow} opacity-80`}>
+                                  {resource.category}
+                                </span>
+                              )}
+                            </div>
+                            
+                            {/* Arrow */}
+                            <svg className={`w-5 h-5 ${colorTheme.text} ${colorTheme.textShadow} flex-shrink-0 transition-transform group-hover:translate-x-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                          
+                          {/* Badges */}
+                          <div className="flex gap-2 mt-2 ml-15">
+                            {resource.featured && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-400/80 text-yellow-900">
+                                ⭐ Featured
+                              </span>
+                            )}
+                            {resource.isPremium && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/60 text-gray-800">
+                                💎 Premium
+                              </span>
+                            )}
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  }
+
+                  // Regular card style
                   return (
                     <article
                       key={resource.id}
-                      className={`${colorTheme.bg} ${colorTheme.border} ${colorTheme.shadow} rounded-xl border-2 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]`}
+                      className={`break-inside-avoid ${colorTheme.bg} ${colorTheme.border} ${colorTheme.shadow} rounded-xl border-2 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]`}
                     >
                       {resource.imageUrl ? (
                         <div className="relative h-48 overflow-hidden">

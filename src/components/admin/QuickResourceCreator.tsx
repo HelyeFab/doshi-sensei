@@ -22,6 +22,7 @@ export default function QuickResourceCreator({ onResourceCreated }: QuickResourc
   const [customTitle, setCustomTitle] = useState('');
   const [customTag, setCustomTag] = useState('');
   const [randomSeed, setRandomSeed] = useState(Math.random());
+  const [isPillStyle, setIsPillStyle] = useState(false);
   
   // Generate random visual elements
   const colors = getRandomPastelColor();
@@ -68,7 +69,8 @@ export default function QuickResourceCreator({ onResourceCreated }: QuickResourc
       imageUrl: previewData.image || `/flat-icons/${iconPath}`,
       externalUrl: url, // Store the original URL
       featured: false,
-      isPremium: false
+      isPremium: false,
+      isPillStyle: isPillStyle // Include pill style preference
     };
     
     onResourceCreated(resourceData);
@@ -78,6 +80,7 @@ export default function QuickResourceCreator({ onResourceCreated }: QuickResourc
     setPreviewData(null);
     setCustomTitle('');
     setCustomTag('');
+    setIsPillStyle(false);
   };
 
   const regenerateVisuals = () => {
@@ -195,7 +198,9 @@ export default function QuickResourceCreator({ onResourceCreated }: QuickResourc
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${colors.text} bg-white/50`}>
                           {previewData.type === 'youtube' ? '🎥 YouTube' : 
                            previewData.type === 'instagram' ? '📸 Instagram' :
-                           previewData.type === 'twitter' ? '🐦 Twitter/X' : '🔗 External'}
+                           previewData.type === 'twitter' ? '🐦 Twitter/X' : 
+                           previewData.type === 'tiktok' ? '🎵 TikTok' :
+                           previewData.type === 'threads' ? '🧵 Threads' : '🔗 External'}
                         </span>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
@@ -271,6 +276,20 @@ export default function QuickResourceCreator({ onResourceCreated }: QuickResourc
                         className="w-full px-3 py-2 bg-white/70 border border-white/50 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
+                  </div>
+
+                  {/* Pill Style Checkbox */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="pill-style-checkbox"
+                      type="checkbox"
+                      checked={isPillStyle}
+                      onChange={(e) => setIsPillStyle(e.target.checked)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="pill-style-checkbox" className={`text-sm ${colors.text}`}>
+                      Create as pill-style resource (compact format with pastel colors)
+                    </label>
                   </div>
 
                   {/* Action Buttons */}

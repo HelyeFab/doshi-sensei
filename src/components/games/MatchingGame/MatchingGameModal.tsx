@@ -365,17 +365,10 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                       className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
                       title={soundEnabled ? "Mute sounds" : "Enable sounds"}
                     >
-                      {soundEnabled ? <Volume2 className="w-4 sm:w-5 h-4 sm:h-5" /> : <VolumeX className="w-4 sm:w-5 h-4 sm:h-5" />}
-                    </button>
-                    <button
-                      onClick={toggleMusic}
-                      className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
-                      title={musicEnabled ? "Mute music" : "Enable music"}
-                    >
                       <img 
-                        src="/flat-icons/root-icons/woman.svg" 
-                        alt="Music toggle" 
-                        className={`w-4 sm:w-5 h-4 sm:h-5 ${!musicEnabled ? 'opacity-50' : ''}`}
+                        src="/flat-icons/root-icons/volume.svg" 
+                        alt={soundEnabled ? "Mute" : "Unmute"} 
+                        className={`w-4 sm:w-5 h-4 sm:h-5 ${!soundEnabled ? 'opacity-50' : 'opacity-100'} transition-opacity`}
                       />
                     </button>
                     <button

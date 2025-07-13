@@ -11,7 +11,6 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 import { colorPalettes } from '@/utils/themes';
-import { StatsDebugSummary } from '@/components/debug/StatsDebugSummary';
 import { StatsBar } from '@/components/stats/StatsBar';
 
 // Structured Data for SEO
@@ -261,8 +260,6 @@ export default function Home() {
         userId={profile?.uid}
       />
       
-      {/* Debug Summary - Only in development */}
-      {process.env.NODE_ENV === 'development' && <StatsDebugSummary />}
     </>
   );
 }

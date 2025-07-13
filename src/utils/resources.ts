@@ -15,7 +15,7 @@ import {
   increment
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { ResourcePost, ResourceFormData, ResourceSearchFilters, ResourceStats, ResourceListItem } from '@/types/resources';
+import { ResourcePost, ResourceFormData, ResourceSearchFilters, ResourceStats, ResourceListItem, RESOURCE_CATEGORIES } from '@/types/resources';
 
 const RESOURCES_COLLECTION = 'resources';
 
@@ -124,6 +124,9 @@ export async function createResourcePost(data: ResourceFormData, authorId: strin
     if (data.scheduledFor) {
       resourcePost.scheduledFor = new Date(data.scheduledFor);
     }
+    if (data.isPillStyle !== undefined) {
+      resourcePost.isPillStyle = data.isPillStyle;
+    }
 
     const docRef = await addDoc(collection(db, RESOURCES_COLLECTION), resourcePost);
     return docRef.id;
@@ -189,6 +192,11 @@ export async function updateResourcePost(id: string, data: ResourceFormData): Pr
       updates.scheduledFor = new Date(data.scheduledFor);
     } else {
       updates.scheduledFor = null;
+    }
+
+    // Handle isPillStyle field
+    if (data.isPillStyle !== undefined) {
+      updates.isPillStyle = data.isPillStyle;
     }
 
     // If changing from draft to published, set publishedAt
@@ -306,9 +314,16 @@ export async function getPublishedResourcePosts(
         return;
       }
 
-      // Apply category filter
-      if (filters.category && data.category !== filters.category) {
-        return;
+      // Apply category filter - check both category field and tags
+      if (filters.category) {
+        const categoryLower = filters.category.toLowerCase();
+        const hasCategory = data.category === filters.category;
+        const hasTag = (data.tags || []).some(tag => 
+          tag.toLowerCase() === categoryLower
+        );
+        if (!hasCategory && !hasTag) {
+          return;
+        }
       }
 
       // Apply featured filter
@@ -425,6 +440,49 @@ export async function incrementResourceViews(id: string): Promise<void> {
   } catch (error) {
     console.error('Error incrementing resource views:', error);
     // Don't throw - view tracking shouldn't break the user experience
+  }
+}
+
+/**
+ * Get all unique categories and tags from published resources
+ */
+export async function getResourceCategoriesAndTags(): Promise<string[]> {
+  try {
+    const q = query(
+      collection(db, RESOURCES_COLLECTION),
+      where('status', '==', 'published')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const categoriesAndTagsSet = new Set<string>();
+    
+    // Add predefined categories
+    RESOURCE_CATEGORIES.forEach(cat => categoriesAndTagsSet.add(cat));
+    
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      
+      // Add category if exists
+      if (data.category) {
+        categoriesAndTagsSet.add(data.category);
+      }
+      
+      // Add all tags
+      if (data.tags && Array.isArray(data.tags)) {
+        data.tags.forEach((tag: string) => {
+          // Capitalize first letter for consistency
+          const capitalizedTag = tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
+          categoriesAndTagsSet.add(capitalizedTag);
+        });
+      }
+    });
+    
+    // Convert to array and sort
+    return Array.from(categoriesAndTagsSet).sort();
+  } catch (error) {
+    console.error('Error getting categories and tags:', error);
+    // Return default categories on error
+    return [...RESOURCE_CATEGORIES];
   }
 }
 

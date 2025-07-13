@@ -404,7 +404,7 @@ export default function KanjiBrowserPage() {
                   </svg>
                   <span>{strings.kanjiBrowser.studyButton} ({studySelection.size}/{strings.kanjiBrowser.studyLimit})</span>
                 </button>
-                {studySelection.size >= 5 && (
+                {studySelection.size >= 3 && (
                   <button
                     type="button"
                     onClick={() => {

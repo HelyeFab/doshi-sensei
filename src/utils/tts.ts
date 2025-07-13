@@ -1,4 +1,4 @@
-// Text-to-Speech utility with ElevenLabs as primary and Google Cloud TTS as fallback
+// Text-to-Speech utility with Google Cloud TTS as primary and ElevenLabs as fallback
 import TTSCache from './ttsCache';
 
 interface ElevenLabsVoice {
@@ -70,11 +70,11 @@ export class TTSManager {
     
     this.isInitialized = true;
     
-    if (this.elevenLabsApiKey) {
-      console.log('✅ ElevenLabs TTS initialized (primary provider)');
-    }
     if (this.googleApiKey) {
-      console.log('✅ Google TTS initialized (fallback provider)');
+      console.log('✅ Google TTS initialized (primary provider)');
+    }
+    if (this.elevenLabsApiKey) {
+      console.log('✅ ElevenLabs TTS initialized (fallback provider)');
     }
     if (!this.elevenLabsApiKey && !this.googleApiKey) {
       console.warn('⚠️ No TTS API keys found');
@@ -165,7 +165,7 @@ export class TTSManager {
   }
 
   /**
-   * Speak text using ElevenLabs as primary, Google TTS as secondary fallback, and Web Speech as final fallback
+   * Speak text using Google TTS as primary, ElevenLabs as secondary fallback, and Web Speech as final fallback
    */
   static async speak(
     text: string, 
@@ -206,37 +206,37 @@ export class TTSManager {
       }
       
       let audioBlob: Blob | null = null;
-      let provider: 'elevenlabs' | 'google' | 'webspeech' = 'elevenlabs';
+      let provider: 'elevenlabs' | 'google' | 'webspeech' = 'google';
       
-      // If provider is forced to Google, skip ElevenLabs
-      if (forceProvider === 'google' && this.googleApiKey) {
+      // If provider is forced to ElevenLabs, skip Google
+      if (forceProvider === 'elevenlabs' && this.elevenLabsApiKey) {
         try {
-          console.log('🎤 Using forced Google TTS...');
-          audioBlob = await this.generateGoogleAudio(text, voice);
-          provider = 'google';
-        } catch (googleError) {
-          console.warn('⚠️ Google TTS failed:', googleError);
-        }
-      }
-      // Try ElevenLabs first if available and not forced to Google
-      else if (this.elevenLabsApiKey && forceProvider !== 'google') {
-        try {
-          console.log('🎤 Attempting ElevenLabs TTS...');
+          console.log('🎤 Using forced ElevenLabs TTS...');
           audioBlob = await this.generateElevenLabsAudio(text, voice);
           provider = 'elevenlabs';
         } catch (elevenLabsError) {
-          console.warn('⚠️ ElevenLabs TTS failed, falling back to Google TTS:', elevenLabsError);
+          console.warn('⚠️ ElevenLabs TTS failed:', elevenLabsError);
         }
       }
-      
-      // Fallback to Google TTS if ElevenLabs failed or unavailable
-      if (!audioBlob && this.googleApiKey) {
+      // Try Google TTS first if available and not forced to ElevenLabs
+      else if (this.googleApiKey && forceProvider !== 'elevenlabs') {
         try {
-          console.log('🎤 Attempting Google TTS...');
+          console.log('🎤 Attempting Google TTS (primary)...');
           audioBlob = await this.generateGoogleAudio(text, voice);
           provider = 'google';
         } catch (googleError) {
-          console.warn('⚠️ Google TTS failed, falling back to Web Speech:', googleError);
+          console.warn('⚠️ Google TTS failed, falling back to ElevenLabs:', googleError);
+        }
+      }
+      
+      // Fallback to ElevenLabs if Google failed or unavailable
+      if (!audioBlob && this.elevenLabsApiKey) {
+        try {
+          console.log('🎤 Attempting ElevenLabs TTS (fallback)...');
+          audioBlob = await this.generateElevenLabsAudio(text, voice);
+          provider = 'elevenlabs';
+        } catch (elevenLabsError) {
+          console.warn('⚠️ ElevenLabs TTS failed, falling back to Web Speech:', elevenLabsError);
         }
       }
       

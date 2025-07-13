@@ -26,6 +26,7 @@ export interface ResourcePost {
   seoTitle?: string;
   seoDescription?: string;
   featured: boolean; // For highlighting important posts
+  isPillStyle?: boolean; // For pill-style display format
 }
 
 export interface ResourceFormData {
@@ -45,6 +46,7 @@ export interface ResourceFormData {
   seoTitle: string;
   seoDescription: string;
   featured: boolean;
+  isPillStyle?: boolean; // For pill-style display format
 }
 
 export interface ResourceSearchFilters {

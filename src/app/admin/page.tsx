@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverview } from '@/components/admin/StatsOverview';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
-import { StatsRecovery } from '@/components/admin/StatsRecovery';
 import { useStrings } from '@/hooks/useLanguage';
+import { useAuth } from '@/contexts/AuthContext';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 function QuickAction({ title, description, icon, onClick, loading }: {
   title: string;
@@ -35,6 +37,34 @@ function QuickAction({ title, description, icon, onClick, loading }: {
 export default function AdminDashboard() {
   const strings = useStrings();
   const router = useRouter();
+  const { user } = useAuth();
+  const [firebaseStatus, setFirebaseStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const [gitBranch, setGitBranch] = useState<string>('main');
+
+  useEffect(() => {
+    // Check Firebase connection
+    const checkFirebaseConnection = async () => {
+      try {
+        // Try to read the user's own document to verify connection
+        if (user?.uid) {
+          const userRef = doc(db, 'users', user.uid);
+          await getDoc(userRef);
+          setFirebaseStatus('connected');
+        }
+      } catch (error) {
+        console.error('Firebase connection error:', error);
+        setFirebaseStatus('error');
+      }
+    };
+
+    if (user) {
+      checkFirebaseConnection();
+    }
+
+    // Get git branch from environment or default
+    const branch = process.env.NEXT_PUBLIC_GIT_BRANCH || 'main';
+    setGitBranch(branch);
+  }, [user]);
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -84,9 +114,6 @@ export default function AdminDashboard() {
 
         {/* Article Monitoring Dashboard */}
         <ArticleMonitoringDashboard />
-
-        {/* Stats Recovery Tool */}
-        <StatsRecovery />
 
         {/* Quick actions */}
         <div>
@@ -156,13 +183,27 @@ export default function AdminDashboard() {
           <h3 className="text-lg font-semibold text-foreground mb-4">{strings.admin.systemStatus}</h3>
           <div className="bg-card border border-border rounded-lg p-4 sm:p-6">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-foreground font-medium">{strings.admin.allSystemsOperational}</span>
+              <div className={`w-3 h-3 rounded-full ${
+                firebaseStatus === 'connected' ? 'bg-green-500' : 
+                firebaseStatus === 'error' ? 'bg-red-500' : 
+                'bg-yellow-500 animate-pulse'
+              }`}></div>
+              <span className="text-foreground font-medium">
+                {firebaseStatus === 'connected' ? strings.admin.allSystemsOperational :
+                 firebaseStatus === 'error' ? 'System Issues Detected' :
+                 'Checking Systems...'}
+              </span>
             </div>
             <div className="mt-4 space-y-2 text-sm text-muted-foreground">
               <div className="flex justify-between">
                 <span>{strings.admin.firebaseConnection}</span>
-                <span className="text-green-600">✓ {strings.admin.connected}</span>
+                <span className={firebaseStatus === 'connected' ? 'text-green-600' : 
+                                firebaseStatus === 'error' ? 'text-red-600' : 
+                                'text-yellow-600'}>
+                  {firebaseStatus === 'connected' ? '✓ ' + strings.admin.connected :
+                   firebaseStatus === 'error' ? '✗ Error' :
+                   '⏳ Checking...'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>{strings.admin.adminDashboard}</span>
@@ -170,7 +211,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex justify-between">
                 <span>{strings.admin.branch}</span>
-                <span className="text-blue-600">feature/admin-dashboard</span>
+                <span className="text-blue-600">{gitBranch}</span>
               </div>
             </div>
           </div>

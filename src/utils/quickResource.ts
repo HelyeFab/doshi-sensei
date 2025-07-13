@@ -89,7 +89,7 @@ export async function extractUrlMetadata(url: string) {
       title: '',
       description: '',
       image: '',
-      type: 'general' as 'youtube' | 'instagram' | 'twitter' | 'general'
+      type: 'general' as 'youtube' | 'instagram' | 'twitter' | 'tiktok' | 'threads' | 'general'
     };
 
     // YouTube URLs
@@ -123,6 +123,28 @@ export async function extractUrlMetadata(url: string) {
     else if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
       extractedData.type = 'twitter';
       extractedData.title = 'Twitter/X Post';
+    }
+    
+    // TikTok URLs
+    else if (hostname.includes('tiktok.com')) {
+      extractedData.type = 'tiktok';
+      extractedData.title = 'TikTok Video';
+      // Extract username from URL if possible
+      const match = url.match(/@([^/]+)/);
+      if (match) {
+        extractedData.description = `Video by @${match[1]}`;
+      }
+    }
+    
+    // Threads URLs
+    else if (hostname.includes('threads.net')) {
+      extractedData.type = 'threads';
+      extractedData.title = 'Threads Post';
+      // Extract username from URL if possible
+      const match = url.match(/@([^/]+)/);
+      if (match) {
+        extractedData.description = `Post by @${match[1]}`;
+      }
     }
     
     // General URL - try to extract basic info
@@ -187,6 +209,12 @@ export function generateSuggestedTags(url: string, extractedData: any): string[]
     case 'twitter':
       tags.push('social', 'twitter');
       break;
+    case 'tiktok':
+      tags.push('video', 'social', 'tiktok');
+      break;
+    case 'threads':
+      tags.push('social', 'threads');
+      break;
     default:
       tags.push('external', 'resource');
   }
@@ -227,6 +255,10 @@ export function createResourceContent(url: string, extractedData: any): string {
     content += `[📸 View on Instagram](${url})\n\n`;
   } else if (extractedData?.type === 'twitter') {
     content += `[🐦 View on Twitter/X](${url})\n\n`;
+  } else if (extractedData?.type === 'tiktok') {
+    content += `[🎵 Watch on TikTok](${url})\n\n`;
+  } else if (extractedData?.type === 'threads') {
+    content += `[🧵 View on Threads](${url})\n\n`;
   } else {
     content += `[🔗 Visit Resource](${url})\n\n`;
   }

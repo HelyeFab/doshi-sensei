@@ -1,0 +1,296 @@
+'use client';
+
+import React from 'react';
+import { useStats } from '@/hooks/useStats';
+import { statsTracker } from '@/lib/stats/statsTracker';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Download, RefreshCw, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+
+export function AdminStatsDebugPanel() {
+  const { stats, loading, error, refreshStats } = useStats();
+
+  const exportDebugData = async () => {
+    try {
+      // Gather all debug data
+      const debugData = {
+        timestamp: new Date().toISOString(),
+        environment: {
+          userAgent: navigator.userAgent,
+          url: window.location.href,
+          localStorage: {
+            STATS_DEBUG: localStorage.getItem('STATS_DEBUG'),
+            STATS_VERBOSE: localStorage.getItem('STATS_VERBOSE'),
+          }
+        },
+        stats: stats,
+        error: error,
+        loading: loading,
+        activities: await statsTracker.getRecentActivities?.() || [],
+        version: '2.0'
+      };
+
+      // Create download
+      const blob = new Blob([JSON.stringify(debugData, null, 2)], { 
+        type: 'application/json' 
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `doshi-sensei-stats-debug-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      console.log('✅ Debug data exported successfully');
+    } catch (err) {
+      console.error('Failed to export debug data:', err);
+      alert('Failed to export debug data. Check console for details.');
+    }
+  };
+
+  const clearAllStats = async () => {
+    if (!confirm('⚠️ This will permanently delete ALL stats data. This cannot be undone. Continue?')) {
+      return;
+    }
+
+    if (!confirm('⚠️ FINAL WARNING: All progress, streaks, and activity history will be lost. Are you absolutely sure?')) {
+      return;
+    }
+
+    try {
+      await statsTracker.resetStats();
+      await refreshStats();
+      alert('✅ All stats have been cleared successfully');
+    } catch (err) {
+      console.error('Failed to clear stats:', err);
+      alert('Failed to clear stats. Check console for details.');
+    }
+  };
+
+  const formatAccuracy = (accuracy: number) => {
+    if (accuracy === 0) return '0%';
+    return `${Math.round(accuracy)}%`;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-destructive/10 border border-destructive rounded-lg">
+        <div className="flex items-center gap-2 text-destructive">
+          <AlertCircle className="h-5 w-5" />
+          <span className="font-medium">Error loading stats</span>
+        </div>
+        <p className="text-sm text-muted-foreground mt-1">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.currentStreak} days</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Longest: {stats.longestStreak} days
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Total Activities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalActivities}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Active {stats.totalDaysActive} days
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Overall Accuracy</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatAccuracy(stats.overallAccuracy)}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {stats.totalCorrectAnswers}/{stats.totalQuestionsAnswered}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Last Active</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm font-medium">
+              {new Date(stats.lastActiveDate).toLocaleDateString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Since {new Date(stats.firstActiveDate).toLocaleDateString()}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Activity Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Activity Breakdown</CardTitle>
+          <CardDescription>Detailed breakdown of all tracked activities</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Drills</span>
+              <div className="font-medium">{stats.drillsCompleted}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Stories</span>
+              <div className="font-medium">{stats.storiesRead}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Articles</span>
+              <div className="font-medium">{stats.articlesRead}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Kanji Study</span>
+              <div className="font-medium">{stats.kanjiStudySessions}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Games</span>
+              <div className="font-medium">{stats.gamesPlayed}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Vocabulary</span>
+              <div className="font-medium">{stats.vocabStudied}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Flashcards</span>
+              <div className="font-medium">{stats.flashcardsReviewed}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Practice Sessions</span>
+              <div className="font-medium">{stats.practiceSessionsCompleted}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Learning Progress */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Learning Progress</CardTitle>
+          <CardDescription>Cumulative learning metrics</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Kanji Learned</span>
+              <div className="font-medium">{stats.totalKanjiLearned}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Words Learned</span>
+              <div className="font-medium">{stats.totalWordsLearned}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Pokemon Caught</span>
+              <div className="font-medium">{stats.pokemonCaught}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Total Score</span>
+              <div className="font-medium">{stats.totalGameScore}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Questions Answered</span>
+              <div className="font-medium">{stats.totalQuestionsAnswered}</div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Correct Answers</span>
+              <div className="font-medium">{stats.totalCorrectAnswers}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Debug Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Debug Actions</CardTitle>
+          <CardDescription>Tools for debugging and managing stats data</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={exportDebugData} variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export Debug Data
+            </Button>
+            <Button onClick={() => refreshStats()} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh Stats
+            </Button>
+            <Button onClick={() => statsTracker.forceSync?.()} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Force Cloud Sync
+            </Button>
+            <Button onClick={clearAllStats} variant="destructive" size="sm">
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear All Stats
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stats Metadata */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Stats Metadata</CardTitle>
+          <CardDescription>Technical information about the stats system</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">User ID</span>
+              <code className="font-mono">{stats.userId || 'Not set'}</code>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Stats Version</span>
+              <Badge variant="outline">{stats.version || '2.0'}</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Last Updated</span>
+              <span>{new Date(stats.lastUpdated).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Loading State</span>
+              <Badge variant={loading ? 'secondary' : 'default'}>
+                {loading ? 'Loading' : 'Ready'}
+              </Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Error State</span>
+              <Badge variant={error ? 'destructive' : 'default'}>
+                {error ? 'Error' : 'OK'}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

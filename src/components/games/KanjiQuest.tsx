@@ -5,7 +5,7 @@ import { GameKanji, getKanjiByJLPT } from '@/utils/kanjiUtils';
 import { getRandomPokemon, getPokemonSpriteUrl, getPokemonSilhouetteClassName } from '@/data/pokemonData';
 import { useAuth } from '@/contexts/AuthContext';
 import { KanjiTTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -135,6 +135,8 @@ export default function KanjiQuest({
   const { isPremium, userType, isLoading: subscriptionLoading } = useSubscription2();
   const { showNotification } = useNotification();
   const { speak } = useTTS();
+  const battleMusicRef = useRef<HTMLAudioElement | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
 
   // Component state is now logged centrally in SubscriptionContext
 
@@ -181,7 +183,51 @@ export default function KanjiQuest({
   
   // Pokeball animation state
   const [showPokeballAnimation, setShowPokeballAnimation] = useState(false);
+  
+  // New battle announcement states
+  const [showKanjiAppearance, setShowKanjiAppearance] = useState(false);
+  const [showKanjiEscape, setShowKanjiEscape] = useState(false);
+  const [currentKanjiId, setCurrentKanjiId] = useState<string | null>(null);
+  const [previousKanjiId, setPreviousKanjiId] = useState<string | null>(null);
+  const [escapedKanji, setEscapedKanji] = useState<GameKanji | null>(null);
+  const [appearanceMessage, setAppearanceMessage] = useState<{ kanji: string; attackType: string } | null>(null);
+  const [showTrainerDefeat, setShowTrainerDefeat] = useState(false);
+  
+  // Exit confirmation modal
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
+  // Initialize battle music
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      battleMusicRef.current = new Audio('/sounds/pokemon-battle.mp3');
+      battleMusicRef.current.loop = true;
+      battleMusicRef.current.volume = 0.3; // Set a moderate volume
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (battleMusicRef.current) {
+        battleMusicRef.current.pause();
+        battleMusicRef.current = null;
+      }
+    };
+  }, []);
+
+  // Handle battle music based on phase
+  useEffect(() => {
+    if (!battleMusicRef.current || isMuted) return;
+
+    if (phase === 'battle') {
+      // Start battle music
+      battleMusicRef.current.play().catch(error => {
+        console.error('Error playing battle music:', error);
+      });
+    } else {
+      // Stop battle music
+      battleMusicRef.current.pause();
+      battleMusicRef.current.currentTime = 0;
+    }
+  }, [phase, isMuted]);
 
   // Initialize session - properly coordinate with auth and subscription loading
   useEffect(() => {
@@ -266,7 +312,7 @@ export default function KanjiQuest({
         // Select 5-8 random kanji
         selectedKanji = [];
         const tempAvailable = [...availableKanji];
-        const numToSelect = Math.min(5 + Math.floor(Math.random() * 4), tempAvailable.length); // 5-8 kanji
+        const numToSelect = Math.min(3 + Math.floor(Math.random() * 3), tempAvailable.length); // 3-5 kanji
 
         for (let i = 0; i < numToSelect && tempAvailable.length > 0; i++) {
           const randomIndex = Math.floor(Math.random() * tempAvailable.length);
@@ -390,6 +436,15 @@ export default function KanjiQuest({
     }
   };
 
+  const getAttackTypeName = (questionType: 'onyomi' | 'kunyomi' | 'meaning'): string => {
+    switch (questionType) {
+      case 'onyomi': return "On'yomi Attack";
+      case 'kunyomi': return "Kun'yomi Attack";
+      case 'meaning': return "Meaning Attack";
+      default: return "Attack";
+    }
+  };
+
   const calculateDamage = (
     attack: Attack,
     isCorrect: boolean,
@@ -458,7 +513,7 @@ export default function KanjiQuest({
     // Check for trainer defeat
     if (trainerHP - damage <= 0) {
       setTimeout(() => {
-        completeQuiz(userAnswers);
+        setShowTrainerDefeat(true);
       }, 1000);
     }
   };
@@ -919,8 +974,21 @@ export default function KanjiQuest({
         return; // Let the modal close handler deal with progression
       }
 
-      // Check if kanji was defeated (HP reached 0)
-      if (isCorrect && kanjiHP - battleLog[battleLog.length - 1]?.damage <= 0) {
+      // Check if kanji was defeated (HP reached 0 OR all questions answered)
+      const currentKanji = currentQuestion.kanjiRef;
+      const questionsAnswered = askedQuestions.get(currentKanji.id) || new Set();
+      const totalPossibleQuestions = 
+        (currentKanji.on_readings?.length > 0 ? 1 : 0) +
+        (currentKanji.kun_readings?.length > 0 ? 1 : 0) +
+        1; // meaning always exists
+      
+      // Add current question type to answered set
+      const currentQuestionType = currentQuestion.type === 'reading' 
+        ? (currentQuestion.question.includes('on\'yomi') ? 'onyomi' : 'kunyomi')
+        : 'meaning';
+      const allQuestionsAnswered = questionsAnswered.size + 1 >= totalPossibleQuestions;
+      
+      if (isCorrect && (kanjiHP - battleLog[battleLog.length - 1]?.damage <= 0 || allQuestionsAnswered)) {
         // Trigger defeat animation
         setShowKanjiDefeat(true);
         
@@ -928,33 +996,49 @@ export default function KanjiQuest({
         setTimeout(() => {
           setShowKanjiDefeat(false);
           
-          // Get next encounter
-          const nextEncounter = getNextEncounter(session.kanji);
-          
-          if (nextEncounter) {
-            // Generate next question
-            const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
-            setQuizQuestions([nextQuestion]);
-            setCurrentQuestionIndex(0);
-            setUserAnswers([]);
-            setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === nextEncounter.kanji.id));
+          // Add a brief pause after defeat before transitioning
+          setTimeout(() => {
+            // Get next encounter
+            const nextEncounter = getNextEncounter(session.kanji);
             
-            // Reset HP for new kanji encounter
-            const baseHP = getKanjiHP(jlptLevel);
-            setKanjiHP(baseHP);
-            setMaxKanjiHP(baseHP);
-            
-            // Generate new random icons for answer buttons
-            setAnswerIcons(getRandomIcons());
-            
-            setShowQuizFeedback(false);
-            setIsProcessingAnswer(false);
-            setShowWrongAnswerModal(false);
-          } else {
-            // All questions completed!
-            completeQuiz(newAnswers);
-          }
-        }, 2000); // Wait for defeat animation
+            if (nextEncounter) {
+              // Always show new kanji appearance after defeating one
+              setPreviousKanjiId(currentKanjiId);
+              setCurrentKanjiId(nextEncounter.kanji.id);
+              setAppearanceMessage({
+                kanji: nextEncounter.kanji.character,
+                attackType: getAttackTypeName(nextEncounter.questionType)
+              });
+              setShowKanjiAppearance(true);
+              
+              setTimeout(() => {
+                setShowKanjiAppearance(false);
+                
+                // Generate next question
+                const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
+                setQuizQuestions([nextQuestion]);
+                setCurrentQuestionIndex(0);
+                setUserAnswers([]);
+                setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === nextEncounter.kanji.id));
+                
+                // Reset HP for new kanji encounter
+                const baseHP = getKanjiHP(jlptLevel);
+                setKanjiHP(baseHP);
+                setMaxKanjiHP(baseHP);
+                
+                // Generate new random icons for answer buttons
+                setAnswerIcons(getRandomIcons());
+                
+                setShowQuizFeedback(false);
+                setIsProcessingAnswer(false);
+                setShowWrongAnswerModal(false);
+              }, 3500); // Wait for appearance animation
+            } else {
+              // All questions completed!
+              completeQuiz(newAnswers);
+            }
+          }, 1000); // Brief pause after defeat
+        }, 3000); // Wait for defeat animation (increased from 2000)
         return;
       }
 
@@ -962,24 +1046,60 @@ export default function KanjiQuest({
       const nextEncounter = getNextEncounter(session.kanji);
       
       if (nextEncounter) {
-        // Generate next question
-        const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
-        setQuizQuestions([nextQuestion]);
-        setCurrentQuestionIndex(0);
-        setUserAnswers([]);
-        setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === nextEncounter.kanji.id));
+        // Check if this is a different kanji than the current one
+        const isNewKanji = nextEncounter.kanji.id !== currentQuestion.kanjiRef.id;
         
-        // Reset HP for new kanji encounter
-        const baseHP = getKanjiHP(jlptLevel);
-        setKanjiHP(baseHP);
-        setMaxKanjiHP(baseHP);
-        
-        // Generate new random icons for answer buttons
-        setAnswerIcons(getRandomIcons());
-        
-        setShowQuizFeedback(false);
-        setIsProcessingAnswer(false);
-        setShowWrongAnswerModal(false);
+        if (isNewKanji) {
+          // Show kanji escape animation first (for non-defeated kanji)
+          setEscapedKanji(currentQuestion.kanjiRef);
+          setShowKanjiEscape(true);
+          
+          setTimeout(() => {
+            setShowKanjiEscape(false);
+            
+            // Then show new kanji appearance
+            setPreviousKanjiId(currentKanjiId);
+            setCurrentKanjiId(nextEncounter.kanji.id);
+            setAppearanceMessage({
+              kanji: nextEncounter.kanji.character,
+              attackType: getAttackTypeName(nextEncounter.questionType)
+            });
+            setShowKanjiAppearance(true);
+            
+            setTimeout(() => {
+              setShowKanjiAppearance(false);
+              
+              // Generate next question
+              const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
+              setQuizQuestions([nextQuestion]);
+              setCurrentQuestionIndex(0);
+              setUserAnswers([]);
+              setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === nextEncounter.kanji.id));
+              
+              // Reset HP for new kanji encounter
+              const baseHP = getKanjiHP(jlptLevel);
+              setKanjiHP(baseHP);
+              setMaxKanjiHP(baseHP);
+              
+              // Generate new random icons for answer buttons
+              setAnswerIcons(getRandomIcons());
+              
+              setShowQuizFeedback(false);
+              setIsProcessingAnswer(false);
+              setShowWrongAnswerModal(false);
+            }, 3500); // Wait for appearance animation
+          }, 2700); // Wait for escape animation (2.5s + buffer)
+        } else {
+          // Same kanji, just transition to next question
+          const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
+          setQuizQuestions([nextQuestion]);
+          setCurrentQuestionIndex(0);
+          setUserAnswers([]);
+          
+          setShowQuizFeedback(false);
+          setIsProcessingAnswer(false);
+          setShowWrongAnswerModal(false);
+        }
       } else {
         // All questions completed!
         completeQuiz(newAnswers);
@@ -998,22 +1118,57 @@ export default function KanjiQuest({
       const nextEncounter = getNextEncounter(session.kanji);
       
       if (nextEncounter) {
-        // Generate next question
-        const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
-        setQuizQuestions([nextQuestion]);
-        setCurrentQuestionIndex(0);
-        setUserAnswers([]);
-        setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === nextEncounter.kanji.id));
+        // Check if this is a different kanji than the current one
+        const currentQuestion = quizQuestions[currentQuestionIndex];
+        const isNewKanji = currentQuestion && nextEncounter.kanji.id !== currentQuestion.kanjiRef.id;
         
-        // Reset HP for new kanji encounter
-        const baseHP = getKanjiHP(jlptLevel);
-        setKanjiHP(baseHP);
-        setMaxKanjiHP(baseHP);
-        
-        // Generate new random icons for answer buttons
-        setAnswerIcons(getRandomIcons());
-        
-        setShowQuizFeedback(false);
+        if (isNewKanji) {
+          // Show kanji escape animation first
+          setEscapedKanji(currentQuestion.kanjiRef);
+          setShowKanjiEscape(true);
+          
+          setTimeout(() => {
+            setShowKanjiEscape(false);
+            
+            // Then show new kanji appearance
+            setPreviousKanjiId(currentKanjiId);
+            setCurrentKanjiId(nextEncounter.kanji.id);
+            setAppearanceMessage({
+              kanji: nextEncounter.kanji.character,
+              attackType: getAttackTypeName(nextEncounter.questionType)
+            });
+            setShowKanjiAppearance(true);
+            
+            setTimeout(() => {
+              setShowKanjiAppearance(false);
+              
+              // Generate next question
+              const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
+              setQuizQuestions([nextQuestion]);
+              setCurrentQuestionIndex(0);
+              setUserAnswers([]);
+              setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === nextEncounter.kanji.id));
+              
+              // Reset HP for new kanji encounter
+              const baseHP = getKanjiHP(jlptLevel);
+              setKanjiHP(baseHP);
+              setMaxKanjiHP(baseHP);
+              
+              // Generate new random icons for answer buttons
+              setAnswerIcons(getRandomIcons());
+              
+              setShowQuizFeedback(false);
+            }, 3500); // Wait for appearance animation
+          }, 2700); // Wait for escape animation (2.5s + buffer)
+        } else {
+          // Same kanji, just transition to next question
+          const nextQuestion = generateEncounterQuestion(nextEncounter, session.kanji);
+          setQuizQuestions([nextQuestion]);
+          setCurrentQuestionIndex(0);
+          setUserAnswers([]);
+          
+          setShowQuizFeedback(false);
+        }
       } else {
         // All questions completed!
         completeQuiz(userAnswers);
@@ -1027,20 +1182,31 @@ export default function KanjiQuest({
       // Generate first question for battle
       const firstEncounter = getNextEncounter(session.kanji);
       if (firstEncounter) {
-        const question = generateEncounterQuestion(firstEncounter, session.kanji);
-        setQuizQuestions([question]);
-        setCurrentQuestionIndex(0);
-        setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === firstEncounter.kanji.id));
-        
-        // Set HP for this kanji
-        const baseHP = getKanjiHP(jlptLevel);
-        setKanjiHP(baseHP);
-        setMaxKanjiHP(baseHP);
-        
-        // Generate initial random icons
-        setAnswerIcons(getRandomIcons());
-        
+        // Show initial kanji appearance
+        setCurrentKanjiId(firstEncounter.kanji.id);
+        setAppearanceMessage({
+          kanji: firstEncounter.kanji.character,
+          attackType: getAttackTypeName(firstEncounter.questionType)
+        });
+        setShowKanjiAppearance(true);
         setPhase('battle');
+        
+        setTimeout(() => {
+          setShowKanjiAppearance(false);
+          
+          const question = generateEncounterQuestion(firstEncounter, session.kanji);
+          setQuizQuestions([question]);
+          setCurrentQuestionIndex(0);
+          setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === firstEncounter.kanji.id));
+          
+          // Set HP for this kanji
+          const baseHP = getKanjiHP(jlptLevel);
+          setKanjiHP(baseHP);
+          setMaxKanjiHP(baseHP);
+          
+          // Generate initial random icons
+          setAnswerIcons(getRandomIcons());
+        }, 3500); // Wait for appearance animation
       }
     }
   };
@@ -1148,7 +1314,7 @@ export default function KanjiQuest({
     if (passed) {
       // Track game completion in stats system
       const timeTaken = Math.floor((Date.now() - new Date(session.startTime).getTime()) / 1000);
-      trackGamePlayed('Kanji Quest', score, timeTaken).catch(error => {
+      trackGamePlayed('kanji-quest', score, timeTaken).catch(error => {
         console.error('Failed to track game completion:', error);
       });
 
@@ -1235,10 +1401,10 @@ export default function KanjiQuest({
               <h1 className="text-2xl md:text-3xl font-bold">Select Kanji to Battle</h1>
               <button
                 onClick={() => {
-                  if (selectedKanji.size < 5 || selectedKanji.size > 8) {
+                  if (selectedKanji.size < 3 || selectedKanji.size > 5) {
                     showNotification({
                       title: 'Invalid Selection',
-                      message: `Please select between 5 and 8 kanji to battle. You currently have ${selectedKanji.size} selected.`,
+                      message: `Please select between 3 and 5 kanji to battle. You currently have ${selectedKanji.size} selected.`,
                       type: 'warning'
                     });
                   } else {
@@ -1250,10 +1416,10 @@ export default function KanjiQuest({
                 Start Battle
               </button>
             </div>
-            <p className="text-muted-foreground text-sm md:text-base">Choose 5-8 kanji to practice with</p>
+            <p className="text-muted-foreground text-sm md:text-base">Choose 3-5 kanji to practice with</p>
             <div className="mt-2">
               <span className="text-sm font-medium">
-                Selected: {selectedKanji.size}/8 (minimum: 5)
+                Selected: {selectedKanji.size}/5 (minimum: 3)
               </span>
             </div>
           </div>
@@ -1294,6 +1460,181 @@ export default function KanjiQuest({
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Global Animation Overlays - Outside of phase transitions */}
+      {/* Kanji Appearance Animation */}
+      <AnimatePresence>
+        {showKanjiAppearance && appearanceMessage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[200]"
+          >
+            <motion.div
+              initial={{ scale: 0, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0, y: -50 }}
+              transition={{ type: "spring", damping: 12 }}
+              className="bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-purple-900 dark:to-pink-900 rounded-lg p-8 max-w-md mx-4 shadow-2xl border-2 border-yellow-500 dark:border-purple-500"
+            >
+              <motion.div
+                animate={{ 
+                  rotate: [0, -5, 5, -5, 0],
+                  scale: [1, 1.05, 1, 1.05, 1]
+                }}
+                transition={{ duration: 0.5, repeat: 2 }}
+                className="text-center"
+              >
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                  A wild <span className="text-4xl japanese-text mx-2">{appearanceMessage.kanji}</span> appeared!
+                </h2>
+                <img 
+                  src="/flat-icons/1752632-pokemon/png/017-gaming.png" 
+                  alt="Pokeball"
+                  className="w-16 h-16 mx-auto mb-4 animate-bounce"
+                />
+                <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  Get ready for a <span className="text-primary">{appearanceMessage.attackType}</span>!
+                </p>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Kanji Escape Animation */}
+      <AnimatePresence>
+        {showKanjiEscape && escapedKanji && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[200]"
+          >
+            <motion.div
+              initial={{ scale: 1, x: 0, opacity: 1 }}
+              animate={{ 
+                scale: [1, 1, 0.9, 0.7],
+                x: [0, 0, -30, 400],
+                opacity: [1, 1, 0.9, 0],
+                rotate: [0, 0, 90, 180]
+              }}
+              transition={{ 
+                duration: 2.5, 
+                ease: "easeInOut",
+                times: [0, 0.4, 0.7, 1] // Hold at full size for 40% of animation
+              }}
+              className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg p-8 max-w-md mx-4 shadow-2xl border-2 border-gray-500"
+            >
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                  Oh no! The wild <span className="text-3xl japanese-text mx-2">{escapedKanji.character}</span> escaped!
+                </h2>
+                <img 
+                  src="/flat-icons/1752632-pokemon/png/055-gaming.png" 
+                  alt="Escape"
+                  className="w-16 h-16 mx-auto opacity-60"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Trainer Defeat Animation */}
+      <AnimatePresence>
+        {showTrainerDefeat && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[200]"
+          >
+            <motion.div
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 20 }}
+              transition={{ type: "spring", damping: 15 }}
+              className="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-lg p-8 max-w-md mx-4 shadow-2xl border-2 border-red-500"
+            >
+              <div className="text-center">
+                <img 
+                  src="/flat-icons/1752632-pokemon/png/030-gaming.png" 
+                  alt="Defeat"
+                  className="w-20 h-20 mx-auto mb-4 opacity-80 grayscale"
+                />
+                <h2 className="text-2xl font-bold text-red-800 dark:text-red-200 mb-2">
+                  You were defeated!
+                </h2>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                  The wild {session?.kanji[currentKanjiIndex]?.character || 'kanji'} was too strong!
+                </p>
+                <button
+                  onClick={() => {
+                    setShowTrainerDefeat(false);
+                    completeQuiz(userAnswers);
+                  }}
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Continue
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Exit Confirmation Modal */}
+      <AnimatePresence>
+        {showExitConfirmation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[300]"
+          >
+            <motion.div
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 20 }}
+              transition={{ type: "spring", damping: 15 }}
+              className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg p-8 max-w-md mx-4 shadow-2xl border-2 border-gray-500"
+            >
+              <div className="text-center">
+                <img 
+                  src="/flat-icons/1752632-pokemon/png/040-gaming.png" 
+                  alt="Warning"
+                  className="w-16 h-16 mx-auto mb-4"
+                />
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                  Exit Battle?
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  Are you sure you want to exit? Your progress in this battle will be lost!
+                </p>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => setShowExitConfirmation(false)}
+                    className="px-6 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowExitConfirmation(false);
+                      onBack();
+                    }}
+                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Exit Battle
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence mode="wait">
         {/* Wild Encounter Phase */}
         {phase === 'encounter' && (
@@ -1365,22 +1706,36 @@ export default function KanjiQuest({
               <button
                 onClick={() => {
                   if (session) {
+                    // Initialize question tracking
+                    setAskedQuestions(new Map());
+                    
                     // Same setup but skip to battle
                     const firstEncounter = getNextEncounter(session.kanji);
                     if (firstEncounter) {
-                      const question = generateEncounterQuestion(firstEncounter, session.kanji);
-                      setQuizQuestions([question]);
-                      setCurrentQuestionIndex(0);
-                      setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === firstEncounter.kanji.id));
-                      
-                      const baseHP = getKanjiHP(jlptLevel);
-                      setKanjiHP(baseHP);
-                      setMaxKanjiHP(baseHP);
-                      
-                      // Generate initial random icons
-                      setAnswerIcons(getRandomIcons());
-                      
+                      // Show initial kanji appearance
+                      setCurrentKanjiId(firstEncounter.kanji.id);
+                      setAppearanceMessage({
+                        kanji: firstEncounter.kanji.character,
+                        attackType: getAttackTypeName(firstEncounter.questionType)
+                      });
+                      setShowKanjiAppearance(true);
                       setPhase('battle');
+                      
+                      setTimeout(() => {
+                        setShowKanjiAppearance(false);
+                        
+                        const question = generateEncounterQuestion(firstEncounter, session.kanji);
+                        setQuizQuestions([question]);
+                        setCurrentQuestionIndex(0);
+                        setCurrentKanjiIndex(session.kanji.findIndex(k => k.id === firstEncounter.kanji.id));
+                        
+                        const baseHP = getKanjiHP(jlptLevel);
+                        setKanjiHP(baseHP);
+                        setMaxKanjiHP(baseHP);
+                        
+                        // Generate initial random icons
+                        setAnswerIcons(getRandomIcons());
+                      }, 3500); // Wait for appearance animation
                     }
                   }
                 }}
@@ -1393,10 +1748,10 @@ export default function KanjiQuest({
         )}
 
         {/* Battle Phase - Integrated Quiz with Battle Interface */}
-        {phase === 'battle' && quizQuestions.length > 0 && (
+        {phase === 'battle' && quizQuestions.length > 0 && !showKanjiAppearance && !showKanjiEscape && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto">
             {/* Grey transparent overlay behind the modal */}
-            <div className="fixed inset-0 bg-black/80 z-0" onClick={onBack} />
+            <div className="fixed inset-0 bg-black/80 z-0" onClick={() => setShowExitConfirmation(true)} />
             {/* Modal (battle UI card) centered */}
             <motion.div
               key="battle"
@@ -1412,6 +1767,7 @@ export default function KanjiQuest({
                 boxShadow: '25px 30px 70px rgba(0, 0, 0, 0.7), 15px 20px 40px rgba(0, 0, 0, 0.5), 8px 10px 20px rgba(0, 0, 0, 0.3)'
               }}
             >
+
               <div className="container mx-auto px-4 py-1 flex flex-col flex-1">
                 {/* Secondary Terminal Display */}
                 <div className="w-2/3 mx-auto mb-2">
@@ -1566,6 +1922,20 @@ export default function KanjiQuest({
                     >
                       <div className="text-6xl md:text-7xl relative">
                         {session.kanji[currentKanjiIndex]?.character}
+                        {/* Question count indicator - smaller and more subtle */}
+                        <div className="absolute -top-10 right-0 text-xs font-medium text-yellow-400/80 bg-black/30 px-2 py-0.5 rounded">
+                          {(() => {
+                            const currentKanji = session.kanji[currentKanjiIndex];
+                            const askedForThisKanji = askedQuestions.get(currentKanji?.id || '') || new Set();
+                            const totalPossible = 
+                              (currentKanji?.on_readings?.length > 0 ? 1 : 0) +
+                              (currentKanji?.kun_readings?.length > 0 ? 1 : 0) +
+                              1; // meaning always exists
+                            // Don't exceed total possible
+                            const currentCount = Math.min(askedForThisKanji.size + 1, totalPossible);
+                            return `${currentCount}/${totalPossible}`;
+                          })()}
+                        </div>
                         {/* Damage number animation */}
                         <AnimatePresence>
                           {isAttacking && userAnswers[currentQuestionIndex] === quizQuestions[currentQuestionIndex]?.correctIndex && (
@@ -1813,7 +2183,18 @@ export default function KanjiQuest({
                     {/* Start/Select centered below controls */}
                     <div className="absolute left-1/2 bottom-[-32px] -translate-x-1/2 flex gap-6">
                       <div className="flex flex-col items-center gap-1">
-                        <div className="w-12 h-2 bg-gray-600 rounded-full shadow-inner"></div>
+                        <button
+                          onClick={() => setIsMuted(!isMuted)}
+                          className="w-12 h-2 bg-gray-600 rounded-full shadow-inner flex items-center justify-center hover:bg-gray-500 transition-colors"
+                          aria-label={isMuted ? "Unmute music" : "Mute music"}
+                        >
+                          <img 
+                            src="/flat-icons/root-icons/volume.svg" 
+                            alt={isMuted ? "Unmute" : "Mute"} 
+                            className={`w-3 h-3 ${isMuted ? 'opacity-50' : 'opacity-100'} transition-opacity`}
+                            style={{ filter: 'invert(1)' }}
+                          />
+                        </button>
                         <span className="text-[9px] text-gray-300 font-medium">START</span>
                       </div>
                       <div className="flex flex-col items-center gap-1">

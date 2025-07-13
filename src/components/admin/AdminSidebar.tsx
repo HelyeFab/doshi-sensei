@@ -69,6 +69,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     iconKey: 'logs',
     href: '/admin/logs',
   },
+  {
+    id: 'debug' as AdminSection,
+    labelKey: 'debug',
+    iconKey: 'debug',
+    href: '/admin/debug',
+  },
 ];
 
 interface AdminSidebarProps {
@@ -84,8 +90,10 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   // Build sidebar items with translated labels
   const sidebarItems = sidebarItemsConfig.map(item => ({
     ...item,
-    label: strings.navigation?.admin?.[item.labelKey]?.label || item.labelKey,
-    icon: strings.navigation?.admin?.[item.labelKey]?.icon || '📋',
+    label: strings.navigation?.admin?.[item.labelKey]?.label || 
+           (item.labelKey === 'debug' ? 'Debug Tools' : item.labelKey),
+    icon: strings.navigation?.admin?.[item.labelKey]?.icon || 
+          (item.labelKey === 'debug' ? '🐛' : '📋'),
   }));
 
   const handleSectionClick = (section: AdminSection) => {

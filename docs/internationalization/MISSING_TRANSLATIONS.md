@@ -34,6 +34,74 @@ This document tracks missing translations and translation issues in the Doshi Se
 - **Status**: Needs font testing across languages
 - **Priority**: Low
 
+## Missing Translations
+
+### Homepage (/)
+
+#### Stats Bar
+
+- **Issue**: Stats bar elements are not translated
+- **UI Element**: Statistics display bar
+- **Context**: Shows user progress/statistics on the main homepage
+- **Priority**: High (visible on main page)
+- **Status**: Needs translation keys added to string files
+
+### Navigation Menus (Mobile & Desktop)
+
+#### Moodboards Menu Item
+
+- **Issue**: "Moodboards" menu item is not translated
+- **UI Element**: Navigation menu item
+- **Context**: Appears in both mobile and desktop navigation menus
+- **Priority**: High (visible in main navigation)
+- **Status**: Needs translation key added to string files
+- **Languages Needed**: All supported languages (es, fr, de, it, ar, ko)
+
+### Practice Page (/practice/)
+
+#### Page Content
+
+- **Issue**: Practice page content is not translated
+- **UI Element**: Page content and navigation
+- **Context**: Main practice page for language learning exercises
+- **Priority**: High (core learning feature)
+- **Status**: Needs translation keys added to string files
+- **Languages Needed**: All supported languages (es, fr, de, it, ar, ko)
+
+### Drill Page (/drill/)
+
+#### Page Content
+
+- **Issue**: Drill page content is not translated
+- **UI Element**: Page content and navigation
+- **Context**: Main drill page for focused language practice exercises
+- **Priority**: High (core learning feature)
+- **Status**: Needs translation keys added to string files
+- **Languages Needed**: All supported languages (es, fr, de, it, ar, ko)
+
+### Vocabulary Page (/vocabulary/)
+
+#### Page Content
+
+- **Issue**: Vocabulary page content is not translated
+- **UI Element**: Page content and navigation
+- **Context**: Main vocabulary page for word learning and management
+- **Priority**: High (core learning feature)
+- **Status**: Needs translation keys added to string files
+- **Languages Needed**: All supported languages (es, fr, de, it, ar, ko)
+
+### Kanji Browser Page (/kanji-browser/)
+
+#### Page Title Translation
+
+- **Issue**: Page title shows "Browser di kanji" instead of "Kanji Browser"
+- **UI Element**: Page title and navigation
+- **Context**: Kanji browsing and study page
+- **Priority**: High (visible in navigation and page header)
+- **Status**: Needs correction in translation files
+- **Languages Needed**: All supported languages (es, fr, de, it, ar, ko)
+- **Note**: Should be "Kanji Browser" in all languages, not "Browser di kanji"
+
 ## Translation Scripts
 
 ### Check Missing Translations

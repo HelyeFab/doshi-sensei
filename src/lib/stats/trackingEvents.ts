@@ -32,6 +32,24 @@ export async function trackStoryRead(
   });
 }
 
+// Story Quiz tracking
+export async function trackStoryQuizCompleted(
+  storyId: string,
+  storyTitle: string,
+  questionsAnswered: number,
+  correctAnswers: number,
+  score: number
+): Promise<void> {
+  await statsTracker.trackActivity('drill', {
+    feature: 'story-quiz',
+    itemId: storyId,
+    itemTitle: `Quiz: ${storyTitle}`,
+    total: questionsAnswered,
+    correct: correctAnswers,
+    score: score
+  });
+}
+
 // Article tracking
 export async function trackArticleRead(
   articleId: string,

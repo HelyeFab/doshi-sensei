@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard } from '@/types/moodBoard';
 import Link from 'next/link';
+import DeleteConfirmationModal from '@/components/admin/DeleteConfirmationModal';
 
 interface MoodBoardManagerProps {
   searchQuery: string;
@@ -15,6 +16,12 @@ export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerPr
   const [filteredBoards, setFilteredBoards] = useState<MoodBoard[]>([]);
   const [sortBy, setSortBy] = useState<'title' | 'jlpt' | 'updated' | 'kanji_count'>('updated');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    boardId: string;
+    boardTitle: string;
+  }>({ isOpen: false, boardId: '', boardTitle: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filter and search mood boards
   useEffect(() => {
@@ -71,16 +78,32 @@ export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerPr
     }
   };
 
-  const handleDelete = async (boardId: string) => {
-    if (confirm('Are you sure you want to delete this mood board? This action cannot be undone.')) {
-      try {
-        await deleteMoodBoard(boardId);
-        await refreshMoodBoards();
-      } catch (error) {
-        console.error('Failed to delete mood board:', error);
-        // TODO: Show error notification
-      }
+  const handleDeleteClick = (board: MoodBoard) => {
+    setDeleteModal({
+      isOpen: true,
+      boardId: board.id,
+      boardTitle: board.title
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.boardId) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteMoodBoard(deleteModal.boardId);
+      await refreshMoodBoards();
+      setDeleteModal({ isOpen: false, boardId: '', boardTitle: '' });
+    } catch (error) {
+      console.error('Failed to delete mood board:', error);
+      // TODO: Show error notification
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false, boardId: '', boardTitle: '' });
   };
 
   const handleToggleStatus = async (boardId: string, currentStatus: boolean) => {
@@ -282,7 +305,7 @@ export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerPr
                       </button>
 
                       <button
-                        onClick={() => handleDelete(board.id)}
+                        onClick={() => handleDeleteClick(board)}
                         className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-lg hover:bg-red-200 dark:bg-red-900 dark:text-red-200 transition-colors"
                       >
                         Delete
@@ -314,5 +337,16 @@ export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerPr
         </div>
       )}
     </div>
+
+    {/* Delete Confirmation Modal */}
+    <DeleteConfirmationModal
+      isOpen={deleteModal.isOpen}
+      title="Delete Mood Board"
+      message="Are you sure you want to delete this mood board?"
+      itemName={deleteModal.boardTitle}
+      onConfirm={handleDeleteConfirm}
+      onCancel={handleDeleteCancel}
+      isDeleting={isDeleting}
+    />
   );
 }

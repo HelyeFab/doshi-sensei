@@ -6,12 +6,17 @@ import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useStrings } from '@/contexts/LanguageContext';
+import GenerateKanjiMoodboardModal from '@/components/admin/GenerateKanjiMoodboardModal';
+import { useRouter } from 'next/navigation';
+import { Sparkles } from 'lucide-react';
 
 export default function MoodBoardsPage() {
   const strings = useStrings();
-  const { moodBoards, loading } = useMoodBoards();
+  const router = useRouter();
+  const { moodBoards, loading, createMoodBoard } = useMoodBoards();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterJLPT, setFilterJLPT] = useState<'all' | 'N5' | 'N4' | 'N3' | 'N2' | 'N1'>('all');
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [stats, setStats] = useState({
     totalBoards: 0,
     activeBoards: 0,
@@ -67,29 +72,92 @@ export default function MoodBoardsPage() {
     }
   }, [moodBoards, loading]);
 
+  const handleGeneratedMoodboard = async (moodboardData: any) => {
+    try {
+      console.log('Handling generated moodboard:', moodboardData);
+      
+      if (!moodboardData || !moodboardData.kanjiList) {
+        throw new Error('Invalid moodboard data received');
+      }
+      
+      // Convert KanjiImportItem format to KanjiItem format
+      const convertedKanji = moodboardData.kanjiList.map((item: any) => {
+        // Use provided readings or fall back to kana field
+        const onReadings = item.onReading ? [item.onReading] : 
+                          (item.kana && item.kana.match(/^[ァ-ヶー]+$/)) ? [item.kana] : [];
+        const kunReadings = item.kunReading ? [item.kunReading] : 
+                           (item.kana && !item.kana.match(/^[ァ-ヶー]+$/)) ? [item.kana] : [];
+        
+        return {
+          char: item.kanji,
+          meaning: item.meaning,
+          readings: {
+            on: onReadings,
+            kun: kunReadings
+          },
+          examples: item.examples?.map((ex: any) => ex.sentence) || [],
+          difficulty: item.jlptLevel === 'N5' ? 1 : 
+                     item.jlptLevel === 'N4' ? 2 : 
+                     item.jlptLevel === 'N3' ? 3 : 
+                     item.jlptLevel === 'N2' ? 4 : 5
+        };
+      });
+      
+      // Create the moodboard in the database
+      await createMoodBoard({
+        title: moodboardData.category,
+        emoji: moodboardData.emoji,
+        jlpt: moodboardData.kanjiList[0]?.jlptLevel || 'N5',
+        background: moodboardData.themeColor,
+        description: moodboardData.description,
+        kanji: convertedKanji,
+        isActive: true,
+        sortOrder: 0,
+      });
+      
+      // Refresh the page to show the new moodboard
+      router.refresh();
+    } catch (error) {
+      console.error('Error creating moodboard:', error);
+      // Show error notification if available
+      if (typeof window !== 'undefined') {
+        alert(`Failed to create moodboard: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+  };
+
   return (
-    <AdminLayout title={strings.admin.moodBoardsManagement}>
+    <AdminLayout title="Mood Boards Management">
       <div className="space-y-6">
         {/* Page header */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-foreground mb-2">
-                {strings.admin.moodBoardsManagement}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-lg sm:text-xl font-bold text-foreground mb-1 sm:mb-2">
+                Mood Boards Management
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Create, edit, and manage kanji mood boards with our hybrid editor interface.
               </p>
             </div>
-            <Link
-              href="/admin/mood-boards/new"
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              {strings.admin.createNewBoard}
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <button
+                onClick={() => setShowGenerateModal(true)}
+                className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 shadow-lg text-sm sm:text-base"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span className="whitespace-nowrap">Generate with AI</span>
+              </button>
+              <Link
+                href="/admin/mood-boards/new"
+                className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span className="whitespace-nowrap">Create New Board</span>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -247,6 +315,13 @@ export default function MoodBoardsPage() {
             </div>
           </div>
         </div>
+
+        {/* AI Generation Modal */}
+        <GenerateKanjiMoodboardModal
+          isOpen={showGenerateModal}
+          onClose={() => setShowGenerateModal(false)}
+          onGenerated={handleGeneratedMoodboard}
+        />
       </div>
     </AdminLayout>
   );

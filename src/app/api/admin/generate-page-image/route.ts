@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withFirebaseAdmin } from '@/utils/api-wrapper';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateImageWithGPTImage, generateImageWithDALLE3 } from '@/utils/openai-image-generation';
+import { generateCharacterProfile, generateConsistentCharacterPrompt, CharacterVisualProfile } from '@/utils/character-consistency';
 
 // Configure for API route timeout
 export const runtime = 'nodejs';
@@ -13,6 +15,8 @@ interface GeneratePageImageRequest {
   characterDescription: string;
   visualStyle: string;
   setting: string;
+  characterReferenceImage?: string; // Reference image for character consistency
+  characterProfile?: CharacterVisualProfile; // Character profile for consistency
   storyContext?: {
     characterName: string;
     characterAge?: string;
@@ -52,13 +56,34 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     }
 
     const body: GeneratePageImageRequest = await request.json();
-    const { pageNumber, imagePrompt, characterDescription, visualStyle, setting, storyContext } = body;
+    const { pageNumber, imagePrompt, characterDescription, visualStyle, setting, storyContext, characterReferenceImage, characterProfile } = body;
 
     // Build a contextual prompt using the story information
     let contextualPrompt = '';
+    let useCharacterConsistency = false;
+    let profile: CharacterVisualProfile | undefined = characterProfile;
     
-    if (storyContext) {
-      // Determine character type from context
+    // If we have story context but no character profile, generate one
+    if (storyContext && !profile) {
+      profile = generateCharacterProfile(
+        {
+          name: storyContext.characterName,
+          nameJa: '', // Not needed for visual profile
+          description: storyContext.characterRole,
+          visualDescription: characterDescription
+        },
+        visualStyle
+      );
+      useCharacterConsistency = true;
+    }
+    
+    if (profile) {
+      // Use the character consistency system
+      const sceneDescription = storyContext?.pageTranslation || imagePrompt;
+      contextualPrompt = generateConsistentCharacterPrompt(profile, sceneDescription, pageNumber);
+      console.log('Using character consistency prompt');
+    } else if (storyContext) {
+      // Fallback to old method
       const isStudent = storyContext.characterRole?.toLowerCase().includes('student') || 
                        storyContext.pageText?.includes('学校') ||
                        storyContext.pageTranslation?.toLowerCase().includes('school');
@@ -66,28 +91,15 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       const characterType = isStudent ? 'young student' : 'young person';
       const age = storyContext.characterAge || '';
       
-      // Extract the scene from the page content
       const pageAction = storyContext.pageTranslation || imagePrompt;
       
-      // Build a specific prompt based on the story content
       contextualPrompt = `An adorable illustration in Japanese anime style showing a ${age} ${characterType} character. ${pageAction}. The character should be wearing appropriate attire (${isStudent ? 'school uniform' : 'casual clothes'}). ${visualStyle} art style, child-friendly.`;
-      
-      console.log('Using story context for prompt generation');
-      console.log('Character role:', storyContext.characterRole);
-      console.log('Page translation:', storyContext.pageTranslation);
     } else {
       // Fallback to generic prompt
       contextualPrompt = imagePrompt;
     }
     
-    // Simplify the prompt to avoid content policy issues
-    const simplifiedPrompt = contextualPrompt
-      .replace(/[A-Z][a-z]+/g, 'character') // Replace specific names
-      .replace(/\b(he|she|him|her|his|hers)\b/gi, 'they') // Gender neutral
-      .replace(/\s+/g, ' ')
-      .trim();
-    
-    const dallePrompt = simplifiedPrompt;
+    const dallePrompt = contextualPrompt;
 
     console.log(`Generating image for page ${pageNumber}...`);
     console.log('GPT Image 1 prompt:', dallePrompt);
@@ -96,31 +108,39 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       let imageUrl = '';
       let modelUsed = 'unknown';
       
-      // Try DALL-E 3 first
+      // Try OpenAI with character consistency first
       try {
-        console.log('Attempting image generation with DALL-E 3');
-        console.log('Prompt:', dallePrompt);
+        console.log('Attempting image generation with character consistency');
+        console.log('Has reference image:', !!characterReferenceImage);
         
-        const imageResponse = await openai.images.generate({
-          model: 'dall-e-3',
-          prompt: dallePrompt,
-          n: 1,
-          size: '1024x1024',
-          quality: 'standard',
-          style: 'vivid'
-        });
-
-        imageUrl = imageResponse.data[0]?.url || '';
-        modelUsed = 'dall-e-3';
-        
-        if (!imageUrl) {
-          throw new Error('No image URL returned from DALL-E 3');
+        if (characterReferenceImage) {
+          // Use the new approach with reference image for consistency
+          const result = await generateImageWithGPTImage(dallePrompt, {
+            referenceImage: characterReferenceImage,
+            model: 'gpt-4o-mini',
+            detail: 'high'
+          });
+          
+          imageUrl = result.imageData;
+          modelUsed = result.modelUsed;
+          
+          console.log(`Character-consistent image generation successful for page ${pageNumber}`);
+        } else {
+          // No reference image, use standard DALL-E 3
+          const result = await generateImageWithDALLE3(dallePrompt, 'vivid');
+          imageUrl = result.imageData;
+          modelUsed = result.modelUsed;
+          
+          console.log(`DALL-E 3 generation successful for page ${pageNumber}`);
         }
         
-        console.log(`DALL-E 3 generation successful for page ${pageNumber}`);
+        // Convert to data URL if needed
+        if (!imageUrl.startsWith('data:') && !imageUrl.startsWith('http')) {
+          imageUrl = `data:image/png;base64,${imageUrl}`;
+        }
         
-      } catch (dalleError: any) {
-        console.log('DALL-E 3 failed:', dalleError.message);
+      } catch (openAIError: any) {
+        console.log('OpenAI generation failed:', openAIError.message);
         
         // Try Google Gemini as fallback
         console.log('Trying Google Gemini as fallback...');

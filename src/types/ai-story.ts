@@ -7,12 +7,14 @@ export interface AICharacterSheet {
     nameJa: string;
     description: string;
     visualDescription: string;
+    referenceImage?: string; // URL or base64 of character reference image
   };
   supportingCharacters: Array<{
     name: string;
     nameJa: string;
     description: string;
     visualDescription: string;
+    referenceImage?: string; // URL or base64 of character reference image
   }>;
   setting: {
     location: string;
@@ -80,4 +82,8 @@ export interface SavedCharacterSheet {
   createdAt: Date;
   createdBy: string;
   tags?: string[];
+  referenceImages?: {
+    mainCharacter?: string;
+    supportingCharacters?: Record<string, string>; // name -> image URL mapping
+  };
 }

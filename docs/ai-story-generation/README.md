@@ -16,11 +16,12 @@
 ## Overview
 
 The AI Story Generation System allows administrators to create educational Japanese stories using OpenAI's GPT-4 and DALL-E 3. Stories are generated with:
-- Japanese text with furigana (ruby tags)
+- Japanese text with furigana (ruby tags) via dedicated API
 - English translations
-- Consistent character illustrations
-- Comprehension quizzes
+- Consistent character illustrations using ID-based references
+- Comprehension quizzes with stats integration
 - JLPT-appropriate vocabulary and grammar
+- Individual image regeneration with editable prompts
 
 ### Key Benefits
 - **Educational Focus**: Stories tailored for language learners
@@ -45,20 +46,39 @@ The AI Story Generation System allows administrators to create educational Japan
 │  │ - Creates character sheets and story outlines       │    │
 │  └─────────────────────────────────────────────────────┘    │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │ /api/admin/generate-story-page                      │    │
-│  │ - Generates individual pages with text & images     │    │
+│  │ /api/admin/generate-character-model-sheet           │    │
+│  │ - Creates visual reference for consistency          │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ /api/admin/generate-page-text                       │    │
+│  │ - Generates text with furigana API                  │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ /api/admin/generate-image-prompt                    │    │
+│  │ - Creates detailed prompts from story text          │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ /api/admin/generate-page-image-consistent           │    │
+│  │ - Generates images with character ID references     │    │
 │  └─────────────────────────────────────────────────────┘    │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │ /api/admin/generate-story-quiz                      │    │
-│  │ - Creates comprehension questions                    │    │
+│  │ - Creates comprehension questions (JSON format)      │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ /api/admin/regenerate-story-image                   │    │
+│  │ - Regenerates individual images with new prompts    │    │
 │  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
-│                   External Services                           │
+│                 External Services & APIs                      │
 │  ┌─────────────────────┐ ┌─────────────────────────────┐    │
-│  │ OpenAI GPT-4 Turbo  │ │ DALL-E 3 Image Generation  │    │
+│  │ OpenAI GPT-4o-mini  │ │ DALL-E 3 Image Generation  │    │
 │  └─────────────────────┘ └─────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ Furigana API - Ruby tag generation                  │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -66,11 +86,15 @@ The AI Story Generation System allows administrators to create educational Japan
 
 1. **Story Configuration** → Admin selects theme, JLPT level, page count
 2. **Character Generation** → GPT-4 creates consistent character descriptions
-3. **Outline Creation** → Story structure planned with page summaries
-4. **Page Generation** → Each page generated with Japanese/English text
-5. **Image Generation** → DALL-E 3 creates illustrations per page
-6. **Quiz Creation** → Comprehension questions generated
-7. **Review & Publish** → Admin reviews and publishes to story database
+3. **Character Model Sheet** → Visual reference generated with unique character ID
+4. **Outline Creation** → Story structure planned with page summaries
+5. **Page Text Generation** → Japanese text (without ruby tags) and English translations
+6. **Furigana Processing** → Ruby tags added via dedicated API (same as articles)
+7. **Image Prompt Generation** → Detailed prompts created from actual story text
+8. **Image Generation** → DALL-E 3 creates illustrations with character ID references
+9. **Quiz Creation** → Comprehension questions generated with JSON validation
+10. **Review & Publish** → Admin reviews all content including quiz questions
+11. **Individual Regeneration** → Any image can be regenerated with edited prompts
 
 ## Features
 
@@ -236,6 +260,32 @@ interface AIStoryDraft {
       explanation: "Yuki made a new friend named Kenji"
     }
   ]
+}
+```
+
+### 4. Regenerate Individual Image
+**POST** `/api/admin/regenerate-story-image`
+
+```javascript
+// Request
+{
+  pageNumber: 2,
+  imagePrompt: "Aiko exploring the magical forest with the glowing map",
+  characterName: "Aiko",
+  characterDescription: "young girl with black hair",
+  visualStyle: "anime illustration style",
+  modelSheetUrl: "https://...",
+  characterId: "aiko-1737400123456",
+  sessionId: "1737400123457"
+}
+
+// Response
+{
+  success: true,
+  imageUrl: "https://dalle-url...",
+  revisedPrompt: "...",
+  originalPrompt: "...",
+  finalPrompt: "[CONTINUE CHARACTER aiko-1737400123456] ..."
 }
 ```
 
@@ -447,6 +497,31 @@ const logGeneration = async (storyId: string, metrics: {
   });
 };
 ```
+
+## Recent Improvements (January 2025)
+
+### Character Consistency System
+- **Character IDs**: Each character gets a unique ID (e.g., `kaito-1737400123456`)
+- **Model Sheets**: Visual reference generated before story pages
+- **ID References**: All prompts include character ID for consistency
+- **Simplified Prompts**: Direct format that works better with DALL-E 3
+
+### Furigana Integration
+- **No GPT Ruby Tags**: Removed unreliable ruby tag generation from prompts
+- **API Post-Processing**: Same furigana API used by articles
+- **Consistent Results**: Accurate furigana across all stories
+
+### Quiz System Improvements
+- **JSON Validation**: Added `response_format: { type: "json_object" }`
+- **Structured Output**: Enforced consistent quiz question format
+- **Stats Integration**: Quiz results tracked via `trackStoryQuizCompleted()`
+- **Display in Review**: Quiz questions shown before publishing
+
+### UI Enhancements
+- **Theme-Aware Components**: All modals respect light/dark theme
+- **Image Regeneration**: Hover buttons to regenerate any image
+- **Editable Prompts**: Modal allows prompt editing before regeneration
+- **Character Info Display**: Shows character ID and consistency status
 
 ## Troubleshooting
 

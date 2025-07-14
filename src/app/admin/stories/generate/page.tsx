@@ -1,5 +1,7 @@
 'use client';
 
+import RegenerateImageModal from '@/components/admin/RegenerateImageModal';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +33,16 @@ export default function GenerateStoryPage() {
   const [storyDraft, setStoryDraft] = useState<AIStoryDraft | null>(null);
   const [currentStep, setCurrentStep] = useState<'setup' | 'generating' | 'review'>('setup');
   const [generatingImageIndex, setGeneratingImageIndex] = useState<number | null>(null);
+  const [regenerateModal, setRegenerateModal] = useState<{
+    isOpen: boolean;
+    pageNumber: number;
+    currentImageUrl?: string;
+    currentPrompt: string;
+  } | null>(null);
+  
+  // Character consistency state
+  const [characterProfile, setCharacterProfile] = useState<any>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   // Check admin access
   useEffect(() => {
@@ -78,6 +90,85 @@ export default function GenerateStoryPage() {
 
       const { characterSheet, metadata } = await characterResponse.json();
       
+      // Step 1.5: Generate character model sheet for consistency
+      let updatedCharacterSheet = characterSheet;
+      let characterProfile = null;
+      let modelSheetUrl = null;
+      let sessionId = null;
+      
+      if (generateImages) {
+        setGenerationProgress({ 
+          step: 'character_sheet', 
+          message: 'Generating character model sheet for visual consistency...' 
+        });
+        
+        try {
+          // First, generate the character model sheet
+          const modelSheetResponse = await fetch('/api/admin/generate-character-model-sheet', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${await user.getIdToken()}`
+            },
+            body: JSON.stringify({
+              character: characterSheet.mainCharacter,
+              visualStyle: characterSheet.visualStyle
+            })
+          });
+          
+          if (modelSheetResponse.ok) {
+            const modelSheetData = await modelSheetResponse.json();
+            characterProfile = modelSheetData.characterProfile;
+            modelSheetUrl = modelSheetData.modelSheet?.imageUrl;
+            sessionId = modelSheetData.sessionId;
+            
+            // Store in state for later use
+            setCharacterProfile(modelSheetData.characterProfile);
+            setSessionId(modelSheetData.sessionId);
+            
+            // Update character sheet with model sheet reference
+            updatedCharacterSheet = {
+              ...characterSheet,
+              mainCharacter: {
+                ...characterSheet.mainCharacter,
+                modelSheetUrl: modelSheetUrl,
+                characterProfile: characterProfile,
+                referenceImage: modelSheetUrl // Use model sheet as reference
+              }
+            };
+            
+            console.log('Character model sheet generated successfully');
+            setGenerationProgress({ 
+              step: 'character_sheet', 
+              message: 'Model sheet generated! Now generating individual character images...' 
+            });
+          }
+          
+          // Then generate individual reference images
+          const characterImagesResponse = await fetch('/api/admin/generate-character-images', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${await user.getIdToken()}`
+            },
+            body: JSON.stringify({
+              characterSheet: updatedCharacterSheet
+            })
+          });
+          
+          if (characterImagesResponse.ok) {
+            const { characterSheet: sheetWithImages } = await characterImagesResponse.json();
+            updatedCharacterSheet = sheetWithImages;
+            console.log('Character reference images generated successfully');
+          } else {
+            console.error('Failed to generate character reference images, continuing with model sheet only');
+          }
+        } catch (error) {
+          console.error('Error generating character visuals:', error);
+          // Continue without reference images
+        }
+      }
+      
       // Step 2: Generate outline separately
       setGenerationProgress({ step: 'outline', message: strings.admin.aiStoryGeneration.generationSteps.outline });
       
@@ -91,7 +182,7 @@ export default function GenerateStoryPage() {
           theme,
           jlptLevel,
           pages: pageCount,
-          characterSheet
+          characterSheet: updatedCharacterSheet
         })
       });
 
@@ -111,7 +202,7 @@ export default function GenerateStoryPage() {
         description: '',
         theme,
         jlptLevel,
-        characterSheet,
+        characterSheet: updatedCharacterSheet,
         outline,
         pages: [],
         generationPrompts: {},
@@ -127,10 +218,11 @@ export default function GenerateStoryPage() {
       setStoryDraft(draft);
       setGenerationProgress({ step: 'outline', message: strings.admin.aiStoryGeneration.generationSteps.outline });
 
-      // Step 3: Generate pages one by one with separate text and image calls
+      // Step 3: Generate all page texts first
       const generatedPages = [];
+      const pageTexts = [];
+      
       for (let i = 0; i < outline.length; i++) {
-        // Generate text first
         setGenerationProgress({
           step: 'pages',
           currentPage: i + 1,
@@ -156,68 +248,134 @@ export default function GenerateStoryPage() {
 
         if (!textResponse.ok) {
           console.error(`Failed to generate text for page ${i + 1}`);
+          pageTexts.push(null);
           continue;
         }
 
         const { pageText } = await textResponse.json();
-
-        let imageUrl = '';
-        let imageAlt = outline[i].imagePrompt;
-
-        // Only generate image if enabled
-        if (generateImages) {
+        pageTexts.push(pageText);
+      }
+      
+      // Step 4: Generate images based on actual story content
+      const pageImages = new Array(outline.length).fill(null);
+      
+      if (generateImages) {
+        // Generate images one by one with consistent character
+        for (let i = 0; i < outline.length; i++) {
           setGenerationProgress({
             step: 'images',
             currentPage: i + 1,
             totalPages: outline.length,
             message: `Generating image for page ${i + 1} of ${outline.length}...`
           });
-
-          const imageResponse = await fetch('/api/admin/generate-page-image', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${await user.getIdToken()}`
-            },
-            body: JSON.stringify({
-              pageNumber: i + 1,
-              imagePrompt: outline[i].imagePrompt,
-              characterDescription: characterSheet.mainCharacter.visualDescription,
-              visualStyle: characterSheet.visualStyle,
-              setting: characterSheet.setting.location,
-              // Add story context for better image generation
-              storyContext: {
-                characterName: characterSheet.mainCharacter.name,
-                characterAge: characterSheet.mainCharacter.age,
-                characterRole: characterSheet.mainCharacter.description,
-                pageText: pageText.text,
-                pageTranslation: pageText.translation
-              }
-            })
-          });
           
-          if (imageResponse.ok) {
-            const { pageImage } = await imageResponse.json();
-            imageUrl = pageImage.imageUrl || '';
-            imageAlt = pageImage.imageAlt || imageAlt;
-          } else {
-            console.error(`Failed to generate image for page ${i + 1}, continuing without image`);
+          try {
+            // First, generate an image prompt based on the actual story text
+            setGenerationProgress({
+              step: 'images',
+              currentPage: i + 1,
+              totalPages: outline.length,
+              message: `Creating image prompt for page ${i + 1}...`
+            });
+            
+            const promptResponse = await fetch('/api/admin/generate-image-prompt', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${await user.getIdToken()}`
+              },
+              body: JSON.stringify({
+                pageText: pageTexts[i].text,
+                pageTranslation: pageTexts[i].translation,
+                pageNumber: i + 1,
+                characterName: updatedCharacterSheet.mainCharacter.name,
+                characterDescription: updatedCharacterSheet.mainCharacter.visualDescription,
+                theme: theme,
+                setting: updatedCharacterSheet.setting.location
+              })
+            });
+            
+            let imagePrompt = outline[i].imagePrompt; // fallback
+            if (promptResponse.ok) {
+              const { imagePrompt: generatedPrompt } = await promptResponse.json();
+              imagePrompt = generatedPrompt;
+              console.log(`Generated context-aware prompt for page ${i + 1}:`, imagePrompt);
+            }
+            
+            // Then generate the image with character consistency
+            setGenerationProgress({
+              step: 'images',
+              currentPage: i + 1,
+              totalPages: outline.length,
+              message: `Generating image for page ${i + 1}...`
+            });
+            
+            const imageResponse = await fetch('/api/admin/generate-page-image-consistent', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${await user.getIdToken()}`
+              },
+              body: JSON.stringify({
+                pageNumber: i + 1,
+                imagePrompt: imagePrompt,
+                characterName: updatedCharacterSheet.mainCharacter.name,
+                characterDescription: updatedCharacterSheet.mainCharacter.visualDescription,
+                visualStyle: updatedCharacterSheet.visualStyle || 'anime illustration style',
+                modelSheetUrl: modelSheetUrl,
+                characterId: characterProfile?.characterId,
+                sessionId: sessionId,
+                useGemini: false
+              })
+            });
+            
+            if (imageResponse.ok) {
+              const { pageImage } = await imageResponse.json();
+              pageImages[i] = {
+                imageUrl: pageImage.imageUrl || '',
+                imageAlt: imagePrompt,
+                provider: pageImage.provider
+              };
+            } else {
+              console.error(`Failed to generate image for page ${i + 1}`);
+              pageImages[i] = {
+                imageUrl: '',
+                imageAlt: imagePrompt
+              };
+            }
+          } catch (error) {
+            console.error(`Error generating image for page ${i + 1}:`, error);
+            pageImages[i] = {
+              imageUrl: '',
+              imageAlt: outline[i].imagePrompt
+            };
+          }
+          
+          // Small delay between images to avoid rate limits
+          if (i < outline.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
         }
+      }
+      
+      // Step 5: Combine text and image results
+      for (let i = 0; i < outline.length; i++) {
+        if (!pageTexts[i]) continue;
+        
+        const pageImage = pageImages[i] || { imageUrl: '', imageAlt: outline[i].imagePrompt };
 
-        // Combine text and image results
         generatedPages.push({
           pageNumber: i + 1,
-          text: pageText.text,
-          translation: pageText.translation,
-          imageUrl: imageUrl,
-          imageAlt: imageAlt
+          text: pageTexts[i].text,
+          translation: pageTexts[i].translation,
+          imageUrl: pageImage.imageUrl || '',
+          imageAlt: pageImage.imageAlt || ''
         });
-
-        // Update draft with new page
-        draft.pages = generatedPages;
-        setStoryDraft({ ...draft });
       }
+      
+      // Update draft with all pages
+      draft.pages = generatedPages;
+      setStoryDraft({ ...draft });
 
       // Step 3: Generate quiz
       setGenerationProgress({ step: 'quiz', message: strings.admin.aiStoryGeneration.generationSteps.quiz });
@@ -238,8 +396,12 @@ export default function GenerateStoryPage() {
 
       let quiz = [];
       if (quizResponse.ok) {
-        const { quiz: generatedQuiz } = await quizResponse.json();
-        quiz = generatedQuiz;
+        const quizData = await quizResponse.json();
+        console.log('Quiz response data:', quizData);
+        quiz = quizData.quiz || [];
+        console.log('Generated quiz:', quiz);
+      } else {
+        console.error('Quiz generation failed:', await quizResponse.text());
       }
 
       // Extract title from first page
@@ -257,6 +419,7 @@ export default function GenerateStoryPage() {
 
       // Store quiz separately for now (we'll add it when publishing)
       (draft as any).quiz = quiz;
+      console.log('Quiz stored in draft:', (draft as any).quiz);
 
       setGenerationProgress({ step: 'complete', message: strings.admin.aiStoryGeneration.generationSteps.complete });
       setCurrentStep('review');
@@ -631,7 +794,44 @@ export default function GenerateStoryPage() {
                     <div key={index} className="bg-card rounded-lg p-6 border border-border">
                       <h4 className="font-semibold mb-4">Page {index + 1}</h4>
                       {page.imageUrl ? (
-                        <img src={page.imageUrl} alt={page.imageAlt} className="w-full max-w-md mx-auto rounded-lg mb-4" />
+                        <div className="relative group w-full max-w-md mx-auto">
+                          <img src={page.imageUrl} alt={page.imageAlt} className="w-full rounded-lg mb-4" />
+                          <button
+                            onClick={() => {
+                              // Get the image prompt used for this page
+                              const imagePrompt = page.imageAlt || storyDraft.outline[index]?.imagePrompt || '';
+                              setRegenerateModal({
+                                isOpen: true,
+                                pageNumber: index + 1,
+                                currentImageUrl: page.imageUrl,
+                                currentPrompt: imagePrompt
+                              });
+                            }}
+                            className="absolute top-2 right-2 bg-white/90 hover:bg-white text-gray-800 px-3 py-1 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Regenerate
+                          </button>
+                          <button
+                            onClick={() => {
+                              const imagePrompt = page.imageAlt || storyDraft.outline[index]?.imagePrompt || '';
+                              navigator.clipboard.writeText(imagePrompt);
+                              showNotification({
+                                title: 'Prompt Copied',
+                                message: 'Image prompt copied to clipboard',
+                                type: 'info'
+                              });
+                            }}
+                            className="absolute top-2 left-2 bg-white/90 hover:bg-white text-gray-800 px-3 py-1 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            Copy Prompt
+                          </button>
+                        </div>
                       ) : (
                         <div className="w-full max-w-md mx-auto mb-4 p-8 bg-muted rounded-lg text-center">
                           <p className="text-muted-foreground mb-4">No image generated</p>
@@ -658,6 +858,7 @@ export default function GenerateStoryPage() {
                                     characterDescription: storyDraft.characterSheet.mainCharacter.visualDescription,
                                     visualStyle: storyDraft.characterSheet.visualStyle,
                                     setting: storyDraft.characterSheet.setting.location,
+                                    characterReferenceImage: storyDraft.characterSheet.mainCharacter.referenceImage,
                                     // Add story context for better image generation
                                     storyContext: {
                                       characterName: storyDraft.characterSheet.mainCharacter.name,
@@ -734,6 +935,36 @@ export default function GenerateStoryPage() {
                   ))}
                 </div>
 
+                {/* Quiz Questions */}
+                {(storyDraft as any).quiz && (storyDraft as any).quiz.length > 0 && (
+                  <div className="bg-card rounded-lg p-6 border border-border">
+                    <h3 className="text-lg font-semibold mb-4">Quiz Questions</h3>
+                    <div className="space-y-4">
+                      {(storyDraft as any).quiz.map((question: any, index: number) => (
+                        <div key={question.id || index} className="p-4 bg-muted rounded-lg">
+                          <p className="font-medium mb-2">Q{index + 1}: {question.question}</p>
+                          <div className="space-y-1 ml-4">
+                            {question.options.map((option: string, optIndex: number) => (
+                              <div 
+                                key={optIndex} 
+                                className={`text-sm ${optIndex === question.correctIndex ? 'text-green-600 dark:text-green-400 font-medium' : ''}`}
+                              >
+                                {String.fromCharCode(65 + optIndex)}. {option}
+                                {optIndex === question.correctIndex && ' ✓'}
+                              </div>
+                            ))}
+                          </div>
+                          {question.explanation && (
+                            <p className="text-sm text-muted-foreground mt-2 ml-4">
+                              <strong>Explanation:</strong> {question.explanation}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Action Buttons */}
                 <div className="flex justify-between">
                   <button
@@ -754,6 +985,43 @@ export default function GenerateStoryPage() {
           </AnimatePresence>
         </div>
       </div>
+      
+      {/* Regenerate Image Modal */}
+      {regenerateModal && storyDraft && (
+        <RegenerateImageModal
+          isOpen={regenerateModal.isOpen}
+          onClose={() => setRegenerateModal(null)}
+          pageNumber={regenerateModal.pageNumber}
+          currentImageUrl={regenerateModal.currentImageUrl}
+          currentPrompt={regenerateModal.currentPrompt}
+          characterName={storyDraft.characterSheet.mainCharacter.name}
+          characterDescription={storyDraft.characterSheet.mainCharacter.visualDescription}
+          visualStyle={storyDraft.characterSheet.visualStyle || 'anime illustration style'}
+          modelSheetUrl={storyDraft.characterSheet.mainCharacter.modelSheetUrl}
+          characterId={characterProfile?.characterId}
+          sessionId={sessionId}
+          user={user}
+          onRegenerate={(newImageUrl, newPrompt) => {
+            // Update the story draft with the new image
+            const updatedPages = [...storyDraft.pages];
+            updatedPages[regenerateModal.pageNumber - 1] = {
+              ...updatedPages[regenerateModal.pageNumber - 1],
+              imageUrl: newImageUrl,
+              imageAlt: newPrompt
+            };
+            setStoryDraft({
+              ...storyDraft,
+              pages: updatedPages
+            });
+            showNotification({
+              title: 'Image Updated',
+              message: `Page ${regenerateModal.pageNumber} image regenerated successfully`,
+              type: 'success'
+            });
+            setRegenerateModal(null);
+          }}
+        />
+      )}
     </>
   );
 }

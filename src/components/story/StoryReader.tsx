@@ -384,16 +384,19 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     const score = Math.round((correctAnswers / story.quiz.length) * 100);
     setQuizScore(score);
 
-    // Save quiz results
-    if (user && story.id) {
+    // Track quiz completion in stats
+    if (story.id) {
       try {
-        await storyManager.saveQuizResults(user.uid, story.id, {
-          score,
-          answers: quizAnswers,
-          completedAt: new Date()
-        });
+        const { trackStoryQuizCompleted } = await import('@/lib/stats/trackingEvents');
+        await trackStoryQuizCompleted(
+          story.id,
+          story.title,
+          story.quiz.length,
+          correctAnswers,
+          score
+        );
       } catch (error) {
-        console.error('Error saving quiz results:', error);
+        console.error('Error tracking quiz results:', error);
       }
     }
   };

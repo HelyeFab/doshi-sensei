@@ -61,24 +61,31 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
 Title: ${storyTitle}
 Summary: ${storyOutline}
 
-Return JSON array with ${questionCount} questions:
-[
-  {
-    "question": "Simple question about the story",
-    "options": ["A", "B", "C", "D"],
-    "correctIndex": 0,
-    "explanation": "Brief reason"
-  }
-]
+You must return a valid JSON object with this exact structure:
+{
+  "questions": [
+    {
+      "question": "Simple question about the story",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctIndex": 0,
+      "explanation": "Brief reason"
+    }
+  ]
+}
 
-Keep questions very simple and short.`;
+Requirements:
+- Return ONLY the JSON object, no other text
+- Include exactly ${questionCount} questions
+- Keep questions simple and appropriate for ${jlptLevel} level
+- Each option should be a complete answer, not just "A", "B", etc.
+- correctIndex must be 0, 1, 2, or 3`;
 
     const quizResponse = await openai.chat.completions.create({
       model: 'gpt-4o-mini', // Using GPT-4o-mini for consistency
       messages: [
         {
           role: 'system',
-          content: 'You are an expert in creating educational assessments for Japanese language learners. Create engaging comprehension questions that test understanding without being too difficult.'
+          content: 'You are an expert in creating educational assessments for Japanese language learners. You must always return valid JSON objects. Never include any text before or after the JSON. Create engaging comprehension questions that test understanding without being too difficult.'
         },
         {
           role: 'user',
@@ -86,14 +93,25 @@ Keep questions very simple and short.`;
         }
       ],
       temperature: 0.7,
-      max_tokens: 500 // Limit tokens for quiz
+      max_tokens: 1000, // Increased for 5 questions
+      response_format: { type: "json_object" }
     }).catch(error => {
       console.error('OpenAI quiz generation error:', error);
       throw error;
     });
 
-    const quizData = JSON.parse(quizResponse.choices[0].message.content || '{"questions": []}');
-    const questions = quizData.questions || quizData || [];
+    let quizData;
+    try {
+      const content = quizResponse.choices[0].message.content || '{"questions": []}';
+      console.log('Raw quiz response:', content);
+      quizData = JSON.parse(content);
+    } catch (parseError) {
+      console.error('Failed to parse quiz JSON:', parseError);
+      console.error('Raw content:', quizResponse.choices[0].message.content);
+      throw new Error('Invalid JSON response from quiz generation');
+    }
+    
+    const questions = Array.isArray(quizData.questions) ? quizData.questions : [];
 
     // Add IDs to questions
     const questionsWithIds = questions.map((q: any, index: number) => ({

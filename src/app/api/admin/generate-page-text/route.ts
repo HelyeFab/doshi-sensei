@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withFirebaseAdmin } from '@/utils/api-wrapper';
 import OpenAI from 'openai';
 import { JLPTLevel } from '@/types/kanji';
+import { generateFurigana } from '@/utils/furigana';
 
 // Configure for API route timeout
 export const runtime = 'nodejs';
@@ -57,20 +58,26 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     const body: GeneratePageTextRequest = await request.json();
     const { pageNumber, pageSummary, theme, jlptLevel, characterName, previousPageSummary } = body;
 
-    // Ultra-light text generation prompt
+    // Enhanced text generation prompt for longer, richer stories
     const textPrompt = `Write page ${pageNumber} of a ${theme} story.
 Character: ${characterName}
 What happens: ${pageSummary}
 ${previousPageSummary ? `Previous: ${previousPageSummary}` : ''}
 JLPT ${jlptLevel}: ${JLPT_GUIDELINES[jlptLevel]}
 
-Write exactly 3-4 sentences in Japanese with furigana.
-Format: <ruby>漢字<rt>かんじ</rt></ruby>
+IMPORTANT: Write a FULL story page with:
+- At least 8-10 sentences (250-300 words total)
+- Rich descriptions of the setting and character emotions
+- Natural dialogue where appropriate
+- Smooth story progression
+- Engaging narrative that would interest children
+
+Write natural Japanese text without any special formatting.
 
 Return JSON:
 {
-  "japanese": "text with ruby tags",
-  "english": "translation"
+  "japanese": "full story text in plain Japanese",
+  "english": "complete translation"
 }`;
 
     console.log(`Generating text for page ${pageNumber}...`);
@@ -80,7 +87,7 @@ Return JSON:
       messages: [
         {
           role: 'system',
-          content: 'Write very short story pages. 3-4 sentences only. Use simple language.'
+          content: 'You are a skilled children\'s story writer. Write engaging, descriptive story pages that are appropriate for the JLPT level while being interesting and substantial. Each page should feel complete but part of a larger narrative.'
         },
         {
           role: 'user',
@@ -88,7 +95,7 @@ Return JSON:
         }
       ],
       temperature: 0.7,
-      max_tokens: 400, // Limited for short text
+      max_tokens: 1000, // Increased for proper story length
       response_format: { type: "json_object" }
     }).catch(error => {
       console.error('OpenAI text generation error:', error);
@@ -96,16 +103,28 @@ Return JSON:
     });
 
     const textResult = JSON.parse(textResponse.choices[0].message.content || '{}');
+    
+    // Apply furigana to the Japanese text
+    let processedText = textResult.japanese || '';
+    try {
+      console.log(`Applying furigana to page ${pageNumber} text...`);
+      processedText = await generateFurigana(processedText);
+      console.log(`Furigana applied successfully for page ${pageNumber}`);
+    } catch (furiganaError) {
+      console.error('Failed to apply furigana, using plain text:', furiganaError);
+      // Continue with plain text if furigana fails
+    }
 
     return NextResponse.json({
       success: true,
       pageText: {
-        text: textResult.japanese || '',
+        text: processedText,
         translation: textResult.english || '',
         pageNumber: pageNumber
       },
       metadata: {
-        generatedAt: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
+        furiganaApplied: processedText !== textResult.japanese
       }
     });
 

@@ -21,8 +21,12 @@ export default function PWAUpdateNotification() {
         try {
           const registration = await safeNavigator.serviceWorker.ready;
           
+          // Check if we just performed an update (within last 10 seconds)
+          const lastUpdateTime = localStorage.getItem('pwa-last-update');
+          const justUpdated = lastUpdateTime && (Date.now() - parseInt(lastUpdateTime)) < 10000;
+          
           // Check if there's already a waiting worker
-          if (registration.waiting) {
+          if (registration.waiting && !justUpdated) {
             setWaitingWorker(registration.waiting);
             setShowUpdatePrompt(true);
           }
@@ -55,7 +59,10 @@ export default function PWAUpdateNotification() {
             await registration.update();
             
             // Check if there's a waiting worker after update check
-            if (registration.waiting && !waitingWorker) {
+            const lastUpdateTime = localStorage.getItem('pwa-last-update');
+            const justUpdated = lastUpdateTime && (Date.now() - parseInt(lastUpdateTime)) < 10000;
+            
+            if (registration.waiting && !waitingWorker && !justUpdated) {
               setWaitingWorker(registration.waiting);
               setShowUpdatePrompt(true);
             }
@@ -88,15 +95,20 @@ export default function PWAUpdateNotification() {
       // Clear localStorage except critical auth data
       const authData = localStorage.getItem('auth-storage');
       const settingsData = localStorage.getItem('doshi-sensei-settings');
+      const devHelperMode = localStorage.getItem('devHelperMode');
       localStorage.clear();
       if (authData) localStorage.setItem('auth-storage', authData);
       if (settingsData) localStorage.setItem('doshi-sensei-settings', settingsData);
+      if (devHelperMode) localStorage.setItem('devHelperMode', devHelperMode);
 
       // Tell the service worker to skip waiting
       waitingWorker.postMessage({ type: 'SKIP_WAITING' });
 
       // Hide the notification immediately after triggering update
       setShowUpdatePrompt(false);
+      
+      // Mark that we just performed an update
+      localStorage.setItem('pwa-last-update', Date.now().toString());
 
       // Set up controller change listener before skip waiting
       let reloadScheduled = false;

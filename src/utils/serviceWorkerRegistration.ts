@@ -6,27 +6,35 @@ type Config = {
   onError?: (error: Error) => void;
 };
 
-const isLocalhost = Boolean(
-  window.location.hostname === 'localhost' ||
-  window.location.hostname === '[::1]' ||
-  window.location.hostname.match(
-    /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-  )
-);
+const getIsLocalhost = () => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return Boolean(
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '[::1]' ||
+    window.location.hostname.match(
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+    )
+  );
+};
 
 export function register(config?: Config) {
-  if ('serviceWorker' in navigator) {
-    // The URL constructor is available in all browsers that support SW.
-    const publicUrl = new URL(process.env.PUBLIC_URL || '', window.location.href);
-    if (publicUrl.origin !== window.location.origin) {
-      // Our service worker won't work if PUBLIC_URL is on a different origin
-      return;
-    }
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return;
+  }
+  
+  // The URL constructor is available in all browsers that support SW.
+  const publicUrl = new URL(process.env.PUBLIC_URL || '', window.location.href);
+  if (publicUrl.origin !== window.location.origin) {
+    // Our service worker won't work if PUBLIC_URL is on a different origin
+    return;
+  }
 
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL || ''}/service-worker.js`;
 
-      if (isLocalhost) {
+      if (getIsLocalhost()) {
         // This is running on localhost. Let's check if a service worker still exists or not.
         checkValidServiceWorker(swUrl, config);
 

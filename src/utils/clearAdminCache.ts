@@ -5,7 +5,9 @@
  * This helps ensure fresh data is loaded when navigating to admin pages
  */
 export async function clearAdminCache() {
-  if ('serviceWorker' in navigator && 'caches' in window) {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('caches' in window)) {
+    return;
+  }
     try {
       // Get all cache names
       const cacheNames = await caches.keys();
@@ -36,5 +38,7 @@ export async function clearCacheAndReload() {
   await clearAdminCache();
   
   // Force reload from server, bypassing cache
-  window.location.reload();
+  if (typeof window !== 'undefined') {
+    window.location.reload();
+  }
 }

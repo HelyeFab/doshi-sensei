@@ -69,6 +69,7 @@ async function initializeAdmin(): Promise<void> {
             adminApp = admin.initializeApp({
               credential: admin.credential.cert(serviceAccount),
               projectId: serviceAccount.project_id || projectId,
+              storageBucket: 'doshi-sensei',
             });
             initialized = true;
           } else {
@@ -109,6 +110,7 @@ async function initializeAdmin(): Promise<void> {
           adminApp = admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
             projectId,
+            storageBucket: 'doshi-sensei',
           });
           initialized = true;
         } catch (credError) {
@@ -122,6 +124,7 @@ async function initializeAdmin(): Promise<void> {
         try {
           adminApp = admin.initializeApp({
             projectId,
+            storageBucket: 'doshi-sensei',
           });
           initialized = true;
         } catch (adcError) {
@@ -132,11 +135,15 @@ async function initializeAdmin(): Promise<void> {
       // Method 4: Minimal initialization (very limited functionality)
       if (!initialized) {
         console.warn('Initializing Firebase Admin with project ID only - limited functionality');
-        adminApp = admin.initializeApp({ projectId });
+        adminApp = admin.initializeApp({ 
+          projectId,
+          storageBucket: `${projectId}.appspot.com`,
+        });
       }
 
       // Log success without exposing sensitive data
-      console.log(`Firebase Admin initialized for project: ${projectId}`);
+      console.log(`✅ Firebase Admin SDK initialized for Storage`);
+      console.log(`📦 Using storage bucket: doshi-sensei`);
 
     } catch (error) {
       initializationError = error instanceof Error ? error : new Error('Unknown initialization error');

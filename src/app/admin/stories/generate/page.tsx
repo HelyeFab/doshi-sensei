@@ -67,6 +67,9 @@ export default function GenerateStoryPage() {
     setCurrentStep('generating');
     setGenerationProgress({ step: 'character_sheet', message: strings.admin.aiStoryGeneration.generationSteps.characterSheet });
 
+    // Generate draft ID early so we can use it for storage paths
+    const draftId = `ai-draft-${Date.now()}`;
+
     try {
       // Step 1: Generate character sheet ONLY
       const characterResponse = await fetch('/api/admin/generate-story', {
@@ -121,6 +124,31 @@ export default function GenerateStoryPage() {
             characterProfile = modelSheetData.characterProfile;
             modelSheetUrl = modelSheetData.modelSheet?.imageUrl;
             sessionId = modelSheetData.sessionId;
+            
+            // Store model sheet permanently
+            if (modelSheetUrl) {
+              try {
+                const storeResponse = await fetch('/api/admin/store-image', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${await user.getIdToken()}`
+                  },
+                  body: JSON.stringify({
+                    imageUrl: modelSheetUrl,
+                    storagePath: `stories/${draftId}/characters/model-sheet-${Date.now()}.jpg`
+                  })
+                });
+                
+                if (storeResponse.ok) {
+                  const { url: permanentModelSheetUrl } = await storeResponse.json();
+                  console.log('Stored model sheet permanently:', permanentModelSheetUrl);
+                  modelSheetUrl = permanentModelSheetUrl;
+                }
+              } catch (error) {
+                console.error('Error storing model sheet:', error);
+              }
+            }
             
             // Store in state for later use
             setCharacterProfile(modelSheetData.characterProfile);
@@ -196,7 +224,7 @@ export default function GenerateStoryPage() {
 
       // Create draft
       const draft: AIStoryDraft = {
-        id: `ai-draft-${Date.now()}`,
+        id: draftId,
         title: '', // Will be set after generation
         titleJa: '',
         description: '',
@@ -331,11 +359,62 @@ export default function GenerateStoryPage() {
             
             if (imageResponse.ok) {
               const { pageImage } = await imageResponse.json();
-              pageImages[i] = {
-                imageUrl: pageImage.imageUrl || '',
-                imageAlt: imagePrompt,
-                provider: pageImage.provider
-              };
+              
+              // Store the image permanently if we got one
+              if (pageImage.imageUrl) {
+                try {
+                  setGenerationProgress({
+                    step: 'images',
+                    currentPage: i + 1,
+                    totalPages: outline.length,
+                    message: `Storing image for page ${i + 1} permanently...`
+                  });
+                  
+                  const storeResponse = await fetch('/api/admin/store-image', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${await user.getIdToken()}`
+                    },
+                    body: JSON.stringify({
+                      imageUrl: pageImage.imageUrl,
+                      storagePath: `stories/${draft.id}/pages/page-${i + 1}-${Date.now()}.jpg`
+                    })
+                  });
+                  
+                  if (storeResponse.ok) {
+                    const { url: permanentUrl } = await storeResponse.json();
+                    console.log(`Stored page ${i + 1} image permanently:`, permanentUrl);
+                    pageImages[i] = {
+                      imageUrl: permanentUrl,
+                      imageAlt: imagePrompt,
+                      provider: pageImage.provider
+                    };
+                  } else {
+                    console.error(`Failed to store image for page ${i + 1}`);
+                    // Fall back to temporary URL
+                    pageImages[i] = {
+                      imageUrl: pageImage.imageUrl,
+                      imageAlt: imagePrompt,
+                      provider: pageImage.provider
+                    };
+                  }
+                } catch (storeError) {
+                  console.error(`Error storing image for page ${i + 1}:`, storeError);
+                  // Fall back to temporary URL
+                  pageImages[i] = {
+                    imageUrl: pageImage.imageUrl,
+                    imageAlt: imagePrompt,
+                    provider: pageImage.provider
+                  };
+                }
+              } else {
+                pageImages[i] = {
+                  imageUrl: '',
+                  imageAlt: imagePrompt,
+                  provider: pageImage.provider
+                };
+              }
             } else {
               console.error(`Failed to generate image for page ${i + 1}`);
               pageImages[i] = {
@@ -1001,12 +1080,37 @@ export default function GenerateStoryPage() {
           characterId={characterProfile?.characterId}
           sessionId={sessionId}
           user={user}
-          onRegenerate={(newImageUrl, newPrompt) => {
-            // Update the story draft with the new image
+          onRegenerate={async (newImageUrl, newPrompt) => {
+            // Store the regenerated image permanently
+            let permanentUrl = newImageUrl;
+            
+            try {
+              const storeResponse = await fetch('/api/admin/store-image', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${await user.getIdToken()}`
+                },
+                body: JSON.stringify({
+                  imageUrl: newImageUrl,
+                  storagePath: `stories/${storyDraft.id}/pages/page-${regenerateModal.pageNumber}-regenerated-${Date.now()}.jpg`
+                })
+              });
+              
+              if (storeResponse.ok) {
+                const { url } = await storeResponse.json();
+                permanentUrl = url;
+                console.log(`Stored regenerated image for page ${regenerateModal.pageNumber}:`, permanentUrl);
+              }
+            } catch (error) {
+              console.error('Error storing regenerated image:', error);
+            }
+            
+            // Update the story draft with the permanent URL
             const updatedPages = [...storyDraft.pages];
             updatedPages[regenerateModal.pageNumber - 1] = {
               ...updatedPages[regenerateModal.pageNumber - 1],
-              imageUrl: newImageUrl,
+              imageUrl: permanentUrl,
               imageAlt: newPrompt
             };
             setStoryDraft({

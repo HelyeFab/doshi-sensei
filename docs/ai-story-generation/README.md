@@ -523,6 +523,104 @@ const logGeneration = async (storyId: string, metrics: {
 - **Editable Prompts**: Modal allows prompt editing before regeneration
 - **Character Info Display**: Shows character ID and consistency status
 
+### Permanent Image Storage (July 2025)
+- **Firebase Storage Integration**: All AI-generated images are now permanently stored
+- **Automatic Download & Upload**: DALL-E temporary URLs are immediately downloaded and stored
+- **Signed URLs**: Images use 10-year signed URLs for effectively permanent access
+- **Organized Structure**: Images stored in `stories/{storyId}/pages/` and `stories/{storyId}/characters/`
+- **Bucket Configuration**: Works with uniform bucket-level access for enhanced security
+- **No More Expired Images**: Solves the problem of DALL-E URLs expiring after ~1 hour
+
+## Image Storage Implementation
+
+### Overview
+AI-generated images from DALL-E 3 have temporary URLs that expire after approximately 1 hour. To ensure story images remain accessible permanently, we implemented an automatic storage system using Firebase Storage.
+
+### Technical Implementation
+
+#### 1. Storage Utility (`/src/utils/imageStorage.ts`)
+```typescript
+// Downloads image from temporary URL and uploads to Firebase Storage
+export async function downloadAndStoreImage(imageUrl: string, path: string): Promise<string>
+```
+
+#### 2. API Endpoint (`/src/app/api/admin/store-image/route.ts`)
+- Admin-only endpoint for secure server-side image storage
+- Downloads images from DALL-E URLs
+- Uploads to Firebase Storage with proper content types
+- Returns signed URLs valid for 10 years
+
+#### 3. Integration Points
+
+**Story Generation Flow:**
+```typescript
+// After DALL-E generates an image
+const tempImageUrl = pageImage.imageUrl;
+
+// Immediately store it permanently
+const permanentUrl = await fetch('/api/admin/store-image', {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${token}` },
+  body: JSON.stringify({
+    imageUrl: tempImageUrl,
+    storagePath: `stories/${storyId}/pages/page-${pageNumber}-${Date.now()}.jpg`
+  })
+});
+```
+
+**Storage Paths:**
+- Model sheets: `stories/{storyId}/characters/model-sheet-{timestamp}.jpg`
+- Page images: `stories/{storyId}/pages/page-{number}-{timestamp}.jpg`
+- Regenerated images: `stories/{storyId}/pages/page-{number}-regenerated-{timestamp}.jpg`
+
+### Firebase Storage Configuration
+
+#### Bucket Setup
+1. Bucket name: `doshi-sensei` (or your project-specific name)
+2. Location: Choose closest to your users
+3. Access control: Uniform (recommended)
+4. Public access prevention: Enabled
+
+#### Storage Rules (`storage.rules`)
+```javascript
+// Admin-only write access to stories folder
+match /stories/{allPaths=**} {
+  allow write: if request.auth != null && 
+    request.auth.token.admin == true;
+}
+```
+
+#### Signed URLs vs Public Access
+Due to bucket security settings, we use signed URLs:
+- Valid for 10 years (effectively permanent)
+- Secure and tamper-proof
+- No need to make bucket publicly accessible
+- Works with uniform bucket-level access
+
+### Error Handling
+
+Common issues and solutions:
+
+1. **"Bucket does not exist"**
+   - Ensure bucket name in `firebase-admin-safe.ts` matches actual bucket
+   - Check Firebase Admin initialization includes `storageBucket`
+
+2. **"Cannot update access control"**
+   - Bucket has uniform access enabled
+   - Use signed URLs instead of `makePublic()`
+
+3. **"Permission denied"**
+   - Verify admin authentication
+   - Check storage.rules configuration
+
+### Benefits
+
+1. **Reliability**: Images never expire
+2. **Performance**: Served from Google's CDN
+3. **Security**: Admin-only upload, signed URLs for access
+4. **Organization**: Clear folder structure for easy management
+5. **Cost-effective**: Only stores actually used images
+
 ## Troubleshooting
 
 ### Common Issues

@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { AdminStatsDebugPanel } from '@/components/admin/StatsDebugPanel';
 import { StatsDebugSummary } from '@/components/debug/StatsDebugSummary';
+import { ConsoleMonitor } from '@/components/admin/ConsoleMonitor';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,10 +24,12 @@ export default function AdminDebugPage() {
     indexedDB: { status: 'checking' | 'ok' | 'error'; details?: string };
     firebase: { status: 'checking' | 'ok' | 'error'; details?: string };
     localStorage: { status: 'checking' | 'ok' | 'error'; details?: string };
+    firebaseStorage: { status: 'checking' | 'ok' | 'error'; details?: string };
   }>({
     indexedDB: { status: 'checking' },
     firebase: { status: 'checking' },
-    localStorage: { status: 'checking' }
+    localStorage: { status: 'checking' },
+    firebaseStorage: { status: 'checking' }
   });
 
   useEffect(() => {
@@ -36,6 +39,9 @@ export default function AdminDebugPage() {
       router.push('/');
       return;
     }
+
+    // Log debug page load
+    console.log('Debug page loaded', { user: user.email });
 
     // Check system status
     checkSystemStatus();
@@ -141,6 +147,45 @@ export default function AdminDebugPage() {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       setSystemStatus(prev => ({ ...prev, firebase: { status: 'error', details: errorMsg } }));
     }
+
+    // Check Firebase Storage
+    try {
+      if (user) {
+        console.log('Checking Firebase Storage status...');
+        const token = await user.getIdToken();
+        const response = await fetch('/api/admin/test-storage', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            console.log('Firebase Storage check successful:', result.tests.bucketAccess.bucketName);
+            setSystemStatus(prev => ({ 
+              ...prev, 
+              firebaseStorage: { 
+                status: 'ok', 
+                details: `Working correctly (bucket: ${result.tests.bucketAccess.bucketName})` 
+              } 
+            }));
+          } else {
+            throw new Error(result.error || 'Storage test failed');
+          }
+        } else {
+          const error = await response.json();
+          throw new Error(error.error || 'Storage test request failed');
+        }
+      } else {
+        setSystemStatus(prev => ({ ...prev, firebaseStorage: { status: 'error', details: 'No authenticated user' } }));
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Firebase Storage check failed:', errorMsg);
+      setSystemStatus(prev => ({ ...prev, firebaseStorage: { status: 'error', details: errorMsg } }));
+    }
   };
 
   const getStatusIcon = (status: 'checking' | 'ok' | 'error') => {
@@ -206,7 +251,7 @@ export default function AdminDebugPage() {
             <CardDescription>{t.admin.debug.systemStatus.description}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <SimpleTooltip content={systemStatus.indexedDB.details || t.admin.debug.systemStatus.indexedDB.tooltip}>
                 <div className="flex items-center justify-between p-4 border rounded-lg cursor-help">
                   <span className="font-medium">{t.admin.debug.systemStatus.indexedDB.title}</span>
@@ -242,10 +287,22 @@ export default function AdminDebugPage() {
                   </div>
                 </div>
               </SimpleTooltip>
+
+              <SimpleTooltip content={systemStatus.firebaseStorage.details || 'Firebase Storage for images and files'}>
+                <div className="flex items-center justify-between p-4 border rounded-lg cursor-help">
+                  <span className="font-medium">Firebase Storage</span>
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon(systemStatus.firebaseStorage.status)}
+                    <Badge variant={systemStatus.firebaseStorage.status === 'ok' ? 'default' : 'destructive'}>
+                      {systemStatus.firebaseStorage.status}
+                    </Badge>
+                  </div>
+                </div>
+              </SimpleTooltip>
             </div>
             
             {/* Show any errors */}
-            {(systemStatus.indexedDB.status === 'error' || systemStatus.firebase.status === 'error' || systemStatus.localStorage.status === 'error') && (
+            {(systemStatus.indexedDB.status === 'error' || systemStatus.firebase.status === 'error' || systemStatus.localStorage.status === 'error' || systemStatus.firebaseStorage.status === 'error') && (
               <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                 <h4 className="font-medium text-destructive mb-2">{t.admin.debug.errors.details}</h4>
                 <ul className="text-sm space-y-1">
@@ -257,6 +314,9 @@ export default function AdminDebugPage() {
                   )}
                   {systemStatus.localStorage.status === 'error' && (
                     <li>• <strong>LocalStorage:</strong> {systemStatus.localStorage.details}</li>
+                  )}
+                  {systemStatus.firebaseStorage.status === 'error' && (
+                    <li>• <strong>Firebase Storage:</strong> {systemStatus.firebaseStorage.details}</li>
                   )}
                 </ul>
               </div>
@@ -329,9 +389,7 @@ export default function AdminDebugPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="border rounded-lg p-4">
-                  <StatsDebugSummary />
-                </div>
+                <ConsoleMonitor />
               </CardContent>
             </Card>
           </TabsContent>
@@ -400,6 +458,58 @@ export default function AdminDebugPage() {
                   }}
                 >
                   {t.admin.debug.quickActions.exportSystemInfo.title}
+                </Button>
+              </SimpleTooltip>
+              
+              <SimpleTooltip content="Run a comprehensive test of Firebase Storage">
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      const token = await user?.getIdToken();
+                      const response = await fetch('/api/admin/test-storage', {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${token}`
+                        }
+                      });
+                      
+                      const result = await response.json();
+                      
+                      if (result.success) {
+                        console.log('Firebase Storage Test Results:', result);
+                        alert(`Firebase Storage test successful!\n\nBucket: ${result.tests.bucketAccess.bucketName}\nFile uploaded: ${result.tests.fileUpload.success}\nImage test: ${result.tests.imageDownloadAndStore?.success ? 'Success' : 'Failed'}\n\nCheck console for full details.`);
+                      } else {
+                        console.error('Firebase Storage test failed:', result);
+                        alert(`Firebase Storage test failed: ${result.error}\n\nCheck console for details.`);
+                      }
+                    } catch (error) {
+                      console.error('Error running storage test:', error);
+                      alert('Failed to run storage test. Check console for details.');
+                    }
+                  }}
+                >
+                  Test Firebase Storage
+                </Button>
+              </SimpleTooltip>
+
+              <SimpleTooltip content="Test console capture with various log types">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    console.log('This is a regular console.log message');
+                    console.info('This is an info message with data:', { test: true, value: 42 });
+                    console.warn('This is a warning message');
+                    console.error('This is an error message', new Error('Test error'));
+                    console.debug('This is a debug message with array:', [1, 2, 3, 4, 5]);
+                    console.log('Complex object:', {
+                      user: { name: 'Test User', email: 'test@example.com' },
+                      settings: { theme: 'dark', language: 'en' },
+                      timestamp: new Date().toISOString()
+                    });
+                  }}
+                >
+                  Test Console Logs
                 </Button>
               </SimpleTooltip>
             </div>

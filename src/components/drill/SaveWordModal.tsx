@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { JapaneseWord, StudyList, StudyListType } from '@/types';
+import { JapaneseWord, StudyList, StudyListType, Kanji, Sentence } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import StudyListManager from '@/utils/studyListManager';
@@ -10,16 +10,17 @@ interface SaveWordModalProps {
   word: JapaneseWord;
   onClose: () => void;
   onSaveComplete?: () => void;
+  itemType?: 'word' | 'kanji' | 'sentence';
 }
 
-export function SaveWordModal({ word, onClose, onSaveComplete }: SaveWordModalProps) {
+export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word' }: SaveWordModalProps) {
   const { user } = useAuth();
   const strings = useStrings();
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [showCreateNew, setShowCreateNew] = useState(false);
   const [newListName, setNewListName] = useState('');
-  const [newListType, setNewListType] = useState<StudyListType>('flashcard');
+  const [newListType, setNewListType] = useState<StudyListType>(itemType === 'sentence' ? 'sentence' : 'flashcard');
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -45,13 +46,18 @@ export function SaveWordModal({ word, onClose, onSaveComplete }: SaveWordModalPr
   };
 
   const canAddToList = (listType: StudyListType): boolean => {
-    return StudyListManager.canAddToList('word', word, listType);
+    return StudyListManager.canAddToList(itemType, word, listType);
   };
 
   const getValidationMessage = (listType: StudyListType, canAdd: boolean): string => {
     if (!canAdd) {
       if (listType === 'drillable') {
+        if (itemType === 'kanji') return `Cannot be added: Kanji cannot be conjugated`;
+        if (itemType === 'sentence') return `Cannot be added: Sentences cannot be conjugated`;
         return `Cannot be added: Word cannot be conjugated`;
+      }
+      if (listType === 'sentence' && itemType !== 'sentence') {
+        return `Cannot be added: Only sentences allowed in sentence lists`;
       }
       return `Cannot be added: Incompatible list type`;
     }
@@ -62,6 +68,10 @@ export function SaveWordModal({ word, onClose, onSaveComplete }: SaveWordModalPr
 
     if (listType === 'drillable') {
       return `Compatible: For conjugation practice`;
+    }
+
+    if (listType === 'sentence') {
+      return `Compatible: For sentence study`;
     }
 
     return `Compatible`;
@@ -91,22 +101,44 @@ export function SaveWordModal({ word, onClose, onSaveComplete }: SaveWordModalPr
         }
       }
 
-      // Save word to selected lists
-      let successCount = 0;
-      for (const listId of listsToSaveTo) {
-        try {
-          await StudyListManager.addItemToList(listId, word.id, 'word');
-          successCount++;
-        } catch (error) {
-          console.error(`Error adding to list ${listId}:`, error);
-        }
+      // Save item to selected lists
+      let itemToSave: JapaneseWord | Kanji | Sentence;
+      
+      if (itemType === 'kanji') {
+        // Convert JapaneseWord to Kanji format
+        itemToSave = {
+          id: word.kanji || word.id,
+          kanji: word.kanji || word.id,
+          meaning: word.meaning || word.english,
+          onyomi: word.reading ? [word.reading] : [],
+          kunyomi: [],
+          jlpt: `N${word.jlptLevel || 5}` as any,
+          strokeCount: 1,
+          radicals: [],
+          components: [],
+          frequency: 0
+        } as Kanji;
+      } else if (itemType === 'sentence') {
+        // Convert JapaneseWord to Sentence format
+        itemToSave = {
+          id: word.id,
+          text: word.kanji || word.word || '',
+          furigana: '',
+          translation: word.english || word.meaning || '',
+          jlptLevel: word.jlptLevel || 5,
+          tags: word.tags || []
+        } as Sentence;
+      } else {
+        itemToSave = word;
       }
-
-      if (successCount > 0) {
+      
+      const result = await StudyListManager.addItemToLists(itemToSave, itemType, listsToSaveTo);
+      
+      if (result.success) {
         onSaveComplete?.();
         onClose();
       } else {
-        setErrors(['Failed to save word to any lists']);
+        setErrors(result.errors);
       }
     } catch (err) {
       console.error('Error saving word:', err);
@@ -120,7 +152,12 @@ export function SaveWordModal({ word, onClose, onSaveComplete }: SaveWordModalPr
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          Save "{word.kanji || word.kana}" to Lists
+          {itemType === 'sentence' 
+            ? `Save Sentence to Lists`
+            : itemType === 'kanji' 
+            ? `Save "${word.kanji || word.kana}" to Lists`
+            : `Save "${word.kanji || word.kana}" to Lists`
+          }
         </h3>
 
         {/* Error messages */}
@@ -215,7 +252,25 @@ export function SaveWordModal({ word, onClose, onSaveComplete }: SaveWordModalPr
                   </span>
                 </span>
               </label>
-              {canAddToList('drillable') && (
+              {itemType === 'sentence' && (
+                <label className="block">
+                  <input
+                    type="radio"
+                    name="listType"
+                    value="sentence"
+                    checked={newListType === 'sentence'}
+                    onChange={() => setNewListType('sentence')}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">
+                    Sentence List
+                    <span className="text-xs text-muted-foreground ml-1">
+                      (for sentence study)
+                    </span>
+                  </span>
+                </label>
+              )}
+              {itemType !== 'sentence' && canAddToList('drillable') && (
                 <label className="block">
                   <input
                     type="radio"

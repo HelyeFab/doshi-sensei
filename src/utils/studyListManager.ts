@@ -227,6 +227,7 @@ export class StudyListManager {
     }
   }
 
+
   /**
    * Add an item to study lists with validation
    */

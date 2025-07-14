@@ -146,7 +146,21 @@ export function useMoodBoards(): UseMoodBoardsReturn {
 
   const refreshMoodBoards = async () => {
     setLoading(true);
-    await fetchMoodBoards();
+    
+    // Force fresh data fetch by bypassing any browser cache
+    try {
+      // Clear existing data first to ensure UI updates
+      setMoodBoards([]);
+      
+      // Add a small delay to ensure state update
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Fetch fresh data
+      await fetchMoodBoards();
+    } catch (error) {
+      console.error('Error in refreshMoodBoards:', error);
+      setLoading(false);
+    }
   };
 
   const createMoodBoard = async (board: Omit<MoodBoard, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {

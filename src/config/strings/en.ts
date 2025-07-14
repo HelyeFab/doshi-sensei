@@ -66,7 +66,7 @@ export const en = {
       account: {
         title: "Account",
         icon: "👤",
-        description: "Profile & stats"
+        description: "Profile"
       },
       settings: {
         title: "Settings",

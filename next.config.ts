@@ -1,6 +1,32 @@
 import type { NextConfig } from "next";
 import withPWA from 'next-pwa';
 
+const pwaConfig = withPWA({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+  runtimeCaching: [
+    {
+      urlPattern: /^\/admin\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'admin-pages',
+        networkTimeoutSeconds: 3,
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 60 // 1 minute cache for admin pages
+        }
+      }
+    },
+    {
+      urlPattern: /^\/api\/admin\/.*/i,
+      handler: 'NetworkOnly' // Never cache admin API calls
+    }
+  ],
+  buildExcludes: [/middleware-manifest\.json$/]
+});
+
 const nextConfig: NextConfig = {
   /* config options here */
   env: {
@@ -93,4 +119,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default pwaConfig(nextConfig);

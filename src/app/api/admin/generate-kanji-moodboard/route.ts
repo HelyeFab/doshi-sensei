@@ -12,7 +12,7 @@ interface GenerateMoodboardRequest {
 
 // Configure for API route
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const maxDuration = 60; // 60 seconds max execution time
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
   console.log('=== Generate Kanji Moodboard API Called ===');
@@ -33,8 +33,8 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
 
     const openai = new OpenAI({ 
       apiKey,
-      timeout: 30000, // 30 second timeout
-      maxRetries: 1
+      timeout: 50000, // 50 second timeout (less than maxDuration)
+      maxRetries: 2
     });
 
     const body: GenerateMoodboardRequest = await request.json();
@@ -59,6 +59,7 @@ Rules:
 4. Each kanji should have accurate readings and meanings
 5. Provide stroke count and relevant tags
 6. Generate exactly ${kanjiCount} kanji entries
+7. IMPORTANT: Each kanji character must be unique - no duplicates allowed
 
 Return ONLY valid JSON in this exact format:
 {
@@ -69,29 +70,72 @@ Return ONLY valid JSON in this exact format:
   "kanjiList": [
     {
       "kanji": "漢字",
-      "kana": "primary reading in hiragana",
-      "onReading": "カンジ",
-      "kunReading": "reading in hiragana if exists",
       "meaning": "English meaning",
+      "onyomi": ["カンジ", "ダイ"],
+      "kunyomi": ["から"],
       "jlptLevel": "N5",
-      "radicals": ["radical1"],
       "strokeCount": 13,
-      "tags": ["tag1", "tag2"]
+      "tags": ["tag1", "tag2"],
+      "examples": [
+        "赤い花が咲いています。",
+        "赤ちゃんは元気です。"
+      ]
     }
   ]
 }
+
+IMPORTANT: 
+- onyomi must be an array of katakana readings (e.g., ["シ", "ス"])
+- kunyomi must be an array of hiragana readings (e.g., ["こ"])
+- If there are no on'yomi readings, use empty array []
+- If there are no kun'yomi readings, use empty array []
+- examples must be an array of exactly 2 Japanese sentences that use the kanji
+- Keep example sentences simple and appropriate for the JLPT level
 
 For family members, include variations like:
 - 父 (ちち, father - informal)
 - お父さん (おとうさん, father - formal)
 - 兄 (あに, older brother - informal)
-- お兄さん (おにいさん, older brother - formal)`;
+- お兄さん (おにいさん, older brother - formal)
 
+For manga/anime/hero themes, focus on:
+- Character traits (勇 brave, 強 strong, 正 justice)
+- Action/battle related kanji (戦 battle, 技 technique, 力 power)
+- Hero attributes (英 hero, 雄 masculine/hero, 侍 samurai)
+- Common manga terminology
+
+For Pokemon/character names, focus on:
+- Kanji used in actual Pokemon names (like 雷 thunder for Raichu, 夢 dream for Munna)
+- NOT Pokemon types, but kanji that appear in Pokemon character names
+- Examples of kanji from Pokemon names:
+  • ピカチュウ (Pikachu) - 光 (light/pika) 電 (electricity)
+  • フシギダネ (Bulbasaur) - 不思議 (mysterious) 種 (seed)
+  • ヒトカゲ (Charmander) - 火 (fire) 蜥 (lizard)
+  • ゼニガメ (Squirtle) - 銭 (coin) 亀 (turtle)
+  • コダック (Psyduck) - 子 (child) 鴨 (duck)
+  • プリン (Jigglypuff) - プリン (pudding/flan)
+  • カビゴン (Kabuto) - 兜 (helmet/kabuto)
+  • ミュウツー (Mewtwo) - 夢 (dream) 二 (two)
+
+For all kanji, include proper on'yomi (katakana) and kun'yomi (hiragana) readings as arrays.`;
+
+    let themeGuidance = '';
+    
+    if (theme.toLowerCase().includes('pokemon') && theme.toLowerCase().includes('name')) {
+      themeGuidance = 'IMPORTANT: Include kanji that appear in actual Pokemon character names (not types). Examples: 雷 (thunder) from Raichu, 夢 (dream) from Munna, 不思議 (mysterious) from Fushigidane, 種 (seed) from Fushigidane, etc.';
+    } else if (theme.toLowerCase().includes('manga') || theme.toLowerCase().includes('hero')) {
+      themeGuidance = 'Include kanji commonly used in manga/anime for heroes, battles, and character traits.';
+    }
+    
     const userPrompt = `Generate a kanji mood board for the theme: "${theme}"
 ${tags.length > 0 ? `Include these tags where relevant: ${tags.join(', ')}` : ''}
-Focus on ${jlptLevel} level and below.`;
+Focus on ${jlptLevel} level and below.
+${themeGuidance}`;
 
     console.log('Calling OpenAI with prompt:', userPrompt);
+    
+    console.log('Calling OpenAI API...');
+    const startTime = Date.now();
     
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -100,8 +144,12 @@ Focus on ${jlptLevel} level and below.`;
         { role: "user", content: userPrompt }
       ],
       temperature: 0.7,
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
+      max_tokens: 4000 // Ensure enough tokens for 20 kanji
     });
+    
+    const apiDuration = Date.now() - startTime;
+    console.log(`OpenAI API responded in ${apiDuration}ms`);
 
     const generatedContent = completion.choices[0].message.content;
     if (!generatedContent) {
@@ -117,17 +165,28 @@ Focus on ${jlptLevel} level and below.`;
       throw new Error('Invalid response format');
     }
 
-    // Ensure all kanji have required fields
-    moodboardData.kanjiList = moodboardData.kanjiList.map((kanji: any) => ({
-      kanji: kanji.kanji || '',
-      kana: kanji.kana || '',
-      meaning: kanji.meaning || '',
-      jlptLevel: kanji.jlptLevel || jlptLevel,
-      examples: [], // Empty for now as requested
-      radicals: kanji.radicals || [],
-      strokeCount: kanji.strokeCount || 1,
-      tags: kanji.tags || []
-    }));
+    // Ensure all kanji have required fields and remove duplicates
+    const seenKanji = new Set<string>();
+    const uniqueKanjiList: any[] = [];
+    
+    for (const kanji of moodboardData.kanjiList) {
+      const char = kanji.kanji || '';
+      if (char && !seenKanji.has(char)) {
+        seenKanji.add(char);
+        uniqueKanjiList.push({
+          kanji: char,
+          meaning: kanji.meaning || '',
+          onyomi: kanji.onyomi || [],
+          kunyomi: kanji.kunyomi || [],
+          jlptLevel: kanji.jlptLevel || jlptLevel,
+          examples: kanji.examples || [],
+          strokeCount: kanji.strokeCount || 1,
+          tags: kanji.tags || []
+        });
+      }
+    }
+    
+    moodboardData.kanjiList = uniqueKanjiList;
 
     // Format the response
     const response = {
@@ -153,7 +212,10 @@ Focus on ${jlptLevel} level and below.`;
       name: error?.name,
       code: error?.code,
       status: error?.status,
-      response: error?.response?.data
+      response: error?.response?.data,
+      theme: theme,
+      jlptLevel: jlptLevel,
+      kanjiCount: kanjiCount
     });
     
     // Check for specific OpenAI errors
@@ -173,13 +235,28 @@ Focus on ${jlptLevel} level and below.`;
     
     if (error?.code === 'ECONNABORTED' || error?.message?.includes('timeout')) {
       return NextResponse.json(
-        { error: 'Request timeout - OpenAI took too long to respond' },
+        { error: `Request timeout - Generating ${kanjiCount} kanji took too long. Try reducing the number of kanji.` },
+        { status: 500 }
+      );
+    }
+    
+    if (error?.message?.includes('rate limit')) {
+      return NextResponse.json(
+        { error: 'OpenAI rate limit exceeded. Please try again in a few seconds.' },
+        { status: 429 }
+      );
+    }
+    
+    // For manga heroes specifically, provide a helpful message
+    if (theme.toLowerCase().includes('manga') || theme.toLowerCase().includes('hero')) {
+      return NextResponse.json(
+        { error: `Failed to generate manga/hero kanji. The theme might be too specific. Try "action characters" or "warrior kanji" instead.` },
         { status: 500 }
       );
     }
     
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to generate moodboard' },
+      { error: error instanceof Error ? error.message : 'Failed to generate moodboard. Please try with fewer kanji or a simpler theme.' },
       { status: 500 }
     );
   }

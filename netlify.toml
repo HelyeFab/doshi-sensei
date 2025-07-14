@@ -4,6 +4,9 @@
   functions = "netlify/functions"
   environment = { NODE_VERSION = "20" }
 
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 # PWA Headers
 [[headers]]
   for = "/sw.js"

@@ -251,14 +251,14 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     }
   }, [currentPageIndex, user, story.id, savedWords]);
 
-  const handleWordClick = async (event: React.MouseEvent<HTMLSpanElement>) => {
-    const target = event.currentTarget;
-    const word = target.getAttribute('data-word');
-    const reading = target.getAttribute('data-reading');
-
+  const handleWordClick = async (word: string, event: React.MouseEvent) => {
     if (!word) return;
+    
+    // For compatibility, try to get reading from event target if available
+    const target = event.target as HTMLElement;
+    const reading = target?.getAttribute?.('data-reading');
 
-    const rect = target.getBoundingClientRect();
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
     const containerRect = textContainerRef.current?.getBoundingClientRect();
 
     if (!containerRect) return;

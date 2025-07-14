@@ -2,7 +2,11 @@
 
 ## Overview
 
-The new TTS implementation uses Firebase Storage to cache full article audio, significantly reducing API calls and costs while improving performance.
+The TTS implementation uses a dual-layer caching strategy:
+1. **Client-side caching** (IndexedDB) - Stores audio blobs locally for 60 days
+2. **Server-side caching** (Firebase Storage) - Stores generated audio for 30 days
+
+This approach significantly reduces API calls and costs while improving performance and enabling offline playback.
 
 ## Key Improvements
 
@@ -18,25 +22,36 @@ The new TTS implementation uses Firebase Storage to cache full article audio, si
 
 ### Components
 
-1. **`FirebaseTTSCache`** (`/src/utils/ttsFirebaseCache.ts`)
-   - Manages Firebase Storage operations
+1. **`AudioCache`** (`/src/lib/cache/audioCache.ts`)
+   - Client-side IndexedDB caching for audio blobs
+   - 60-day cache duration
+   - Respects user storage limits (guest: 100, free: 500, premium: unlimited)
+   - Handles batch caching and offline playback
+
+2. **`FirebaseTTSCache`** (`/src/utils/ttsFirebaseCache.ts`)
+   - Server-side Firebase Storage operations
    - Generates cache keys based on article ID, content hash, voice, and provider
+   - 30-day automatic cleanup
    - Handles upload, download, and deletion of cached audio
 
-2. **`ArticleTTSManager`** (`/src/utils/articleTTS.ts`)
+3. **`ArticleTTSManager`** (`/src/utils/articleTTS.ts`)
    - High-level API for article audio generation
+   - **NEW**: Integrated client-side caching via AudioCache
+   - Checks client cache first, then Firebase Storage, then generates new audio
    - Handles both ElevenLabs and Google TTS providers
    - Manages audio playback with HTMLAudioElement
 
-3. **`/api/tts/article`** Route (`/src/app/api/tts/article/route.ts`)
+4. **`/api/tts/article`** Route (`/src/app/api/tts/article/route.ts`)
    - Server-side endpoint for generating full article audio
    - Handles provider fallback (ElevenLabs → Google)
    - Manages Google TTS chunk splitting (5000 char limit)
+   - Returns either Firebase Storage URLs or base64 audio data
 
-4. **`ImprovedArticleAudioPlayer`** (`/src/components/audio/ImprovedArticleAudioPlayer.tsx`)
+5. **`ImprovedArticleAudioPlayer`** (`/src/components/audio/ImprovedArticleAudioPlayer.tsx`)
    - Enhanced UI component with progress tracking
    - Voice and provider selection
    - Playback speed and volume controls
+   - Automatically benefits from client-side caching
 
 ## Usage
 
@@ -118,10 +133,28 @@ Ensure these environment variables are set:
 
 ## Cache Management
 
-### Manual Cache Operations
+### Client-Side Cache Operations
 
 ```typescript
-// Get cache statistics
+import { AudioCache } from '@/lib/cache/audioCache';
+
+// Get client cache statistics
+const stats = await AudioCache.getCacheStats();
+console.log(`Cached audio files: ${stats.count}`);
+console.log(`Total size: ${(stats.totalSize / 1024 / 1024).toFixed(2)}MB`);
+console.log(`By type:`, stats.byType);
+
+// Clear all client-side audio cache
+await AudioCache.clearCache();
+
+// Pre-cache common sounds (e.g., kana)
+await AudioCache.preCacheCommonSounds('free'); // user type
+```
+
+### Server-Side Cache Operations
+
+```typescript
+// Get Firebase Storage cache statistics
 const stats = await ArticleTTSManager.getCacheStats();
 console.log(`Cache size: ${stats.totalSizeFormatted}`);
 console.log(`Total files: ${stats.totalFiles}`);
@@ -171,10 +204,11 @@ export const cleanupTTSCache = async () => {
 
 ## Performance Benefits
 
-1. **Instant Playback**: Cached audio loads immediately
-2. **Reduced Latency**: No API calls for cached content
-3. **Better UX**: Progress indicators and preloading
-4. **Offline Support**: Cached URLs work offline (with service worker)
+1. **Instant Playback**: Client-cached audio loads immediately from IndexedDB
+2. **Offline Support**: Audio works completely offline after initial cache
+3. **Reduced Latency**: No network calls for cached content
+4. **Better UX**: Progress indicators and preloading
+5. **Storage Efficiency**: Respects user tier limits automatically
 
 ## Troubleshooting
 
@@ -185,20 +219,43 @@ export const cleanupTTSCache = async () => {
    - Verify Firebase Storage rules are deployed
    - Check browser console for specific errors
 
-2. **Cache not working**
+2. **Client-side cache not working**
+   - Check IndexedDB support in browser
+   - Verify storage limits not exceeded
+   - Check browser console for quota errors
+   - Clear cache and retry: `await AudioCache.clearCache()`
+
+3. **Firebase Storage cache errors**
    - Ensure user is authenticated
    - Check Firebase Storage permissions
    - Verify storage bucket is configured
+   - Check for "bucket does not exist" errors in console
 
-3. **Audio quality issues**
+4. **Audio quality issues**
    - Try switching between providers
    - Adjust voice settings in the player
    - Check content formatting (remove special characters)
 
+## Implementation Status
+
+### ✅ Completed (January 2025)
+- Client-side audio caching with IndexedDB (60-day expiration)
+- Integration with ArticleTTSManager
+- Automatic caching for articles and stories
+- Storage limit enforcement by user tier
+- Offline playback support
+
+### 🚧 Existing Features
+- Firebase Storage caching (server-side)
+- Full article audio generation
+- Provider fallback (ElevenLabs → Google)
+- Audio player UI components
+
 ## Future Enhancements
 
 1. **Background Preloading**: Automatically preload next article
-2. **Offline Mode**: Download articles for offline listening
+2. **Batch Download**: Download multiple articles for offline listening
 3. **Custom Voices**: Allow users to select from more voice options
 4. **SSML Support**: Enhanced pronunciation and emphasis
 5. **Analytics**: Track most-listened articles
+6. **Progressive Caching**: Cache as user listens (streaming)

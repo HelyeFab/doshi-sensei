@@ -19,6 +19,7 @@ export function KanjiSearchInput({
   const [results, setResults] = useState<KanjiItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +30,7 @@ export function KanjiSearchInput({
       setIsOpen(true);
       setSelectedIndex(-1);
     } else {
-      // Show random suggestions when no query
+      // Show random suggestions when focused
       const randomKanji = getRandomKanji(6);
       setResults(randomKanji);
       setIsOpen(false);
@@ -82,9 +83,17 @@ export function KanjiSearchInput({
   };
 
   const handleInputFocus = () => {
-    if (results.length > 0) {
+    setIsFocused(true);
+    if (query.trim() && results.length > 0) {
       setIsOpen(true);
     }
+  };
+
+  const handleInputBlur = () => {
+    // Delay to allow click on results
+    setTimeout(() => {
+      setIsFocused(false);
+    }, 200);
   };
 
   return (
@@ -96,6 +105,7 @@ export function KanjiSearchInput({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className="w-full px-4 py-2 pl-10 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -121,12 +131,12 @@ export function KanjiSearchInput({
         )}
       </div>
 
-      {(isOpen || (!query && results.length > 0)) && (
+      {(isOpen || (isFocused && !query && results.length > 0)) && (
         <div
           ref={resultsRef}
           className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-80 overflow-y-auto"
         >
-          {!query && results.length > 0 && (
+          {!query && results.length > 0 && isFocused && (
             <div className="px-3 py-2 text-xs text-muted-foreground border-b border-border">
               💡 Quick suggestions (start typing to search)
             </div>

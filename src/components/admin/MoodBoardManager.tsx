@@ -5,6 +5,7 @@ import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard } from '@/types/moodBoard';
 import Link from 'next/link';
 import DeleteConfirmationModal from '@/components/admin/DeleteConfirmationModal';
+import { clearCacheAndReload } from '@/utils/clearAdminCache';
 
 interface MoodBoardManagerProps {
   searchQuery: string;
@@ -183,170 +184,182 @@ export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerPr
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg">
-      {/* Table header */}
-      <div className="px-6 py-4 border-b border-border">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-foreground">
-            Mood Boards ({filteredBoards.length})
-          </h3>
-          <div className="flex items-center gap-2">
-            <select
-              value={`${sortBy}-${sortOrder}`}
-              onChange={(e) => {
-                const [field, order] = e.target.value.split('-') as [typeof sortBy, typeof sortOrder];
-                setSortBy(field);
-                setSortOrder(order);
-              }}
-              className="px-3 py-1 border border-border rounded-lg bg-background text-foreground text-sm"
-            >
-              <option value="updated-desc">Latest Updated</option>
-              <option value="updated-asc">Oldest Updated</option>
-              <option value="title-asc">Title A-Z</option>
-              <option value="title-desc">Title Z-A</option>
-              <option value="jlpt-asc">JLPT Level (N5→N1)</option>
-              <option value="jlpt-desc">JLPT Level (N1→N5)</option>
-              <option value="kanji_count-desc">Most Kanji</option>
-              <option value="kanji_count-asc">Least Kanji</option>
-            </select>
+    <>
+      <div className="bg-card border border-border rounded-lg">
+        {/* Table header */}
+        <div className="px-6 py-4 border-b border-border">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-foreground">
+              Mood Boards ({filteredBoards.length})
+            </h3>
+            <div className="flex items-center gap-2">
+              <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                  const [field, order] = e.target.value.split('-') as [typeof sortBy, typeof sortOrder];
+                  setSortBy(field);
+                  setSortOrder(order);
+                }}
+                className="px-3 py-1 border border-border rounded-lg bg-background text-foreground text-sm"
+              >
+                <option value="updated-desc">Latest Updated</option>
+                <option value="updated-asc">Oldest Updated</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
+                <option value="jlpt-asc">JLPT Level (N5→N1)</option>
+                <option value="jlpt-desc">JLPT Level (N1→N5)</option>
+                <option value="kanji_count-desc">Most Kanji</option>
+                <option value="kanji_count-asc">Least Kanji</option>
+              </select>
 
-            <button
-              onClick={refreshMoodBoards}
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
-              title="Refresh mood boards"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </button>
+              <button
+                onClick={refreshMoodBoards}
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                title="Refresh mood boards"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+              
+              <button
+                onClick={clearCacheAndReload}
+                className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                title="Clear cache and reload (use if data appears stale)"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mood boards list */}
-      {filteredBoards.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-4xl mb-4">🎨</div>
-          <h3 className="text-lg font-medium text-foreground mb-2">
-            No Mood Boards Found
-          </h3>
-          <p className="text-muted-foreground mb-6">
-            {searchQuery || filterJLPT !== 'all'
-              ? 'Try adjusting your search or filters'
-              : 'No mood boards have been created yet'
-            }
-          </p>
-          <Link
-            href="/admin/mood-boards/new"
-            className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Create First Mood Board
-          </Link>
-        </div>
-      ) : (
-        <div className="divide-y divide-border">
-          {filteredBoards.map((board) => (
-            <div key={board.id} className="p-6 hover:bg-muted/30 transition-colors">
-              <div className="flex items-start gap-4">
-                {/* Board preview */}
-                <div
-                  className="flex-shrink-0 w-16 h-16 rounded-lg flex items-center justify-center text-2xl border border-border"
-                  style={{ background: board.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
-                >
-                  {board.emoji}
-                </div>
+        {/* Mood boards list */}
+        {filteredBoards.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-4xl mb-4">🎨</div>
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              No Mood Boards Found
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              {searchQuery || filterJLPT !== 'all'
+                ? 'Try adjusting your search or filters'
+                : 'No mood boards have been created yet'
+              }
+            </p>
+            <Link
+              href="/admin/mood-boards/new"
+              className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Create First Mood Board
+            </Link>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {filteredBoards.map((board) => (
+              <div key={board.id} className="p-6 hover:bg-muted/30 transition-colors">
+                <div className="flex items-start gap-4">
+                  {/* Board preview */}
+                  <div
+                    className="flex-shrink-0 w-16 h-16 rounded-lg flex items-center justify-center text-2xl border border-border"
+                    style={{ background: board.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+                  >
+                    {board.emoji}
+                  </div>
 
-                {/* Board info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="text-lg font-medium text-foreground mb-1">
-                        {board.title}
-                      </h4>
-                      {board.description && (
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {board.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span>{board.kanji.length} kanji</span>
-                        <span>•</span>
-                        <span>{getJLPTBadge(board.jlpt)}</span>
-                        <span>•</span>
-                        <span>Updated {formatDate(board.updatedAt || board.createdAt)}</span>
-                        <span>•</span>
-                        <span className={board.isActive ? 'text-green-600' : 'text-red-600'}>
-                          {board.isActive ? 'Active' : 'Inactive'}
-                        </span>
+                  {/* Board info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-lg font-medium text-foreground mb-1">
+                          {board.title}
+                        </h4>
+                        {board.description && (
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {board.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span>{board.kanji.length} kanji</span>
+                          <span>•</span>
+                          <span>{getJLPTBadge(board.jlpt)}</span>
+                          <span>•</span>
+                          <span>Updated {formatDate(board.updatedAt || board.createdAt)}</span>
+                          <span>•</span>
+                          <span className={board.isActive ? 'text-green-600' : 'text-red-600'}>
+                            {board.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/admin/mood-boards/${board.id}/edit`}
+                          className="px-3 py-1 bg-primary text-primary-foreground text-xs rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                          Edit
+                        </Link>
+
+                        <button
+                          onClick={() => handleToggleStatus(board.id, board.isActive)}
+                          className={`px-3 py-1 text-xs rounded-lg transition-colors ${
+                            board.isActive
+                              ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-200'
+                              : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200'
+                          }`}
+                        >
+                          {board.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteClick(board)}
+                          className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-lg hover:bg-red-200 dark:bg-red-900 dark:text-red-200 transition-colors"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`/admin/mood-boards/${board.id}/edit`}
-                        className="px-3 py-1 bg-primary text-primary-foreground text-xs rounded-lg hover:bg-primary/90 transition-colors"
-                      >
-                        Edit
-                      </Link>
-
-                      <button
-                        onClick={() => handleToggleStatus(board.id, board.isActive)}
-                        className={`px-3 py-1 text-xs rounded-lg transition-colors ${
-                          board.isActive
-                            ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-200'
-                            : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200'
-                        }`}
-                      >
-                        {board.isActive ? 'Deactivate' : 'Activate'}
-                      </button>
-
-                      <button
-                        onClick={() => handleDeleteClick(board)}
-                        className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-lg hover:bg-red-200 dark:bg-red-900 dark:text-red-200 transition-colors"
-                      >
-                        Delete
-                      </button>
+                    {/* Kanji preview */}
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {board.kanji.slice(0, 10).map((kanji, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center justify-center w-6 h-6 bg-muted rounded text-xs font-medium"
+                          title={kanji.meaning || kanji.char}
+                        >
+                          {kanji.char}
+                        </span>
+                      ))}
+                      {board.kanji.length > 10 && (
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-muted rounded text-xs text-muted-foreground">
+                          +{board.kanji.length - 10}
+                        </span>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Kanji preview */}
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {board.kanji.slice(0, 10).map((kanji, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center justify-center w-6 h-6 bg-muted rounded text-xs font-medium"
-                        title={kanji.meaning || kanji.char}
-                      >
-                        {kanji.char}
-                      </span>
-                    ))}
-                    {board.kanji.length > 10 && (
-                      <span className="inline-flex items-center justify-center w-6 h-6 bg-muted rounded text-xs text-muted-foreground">
-                        +{board.kanji.length - 10}
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-    {/* Delete Confirmation Modal */}
-    <DeleteConfirmationModal
-      isOpen={deleteModal.isOpen}
-      title="Delete Mood Board"
-      message="Are you sure you want to delete this mood board?"
-      itemName={deleteModal.boardTitle}
-      onConfirm={handleDeleteConfirm}
-      onCancel={handleDeleteCancel}
-      isDeleting={isDeleting}
-    />
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        title="Delete Mood Board"
+        message="Are you sure you want to delete this mood board?"
+        itemName={deleteModal.boardTitle}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        isDeleting={isDeleting}
+      />
+    </>
   );
 }

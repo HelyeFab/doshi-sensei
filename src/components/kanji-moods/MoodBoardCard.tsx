@@ -49,7 +49,7 @@ export default function MoodBoardCard({ board, progress, onClick }: MoodBoardCar
             <div className="flex gap-2">
               {board.kanji.slice(0, 5).map((kanji, index) => (
                 <div
-                  key={kanji.char}
+                  key={`${kanji.char}-${index}`}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-200 ${
                     progress?.learnedKanji.includes(kanji.char)
                       ? 'bg-green-500/80 text-white'

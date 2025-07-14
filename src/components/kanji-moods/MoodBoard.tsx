@@ -10,6 +10,8 @@ import ProgressIndicator from './ProgressIndicator';
 import KanjiStudyModal from './KanjiStudyModal';
 import { UpgradePromptModal } from '@/components/UpgradePromptModal';
 import { useStrings } from '@/contexts/LanguageContext';
+import { SaveMultipleKanjiModal } from './SaveMultipleKanjiModal';
+import { JapaneseWord } from '@/types';
 
 interface MoodBoardProps {
   board: MoodBoardType;
@@ -27,6 +29,8 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
     remainingSessions: 0,
     isPremium: false
   });
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [itemsToSave, setItemsToSave] = useState<JapaneseWord[]>([]);
 
   // Update progress when component mounts or board changes
   useEffect(() => {
@@ -48,6 +52,28 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
   const learnedCount = progress?.learnedKanji.length || 0;
   const totalCount = board.kanji.length;
   const isCompleted = progress?.progressPercentage === 100;
+
+  const handleSaveAllToList = () => {
+    const kanjiWords: JapaneseWord[] = board.kanji.map(kanji => ({
+      id: kanji.char,
+      kanji: kanji.char,
+      kana: kanji.readings.kun[0] || kanji.readings.on[0] || '',
+      romaji: '',
+      meaning: kanji.meaning,
+      english: kanji.meaning,
+      type: 'noun',
+      jlpt: 5,
+      tags: [],
+      word: kanji.char,
+      reading: kanji.readings.kun[0] || kanji.readings.on[0] || '',
+      meanings: [kanji.meaning],
+      jlptLevel: kanji.difficulty,
+      frequency: 0,
+      kanaReading: kanji.readings.kun[0] || kanji.readings.on[0] || ''
+    }));
+    setItemsToSave(kanjiWords);
+    setShowSaveModal(true);
+  };
 
   return (
     <div className="mood-board-container">
@@ -184,9 +210,9 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
       <div className="mood-board-content">
         <div className="container mx-auto px-6 py-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {board.kanji.map((kanji) => (
+            {board.kanji.map((kanji, index) => (
               <KanjiCard
-                key={kanji.char}
+                key={`${kanji.char}-${index}`}
                 kanji={kanji}
                 isLearned={isKanjiLearned(board.id, kanji.char)}
                 onToggleLearned={handleToggleKanji}
@@ -194,8 +220,21 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
             ))}
           </div>
 
+          {/* Save All to List Button */}
+          <div className="mt-8 max-w-2xl mx-auto">
+            <button
+              onClick={handleSaveAllToList}
+              className="w-full px-6 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center justify-center gap-3"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              Save All Kanji to Lists
+            </button>
+          </div>
+
           {/* Study Tips */}
-          <div className="mt-12 max-w-2xl mx-auto">
+          <div className="mt-8 max-w-2xl mx-auto">
             <div className="bg-card border border-border rounded-lg p-6">
               <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
                 <span>💡</span>
@@ -275,6 +314,20 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
         feature="Unlimited Kanji Study"
         message={`You've used all ${3 - studyAccess.remainingSessions} of your daily study sessions. Upgrade to Premium for unlimited kanji study sessions!`}
       />
+
+      {/* Save Modal */}
+      {showSaveModal && itemsToSave.length > 0 && (
+        <SaveMultipleKanjiModal
+          items={itemsToSave}
+          onClose={() => {
+            setShowSaveModal(false);
+            setItemsToSave([]);
+          }}
+          onSaveComplete={() => {
+            // Optionally refresh saved states
+          }}
+        />
+      )}
     </div>
   );
 }

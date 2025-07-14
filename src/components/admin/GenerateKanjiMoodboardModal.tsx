@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNotification } from '@/contexts/NotificationContext';
+import { useAdminNotifications } from '@/components/admin/AdminNotifications';
 import { JLPTLevel, JLPT_LEVELS } from '@/types/kanji';
 import { X } from 'lucide-react';
 
@@ -18,7 +18,7 @@ export default function GenerateKanjiMoodboardModal({
   onGenerated
 }: GenerateKanjiMoodboardModalProps) {
   const { user } = useAuth();
-  const { showNotification } = useNotification();
+  const { error: showError, info: showInfo } = useAdminNotifications();
   
   const [theme, setTheme] = useState('');
   const [jlptLevel, setJlptLevel] = useState<JLPTLevel>('N5');
@@ -28,11 +28,7 @@ export default function GenerateKanjiMoodboardModal({
 
   const handleGenerate = async () => {
     if (!theme.trim()) {
-      showNotification({
-        title: 'Error',
-        message: 'Please enter a theme',
-        type: 'error'
-      });
+      showError('Error', 'Please enter a theme');
       return;
     }
 
@@ -81,11 +77,7 @@ export default function GenerateKanjiMoodboardModal({
         throw new Error('Invalid response format: missing kanjiList');
       }
       
-      showNotification({
-        title: 'Success',
-        message: `Generated ${moodboardData.kanjiList.length} kanji for "${theme}"`,
-        type: 'success'
-      });
+      showInfo('Success', `Generated ${moodboardData.kanjiList.length} kanji for "${theme}"`);
 
       onGenerated(moodboardData);
       onClose();
@@ -97,11 +89,7 @@ export default function GenerateKanjiMoodboardModal({
       
     } catch (error) {
       console.error('Error generating moodboard:', error);
-      showNotification({
-        title: 'Error',
-        message: error instanceof Error ? error.message : 'Failed to generate moodboard',
-        type: 'error'
-      });
+      showError('Error', error instanceof Error ? error.message : 'Failed to generate moodboard');
     } finally {
       setIsGenerating(false);
     }

@@ -31,6 +31,7 @@ export interface TTSOptions {
   speed?: number;
   priority?: 'low' | 'normal' | 'high';
   context?: string; // For analytics/logging (e.g., 'vocabulary', 'kanji', 'article', 'game')
+  provider?: 'google' | 'elevenlabs'; // Force specific TTS provider
 }
 
 /**
@@ -65,11 +66,12 @@ export function useTTS(): TTSHookReturn {
         voice = 'female',
         speed = 1.0,
         priority = 'normal',
-        context = 'general'
+        context = 'general',
+        provider
       } = options;
 
       // Log TTS usage for analytics
-      console.log(`🔊 TTS: ${context} - "${text.substring(0, 30)}${text.length > 30 ? '...' : ''}"`);
+      console.log(`🔊 TTS: ${context} - "${text.substring(0, 30)}${text.length > 30 ? '...' : ''}"${provider ? ` (forced: ${provider})` : ''}`);
 
       // Set playing state just before speaking
       setState(prev => ({
@@ -79,7 +81,7 @@ export function useTTS(): TTSHookReturn {
       }));
 
       // Use TTSManager with caching and context
-      await TTSManager.speak(text, { voice, speed, context }, speed);
+      await TTSManager.speak(text, { voice, speed, context, provider }, speed);
 
       // Speech completed successfully
       setState(prev => ({
@@ -191,7 +193,8 @@ export function useKanjiTTS() {
   const speakReading = useCallback(async (reading: string, type: 'kun' | 'on' = 'kun', options?: Omit<TTSOptions, 'context'>) => {
     await tts.speak(reading, { 
       ...options, 
-      context: `kanji-${type}-reading`
+      context: `kanji-${type}-reading`,
+      provider: options?.provider
     });
   }, [tts]);
 

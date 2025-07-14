@@ -20,12 +20,15 @@ if (!admin.apps.length) {
       client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
     };
 
+    const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'doshi-sensei.appspot.com';
+    
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-      storageBucket: 'doshi-sensei.appspot.com'
+      storageBucket: bucketName
     });
 
     console.log('✅ Firebase Admin SDK initialized for Storage');
+    console.log('📦 Using storage bucket:', bucketName);
   } catch (error) {
     console.error('❌ Failed to initialize Firebase Admin SDK:', error);
   }
@@ -35,9 +38,16 @@ export class ServerFirebaseCache {
   private static instance: ServerFirebaseCache;
   private readonly CACHE_FOLDER = 'tts-cache';
   private readonly CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days
-  private bucket = admin.storage().bucket();
+  private bucket: any;
 
-  private constructor() {}
+  private constructor() {
+    try {
+      this.bucket = admin.storage().bucket();
+      console.log('✅ Firebase Storage bucket initialized');
+    } catch (error) {
+      console.error('❌ Failed to initialize storage bucket:', error);
+    }
+  }
 
   static getInstance(): ServerFirebaseCache {
     if (!ServerFirebaseCache.instance) {
@@ -127,8 +137,15 @@ export class ServerFirebaseCache {
     audioBuffer: Buffer
   ): Promise<string> {
     try {
+      if (!this.bucket) {
+        console.error('[Server Firebase Cache] Storage bucket not initialized');
+        throw new Error('Storage bucket not initialized');
+      }
+
       const cacheKey = this.generateCacheKey(articleId, content, voice, provider);
       const storagePath = this.getStoragePath(cacheKey);
+      console.log(`[Server Firebase Cache] Attempting to cache audio at path: ${storagePath}`);
+      
       const file = this.bucket.file(storagePath);
 
       // Upload the audio file
@@ -153,8 +170,22 @@ export class ServerFirebaseCache {
 
       console.log(`[Server Firebase Cache] Cached audio for article ${articleId} (${this.formatBytes(audioBuffer.length)})`);
       return url;
-    } catch (error) {
-      console.error('[Server Firebase Cache] Error caching audio:', error);
+    } catch (error: any) {
+      console.error('[Server Firebase Cache] Error caching audio:', {
+        error: error.message,
+        code: error.code,
+        details: error.details,
+        stack: error.stack
+      });
+      
+      // If it's a bucket error, provide more context
+      if (error.code === 404 || error.message?.includes('bucket')) {
+        console.error('[Server Firebase Cache] Bucket configuration issue. Please check:');
+        console.error('1. The bucket name in Firebase console matches:', process.env.FIREBASE_STORAGE_BUCKET || 'doshi-sensei.appspot.com');
+        console.error('2. The service account has Storage Admin permissions');
+        console.error('3. Firebase Storage is enabled in your project');
+      }
+      
       throw error;
     }
   }

@@ -82,11 +82,9 @@ export default function MoodBoardsPage() {
       
       // Convert KanjiImportItem format to KanjiItem format
       const convertedKanji = moodboardData.kanjiList.map((item: any) => {
-        // Use provided readings or fall back to kana field
-        const onReadings = item.onReading ? [item.onReading] : 
-                          (item.kana && item.kana.match(/^[ァ-ヶー]+$/)) ? [item.kana] : [];
-        const kunReadings = item.kunReading ? [item.kunReading] : 
-                           (item.kana && !item.kana.match(/^[ァ-ヶー]+$/)) ? [item.kana] : [];
+        // Use the onyomi and kunyomi arrays directly from the AI response
+        const onReadings = item.onyomi || [];
+        const kunReadings = item.kunyomi || [];
         
         return {
           char: item.kanji,
@@ -95,7 +93,7 @@ export default function MoodBoardsPage() {
             on: onReadings,
             kun: kunReadings
           },
-          examples: item.examples?.map((ex: any) => ex.sentence) || [],
+          examples: item.examples || [],
           difficulty: item.jlptLevel === 'N5' ? 1 : 
                      item.jlptLevel === 'N4' ? 2 : 
                      item.jlptLevel === 'N3' ? 3 : 

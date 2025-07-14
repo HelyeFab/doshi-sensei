@@ -324,7 +324,7 @@ export const strings = {
   "learn_by_theme": "Learn by theme",
   "saved_items": "Saved Items",
   "your_collection": "Your collection",
-  "profile_stats": "Profile & stats",
+  "profile_stats": "Profile",
   "customize_app": "Customize app",
   "japanese_articles": "Japanese articles",
   "listening_quiz": "Listening quiz",

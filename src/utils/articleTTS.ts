@@ -2,6 +2,10 @@
 // Handles full article audio generation and caching
 
 import FirebaseTTSCache from './ttsFirebaseCache';
+import { AudioCache, AudioResource } from '@/lib/cache/audioCache';
+import { auth } from '@/lib/firebase';
+import { subscriptionManager } from '@/lib/subscriptions/manager';
+import EnhancedStorageManager2 from '@/utils/enhancedStorageManager2';
 
 export interface ArticleAudioOptions {
   voice?: 'male' | 'female';
@@ -54,6 +58,39 @@ export class ArticleTTSManager {
       onProgress?.('Preparing audio...');
       console.log(`🎤 Requesting audio for article ${articleId}`);
 
+      // Generate a unique cache key for this audio
+      const cacheKey = `article-${articleId}-${voice}-${provider}`;
+      
+      // Check client-side cache first
+      try {
+        const cachedAudio = await AudioCache.getAudio(
+          cacheKey,
+          undefined, // No fetch function yet
+          undefined  // No user type needed for retrieval
+        );
+
+        if (cachedAudio && cachedAudio.audioUrl) {
+          console.log(`✅ Serving article audio from client-side cache: ${articleId}`);
+          onProgress?.('Loading cached audio...');
+          
+          // If we have a blob URL from cache, return it
+          if (cachedAudio.audioUrl.startsWith('blob:')) {
+            return cachedAudio.audioUrl;
+          }
+          
+          // Otherwise try to get the cached blob
+          const cached = await EnhancedStorageManager2.getCachedResource('audio', cacheKey);
+          if (cached && cached.assets?.audio?.get('main')) {
+            const blob = cached.assets.audio.get('main');
+            const blobUrl = URL.createObjectURL(blob);
+            return blobUrl;
+          }
+        }
+      } catch (cacheError) {
+        console.log(`⚠️ Cache check failed: ${cacheError}`);
+        // Continue without cache
+      }
+
       // Add timeout for long requests
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
@@ -97,6 +134,11 @@ export class ArticleTTSManager {
 
       if (data.audioUrl) {
         onProgress?.('Audio ready!');
+        
+        // Don't cache Firebase Storage URLs directly since AudioCache needs to download the blob
+        // The URL will work fine for playback, and Firebase Storage acts as our cache
+        console.log(`📦 Using Firebase Storage cached audio: ${data.audioUrl}`);
+        
         return data.audioUrl;
       } else if (data.audioContent) {
         // Fallback: convert base64 to blob URL
@@ -110,6 +152,10 @@ export class ArticleTTSManager {
         const blobUrl = URL.createObjectURL(blob);
         
         onProgress?.('Audio ready!');
+        
+        // Cache the actual audio blob for future use
+        await this.cacheArticleAudioBlob(cacheKey, blob, content, voice, provider);
+        
         return blobUrl;
       } else {
         throw new Error('No audio data received');
@@ -244,6 +290,66 @@ export class ArticleTTSManager {
    */
   static async clearOldCache(daysOld: number = 30): Promise<void> {
     await this.cache.clearOldCache(daysOld);
+  }
+
+  /**
+   * Cache article audio blob directly to client-side storage
+   */
+  private static async cacheArticleAudioBlob(
+    cacheKey: string,
+    audioBlob: Blob,
+    content: string,
+    voice: 'male' | 'female',
+    provider: 'elevenlabs' | 'google'
+  ): Promise<void> {
+    try {
+      // Get current user type for storage limits
+      const user = auth.currentUser;
+      const userType = user ? 'free' : 'guest';
+      
+      // Create a temporary blob URL for the AudioResource
+      const blobUrl = URL.createObjectURL(audioBlob);
+      
+      // Create cached resource directly with the blob
+      const cachedResource = {
+        id: cacheKey,
+        type: 'audio' as const,
+        data: {
+          id: cacheKey,
+          type: 'sentence' as const,
+          audioUrl: blobUrl,
+          text: content.substring(0, 100),
+          meaning: `Article audio - ${voice} voice, ${provider}`,
+          version: '1.0'
+        },
+        metadata: {
+          size: audioBlob.size,
+          cachedAt: Date.now(),
+          lastAccessed: Date.now(),
+          version: '1.0',
+          checksum: await EnhancedStorageManager2.generateChecksum({
+            id: cacheKey,
+            content: content.substring(0, 100)
+          }),
+          expiresAt: Date.now() + (60 * 24 * 60 * 60 * 1000) // 60 days
+        },
+        assets: {
+          images: new Map(),
+          audio: new Map([['main', audioBlob]])
+        }
+      };
+      
+      // Store in cache
+      await EnhancedStorageManager2.cacheResource(cachedResource, userType);
+      
+      // Clean up the temporary blob URL
+      URL.revokeObjectURL(blobUrl);
+      
+      console.log(`✅ Cached article audio blob to client storage: ${cacheKey} (${(audioBlob.size / 1024 / 1024).toFixed(2)}MB)`);
+    } catch (error) {
+      // Don't throw, just log - caching failure shouldn't break playback
+      console.error(`⚠️ Failed to cache article audio blob: ${cacheKey}`, error);
+    }
   }
 }
 

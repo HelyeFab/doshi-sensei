@@ -27,7 +27,9 @@ export class AudioCache {
       const audioBlob = await this.downloadAudio(audioResource.audioUrl);
 
       if (!audioBlob) {
-        throw new Error(`Failed to download audio from ${audioResource.audioUrl}`);
+        // Don't throw error for missing audio files, just skip caching
+        console.log(`[AudioCache] Audio not available for caching: ${audioResource.id}`);
+        return;
       }
 
       // Calculate total size
@@ -288,9 +290,16 @@ export class AudioCache {
   private static async downloadAudio(audioUrl: string): Promise<Blob | null> {
     try {
       const response = await fetch(audioUrl);
-      if (response.ok) {
-        return await response.blob();
+      
+      if (!response.ok) {
+        // Don't log 404 errors as they're expected when audio hasn't been generated yet
+        if (response.status !== 404) {
+          console.error(`[AudioCache] Failed to download audio ${audioUrl}: ${response.status} ${response.statusText}`);
+        }
+        return null;
       }
+      
+      return await response.blob();
     } catch (error) {
       console.error(`[AudioCache] Failed to download audio ${audioUrl}:`, error);
     }

@@ -1,9 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { KanjiCardProps } from '@/types/moodBoard';
+import { Kanji } from '@/types';
 import KanjiModal from './KanjiModal';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Bookmark } from 'lucide-react';
+import StudyListManager from '@/utils/studyListManager';
+import { SaveWordModal } from '@/components/drill/SaveWordModal';
 
 export default function KanjiCard({
   kanji,
@@ -11,10 +16,53 @@ export default function KanjiCard({
   onToggleLearned,
 }: KanjiCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [isKanjiSaved, setIsKanjiSaved] = useState(false);
   const strings = useStrings();
+  const { user } = useAuth();
 
-  const handleCardClick = () => {
+  // Check if kanji is already saved when component mounts
+  useEffect(() => {
+    checkIfKanjiSaved();
+  }, [kanji.char]);
+
+  const checkIfKanjiSaved = async () => {
+    if (!kanji || !user) return;
+    try {
+      const lists = await StudyListManager.getAllStudyLists();
+      let saved = false;
+      
+      for (const list of lists) {
+        const items = await StudyListManager.getItemsInList(list.id);
+        // Check if this kanji exists in the kanji array
+        const kanjiExists = items.kanji?.some(k => k.kanji === kanji.char);
+        if (kanjiExists) {
+          saved = true;
+          break;
+        }
+      }
+      
+      setIsKanjiSaved(saved);
+    } catch (error) {
+      console.error('Error checking saved kanji:', error);
+    }
+  };
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't open modal if clicking on bookmark
+    if ((e.target as HTMLElement).closest('.bookmark-button')) {
+      return;
+    }
     setIsModalOpen(true);
+  };
+
+  const handleBookmarkClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      alert('Please sign in to save kanji');
+      return;
+    }
+    setShowSaveModal(true);
   };
 
   return (
@@ -50,6 +98,17 @@ export default function KanjiCard({
               )}
             </div>
 
+            {/* Bookmark Icon - Top Left */}
+            <button
+              className="bookmark-button absolute top-3 left-3 p-1.5 rounded-full bg-muted/80 hover:bg-muted transition-colors"
+              onClick={handleBookmarkClick}
+              aria-label="Save to lists"
+            >
+              <Bookmark 
+                className={`w-4 h-4 transition-colors duration-300 ${isKanjiSaved ? 'fill-current text-purple-400' : 'text-muted-foreground'}`} 
+              />
+            </button>
+
             {/* Learned Indicator - Pastel Colors */}
             <div className="absolute top-3 right-3">
               <div
@@ -84,6 +143,34 @@ export default function KanjiCard({
         isLearned={isLearned}
         onToggleLearned={onToggleLearned}
       />
+
+      {/* Save Modal */}
+      {showSaveModal && (
+        <SaveWordModal
+          word={{
+            id: kanji.char,
+            kanji: kanji.char,
+            kana: kanji.readings.kun[0] || kanji.readings.on[0] || '',
+            romaji: '',
+            meaning: kanji.meaning,
+            english: kanji.meaning,
+            type: 'noun',
+            jlpt: 5,
+            tags: [],
+            word: kanji.char,
+            reading: kanji.readings.kun[0] || kanji.readings.on[0] || '',
+            meanings: [kanji.meaning],
+            jlptLevel: kanji.difficulty,
+            frequency: 0,
+            kanaReading: kanji.readings.kun[0] || kanji.readings.on[0] || ''
+          }}
+          onClose={() => setShowSaveModal(false)}
+          onSaveComplete={() => {
+            checkIfKanjiSaved();
+          }}
+          itemType="kanji"
+        />
+      )}
 
       <style jsx>{`
         .kanji-card-container {

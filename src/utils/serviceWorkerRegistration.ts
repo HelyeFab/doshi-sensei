@@ -32,24 +32,23 @@ export function register(config?: Config) {
   }
 
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL || ''}/service-worker.js`;
+    const swUrl = `${process.env.PUBLIC_URL || ''}/service-worker.js`;
 
-      if (getIsLocalhost()) {
-        // This is running on localhost. Let's check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl, config);
+    if (getIsLocalhost()) {
+      // This is running on localhost. Let's check if a service worker still exists or not.
+      checkValidServiceWorker(swUrl, config);
 
-        // Add some additional logging to localhost
-        navigator.serviceWorker.ready.then(() => {
-          console.log(
-            'This web app is being served cache-first by a service worker.'
-          );
-        });
-      } else {
-        // Is not localhost. Just register service worker
-        registerValidSW(swUrl, config);
-      }
-    });
-  }
+      // Add some additional logging to localhost
+      navigator.serviceWorker.ready.then(() => {
+        console.log(
+          'This web app is being served cache-first by a service worker.'
+        );
+      });
+    } else {
+      // Is not localhost. Just register service worker
+      registerValidSW(swUrl, config);
+    }
+  });
 }
 
 function registerValidSW(swUrl: string, config?: Config) {
@@ -128,67 +127,74 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
 }
 
 export function unregister() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready
-      .then((registration) => {
-        registration.unregister();
-      })
-      .catch((error) => {
-        console.error(error.message);
-      });
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return;
   }
+    navigator.serviceWorker.ready
+    .then((registration) => {
+      registration.unregister();
+    })
+    .catch((error) => {
+      console.error(error.message);
+    });
 }
 
 // Utility functions for service worker communication
 export async function clearServiceWorkerCache() {
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({
-      type: 'CLEAR_CACHE'
-    });
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
+    return;
   }
+    navigator.serviceWorker.controller.postMessage({
+    type: 'CLEAR_CACHE'
+  });
 }
 
 export async function cacheResource(url: string, type: string) {
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({
-      type: 'CACHE_RESOURCE',
-      resource: { url, type }
-    });
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
+    return;
   }
+    navigator.serviceWorker.controller.postMessage({
+    type: 'CACHE_RESOURCE',
+    resource: { url, type }
+  });
 }
 
 export async function skipWaiting() {
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({
-      type: 'SKIP_WAITING'
-    });
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
+    return;
   }
+    navigator.serviceWorker.controller.postMessage({
+    type: 'SKIP_WAITING'
+  });
 }
 
 // Check if app can work offline
 export function isOfflineReady(): boolean {
-  return 'serviceWorker' in navigator && navigator.serviceWorker.controller !== null;
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return false;
+  }
+  return navigator.serviceWorker.controller !== null;
 }
 
 // Get service worker registration
 export async function getRegistration(): Promise<ServiceWorkerRegistration | undefined> {
-  if ('serviceWorker' in navigator) {
-    return navigator.serviceWorker.ready;
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return undefined;
   }
-  return undefined;
+  return navigator.serviceWorker.ready;
 }
 
 // Request persistent storage (for premium users)
 export async function requestPersistentStorage(): Promise<boolean> {
-  if ('storage' in navigator && 'persist' in navigator.storage) {
-    try {
-      const granted = await navigator.storage.persist();
-      console.log(`Persistent storage ${granted ? 'granted' : 'denied'}`);
-      return granted;
-    } catch (error) {
-      console.error('Error requesting persistent storage:', error);
-      return false;
-    }
+  if (typeof window === 'undefined' || !('storage' in navigator) || !('persist' in navigator.storage)) {
+    return false;
   }
-  return false;
+    try {
+    const granted = await navigator.storage.persist();
+    console.log(`Persistent storage ${granted ? 'granted' : 'denied'}`);
+    return granted;
+  } catch (error) {
+    console.error('Error requesting persistent storage:', error);
+    return false;
+  }
 }

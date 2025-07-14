@@ -266,7 +266,7 @@ service cloud.firestore {
         request.auth.uid == userId &&
         // Validate stats structure on updates
         request.resource.data.keys().hasAll(['version', 'userId', 'lastUpdated']) &&
-        request.resource.data.version == '2.0' &&
+        request.resource.data.version in ['2.0', '2.1'] &&
         request.resource.data.userId == userId &&
         request.resource.data.lastUpdated is timestamp;
 
@@ -288,6 +288,63 @@ service cloud.firestore {
           request.resource.data.summary is map;
         
         // Users can delete their own old activities
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
+      // Learned items subcollections (new in v2.1)
+      match /learnedItems/kanji/{kanjiId} {
+        // Users can read their own learned kanji
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create/update their own learned kanji
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['character', 'learnedAt']) &&
+          request.resource.data.character is string &&
+          request.resource.data.learnedAt is timestamp;
+        
+        // Users can delete their own learned kanji
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
+      match /learnedItems/words/{wordId} {
+        // Users can read their own learned words
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create/update their own learned words
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['word', 'learnedAt']) &&
+          request.resource.data.word is string &&
+          request.resource.data.learnedAt is timestamp;
+        
+        // Users can delete their own learned words
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
+      // Study sessions subcollection (new in v2.1)
+      match /sessions/{sessionId} {
+        // Users can read their own sessions
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create their own sessions
+        allow create: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['startTime', 'endTime', 'activities']) &&
+          request.resource.data.startTime is timestamp &&
+          request.resource.data.endTime is timestamp &&
+          request.resource.data.activities is list;
+        
+        // Users cannot update sessions (immutable)
+        allow update: if false;
+        
+        // Users can delete old sessions
         allow delete: if request.auth != null &&
           (isAdmin() || request.auth.uid == userId);
       }

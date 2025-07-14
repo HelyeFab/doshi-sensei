@@ -80,6 +80,25 @@ export interface UserStatsV2 {
   // Pokemon specific
   pokemonCaught: number;
   
+  // Unique items tracking (new)
+  learnedKanjiSet: string[];
+  learnedWordsSet: string[];
+  caughtPokemonSet: string[];
+  
+  // Activity-specific metrics (new)
+  drillStats: {
+    totalQuestions: number;
+    totalCorrect: number;
+  };
+  kanjiStats: {
+    totalQuestions: number;
+    totalCorrect: number;
+  };
+  gameStats: {
+    totalQuestions: number;
+    totalCorrect: number;
+  };
+  
   // Metadata
   lastUpdated: number;
   version: string;
@@ -104,7 +123,7 @@ export class StatsTracker {
   private static readonly ACTIVITIES_STORE = 'dailyActivities';
   private static readonly SYNC_INTERVAL = 30000; // 30 seconds
   private static readonly BATCH_SIZE = 50;
-  private static readonly VERSION = '2.0';
+  private static readonly VERSION = '2.1';
 
   private constructor() {
     // Private constructor for singleton
@@ -466,6 +485,12 @@ export class StatsTracker {
     this.stats.totalActivities++;
     this.stats.lastUpdated = Date.now();
 
+    // Validate data before processing
+    if (!this.validateActivityData(event)) {
+      console.warn('[StatsTracker] Invalid activity data, skipping update', event);
+      return;
+    }
+
     switch (event.type) {
       case 'drill':
         this.stats.drillsCompleted++;
@@ -478,15 +503,29 @@ export class StatsTracker {
         break;
       case 'kanji':
         this.stats.kanjiStudySessions++;
+        // Track unique kanji learned
+        if (event.details.itemId && !this.stats.learnedKanjiSet.includes(event.details.itemId)) {
+          this.stats.learnedKanjiSet.push(event.details.itemId);
+          this.stats.totalKanjiLearned = this.stats.learnedKanjiSet.length;
+        }
         break;
       case 'game':
         this.stats.gamesPlayed++;
+        // Track unique Pokemon caught
         if (event.details.gameType === 'pokemon' && event.details.itemId) {
-          this.stats.pokemonCaught++;
+          if (!this.stats.caughtPokemonSet.includes(event.details.itemId)) {
+            this.stats.caughtPokemonSet.push(event.details.itemId);
+            this.stats.pokemonCaught = this.stats.caughtPokemonSet.length;
+          }
         }
         break;
       case 'vocab':
         this.stats.vocabStudied++;
+        // Track unique words learned
+        if (event.details.itemId && !this.stats.learnedWordsSet.includes(event.details.itemId)) {
+          this.stats.learnedWordsSet.push(event.details.itemId);
+          this.stats.totalWordsLearned = this.stats.learnedWordsSet.length;
+        }
         break;
       case 'flashcard':
         this.stats.flashcardsReviewed++;
@@ -496,7 +535,7 @@ export class StatsTracker {
         break;
     }
 
-    // Update accuracy metrics
+    // Update accuracy metrics with activity-specific tracking
     if (event.details.correct !== undefined && event.details.total !== undefined) {
       this.stats.totalCorrectAnswers += event.details.correct;
       this.stats.totalQuestionsAnswered += event.details.total;
@@ -508,16 +547,34 @@ export class StatsTracker {
         );
       }
 
-      // Update specific accuracies
+      // Update activity-specific accuracies
       switch (event.type) {
         case 'drill':
-          // Will implement drill-specific accuracy tracking
+          this.stats.drillStats.totalCorrect += event.details.correct;
+          this.stats.drillStats.totalQuestions += event.details.total;
+          if (this.stats.drillStats.totalQuestions > 0) {
+            this.stats.drillAccuracy = Math.round(
+              (this.stats.drillStats.totalCorrect / this.stats.drillStats.totalQuestions) * 100
+            );
+          }
           break;
         case 'kanji':
-          // Will implement kanji-specific accuracy tracking
+          this.stats.kanjiStats.totalCorrect += event.details.correct;
+          this.stats.kanjiStats.totalQuestions += event.details.total;
+          if (this.stats.kanjiStats.totalQuestions > 0) {
+            this.stats.kanjiAccuracy = Math.round(
+              (this.stats.kanjiStats.totalCorrect / this.stats.kanjiStats.totalQuestions) * 100
+            );
+          }
           break;
         case 'game':
-          // Will implement game-specific accuracy tracking
+          this.stats.gameStats.totalCorrect += event.details.correct;
+          this.stats.gameStats.totalQuestions += event.details.total;
+          if (this.stats.gameStats.totalQuestions > 0) {
+            this.stats.gameAccuracy = Math.round(
+              (this.stats.gameStats.totalCorrect / this.stats.gameStats.totalQuestions) * 100
+            );
+          }
           break;
       }
     }
@@ -526,6 +583,33 @@ export class StatsTracker {
     if (event.details.score !== undefined) {
       this.stats.totalGameScore += event.details.score;
     }
+  }
+
+  /**
+   * Validate activity data before processing
+   */
+  private validateActivityData(event: ActivityEvent): boolean {
+    // Check for invalid correct/total combinations
+    if (event.details.correct !== undefined && event.details.total !== undefined) {
+      if (event.details.correct < 0 || event.details.total < 0) {
+        return false;
+      }
+      if (event.details.correct > event.details.total) {
+        return false;
+      }
+    }
+
+    // Check for invalid scores
+    if (event.details.score !== undefined && event.details.score < 0) {
+      return false;
+    }
+
+    // Check for invalid duration
+    if (event.details.duration !== undefined && event.details.duration < 0) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -858,6 +942,22 @@ export class StatsTracker {
       totalWordsLearned: 0,
       totalGameScore: 0,
       pokemonCaught: 0,
+      // New fields
+      learnedKanjiSet: [],
+      learnedWordsSet: [],
+      caughtPokemonSet: [],
+      drillStats: {
+        totalQuestions: 0,
+        totalCorrect: 0
+      },
+      kanjiStats: {
+        totalQuestions: 0,
+        totalCorrect: 0
+      },
+      gameStats: {
+        totalQuestions: 0,
+        totalCorrect: 0
+      },
       lastUpdated: Date.now(),
       version: StatsTracker.VERSION
     };

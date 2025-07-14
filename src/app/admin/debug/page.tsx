@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, XCircle, AlertCircle, RefreshCw, Info, HelpCircle } from 'lucide-react';
 import { SimpleTooltip } from '@/components/ui/tooltip';
 import { useStrings } from '@/contexts/LanguageContext';
+import StatsMigration from '@/components/admin/StatsMigration';
 
 export default function AdminDebugPage() {
   const { user } = useAuth();
@@ -289,9 +290,10 @@ export default function AdminDebugPage() {
 
         {/* Debug Tools Tabs */}
         <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="stats">Stats Debug Panel</TabsTrigger>
             <TabsTrigger value="console">Console Monitor</TabsTrigger>
+            <TabsTrigger value="migration">Migration Tools</TabsTrigger>
           </TabsList>
           
           <TabsContent value="stats" className="space-y-4">
@@ -332,6 +334,10 @@ export default function AdminDebugPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="migration" className="space-y-4">
+            <StatsMigration />
           </TabsContent>
         </Tabs>
 

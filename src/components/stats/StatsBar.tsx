@@ -4,6 +4,7 @@ import React from 'react';
 import { useStats } from '@/hooks/useStats';
 import { useSettings } from '@/contexts/SettingsContext';
 import { colorPalettes } from '@/utils/themes';
+import { useComponentName } from '@/components/DevHelper';
 
 interface StatBadgeProps {
   icon: string | React.ReactNode;
@@ -39,6 +40,7 @@ interface StatsBarProps {
 export function StatsBar({ className = '' }: StatsBarProps) {
   const { stats, loading } = useStats();
   const { settings } = useSettings();
+  const componentProps = useComponentName('StatsBar');
 
   // Calculate gradient colors
   const colorScheme = settings.colorScheme || 'default';
@@ -64,6 +66,7 @@ export function StatsBar({ className = '' }: StatsBarProps) {
         boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
         background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
       }}
+      {...componentProps}
     >
       <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">
         {/* Streak */}
@@ -171,8 +174,8 @@ export function StatsBar({ className = '' }: StatsBarProps) {
         </div>
 
         {/* Active Days (new stat) */}
-        <div className="hidden md:flex items-center gap-2">
-          <div className="h-8 w-px bg-gray-400/30 mr-2" />
+        <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
+          <div className="hidden md:block h-8 w-px bg-gray-400/30 mr-2" />
           <StatBadge
             icon="📅"
             label="Active Days"

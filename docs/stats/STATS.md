@@ -36,6 +36,49 @@ This metric aggregates performance across all activities that track correct/inco
 
 Activities without scoring components (like reading stories or browsing articles) do not affect the accuracy percentage.
 
+### How Individual Stats are Calculated
+
+#### 🔥 Streak Calculation
+- **Current Streak**: Number of consecutive days with at least one activity
+  - Resets to 1 if there's a gap in activity
+  - Updated each time an activity is tracked
+  - Verified against daily activity history
+- **Longest Streak**: Historical maximum of currentStreak
+  - Updated when currentStreak exceeds the previous record
+
+#### 📅 Active Days
+- **Total Days Active**: Count of unique days where user performed any tracked activity
+- Calculated during streak validation by counting distinct dates in activity history
+- Includes all days from firstActiveDate to lastActiveDate with activities
+
+#### ⚡ Activity Counters
+Each activity type has its own counter that increments when tracked:
+- **Drills Completed**: Incremented via `trackDrillCompleted()`
+- **Stories Read**: Incremented via `trackStoryRead()`
+- **Articles Read**: Incremented via `trackArticleRead()`
+- **Kanji Study Sessions**: Incremented via `trackKanjiStudy()`
+- **Games Played**: Incremented via `trackGamePlayed()`
+- **Vocabulary Studied**: Incremented via `trackVocabStudied()`
+- **Flashcards Reviewed**: Incremented via `trackFlashcardReviewed()`
+- **Practice Sessions**: Incremented via `trackPracticeSession()`
+
+#### 🎮 Special Counters
+- **Pokémon Caught**: Only incremented when game type is 'pokemon' and includes a unique pokemonId
+- **Total Game Score**: Sum of all score values from game activities
+- **Total Kanji Learned**: Count of unique kanji characters studied
+- **Total Words Learned**: Count of unique vocabulary items studied
+
+#### 📊 Performance Metrics
+- **Total Questions Answered**: Sum of all 'total' values from activities with questions
+- **Total Correct Answers**: Sum of all 'correct' values from activities
+- **Overall Accuracy**: `(totalCorrectAnswers / totalQuestionsAnswered) × 100`
+- **Activity-Specific Accuracy**: Planned for future implementation (drillAccuracy, kanjiAccuracy, gameAccuracy)
+
+#### 🕐 Time-Based Metrics (Future Implementation)
+- **Total Study Time**: Sum of all duration values from activities
+- **Average Session Duration**: totalStudyTime / totalActivities
+- **Study Time by Activity**: Breakdown of time spent on each activity type
+
 ### Key Features
 
 - **Event-Driven Architecture**: Every user action triggers a stats update
@@ -191,9 +234,28 @@ interface UserStatsV2 {
   totalGameScore: number;
   pokemonCaught: number;
   
+  // Unique items tracking (v2.1)
+  learnedKanjiSet: string[];    // Array of unique kanji IDs
+  learnedWordsSet: string[];    // Array of unique word IDs
+  caughtPokemonSet: string[];   // Array of unique Pokemon IDs
+  
+  // Activity-specific metrics (v2.1)
+  drillStats: {
+    totalQuestions: number;
+    totalCorrect: number;
+  };
+  kanjiStats: {
+    totalQuestions: number;
+    totalCorrect: number;
+  };
+  gameStats: {
+    totalQuestions: number;
+    totalCorrect: number;
+  };
+  
   // Metadata
   lastUpdated: number;          // Unix timestamp
-  version: string;              // Stats version
+  version: string;              // Stats version (current: '2.1')
 }
 ```
 

@@ -12,6 +12,7 @@ import PokedexModal from '@/components/games/PokedexModal';
 import { useStrings } from '@/contexts/LanguageContext';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useStats } from '@/hooks/useStats';
+import { toggleDevHelper } from '@/components/DevHelper';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -164,6 +165,20 @@ export default function MobileMenu() {
                 </Link>
               );
             })}
+            
+            {/* Dev Helper Toggle */}
+            {(
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  toggleDevHelper();
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left border-t border-border"
+              >
+                <span className="text-lg">🛠️</span>
+                <span className="font-medium">Toggle Dev Helper</span>
+              </button>
+            )}
             
             {/* Install App Option */}
             {canInstall && !isInstalled && (

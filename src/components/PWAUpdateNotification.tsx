@@ -95,11 +95,15 @@ export default function PWAUpdateNotification() {
       // Tell the service worker to skip waiting
       waitingWorker.postMessage({ type: 'SKIP_WAITING' });
 
+      // Hide the notification immediately after triggering update
+      setShowUpdatePrompt(false);
+
       // Set up controller change listener before skip waiting
       let reloadScheduled = false;
       const controllerChangeHandler = () => {
         if (!reloadScheduled) {
           reloadScheduled = true;
+          console.log('Service worker controller changed, reloading...');
           // Reload after a short delay to ensure everything is ready
           setTimeout(() => {
             window.location.reload();
@@ -114,13 +118,24 @@ export default function PWAUpdateNotification() {
         }
       });
 
-      // Fallback reload after 2 seconds if controller doesn't change
+      // Also listen for state changes on the waiting worker
+      waitingWorker.addEventListener('statechange', () => {
+        if (waitingWorker.state === 'activated' && !reloadScheduled) {
+          reloadScheduled = true;
+          console.log('Service worker activated, reloading...');
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        }
+      });
+
+      // Fallback reload after 3 seconds if controller doesn't change
       setTimeout(() => {
         if (!reloadScheduled) {
           console.log('Forcing reload after timeout');
           window.location.reload();
         }
-      }, 2000);
+      }, 3000);
     } catch (error) {
       console.error('Error during update:', error);
       // Force reload on error

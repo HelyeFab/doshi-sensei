@@ -134,6 +134,31 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     sharedLimitGroup: 'games'
   },
   
+  // Learning Features
+  'kanji_stroke_order': {
+    id: 'kanji_stroke_order',
+    name: 'Kanji Stroke Order',
+    description: 'View animated stroke order for any kanji character',
+    category: 'learning',
+    icon: '✍️',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+  
+  'stroke_order_practice': {
+    id: 'stroke_order_practice',
+    name: 'Stroke Order Practice',
+    description: 'Practice writing kanji with guided stroke order',
+    category: 'learning',
+    icon: '📝',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+  
   // Storage Features
   'word_lists': {
     id: 'word_lists',

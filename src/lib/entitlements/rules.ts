@@ -10,14 +10,15 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
   {
     id: 'guest_basic',
     userTypes: ['guest'],
-    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods'],
+    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order'],
     limits: {
       daily: {
         drill_practice: 3,
         games: 3, // Shared limit for all games
         article_reading: 3,
         story_reading: 1,
-        kanji_moods: 1
+        kanji_moods: 1,
+        kanji_stroke_order: 10
       }
     },
     description: 'Basic access for non-registered users'
@@ -34,7 +35,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
       'read_stories',
       'create_lists',
       'save_progress',
-      'kanji_moods'
+      'kanji_moods',
+      'view_stroke_order'
     ],
     limits: {
       daily: {
@@ -42,7 +44,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         games: 3, // Shared limit for all games
         article_reading: 3,
         story_reading: 1,
-        kanji_moods: 1
+        kanji_moods: 1,
+        kanji_stroke_order: 10
       },
       total: {
         word_lists: 3,
@@ -64,7 +67,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         article_reading: -1,
         story_reading: -1,
         speaking_practice: -1,
-        ai_tutor: 10 // Even premium has some limits on expensive features
+        ai_tutor: 10, // Even premium has some limits on expensive features
+        kanji_stroke_order: -1
       },
       total: {
         word_lists: -1,
@@ -86,7 +90,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         article_reading: -1,
         story_reading: -1,
         speaking_practice: -1,
-        ai_tutor: -1 // Yearly gets truly unlimited
+        ai_tutor: -1, // Yearly gets truly unlimited
+        kanji_stroke_order: -1
       },
       total: {
         word_lists: -1,

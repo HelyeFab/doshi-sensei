@@ -101,7 +101,9 @@ export class AccessControl {
       'sentences-bookmark': 'create_lists',
       'cloud_sync': 'cloud_sync',
       'progress_saving': 'save_progress',
-      'kanji_moods': 'kanji_moods'
+      'kanji_moods': 'kanji_moods',
+      'kanji_stroke_order': 'view_stroke_order',
+      'stroke_order_practice': 'view_stroke_order'
     };
     
     const permission = permissionMap[featureId];

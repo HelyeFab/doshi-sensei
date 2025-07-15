@@ -269,6 +269,11 @@ export default function StoriesPage() {
                             <span>💾</span> Offline
                           </span>
                         )}
+                        {story.theme === 'Mood Board Story' && (
+                          <span className="px-2 py-1 bg-purple-600/90 text-white text-xs rounded flex items-center gap-1">
+                            <span>🎨</span> Mood Board
+                          </span>
+                        )}
                         <span className="px-2 py-1 bg-black/50 text-white text-xs rounded">
                           {story.jlptLevel}
                         </span>

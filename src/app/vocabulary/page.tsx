@@ -82,7 +82,7 @@ export default function VocabularyPage() {
       setSearching(true);
       setError(null);
       setDidYouMean(null);
-      
+
       let searchResults: SearchResult[] = [];
       if (searchSource === 'wanikani') {
         const results = await searchWords(term, 30);
@@ -149,7 +149,7 @@ export default function VocabularyPage() {
       jlpt: 'N5',
       tags: ['sentence', 'example']
     };
-    
+
     setWordToSave(exampleAsWord);
     setExampleToSave(example);
     setShowSaveModal(true);
@@ -296,24 +296,42 @@ export default function VocabularyPage() {
             Search Japanese words and browse your search history
           </p>
 
-          {/* Search Source Toggle - moved here */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex rounded-lg overflow-hidden border border-border bg-muted">
+                    {/* Search Source Toggle - moved here */}
+          <div className="flex flex-col items-center mb-6">
+            <div className="inline-flex rounded-lg overflow-hidden border border-border bg-muted mb-3">
               <button
-                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'wanikani' ? 'bg-background text-primary' : 'text-muted-foreground hover:bg-accent/30'}`}
+                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'wanikani' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'text-muted-foreground hover:bg-accent/30'}`}
                 onClick={() => setSearchSource('wanikani')}
                 aria-pressed={searchSource === 'wanikani'}
               >
                 WaniKani
               </button>
               <button
-                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'jmdict' ? 'bg-background text-primary' : 'text-muted-foreground hover:bg-accent/30'}`}
+                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'jmdict' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'text-muted-foreground hover:bg-accent/30'}`}
                 onClick={() => setSearchSource('jmdict')}
                 aria-pressed={searchSource === 'jmdict'}
               >
                 JMdict
               </button>
             </div>
+
+            {/* Dictionary differences dropdown */}
+            <details className="group">
+              <summary className="text-sm text-muted-foreground hover:text-foreground cursor-pointer flex items-center gap-1 justify-center transition-colors">
+                <span>What's the difference?</span>
+                <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="text-center max-w-md mt-2 p-3 bg-muted/30 rounded-lg border border-border/50">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-purple-600">WaniKani:</span> Curated vocabulary from JLPT levels, optimized for learners
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  <span className="font-medium text-purple-600">JMdict:</span> Comprehensive dictionary with 170,000+ entries, includes rare words
+                </p>
+              </div>
+            </details>
           </div>
 
           {/* Search */}
@@ -368,7 +386,7 @@ export default function VocabularyPage() {
                   ← Back to History
                 </button>
               </div>
-              
+
               {/* Did you mean suggestion */}
               {didYouMean && searchSource === 'jmdict' && (
                 <div className="mb-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
@@ -388,7 +406,7 @@ export default function VocabularyPage() {
                   </p>
                 </div>
               )}
-              
+
               {currentSearchResults.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {currentSearchResults.map((word) => (
@@ -655,7 +673,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
 
           {/* Example Sentences */}
           {word.exampleSentences && word.exampleSentences.length > 0 && (
-            <ExampleSentencesBlock 
+            <ExampleSentencesBlock
               word={word.kanji || word.kana}
               examples={word.exampleSentences}
               onSaveExample={onSaveExample}

@@ -108,6 +108,32 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     sharedLimitGroup: 'games'
   },
   
+  'reading_routes': {
+    id: 'reading_routes',
+    name: 'Reading Routes',
+    description: 'Master kanji readings through an interactive path-selection game',
+    category: 'games',
+    icon: '🛤️',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+    sharedLimitGroup: 'games'
+  },
+  
+  'kanji_simon': {
+    id: 'kanji_simon',
+    name: 'Kanji Simon',
+    description: 'Memory game: repeat kanji reading sequences like Simon Says',
+    category: 'games',
+    icon: '🎯',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+    sharedLimitGroup: 'games'
+  },
+  
   // Storage Features
   'word_lists': {
     id: 'word_lists',

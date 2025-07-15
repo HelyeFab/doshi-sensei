@@ -436,10 +436,15 @@ export function MoodBoardEditor({
         {/* Kanji Management */}
         <div className="bg-card border border-border rounded-lg shadow-lg p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
-            Kanji Management
+            Kanji Management *
           </h3>
           {errors.kanji && (
             <p className="mb-4 text-sm text-destructive">{errors.kanji}</p>
+          )}
+          {formData.kanji.length === 0 && (
+            <p className="mb-4 text-sm text-muted-foreground">
+              At least one kanji is required
+            </p>
           )}
           <KanjiEditor
             kanji={formData.kanji}
@@ -460,7 +465,14 @@ export function MoodBoardEditor({
           <button
             type="submit"
             className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isSaving}
+            disabled={isSaving || !formData.title.trim() || !formData.emoji || !formData.description.trim() || formData.kanji.length === 0}
+            title={
+              !formData.title.trim() ? 'Title is required' :
+              !formData.emoji ? 'Emoji is required' :
+              !formData.description.trim() ? 'Description is required' :
+              formData.kanji.length === 0 ? 'At least one kanji is required' :
+              ''
+            }
           >
             {isSaving ? 'Saving...' : initialData ? 'Update Mood Board' : 'Create Mood Board'}
           </button>

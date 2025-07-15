@@ -94,6 +94,8 @@ export class AccessControl {
       'kana_drop': 'play_games',
       'sentence_scramble': 'play_games',
       'matching_game': 'play_games',
+      'reading_routes': 'play_games',
+      'kanji_simon': 'play_games',
       'word_lists': 'create_lists',
       'bookmarks': 'create_lists',
       'sentences-bookmark': 'create_lists',

@@ -72,6 +72,38 @@ class StoryManager {
     }
   }
 
+  // Get a single story by slug
+  async getStoryBySlug(slug: string): Promise<Story | null> {
+    try {
+      const q = query(
+        collection(db, this.STORIES_COLLECTION),
+        where('slug', '==', slug),
+        limit(1)
+      );
+
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        return null;
+      }
+
+      const doc = querySnapshot.docs[0];
+      const data = doc.data();
+      const safeDate = (d: any) => d ? (typeof d.toDate === 'function' ? d.toDate() : new Date(d)) : undefined;
+      
+      return {
+        ...data,
+        id: doc.id,
+        createdAt: safeDate(data.createdAt) || new Date(),
+        updatedAt: safeDate(data.updatedAt) || new Date(),
+        publishedAt: safeDate(data.publishedAt)
+      } as Story;
+    } catch (error) {
+      console.error('Error getting story by slug:', error);
+      throw error;
+    }
+  }
+
   // Get stories by JLPT level
   async getStoriesByLevel(level: JLPTLevel, limitCount: number = 20): Promise<Story[]> {
     try {

@@ -206,7 +206,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
   };
 
   return (
-    <div className="absolute top-12 right-0 z-40 bg-card border border-border rounded-lg shadow-lg p-4 w-64">
+    <div className="absolute top-12 right-0 z-40 bg-card border border-border rounded-lg shadow-lg p-4 w-64 max-w-[calc(100vw-2rem)] md:max-w-none">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-medium text-foreground">Reading Settings</h3>
         <button
@@ -223,12 +223,12 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
           <label className="block text-sm font-medium text-foreground mb-2">
             Text Size
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {(['small', 'medium', 'large', 'xlarge'] as const).map((size) => (
               <button
                 key={size}
                 onClick={() => handleFontSizeChange(size)}
-                className={`px-3 py-1 rounded text-sm ${settings.fontSize === size
+                className={`px-3 py-1 rounded text-xs sm:text-sm ${settings.fontSize === size
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}

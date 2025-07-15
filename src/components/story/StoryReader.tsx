@@ -72,7 +72,7 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
   };
 
   return (
-    <div className="absolute top-12 right-0 z-40 bg-card border border-border rounded-lg shadow-lg p-4 w-64">
+    <div className="absolute top-12 right-0 z-40 bg-card border border-border rounded-lg shadow-lg p-4 w-64 max-w-[calc(100vw-2rem)] md:max-w-none">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-medium text-foreground">Reading Settings</h3>
         <button
@@ -87,17 +87,17 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
         {/* Font Size */}
         <div>
           <label className="block text-sm font-medium mb-2">Font Size</label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {(['small', 'medium', 'large', 'xlarge'] as const).map((size) => (
               <button
                 key={size}
                 onClick={() => handleFontSizeChange(size)}
-                className={`px-3 py-1 rounded text-sm ${settings.fontSize === size
+                className={`px-3 py-1 rounded text-xs sm:text-sm ${settings.fontSize === size
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
               >
-                {size.charAt(0).toUpperCase() + size.slice(1)}
+                {size === 'xlarge' ? 'XLarge' : size.charAt(0).toUpperCase() + size.slice(1)}
               </button>
             ))}
           </div>
@@ -568,6 +568,23 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       {/* Page Header */}
       <div className="container mx-auto px-4">
         <PageHeader title={story.title} showBackButton={true} onBackClick={onExit} />
+        
+        {/* Mood Board Indicator */}
+        {story.moodBoardTitle && (
+          <div className="max-w-6xl mx-auto mt-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-900 dark:text-purple-100">
+              <span className="text-lg">🎨</span>
+              <span className="text-sm font-medium">
+                Created from "{story.moodBoardTitle}" mood board
+              </span>
+              {story.moodBoardKanji && story.moodBoardKanji.length > 0 && (
+                <span className="text-xs text-purple-700 dark:text-purple-300">
+                  ({story.moodBoardKanji.length} kanji)
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">

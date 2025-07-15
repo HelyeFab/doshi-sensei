@@ -186,6 +186,20 @@ export default function GamesPage() {
       icon: '🧩',
       iconImage: '/flat-icons/root-icons/construction.svg',
       color: 'bg-orange-500'
+    },
+    {
+      id: 'reading-routes',
+      title: strings.games.modes.readingRoutes?.title || 'Reading Routes',
+      description: strings.games.modes.readingRoutes?.description || 'Master kanji readings through path selection',
+      icon: '🛤️',
+      color: 'bg-gradient-to-r from-blue-500 to-purple-500'
+    },
+    {
+      id: 'kanji-simon',
+      title: strings.games.modes.kanjiSimon?.title || 'Kanji Simon',
+      description: strings.games.modes.kanjiSimon?.description || 'Memory game: repeat kanji reading sequences',
+      icon: '🎯',
+      color: 'bg-gradient-to-r from-yellow-500 to-red-500'
     }
   ];
 
@@ -518,6 +532,12 @@ export default function GamesPage() {
       // Show list selection for matching game
       setShowListSelection(true);
       loadStudyLists();
+    } else if (gameMode.id === 'reading-routes') {
+      // Navigate to Reading Routes game page without board selection
+      router.push('/games/reading-routes');
+    } else if (gameMode.id === 'kanji-simon') {
+      // Navigate to Kanji Simon game page
+      router.push('/games/kanji-simon');
     }
   };
 

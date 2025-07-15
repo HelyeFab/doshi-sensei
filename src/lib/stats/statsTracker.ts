@@ -188,6 +188,19 @@ export class StatsTracker {
 
     // Process immediately
     await this.processPendingActivities();
+    
+    // Debug logging after processing
+    if (this.stats) {
+      console.log(`📊 [STATS DEBUG] After tracking ${type} activity:`, {
+        type,
+        timestamp: new Date().toISOString(),
+        currentStreak: this.stats.currentStreak,
+        longestStreak: this.stats.longestStreak,
+        lastActiveDate: this.stats.lastActiveDate,
+        totalDaysActive: this.stats.totalDaysActive,
+        totalActivities: this.stats.totalActivities
+      });
+    }
   }
 
   /**
@@ -620,35 +633,45 @@ export class StatsTracker {
 
     const today = this.getDateString(Date.now());
     const yesterday = this.getDateString(Date.now() - 24 * 60 * 60 * 1000);
-
-    // Update last active date
-    if (activityDate > this.stats.lastActiveDate || !this.stats.lastActiveDate) {
-      this.stats.lastActiveDate = activityDate;
-    }
+    
+    // Debug logging
+    console.log(`📊 [StatsTracker] updateStreak called with activityDate: ${activityDate}, today: ${today}, lastActiveDate: ${this.stats.lastActiveDate}`);
 
     // Update first active date
     if (!this.stats.firstActiveDate || activityDate < this.stats.firstActiveDate) {
       this.stats.firstActiveDate = activityDate;
     }
 
-    // Check if we need to update streak
+    // Check if we need to update streak - only process if activity is for today
     if (activityDate === today) {
-      // Activity today - check if streak needs to continue
-      if (this.stats.lastActiveDate === yesterday) {
-        // Consecutive day - streak continues
-        console.log(`🔥 [StatsTracker] Streak continues! Current: ${this.stats.currentStreak}`);
-      } else if (this.stats.lastActiveDate === today) {
-        // Already active today - no change
-      } else {
-        // Gap in activity - reset streak
-        console.log(`💔 [StatsTracker] Streak broken. Was: ${this.stats.currentStreak}, Last active: ${this.stats.lastActiveDate}`);
+      // Check previous activity to determine streak status
+      if (!this.stats.lastActiveDate || this.stats.lastActiveDate === '') {
+        // First activity ever
+        console.log(`🎉 [StatsTracker] First activity! Starting streak at 1`);
         this.stats.currentStreak = 1;
+      } else if (this.stats.lastActiveDate === today) {
+        // Already processed today - no change needed
+        console.log(`✅ [StatsTracker] Already active today, maintaining streak: ${this.stats.currentStreak}`);
+        return;
+      } else if (this.stats.lastActiveDate === yesterday) {
+        // Consecutive day - INCREMENT the streak!
+        this.stats.currentStreak += 1;
+        console.log(`🔥 [StatsTracker] Streak continues! Incremented from ${this.stats.currentStreak - 1} to ${this.stats.currentStreak}`);
+      } else {
+        // Gap in activity - reset streak to 1
+        const previousStreak = this.stats.currentStreak;
+        this.stats.currentStreak = 1;
+        console.log(`💔 [StatsTracker] Streak broken. Was: ${previousStreak}, Last active: ${this.stats.lastActiveDate}, Resetting to 1`);
       }
+      
+      // Update last active date AFTER checking (this was the critical bug!)
+      this.stats.lastActiveDate = today;
     }
 
     // Update longest streak
     if (this.stats.currentStreak > this.stats.longestStreak) {
       this.stats.longestStreak = this.stats.currentStreak;
+      console.log(`🏆 [StatsTracker] New longest streak: ${this.stats.longestStreak}`);
     }
   }
 
@@ -658,7 +681,7 @@ export class StatsTracker {
   private async validateAndFixStreak(): Promise<void> {
     if (!this.stats) return;
 
-    console.log('🔍 [StatsTracker] Validating streak...');
+    console.log('🔍 [StatsTracker] Validating streak and active days...');
 
     // Get all activity dates
     const activityDates = new Set<string>();
@@ -679,38 +702,93 @@ export class StatsTracker {
     // Sort dates
     const sortedDates = Array.from(activityDates).sort();
     
+    console.log(`📊 [StatsTracker] Found ${sortedDates.length} days with activity`);
+    if (sortedDates.length > 0) {
+      console.log(`📊 [StatsTracker] Date range: ${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}`);
+    }
+    
     if (sortedDates.length === 0) {
       console.log('📊 [StatsTracker] No activity data found');
       this.stats.currentStreak = 0;
+      this.stats.totalDaysActive = 0;
       return;
     }
 
-    // Calculate actual streak
+    // Calculate actual current streak (counting backwards from today)
     let actualStreak = 0;
     const today = this.getDateString(Date.now());
     let checkDate = today;
 
+    console.log(`📊 [StatsTracker] Checking streak from today (${today}) backwards...`);
     while (activityDates.has(checkDate)) {
       actualStreak++;
-      const prevDate = new Date(checkDate);
-      prevDate.setDate(prevDate.getDate() - 1);
+      console.log(`✅ [StatsTracker] Activity found on ${checkDate}, streak now: ${actualStreak}`);
+      const prevDate = new Date(checkDate + 'T00:00:00.000Z'); // Ensure UTC
+      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
       checkDate = this.getDateString(prevDate.getTime());
     }
-
-    // Update stats if different
-    if (actualStreak !== this.stats.currentStreak) {
-      console.log(`✅ [StatsTracker] Fixed streak: ${this.stats.currentStreak} -> ${actualStreak}`);
-      this.stats.currentStreak = actualStreak;
-      
-      if (actualStreak > this.stats.longestStreak) {
-        this.stats.longestStreak = actualStreak;
+    
+    if (actualStreak === 0 && activityDates.has(sortedDates[sortedDates.length - 1])) {
+      // Check if last activity was yesterday (streak might be at risk)
+      const yesterday = this.getDateString(Date.now() - 24 * 60 * 60 * 1000);
+      if (sortedDates[sortedDates.length - 1] === yesterday) {
+        console.log(`⚠️ [StatsTracker] Last activity was yesterday - streak at risk! Activity needed today.`);
       }
     }
 
-    // Update total days active
+    // Calculate longest streak ever
+    let longestStreak = 0;
+    let currentCheckStreak = 0;
+    let lastDate: string | null = null;
+    
+    for (const date of sortedDates) {
+      if (lastDate === null) {
+        currentCheckStreak = 1;
+      } else {
+        const lastDateTime = new Date(lastDate + 'T00:00:00.000Z');
+        const currentDateTime = new Date(date + 'T00:00:00.000Z');
+        const daysDiff = Math.round((currentDateTime.getTime() - lastDateTime.getTime()) / (24 * 60 * 60 * 1000));
+        
+        if (daysDiff === 1) {
+          currentCheckStreak++;
+        } else {
+          longestStreak = Math.max(longestStreak, currentCheckStreak);
+          currentCheckStreak = 1;
+        }
+      }
+      lastDate = date;
+    }
+    longestStreak = Math.max(longestStreak, currentCheckStreak);
+
+    // Update stats if different
+    const previousStreak = this.stats.currentStreak;
+    const previousLongest = this.stats.longestStreak;
+    const previousActive = this.stats.totalDaysActive;
+    
+    this.stats.currentStreak = actualStreak;
+    this.stats.longestStreak = Math.max(longestStreak, actualStreak, this.stats.longestStreak);
     this.stats.totalDaysActive = activityDates.size;
     
-    console.log(`📊 [StatsTracker] Validation complete. Streak: ${this.stats.currentStreak}, Total days: ${this.stats.totalDaysActive}`);
+    if (actualStreak !== previousStreak || this.stats.longestStreak !== previousLongest || this.stats.totalDaysActive !== previousActive) {
+      console.log(`✅ [StatsTracker] Stats updated:`);
+      console.log(`   - Current streak: ${previousStreak} → ${this.stats.currentStreak}`);
+      console.log(`   - Longest streak: ${previousLongest} → ${this.stats.longestStreak}`);
+      console.log(`   - Total active days: ${previousActive} → ${this.stats.totalDaysActive}`);
+    } else {
+      console.log(`✅ [StatsTracker] Stats validated - no changes needed`);
+    }
+    
+    // Update dates if needed
+    if (sortedDates.length > 0) {
+      if (!this.stats.firstActiveDate || sortedDates[0] < this.stats.firstActiveDate) {
+        this.stats.firstActiveDate = sortedDates[0];
+        console.log(`📊 [StatsTracker] Updated first active date: ${this.stats.firstActiveDate}`);
+      }
+      if (!this.stats.lastActiveDate || sortedDates[sortedDates.length - 1] > this.stats.lastActiveDate) {
+        this.stats.lastActiveDate = sortedDates[sortedDates.length - 1];
+        console.log(`📊 [StatsTracker] Updated last active date: ${this.stats.lastActiveDate}`);
+      }
+    }
   }
 
   /**
@@ -828,9 +906,9 @@ export class StatsTracker {
           console.error('Stringified:', JSON.stringify(sanitizedActivity, null, 2));
           
           // Try to identify the problematic field
-          if (error.message && error.message.includes('undefined')) {
+          if (error instanceof Error && error.message && error.message.includes('undefined')) {
             console.error('Checking for undefined values...');
-            const checkForUndefined = (obj, path = '') => {
+            const checkForUndefined = (obj: any, path = '') => {
               for (const key in obj) {
                 const value = obj[key];
                 const currentPath = path ? `${path}.${key}` : key;
@@ -995,7 +1073,7 @@ export class StatsTracker {
     // Remove any 'id' field that might have been added by storage
     const { id, ...activityWithoutId } = activity;
     // Sanitize individual activity events to ensure no undefined values
-    const sanitizedActivities = (activityWithoutId.activities || []).map(event => {
+    const sanitizedActivities = (activityWithoutId.activities || []).map((event: any) => {
       // Build details object with only defined values
       const cleanDetails: any = {};
       
@@ -1107,6 +1185,54 @@ export class StatsTracker {
     return allActivities
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, limit);
+  }
+
+  /**
+   * Manually recalculate and fix streak (for debugging)
+   * This is a public method that can be called from browser console
+   */
+  async recalculateStreak(): Promise<{ success: boolean; message: string; stats: any }> {
+    try {
+      console.log('🔧 [StatsTracker] Manual streak recalculation requested');
+      
+      const before = {
+        currentStreak: this.stats?.currentStreak || 0,
+        longestStreak: this.stats?.longestStreak || 0,
+        totalDaysActive: this.stats?.totalDaysActive || 0,
+        lastActiveDate: this.stats?.lastActiveDate || 'unknown'
+      };
+      
+      await this.validateAndFixStreak();
+      
+      const after = {
+        currentStreak: this.stats?.currentStreak || 0,
+        longestStreak: this.stats?.longestStreak || 0,
+        totalDaysActive: this.stats?.totalDaysActive || 0,
+        lastActiveDate: this.stats?.lastActiveDate || 'unknown'
+      };
+      
+      // Save the corrected stats
+      if (this.stats) {
+        await this.saveToIndexedDB();
+        if (this.currentUser && this.isPremium) {
+          await this.saveToCloud();
+        }
+        this.notifyListeners();
+      }
+      
+      return {
+        success: true,
+        message: 'Streak recalculated successfully',
+        stats: { before, after }
+      };
+    } catch (error) {
+      console.error('❌ [StatsTracker] Error recalculating streak:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stats: null
+      };
+    }
   }
 
   /**

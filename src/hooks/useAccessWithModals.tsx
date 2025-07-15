@@ -9,7 +9,7 @@ import { UpgradePromptModal } from '@/components/UpgradePromptModal';
 interface UseAccessWithModalsReturn {
   checkAndTrack: (featureId: string) => Promise<boolean>;
   isChecking: boolean;
-  AccessModals: React.FC;
+  AccessModals: () => JSX.Element;
 }
 
 export function useAccessWithModals(): UseAccessWithModalsReturn {

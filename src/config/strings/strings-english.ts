@@ -493,6 +493,10 @@ export const strings = {
       "sentenceScramble": {
         "title": "Sentence Scramble",
         "description": "Rearrange words to form correct Japanese sentences."
+      },
+      "readingRoutes": {
+        "title": "Reading Routes",
+        "description": "Master kanji readings through path selection"
       }
     }
   },

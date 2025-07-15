@@ -171,6 +171,12 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
   const lowerTerm = term.toLowerCase().trim();
   const results: { word: any; score: number; matchType: 'exact' | 'reading' | 'meaning' }[] = [];
   
+  // For very short search terms (1-3 letters), we need to be more strict
+  const isShortTerm = lowerTerm.length <= 3;
+  
+  // Escape special regex characters for safe regex usage
+  const escapedTerm = lowerTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
   // Check if this is a common word we know about
   const commonWord = COMMON_WORDS[lowerTerm];
   
@@ -209,28 +215,68 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
     // English gloss match
     let glossMatch = false;
     let exactGlossMatch = false;
+    let wholeWordMatch = false;
+    let substringMatch = false;
+    
     for (const sense of word.sense || []) {
       for (const gloss of sense.gloss || []) {
         if (gloss.lang === 'eng') {
           const glossText = gloss.text.toLowerCase();
-          // Exact word match (not just substring)
-          if (glossText === lowerTerm || 
-              glossText.split(/[,;]/).some((part: string) => part.trim() === lowerTerm)) {
+          
+          // Check for exact match of the entire gloss
+          if (glossText === lowerTerm) {
             exactGlossMatch = true;
-            score += 800;
+            score += 1000;
             matchType = 'meaning';
             break;
+          }
+          
+          // Check if any part separated by common delimiters matches exactly
+          const parts = glossText.split(/[,;\/]/).map(p => p.trim());
+          if (parts.some(part => part === lowerTerm)) {
+            exactGlossMatch = true;
+            score += 900;
+            matchType = 'meaning';
+            break;
+          }
+          
+          // Check for whole word match using word boundaries
+          const wordBoundaryRegex = new RegExp(`\\b${escapedTerm}\\b`, 'i');
+          if (wordBoundaryRegex.test(glossText)) {
+            wholeWordMatch = true;
+            score += 600;
+            matchType = 'meaning';
+            // Don't break - keep looking for exact matches
           } else if (glossText.includes(lowerTerm)) {
-            glossMatch = true;
-            score += 200;
+            // Substring match - lowest priority
+            // For short terms, skip substring matches unless they're at word start
+            if (isShortTerm) {
+              // Only allow substring match if it's at the start of a word
+              const startsWordRegex = new RegExp(`\\b${escapedTerm}`, 'i');
+              if (!startsWordRegex.test(glossText)) {
+                continue; // Skip this match for short terms
+              }
+            }
+            substringMatch = true;
+            // Calculate penalty based on how much extra content there is
+            const lengthRatio = lowerTerm.length / glossText.length;
+            score += Math.floor(30 * lengthRatio); // Reduced score 0-30 for substring matches
           }
         }
       }
       if (exactGlossMatch) break;
     }
     
-    if (!glossMatch && !exactGlossMatch && matchType === 'meaning') {
+    // Set glossMatch if we found any kind of match
+    glossMatch = exactGlossMatch || wholeWordMatch || substringMatch;
+    
+    if (!glossMatch && matchType === 'meaning') {
       continue; // Skip if no match
+    }
+    
+    // Extra boost for exact matches on short common words
+    if (isShortTerm && exactGlossMatch && commonWord) {
+      score += 500; // Additional boost to ensure common words appear first
     }
     
     // Priority tag score
@@ -242,9 +288,9 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
     // Word length score (prefer simpler words)
     score += getWordLengthScore(word);
     
-    // Penalty for compound words
+    // Penalty for compound words (higher penalty for short search terms)
     if (isCompoundWord(word)) {
-      score -= 200;
+      score -= isShortTerm ? 400 : 200;
     }
     
     // Penalty for words with too many senses (likely less common)

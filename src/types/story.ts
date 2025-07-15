@@ -44,6 +44,11 @@ export interface Story {
   slug: string;
   seoTitle?: string;
   seoDescription?: string;
+
+  // Mood Board Reference (optional)
+  moodBoardId?: string;
+  moodBoardTitle?: string;
+  moodBoardKanji?: string[];
 }
 
 // Enhanced Story Progress (extends unified ReadingProgress)

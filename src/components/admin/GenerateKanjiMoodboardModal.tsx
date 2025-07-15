@@ -25,6 +25,7 @@ export default function GenerateKanjiMoodboardModal({
   const [kanjiCount, setKanjiCount] = useState(15);
   const [customTags, setCustomTags] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generateStory, setGenerateStory] = useState(true); // Default to true
 
   const handleGenerate = async () => {
     if (!theme.trim()) {
@@ -79,13 +80,65 @@ export default function GenerateKanjiMoodboardModal({
       
       showInfo('Success', `Generated ${moodboardData.kanjiList.length} kanji for "${theme}"`);
 
+      // Pass the moodboard data to the parent
       onGenerated(moodboardData);
+      
+      // If generateStory is enabled, trigger story generation
+      if (generateStory) {
+        showInfo('Generating Story', 'Creating a story from your mood board...');
+        
+        // Transform the moodboard data to match the expected format
+        const transformedMoodBoard = {
+          id: `moodboard-${Date.now()}`,
+          title: moodboardData.category || theme,
+          description: moodboardData.description || `Kanji related to ${theme}`,
+          emoji: moodboardData.emoji || '📚',
+          themeColor: moodboardData.themeColor || '#F6C667',
+          tags: customTags ? customTags.split(',').map(t => t.trim()).filter(Boolean) : [],
+          kanjiItems: moodboardData.kanjiList || [],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        console.log('Transformed mood board for story generation:', transformedMoodBoard);
+        
+        try {
+          const storyResponse = await fetch('/api/admin/generate-moodboard-story', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${await user.getIdToken()}`
+            },
+            body: JSON.stringify({
+              moodBoard: transformedMoodBoard
+            })
+          });
+
+          if (!storyResponse.ok) {
+            const error = await storyResponse.json();
+            throw new Error(error.error || 'Failed to generate story');
+          }
+
+          const storyResult = await storyResponse.json();
+          showInfo('Story Created!', `Successfully created story "${storyResult.story.title}" from your mood board`);
+          
+          // Open story in new tab
+          if (storyResult.story && storyResult.story.slug) {
+            window.open(`/stories/${storyResult.story.slug}`, '_blank');
+          }
+        } catch (error) {
+          console.error('Error generating story:', error);
+          showError('Story Generation Failed', error instanceof Error ? error.message : 'Failed to generate story from mood board');
+        }
+      }
+      
       onClose();
       
       // Reset form
       setTheme('');
       setCustomTags('');
       setKanjiCount(15);
+      setGenerateStory(true);
       
     } catch (error) {
       console.error('Error generating moodboard:', error);
@@ -187,6 +240,26 @@ export default function GenerateKanjiMoodboardModal({
             <p className="text-xs text-muted-foreground mt-1">
               Comma-separated tags to help categorize the kanji
             </p>
+          </div>
+
+          {/* Generate Story Checkbox */}
+          <div className="flex items-center gap-3 p-3 bg-purple-100 dark:bg-purple-950/40 border border-purple-300 dark:border-purple-700 rounded-lg">
+            <input
+              type="checkbox"
+              id="generateStory"
+              checked={generateStory}
+              onChange={(e) => setGenerateStory(e.target.checked)}
+              className="w-4 h-4 rounded border-border"
+              disabled={isGenerating}
+            />
+            <label htmlFor="generateStory" className="flex-1 cursor-pointer">
+              <span className="text-sm font-medium text-purple-900 dark:text-purple-200">
+                Automatically create a story
+              </span>
+              <p className="text-xs text-purple-700 dark:text-purple-300 mt-0.5">
+                Generate a 3-page educational story using all the kanji from this mood board
+              </p>
+            </label>
           </div>
 
           {/* Info Box */}

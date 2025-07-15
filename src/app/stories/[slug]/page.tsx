@@ -64,7 +64,7 @@ export default function StoryPage() {
 
       // If not found in cache or online, load from Firebase
       if (!loadedStory) {
-        loadedStory = await storyManager.getStory(slug);
+        loadedStory = await storyManager.getStoryBySlug(slug);
       }
 
       if (!loadedStory) {

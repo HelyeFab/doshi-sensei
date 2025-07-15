@@ -455,3 +455,33 @@ html, body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+
+/* Mood Board Kanji Styling for Stories */
+.mood-board-kanji {
+  color: #87CEEB !important; /* Baby blue color */
+  font-weight: bold;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* Add subtle glow effect on hover */
+.mood-board-kanji:hover {
+  text-shadow: 0 0 8px rgba(135, 206, 235, 0.5);
+  transform: scale(1.05);
+}
+
+/* Ensure the color applies even inside ruby tags */
+.japanese-text ruby .mood-board-kanji,
+.japanese-text .mood-board-kanji ruby {
+  color: #87CEEB !important;
+}
+
+/* Dark mode adjustment for better visibility */
+.dark .mood-board-kanji {
+  color: #ADD8E6 !important; /* Lighter baby blue for dark mode */
+}
+
+.dark .mood-board-kanji:hover {
+  text-shadow: 0 0 10px rgba(173, 216, 230, 0.6);
+}

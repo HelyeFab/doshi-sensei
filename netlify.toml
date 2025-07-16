@@ -105,6 +105,29 @@
   [functions."scrape-news-scheduled"]
     schedule = "0 21 * * *"
   
+  # Enhanced daily news scraping with all 6 sources
+  [functions."scrape-news-scheduled-enhanced"]
+    schedule = "0 21 * * *"
+  
+  # Puppeteer-based scraper configurations with increased memory
+  [functions."scrape-nhk-easy-puppeteer"]
+    memory = 1024
+  
+  [functions."scrape-todaii-puppeteer"]
+    memory = 1024
+  
+  [functions."scrape-watanoc-puppeteer"]
+    memory = 1024
+  
+  [functions."scrape-nhk-improved"]
+    memory = 1024
+  
+  [functions."scrape-yahoo-news"]
+    memory = 1024
+  
+  [functions."scrape-mainichi-shogakusei"]
+    memory = 1024
+  
   # Alternative times if you want multiple daily scrapes:
   # Morning scrape at 6 AM JST (9 PM UTC)
   # [functions."scrape-news-morning"]

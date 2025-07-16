@@ -47,71 +47,55 @@ export default function KanjiSimonBoardSelection({ onSelect }: KanjiSimonBoardSe
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {filteredBoards.map((board, index) => (
-        <motion.button
-          key={board.id}
-          onClick={() => onSelect(board.id)}
-          className="group relative overflow-hidden rounded-xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-lg"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          {/* Background gradient */}
-          <div 
-            className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity"
-            style={{ background: board.background }}
-          />
-          
-          {/* Content */}
-          <div className="relative p-6 text-left">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold text-foreground mb-1">
-                  {board.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {board.jlpt && `JLPT ${board.jlpt} • `}
-                  {board.kanji.length} kanji
+    <div>
+      <h3 className="text-xl font-semibold text-foreground mb-6 text-center">
+        Select a Mood Board
+      </h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredBoards.map((board) => (
+          <button
+            key={board.id}
+            onClick={() => onSelect(board.id)}
+            className="group relative overflow-hidden rounded-2xl bg-card hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+          >
+            {/* Background with subtle gradient */}
+            <div 
+              className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+              style={{ 
+                background: `linear-gradient(135deg, ${board.background}, transparent)` 
+              }}
+            />
+
+            <div className="relative p-6">
+              {/* Emoji and Title */}
+              <div className="text-center mb-4">
+                <div className="text-5xl mb-3">{board.emoji}</div>
+                <h4 className="text-xl font-bold text-foreground mb-1">{board.title}</h4>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {board.kanji.length} kanji • {board.jlpt}
                 </p>
               </div>
-              <div className="text-3xl">{board.emoji}</div>
-            </div>
-            
-            {/* Kanji preview */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {board.kanji.slice(0, 5).map((kanji, i) => (
-                <div
-                  key={i}
-                  className="w-8 h-8 bg-background/80 rounded flex items-center justify-center text-sm font-bold border border-border"
-                >
-                  {kanji.char}
+
+              {/* Description */}
+              <p className="text-sm text-muted-foreground text-center mb-4 line-clamp-2 min-h-[2.5rem]">
+                {board.description}
+              </p>
+
+              {/* Start Practice Button */}
+              <div className="mt-4 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium group-hover:bg-primary/20 transition-colors">
+                  <span>Start Practice</span>
+                  <span className="text-lg">→</span>
                 </div>
-              ))}
-              {board.kanji.length > 5 && (
-                <div className="w-8 h-8 bg-background/80 rounded flex items-center justify-center text-xs text-muted-foreground border border-border">
-                  +{board.kanji.length - 5}
-                </div>
-              )}
+              </div>
             </div>
-            
-            {/* Description */}
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {board.description}
-            </p>
-            
-            {/* Play indicator */}
-            <div className="mt-4 flex items-center gap-2 text-primary">
-              <span className="text-sm font-medium">Play Kanji Simon</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </div>
-        </motion.button>
-      ))}
+
+            {/* Hover border effect */}
+            <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-primary/30 transition-colors duration-300" />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

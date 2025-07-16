@@ -17,28 +17,24 @@ const PRACTICE_SETS = [
     name: 'JLPT N5',
     description: 'Basic kanji for beginners',
     kanji: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '日', '月', '火', '水', '木', '金', '土'],
-    color: 'bg-green-500/10 border-green-500/20',
   },
   {
     id: 'jlpt-n4',
     name: 'JLPT N4',
     description: 'Elementary level kanji',
     kanji: ['山', '川', '田', '人', '口', '車', '門', '間', '話', '言', '読', '聞', '書', '見', '行', '来'],
-    color: 'bg-blue-500/10 border-blue-500/20',
   },
   {
     id: 'common-radicals',
     name: 'Common Radicals',
     description: 'Essential kanji components',
     kanji: ['人', '手', '心', '日', '月', '木', '水', '火', '土', '金', '言', '糸', '肉', '貝', '車', '門'],
-    color: 'bg-purple-500/10 border-purple-500/20',
   },
   {
     id: 'numbers',
     name: 'Numbers',
     description: 'Learn to write numbers',
     kanji: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '円', '年', '月'],
-    color: 'bg-yellow-500/10 border-yellow-500/20',
   },
 ];
 
@@ -184,24 +180,35 @@ export default function StrokeOrderPracticePage() {
           />
 
           {/* Hero Section */}
-          <div className="mb-8">
-            <div className="text-center max-w-2xl mx-auto">
-              <div className="text-6xl mb-4">✍️</div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+          <div className="mb-12">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="relative inline-block mb-6">
+                <div className="text-7xl animate-pulse">✍️</div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-2xl rounded-full opacity-60"></div>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
                 Master Kanji Stroke Order
               </h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6 max-w-2xl mx-auto">
                 Learn to write kanji correctly by practicing stroke order.
                 Click strokes in the right sequence to build muscle memory.
               </p>
               {remaining !== null && remaining !== undefined && (
-                <p className="text-sm text-muted-foreground">
-                  {remaining > 0 ? `${remaining} practices remaining today` : 'No practices remaining today'}
-                </p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+                  <span className="text-sm font-medium text-foreground">
+                    {remaining > 0 ? (
+                      <>
+                        <span className="text-primary font-bold">{remaining}</span> practices remaining today
+                      </>
+                    ) : (
+                      <span className="text-destructive">No practices remaining today</span>
+                    )}
+                  </span>
+                </div>
               )}
 
               {progress && progress.totalGamesPlayed > 0 && (
-                <div className="flex gap-4 justify-center mt-4">
+                <div className="flex gap-4 justify-center">
                   <div className="flex items-center gap-2">
                     <Trophy className="h-4 w-4 text-yellow-500" />
                     <span className="text-sm text-muted-foreground">
@@ -219,56 +226,144 @@ export default function StrokeOrderPracticePage() {
             </div>
           </div>
 
+          {/* Instructions */}
+          <div className="mb-8 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-2xl p-8 backdrop-blur-sm">
+              <h3 className="text-2xl font-bold text-center text-foreground mb-8">How to Play</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                      1
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">See the Kanji</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        A kanji appears with stroke guides
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                      2
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">Click Strokes</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Click strokes in the correct order
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                      3
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">Get Feedback</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Green means correct, red means try again
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                      4
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">Earn Points</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Score points for speed and accuracy
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Practice Sets */}
-          <div className="grid gap-4 md:grid-cols-2 mb-8">
-            {PRACTICE_SETS.map((set) => (
-              <button
-                key={set.id}
-                className={`text-left transition-all hover:scale-[1.02] hover:shadow-lg rounded-lg overflow-hidden ${set.color}`}
-                onClick={() => handleSelectSet(set.id)}
-              >
-                <Card className="h-full border-0">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-2">{set.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {set.description}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Brain className="h-4 w-4" />
-                      <span>{set.kanji.length} kanji</span>
-                      {progress && progress.highScores[set.id] && (
-                        <>
-                          <span className="text-muted-foreground">•</span>
-                          <Zap className="h-4 w-4 text-yellow-500" />
-                          <span>High: {progress.highScores[set.id].toLocaleString()}</span>
-                        </>
-                      )}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-foreground mb-6 text-center">
+              Practice Sets
+            </h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              {PRACTICE_SETS.map((set) => {
+                const setColor = {
+                  'jlpt-n5': 'from-green-400 to-green-600',
+                  'jlpt-n4': 'from-blue-400 to-blue-600',
+                  'common-radicals': 'from-purple-400 to-purple-600',
+                  'numbers': 'from-yellow-400 to-yellow-600'
+                }[set.id] || 'from-gray-400 to-gray-600';
+
+                return (
+                  <button
+                    key={set.id}
+                    className="group relative overflow-hidden rounded-2xl bg-card hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                    onClick={() => handleSelectSet(set.id)}
+                  >
+                    {/* Background with subtle gradient */}
+                    <div 
+                      className={`absolute inset-0 bg-gradient-to-br ${setColor} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}
+                    />
+
+                    <div className="relative p-6">
+                      {/* Title and Description */}
+                      <div className="text-left mb-4">
+                        <h4 className="text-xl font-bold text-foreground mb-1">{set.name}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {set.description}
+                        </p>
+                      </div>
+
+                      {/* Kanji count and high score */}
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                        <div className="flex items-center gap-1.5">
+                          <Brain className="h-4 w-4" />
+                          <span className="font-medium">{set.kanji.length} kanji</span>
+                        </div>
+                        {progress && progress.highScores[set.id] && (
+                          <>
+                            <span className="text-muted-foreground">•</span>
+                            <div className="flex items-center gap-1.5">
+                              <Zap className="h-4 w-4 text-yellow-500" />
+                              <span className="font-medium">High: {progress.highScores[set.id].toLocaleString()}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Kanji preview */}
+                      <div className="flex flex-wrap gap-1.5 items-center">
+                        {set.kanji.slice(0, 8).map((kanji, idx) => (
+                          <span
+                            key={idx}
+                            className="text-2xl font-bold text-foreground/80 group-hover:text-foreground transition-colors"
+                          >
+                            {kanji}
+                          </span>
+                        ))}
+                        {set.kanji.length > 8 && (
+                          <span className="text-sm text-muted-foreground font-medium ml-1">
+                            +{set.kanji.length - 8} more
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {set.kanji.slice(0, 8).map((kanji, idx) => (
-                        <span
-                          key={idx}
-                          className="text-lg font-bold opacity-60"
-                        >
-                          {kanji}
-                        </span>
-                      ))}
-                      {set.kanji.length > 8 && (
-                        <span className="text-sm opacity-40">
-                          +{set.kanji.length - 8} more
-                        </span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </button>
-            ))}
+
+                    {/* Hover border effect */}
+                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-primary/30 transition-colors duration-300" />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Mood Boards Section */}
           {!boardsLoading && filteredBoards.length > 0 && (
-            <div>
-              <h3 className="text-xl font-semibold text-foreground mb-6">
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-foreground mb-6 text-center">
                 Select a Mood Board
               </h3>
 
@@ -289,107 +384,60 @@ export default function StrokeOrderPracticePage() {
                     <button
                       key={board.id}
                       onClick={() => handleSelectMoodBoard(board.id)}
-                      className="group relative overflow-hidden rounded-lg border-2 border-border bg-card hover:border-primary transition-all duration-200 hover:shadow-lg"
+                      className="group relative overflow-hidden rounded-2xl bg-card hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                     >
-                      {/* Background gradient */}
-                      <div
-                        className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
-                        style={{ background: board.background }}
+                      {/* Background with subtle gradient */}
+                      <div 
+                        className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+                        style={{ 
+                          background: `linear-gradient(135deg, ${board.background}, transparent)` 
+                        }}
                       />
 
                       <div className="relative p-6">
                         {/* Emoji and Title */}
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="text-4xl">{board.emoji}</div>
-                          <div className="text-left flex-1">
-                            <h4 className="text-lg font-semibold text-foreground">{board.title}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {kanjiCount} kanji • {board.jlpt}
-                            </p>
-                          </div>
+                        <div className="text-center mb-4">
+                          <div className="text-5xl mb-3">{board.emoji}</div>
+                          <h4 className="text-xl font-bold text-foreground mb-1">{board.title}</h4>
+                          <p className="text-sm text-muted-foreground font-medium">
+                            {kanjiCount} kanji • {board.jlpt}
+                          </p>
                         </div>
 
                         {/* Description */}
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                        <p className="text-sm text-muted-foreground text-center mb-4 line-clamp-2 min-h-[2.5rem]">
                           {board.description}
                         </p>
 
-                        {/* High Score if exists */}
-                        {progress && progress.highScores[`mood-${board.id}`] && (
+                        {/* High Score or Start Practice Button */}
+                        {progress && progress.highScores[`mood-${board.id}`] ? (
                           <div className="mt-4">
-                            <div className="flex items-center justify-between text-xs text-muted-foreground">
-                              <span className="flex items-center gap-1">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                              <span className="flex items-center gap-1 font-medium">
                                 <Zap className="h-3 w-3 text-yellow-500" />
                                 High Score
                               </span>
-                              <span className="font-semibold">{progress.highScores[`mood-${board.id}`].toLocaleString()}</span>
+                              <span className="font-bold">{progress.highScores[`mood-${board.id}`].toLocaleString()}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mt-4 text-center">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium group-hover:bg-primary/20 transition-colors">
+                              <span>Start Practice</span>
+                              <span className="text-lg">→</span>
                             </div>
                           </div>
                         )}
                       </div>
+
+                      {/* Hover border effect */}
+                      <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-primary/30 transition-colors duration-300" />
                     </button>
                   );
                 })}
               </div>
             </div>
           )}
-
-          {/* Instructions */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-card rounded-lg p-6 border border-border">
-              <h3 className="text-lg font-semibold text-foreground mb-4">How to Play</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      1
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">See the Kanji</h4>
-                      <p className="text-sm text-muted-foreground">
-                        A kanji appears with stroke guides
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      2
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">Click Strokes</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Click strokes in the correct order
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      3
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">Get Feedback</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Green means correct, red means try again
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      4
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">Earn Points</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Score points for speed and accuracy
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </main>
       </div>
     </>

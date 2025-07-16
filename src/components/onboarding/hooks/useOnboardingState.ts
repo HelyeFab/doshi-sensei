@@ -5,6 +5,7 @@ import { OnboardingState, OnboardingAnalytics } from '@/types/onboarding';
 
 const ONBOARDING_KEY = 'doshi_onboarding_completed';
 const ONBOARDING_DATE_KEY = 'doshi_onboarding_date';
+const ONBOARDING_SEEN_KEY = 'doshi_onboarding_seen';
 
 const initialState: OnboardingState = {
   currentScreen: 0,
@@ -42,7 +43,8 @@ export function useOnboardingState() {
     }
 
     const completed = localStorage.getItem(ONBOARDING_KEY);
-    const isFirstVisit = !completed;
+    const seen = localStorage.getItem(ONBOARDING_SEEN_KEY);
+    const isFirstVisit = !completed && !seen;
     const isManualTrigger = window.location.search.includes('tutorial=true');
 
     return { isFirstVisit, isManualTrigger, shouldShow: isFirstVisit || isManualTrigger };
@@ -196,6 +198,14 @@ export function useOnboardingState() {
     }
   }, [startTime, analytics.completion.interactionCount]);
 
+  // Mark tutorial as seen (for dismissal without completion)
+  const markAsSeen = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(ONBOARDING_SEEN_KEY, 'true');
+      localStorage.setItem(ONBOARDING_DATE_KEY, new Date().toISOString());
+    }
+  }, []);
+
   // Track drop off
   const trackDropOff = useCallback((screenIndex: number) => {
     const timeSpent = startTime ? new Date().getTime() - startTime.getTime() : 0;
@@ -223,6 +233,7 @@ export function useOnboardingState() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(ONBOARDING_KEY);
       localStorage.removeItem(ONBOARDING_DATE_KEY);
+      localStorage.removeItem(ONBOARDING_SEEN_KEY);
     }
     setState(initialState);
     setAnalytics({
@@ -244,6 +255,7 @@ export function useOnboardingState() {
     updateInteraction,
     updateAnimationState,
     completeOnboarding,
+    markAsSeen,
     trackDropOff,
     resetOnboarding,
     checkOnboardingStatus,

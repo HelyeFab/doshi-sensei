@@ -79,72 +79,82 @@ export default function ReadingRoutesPage() {
           <PageHeader title="Reading Routes" showBackButton={true} />
 
           {/* Hero Section */}
-          <div className="mb-8">
-            <div className="text-center max-w-2xl mx-auto">
-              <div className="text-6xl mb-4">🛤️</div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+          <div className="mb-12">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="relative inline-block mb-6">
+                <div className="text-7xl animate-pulse">🛤️</div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-2xl rounded-full opacity-60"></div>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
                 Master Kanji Readings
               </h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Select a mood board to practice kanji readings through our interactive path-selection game.
-                Learn when to use on'yomi vs kun'yomi readings in different contexts.
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6 max-w-2xl mx-auto">
+                Navigate through interactive reading challenges to master when to use <span className="font-semibold text-pink-600">on'yomi</span> vs <span className="font-semibold text-blue-600">kun'yomi</span> readings in different contexts.
               </p>
               {remaining !== null && remaining !== undefined && (
-                <p className="text-sm text-muted-foreground">
-                  {remaining > 0 ? `${remaining} plays remaining today` : 'No plays remaining today'}
-                </p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                  <span className="text-sm font-medium text-foreground">
+                    {remaining > 0 ? (
+                      <>
+                        <span className="text-primary font-bold">{remaining}</span> plays remaining today
+                      </>
+                    ) : (
+                      <span className="text-destructive">No plays remaining today</span>
+                    )}
+                  </span>
+                </div>
               )}
             </div>
           </div>
 
           {/* Instructions */}
           <div className="mb-8 max-w-4xl mx-auto">
-            <div className="bg-card rounded-lg p-6 border border-border">
-              <h3 className="text-lg font-semibold text-foreground mb-4">How to Play</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-2xl p-8 backdrop-blur-sm">
+              <h3 className="text-2xl font-bold text-center text-foreground mb-8">How to Play</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
                       1
                     </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">See Context</h4>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">See Context</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
                         A kanji appears in a word or sentence
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
                       2
                     </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">Choose Path</h4>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">Choose Path</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
                         Select the correct reading from multiple paths
                       </p>
                     </div>
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
                       3
                     </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">Learn Rules</h4>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">Learn Rules</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
                         Understand when to use each reading type
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
                       4
                     </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">Track Progress</h4>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground text-lg">Track Progress</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
                         Master all readings for each kanji
                       </p>
                     </div>
@@ -156,7 +166,7 @@ export default function ReadingRoutesPage() {
 
           {/* Mood Board Selection */}
           <div>
-            <h3 className="text-xl font-semibold text-foreground mb-6">
+            <h3 className="text-xl font-semibold text-foreground mb-6 text-center">
               Select a Mood Board
             </h3>
 
@@ -169,47 +179,57 @@ export default function ReadingRoutesPage() {
                   <button
                     key={board.id}
                     onClick={() => handleBoardSelect(board.id)}
-                    className="group relative overflow-hidden rounded-lg border-2 border-border bg-card hover:border-primary transition-all duration-200 hover:shadow-lg"
+                    className="group relative overflow-hidden rounded-2xl bg-card hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                   >
-                    {/* Background gradient */}
-                    <div
-                      className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
-                      style={{ background: board.background }}
+                    {/* Background with subtle gradient */}
+                    <div 
+                      className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${board.background}, transparent)` 
+                      }}
                     />
 
                     <div className="relative p-6">
                       {/* Emoji and Title */}
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="text-4xl">{board.emoji}</div>
-                        <div className="text-left flex-1">
-                          <h4 className="text-lg font-semibold text-foreground">{board.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {board.kanji.length} kanji • {board.jlpt}
-                          </p>
-                        </div>
+                      <div className="text-center mb-4">
+                        <div className="text-5xl mb-3">{board.emoji}</div>
+                        <h4 className="text-xl font-bold text-foreground mb-1">{board.title}</h4>
+                        <p className="text-sm text-muted-foreground font-medium">
+                          {board.kanji.length} kanji • {board.jlpt}
+                        </p>
                       </div>
 
                       {/* Description */}
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      <p className="text-sm text-muted-foreground text-center mb-4 line-clamp-2 min-h-[2.5rem]">
                         {board.description}
                       </p>
 
-                      {/* Progress */}
-                      {progressPercent > 0 && (
+                      {/* Progress or Start Button */}
+                      {progressPercent > 0 ? (
                         <div className="mt-4">
-                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                            <span>Progress</span>
-                            <span>{progressPercent}%</span>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                            <span className="font-medium">Progress</span>
+                            <span className="font-bold">{progressPercent}%</span>
                           </div>
-                          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                          <div className="w-full bg-muted/30 rounded-full h-3 overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 rounded-full"
                               style={{ width: `${progressPercent}%` }}
                             />
                           </div>
                         </div>
+                      ) : (
+                        <div className="mt-4 text-center">
+                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium group-hover:bg-primary/20 transition-colors">
+                            <span>Start Practice</span>
+                            <span className="text-lg">→</span>
+                          </div>
+                        </div>
                       )}
                     </div>
+
+                    {/* Hover border effect */}
+                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-primary/30 transition-colors duration-300" />
                   </button>
                 );
               })}

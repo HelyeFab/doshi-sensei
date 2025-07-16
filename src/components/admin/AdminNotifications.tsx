@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
 export interface Notification {
   id: string;
@@ -194,6 +195,7 @@ function NotificationToast({ notification, onDismiss }: NotificationToastProps) 
 // Utility functions for common notification types
 export function useAdminNotifications() {
   const { showNotification } = useNotifications();
+  const router = useRouter();
 
   return {
     success: (title: string, message?: string) => {
@@ -215,7 +217,7 @@ export function useAdminNotifications() {
         message: `"${title}" has been created successfully`,
         action: {
           label: 'View Mood Boards',
-          onClick: () => window.location.href = '/admin/mood-boards'
+          onClick: () => router.push('/admin/mood-boards')
         }
       });
     },

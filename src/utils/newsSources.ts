@@ -18,18 +18,18 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
   watanoc: {
     id: 'watanoc',
     name: 'Watanoc',
-    displayName: 'Watanoc Real Japanese News (Improved)',
+    displayName: 'Watanoc Japanese Learning Articles',
     netlifyFunction: 'scrape-watanoc-next',
-    emoji: '🌐',
-    description: 'Real Japanese news with improved content extraction and furigana'
+    emoji: '🏯',
+    description: 'Japanese learning articles with proper content extraction'
   },
   todaii: {
     id: 'todaii',
     name: 'Todaii',
-    displayName: 'Todaii Japanese News - Improved Platform',
+    displayName: 'Todaii Japanese News',
     netlifyFunction: 'scrape-todaii-next',
     emoji: '📚',
-    description: 'Japanese learning content with actual article extraction'
+    description: 'JLPT-graded news articles for learners'
   },
   nhkEasy: {
     id: 'nhkEasy',
@@ -37,8 +37,32 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     displayName: 'NHK NEWS WEB EASY',
     netlifyFunction: 'scrape-nhk-easy',
     emoji: '📺',
-    description: 'Beginner-friendly Japanese news from NHK'
+    description: 'Simplified Japanese news from NHK'
   },
+  nhkNews: {
+    id: 'nhkNews',
+    name: 'NHK News',
+    displayName: 'NHK Regular News',
+    netlifyFunction: 'scrape-nhk-improved',
+    emoji: '📰',
+    description: 'Regular NHK news articles (N3 level)'
+  },
+  yahooNews: {
+    id: 'yahooNews',
+    name: 'Yahoo News',
+    displayName: 'Yahoo! News Japan',
+    netlifyFunction: 'scrape-yahoo-news',
+    emoji: '🌸',
+    description: 'Popular Japanese news portal (N3-N2 level)'
+  },
+  mainichiShogakusei: {
+    id: 'mainichiShogakusei',
+    name: 'Mainichi Elementary',
+    displayName: '毎日小学生新聞',
+    netlifyFunction: 'scrape-mainichi-shogakusei',
+    emoji: '🎒',
+    description: 'Elementary school newspaper with furigana (N5-N4)'
+  }
 };
 
 /**
@@ -140,6 +164,27 @@ export async function triggerNHKEasyScraping(): Promise<ScrapingResult> {
   return triggerSourceScraping(NEWS_SOURCES.nhkEasy);
 }
 
+/**
+ * Trigger NHK News (regular) article scraping
+ */
+export async function triggerNHKNewsScraping(): Promise<ScrapingResult> {
+  return triggerSourceScraping(NEWS_SOURCES.nhkNews);
+}
+
+/**
+ * Trigger Yahoo News article scraping
+ */
+export async function triggerYahooNewsScraping(): Promise<ScrapingResult> {
+  return triggerSourceScraping(NEWS_SOURCES.yahooNews);
+}
+
+/**
+ * Trigger Mainichi Shogakusei article scraping
+ */
+export async function triggerMainichiShogakuseiScraping(): Promise<ScrapingResult> {
+  return triggerSourceScraping(NEWS_SOURCES.mainichiShogakusei);
+}
+
 
 /**
  * Trigger all sources sequentially
@@ -148,6 +193,9 @@ export async function triggerAllSourcesScraping(): Promise<{
   watanoc: ScrapingResult;
   todaii: ScrapingResult;
   nhkEasy: ScrapingResult;
+  nhkNews: ScrapingResult;
+  yahooNews: ScrapingResult;
+  mainichiShogakusei: ScrapingResult;
   overall: {
     totalArticles: number;
     successfulSources: number;
@@ -160,10 +208,13 @@ export async function triggerAllSourcesScraping(): Promise<{
   const startTime = Date.now();
 
   // Run all enhanced scrapers in parallel for faster execution
-  const [watanoc, todaii, nhkEasy] = await Promise.allSettled([
+  const [watanoc, todaii, nhkEasy, nhkNews, yahooNews, mainichiShogakusei] = await Promise.allSettled([
     triggerWatanocScraping(),
     triggerTodaiiScraping(),
-    triggerNHKEasyScraping()
+    triggerNHKEasyScraping(),
+    triggerNHKNewsScraping(),
+    triggerYahooNewsScraping(),
+    triggerMainichiShogakuseiScraping()
   ]);
 
   // Extract results (handle promise rejections)
@@ -182,17 +233,36 @@ export async function triggerAllSourcesScraping(): Promise<{
     timeElapsed: 0, source: 'nhkEasy', nextScrapingTime: new Date()
   };
 
-  const totalTimeElapsed = Math.round((Date.now() - startTime) / 1000);
-  const totalArticles = watanocResult.articlesScraped + todaiiResult.articlesScraped + nhkEasyResult.articlesScraped;
-  const successfulSources = [watanocResult, todaiiResult, nhkEasyResult].filter(r => r.success).length;
-  const failedSources = 3 - successfulSources;
+  const nhkNewsResult = nhkNews.status === 'fulfilled' ? nhkNews.value : {
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
+    timeElapsed: 0, source: 'nhkNews', nextScrapingTime: new Date()
+  };
 
-  console.log(`✅ All enhanced sources scraping completed. Total: ${totalArticles} articles from ${successfulSources}/3 sources`);
+  const yahooNewsResult = yahooNews.status === 'fulfilled' ? yahooNews.value : {
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
+    timeElapsed: 0, source: 'yahooNews', nextScrapingTime: new Date()
+  };
+
+  const mainichiShogakuseiResult = mainichiShogakusei.status === 'fulfilled' ? mainichiShogakusei.value : {
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
+    timeElapsed: 0, source: 'mainichiShogakusei', nextScrapingTime: new Date()
+  };
+
+  const totalTimeElapsed = Math.round((Date.now() - startTime) / 1000);
+  const allResults = [watanocResult, todaiiResult, nhkEasyResult, nhkNewsResult, yahooNewsResult, mainichiShogakuseiResult];
+  const totalArticles = allResults.reduce((sum, r) => sum + r.articlesScraped, 0);
+  const successfulSources = allResults.filter(r => r.success).length;
+  const failedSources = 6 - successfulSources;
+
+  console.log(`✅ All enhanced sources scraping completed. Total: ${totalArticles} articles from ${successfulSources}/6 sources`);
 
   return {
     watanoc: watanocResult,
     todaii: todaiiResult,
     nhkEasy: nhkEasyResult,
+    nhkNews: nhkNewsResult,
+    yahooNews: yahooNewsResult,
+    mainichiShogakusei: mainichiShogakuseiResult,
     overall: {
       totalArticles,
       successfulSources,
@@ -236,6 +306,9 @@ export default {
   triggerWatanocScraping,
   triggerTodaiiScraping,
   triggerNHKEasyScraping,
+  triggerNHKNewsScraping,
+  triggerYahooNewsScraping,
+  triggerMainichiShogakuseiScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult,

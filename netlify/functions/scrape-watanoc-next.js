@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const cheerio = require('cheerio');
 
 // Function to get Unsplash image for articles without covers
 async function getUnsplashImage(keyword = 'japan news') {
@@ -153,38 +154,33 @@ async function scrapeWatanoc() {
           }
         }
         
-        // Enhanced content selectors for Watanoc
-        const contentSelectors = [
-          // Primary Watanoc content area
-          /<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<(?:footer|div[^>]*class="[^"]*(?:share|comment|related|navigation)))/i,
-          // Alternative content selectors
-          /<article[^>]*class="[^"]*post[^"]*"[^>]*>[\s\S]*?<div[^>]*class="[^"]*(?:content|entry)[^"]*"[^>]*>([\s\S]*?)(?:<\/div>[\s\S]*?<footer)/i,
-          // WordPress content area
-          /<div[^>]*class="[^"]*(?:post-content|article-content|the-content)[^"]*"[^>]*>([\s\S]*?)(?:<\/div>)/i,
-          // Generic content area
-          /<main[^>]*>([\s\S]*?)(?:<aside|<footer|<\/main>)/i,
-          // Fallback: look for article tag content
-          /<article[^>]*>([\s\S]*?)(?:<footer|<\/article>)/i
-        ];
-
-        for (const selector of contentSelectors) {
-          const contentMatch = articleHtml.match(selector);
-          if (contentMatch && contentMatch[1]) {
-            content = contentMatch[1];
-            console.log(`✅ [Enhanced] Content extracted using selector pattern`);
-            break;
-          }
-        }
-
-        // If no content found with selectors, try extracting from any substantial text blocks
-        if (!content || content.length < 100) {
-          console.log('⚠️ [Enhanced] Primary selectors failed, trying fallback extraction...');
+        // Use cheerio for better content extraction
+        const $ = cheerio.load(articleHtml);
+        
+        // Extract the actual article content from entry-content
+        // This should be just the article text, not comments
+        const entryContent = $('.entry-content').first();
+        
+        if (entryContent.length > 0) {
+          // Remove any nested divs that might contain ads or other non-content
+          entryContent.find('div.sharedaddy, div.jp-relatedposts, div.ads').remove();
           
-          // Look for paragraphs with Japanese content
-          const paragraphMatches = articleHtml.match(/<p[^>]*>([^<]*[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF][^<]*)<\/p>/gi);
-          if (paragraphMatches && paragraphMatches.length > 0) {
-            content = paragraphMatches.slice(0, 10).join('\n'); // Take first 10 paragraphs
-            console.log(`✅ [Enhanced] Extracted ${paragraphMatches.length} paragraphs as fallback`);
+          // Get the text content
+          content = entryContent.text().trim();
+          console.log(`✅ [Watanoc] Extracted article content from .entry-content (${content.length} chars)`);
+        } else {
+          // Fallback: try other selectors
+          const contentSelectors = ['.post-content', '.article-content', '.the-content', 'article > p'];
+          
+          for (const selector of contentSelectors) {
+            const element = $(selector).first();
+            if (element.length > 0) {
+              content = element.text().trim();
+              if (content.length > 50) {
+                console.log(`✅ [Watanoc] Extracted content using fallback selector: ${selector}`);
+                break;
+              }
+            }
           }
         }
 

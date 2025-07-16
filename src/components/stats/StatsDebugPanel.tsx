@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { useStats } from '@/hooks/useStats';
 import { statsTracker } from '@/lib/stats/statsTracker';
+import { useRouter } from 'next/navigation';
 
 export function StatsDebugPanel() {
   const { stats, loading, error } = useStats();
+  const router = useRouter();
   const [showDebug, setShowDebug] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('STATS_DEBUG') === 'true';
@@ -133,7 +135,7 @@ export function StatsDebugPanel() {
           </button>
           
           <button
-            onClick={() => window.location.href = '/admin'}
+            onClick={() => router.push('/admin')}
             className="w-full bg-yellow-600 text-black px-3 py-1 rounded hover:bg-yellow-700 transition-colors"
           >
             🔧 Admin Panel

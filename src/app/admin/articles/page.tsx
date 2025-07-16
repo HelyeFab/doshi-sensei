@@ -10,6 +10,9 @@ import {
   triggerWatanocScraping,
   triggerTodaiiScraping,
   triggerNHKEasyScraping,
+  triggerNHKNewsScraping,
+  triggerYahooNewsScraping,
+  triggerMainichiShogakuseiScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult
@@ -77,6 +80,60 @@ export default function ArticlesManagementPage() {
     }
   };
 
+  const handleNHKNewsScraping = async () => {
+    setLoading(true);
+    setStatus('📰 Scraping NHK Regular News...');
+
+    try {
+      const result = await triggerNHKNewsScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.nhkNews));
+
+      if (result.success) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleYahooNewsScraping = async () => {
+    setLoading(true);
+    setStatus('🌸 Scraping Yahoo News Japan...');
+
+    try {
+      const result = await triggerYahooNewsScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.yahooNews));
+
+      if (result.success) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMainichiShogakuseiScraping = async () => {
+    setLoading(true);
+    setStatus('🎒 Scraping Mainichi Elementary News...');
+
+    try {
+      const result = await triggerMainichiShogakuseiScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.mainichiShogakusei));
+
+      if (result.success) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleAllSourcesScraping = async () => {
     setLoading(true);
@@ -91,7 +148,10 @@ export default function ArticlesManagementPage() {
         formatScrapingResult(results.watanoc, NEWS_SOURCES.watanoc),
         formatScrapingResult(results.todaii, NEWS_SOURCES.todaii),
         formatScrapingResult(results.nhkEasy, NEWS_SOURCES.nhkEasy),
-        `\n🎉 Overall: ${overall.totalArticles} total articles from ${overall.successfulSources}/3 sources (${overall.totalTimeElapsed}s)`
+        formatScrapingResult(results.nhkNews, NEWS_SOURCES.nhkNews),
+        formatScrapingResult(results.yahooNews, NEWS_SOURCES.yahooNews),
+        formatScrapingResult(results.mainichiShogakusei, NEWS_SOURCES.mainichiShogakusei),
+        `\n🎉 Overall: ${overall.totalArticles} total articles from ${overall.successfulSources}/6 sources (${overall.totalTimeElapsed}s)`
       ];
 
       setStatus(statusMessages.join('\n'));
@@ -187,7 +247,7 @@ export default function ArticlesManagementPage() {
           {/* Primary scraping actions */}
           <div className="mb-6">
             <h3 className="text-lg font-medium mb-3">{strings.admin.newsSources}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               <button
                 onClick={handleWatanocScraping}
                 disabled={loading}
@@ -225,9 +285,45 @@ export default function ArticlesManagementPage() {
               </button>
 
               <button
+                onClick={handleNHKNewsScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.nhkNews.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.nhkNews.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.nhkNews.description}</div>
+                </div>
+              </button>
+
+              <button
+                onClick={handleYahooNewsScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.yahooNews.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.yahooNews.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.yahooNews.description}</div>
+                </div>
+              </button>
+
+              <button
+                onClick={handleMainichiShogakuseiScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.mainichiShogakusei.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.mainichiShogakusei.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.mainichiShogakusei.description}</div>
+                </div>
+              </button>
+
+              <button
                 onClick={handleAllSourcesScraping}
                 disabled={loading}
-                className="px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 sm:col-span-2 lg:col-span-1"
               >
                 <span className="text-lg">🚀</span>
                 <div className="text-left">
@@ -338,7 +434,11 @@ export default function ArticlesManagementPage() {
                         <span className="capitalize">
                           {source === 'watanoc' ? '🏯 Watanoc' :
                             source === 'todaii' ? '📚 Todaii' :
-                              source === 'fallback' ? '🔄 Fallback' : source}:
+                            source === 'nhk-easy' ? '📺 NHK Easy' :
+                            source === 'nhk-news' ? '📰 NHK News' :
+                            source === 'yahoo-news' ? '🌸 Yahoo News' :
+                            source === 'mainichi-shogakusei' ? '🎒 Mainichi' :
+                            source === 'fallback' ? '🔄 Fallback' : source}:
                         </span>
                         <span className="font-medium">{count as number}</span>
                       </div>

@@ -20,6 +20,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     nextScreen,
     previousScreen,
     completeOnboarding,
+    markAsSeen,
     trackDropOff,
   } = useOnboardingState();
 
@@ -37,6 +38,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
   const handleClose = () => {
     trackDropOff(state.currentScreen);
+    markAsSeen(); // Mark tutorial as seen even if not completed
     onComplete();
   };
 
@@ -47,7 +49,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
       switch (event.key) {
         case 'Escape':
-          if (confirm('Exit tutorial? You can restart it later from Settings.')) {
+          if (confirm('Exit tutorial? You can restart it anytime from Settings.')) {
             handleClose();
           }
           break;
@@ -70,7 +72,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [state.isActive, state.currentScreen, nextScreen, previousScreen]);
+  }, [state.isActive, state.currentScreen, nextScreen, previousScreen, handleClose]);
 
   if (!state.isActive) {
     return null;

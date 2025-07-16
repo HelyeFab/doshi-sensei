@@ -100,6 +100,7 @@ export const en = {
   practice: {
     title: "Practice Mode",
     selectWord: "Select a verb or adjective to practice",
+    conjugationIntro: "Master Japanese verb and adjective conjugations through interactive practice. Explore all forms including tense, politeness, and special constructions like passive and causative.",
     showConjugations: "Show All Conjugations",
     backToList: "Back to List"
   },

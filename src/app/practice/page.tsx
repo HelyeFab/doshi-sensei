@@ -384,7 +384,7 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
         {!station.disabled && (
           <div 
             className={`absolute inset-0 rounded-full border-2 md:border-4 animate-pulse-ring ${
-              station.id === 'kana' ? 'border-rose-400/50' : 'border-orange-400/50'
+              station.id === 'kana' ? 'border-rose-400/70' : 'border-orange-400/70'
             }`}
           />
         )}

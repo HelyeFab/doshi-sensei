@@ -288,6 +288,16 @@ function LearningPath() {
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
         
+        {/* Purple frosted glass gradient overlay */}
+        <div className="absolute inset-0">
+          {/* Primary purple gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/15 via-purple-500/8 to-transparent" />
+          {/* Secondary gradient for depth */}
+          <div className="absolute inset-0 bg-gradient-to-tl from-violet-600/10 via-transparent to-purple-400/5" />
+          {/* Frosted glass effect */}
+          <div className="absolute inset-0 backdrop-blur-[2px]" />
+        </div>
+        
         {/* Stacked Container Layout */}
         <div className="flex flex-col gap-8 relative z-10">
         {stations.map((station, index) => {

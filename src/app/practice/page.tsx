@@ -291,7 +291,7 @@ function LearningPath() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 relative">
-      <h3 className="text-xl font-semibold text-center text-foreground mb-12 relative z-10 animate-fade-in-up bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">
+      <h3 className="text-xl font-semibold text-center text-white mb-12 relative z-10 animate-fade-in-up bg-primary/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">
         Your Learning Path Awaits
       </h3>
       
@@ -332,8 +332,8 @@ function LearningPath() {
         })}
         
         {/* Duplicate the pattern */}
-        <div className="mt-8 pt-8 border-t-2 border-white/50 dark:border-gray-800/50">
-          <h4 className="text-center text-lg font-semibold text-foreground mb-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">Continue Your Journey</h4>
+        <div className="mt-8 pt-8 border-t-2 border-primary/30">
+          <h4 className="text-center text-lg font-semibold text-white mb-8 bg-primary/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">Continue Your Journey</h4>
           {stations.map((station, index) => {
             const isLast = index === stations.length - 1;
             
@@ -368,8 +368,8 @@ function LearningPath() {
       
       {/* Enhanced description with animation */}
       <div className="mt-20 text-center max-w-2xl mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '1400ms' }}>
-        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-2xl px-8 py-6 shadow-xl">
-          <p className="text-foreground text-lg font-medium">
+        <div className="bg-primary/80 backdrop-blur-md rounded-2xl px-8 py-6 shadow-xl">
+          <p className="text-white text-lg font-medium">
             Follow the path from top to bottom. Each station builds upon the last, 
             creating your foundation in Japanese.
           </p>
@@ -405,11 +405,11 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
       </div>
       
       <div className="text-center mt-4 md:mt-6">
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-md">
-          <p className={`text-lg md:text-xl font-bold ${station.disabled ? 'text-muted-foreground' : `text-foreground ${station.hoverColor} transition-colors`}`}>
+        <div className="bg-primary/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-md">
+          <p className={`text-lg md:text-xl font-bold text-white ${station.disabled ? 'opacity-70' : ''}`}>
             {station.title}
           </p>
-          <p className="text-xs md:text-sm text-muted-foreground font-medium">{station.subtitle}</p>
+          <p className="text-xs md:text-sm text-white/80 font-medium">{station.subtitle}</p>
         </div>
       </div>
     </>

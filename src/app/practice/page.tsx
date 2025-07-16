@@ -433,7 +433,7 @@ export default function PracticePage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <div className="container mx-auto px-0 md:px-4 py-8 min-h-screen pb-24 md:pb-8">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"

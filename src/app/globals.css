@@ -492,3 +492,64 @@ html, body {
 .dark .mood-board-kanji:hover {
   text-shadow: 0 0 10px rgba(173, 216, 230, 0.6);
 }
+
+/* Animation delays for floating elements */
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+.animation-delay-700 {
+  animation-delay: 700ms;
+}
+
+/* Vertical scroll animations for background cards */
+@keyframes scrollUp {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes scrollDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Continuous scroll animations for seamless infinite loop */
+@keyframes continuousScrollUp {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes continuousScrollDown {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+/* Word breaking for long words on small screens */
+@media (max-width: 640px) {
+  .break-words {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+}

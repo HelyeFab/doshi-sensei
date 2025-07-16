@@ -107,70 +107,128 @@ function InfiniteScrollingBackground() {
 function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number; offset: number; speed: number; reverse: boolean }) {
   // Rearrange cards for variety
   const cards = [...FEATURE_CARDS.slice(offset % FEATURE_CARDS.length), ...FEATURE_CARDS.slice(0, offset % FEATURE_CARDS.length)];
-  // Triple the cards for seamless looping
-  const extendedCards = [...cards, ...cards, ...cards];
+  // Double the cards for seamless looping
+  const extendedCards = [...cards, ...cards];
 
   return (
     <div className="relative flex-1 h-full overflow-hidden">
+      {/* Primary scrolling container */}
       <div
-        className="absolute flex flex-col gap-4 w-full"
+        className="absolute w-full"
         style={{
-          animation: `${reverse ? 'scrollUp' : 'scrollDown'} ${speed}s linear infinite`,
-          animationFillMode: 'both',
-          willChange: 'transform',
+          animation: `${reverse ? 'continuousScrollUp' : 'continuousScrollDown'} ${speed}s linear infinite`,
+          height: '200%', // Double height for seamless loop
         }}
       >
-        {extendedCards.map((card, index) => (
-          <div
-            key={`${colIndex}-${index}`}
-            className={`relative overflow-hidden rounded-3xl shadow-xl transition-all ${
-              card.size === 'full' 
-                ? 'min-h-[240px] md:min-h-[280px]' 
-                : 'min-h-[120px] md:min-h-[140px]'
-            }`}
-            style={{
-              opacity: 0.12,  // Reduced to 12%
-              background: card.bgColor,
-            }}
-          >
-            {/* Stronger gradient overlay like mood boards */}
-            <div 
-              className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`}
-              style={{ mixBlendMode: 'multiply', opacity: 0.8 }}
-            />
-            
-            {/* White overlay for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-            
-            {/* Content */}
-            <div className={`relative h-full flex flex-col justify-between ${
-              card.size === 'full' ? 'p-3 md:p-6' : 'p-2 md:p-4'
-            } text-white`}>
-              <div>
-                <div className={`${card.size === 'full' ? 'text-4xl md:text-5xl' : 'text-2xl md:text-3xl'} mb-2`}>
-                  {card.icon}
-                </div>
-                <h4 className={`font-bold ${
-                  card.size === 'full' ? 'text-lg md:text-2xl' : 'text-sm md:text-lg'
-                } mb-1 break-words hyphens-auto`}>
-                  {card.title}
-                </h4>
-                <p className={`${
-                  card.size === 'full' ? 'text-sm md:text-base' : 'text-xs md:text-sm'
-                } opacity-90`}>
-                  {card.subtitle}
-                </p>
-              </div>
+        {/* First set of cards */}
+        <div className="flex flex-col gap-4">
+          {extendedCards.map((card, index) => (
+            <div
+              key={`${colIndex}-${index}`}
+              className={`relative overflow-hidden rounded-3xl shadow-xl ${
+                card.size === 'full' 
+                  ? 'min-h-[240px] md:min-h-[280px]' 
+                  : 'min-h-[120px] md:min-h-[140px]'
+              }`}
+              style={{
+                opacity: 0.12,  // Reduced to 12%
+                background: card.bgColor,
+              }}
+            >
+              {/* Stronger gradient overlay like mood boards */}
+              <div 
+                className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`}
+                style={{ mixBlendMode: 'multiply', opacity: 0.8 }}
+              />
               
-              {/* Level indicator like mood boards */}
-              {card.size === 'full' && (
-                <div className="text-xs md:text-sm opacity-80 font-medium">
-                  N{(index % 5) + 1} Level
+              {/* White overlay for text contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              
+              {/* Content */}
+              <div className={`relative h-full flex flex-col justify-between ${
+                card.size === 'full' ? 'p-3 md:p-6' : 'p-2 md:p-4'
+              } text-white`}>
+                <div>
+                  <div className={`${card.size === 'full' ? 'text-4xl md:text-5xl' : 'text-2xl md:text-3xl'} mb-2`}>
+                    {card.icon}
+                  </div>
+                  <h4 className={`font-bold ${
+                    card.size === 'full' ? 'text-lg md:text-2xl' : 'text-sm md:text-lg'
+                  } mb-1 break-words hyphens-auto`}>
+                    {card.title}
+                  </h4>
+                  <p className={`${
+                    card.size === 'full' ? 'text-sm md:text-base' : 'text-xs md:text-sm'
+                  } opacity-90`}>
+                    {card.subtitle}
+                  </p>
                 </div>
-              )}
+                
+                {/* Level indicator like mood boards */}
+                {card.size === 'full' && (
+                  <div className="text-xs md:text-sm opacity-80 font-medium">
+                    N{(index % 5) + 1} Level
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        
+        {/* Duplicate set for seamless loop */}
+        <div className="flex flex-col gap-4 mt-4">
+          {extendedCards.map((card, index) => (
+            <div
+              key={`${colIndex}-${index}-dup`}
+              className={`relative overflow-hidden rounded-3xl shadow-xl ${
+                card.size === 'full' 
+                  ? 'min-h-[240px] md:min-h-[280px]' 
+                  : 'min-h-[120px] md:min-h-[140px]'
+              }`}
+              style={{
+                opacity: 0.12,  // Reduced to 12%
+                background: card.bgColor,
+              }}
+            >
+              {/* Stronger gradient overlay like mood boards */}
+              <div 
+                className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`}
+                style={{ mixBlendMode: 'multiply', opacity: 0.8 }}
+              />
+              
+              {/* White overlay for text contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              
+              {/* Content */}
+              <div className={`relative h-full flex flex-col justify-between ${
+                card.size === 'full' ? 'p-3 md:p-6' : 'p-2 md:p-4'
+              } text-white`}>
+                <div>
+                  <div className={`${card.size === 'full' ? 'text-4xl md:text-5xl' : 'text-2xl md:text-3xl'} mb-2`}>
+                    {card.icon}
+                  </div>
+                  <h4 className={`font-bold ${
+                    card.size === 'full' ? 'text-lg md:text-2xl' : 'text-sm md:text-lg'
+                  } mb-1 break-words hyphens-auto`}>
+                    {card.title}
+                  </h4>
+                  <p className={`${
+                    card.size === 'full' ? 'text-sm md:text-base' : 'text-xs md:text-sm'
+                  } opacity-90`}>
+                    {card.subtitle}
+                  </p>
+                </div>
+                
+                {/* Level indicator like mood boards */}
+                {card.size === 'full' && (
+                  <div className="text-xs md:text-sm opacity-80 font-medium">
+                    N{(index % 5) + 1} Level
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

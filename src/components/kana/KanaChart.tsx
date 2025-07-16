@@ -20,7 +20,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
     try {
       setPlayingId(kana.id);
       const character = chartType === 'hiragana' ? kana.hiragana : kana.katakana;
-      
+
       // Use Google TTS for single kana characters
       await TTSManager.speak(character, {
         voice: 'female',
@@ -54,8 +54,8 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
         <div
           className={`
             relative rounded-lg border-2 transition-all cursor-pointer overflow-hidden
-            ${isSelected 
-              ? 'bg-primary/20 border-primary text-primary-foreground ring-2 ring-primary/50' 
+            ${isSelected
+              ? 'bg-primary/20 border-primary text-primary-foreground ring-2 ring-primary/50'
               : 'bg-card border-border text-card-foreground hover:bg-muted hover:border-muted-foreground/50'
             }
           `}
@@ -68,7 +68,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               <div className="text-2xl sm:text-3xl md:text-4xl font-medium japanese-text">
                 {character}
               </div>
-              
+
               {/* Romaji */}
               {showRomaji && (
                 <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">
@@ -78,10 +78,10 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
             </div>
 
             {/* Selection indicator with clickable area */}
-            <div 
+            <div
               className={`absolute top-0 left-0 w-3.5 h-3.5 rounded-tl-md rounded-br-lg transition-all ${
-                isSelected 
-                  ? 'bg-purple-500 hover:bg-purple-600' 
+                isSelected
+                  ? 'bg-purple-500 hover:bg-purple-600'
                   : 'bg-purple-200 hover:bg-purple-300'
               }`}
               onClick={(e) => {
@@ -99,22 +99,15 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
             </div>
           </div>
         </div>
-        
-        {/* Pronunciation note - Outside the card */}
-        {kana.pronunciation && (
-          <div className="mt-1 px-1">
-            <div className="bg-yellow-500/20 rounded px-1 py-0.5 text-[10px] sm:text-xs text-yellow-600 dark:text-yellow-400 text-center">
-              {kana.pronunciation}
-            </div>
-          </div>
-        )}
+
+
       </div>
     );
   };
 
   const renderBasicChart = () => {
     const columns = ['a', 'i', 'u', 'e', 'o'];
-    
+
     return (
       <div className="mb-8 w-full">
         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">
@@ -132,7 +125,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
           {/* Kana rows */}
           {kanaRowOrder.map(row => {
             const rowKana = basicKana.filter(k => k.row === row);
-            
+
             // Special handling for rows with fewer than 5 characters
             if (row === 'y') {
               return (
@@ -184,7 +177,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
 
   const renderDigraphChart = () => {
     const columns = ['a', 'u', 'o'];
-    
+
     return (
       <div className="w-full">
         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">
@@ -202,7 +195,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
           {/* Digraph rows */}
           {digraphRowOrder.map(row => {
             const rowDigraphs = digraphs.filter(k => k.row === row);
-            
+
             return (
               <React.Fragment key={row}>
                 {columns.map(col => {

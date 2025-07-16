@@ -200,6 +200,13 @@ export default function GamesPage() {
       description: strings.games.modes.kanjiSimon?.description || 'Memory game: repeat kanji reading sequences',
       icon: '🎯',
       color: 'bg-gradient-to-r from-yellow-500 to-red-500'
+    },
+    {
+      id: 'stroke-order-practice',
+      title: strings.games.modes.strokeOrderPractice?.title || 'Stroke Order Practice',
+      description: strings.games.modes.strokeOrderPractice?.description || 'Learn to write kanji with proper stroke order',
+      icon: '✍️',
+      color: 'bg-gradient-to-r from-green-500 to-teal-500'
     }
   ];
 
@@ -538,6 +545,9 @@ export default function GamesPage() {
     } else if (gameMode.id === 'kanji-simon') {
       // Navigate to Kanji Simon game page
       router.push('/games/kanji-simon');
+    } else if (gameMode.id === 'stroke-order-practice') {
+      // Navigate to Stroke Order Practice game page
+      router.push('/games/stroke-order-practice');
     }
   };
 

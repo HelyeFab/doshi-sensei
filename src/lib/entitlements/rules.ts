@@ -18,7 +18,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         article_reading: 3,
         story_reading: 1,
         kanji_moods: 1,
-        kanji_stroke_order: 10
+        kanji_stroke_order: 10,
+        stroke_order_practice: 3
       }
     },
     description: 'Basic access for non-registered users'
@@ -45,7 +46,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         article_reading: 3,
         story_reading: 1,
         kanji_moods: 1,
-        kanji_stroke_order: 10
+        kanji_stroke_order: 10,
+        stroke_order_practice: 3
       },
       total: {
         word_lists: 3,
@@ -68,7 +70,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         story_reading: -1,
         speaking_practice: -1,
         ai_tutor: 10, // Even premium has some limits on expensive features
-        kanji_stroke_order: -1
+        kanji_stroke_order: -1,
+        stroke_order_practice: -1
       },
       total: {
         word_lists: -1,
@@ -91,7 +94,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         story_reading: -1,
         speaking_practice: -1,
         ai_tutor: -1, // Yearly gets truly unlimited
-        kanji_stroke_order: -1
+        kanji_stroke_order: -1,
+        stroke_order_practice: -1
       },
       total: {
         word_lists: -1,

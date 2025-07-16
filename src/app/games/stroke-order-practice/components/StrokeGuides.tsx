@@ -33,6 +33,12 @@ export default function StrokeGuides({
   }, [kanji]);
 
   const loadKanjiData = async () => {
+    if (!kanji) {
+      setLoading(false);
+      setError('No kanji selected');
+      return;
+    }
+    
     try {
       setLoading(true);
       setError(null);

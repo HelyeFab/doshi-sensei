@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, RefreshCw, Lightbulb, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { PageHeader } from '@/components/PageHeader';
 import StrokeGuides from './StrokeGuides';
 import DrawingCanvas from './DrawingCanvas';
 import GameControls, { InputMode } from './GameControls';
@@ -73,7 +74,10 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [progress, setProgress] = useState<StrokeOrderProgress | null>(null);
 
+  console.log('Practice set:', practiceSet);
+  console.log('Practice set kanji:', practiceSet.kanji);
   const currentKanji = practiceSet.kanji[gameState.currentKanjiIndex];
+  console.log('Current kanji:', currentKanji, 'at index:', gameState.currentKanjiIndex);
 
   // Load progress on mount
   useEffect(() => {
@@ -86,10 +90,20 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
   }, [currentKanji]);
 
   const loadKanjiData = async () => {
+    if (!currentKanji) {
+      console.warn('No kanji to load');
+      setLoadingKanji(false);
+      return;
+    }
+    
     try {
       setLoadingKanji(true);
+      console.log('Loading kanji:', currentKanji);
       const codePoint = currentKanji.charCodeAt(0).toString(16).padStart(5, '0');
-      const response = await fetch(`/data/kanjivg/${codePoint}.svg`);
+      console.log('Code point:', codePoint);
+      const url = `/data/kanjivg/${codePoint}.svg`;
+      console.log('Fetching from:', url);
+      const response = await fetch(url);
       
       if (response.ok) {
         const svgText = await response.text();
@@ -97,7 +111,10 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
         const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
         const paths = svgDoc.querySelectorAll('path[id^="kvg:"][id*="-s"]');
         const pathData = Array.from(paths).map(path => path.getAttribute('d') || '');
+        console.log('Found stroke paths:', pathData.length);
         setStrokePaths(pathData);
+      } else {
+        console.error('Failed to fetch SVG:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Failed to load kanji data:', error);
@@ -326,20 +343,37 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-6 max-w-4xl">
-        <div className="mb-4">
-          <GameControls
-            difficulty={difficulty}
-            onDifficultyChange={setDifficulty}
-            inputMode={inputMode}
-            onInputModeChange={setInputMode}
-            onHint={handleHint}
-            hintsRemaining={3 - gameState.hintsUsed}
-          />
-        </div>
+      {/* Virtual Companion Section - 1/6th of screen height */}
+      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+        
+        {/* Gradient to White Fade */}
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
+      </div>
 
-        <div className="grid gap-6 md:grid-cols-[1fr,300px]">
-          <Card className="p-8">
+      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+        <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
+          {/* Page Header */}
+          <PageHeader 
+            title={practiceSet.name}
+            showBackButton={true}
+            onBack={onBack}
+          />
+
+          <div className="mb-4 mt-8">
+            <GameControls
+              difficulty={difficulty}
+              onDifficultyChange={setDifficulty}
+              inputMode={inputMode}
+              onInputModeChange={setInputMode}
+              onHint={handleHint}
+              hintsRemaining={3 - gameState.hintsUsed}
+            />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-[1fr,300px]">
+            <Card className="p-8">
             <div className="flex flex-col items-center">
               <div className="mb-4 text-center">
                 <div className="text-sm text-muted-foreground mb-1">
@@ -432,7 +466,8 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
             </Button>
           </div>
         </div>
-      </main>
+        </main>
+      </div>
 
       <GameOverModal
         isOpen={isGameOver}

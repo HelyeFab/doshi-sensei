@@ -8,6 +8,8 @@ import { PageHeader } from '@/components/PageHeader';
 import StrokeOrderGame from './components/StrokeOrderGame';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
+import { useMoodBoards } from '@/hooks/useMoodBoards';
+import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 
 const PRACTICE_SETS = [
   {
@@ -50,15 +52,34 @@ interface StrokeOrderProgress {
 
 export default function StrokeOrderPracticePage() {
   const router = useRouter();
-  const [selectedSet, setSelectedSet] = useState<string | null>(null);
+  const [selectedSet, setSelectedSet] = useState<any>(null);
   const [showGame, setShowGame] = useState(false);
   const [progress, setProgress] = useState<StrokeOrderProgress | null>(null);
   const { checkAndTrack, AccessModals } = useAccessWithModals();
   const { feature, access, remaining } = useFeature('stroke_order_practice');
-
+  const { moodBoards, loading: boardsLoading } = useMoodBoards();
+  const [filteredBoards, setFilteredBoards] = useState<MoodBoardType[]>([]);
+  
   useEffect(() => {
     loadProgress();
   }, []);
+
+  useEffect(() => {
+    // Filter active boards with kanji
+    if (moodBoards && moodBoards.length > 0) {
+      const activeBoardsWithKanji = moodBoards.filter(board => {
+        // Check if board has kanji items
+        const hasKanji = board.kanji && board.kanji.length > 0;
+        
+        // Default to active if status is not set
+        const isActive = board.isActive !== false;
+        
+        return hasKanji && isActive;
+      });
+      
+      setFilteredBoards(activeBoardsWithKanji);
+    }
+  }, [moodBoards]);
 
   const loadProgress = async () => {
     try {
@@ -80,12 +101,53 @@ export default function StrokeOrderPracticePage() {
     }
   };
 
+  const handleSelectMoodBoard = async (boardId: string) => {
+    const canAccess = await checkAndTrack('stroke_order_practice');
+    if (canAccess) {
+      const board = filteredBoards.find(b => b.id === boardId);
+      if (board) {
+        let kanjiItems: string[] = [];
+        
+        // Handle both old 'kanji' array and new 'items' array structure
+        if (board.items && board.items.length > 0) {
+          kanjiItems = board.items
+            .filter(item => item.type === 'kanji')
+            .map(item => item.content);
+        } else if (board.kanji && board.kanji.length > 0) {
+          // Extract the character from KanjiItem objects
+          console.log('Board kanji:', board.kanji);
+          kanjiItems = board.kanji.map(k => {
+            if (typeof k === 'string') return k;
+            const char = k.char || k.character || k.kanji || '';
+            console.log('Extracted char:', char, 'from:', k);
+            return char;
+          }).filter(k => k !== '');
+        }
+        
+        console.log('Final kanjiItems:', kanjiItems);
+        
+        const moodBoardSet = {
+          id: `mood-${boardId}`,
+          name: board.title,
+          description: board.description || 'Mood board collection',
+          kanji: kanjiItems,
+          color: 'bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20',
+        };
+        
+        setSelectedSet(moodBoardSet);
+        setShowGame(true);
+      }
+    }
+  };
+
   const handleBackToSets = () => {
     setShowGame(false);
     setSelectedSet(null);
   };
 
-  const selectedPracticeSet = PRACTICE_SETS.find(set => set.id === selectedSet);
+  const selectedPracticeSet = typeof selectedSet === 'string' 
+    ? PRACTICE_SETS.find(set => set.id === selectedSet)
+    : selectedSet;
 
   if (showGame && selectedPracticeSet) {
     return (
@@ -202,6 +264,75 @@ export default function StrokeOrderPracticePage() {
               </button>
             ))}
           </div>
+
+          {/* Mood Boards Section */}
+          {!boardsLoading && filteredBoards.length > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold text-foreground mb-6">
+                Select a Mood Board
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredBoards.map((board) => {
+                  const progressPercent = 0; // TODO: Add progress tracking for mood boards if needed
+                  
+                  // Handle both old and new data structures
+                  let kanjiCount = 0;
+                  
+                  if (board.items && board.items.length > 0) {
+                    kanjiCount = board.items.filter(item => item.type === 'kanji').length;
+                  } else if (board.kanji && board.kanji.length > 0) {
+                    kanjiCount = board.kanji.length;
+                  }
+
+                  return (
+                    <button
+                      key={board.id}
+                      onClick={() => handleSelectMoodBoard(board.id)}
+                      className="group relative overflow-hidden rounded-lg border-2 border-border bg-card hover:border-primary transition-all duration-200 hover:shadow-lg"
+                    >
+                      {/* Background gradient */}
+                      <div
+                        className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
+                        style={{ background: board.background }}
+                      />
+
+                      <div className="relative p-6">
+                        {/* Emoji and Title */}
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="text-4xl">{board.emoji}</div>
+                          <div className="text-left flex-1">
+                            <h4 className="text-lg font-semibold text-foreground">{board.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {kanjiCount} kanji • {board.jlpt}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                          {board.description}
+                        </p>
+
+                        {/* High Score if exists */}
+                        {progress && progress.highScores[`mood-${board.id}`] && (
+                          <div className="mt-4">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Zap className="h-3 w-3 text-yellow-500" />
+                                High Score
+                              </span>
+                              <span className="font-semibold">{progress.highScores[`mood-${board.id}`].toLocaleString()}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Instructions */}
           <div className="max-w-4xl mx-auto">

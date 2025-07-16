@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { JapaneseWord, ConjugationForms, WordList } from '@/types';
 import { searchWords } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
@@ -57,6 +58,7 @@ const conjugationStructuredData = {
 };
 
 export default function ConjugationPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const { checkAndTrack } = useAccess();
   const { isPremium, userType } = useSubscription2();
@@ -157,11 +159,25 @@ export default function ConjugationPage() {
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
-          <PageHeader title="Conjugation Practice" helpKey="conjugation" />
+          <PageHeader title="Conjugation Practice" helpKey="conjugation" showBackButton={true} onBackClick={() => router.push('/practice')} />
+
+          {/* Target Icon */}
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+              <img
+                src="/flat-icons/root-icons/target.svg"
+                alt="Target Icon"
+                className="w-8 h-8"
+              />
+            </div>
+          </div>
 
           <>
+            <p className="text-muted-foreground mb-4 text-center max-w-2xl mx-auto">
+              {strings.practice?.conjugationIntro || "Master Japanese verb and adjective conjugations through interactive practice. Explore all forms including tense, politeness, and special constructions like passive and causative."}
+            </p>
             <p className="text-muted-foreground mb-8 text-center">
-              {strings.practice.selectWord}
+              {strings.practice?.selectWord || "Select a verb or adjective to practice"}
             </p>
 
             <WordSelector

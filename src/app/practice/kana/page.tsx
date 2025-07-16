@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,6 +52,7 @@ const kanaStructuredData = {
 };
 
 export default function KanaPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const { checkAndTrack } = useAccess();
   const { isPremium, userType } = useSubscription2();
@@ -223,14 +225,14 @@ export default function KanaPage() {
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
-          <PageHeader title="Kana Charts" helpKey="kana" />
+          <PageHeader title="Kana Charts" helpKey="kana" showBackButton={true} onBackClick={() => router.push('/practice')} />
 
-          {/* Target Icon */}
+          {/* Logogram Icon */}
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
               <img
-                src="/flat-icons/root-icons/target.svg"
-                alt="Target Icon"
+                src="/flat-icons/root-icons/logogram.svg"
+                alt="Logogram Icon"
                 className="w-8 h-8"
               />
             </div>

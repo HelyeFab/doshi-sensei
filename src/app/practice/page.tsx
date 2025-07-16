@@ -301,7 +301,7 @@ function LearningPath() {
         <InfiniteScrollingBackground />
         
         {/* Stacked Container Layout */}
-        <div className="flex flex-col gap-8 relative z-10">
+        <div className="flex flex-col gap-8 relative z-10 p-8 md:p-12">
         {stations.map((station, index) => {
           const isLast = index === stations.length - 1;
           
@@ -332,7 +332,7 @@ function LearningPath() {
         })}
         
         {/* Duplicate the pattern */}
-        <div className="mt-8 pt-8 border-t-2 border-primary/30">
+        <div className="mt-8 pt-8">
           <h4 className="text-center text-lg font-semibold text-white mb-8 bg-primary/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">Continue Your Journey</h4>
           {stations.map((station, index) => {
             const isLast = index === stations.length - 1;

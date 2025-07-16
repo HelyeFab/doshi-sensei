@@ -291,7 +291,7 @@ function LearningPath() {
 
   return (
     <div className="w-full md:max-w-5xl mx-auto px-0 md:px-4 relative">
-      <h3 className="text-xl font-semibold text-center text-white mb-12 relative z-10 animate-fade-in-up bg-primary/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">
+      <h3 className="text-xl font-semibold text-center text-white mb-12 relative z-10 animate-fade-in-up bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 max-w-fit mx-auto transform hover:scale-105 transition-all hover:shadow-[0_20px_50px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 10px 40px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
         Your Learning Path Awaits
       </h3>
       
@@ -333,7 +333,7 @@ function LearningPath() {
         
         {/* Duplicate the pattern */}
         <div className="mt-8 pt-8">
-          <h4 className="text-center text-lg font-semibold text-white mb-8 bg-primary/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">Continue Your Journey</h4>
+          <h4 className="text-center text-lg font-semibold text-white mb-8 bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 max-w-fit mx-auto transform hover:scale-105 transition-all hover:shadow-[0_20px_50px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 10px 40px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>Continue Your Journey</h4>
           {stations.map((station, index) => {
             const isLast = index === stations.length - 1;
             
@@ -368,7 +368,7 @@ function LearningPath() {
       
       {/* Enhanced description with animation */}
       <div className="mt-20 text-center max-w-2xl mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '1400ms' }}>
-        <div className="bg-primary/80 backdrop-blur-md rounded-2xl px-8 py-6 shadow-xl">
+        <div className="bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/20 transform hover:scale-[1.02] transition-all hover:shadow-[0_25px_60px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 15px 45px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
           <p className="text-white text-lg font-medium">
             Follow the path from top to bottom. Each station builds upon the last, 
             creating your foundation in Japanese.
@@ -405,7 +405,7 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
       </div>
       
       <div className="text-center mt-4 md:mt-6">
-        <div className="bg-primary/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-md">
+        <div className="bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20 transform hover:scale-105 transition-all hover:shadow-[0_15px_35px_rgba(139,_92,_246,_0.4)]" style={{ boxShadow: '0 8px 25px rgba(139, 92, 246, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
           <p className={`text-lg md:text-xl font-bold text-white ${station.disabled ? 'opacity-70' : ''}`}>
             {station.title}
           </p>

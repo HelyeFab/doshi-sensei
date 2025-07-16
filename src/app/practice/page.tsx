@@ -5,7 +5,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { PageHeader } from '@/components/PageHeader';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useSpring, animated, useTrail, useSpringRef, useChain, useSprings } from '@react-spring/web';
+import { useSpring, animated, useTrail } from '@react-spring/web';
 
 // Structured Data for Practice Page
 const practiceStructuredData = {
@@ -357,17 +357,12 @@ function LearningPath() {
 
 // Station Circle Component
 function StationCircle({ station, isHovered = false }: { station: any; isHovered?: boolean }) {
-  // Pulse animation - properly memoized
+  // Pulse animation - using loop instead of async function
   const pulseStyle = useSpring({
     from: { scale: 1, opacity: 0.5 },
-    to: async (next) => {
-      while (true) {
-        await next({ scale: 1.5, opacity: 0 });
-        await next({ scale: 1, opacity: 0.5 });
-      }
-    },
-    config: { duration: 2000 },
-    pause: station.disabled
+    to: { scale: 1.5, opacity: 0 },
+    loop: !station.disabled ? { reverse: true } : false,
+    config: { duration: 2000 }
   });
 
   // Hover animation - using the isHovered prop properly

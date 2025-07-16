@@ -5,7 +5,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { PageHeader } from '@/components/PageHeader';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useSpring, animated, useTrail } from '@react-spring/web';
+// Removed React Spring to use pure CSS animations
 
 // Structured Data for Practice Page
 const practiceStructuredData = {
@@ -234,7 +234,7 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
   );
 }
 
-// Learning Path Component with React Spring animations
+// Learning Path Component with pure CSS animations
 function LearningPath() {
   // Define the path stations
   const stations = [
@@ -274,57 +274,14 @@ function LearningPath() {
     }
   ];
 
-  // Title animation
-  const titleProps = useSpring({
-    from: { opacity: 0, transform: 'translateY(-20px)' },
-    to: { opacity: 1, transform: 'translateY(0px)' },
-    delay: 200,
-    config: { tension: 280, friction: 60 }
-  });
-
-  // Station trail animation with staggered delay
-  const stationTrail = useTrail(stations.length, {
-    from: { opacity: 0, transform: 'scale(0) translateY(50px)' },
-    to: { opacity: 1, transform: 'scale(1) translateY(0px)' },
-    delay: 500,
-    config: { mass: 1, tension: 280, friction: 60 }
-  });
-
-  // Connector animations
-  const connectorTrail = useTrail(2, {
-    from: { opacity: 0, transform: 'scaleX(0)' },
-    to: { opacity: 1, transform: 'scaleX(1)' },
-    delay: 800,
-    config: { tension: 280, friction: 60 }
-  });
-
-  // Mobile connector animations
-  const mobileConnectorTrail = useTrail(2, {
-    from: { opacity: 0, transform: 'scaleY(0)' },
-    to: { opacity: 1, transform: 'scaleY(1)' },
-    delay: 800,
-    config: { tension: 280, friction: 60 }
-  });
-
-  // Description animation
-  const descProps = useSpring({
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    to: { opacity: 1, transform: 'translateY(0px)' },
-    delay: 1400,
-    config: { tension: 280, friction: 60 }
-  });
-
-  // Hover animation for stations
+  // Hover state for stations
   const [hoveredStation, setHoveredStation] = useState<string | null>(null);
 
   return (
     <div className="max-w-4xl mx-auto px-4 relative">
-      <animated.h3 
-        style={titleProps}
-        className="text-xl font-semibold text-center text-foreground mb-12 relative z-10"
-      >
+      <h3 className="text-xl font-semibold text-center text-foreground mb-12 relative z-10 animate-fade-in-up">
         Your Learning Path Awaits
-      </animated.h3>
+      </h3>
       
       {/* Stacked Container Layout with Background */}
       <div className="relative">
@@ -333,8 +290,7 @@ function LearningPath() {
         
         {/* Stacked Container Layout */}
         <div className="flex flex-col gap-8 relative z-10">
-        {stationTrail.map((style, index) => {
-          const station = stations[index];
+        {stations.map((station, index) => {
           const isLast = index === stations.length - 1;
           
           // Determine alignment based on index
@@ -342,7 +298,7 @@ function LearningPath() {
           
           return (
             <div key={station.id} className="w-full">
-              <animated.div style={style} className={`flex ${alignment} w-full`}>
+              <div className={`flex ${alignment} w-full animate-scale-in`} style={{ animationDelay: `${500 + index * 200}ms` }}>
                 {station.disabled ? (
                   <div className="opacity-60">
                     <StationCircle station={station} />
@@ -357,7 +313,7 @@ function LearningPath() {
                     <StationCircle station={station} isHovered={hoveredStation === station.id} />
                   </Link>
                 )}
-              </animated.div>
+              </div>
               
             </div>
           );
@@ -366,8 +322,7 @@ function LearningPath() {
         {/* Duplicate the pattern */}
         <div className="mt-8 pt-8 border-t border-border/30">
           <h4 className="text-center text-lg font-semibold text-muted-foreground mb-8">Continue Your Journey</h4>
-          {stationTrail.map((style, index) => {
-            const station = stations[index];
+          {stations.map((station, index) => {
             const isLast = index === stations.length - 1;
             
             // Determine alignment based on index
@@ -375,7 +330,7 @@ function LearningPath() {
             
             return (
               <div key={`${station.id}-2`} className="w-full mb-8">
-                <animated.div style={style} className={`flex ${alignment} w-full`}>
+                <div className={`flex ${alignment} w-full animate-scale-in`} style={{ animationDelay: `${1000 + index * 200}ms` }}>
                   {station.disabled ? (
                     <div className="opacity-60">
                       <StationCircle station={station} />
@@ -390,7 +345,7 @@ function LearningPath() {
                       <StationCircle station={station} isHovered={hoveredStation === `${station.id}-2`} />
                     </Link>
                   )}
-                </animated.div>
+                </div>
                 
               </div>
             );
@@ -400,35 +355,18 @@ function LearningPath() {
       </div>
       
       {/* Enhanced description with animation */}
-      <animated.div 
-        style={descProps}
-        className="mt-20 text-center max-w-2xl mx-auto relative z-10"
-      >
+      <div className="mt-20 text-center max-w-2xl mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '1400ms' }}>
         <p className="text-muted-foreground text-lg">
           Follow the path from top to bottom. Each station builds upon the last, 
           creating your foundation in Japanese.
         </p>
-      </animated.div>
+      </div>
     </div>
   );
 }
 
-// Station Circle Component
+// Station Circle Component with pure CSS animations
 function StationCircle({ station, isHovered = false }: { station: any; isHovered?: boolean }) {
-  // Pulse animation - using loop instead of async function
-  const pulseStyle = useSpring({
-    from: { scale: 1, opacity: 0.5 },
-    to: { scale: 1.5, opacity: 0 },
-    loop: !station.disabled ? { reverse: true } : false,
-    config: { duration: 2000 }
-  });
-
-  // Hover animation - using the isHovered prop properly
-  const hoverStyle = useSpring({
-    transform: isHovered ? 'scale(1.1)' : 'scale(1)',
-    config: { tension: 300, friction: 20 }
-  });
-
   return (
     <>
       <div className="relative w-20 h-20 md:w-32 md:h-32">
@@ -436,26 +374,18 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
         <div className={`absolute -inset-2 md:-inset-4 bg-gradient-to-r ${station.glowGradient} rounded-full blur-xl md:blur-2xl ${station.disabled ? 'opacity-30' : 'opacity-50 group-hover:opacity-70'} transition-opacity duration-300`} />
         
         {/* Main circle */}
-        <animated.div 
-          style={hoverStyle}
-          className={`relative w-full h-full bg-gradient-to-br ${station.gradient} rounded-full flex items-center justify-center shadow-2xl`}
+        <div 
+          className={`relative w-full h-full bg-gradient-to-br ${station.gradient} rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}
         >
           <span className={`text-3xl md:text-5xl ${station.icon === '🔜' ? '' : 'text-white font-bold'}`}>{station.icon}</span>
-        </animated.div>
+        </div>
         
         {/* Pulse ring animation */}
         {!station.disabled && (
-          <animated.div 
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '9999px',
-              border: '2px solid',
-              borderColor: station.id === 'kana' ? 'rgb(251 113 133 / 0.5)' : 'rgb(251 146 60 / 0.5)',
-              scale: pulseStyle.scale,
-              opacity: pulseStyle.opacity
-            }}
-            className="md:border-4"
+          <div 
+            className={`absolute inset-0 rounded-full border-2 md:border-4 animate-pulse-ring ${
+              station.id === 'kana' ? 'border-rose-400/50' : 'border-orange-400/50'
+            }`}
           />
         )}
       </div>

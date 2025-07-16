@@ -296,7 +296,7 @@ function LearningPath() {
       </h3>
       
       {/* Stacked Container Layout with Background */}
-      <div className="relative overflow-hidden rounded-none md:rounded-3xl">
+      <div className="relative overflow-hidden rounded-3xl">
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
         

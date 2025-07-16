@@ -102,12 +102,14 @@ function InfiniteScrollingBackground() {
       
       {/* Purple frosted glass gradient overlay - covers entire background */}
       <div className="absolute inset-0 -top-32 -bottom-32 -left-32 -right-32">
-        {/* Primary purple gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/15 via-purple-500/8 to-transparent" />
+        {/* Primary purple gradient - slightly stronger */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-purple-500/10 to-transparent" />
         {/* Secondary gradient for depth */}
-        <div className="absolute inset-0 bg-gradient-to-tl from-violet-600/10 via-transparent to-purple-400/5" />
+        <div className="absolute inset-0 bg-gradient-to-tl from-violet-600/15 via-transparent to-purple-400/8" />
+        {/* Subtle white overlay for better text contrast */}
+        <div className="absolute inset-0 bg-white/5 dark:bg-black/10" />
         {/* Frosted glass effect */}
-        <div className="absolute inset-0 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 backdrop-blur-[3px]" />
       </div>
     </div>
   );
@@ -289,7 +291,7 @@ function LearningPath() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 relative">
-      <h3 className="text-xl font-semibold text-center text-foreground mb-12 relative z-10 animate-fade-in-up">
+      <h3 className="text-xl font-semibold text-center text-foreground mb-12 relative z-10 animate-fade-in-up bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">
         Your Learning Path Awaits
       </h3>
       
@@ -330,8 +332,8 @@ function LearningPath() {
         })}
         
         {/* Duplicate the pattern */}
-        <div className="mt-8 pt-8 border-t border-border/30">
-          <h4 className="text-center text-lg font-semibold text-muted-foreground mb-8">Continue Your Journey</h4>
+        <div className="mt-8 pt-8 border-t-2 border-white/50 dark:border-gray-800/50">
+          <h4 className="text-center text-lg font-semibold text-foreground mb-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">Continue Your Journey</h4>
           {stations.map((station, index) => {
             const isLast = index === stations.length - 1;
             
@@ -366,10 +368,12 @@ function LearningPath() {
       
       {/* Enhanced description with animation */}
       <div className="mt-20 text-center max-w-2xl mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '1400ms' }}>
-        <p className="text-muted-foreground text-lg">
-          Follow the path from top to bottom. Each station builds upon the last, 
-          creating your foundation in Japanese.
-        </p>
+        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-2xl px-8 py-6 shadow-xl">
+          <p className="text-foreground text-lg font-medium">
+            Follow the path from top to bottom. Each station builds upon the last, 
+            creating your foundation in Japanese.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -401,10 +405,12 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
       </div>
       
       <div className="text-center mt-4 md:mt-6">
-        <p className={`text-lg md:text-xl font-bold ${station.disabled ? 'text-muted-foreground' : `text-foreground ${station.hoverColor} transition-colors`}`}>
-          {station.title}
-        </p>
-        <p className="text-xs md:text-sm text-muted-foreground">{station.subtitle}</p>
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-md">
+          <p className={`text-lg md:text-xl font-bold ${station.disabled ? 'text-muted-foreground' : `text-foreground ${station.hoverColor} transition-colors`}`}>
+            {station.title}
+          </p>
+          <p className="text-xs md:text-sm text-muted-foreground font-medium">{station.subtitle}</p>
+        </div>
       </div>
     </>
   );

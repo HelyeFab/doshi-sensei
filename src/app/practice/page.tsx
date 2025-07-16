@@ -78,7 +78,7 @@ function InfiniteScrollingBackground() {
   ];
 
   return (
-    <div className="absolute inset-0 -top-32 -bottom-32 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 -top-32 -bottom-32 overflow-hidden pointer-events-none rounded-3xl">
       {/* Diagonal container with parallax */}
       <div 
         className="absolute inset-0 -left-32 -right-32"
@@ -294,7 +294,7 @@ function LearningPath() {
       </h3>
       
       {/* Stacked Container Layout with Background */}
-      <div className="relative">
+      <div className="relative overflow-hidden rounded-3xl">
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
         

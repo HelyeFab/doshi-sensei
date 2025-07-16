@@ -78,7 +78,7 @@ function InfiniteScrollingBackground() {
   ];
 
   return (
-    <div className="absolute inset-0 -top-32 -bottom-32 overflow-hidden pointer-events-none rounded-3xl">
+    <div className="absolute inset-0 -top-32 -bottom-32 overflow-hidden pointer-events-none">
       {/* Diagonal container with parallax */}
       <div 
         className="absolute inset-0 -left-32 -right-32"

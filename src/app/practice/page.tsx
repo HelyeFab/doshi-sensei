@@ -290,13 +290,13 @@ function LearningPath() {
   const [hoveredStation, setHoveredStation] = useState<string | null>(null);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 relative">
+    <div className="w-full md:max-w-5xl mx-auto px-0 md:px-4 relative">
       <h3 className="text-xl font-semibold text-center text-white mb-12 relative z-10 animate-fade-in-up bg-primary/80 backdrop-blur-md rounded-2xl px-6 py-3 shadow-lg max-w-fit mx-auto">
         Your Learning Path Awaits
       </h3>
       
       {/* Stacked Container Layout with Background */}
-      <div className="relative overflow-hidden rounded-3xl">
+      <div className="relative overflow-hidden rounded-none md:rounded-3xl">
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
         

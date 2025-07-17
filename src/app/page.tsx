@@ -50,17 +50,11 @@ const structuredData = {
 // Predefined color patterns for optimal visual distribution
 const MOBILE_COLOR_PATTERN: CardColor[] = [
   'blue', 'teal',
-  'green', 'purple',
-  'indigo', 'orange',
-  'pink', 'blue',
-  'purple', 'green',
-  'teal', 'indigo'
+  'green', 'purple'
 ];
 
 const DESKTOP_COLOR_PATTERN: CardColor[] = [
-  'blue', 'orange', 'green', 'purple',
-  'pink', 'teal', 'indigo', 'orange',
-  'purple', 'green', 'blue', 'pink'
+  'blue', 'orange', 'green', 'purple'
 ];
 
 // Utility to convert hsl string to moderate pastel
@@ -88,29 +82,17 @@ export default function Home() {
   // Generate feature cards from strings
   const FEATURE_CARDS = [
     { title: strings.home.featureCards.practice.title, icon: strings.home.featureCards.practice.icon, href: '/practice', description: strings.home.featureCards.practice.description },
-    { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
-    { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
-    { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
-    { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
     { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description },
     { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
-    { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description },
-    { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
-    { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description },
-    { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
-    { title: strings.home.featureCards.stories.title, icon: strings.home.featureCards.stories.icon, href: '/stories', description: strings.home.featureCards.stories.description }
+    { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description }
   ];
 
   // Use predefined color patterns for better visual distribution
   const mobileColors = MOBILE_COLOR_PATTERN;
   const desktopColors = DESKTOP_COLOR_PATTERN;
 
-  // For mobile, override the Resources card icon to only show the flag
-  const mobileFeatureCards = FEATURE_CARDS.map(card =>
-    card.title === strings.home.featureCards.resources.title
-      ? { ...card, icon: '🎌' }
-      : card
-  );
+  // Mobile feature cards are the same as desktop cards now
+  const mobileFeatureCards = FEATURE_CARDS;
 
   // Get theme colors for gradient (moderate pastel) - client-side only to prevent hydration issues
   const [gradientColors, setGradientColors] = useState({

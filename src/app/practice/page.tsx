@@ -5,6 +5,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { PageHeader } from '@/components/PageHeader';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ProductionSnakePath } from '@/components/ProductionSnakePath';
 // Removed React Spring to use pure CSS animations
 
 // Structured Data for Practice Page
@@ -416,6 +417,165 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
   );
 }
 
+// Production Learning Path Component with Snake Path
+function ProductionLearningPath() {
+  const nodes = [
+    {
+      id: 'start',
+      type: 'checkpoint' as const,
+      icon: '🌸',
+      title: 'Welcome!',
+      subtitle: 'Start here',
+      completed: true
+    },
+    {
+      id: 'hiragana',
+      type: 'lesson' as const,
+      icon: 'あ',
+      title: 'Hiragana',
+      subtitle: 'Basic syllabary',
+      completed: true,
+      href: '/practice/hiragana'
+    },
+    {
+      id: 'katakana',
+      type: 'lesson' as const,
+      icon: 'ア',
+      title: 'Katakana',
+      subtitle: 'Foreign words',
+      completed: true,
+      href: '/practice/katakana',
+      current: true
+    },
+    {
+      id: 'conjugation',
+      type: 'lesson' as const,
+      icon: '動',
+      title: 'Conjugation',
+      subtitle: 'Verb forms',
+      href: '/practice/conjugation'
+    },
+    {
+      id: 'checkpoint-1',
+      type: 'checkpoint' as const,
+      icon: '🎮',
+      title: 'Checkpoint 1',
+      subtitle: 'Play games!',
+      completed: true,
+      href: '/games'
+    },
+    {
+      id: 'conjugation-drill',
+      type: 'lesson' as const,
+      icon: '⚡',
+      title: 'Conjugation Drill',
+      subtitle: 'Quick practice',
+      href: '/drill/conjugation'
+    },
+    {
+      id: 'flashcards',
+      type: 'lesson' as const,
+      icon: '🎴',
+      title: 'Flashcards',
+      subtitle: 'Spaced repetition',
+      href: '/drill/flashcards'
+    },
+    {
+      id: 'checkpoint-2',
+      type: 'checkpoint' as const,
+      icon: '🕹️',
+      title: 'Checkpoint 2',
+      subtitle: 'More games!',
+      href: '/games'
+    },
+    {
+      id: 'kanji-browser',
+      type: 'lesson' as const,
+      icon: '漢',
+      title: 'Kanji Browser',
+      subtitle: 'Explore kanji',
+      href: '/kanji-browser'
+    },
+    {
+      id: 'vocabulary',
+      type: 'lesson' as const,
+      icon: '📚',
+      title: 'Vocabulary',
+      subtitle: 'Browse words',
+      href: '/vocabulary'
+    },
+    {
+      id: 'mood-boards',
+      type: 'lesson' as const,
+      icon: '🎭',
+      title: 'Mood Boards',
+      subtitle: 'Kanji by feeling',
+      href: '/kanji-moods'
+    },
+    {
+      id: 'checkpoint-3',
+      type: 'checkpoint' as const,
+      icon: '🎯',
+      title: 'Checkpoint 3',
+      subtitle: 'Game time!',
+      href: '/games'
+    },
+    {
+      id: 'news',
+      type: 'lesson' as const,
+      icon: '📰',
+      title: 'News',
+      subtitle: 'Latest updates',
+      href: '/news'
+    },
+    {
+      id: 'ai-stories',
+      type: 'lesson' as const,
+      icon: '🤖',
+      title: 'AI Stories',
+      subtitle: 'Interactive tales',
+      href: '/stories'
+    },
+    {
+      id: 'resources',
+      type: 'lesson' as const,
+      icon: '🎌',
+      title: 'Resources',
+      subtitle: 'Learning tools',
+      href: '/resources'
+    }
+  ];
+
+  return (
+    <div className="w-full md:max-w-5xl mx-auto px-0 md:px-4 relative">
+      <h3 className="text-xl font-semibold text-center text-white mb-12 relative z-10 animate-fade-in-up bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 max-w-fit mx-auto transform hover:scale-105 transition-all hover:shadow-[0_20px_50px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 10px 40px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
+        Your Learning Path Awaits
+      </h3>
+      
+      {/* Snake Path Container with Animated Background */}
+      <div className="relative overflow-hidden rounded-3xl">
+        {/* Infinite Scrolling Background - Local to Learning Path */}
+        <InfiniteScrollingBackground />
+        
+        {/* Snake Path Content */}
+        <div className="relative z-10 p-8">
+          <ProductionSnakePath nodes={nodes} />
+        </div>
+      </div>
+      
+      {/* Enhanced description with animation */}
+      <div className="mt-20 text-center max-w-2xl mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '1400ms' }}>
+        <div className="bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/20 transform hover:scale-[1.02] transition-all hover:shadow-[0_25px_60px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 15px 45px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
+          <p className="text-white text-lg font-medium">
+            Follow the path from top to bottom. Each station builds upon the last, 
+            creating your foundation in Japanese.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PracticePage() {
   const strings = useStrings();
 
@@ -495,8 +655,8 @@ export default function PracticePage() {
             </div>
           </div>
 
-          {/* Learning Path with React Spring */}
-          <LearningPath />
+          {/* Learning Path with Production Snake Path */}
+          <ProductionLearningPath />
         </main>
       </div>
     </>

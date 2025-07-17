@@ -216,6 +216,20 @@ export class PracticeCache {
       // Error preloading practice cache
     }
   }
+
+  /**
+   * Get common words for practice (wrapper for getCachedCommonWordsForPractice)
+   */
+  static async getCommonWordsForPractice(limit: number = 50): Promise<JapaneseWord[]> {
+    return getCachedCommonWordsForPractice(limit);
+  }
+
+  /**
+   * Get filtered words (wrapper for getCachedFilteredWords)
+   */
+  static async getFilteredWords(filter: 'all' | 'verbs' | 'adjectives', limit: number = 50): Promise<JapaneseWord[]> {
+    return getCachedFilteredWords(filter, limit);
+  }
 }
 
 /**

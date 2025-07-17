@@ -6,13 +6,14 @@ import { statsTracker } from './statsTracker';
 
 // Drill tracking
 export async function trackDrillCompleted(
-  drillType: string,
+  userId: string,
   questionsAnswered: number,
   correctAnswers: number,
+  drillType?: string,
   wordsStudied?: string[]
 ): Promise<void> {
   await statsTracker.trackActivity('drill', {
-    feature: drillType,
+    feature: drillType || 'conjugation',
     total: questionsAnswered,
     correct: correctAnswers,
     itemId: wordsStudied?.join(',')
@@ -120,15 +121,14 @@ export async function trackVocabStudied(
 
 // Flashcard tracking
 export async function trackFlashcardReviewed(
+  userId: string,
   cardId: string,
-  correct: boolean,
-  difficulty: number
+  correct: boolean
 ): Promise<void> {
   await statsTracker.trackActivity('flashcard', {
     itemId: cardId,
     correct: correct ? 1 : 0,
-    total: 1,
-    score: difficulty
+    total: 1
   });
 }
 
@@ -155,5 +155,19 @@ export async function trackKanaPractice(
     total: totalItems,
     correct: correctItems,
     duration
+  });
+}
+
+// Flashcard session tracking
+export async function trackFlashcardSessionCompleted(
+  userId: string,
+  cardsReviewed: number,
+  correctCards: number
+): Promise<void> {
+  await statsTracker.trackActivity('flashcard', {
+    feature: 'session',
+    total: cardsReviewed,
+    correct: correctCards,
+    score: Math.round((correctCards / cardsReviewed) * 100)
   });
 }

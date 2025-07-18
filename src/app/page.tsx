@@ -12,6 +12,7 @@ import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 import { colorPalettes } from '@/utils/themes';
 import { StatsBar } from '@/components/stats/StatsBar';
+import { ToriiGate } from '@/components/ToriiGate';
 
 // Structured Data for SEO
 const structuredData = {
@@ -137,7 +138,12 @@ export default function Home() {
   }, [profile?.displayName, profile?.email]);
 
   return (
-    <>
+    <div 
+      className="min-h-screen"
+      style={{
+        backgroundImage: 'linear-gradient(to right bottom, #d16ba5, #d16fb1, #d173bd, #cf78ca, #cb7ed6, #de81cf, #ee86c8, #fb8cc1, #ff9eaa, #ffb59e, #ffcda2, #f5e3b5)'
+      }}
+    >
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -146,101 +152,16 @@ export default function Home() {
         }}
       />
 
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20"
+      {/* Full Page Hero Section - Extends to bottom */}
+      <div className="w-full min-h-screen">
+        <ToriiGate 
+          profile={profile}
+          displayName={displayName}
+          greeting={strings.home.greeting}
+          readyText={strings.home.readyToPractice}
+          featureCards={FEATURE_CARDS}
+          cardColors={desktopColors}
         />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 md:py-8 min-h-screen pb-32 md:pb-8">
-        {/* Welcome Header */}
-        <header className="mb-8 md:mb-12 text-center">
-          {/* Welcome Text with Inline Avatar */}
-          <div className="flex items-center justify-center gap-3 mb-2">
-            {typeof window !== 'undefined' && profile?.avatar ? (
-              <img
-                src={profile.avatar}
-                alt={`${profile.displayName || profile.email}'s profile`}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg"
-                style={{
-                  boxShadow: '0 0 0 2px white, 0 0 0 3px var(--primary), 0 2px 8px rgba(0,0,0,0.1)'
-                }}
-              />
-            ) : typeof window !== 'undefined' && profile?.photoURL ? (
-              <img
-                src={profile.photoURL}
-                alt={`${profile.displayName || profile.email}'s profile`}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg"
-                style={{
-                  boxShadow: '0 0 0 2px white, 0 0 0 3px var(--primary), 0 2px 8px rgba(0,0,0,0.1)'
-                }}
-              />
-            ) : null}
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2" suppressHydrationWarning>
-              {strings.home.greeting} {displayName}!
-              <span
-                className="inline-block animate-pulse origin-[70%_70%]"
-                style={{
-                  animation: 'wave 2s ease-in-out infinite',
-                  transformOrigin: '70% 70%'
-                }}
-              >
-                👋
-              </span>
-            </h1>
-          </div>
-          <p className="text-base md:text-lg text-muted-foreground">
-            {strings.home.readyToPractice}
-          </p>
-        </header>
-
-        {/* Main Navigation Cards */}
-        <main className="max-w-6xl mx-auto">
-          {/* Navigation Cards */}
-          <div className="mb-6 md:mb-8">
-            {/* Mobile: 2x2 Grid without scroll container */}
-            <div className="md:hidden">
-              <div className="grid grid-cols-2 gap-3">
-                {mobileFeatureCards.map((card, index) => (
-                  <FeatureCard
-                    key={card.href}
-                    title={card.title}
-                    icon={card.icon}
-                    href={card.href}
-                    color={mobileColors[index]}
-                    description={card.description}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Desktop: Grid Layout (no scroll needed) */}
-            <div className="hidden md:grid md:grid-cols-4 md:gap-6">
-              {FEATURE_CARDS.map((card, index) => (
-                <FeatureCard
-                  key={card.href}
-                  title={card.title}
-                  icon={card.icon}
-                  href={card.href}
-                  color={desktopColors[index]}
-                  description={card.description}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* New Stats Bar Component */}
-          <StatsBar className="mb-8" />
-        </main>
       </div>
 
       {/* Pokédex Modal */}
@@ -249,8 +170,7 @@ export default function Home() {
         onClose={() => setShowPokedexModal(false)}
         userId={profile?.uid}
       />
-      
-    </>
+    </div>
   );
 }
 

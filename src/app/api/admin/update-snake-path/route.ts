@@ -1,4 +1,78 @@
-'use client';
+import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/firebase-admin';
+import { ADMIN_EMAIL } from '@/types/admin';
+import fs from 'fs';
+import path from 'path';
+
+// This route handles both development (auto-save) and production (copy-paste)
+
+export async function POST(request: NextRequest) {
+  try {
+    // Verify admin access
+    const authHeader = headers().get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    
+    try {
+      const decodedToken = await auth.verifyIdToken(token);
+      if (decodedToken.email !== ADMIN_EMAIL) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    } catch (error) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
+
+    const data = await request.json();
+    const { positions, nodes } = data;
+
+    // Generate the new positions array string
+    const positionsString = positions.map((pos: any, i: number) => 
+      `  { x: ${pos.x.toFixed(1)}, y: ${pos.y} }, // ${nodes[i]?.title || `Node ${i}`}`
+    ).join('\n');
+
+    // Check if we're in development
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    // Try to auto-save in development
+    if (isDevelopment) {
+      try {
+        // Path to the ProductionSnakePath.tsx file
+        const filePath = path.join(process.cwd(), 'src/components/ProductionSnakePath.tsx');
+        
+        // Read the current file
+        const currentContent = fs.readFileSync(filePath, 'utf-8');
+        
+        // Replace the PRODUCTION_POSITIONS array
+        const regex = /const PRODUCTION_POSITIONS = \[\n([\s\S]*?)\];/;
+        const newPositionsArray = `const PRODUCTION_POSITIONS = [\n${positionsString}\n];`;
+        
+        if (regex.test(currentContent)) {
+          const updatedContent = currentContent.replace(regex, newPositionsArray);
+          
+          // Write the updated file
+          fs.writeFileSync(filePath, updatedContent, 'utf-8');
+          
+          return NextResponse.json({ 
+            success: true,
+            autoSaved: true,
+            message: 'File updated successfully! Next.js will hot-reload automatically.',
+            positions: positions.length
+          });
+        } else {
+          throw new Error('Could not find PRODUCTION_POSITIONS array in file');
+        }
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+        // Fall through to manual mode
+      }
+    }
+
+    // Generate the complete file content for manual copy-paste
+    const fileContent = `'use client';
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -6,21 +80,7 @@ import { useRouter } from 'next/navigation';
 
 // Production positions from your adjustments
 const PRODUCTION_POSITIONS = [
-  { x: 39.0, y: 50 }, // Welcome!
-  { x: 46.0, y: 190 }, // Hiragana Basics
-  { x: 38.0, y: 330 }, // More Hiragana
-  { x: 43.0, y: 470 }, // Checkpoint 1
-  { x: 40.0, y: 610 }, // Katakana Intro
-  { x: 47.0, y: 750 }, // Katakana Practice
-  { x: 57.0, y: 890 }, // Basic Verbs
-  { x: 51.0, y: 1030 }, // Checkpoint 2
-  { x: 41.0, y: 1170 }, // Conjugation
-  { x: 44.0, y: 1310 }, // Adjectives
-  { x: 51.0, y: 1450 }, // Particles
-  { x: 59.0, y: 1590 }, // Checkpoint 3
-  { x: 52.0, y: 1730 }, // Coming Soon
-  { x: 44.0, y: 1870 }, // Coming Soon
-  { x: 49.0, y: 2010 }, // Coming Soon
+${positionsString}
 ];
 
 interface PathNode {
@@ -38,11 +98,9 @@ interface ProductionSnakePathProps {
   nodes: PathNode[];
   onNodeClick?: (node: PathNode) => void;
   __testPositions?: Array<{ x: number; y: number }>; // For admin preview only
-  __testRegularSize?: number; // For admin preview only
-  __testCheckpointSize?: number; // For admin preview only
 }
 
-export function ProductionSnakePath({ nodes, onNodeClick, __testPositions, __testRegularSize, __testCheckpointSize }: ProductionSnakePathProps) {
+export function ProductionSnakePath({ nodes, onNodeClick, __testPositions }: ProductionSnakePathProps) {
   const router = useRouter();
 
   const handleNodeClick = (node: PathNode) => {
@@ -61,7 +119,7 @@ export function ProductionSnakePath({ nodes, onNodeClick, __testPositions, __tes
   const generatePath = () => {
     if (PRODUCTION_POSITIONS.length < 2) return '';
     
-    let path = `M ${PRODUCTION_POSITIONS[0].x} ${PRODUCTION_POSITIONS[0].y}`;
+    let path = \`M \${PRODUCTION_POSITIONS[0].x} \${PRODUCTION_POSITIONS[0].y}\`;
     
     for (let i = 1; i < PRODUCTION_POSITIONS.length; i++) {
       const prev = PRODUCTION_POSITIONS[i - 1];
@@ -73,7 +131,7 @@ export function ProductionSnakePath({ nodes, onNodeClick, __testPositions, __tes
       const cp2x = curr.x;
       const cp2y = curr.y - 70;
       
-      path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${curr.x} ${curr.y}`;
+      path += \` C \${cp1x} \${cp1y}, \${cp2x} \${cp2y}, \${curr.x} \${curr.y}\`;
     }
     
     return path;
@@ -94,7 +152,7 @@ export function ProductionSnakePath({ nodes, onNodeClick, __testPositions, __tes
             key={node.id}
             className="absolute"
             style={{
-              left: `${position.x}%`,
+              left: \`\${position.x}%\`,
               top: position.y,
               transform: 'translateX(-50%)'
             }}
@@ -110,9 +168,7 @@ export function ProductionSnakePath({ nodes, onNodeClick, __testPositions, __tes
             <ProductionNode 
               node={node} 
               index={index}
-              onClick={() => handleNodeClick(node)}
-              regularSize={__testRegularSize}
-              checkpointSize={__testCheckpointSize}
+              onClick={() => handleNodeClick(node)} 
             />
           </motion.div>
         );
@@ -125,72 +181,56 @@ interface ProductionNodeProps {
   node: PathNode;
   index: number;
   onClick: () => void;
-  regularSize?: number;
-  checkpointSize?: number;
 }
 
-function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: ProductionNodeProps) {
+function ProductionNode({ node, index, onClick }: ProductionNodeProps) {
   const isLocked = node.type === 'locked';
   const isCheckpoint = node.type === 'checkpoint';
   const isCurrent = node.current;
   
-  // Use test sizes if provided, otherwise use defaults
-  const defaultRegularSize = 64; // w-16 h-16
-  const defaultCheckpointSize = 80; // w-20 h-20
-  const nodePixelSize = isCheckpoint 
-    ? (checkpointSize || defaultCheckpointSize)
-    : (regularSize || defaultRegularSize);
-  
-  // For backwards compatibility, use Tailwind classes when no custom size
-  const nodeSize = !regularSize && !checkpointSize 
-    ? (isCheckpoint ? 'w-20 h-20' : 'w-16 h-16')
-    : '';
+  const nodeSize = isCheckpoint ? 'w-20 h-20' : 'w-16 h-16';
   
   return (
     <div className="relative group">
       <button
         onClick={onClick}
         disabled={isLocked}
-        className={`
-          relative ${nodeSize} rounded-full
+        className={\`
+          relative \${nodeSize} rounded-full
           transition-all duration-300
-          ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'}
-          ${isCurrent ? 'animate-pulse' : ''}
-        `}
-        style={regularSize || checkpointSize ? {
-          width: `${nodePixelSize}px`,
-          height: `${nodePixelSize}px`
-        } : undefined}
+          \${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'}
+          \${isCurrent ? 'animate-pulse' : ''}
+        \`}
       >
         {/* Glow effect on hover */}
         {!isLocked && (
-          <div className={`
+          <div className={\`
             absolute -inset-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity
-            bg-gradient-to-r ${isCheckpoint ? 'from-yellow-400/20 to-amber-500/20' : 'from-primary/20 to-accent/20'}
+            bg-gradient-to-r \${isCheckpoint ? 'from-yellow-400/20 to-amber-500/20' : 'from-primary/20 to-accent/20'}
             blur-xl
-          `} />
+          \`} />
         )}
         
         {/* Node background */}
         <div
-          className={`
+          className={\`
             absolute inset-0 rounded-full shadow-lg transform transition-all
-            ${isLocked ? 'bg-gray-300' : ''}
-            ${isCheckpoint ? 'bg-gradient-to-br from-yellow-400 to-amber-500' : ''}
-            ${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-green-400 to-emerald-500' : ''}
-            ${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-purple-400 to-violet-500' : ''}
-            ${!isLocked && 'group-hover:shadow-xl'}
-          `}
+            \${isLocked ? 'bg-gray-300' : ''}
+            \${isCheckpoint ? 'bg-gradient-to-br from-yellow-400 to-amber-500' : ''}
+            \${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-green-400 to-emerald-500' : ''}
+            \${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-purple-400 to-violet-500' : ''}
+            \${!isLocked && 'group-hover:shadow-xl'}
+          \`}
         />
         
         {/* Pulse ring animation for all nodes */}
         {!isLocked && (
           <div 
-            className={`absolute inset-0 rounded-full border-2 md:border-4 animate-pulse-ring ${
+            className={\`absolute inset-0 rounded-full border-2 md:border-4 animate-pulse-ring \${
               isCheckpoint ? 'border-yellow-400/70' : 
               node.completed ? 'border-green-400/70' : 
               'border-purple-400/70'
-            }`}
+            }\`}
           />
         )}
         
@@ -220,7 +260,7 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           ) : node.icon ? (
-            <span className={`${isCheckpoint ? 'text-3xl' : 'text-2xl'}`}>{node.icon}</span>
+            <span className={\`\${isCheckpoint ? 'text-3xl' : 'text-2xl'}\`}>{node.icon}</span>
           ) : (
             <span className="text-xl text-white font-bold">
               {node.completed ? '✓' : index + 1}
@@ -230,11 +270,11 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
       </button>
       
       {/* Node label - appears on hover */}
-      <div className={`
+      <div className={\`
         absolute top-full mt-2 left-1/2 transform -translate-x-1/2 text-center
         transition-all duration-200 pointer-events-none
-        ${isLocked ? 'opacity-50' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-1'}
-      `}>
+        \${isLocked ? 'opacity-50' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-1'}
+      \`}>
         {node.title && (
           <div className="bg-background/90 backdrop-blur-sm px-3 py-1 rounded-lg shadow-lg border border-border whitespace-nowrap">
             <div className="text-sm font-semibold text-foreground">
@@ -250,4 +290,20 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
       </div>
     </div>
   );
+}
+`;
+
+    // Return the file content and instructions
+    return NextResponse.json({ 
+      success: true,
+      fileContent,
+      instructions: 'Copy the fileContent and save it to /src/components/ProductionSnakePath.tsx'
+    });
+  } catch (error) {
+    console.error('Error updating snake path:', error);
+    return NextResponse.json(
+      { error: 'Failed to generate snake path content' },
+      { status: 500 }
+    );
+  }
 }

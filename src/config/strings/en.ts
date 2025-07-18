@@ -102,7 +102,27 @@ export const en = {
     selectWord: "Select a verb or adjective to practice",
     conjugationIntro: "Master Japanese verb and adjective conjugations through interactive practice. Explore all forms including tense, politeness, and special constructions like passive and causative.",
     showConjugations: "Show All Conjugations",
-    backToList: "Back to List"
+    backToList: "Back to List",
+
+    // Hero Section
+    hero: {
+      gatewayTitle: "Your Gateway to Japanese",
+      subtitle: "Begin Your Journey Here",
+      description: "Welcome to the foundation of your Japanese learning adventure. Master the essentials with our Kana Charts and Conjugation Practice — the building blocks every learner needs.",
+      kanaChartsHighlight: "Kana Charts",
+      conjugationPracticeHighlight: "Conjugation Practice",
+      stats: {
+        hiraganaKatakana: "Start with Hiragana & Katakana",
+        verbConjugations: "Master verb conjugations",
+        strongFoundations: "Build strong foundations"
+      }
+    },
+
+    // Learning Path Section
+    learningPath: {
+      title: "Your Learning Path Awaits",
+      description: "Follow the path from top to bottom. Each station builds upon the last, creating your foundation in Japanese."
+    }
   },
 
   // Drill Screen
@@ -861,7 +881,7 @@ export const en = {
     createNewStory: "Create New Story",
     noStoriesCreatedYet: "No stories created yet.",
     createYourFirstStory: "Create your first story",
-    
+
     // AI Story Generation
     aiStoryGeneration: {
       title: "AI Story Generator",
@@ -1152,7 +1172,7 @@ export const en = {
     debug: {
       title: "Debug Tools",
       description: "Advanced debugging tools for system diagnostics and troubleshooting",
-      
+
       // System Status Section
       systemStatus: {
         title: "System Status",
@@ -1170,7 +1190,7 @@ export const en = {
           tooltip: "Simple browser storage for preferences. Stores app settings and small user preferences."
         }
       },
-      
+
       // Stats Debug Panel
       statsPanel: {
         title: "Stats Debug Panel",
@@ -1181,13 +1201,13 @@ export const en = {
         clearStats: "Clear All Stats",
         clearWarning: "⚠️ This will permanently delete ALL stats data. This cannot be undone."
       },
-      
+
       // Console Monitor
       consoleMonitor: {
         title: "Console Monitor",
         description: "Captures and displays stats-related console logs to help identify loading issues and race conditions"
       },
-      
+
       // Quick Debug Actions
       quickActions: {
         title: "Quick Debug Actions",
@@ -1209,7 +1229,7 @@ export const en = {
           tooltip: "⚠️ Clears all browser storage including IndexedDB, localStorage, and sessionStorage. Use with caution!"
         }
       },
-      
+
       // Error Messages
       errors: {
         details: "Error Details:",
@@ -1824,7 +1844,7 @@ export const en = {
       removeBookmark: "Remove bookmark",
       removeError: "Failed to remove bookmark. Please try again.",
       clearAllConfirmation: {
-        title: "Clear All Bookmarked Stories", 
+        title: "Clear All Bookmarked Stories",
         message: "Are you sure you want to clear all bookmarked stories? This action cannot be undone."
       },
       clearAllError: "Failed to clear bookmarked stories. Please try again.",
@@ -2247,7 +2267,7 @@ export const en = {
       features: {
         header: "🌟 Your Japanese Journey Includes:",
         conjugations: "🎯 Master 127+ conjugation forms instantly",
-        vocabulary: "📚 Build vocabulary with smart study lists", 
+        vocabulary: "📚 Build vocabulary with smart study lists",
         games: "🎮 Learn through games (Kanji Quest lets you catch 1000+ Pokémon!)",
         reading: "📰 Read real Japanese news with furigana support",
         kanji: "🈯 Study kanji with beautiful mood boards",
@@ -2267,7 +2287,7 @@ export const en = {
         features: ["127+ conjugation forms", "Detailed grammar explanations", "Verb & adjective mastery"]
       },
       gamer: {
-        title: "🎮 The Action Hero", 
+        title: "🎮 The Action Hero",
         description: "Learn through interactive games",
         features: ["Kanji Quest: Catch 1000+ Pokémon", "Kana Drop: Falling block game", "Matching games & more"]
       },
@@ -2308,7 +2328,7 @@ export const en = {
       continueButton: "What's Next? →",
       demoWords: {
         read: "to read",
-        write: "to write", 
+        write: "to write",
         speak: "to speak"
       }
     },
@@ -2324,7 +2344,7 @@ export const en = {
         subtitle: "Explore at your own pace"
       },
       drillMode: {
-        name: "Drill Mode", 
+        name: "Drill Mode",
         tagline: "(test yourself)",
         title: "⚡ Drill Mode",
         subtitle: "Challenge your knowledge"
@@ -2332,7 +2352,7 @@ export const en = {
       gameMode: {
         name: "Game Mode",
         tagline: "(learn while playing)",
-        title: "🎮 Game Mode", 
+        title: "🎮 Game Mode",
         subtitle: "Learning disguised as fun"
       },
       demoIntro: "Let's see each mode in action!",
@@ -2365,7 +2385,7 @@ export const en = {
         limitation: "Progress not saved"
       },
       free: {
-        title: "🆓 Free Learner", 
+        title: "🆓 Free Learner",
         description: "Your personal account",
         features: ["3 games per day", "3 drill sessions daily", "Create 3 study lists", "Save 5 bookmarks"],
         benefit: "Progress saved locally"
@@ -2387,7 +2407,7 @@ export const en = {
       checklistHeader: "🎯 Your Journey Checklist:",
       checklistItems: {
         vocabulary: "✓ Discover Japanese vocabulary",
-        conjugations: "✓ Master verb conjugations", 
+        conjugations: "✓ Master verb conjugations",
         games: "✓ Play learning games (1000+ Pokémon await!)",
         reading: "✓ Read real Japanese content",
         tracking: "✓ Track your daily progress"
@@ -2400,7 +2420,7 @@ export const en = {
       themes: {
         classic: "Classic",
         ocean: "Ocean",
-        forest: "Forest", 
+        forest: "Forest",
         sunset: "Sunset"
       },
       preferencesHeader: "Display Options:",

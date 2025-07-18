@@ -75,6 +75,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     iconKey: 'debug',
     href: '/admin/debug',
   },
+  {
+    id: 'snake-path' as AdminSection,
+    labelKey: 'snakePath',
+    iconKey: 'snakePath',
+    href: '/admin/snake-path',
+  },
 ];
 
 interface AdminSidebarProps {
@@ -91,9 +97,11 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const sidebarItems = sidebarItemsConfig.map(item => ({
     ...item,
     label: strings.navigation?.admin?.[item.labelKey]?.label || 
-           (item.labelKey === 'debug' ? 'Debug Tools' : item.labelKey),
+           (item.labelKey === 'debug' ? 'Debug Tools' : 
+            item.labelKey === 'snakePath' ? 'Snake Path' : item.labelKey),
     icon: strings.navigation?.admin?.[item.labelKey]?.icon || 
-          (item.labelKey === 'debug' ? '🐛' : '📋'),
+          (item.labelKey === 'debug' ? '🐛' : 
+           item.labelKey === 'snakePath' ? '🐍' : '📋'),
   }));
 
   const handleSectionClick = (section: AdminSection) => {

@@ -81,7 +81,7 @@ function InfiniteScrollingBackground() {
   return (
     <div className="absolute inset-0 -top-32 -bottom-32 overflow-hidden pointer-events-none">
       {/* Diagonal container with parallax */}
-      <div 
+      <div
         className="absolute inset-0 -left-32 -right-32"
         style={{
           transform: `rotate(-15deg)`,
@@ -90,8 +90,8 @@ function InfiniteScrollingBackground() {
         {/* Instagram-style grid columns */}
         <div className="flex gap-4 h-full">
           {columns.map((col, colIndex) => (
-            <InfiniteColumn 
-              key={colIndex} 
+            <InfiniteColumn
+              key={colIndex}
               colIndex={colIndex}
               offset={col.offset}
               speed={col.speed}
@@ -100,7 +100,7 @@ function InfiniteScrollingBackground() {
           ))}
         </div>
       </div>
-      
+
       {/* Purple frosted glass gradient overlay - covers entire background */}
       <div className="absolute inset-0 -top-32 -bottom-32 -left-32 -right-32">
         {/* Primary purple gradient - slightly stronger */}
@@ -139,8 +139,8 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
             <div
               key={`${colIndex}-${index}`}
               className={`relative overflow-hidden rounded-3xl shadow-xl ${
-                card.size === 'full' 
-                  ? 'min-h-[240px] md:min-h-[280px]' 
+                card.size === 'full'
+                  ? 'min-h-[240px] md:min-h-[280px]'
                   : 'min-h-[120px] md:min-h-[140px]'
               }`}
               style={{
@@ -149,14 +149,14 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
               }}
             >
               {/* Stronger gradient overlay like mood boards */}
-              <div 
+              <div
                 className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`}
                 style={{ mixBlendMode: 'multiply', opacity: 0.8 }}
               />
-              
+
               {/* White overlay for text contrast */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              
+
               {/* Content */}
               <div className={`relative h-full flex flex-col justify-between ${
                 card.size === 'full' ? 'p-3 md:p-6' : 'p-2 md:p-4'
@@ -176,7 +176,7 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
                     {card.subtitle}
                   </p>
                 </div>
-                
+
                 {/* Level indicator like mood boards */}
                 {card.size === 'full' && (
                   <div className="text-xs md:text-sm opacity-80 font-medium">
@@ -187,15 +187,15 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
             </div>
           ))}
         </div>
-        
+
         {/* Duplicate set for seamless loop */}
         <div className="flex flex-col gap-4 mt-4">
           {extendedCards.map((card, index) => (
             <div
               key={`${colIndex}-${index}-dup`}
               className={`relative overflow-hidden rounded-3xl shadow-xl ${
-                card.size === 'full' 
-                  ? 'min-h-[240px] md:min-h-[280px]' 
+                card.size === 'full'
+                  ? 'min-h-[240px] md:min-h-[280px]'
                   : 'min-h-[120px] md:min-h-[140px]'
               }`}
               style={{
@@ -204,14 +204,14 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
               }}
             >
               {/* Stronger gradient overlay like mood boards */}
-              <div 
+              <div
                 className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`}
                 style={{ mixBlendMode: 'multiply', opacity: 0.8 }}
               />
-              
+
               {/* White overlay for text contrast */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              
+
               {/* Content */}
               <div className={`relative h-full flex flex-col justify-between ${
                 card.size === 'full' ? 'p-3 md:p-6' : 'p-2 md:p-4'
@@ -231,7 +231,7 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
                     {card.subtitle}
                   </p>
                 </div>
-                
+
                 {/* Level indicator like mood boards */}
                 {card.size === 'full' && (
                   <div className="text-xs md:text-sm opacity-80 font-medium">
@@ -295,20 +295,20 @@ function LearningPath() {
       <h3 className="text-xl font-semibold text-center text-white mb-12 relative z-10 animate-fade-in-up bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 max-w-fit mx-auto transform hover:scale-105 transition-all hover:shadow-[0_20px_50px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 10px 40px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
         Your Learning Path Awaits
       </h3>
-      
+
       {/* Stacked Container Layout with Background */}
       <div className="relative overflow-hidden rounded-3xl">
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
-        
+
         {/* Stacked Container Layout */}
         <div className="flex flex-col gap-8 relative z-10 p-8 md:p-12">
         {stations.map((station, index) => {
           const isLast = index === stations.length - 1;
-          
+
           // Determine alignment based on index
           const alignment = index === 0 ? 'justify-start' : index === 1 ? 'justify-center' : 'justify-end';
-          
+
           return (
             <div key={station.id} className="w-full">
               <div className={`flex ${alignment} w-full animate-scale-in`} style={{ animationDelay: `${500 + index * 200}ms` }}>
@@ -317,8 +317,8 @@ function LearningPath() {
                     <StationCircle station={station} />
                   </div>
                 ) : (
-                  <Link 
-                    href={station.href} 
+                  <Link
+                    href={station.href}
                     className="group block"
                     onMouseEnter={() => setHoveredStation(station.id)}
                     onMouseLeave={() => setHoveredStation(null)}
@@ -327,20 +327,20 @@ function LearningPath() {
                   </Link>
                 )}
               </div>
-              
+
             </div>
           );
         })}
-        
+
         {/* Duplicate the pattern */}
         <div className="mt-8 pt-8">
           <h4 className="text-center text-lg font-semibold text-white mb-8 bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 max-w-fit mx-auto transform hover:scale-105 transition-all hover:shadow-[0_20px_50px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 10px 40px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>Continue Your Journey</h4>
           {stations.map((station, index) => {
             const isLast = index === stations.length - 1;
-            
+
             // Determine alignment based on index
             const alignment = index === 0 ? 'justify-start' : index === 1 ? 'justify-center' : 'justify-end';
-            
+
             return (
               <div key={`${station.id}-2`} className="w-full mb-8">
                 <div className={`flex ${alignment} w-full animate-scale-in`} style={{ animationDelay: `${1000 + index * 200}ms` }}>
@@ -349,8 +349,8 @@ function LearningPath() {
                       <StationCircle station={station} />
                     </div>
                   ) : (
-                    <Link 
-                      href={station.href} 
+                    <Link
+                      href={station.href}
                       className="group block"
                       onMouseEnter={() => setHoveredStation(`${station.id}-2`)}
                       onMouseLeave={() => setHoveredStation(null)}
@@ -359,19 +359,19 @@ function LearningPath() {
                     </Link>
                   )}
                 </div>
-                
+
               </div>
             );
           })}
         </div>
       </div>
       </div>
-      
+
       {/* Enhanced description with animation */}
       <div className="mt-20 text-center max-w-2xl mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '1400ms' }}>
         <div className="bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/20 transform hover:scale-[1.02] transition-all hover:shadow-[0_25px_60px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 15px 45px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
           <p className="text-white text-lg font-medium">
-            Follow the path from top to bottom. Each station builds upon the last, 
+            Follow the path from top to bottom. Each station builds upon the last,
             creating your foundation in Japanese.
           </p>
         </div>
@@ -387,24 +387,24 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
       <div className="relative w-20 h-20 md:w-32 md:h-32">
         {/* Glow effect - reduced opacity */}
         <div className={`absolute -inset-2 md:-inset-4 bg-gradient-to-r ${station.glowGradient} rounded-full blur-xl md:blur-2xl ${station.disabled ? 'opacity-30' : 'opacity-50 group-hover:opacity-70'} transition-opacity duration-300`} />
-        
+
         {/* Main circle */}
-        <div 
+        <div
           className={`relative w-full h-full bg-gradient-to-br ${station.gradient} rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}
         >
           <span className={`text-3xl md:text-5xl ${station.icon === '🔜' ? '' : 'text-white font-bold'}`}>{station.icon}</span>
         </div>
-        
+
         {/* Pulse ring animation */}
         {!station.disabled && (
-          <div 
+          <div
             className={`absolute inset-0 rounded-full border-2 md:border-4 animate-pulse-ring ${
               station.id === 'kana' ? 'border-rose-400/70' : 'border-orange-400/70'
             }`}
           />
         )}
       </div>
-      
+
       <div className="text-center mt-4 md:mt-6">
         <div className="bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20 transform hover:scale-105 transition-all hover:shadow-[0_15px_35px_rgba(139,_92,_246,_0.4)]" style={{ boxShadow: '0 8px 25px rgba(139, 92, 246, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
           <p className={`text-lg md:text-xl font-bold text-white ${station.disabled ? 'opacity-70' : ''}`}>
@@ -551,23 +551,23 @@ function ProductionLearningPath() {
       <h3 className="text-xl font-semibold text-center text-white mb-12 relative z-10 animate-fade-in-up bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20 max-w-fit mx-auto transform hover:scale-105 transition-all hover:shadow-[0_20px_50px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 10px 40px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
         Your Learning Path Awaits
       </h3>
-      
+
       {/* Snake Path Container with Animated Background */}
       <div className="relative overflow-hidden rounded-3xl">
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
-        
+
         {/* Snake Path Content */}
         <div className="relative z-10 p-8">
           <ProductionSnakePath nodes={nodes} />
         </div>
       </div>
-      
+
       {/* Enhanced description with animation */}
       <div className="mt-20 text-center max-w-2xl mx-auto relative z-10 animate-fade-in-up" style={{ animationDelay: '1400ms' }}>
         <div className="bg-gradient-to-br from-primary/90 to-primary/70 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/20 transform hover:scale-[1.02] transition-all hover:shadow-[0_25px_60px_rgba(139,_92,_246,_0.5)]" style={{ boxShadow: '0 15px 45px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
           <p className="text-white text-lg font-medium">
-            Follow the path from top to bottom. Each station builds upon the last, 
+            Follow the path from top to bottom. Each station builds upon the last,
             creating your foundation in Japanese.
           </p>
         </div>
@@ -619,37 +619,37 @@ export default function PracticePage() {
                 <div className="absolute -bottom-4 -left-6 text-2xl animate-bounce animation-delay-500">学</div>
                 <div className="absolute -bottom-4 -right-6 text-2xl animate-bounce animation-delay-700">習</div>
               </div>
-              
+
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
                 <span className="bg-gradient-to-r from-rose-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">
-                  Your Gateway to Japanese
+                  {strings.practice?.hero?.gatewayTitle || "Your Gateway to Japanese"}
                 </span>
               </h2>
-              
+
               <p className="text-xl font-semibold text-foreground mb-4">
-                Begin Your Journey Here
+                {strings.practice?.hero?.subtitle || "Begin Your Journey Here"}
               </p>
-              
+
               <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                Welcome to the foundation of your Japanese learning adventure. Master the essentials with our 
-                <span className="font-semibold text-rose-600"> Kana Charts</span> and 
-                <span className="font-semibold text-orange-600"> Conjugation Practice</span> — 
+                Welcome to the foundation of your Japanese learning adventure. Master the essentials with our
+                <span className="font-semibold text-rose-600"> {strings.practice?.hero?.kanaChartsHighlight || 'Kana Charts'}</span> and
+                <span className="font-semibold text-orange-600"> {strings.practice?.hero?.conjugationPracticeHighlight || 'Conjugation Practice'}</span> —
                 the building blocks every learner needs.
               </p>
-              
+
               {/* Stats or motivational elements */}
               <div className="flex flex-wrap gap-6 justify-center text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🌸</span>
-                  <span className="text-muted-foreground">Start with Hiragana & Katakana</span>
+                  <span className="text-muted-foreground">{strings.practice?.hero?.stats?.hiraganaKatakana || "Start with Hiragana & Katakana"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🎯</span>
-                  <span className="text-muted-foreground">Master verb conjugations</span>
+                  <span className="text-muted-foreground">{strings.practice?.hero?.stats?.verbConjugations || "Master verb conjugations"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🚀</span>
-                  <span className="text-muted-foreground">Build strong foundations</span>
+                  <span className="text-muted-foreground">{strings.practice?.hero?.stats?.strongFoundations || "Build strong foundations"}</span>
                 </div>
               </div>
             </div>

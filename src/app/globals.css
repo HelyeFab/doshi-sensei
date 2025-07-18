@@ -3,6 +3,45 @@
 @import '../styles/grammar-highlighting.css';
 @import '../styles/pwa-fullscreen.css';
 
+/* Global reset and overflow prevention */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+
+/* Hide all scrollbars globally while keeping scroll functionality */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* IE/Edge legacy */
+* {
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbars for stats bar (redundant but keeping for specificity) */
+.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+.overflow-x-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Configure Tailwind v4 dark mode to use class strategy */
 @utility dark {
   :where(.dark) &;
@@ -125,6 +164,7 @@ body {
 /* Custom scrollbar for dark theme */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -390,8 +430,30 @@ body {
   }
 }
 
-/* Prevent horizontal scrolling on mobile */
-html, body {
+/* Prevent horizontal scrolling and ensure proper viewport containment */
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100vw;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Global box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Ensure the root div respects viewport */
+#__next {
+  width: 100%;
   overflow-x: hidden;
 }
 

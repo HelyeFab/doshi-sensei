@@ -82,7 +82,6 @@ export default function Home() {
 
   // Generate feature cards from strings
   const FEATURE_CARDS = [
-    { title: strings.home.featureCards.practice.title, icon: strings.home.featureCards.practice.icon, href: '/practice', description: strings.home.featureCards.practice.description },
     { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description },
     { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
     { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description }
@@ -137,39 +136,137 @@ export default function Home() {
     }
   }, [profile?.displayName, profile?.email]);
 
+  // Generate falling sakura petals
+  const [sakuraPetals, setSakuraPetals] = useState<Array<{
+    id: number;
+    left: number;
+    delay: number;
+    duration: number;
+    size: number;
+    swayDuration: number;
+    svg: string;
+  }>>([]);
+
+  useEffect(() => {
+    // Available sakura SVGs
+    const sakuraSvgs = [
+      '/flat-icons/sakura/petals.svg',
+      '/flat-icons/sakura/sakura (1).svg',
+      '/flat-icons/sakura/sakura (2).svg',
+      '/flat-icons/sakura/sakura (5).svg',
+      '/flat-icons/sakura/sakura (6).svg'
+    ];
+
+    // Generate random sakura petals
+    const petals = [];
+    for (let i = 0; i < 35; i++) {
+      petals.push({
+        id: i,
+        left: Math.random() * 100,
+        delay: Math.random() * 10,
+        duration: 15 + Math.random() * 20,
+        size: 20 + Math.random() * 30,
+        swayDuration: 3 + Math.random() * 2,
+        svg: sakuraSvgs[Math.floor(Math.random() * sakuraSvgs.length)]
+      });
+    }
+    setSakuraPetals(petals);
+  }, []);
+
   return (
     <div 
-      className="min-h-screen"
+      className="min-h-screen relative overflow-hidden"
       style={{
         backgroundImage: 'linear-gradient(to right bottom, #d16ba5, #d16fb1, #d173bd, #cf78ca, #cb7ed6, #de81cf, #ee86c8, #fb8cc1, #ff9eaa, #ffb59e, #ffcda2, #f5e3b5)'
       }}
     >
-      {/* Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
-        }}
-      />
+      {/* Main Content */}
+      <div className="relative">
+        {/* Falling Sakura Animation */}
+        <div className="fixed inset-0 pointer-events-none z-20">
+          {sakuraPetals.map((petal) => (
+            <div
+              key={petal.id}
+              className="absolute animate-fall"
+              style={{
+                left: `${petal.left}%`,
+                animationDelay: `${petal.delay}s`,
+                animationDuration: `${petal.duration}s`,
+                '--sway-duration': `${petal.swayDuration}s`
+              } as React.CSSProperties}
+            >
+              <img
+                src={petal.svg}
+                alt="Sakura petal"
+                className="animate-sway opacity-70"
+                style={{
+                  width: `${petal.size}px`,
+                  height: `${petal.size}px`,
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                }}
+              />
+            </div>
+          ))}
+        </div>
 
-      {/* Full Page Hero Section - Extends to bottom */}
-      <div className="w-full min-h-screen">
-        <ToriiGate 
-          profile={profile}
-          displayName={displayName}
-          greeting={strings.home.greeting}
-          readyText={strings.home.readyToPractice}
-          featureCards={FEATURE_CARDS}
-          cardColors={desktopColors}
+        <style jsx>{`
+          @keyframes fall {
+            from {
+              transform: translateY(-100px);
+            }
+            to {
+              transform: translateY(calc(100vh + 100px));
+            }
+          }
+          
+          @keyframes sway {
+            0%, 100% {
+              transform: translateX(0) rotate(0deg);
+            }
+            25% {
+              transform: translateX(-20px) rotate(-5deg);
+            }
+            75% {
+              transform: translateX(20px) rotate(5deg);
+            }
+          }
+          
+          .animate-fall {
+            animation: fall linear infinite;
+          }
+          
+          .animate-sway {
+            animation: sway var(--sway-duration) ease-in-out infinite;
+          }
+        `}</style>
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+
+        {/* Full Page Hero Section - Extends to bottom */}
+        <div className="w-full min-h-screen">
+          <ToriiGate 
+            profile={profile}
+            displayName={displayName}
+            greeting={strings.home.greeting}
+            readyText={strings.home.readyToPractice}
+            featureCards={FEATURE_CARDS}
+            cardColors={desktopColors}
+          />
+        </div>
+
+        {/* Pokédex Modal */}
+        <PokedexModal
+          isOpen={showPokedexModal}
+          onClose={() => setShowPokedexModal(false)}
+          userId={profile?.uid}
         />
       </div>
 
-      {/* Pokédex Modal */}
-      <PokedexModal
-        isOpen={showPokedexModal}
-        onClose={() => setShowPokedexModal(false)}
-        userId={profile?.uid}
-      />
     </div>
   );
 }

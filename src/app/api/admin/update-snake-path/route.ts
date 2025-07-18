@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { auth } from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 import { ADMIN_EMAIL } from '@/types/admin';
 import fs from 'fs';
 import path from 'path';
@@ -18,11 +18,13 @@ export async function POST(request: NextRequest) {
     const token = authHeader.split('Bearer ')[1];
     
     try {
-      const decodedToken = await auth.verifyIdToken(token);
+      const admin = await getFirebaseAdmin();
+      const decodedToken = await admin.auth().verifyIdToken(token);
       if (decodedToken.email !== ADMIN_EMAIL) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
     } catch (error) {
+      console.error('Token verification error:', error);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 

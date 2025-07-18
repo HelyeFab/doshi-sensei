@@ -178,21 +178,21 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
 // Apply theme to document
 export function applyTheme(scheme: ColorScheme, mode: ThemeMode) {
   if (typeof window === 'undefined') return;
-
+  
   const root = document.documentElement;
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   const effectiveMode = mode === 'system' ? systemTheme : mode;
-
+  
   // Remove existing theme classes
   root.classList.remove('dark', 'light');
   root.classList.add(effectiveMode);
-
-  // Apply CSS variables
+  
+  // Apply all CSS variables
   const variables = generateThemeVariables(scheme, effectiveMode);
   Object.entries(variables).forEach(([property, value]) => {
     root.style.setProperty(property, value);
   });
-
+  
   // Store current scheme in data attribute for CSS targeting if needed
   root.setAttribute('data-color-scheme', scheme);
 }

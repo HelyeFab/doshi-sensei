@@ -6,21 +6,21 @@ import { useRouter } from 'next/navigation';
 
 // Production positions from your adjustments
 const PRODUCTION_POSITIONS = [
-  { x: 39.0, y: 50 }, // Welcome!
-  { x: 46.0, y: 190 }, // Hiragana Basics
-  { x: 38.0, y: 330 }, // More Hiragana
-  { x: 43.0, y: 470 }, // Checkpoint 1
-  { x: 40.0, y: 610 }, // Katakana Intro
-  { x: 47.0, y: 750 }, // Katakana Practice
-  { x: 57.0, y: 890 }, // Basic Verbs
-  { x: 51.0, y: 1030 }, // Checkpoint 2
-  { x: 41.0, y: 1170 }, // Conjugation
-  { x: 44.0, y: 1310 }, // Adjectives
-  { x: 51.0, y: 1450 }, // Particles
-  { x: 59.0, y: 1590 }, // Checkpoint 3
-  { x: 52.0, y: 1730 }, // Coming Soon
-  { x: 44.0, y: 1870 }, // Coming Soon
-  { x: 49.0, y: 2010 }, // Coming Soon
+  { x: 20.0, y: 50 }, // Welcome!
+  { x: 26.0, y: 190 }, // Hiragana
+  { x: 46.0, y: 330 }, // Katakana
+  { x: 59.0, y: 470 }, // Checkpoint 1
+  { x: 64.0, y: 610 }, // Conjugation
+  { x: 45.0, y: 750 }, // Lesson 1
+  { x: 32.0, y: 890 }, // Lesson 2
+  { x: 28.0, y: 1030 }, // Checkpoint 2
+  { x: 41.0, y: 1170 }, // Lesson 3
+  { x: 62.0, y: 1310 }, // Lesson 4
+  { x: 45.0, y: 1450 }, // Lesson 5
+  { x: 29.0, y: 1590 }, // Checkpoint 3
+  { x: 34.0, y: 1730 }, // Coming Soon
+  { x: 52.0, y: 1870 }, // Coming Soon
+  { x: 68.0, y: 2010 }, // Coming Soon
 ];
 
 interface PathNode {

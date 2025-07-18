@@ -15,19 +15,19 @@ interface StatBadgeProps {
 
 function StatBadge({ icon, label, value, loading }: StatBadgeProps) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="w-8 h-8 md:w-7 md:h-7 rounded-full bg-white shadow-sm flex items-center justify-center">
+    <div className="flex flex-col items-center text-center gap-0.5 sm:gap-1">
+      <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-white shadow-sm flex items-center justify-center">
         {typeof icon === 'string' ? (
-          <span className="text-base md:text-sm text-gray-800">{icon}</span>
+          <span className="text-sm sm:text-base md:text-base">{icon}</span>
         ) : (
           icon
         )}
       </div>
-      <div>
-        <div className="text-base md:text-sm font-semibold text-gray-900">
+      <div className="flex flex-col items-center">
+        <div className="text-xs sm:text-sm md:text-sm font-bold text-gray-900 leading-tight">
           {loading ? '...' : value}
         </div>
-        <div className="text-sm md:text-xs text-gray-700">{label}</div>
+        <div className="text-[10px] sm:text-xs text-gray-700">{label}</div>
       </div>
     </div>
   );
@@ -59,16 +59,18 @@ export function StatsBar({ className = '' }: StatsBarProps) {
     : 0;
 
   return (
-    <div
-      className={`backdrop-blur-md rounded-lg p-4 md:p-5 transition-all duration-300 ${className}`}
-      style={{
-        border: '2px solid white',
-        boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
-        background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
-      }}
-      {...componentProps}
-    >
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between gap-4 md:gap-4">
+    <div className="w-full max-w-full overflow-hidden">
+      <div className="px-2 sm:px-3 md:px-4 py-2">
+        <div
+          className={`backdrop-blur-md rounded-lg p-2 sm:p-3 md:p-4 transition-all duration-300 ${className}`}
+          style={{
+            border: '2px solid white',
+            boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
+            background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
+          }}
+          {...componentProps}
+        >
+          <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-2 md:gap-3">
         {/* Streak */}
         <StatBadge
           icon="🔥"
@@ -77,7 +79,6 @@ export function StatsBar({ className = '' }: StatsBarProps) {
           loading={loading}
         />
 
-        <div className="hidden md:block h-8 w-px bg-gray-400/30" />
 
         {/* Drills */}
         <StatBadge
@@ -109,7 +110,7 @@ export function StatsBar({ className = '' }: StatsBarProps) {
             <img
               src="/pokeball.png"
               alt="Pokéball"
-              className="w-full h-full object-contain"
+              className="w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 object-contain"
             />
           }
           label="Pokémon"
@@ -117,7 +118,6 @@ export function StatsBar({ className = '' }: StatsBarProps) {
           loading={loading}
         />
 
-        <div className="hidden md:block h-8 w-px bg-gray-400/30" />
 
         {/* Stories */}
         <StatBadge
@@ -125,9 +125,7 @@ export function StatsBar({ className = '' }: StatsBarProps) {
             <img 
               src="/flat-icons/root-icons/story.svg" 
               alt="Stories" 
-              width={20}
-              height={20}
-              className="w-5 h-5 md:w-4 md:h-4 object-contain"
+              className="w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 object-contain"
             />
           }
           label="Stories"
@@ -135,53 +133,24 @@ export function StatsBar({ className = '' }: StatsBarProps) {
           loading={loading}
         />
 
-        <div className="hidden md:block h-8 w-px bg-gray-400/30" />
 
         {/* Overall Accuracy */}
-        <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
-          <div className="relative w-10 h-10">
-            <svg className="w-full h-full -rotate-90">
-              <circle
-                cx="20"
-                cy="20"
-                r="16"
-                stroke="gray"
-                strokeWidth="3"
-                fill="none"
-                opacity="0.2"
-              />
-              <circle
-                cx="20"
-                cy="20"
-                r="16"
-                stroke="gray"
-                strokeWidth="3"
-                fill="none"
-                strokeDasharray={`${loading ? 0 : (avgAccuracy / 100) * 100} 100`}
-                strokeLinecap="round"
-                className="transition-all duration-500"
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[10px] font-semibold text-gray-800">
-                {loading ? '...' : `${avgAccuracy}%`}
-              </span>
-            </div>
-          </div>
-          <div>
-            <div className="text-xs text-gray-700">Accuracy</div>
-          </div>
-        </div>
+        <StatBadge
+          icon="📊"
+          label="Accuracy"
+          value={`${avgAccuracy}%`}
+          loading={loading}
+        />
 
+        
         {/* Active Days (new stat) */}
-        <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
-          <div className="hidden md:block h-8 w-px bg-gray-400/30 mr-2" />
-          <StatBadge
-            icon="📅"
-            label="Active Days"
-            value={stats.totalDaysActive}
-            loading={loading}
-          />
+        <StatBadge
+          icon="📅"
+          label="Active Days"
+          value={stats.totalDaysActive}
+          loading={loading}
+        />
+      </div>
         </div>
       </div>
     </div>

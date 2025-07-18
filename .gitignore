@@ -59,8 +59,8 @@ sensei-feedback/
 src/utils/rate-limiter.ts
 
 # Large icon source folder (backup)
-/flat-icons/
-flat-icons/
+# /flat-icons/
+# flat-icons/
 
 # Allow the public flat-icons that are actually used
 # These are the minimal set of icons needed for the app

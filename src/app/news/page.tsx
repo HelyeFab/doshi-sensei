@@ -345,7 +345,7 @@ export default function NewsPage() {
   const handleArticleClick = async (article: NewsArticle) => {
     // Check if user can access articles
     const canAccess = await checkAndTrack('article_reading');
-    
+
     if (canAccess) {
       // Navigate to individual article page using Next.js router
       router.push(`/news/${article.id}`);
@@ -393,7 +393,7 @@ export default function NewsPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title="Japanese News Articles" showBackButton={true} helpKey="news" />
+        <PageHeader emoji="📰" showBackButton={true} helpKey="news" />
 
         <div className="max-w-6xl mx-auto">
           {/* Description */}
@@ -523,7 +523,7 @@ export default function NewsPage() {
         message={modalMessage}
         feature="articles"
       />
-      
+
       <UpgradePromptModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}

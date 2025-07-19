@@ -5,7 +5,9 @@ import { PageHelpIcon } from '@/components/PageHelpIcon';
 import { pageHelpContent } from '@/config/pageHelp';
 
 interface PageHeaderProps {
-  title: string;
+  title?: string;
+  emoji?: string;
+  icon?: string;
   subtitle?: string;
   showBackButton?: boolean;
   helpKey?: string;
@@ -14,7 +16,7 @@ interface PageHeaderProps {
   rightAction?: JSX.Element;
 }
 
-export function PageHeader({ title, subtitle, showBackButton = true, helpKey, onBackClick, backHref = "/", rightAction }: PageHeaderProps) {
+export function PageHeader({ title, emoji, icon, subtitle, showBackButton = true, helpKey, onBackClick, backHref = "/", rightAction }: PageHeaderProps) {
   const helpContent = helpKey ? pageHelpContent[helpKey] : null;
 
   const handleBackClick = (e: React.MouseEvent) => {
@@ -26,12 +28,12 @@ export function PageHeader({ title, subtitle, showBackButton = true, helpKey, on
 
   return (
     <header className="mb-8">
-      <div className="flex items-center mb-4">
+      <div className="relative flex items-center mb-4">
         {showBackButton && (
           <Link
             href={backHref}
             onClick={onBackClick ? handleBackClick : undefined}
-            className="mr-4 p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors inline-flex items-center justify-center"
+            className="absolute left-0 p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors inline-flex items-center justify-center z-10"
             aria-label="Go back"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,22 +42,33 @@ export function PageHeader({ title, subtitle, showBackButton = true, helpKey, on
           </Link>
         )}
 
-        <div className="flex-1 flex items-center justify-between gap-4">
-          <h1 className="text-xl sm:text-3xl font-bold text-foreground">
-            {title}
-          </h1>
-          {helpContent && (
-            <div className="ml-auto">
-              <PageHelpIcon
-                title={helpContent.title}
-                description={helpContent.description}
-                tips={helpContent.tips}
-              />
+        <div className="absolute inset-0 flex items-center justify-center">
+          {icon ? (
+            <div className="text-4xl sm:text-6xl md:text-7xl text-center">
+              <img src={icon} alt="Page icon" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24" />
             </div>
-          )}
+          ) : emoji ? (
+            <div className="text-4xl sm:text-6xl md:text-7xl text-center">
+              {emoji}
+            </div>
+          ) : title ? (
+            <h1 className="text-xl sm:text-3xl font-bold text-foreground text-center">
+              {title}
+            </h1>
+          ) : null}
         </div>
+
+        {helpContent && (
+          <div className="absolute right-0 z-10">
+            <PageHelpIcon
+              title={helpContent.title}
+              description={helpContent.description}
+              tips={helpContent.tips}
+            />
+          </div>
+        )}
         {rightAction && (
-          <div className="ml-4 flex-shrink-0 flex items-center">{rightAction}</div>
+          <div className="absolute right-0 z-10 flex items-center">{rightAction}</div>
         )}
       </div>
       {subtitle && (

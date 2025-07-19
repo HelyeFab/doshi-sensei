@@ -64,8 +64,8 @@ export default function MobileMenu() {
 
   return (
     <>
-      {/* Menu Button - Top Right Corner (replaces Pokédex position) */}
-      <div className="fixed top-4 right-4 z-50 md:hidden">
+      {/* Menu Button - Hidden on mobile since we use bottom navbar */}
+      <div className="fixed top-4 right-4 z-50 hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center justify-center w-12 h-12 bg-background/80 backdrop-blur-md rounded-full hover:bg-background/90 transition-all duration-300"

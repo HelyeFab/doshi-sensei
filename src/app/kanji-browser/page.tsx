@@ -387,46 +387,46 @@ export default function KanjiBrowserPage() {
         />
 
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <PageHeader title={strings.kanjiBrowser.title} helpKey="kanji-browser" />
-            {/* Study Buttons */}
-            {studySelection.size > 0 && (
-              <div className="flex flex-row gap-2 flex-wrap self-start sm:self-auto">
+        <div className="mb-12 md:mb-24">
+          <PageHeader emoji="漢" helpKey="kanji-browser" />
+
+          {/* Study Buttons */}
+          {studySelection.size > 0 && (
+            <div className="flex flex-row gap-2 flex-wrap justify-center mt-4">
+              <button
+                onClick={() => setShowStudyModal(true)}
+                className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  />
+                </svg>
+                <span>{strings.kanjiBrowser.studyButton} ({studySelection.size}/{strings.kanjiBrowser.studyLimit})</span>
+              </button>
+              {studySelection.size >= 3 && (
                 <button
-                  onClick={() => setShowStudyModal(true)}
-                  className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
+                  type="button"
+                  onClick={() => {
+                    // Show tutorial modal first
+                    setShowKanjiQuestTutorial(true);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
-                  </svg>
-                  <span>{strings.kanjiBrowser.studyButton} ({studySelection.size}/{strings.kanjiBrowser.studyLimit})</span>
+                  <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
+                  <span>{strings.kanjiBrowser.battleButton} ({studySelection.size} {strings.kanjiBrowser.kanji})</span>
                 </button>
-                {studySelection.size >= 3 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // Show tutorial modal first
-                      setShowKanjiQuestTutorial(true);
-                    }}
-                    className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
-                  >
-                    <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
-                    <span>{strings.kanjiBrowser.battleButton} ({studySelection.size} {strings.kanjiBrowser.kanji})</span>
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
+
           <p className="text-muted-foreground text-center mt-2">
             {strings.kanjiBrowser.browseKanjiByLevel}
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-md mx-auto mb-8">
+        <div className="mb-8">
           <form onSubmit={e => { e.preventDefault(); performSearch(); }} className="relative">
             <input
               type="text"

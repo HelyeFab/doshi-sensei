@@ -287,7 +287,7 @@ export default function VocabularyPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title={strings.vocab.title} helpKey="vocabulary" />
+        <PageHeader emoji="📖" helpKey="vocabulary" />
         <p className="text-muted-foreground text-center mt-2">
           {strings.vocab.searchPlaceholder}
         </p>
@@ -704,7 +704,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
             >
               Save to Lists
             </button>
-            
+
             {/* Stroke Order Button - only show for kanji */}
             {word.kanji && /[\u4e00-\u9faf]/.test(word.kanji) && (
               <button

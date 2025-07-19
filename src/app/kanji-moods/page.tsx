@@ -14,7 +14,7 @@ export default function KanjiMoodsPage() {
   const searchParams = useSearchParams();
   const { moodBoards, loading } = useMoodBoards();
   const [progress, setProgress] = useState<MoodBoardsProgress>({});
-  
+
   // Initialize state from URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [selectedJLPT, setSelectedJLPT] = useState<'all' | 'N5' | 'N4' | 'N3' | 'N2' | 'N1'>(
@@ -24,15 +24,16 @@ export default function KanjiMoodsPage() {
     searchParams.get('completed') !== 'false'
   );
   const [showFilters, setShowFilters] = useState(false);
+  const [showQuickFilters, setShowQuickFilters] = useState(false);
   const [sortBy, setSortBy] = useState<'title' | 'progress' | 'kanji'>('title');
-  
+
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
     if (selectedJLPT !== 'all') params.set('jlpt', selectedJLPT);
     if (!showCompleted) params.set('completed', 'false');
-    
+
     const newUrl = params.toString() ? `?${params.toString()}` : '/kanji-moods';
     router.replace(newUrl, { scroll: false });
   }, [searchQuery, selectedJLPT, showCompleted, router]);
@@ -54,32 +55,32 @@ export default function KanjiMoodsPage() {
   // Filter mood boards based on search and filters
   const filteredBoards = useMemo(() => {
     let boards = moodBoards.filter(board => board.isActive !== false);
-    
+
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      boards = boards.filter(board => 
+      boards = boards.filter(board =>
         board.title.toLowerCase().includes(query) ||
         board.description.toLowerCase().includes(query) ||
-        board.kanji.some(k => 
-          k.char.includes(query) || 
+        board.kanji.some(k =>
+          k.char.includes(query) ||
           k.meaning.toLowerCase().includes(query)
         )
       );
     }
-    
+
     // Apply JLPT filter
     if (selectedJLPT !== 'all') {
       boards = boards.filter(board => board.jlpt === selectedJLPT);
     }
-    
+
     // Apply completion filter
     if (!showCompleted) {
-      boards = boards.filter(board => 
+      boards = boards.filter(board =>
         progress[board.id]?.progressPercentage !== 100
       );
     }
-    
+
     // Sort boards
     boards.sort((a, b) => {
       switch (sortBy) {
@@ -95,10 +96,10 @@ export default function KanjiMoodsPage() {
           return 0;
       }
     });
-    
+
     return boards;
   }, [moodBoards, searchQuery, selectedJLPT, showCompleted, progress, sortBy]);
-  
+
   const completedBoards = moodBoards
     .filter(board => board.isActive !== false)
     .filter(board => progress[board.id]?.progressPercentage === 100)
@@ -115,15 +116,15 @@ export default function KanjiMoodsPage() {
         <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
           {/* Gradient Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          
+
           {/* Gradient to White Fade */}
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-          
+
           {/* Virtual Companion Button positioned within this section */}
         </div>
 
         <div className="container mx-auto px-4 pb-20">
-          <PageHeader title="Kanji Mood Boards" showBackButton={true} helpKey="kanji-moods" />
+          <PageHeader icon="/flat-icons/ui/kanji.svg" showBackButton={true} helpKey="kanji-moods" />
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin text-4xl mb-4">⏳</div>
@@ -141,16 +142,18 @@ export default function KanjiMoodsPage() {
       <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
         {/* Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        
+
         {/* Gradient to White Fade */}
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        
+
         {/* Virtual Companion Button positioned within this section */}
       </div>
 
       <div className="container mx-auto px-4 pb-24 md:pb-8">
-        <PageHeader title="Kanji Mood Boards" showBackButton={true} helpKey="kanji-moods" />
-        
+        <div className="mb-16 md:mb-24">
+          <PageHeader icon="/flat-icons/ui/kanji.svg" showBackButton={true} helpKey="kanji-moods" />
+        </div>
+
         {/* Search and Filter Section */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -173,7 +176,7 @@ export default function KanjiMoodsPage() {
                 </button>
               )}
             </div>
-            
+
             {/* Filter Button - Mobile */}
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -187,7 +190,7 @@ export default function KanjiMoodsPage() {
                 </span>
               )}
             </button>
-            
+
             {/* Desktop Filters */}
             <div className="hidden sm:flex items-center gap-3">
               {/* JLPT Filter */}
@@ -203,7 +206,7 @@ export default function KanjiMoodsPage() {
                 <option value="N2">JLPT N2</option>
                 <option value="N1">JLPT N1</option>
               </select>
-              
+
               {/* Completion Filter */}
               <label className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card cursor-pointer hover:bg-muted transition-colors">
                 <input
@@ -216,7 +219,7 @@ export default function KanjiMoodsPage() {
               </label>
             </div>
           </div>
-          
+
           {/* Mobile Filter Panel */}
           {showFilters && (
             <div className="sm:hidden mt-3 p-4 rounded-lg border border-border bg-card">
@@ -237,7 +240,7 @@ export default function KanjiMoodsPage() {
                     <option value="N1">JLPT N1</option>
                   </select>
                 </div>
-                
+
                 {/* Completion Filter */}
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -248,7 +251,7 @@ export default function KanjiMoodsPage() {
                   />
                   <span className="text-sm text-foreground">Show Completed Boards</span>
                 </label>
-                
+
                 {/* Clear Filters */}
                 {(selectedJLPT !== 'all' || !showCompleted || searchQuery) && (
                   <button
@@ -266,7 +269,7 @@ export default function KanjiMoodsPage() {
               </div>
             </div>
           )}
-          
+
           {/* Active Filters Display */}
           {(searchQuery || selectedJLPT !== 'all' || !showCompleted) && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -310,50 +313,121 @@ export default function KanjiMoodsPage() {
               </button>
             </div>
           )}
-          
+
           {/* Quick Filter Pills */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="text-sm text-muted-foreground">Quick filters:</span>
-            <button
-              onClick={() => {
-                setSelectedJLPT('N5');
-                setShowCompleted(true);
-              }}
-              className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                selectedJLPT === 'N5' && showCompleted
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              Beginner (N5)
-            </button>
-            <button
-              onClick={() => {
-                setShowCompleted(false);
-                setSelectedJLPT('all');
-              }}
-              className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                !showCompleted && selectedJLPT === 'all'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              In Progress
-            </button>
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedJLPT('all');
-                setShowCompleted(true);
-              }}
-              className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                !searchQuery && selectedJLPT === 'all' && showCompleted
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              All Boards
-            </button>
+          <div className="mt-4">
+            {/* Desktop Quick Filters */}
+            <div className="hidden sm:flex flex-wrap gap-2">
+              <span className="text-sm text-muted-foreground">Quick filters:</span>
+              <button
+                onClick={() => {
+                  setSelectedJLPT('N5');
+                  setShowCompleted(true);
+                }}
+                className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                  selectedJLPT === 'N5' && showCompleted
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                Beginner (N5)
+              </button>
+              <button
+                onClick={() => {
+                  setShowCompleted(false);
+                  setSelectedJLPT('all');
+                }}
+                className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                  !showCompleted && selectedJLPT === 'all'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                In Progress
+              </button>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedJLPT('all');
+                  setShowCompleted(true);
+                }}
+                className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                  !searchQuery && selectedJLPT === 'all' && showCompleted
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                All Boards
+              </button>
+            </div>
+
+            {/* Mobile Quick Filters Dropdown */}
+            <div className="sm:hidden">
+              <button
+                onClick={() => setShowQuickFilters(!showQuickFilters)}
+                className="flex items-center justify-between w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground hover:bg-muted transition-colors"
+              >
+                <span className="text-sm">Quick Filters</span>
+                <svg
+                  className={`w-4 h-4 transform transition-transform ${showQuickFilters ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showQuickFilters && (
+                <div className="mt-2 p-4 rounded-lg border border-border bg-card">
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => {
+                        setSelectedJLPT('N5');
+                        setShowCompleted(true);
+                        setShowQuickFilters(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                        selectedJLPT === 'N5' && showCompleted
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      Beginner (N5)
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCompleted(false);
+                        setSelectedJLPT('all');
+                        setShowQuickFilters(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                        !showCompleted && selectedJLPT === 'all'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      In Progress
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSelectedJLPT('all');
+                        setShowCompleted(true);
+                        setShowQuickFilters(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                        !searchQuery && selectedJLPT === 'all' && showCompleted
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      All Boards
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

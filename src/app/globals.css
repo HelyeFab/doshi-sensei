@@ -856,3 +856,16 @@ input[type="range"].slider::-moz-range-thumb:active {
 .dark .bg-gradient-radial {
   background: radial-gradient(ellipse at center, rgba(159, 18, 57, 0.3) 0%, rgba(159, 18, 57, 0.15) 50%, transparent 100%);
 }
+
+/* Bottom navigation spacing solution */
+@media (max-width: 768px) {
+  /* Add scroll padding to html to ensure content scrolls above navbar */
+  html {
+    scroll-padding-bottom: 6rem;
+  }
+  
+  /* Add padding to the last element on each page */
+  body > div > div > div > *:last-child {
+    padding-bottom: 6rem;
+  }
+}

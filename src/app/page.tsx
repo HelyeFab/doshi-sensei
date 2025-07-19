@@ -86,9 +86,8 @@ export default function Home() {
     return <div className="container mx-auto px-4 py-8 text-center">Loading...</div>;
   }
 
-  // Generate feature cards from strings (excluding Practice)
+  // Generate feature cards from strings (excluding Practice and Drill)
   const FEATURE_CARDS = [
-    { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
     { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
     { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
     { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
@@ -276,7 +275,7 @@ export default function Home() {
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="container mx-auto px-4 mt-8">
+        <div className="container mx-auto px-4 mt-8 mb-16">
           <div className="flex justify-center">
             <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-8 xl:gap-10" style={{ width: 'fit-content' }}>
               {FEATURE_CARDS.map((card, index) => (
@@ -310,13 +309,14 @@ export default function Home() {
                   </div>
                 </Link>
               ))}
+              
+              {/* Stats Bar - spans 2 columns on all screen sizes */}
+              <div className="col-span-2">
+                <StatsBar className="h-full" />
+              </div>
             </div>
           </div>
 
-          {/* Stats Bar Component */}
-          <div className="mt-8 mb-8">
-            <StatsBar />
-          </div>
         </div>
 
         {/* Pokédex Modal */}

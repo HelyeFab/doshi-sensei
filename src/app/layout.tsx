@@ -12,6 +12,7 @@ import { ToastContainer } from "@/components/ui/Toast";
 import { EnvProvider } from "@/components/EnvProvider";
 import MobileMenu from "@/components/MobileMenu";
 import DesktopNavMenu from "@/components/DesktopNavMenu";
+import StunningBottomNavbar from "@/components/StunningBottomNavbar";
 import PWAInstaller from "@/components/PWAInstaller";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
@@ -189,6 +190,7 @@ export default function RootLayout({
                                   <JMdictInitializer />
                                   <CacheSystemInitializer />
                                   {children}
+                                  <StunningBottomNavbar />
                                   <MobileMenu />
                                   <DesktopNavMenu />
                                   <PWAInstaller />

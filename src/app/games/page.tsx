@@ -563,7 +563,7 @@ export default function GamesPage() {
     } else {
       featureId = 'listening_quiz';
     }
-    
+
     const canPlay = await checkAndTrack(featureId);
 
     if (!canPlay) {
@@ -898,7 +898,7 @@ export default function GamesPage() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
         {/* Page Header - for mobile consistency */}
-        <PageHeader title={strings.games?.title || "Games"} helpKey="games" />
+        <PageHeader helpKey="games" />
 
         <div className="max-w-2xl mx-auto">
           {/* Game Selection */}

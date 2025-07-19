@@ -111,7 +111,7 @@ export default function SettingsPage() {
         if (data.studyLists && data.savedStudyItems) {
           // Clear existing data first
           await StudyListManager.clearAllStudyLists();
-          
+
           // Import new data
           localStorage.setItem('doshi_sensei_study_lists', JSON.stringify(data.studyLists));
           localStorage.setItem('doshi_sensei_saved_study_items', JSON.stringify(data.savedStudyItems));
@@ -175,28 +175,28 @@ export default function SettingsPage() {
   const performCacheClear = async () => {
     setIsClearingCache(true);
     setShowCacheModal(false); // Close modal immediately
-    
+
     try {
       const result = await CacheCleaner.clearAllCaches();
-      
+
       // Show success message
       setSyncModal({
         show: true,
         type: result.success ? 'success' : 'error',
         title: result.success ? 'Cache Cleared Successfully' : 'Cache Clear Partially Successful',
-        message: result.success 
+        message: result.success
           ? 'All browser cache has been cleared. The page will now reload.'
           : `Some items could not be cleared: ${result.errors.join(', ')}. The page will reload anyway.`
       });
-      
+
       // Reload after a short delay
       setTimeout(() => {
         window.location.reload();
       }, 1500);
-      
+
     } catch (error) {
       console.error('Cache clear failed:', error);
-      
+
       // Even on error, try to reload as it might help
       setSyncModal({
         show: true,
@@ -204,7 +204,7 @@ export default function SettingsPage() {
         title: 'Cache Clear Error',
         message: 'There was an error clearing the cache. The page will reload anyway.'
       });
-      
+
       setTimeout(() => {
         window.location.reload();
       }, 1500);
@@ -285,14 +285,14 @@ export default function SettingsPage() {
 
     try {
       console.log('Starting manual sync...');
-      
+
       // Sync study lists (all types: words, sentences, kanji, drillable)
       await StudyListManager.autoSyncLists(user, subscription?.status);
       await StudyListManager.autoSyncItems(user, subscription?.status);
-      
+
       // Then trigger premium sync for articles/stories
       await triggerPremiumSync();
-      
+
       // Show success message
       setSyncModal({
         show: true,
@@ -398,7 +398,7 @@ export default function SettingsPage() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen">
         {/* Header */}
-        <PageHeader title={strings.settings.title} helpKey="settings" />
+        <PageHeader helpKey="settings" />
 
         {/* Main Content */}
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
@@ -822,7 +822,7 @@ export default function SettingsPage() {
                 <p className="text-muted-foreground text-sm mb-4">
                   This will clear all cached data to fix loading issues or sync problems.
                 </p>
-                
+
                 {/* Cache Stats */}
                 {cacheStats && (
                   <div className="text-left bg-muted/50 rounded-lg p-3 mb-4">
@@ -835,7 +835,7 @@ export default function SettingsPage() {
                     </ul>
                   </div>
                 )}
-                
+
                 <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
                   <p className="text-sm text-yellow-600 dark:text-yellow-400">
                     ⚠️ This will log you out and reload the page

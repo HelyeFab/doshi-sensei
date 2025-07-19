@@ -111,7 +111,7 @@ export default function ResourcesPage() {
       </div>
 
       <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
-        <PageHeader title="Resources" showBackButton={true} helpKey="resources" />
+        <PageHeader emoji="🎌" showBackButton={true} helpKey="resources" className="mb-4 sm:mb-8 md:mb-12" />
 
         {/* Search and Filters */}
         <div className="max-w-4xl mx-auto mb-8">
@@ -219,7 +219,7 @@ export default function ResourcesPage() {
                                 {categoryEmoji}
                               </div>
                             </div>
-                            
+
                             {/* Content */}
                             <div className="flex-1 min-w-0">
                               <h3 className={`font-bold ${colorTheme.text} ${colorTheme.textShadow} truncate`}>
@@ -231,13 +231,13 @@ export default function ResourcesPage() {
                                 </span>
                               )}
                             </div>
-                            
+
                             {/* Arrow */}
                             <svg className={`w-5 h-5 ${colorTheme.text} ${colorTheme.textShadow} flex-shrink-0 transition-transform group-hover:translate-x-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                           </div>
-                          
+
                           {/* Badges */}
                           <div className="flex gap-2 mt-2 ml-15">
                             {resource.featured && (

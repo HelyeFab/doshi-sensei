@@ -5,14 +5,12 @@ import { useStats } from '@/hooks/useStats';
 import { useSettings } from '@/contexts/SettingsContext';
 import { colorPalettes } from '@/utils/themes';
 import { useComponentName } from '@/components/DevHelper';
-import { formatDistanceToNow } from 'date-fns';
 
 interface StatItem {
   id: string;
   icon: string | React.ReactNode;
   label: string;
   value: string | number;
-  hoverText?: string;
   loading: boolean;
 }
 
@@ -22,41 +20,27 @@ interface StatDisplayProps {
 }
 
 function StatDisplay({ stat, index }: StatDisplayProps) {
-  const [showTooltip, setShowTooltip] = React.useState(false);
-  
   return (
     <div 
-      className="relative flex flex-col items-center text-center gap-1 p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-      onTouchStart={() => setShowTooltip(true)}
-      onTouchEnd={() => setTimeout(() => setShowTooltip(false), 2000)}
+      className="relative flex flex-col items-center text-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-lg group"
     >
-      {/* Tooltip */}
-      {showTooltip && stat.hoverText && (
-        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-10">
-          <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-            {stat.hoverText}
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
-          </div>
-        </div>
-      )}
-      
       {/* Icon */}
-      <div className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center">
+      <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full bg-white/60 backdrop-blur-sm shadow-lg flex items-center justify-center transition-transform group-hover:scale-110">
         {typeof stat.icon === 'string' ? (
-          <span className="text-base">{stat.icon}</span>
+          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl">{stat.icon}</span>
         ) : (
-          stat.icon
+          React.cloneElement(stat.icon as React.ReactElement, {
+            className: "w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 object-contain"
+          })
         )}
       </div>
       
       {/* Value and Label */}
       <div className="flex flex-col items-center">
-        <div className="text-sm font-bold text-gray-900">
+        <div className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900">
           {stat.loading ? '...' : stat.value}
         </div>
-        <div className="text-xs text-gray-700">
+        <div className="text-[10px] sm:text-xs md:text-sm text-gray-700">
           {stat.label}
         </div>
       </div>
@@ -128,7 +112,6 @@ export function StatsBar({ className = '' }: { className?: string }) {
         icon: '🔥',
         label: 'Streak',
         value: stats.currentStreak,
-        hoverText: `Longest: ${stats.longestStreak} days`,
         loading
       },
       {
@@ -145,39 +128,10 @@ export function StatsBar({ className = '' }: { className?: string }) {
         loading
       },
       {
-        id: 'today',
-        icon: '📊',
-        label: 'Today',
-        value: todayActivity ? 
-          `${todayActivity.summary.flashcardsReviewed}/${todayActivity.summary.articlesRead}/${todayActivity.summary.storiesRead}/${todayActivity.summary.gamesPlayed}` : 
-          '0/0/0/0',
-        hoverText: todayActivity ? 
-          `Flashcards: ${todayActivity.summary.flashcardsReviewed}, Articles: ${todayActivity.summary.articlesRead}, Stories: ${todayActivity.summary.storiesRead}, Games: ${todayActivity.summary.gamesPlayed}` :
-          'No activity today',
-        loading
-      },
-      {
-        id: 'week',
-        icon: '📅',
-        label: 'This Week',
-        value: weekTotal.flashcardSessions + weekTotal.newsArticles + weekTotal.stories + weekTotal.games,
-        hoverText: `Flashcards: ${weekTotal.flashcardSessions}, Articles: ${weekTotal.newsArticles}, Stories: ${weekTotal.stories}, Games: ${weekTotal.games}`,
-        loading
-      },
-      {
-        id: 'month',
-        icon: '📆',
-        label: 'This Month',
-        value: monthTotal.flashcardSessions + monthTotal.newsArticles + monthTotal.stories + monthTotal.games,
-        hoverText: `Flashcards: ${monthTotal.flashcardSessions}, Articles: ${monthTotal.newsArticles}, Stories: ${monthTotal.stories}, Games: ${monthTotal.games}`,
-        loading
-      },
-      {
         id: 'alltime',
         icon: '🏆',
         label: 'All Time',
         value: allTimeTotal.activities,
-        hoverText: `Active for ${allTimeTotal.daysActive} days`,
         loading
       }
     ];
@@ -186,22 +140,34 @@ export function StatsBar({ className = '' }: { className?: string }) {
   }, [stats, activities, loading]);
 
   return (
-    <div className="w-full max-w-3xl mx-auto overflow-hidden">
-      <div className="px-2 py-1">
-        <div
-          className={`backdrop-blur-md rounded-lg p-2 transition-all duration-300 ${className}`}
-          style={{
-            border: '2px solid white',
-            boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
-            background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
-          }}
-          {...componentProps}
-        >
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-1 max-w-2xl lg:max-w-3xl mx-auto">
-            {statsItems.map((stat, index) => (
-              <StatDisplay key={stat.id} stat={stat} index={index} />
-            ))}
-          </div>
+    <div
+      className={`group relative backdrop-blur-md rounded-2xl p-2 sm:p-4 md:p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden ${className}`}
+      style={{
+        border: '2px solid white',
+        boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
+      }}
+      {...componentProps}
+    >
+      {/* Gradient background layer */}
+      <div 
+        className="absolute inset-0 opacity-40"
+        style={{
+          background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
+        }}
+      />
+      
+      {/* Frosted glass overlay */}
+      <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-sm" />
+      
+      {/* Hover glass effect - similar to feature cards */}
+      <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      
+      {/* Content layer - above the background */}
+      <div className="relative z-10 h-full flex items-center justify-center">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 lg:gap-8 w-full max-w-md">
+          {statsItems.map((stat, index) => (
+            <StatDisplay key={stat.id} stat={stat} index={index} />
+          ))}
         </div>
       </div>
     </div>

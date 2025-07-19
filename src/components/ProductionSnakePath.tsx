@@ -166,7 +166,7 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
         {!isLocked && (
           <div className={`
             absolute -inset-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity
-            bg-gradient-to-r ${isCheckpoint ? 'from-yellow-400/20 to-amber-500/20' : 'from-primary/20 to-accent/20'}
+            bg-gradient-to-r ${isCheckpoint ? 'from-pink-200/20 to-pink-300/20' : 'from-pink-100/20 to-pink-200/20'}
             blur-xl
           `} />
         )}
@@ -176,9 +176,9 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
           className={`
             absolute inset-0 rounded-full shadow-lg transform transition-all
             ${isLocked ? 'bg-gray-300' : ''}
-            ${isCheckpoint ? 'bg-gradient-to-br from-yellow-400 to-amber-500' : ''}
-            ${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-green-400 to-emerald-500' : ''}
-            ${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-purple-400 to-violet-500' : ''}
+            ${isCheckpoint ? 'bg-gradient-to-br from-pink-100 to-pink-200' : ''}
+            ${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-white to-pink-50' : ''}
+            ${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-pink-200 to-pink-300' : ''}
             ${!isLocked && 'group-hover:shadow-xl'}
           `}
         />
@@ -187,16 +187,16 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
         {!isLocked && (
           <div 
             className={`absolute inset-0 rounded-full border-2 md:border-4 animate-pulse-ring ${
-              isCheckpoint ? 'border-yellow-400/70' : 
-              node.completed ? 'border-green-400/70' : 
-              'border-purple-400/70'
+              isCheckpoint ? 'border-pink-200/70' : 
+              node.completed ? 'border-pink-100/70' : 
+              'border-pink-300/70'
             }`}
           />
         )}
         
         {/* Current node indicator */}
         {isCurrent && (
-          <div className="absolute -inset-2 rounded-full border-4 border-purple-500 animate-pulse" />
+          <div className="absolute -inset-2 rounded-full border-4 border-pink-400 animate-pulse" />
         )}
         
         {/* Progress ring for completed nodes */}
@@ -215,17 +215,23 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
         
         {/* Node content */}
         <div className="relative flex items-center justify-center h-full">
-          {isLocked ? (
-            <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          ) : node.icon ? (
-            <span className={`${isCheckpoint ? 'text-3xl' : 'text-2xl'}`}>{node.icon}</span>
-          ) : (
-            <span className="text-xl text-white font-bold">
-              {node.completed ? '✓' : index + 1}
-            </span>
-          )}
+          {/* White circle border */}
+          <div className="absolute inset-2 rounded-full border-2 border-white"></div>
+          
+          {/* Icon content */}
+          <div className="relative z-10">
+            {isLocked ? (
+              <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            ) : node.icon ? (
+              <span className={`${isCheckpoint ? 'text-3xl' : 'text-2xl'}`}>{node.icon}</span>
+            ) : (
+              <span className="text-xl text-white font-bold">
+                {node.completed ? '✓' : index + 1}
+              </span>
+            )}
+          </div>
         </div>
       </button>
       

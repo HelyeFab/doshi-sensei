@@ -116,7 +116,7 @@ export default function StoriesPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title={strings.stories.title} showBackButton={true} helpKey="stories" />
+        <PageHeader icon="/flat-icons/root-icons/story.svg" showBackButton={true} helpKey="stories" className="mb-8 sm:mb-8 md:mb-12" />
         <p className="text-muted-foreground text-center mt-2">
           {strings.stories.description}
         </p>

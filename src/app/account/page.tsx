@@ -16,6 +16,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import UserAvatar from '@/components/UserAvatar';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
+import { DetailedStats } from '@/components/stats/DetailedStats';
 
 // List of available SVGs for user thumbnails
 const THUMBNAIL_OPTIONS = [
@@ -81,7 +82,7 @@ export default function AccountPage() {
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [updatingAvatar, setUpdatingAvatar] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
+
   // Use the new profile hook
   const { profile } = useUserProfile();
 
@@ -208,7 +209,7 @@ export default function AccountPage() {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 py-8 min-h-screen">
-          <PageHeader title="Account" helpKey="account" />
+          <PageHeader helpKey="account" />
 
           <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
             <div className="space-y-6">
@@ -332,6 +333,11 @@ export default function AccountPage() {
                 </div>
               )}
 
+              {/* Detailed Statistics - Only for registered users */}
+              {user && userType !== 'guest' && (
+                <DetailedStats />
+              )}
+
               {/* Subscription Management */}
               {subLoading ? (
                 <div className="bg-card border border-border rounded-lg p-6 flex items-center justify-center">
@@ -426,7 +432,7 @@ export default function AccountPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 min-h-screen">
-        <PageHeader title="Account" helpKey="account" />
+        <PageHeader helpKey="account" />
 
         <main className="max-w-md mx-auto mb-32 md:mb-8 pb-safe">
           <div className="bg-card border border-border rounded-lg p-6">

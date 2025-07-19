@@ -9,6 +9,7 @@ import { ProductionSnakePath } from '@/components/ProductionSnakePath';
 import { JourneyDropdown } from '@/components/JourneyDropdown';
 import { PageHelpIcon } from '@/components/PageHelpIcon';
 import { pageHelpContent } from '@/config/pageHelp';
+import DecorativeBackground from '@/components/DecorativeBackground';
 // Removed React Spring to use pure CSS animations
 
 // Structured Data for Practice Page
@@ -560,6 +561,9 @@ function ProductionLearningPath() {
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
 
+        {/* Decorative Background Elements */}
+        <DecorativeBackground />
+        
         {/* Snake Path Content */}
         <div className="relative z-10 p-8">
           <ProductionSnakePath nodes={nodes} />

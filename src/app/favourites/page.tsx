@@ -120,72 +120,6 @@ export default function FavouritesPage() {
     }
   }, [user, isPremium]); // Added isPremium to trigger reload when subscription status is known
 
-  // Set up real-time sync listener for premium users
-  useEffect(() => {
-    if (!user || !isPremium || !subscription) return;
-
-    // Import Firebase functions
-    const setupRealtimeSync = async () => {
-      const { onSnapshot, doc } = await import('firebase/firestore');
-      const { db } = await import('@/lib/firebase');
-      
-      // Listen to studyLists changes
-      const unsubscribeLists = onSnapshot(
-        doc(db, 'users', user.uid, 'studyLists', 'data'),
-        (snapshot) => {
-          if (snapshot.exists()) {
-            console.log('Real-time update: study lists changed');
-            loadWordLists(); // Reload lists when Firebase data changes
-          }
-        },
-        (error) => {
-          console.error('Real-time sync error:', error);
-        }
-      );
-
-      // Listen to savedStudyItems changes
-      const unsubscribeItems = onSnapshot(
-        doc(db, 'users', user.uid, 'savedStudyItems', 'data'),
-        (snapshot) => {
-          if (snapshot.exists()) {
-            console.log('Real-time update: saved items changed');
-            // If we're viewing a specific list, reload its items
-            if (selectedList) {
-              handleListClick(selectedList);
-            }
-          }
-        },
-        (error) => {
-          console.error('Real-time sync error:', error);
-        }
-      );
-
-      // Cleanup function
-      return () => {
-        unsubscribeLists();
-        unsubscribeItems();
-      };
-    };
-
-    // Set up the listener
-    const cleanupPromise = setupRealtimeSync();
-
-    // Cleanup on unmount
-    return () => {
-      cleanupPromise.then(cleanup => cleanup && cleanup());
-    };
-  }, [user, isPremium, subscription, selectedList, loadWordLists, handleListClick]);
-
-  // Load content when tab changes
-  useEffect(() => {
-    if (activeTab === 'articles' && user && bookmarkedArticles.length === 0) {
-      loadBookmarkedArticles();
-    }
-    if (activeTab === 'stories' && user && bookmarkedStories.length === 0) {
-      loadBookmarkedStories();
-    }
-  }, [activeTab, user]);
-
   const loadWordLists = useCallback(async () => {
     try {
       setLoading(true);
@@ -363,6 +297,72 @@ export default function FavouritesPage() {
       console.error('Error removing sentence from list:', error);
     }
   };
+
+  // Set up real-time sync listener for premium users
+  useEffect(() => {
+    if (!user || !isPremium || !subscription) return;
+
+    // Import Firebase functions
+    const setupRealtimeSync = async () => {
+      const { onSnapshot, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      
+      // Listen to studyLists changes
+      const unsubscribeLists = onSnapshot(
+        doc(db, 'users', user.uid, 'studyLists', 'data'),
+        (snapshot) => {
+          if (snapshot.exists()) {
+            console.log('Real-time update: study lists changed');
+            loadWordLists(); // Reload lists when Firebase data changes
+          }
+        },
+        (error) => {
+          console.error('Real-time sync error:', error);
+        }
+      );
+
+      // Listen to savedStudyItems changes
+      const unsubscribeItems = onSnapshot(
+        doc(db, 'users', user.uid, 'savedStudyItems', 'data'),
+        (snapshot) => {
+          if (snapshot.exists()) {
+            console.log('Real-time update: saved items changed');
+            // If we're viewing a specific list, reload its items
+            if (selectedList) {
+              handleListClick(selectedList);
+            }
+          }
+        },
+        (error) => {
+          console.error('Real-time sync error:', error);
+        }
+      );
+
+      // Cleanup function
+      return () => {
+        unsubscribeLists();
+        unsubscribeItems();
+      };
+    };
+
+    // Set up the listener
+    const cleanupPromise = setupRealtimeSync();
+
+    // Cleanup on unmount
+    return () => {
+      cleanupPromise.then(cleanup => cleanup && cleanup());
+    };
+  }, [user, isPremium, subscription, selectedList, loadWordLists, handleListClick]);
+
+  // Load content when tab changes
+  useEffect(() => {
+    if (activeTab === 'articles' && user && bookmarkedArticles.length === 0) {
+      loadBookmarkedArticles();
+    }
+    if (activeTab === 'stories' && user && bookmarkedStories.length === 0) {
+      loadBookmarkedStories();
+    }
+  }, [activeTab, user]);
 
   const handleArticleRemove = async (articleId: string | undefined) => {
     if (!user || !articleId) return;

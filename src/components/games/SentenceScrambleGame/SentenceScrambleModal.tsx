@@ -11,6 +11,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import { X, Play, Clock, Star, RotateCcw } from 'lucide-react';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import {
   GameState,
   ScrambledSentence,
@@ -481,6 +482,15 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
     setGameState(prev => ({ ...prev, phase: 'game-over' }));
     clearInterval(gameTimer!);
 
+    // Track game completion
+    const timePlayed = Date.now() - gameState.gameStartTime;
+    if (timePlayed > 10000) { // Only track if played for more than 10 seconds
+      const score = Math.round((gameState.totalScore / Math.max(gameState.sentences.length, 1)) * 100);
+      trackGamePlayed('sentence-scramble', score, gameState.sentences.length, gameState.totalScore).catch(error => {
+        console.error('Failed to track game completion:', error);
+      });
+    }
+
     showNotification({
       title: 'Game Complete!',
       message: `You completed ${gameState.totalScore} out of ${gameState.sentences.length} sentences!`,
@@ -524,6 +534,17 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
   };
 
   const handleClose = () => {
+    // Track early exit if game has been playing
+    if (gameState.phase === 'playing' && gameState.gameStartTime > 0) {
+      const timePlayed = Date.now() - gameState.gameStartTime;
+      if (timePlayed > 10000) { // Only track if played for more than 10 seconds
+        const score = Math.round((gameState.totalScore / Math.max(gameState.currentSentenceIndex + 1, 1)) * 100);
+        trackGamePlayed('sentence-scramble', score, gameState.currentSentenceIndex + 1, gameState.totalScore).catch(error => {
+          console.error('Failed to track early exit:', error);
+        });
+      }
+    }
+    
     resetGame();
     onClose();
   };

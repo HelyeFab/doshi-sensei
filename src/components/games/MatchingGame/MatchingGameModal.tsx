@@ -10,6 +10,7 @@ import GameGrid from './GameGrid';
 import VictoryScreen from './VictoryScreen';
 import { useGameTTS } from '@/hooks/useTTS';
 import { useStrings } from '@/contexts/LanguageContext';
+import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 
 interface MatchingGameModalProps {
   isOpen: boolean;
@@ -253,10 +254,18 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                 setTimeout(() => {
                   const endTime = Date.now();
                   const timeTaken = endTime - prev.startTime;
+                  const perfectGame = newMoves === prev.totalPairs;
+                  const score = Math.round((prev.totalPairs / newMoves) * 100);
+                  
+                  // Track game completion
+                  trackGamePlayed('matching-game', score, prev.totalPairs, prev.totalPairs).catch(error => {
+                    console.error('Failed to track game completion:', error);
+                  });
+                  
                   setGameStats({
                     totalMoves: newMoves,
                     timeTaken,
-                    perfectGame: newMoves === prev.totalPairs
+                    perfectGame
                   });
                   setShowVictory(true);
                 }, GAME_CONFIG.VICTORY_DELAY);
@@ -439,7 +448,20 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                     {strings.games.confirmExit?.cancel || 'Keep Playing'}
                   </button>
                   <button
-                    onClick={handleConfirmExit}
+                    onClick={() => {
+                      setShowExitConfirm(false);
+                      
+                      // Track early exit if game has started and has been playing for more than 10 seconds
+                      const timePlayed = Date.now() - gameState.startTime;
+                      if (gameState.moves > 0 && timePlayed > 10000) {
+                        const score = gameState.matchedPairs > 0 ? Math.round((gameState.matchedPairs / gameState.moves) * 100) : 0;
+                        trackGamePlayed('matching-game', score, gameState.totalPairs, gameState.matchedPairs).catch(error => {
+                          console.error('Failed to track early exit:', error);
+                        });
+                      }
+                      
+                      onClose();
+                    }}
                     className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors font-medium"
                   >
                     {strings.games.confirmExit?.confirm || 'Exit Game'}

@@ -11,8 +11,8 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { pokemonManager } from '@/utils/pokemonManager';
 import PokedexModal from '@/components/games/PokedexModal';
 import { colorPalettes } from '@/utils/themes';
-import { StatsBar } from '@/components/stats/StatsBar';
 import { ToriiGate } from '@/components/ToriiGate';
+import { StatsBar } from '@/components/stats/StatsBar';
 
 // Structured Data for SEO
 const structuredData = {
@@ -51,11 +51,17 @@ const structuredData = {
 // Predefined color patterns for optimal visual distribution
 const MOBILE_COLOR_PATTERN: CardColor[] = [
   'blue', 'teal',
-  'green', 'purple'
+  'green', 'purple',
+  'indigo', 'orange',
+  'pink', 'blue',
+  'purple', 'green',
+  'teal', 'indigo'
 ];
 
 const DESKTOP_COLOR_PATTERN: CardColor[] = [
-  'blue', 'orange', 'green', 'purple'
+  'blue', 'orange', 'green', 'purple',
+  'pink', 'teal', 'indigo', 'orange',
+  'purple', 'green', 'blue', 'pink'
 ];
 
 // Utility to convert hsl string to moderate pastel
@@ -80,34 +86,46 @@ export default function Home() {
     return <div className="container mx-auto px-4 py-8 text-center">Loading...</div>;
   }
 
-  // Generate feature cards from strings
+  // Generate feature cards from strings (excluding Practice)
   const FEATURE_CARDS = [
+    { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
+    { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
+    { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
+    { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
     { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description },
     { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
-    { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description }
+    { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description },
+    { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
+    { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description },
+    { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
+    { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description }
   ];
 
   // Use predefined color patterns for better visual distribution
   const mobileColors = MOBILE_COLOR_PATTERN;
   const desktopColors = DESKTOP_COLOR_PATTERN;
 
-  // Mobile feature cards are the same as desktop cards now
-  const mobileFeatureCards = FEATURE_CARDS;
+  // For mobile, override the Resources card icon to only show the flag
+  const mobileFeatureCards = FEATURE_CARDS.map(card =>
+    card.title === strings.home.featureCards.resources.title
+      ? { ...card, icon: '🎌' }
+      : card
+  );
 
   // Get theme colors for gradient (moderate pastel) - client-side only to prevent hydration issues
   const [gradientColors, setGradientColors] = useState({
     primary: 'hsl(210, 60%, 85%)',
-    accent: 'hsl(220, 60%, 85%)', 
+    accent: 'hsl(220, 60%, 85%)',
     secondary: 'hsl(230, 60%, 85%)'
   });
 
   useEffect(() => {
     // Only run on client side to prevent hydration mismatch
     if (typeof window === 'undefined') return;
-    
+
     const colorScheme = settings.colorScheme || 'default';
     const palette = colorPalettes[colorScheme]?.colors || colorPalettes['default'].colors;
-    
+
     setGradientColors({
       primary: pastelizeHSL(palette.primary),
       accent: pastelizeHSL(palette.accent),
@@ -118,11 +136,11 @@ export default function Home() {
 
   // Get user's first name only - memoized to prevent hydration issues
   const [displayName, setDisplayName] = useState('Friend');
-  
+
   useEffect(() => {
     // Only run on client side to prevent hydration mismatch
     if (typeof window === 'undefined') return;
-    
+
     if (profile?.displayName) {
       // Extract first name from display name (split by space and take first part)
       setDisplayName(profile.displayName.split(' ')[0]);
@@ -159,7 +177,7 @@ export default function Home() {
 
     // Generate random sakura petals
     const petals = [];
-    for (let i = 0; i < 35; i++) {
+    for (let i = 0; i < 25; i++) {
       petals.push({
         id: i,
         left: Math.random() * 100,
@@ -174,7 +192,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div 
+    <div
       className="min-h-screen relative overflow-hidden"
       style={{
         backgroundImage: 'linear-gradient(to right bottom, #d16ba5, #d16fb1, #d173bd, #cf78ca, #cb7ed6, #de81cf, #ee86c8, #fb8cc1, #ff9eaa, #ffb59e, #ffcda2, #f5e3b5)'
@@ -218,7 +236,7 @@ export default function Home() {
               transform: translateY(calc(100vh + 100px));
             }
           }
-          
+
           @keyframes sway {
             0%, 100% {
               transform: translateX(0) rotate(0deg);
@@ -230,11 +248,11 @@ export default function Home() {
               transform: translateX(20px) rotate(5deg);
             }
           }
-          
+
           .animate-fall {
             animation: fall linear infinite;
           }
-          
+
           .animate-sway {
             animation: sway var(--sway-duration) ease-in-out infinite;
           }
@@ -247,16 +265,58 @@ export default function Home() {
           }}
         />
 
-        {/* Full Page Hero Section - Extends to bottom */}
-        <div className="w-full min-h-screen">
-          <ToriiGate 
+        {/* ToriiGate Section */}
+        <div className="w-full">
+          <ToriiGate
             profile={profile}
             displayName={displayName}
             greeting={strings.home.greeting}
             readyText={strings.home.readyToPractice}
-            featureCards={FEATURE_CARDS}
-            cardColors={desktopColors}
           />
+        </div>
+
+        {/* Feature Cards Grid */}
+        <div className="container mx-auto px-4 mt-8">
+          <div className="flex justify-center">
+            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-8 xl:gap-10" style={{ width: 'fit-content' }}>
+              {FEATURE_CARDS.map((card, index) => (
+                <Link key={card.href} href={card.href} className="block">
+                  <div
+                    className={`group relative rounded-2xl backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 ${CARD_COLORS[desktopColors[index]].bg} ${CARD_COLORS[desktopColors[index]].text}`}
+                    style={{
+                      border: '2px solid white',
+                      boxShadow: `inset 0 0 0 1px ${CARD_COLORS[desktopColors[index]].inset}, 0 4px 12px rgba(0,0,0,0.1)`
+                    }}
+                  >
+                    {/* Frosted glass overlay effect */}
+                    <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                    <div className="relative flex flex-col items-center justify-center text-center h-full p-2">
+                      <div className="text-2xl sm:text-3xl md:text-4xl drop-shadow-sm mb-1">
+                        {card.icon.startsWith('/') ? (
+                          <img
+                            src={card.icon}
+                            alt={card.title}
+                            className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain"
+                          />
+                        ) : (
+                          card.icon
+                        )}
+                      </div>
+                      <h3 className="text-xs sm:text-sm md:text-base font-bold">
+                        {card.title}
+                      </h3>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats Bar Component */}
+          <div className="mt-8">
+            <StatsBar />
+          </div>
         </div>
 
         {/* Pokédex Modal */}
@@ -404,11 +464,11 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
       console.log('📱 Event type:', e.type);
       console.log('🎯 Event target:', e.target);
       console.log('⏰ Timestamp:', new Date().toISOString());
-      
+
       // Check if there's any tutorial state in localStorage
       const tutorialState = localStorage.getItem('doshi-sensei-tutorial-seen');
       console.log('📚 Tutorial state in localStorage:', tutorialState);
-      
+
       // Log navigation type
       console.log('🚀 About to navigate to:', href);
     }
@@ -417,7 +477,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
   return (
     <Link href={href} className="block" onClick={handleClick}>
       <div
-        className={`group relative rounded-2xl p-4 md:p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer ${colors.bg} ${colors.text} ${colors.shadow}`}
+        className={`group relative rounded-2xl p-3 md:p-4 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer aspect-square ${colors.bg} ${colors.text} ${colors.shadow}`}
         style={{
           border: '2px solid white',
           boxShadow: `inset 0 0 0 1px ${colors.inset}, 0 4px 12px rgba(0,0,0,0.1)`
@@ -426,8 +486,8 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
         {/* Frosted glass overlay effect - pointer-events-none to prevent click interference */}
         <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
-        <div className="relative flex flex-col items-center text-center space-y-2 md:space-y-3">
-          <div className="text-2xl md:text-3xl drop-shadow-sm">
+        <div className="relative flex flex-col items-center justify-center text-center h-full">
+          <div className="text-2xl md:text-3xl drop-shadow-sm mb-2">
             {icon.startsWith('/') ? (
               <img
                 src={icon}
@@ -444,7 +504,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
             <h3 className="text-sm md:text-base font-bold">
               {title}
             </h3>
-            <p className="text-xs md:text-sm opacity-90 mt-1 font-medium">
+            <p className="text-xs md:text-sm opacity-90 mt-1 font-medium hidden md:block">
               {description}
             </p>
           </div>

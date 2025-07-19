@@ -1311,13 +1311,19 @@ export default function KanjiQuest({
       quizScore: score
     });
 
-    if (passed) {
-      // Track game completion in stats system
-      const timeTaken = Math.floor((Date.now() - new Date(session.startTime).getTime()) / 1000);
-      trackGamePlayed('kanji-quest', score, timeTaken).catch(error => {
+    // Track game completion for both pass and fail
+    const timeTaken = Math.floor((Date.now() - new Date(session.startTime).getTime()) / 1000);
+    const questionsAnswered = session.kanji.length;
+    const correctAnswers = Math.round((score / 100) * questionsAnswered);
+    
+    // Only track if game lasted more than 10 seconds (to avoid tracking immediate quits)
+    if (timeTaken > 10) {
+      trackGamePlayed('kanji-quest', score, questionsAnswered, correctAnswers).catch(error => {
         console.error('Failed to track game completion:', error);
       });
+    }
 
+    if (passed) {
       // Mark kanji as completed
       onKanjiCompleted(session.kanji.map(k => k.id));
 
@@ -1622,6 +1628,20 @@ export default function KanjiQuest({
                   <button
                     onClick={() => {
                       setShowExitConfirmation(false);
+                      // Track early exit if game has been going for more than 10 seconds
+                      if (session && phase === 'battle') {
+                        const timeTaken = Math.floor((Date.now() - new Date(session.startTime).getTime()) / 1000);
+                        if (timeTaken > 10) {
+                          const questionsAnswered = userAnswers.length;
+                          const correctAnswers = userAnswers.filter((answer, index) => 
+                            answer === quizQuestions[index]?.correctIndex
+                          ).length;
+                          const score = questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 0;
+                          trackGamePlayed('kanji-quest', score, questionsAnswered, correctAnswers).catch(error => {
+                            console.error('Failed to track early exit:', error);
+                          });
+                        }
+                      }
                       onBack();
                     }}
                     className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"

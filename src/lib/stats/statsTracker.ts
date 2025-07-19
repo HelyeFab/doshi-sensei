@@ -1,6 +1,6 @@
 import { EnhancedStorageManager2 } from '@/utils/enhancedStorageManager2';
 import { User } from 'firebase/auth';
-import { collection, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 // Activity event types
@@ -142,6 +142,14 @@ export class StatsTracker {
   async initialize(user: User | null, isPremium: boolean): Promise<void> {
     console.log(`🎯 [StatsTracker] Initializing for user: ${user?.uid || 'guest'}, premium: ${isPremium}`);
     
+    // If switching to a different user, clear existing data
+    if (this.currentUser?.uid !== user?.uid) {
+      console.log(`🔄 [StatsTracker] User changed, clearing existing data`);
+      this.stats = null;
+      this.activities.clear();
+      this.pendingActivities = [];
+    }
+    
     this.currentUser = user;
     this.isPremium = isPremium;
     
@@ -256,13 +264,24 @@ export class StatsTracker {
 
       // If premium user, also check cloud for newer data
       if (this.currentUser && this.isPremium) {
-        const cloudStats = await this.loadFromCloud();
+        // Don't reload from cloud if we have very recent local updates (within last 10 seconds)
+        const now = Date.now();
+        const recentlyUpdated = this.stats && (now - this.stats.lastUpdated < 10000);
         
-        if (cloudStats && (!localStats || cloudStats.lastUpdated > localStats.lastUpdated)) {
-          this.stats = cloudStats;
-          console.log('☁️ [StatsTracker] Using newer stats from cloud:', this.stats);
-          // Save cloud stats locally
-          await this.saveToIndexedDB();
+        if (recentlyUpdated) {
+          console.log('⏭️ [StatsTracker] Skipping cloud load - have recent local updates');
+        } else {
+          const cloudStats = await this.loadFromCloud();
+          
+          // Only use cloud stats if they're actually newer than what we have in memory
+          if (cloudStats && (!localStats || (cloudStats.lastUpdated > localStats.lastUpdated && cloudStats.lastUpdated > (this.stats?.lastUpdated || 0)))) {
+            this.stats = cloudStats;
+            console.log('☁️ [StatsTracker] Using newer stats from cloud:', this.stats);
+            // Save cloud stats locally
+            await this.saveToIndexedDB();
+          } else if (cloudStats) {
+            console.log('📊 [StatsTracker] Keeping current stats (newer than cloud)');
+          }
         }
       }
 
@@ -290,6 +309,12 @@ export class StatsTracker {
    * Load stats from IndexedDB
    */
   private async loadFromIndexedDB(): Promise<UserStatsV2 | null> {
+    // Guest users should not load from IndexedDB
+    if (!this.currentUser) {
+      console.log('👤 [StatsTracker] Guest user - skipping IndexedDB load');
+      return null;
+    }
+    
     try {
       const stored = await EnhancedStorageManager2.getFromStore(
         StatsTracker.STATS_STORE,
@@ -314,6 +339,12 @@ export class StatsTracker {
    */
   private async saveToIndexedDB(): Promise<void> {
     if (!this.stats) return;
+    
+    // Guest users (no currentUser) should not persist to IndexedDB
+    if (!this.currentUser) {
+      console.log('👤 [StatsTracker] Guest user - skipping IndexedDB save');
+      return;
+    }
 
     try {
       await EnhancedStorageManager2.saveToStore(
@@ -334,21 +365,104 @@ export class StatsTracker {
     if (!this.currentUser) return null;
 
     try {
-      const statsRef = doc(db, 'userStats', this.currentUser.uid);
-      const snapshot = await getDoc(statsRef);
+      const userStatsRef = collection(db, 'userStats', this.currentUser.uid, 'current');
       
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        // Convert Firestore timestamp to number
-        if (data.lastUpdated?.toMillis) {
-          data.lastUpdated = data.lastUpdated.toMillis();
+      // Load all documents in parallel
+      const [summaryDoc, activitiesDoc, performanceDoc, metadataDoc] = await Promise.all([
+        getDoc(doc(userStatsRef, 'summary')),
+        getDoc(doc(userStatsRef, 'activities')),
+        getDoc(doc(userStatsRef, 'performance')),
+        getDoc(doc(userStatsRef, 'metadata'))
+      ]);
+      
+      // If no documents exist, try loading from old structure
+      if (!summaryDoc.exists() && !activitiesDoc.exists()) {
+        // Try old structure for backward compatibility
+        const oldStatsRef = doc(db, 'userStats', this.currentUser.uid);
+        const oldSnapshot = await getDoc(oldStatsRef);
+        
+        if (oldSnapshot.exists()) {
+          const data = oldSnapshot.data();
+          // Convert Firestore timestamp to number
+          if (data.lastUpdated?.toMillis) {
+            data.lastUpdated = data.lastUpdated.toMillis();
+          }
+          // Remove any 'id' field that might have been accidentally saved
+          const { id, ...cleanData } = data;
+          
+          // Migrate to new structure on next save
+          console.log('📊 [StatsTracker] Found old stats structure, will migrate on next save');
+          return cleanData as UserStatsV2;
         }
-        // Remove any 'id' field that might have been accidentally saved
-        const { id, ...cleanData } = data;
-        return cleanData as UserStatsV2;
+        
+        return null;
       }
       
-      return null;
+      // Reconstruct stats from new structure
+      const stats: Partial<UserStatsV2> = {
+        userId: this.currentUser.uid,
+        version: '2.1'
+      };
+      
+      // Merge summary data
+      if (summaryDoc.exists()) {
+        const summaryData = summaryDoc.data();
+        Object.assign(stats, {
+          currentStreak: summaryData.currentStreak || 0,
+          longestStreak: summaryData.longestStreak || 0,
+          totalDaysActive: summaryData.totalDaysActive || 0,
+          lastActiveDate: summaryData.lastActiveDate || '',
+          firstActiveDate: summaryData.firstActiveDate || '',
+          totalActivities: summaryData.totalActivities || 0,
+          pokemonCaught: summaryData.pokemonCaught || 0
+        });
+      }
+      
+      // Merge activities data
+      if (activitiesDoc.exists()) {
+        const activitiesData = activitiesDoc.data();
+        Object.assign(stats, {
+          drillsCompleted: activitiesData.drillsCompleted || 0,
+          storiesRead: activitiesData.storiesRead || 0,
+          articlesRead: activitiesData.articlesRead || 0,
+          kanjiStudySessions: activitiesData.kanjiStudySessions || 0,
+          gamesPlayed: activitiesData.gamesPlayed || 0,
+          flashcardsReviewed: activitiesData.flashcardsReviewed || 0,
+          practiceSessionsCompleted: activitiesData.practiceSessionsCompleted || 0,
+          vocabStudied: activitiesData.vocabStudied || 0
+        });
+      }
+      
+      // Merge performance data
+      if (performanceDoc.exists()) {
+        const performanceData = performanceDoc.data();
+        Object.assign(stats, {
+          overallAccuracy: performanceData.overallAccuracy || 0,
+          drillAccuracy: performanceData.drillAccuracy || 0,
+          kanjiAccuracy: performanceData.kanjiAccuracy || 0,
+          gameAccuracy: performanceData.gameAccuracy || 0,
+          totalQuestionsAnswered: performanceData.totalQuestionsAnswered || 0,
+          totalCorrectAnswers: performanceData.totalCorrectAnswers || 0,
+          totalKanjiLearned: performanceData.totalKanjiLearned || 0,
+          totalWordsLearned: performanceData.totalWordsLearned || 0,
+          totalGameScore: performanceData.totalGameScore || 0,
+          drillStats: performanceData.drillStats || { totalQuestions: 0, totalCorrect: 0 },
+          kanjiStats: performanceData.kanjiStats || { totalQuestions: 0, totalCorrect: 0 },
+          gameStats: performanceData.gameStats || { totalQuestions: 0, totalCorrect: 0 }
+        });
+      }
+      
+      // Set default values for missing fields
+      const completeStats: UserStatsV2 = {
+        ...this.createInitialStats(),
+        ...stats,
+        lastUpdated: Date.now(),
+        learnedKanjiSet: [],
+        learnedWordsSet: [],
+        caughtPokemonSet: []
+      };
+      
+      return completeStats;
     } catch (error) {
       console.error('❌ [StatsTracker] Error loading from cloud:', error);
       return null;
@@ -359,6 +473,12 @@ export class StatsTracker {
    * Save stats to cloud
    */
   private async saveToCloud(): Promise<void> {
+    console.log('💾 [StatsTracker] saveToCloud called:', {
+      hasUser: !!this.currentUser,
+      hasStats: !!this.stats,
+      isPremium: this.isPremium
+    });
+    
     if (!this.currentUser || !this.stats) return;
 
     // Additional check for premium status
@@ -375,17 +495,88 @@ export class StatsTracker {
     }
 
     try {
-      const statsRef = doc(db, 'userStats', this.currentUser.uid);
+      const userStatsRef = collection(db, 'userStats', this.currentUser.uid, 'current');
       
-      // Create a clean copy without the 'id' field from IndexedDB
-      const { id, ...cleanStats } = this.stats as any;
+      // Save to organized documents
+      const batch = [];
       
-      await setDoc(statsRef, {
-        ...cleanStats,
+      // 1. Summary stats document
+      batch.push(setDoc(doc(userStatsRef, 'summary'), {
+        currentStreak: this.stats.currentStreak,
+        longestStreak: this.stats.longestStreak,
+        totalDaysActive: this.stats.totalDaysActive,
+        lastActiveDate: this.stats.lastActiveDate,
+        firstActiveDate: this.stats.firstActiveDate,
+        totalActivities: this.stats.totalActivities,
+        pokemonCaught: this.stats.pokemonCaught,
         lastUpdated: serverTimestamp()
-      }, { merge: true });
+      }));
       
-      console.log('☁️ [StatsTracker] Saved stats to cloud');
+      // 2. Activity totals document
+      batch.push(setDoc(doc(userStatsRef, 'activities'), {
+        drillsCompleted: this.stats.drillsCompleted,
+        storiesRead: this.stats.storiesRead,
+        articlesRead: this.stats.articlesRead,
+        kanjiStudySessions: this.stats.kanjiStudySessions,
+        gamesPlayed: this.stats.gamesPlayed,
+        flashcardsReviewed: this.stats.flashcardsReviewed,
+        practiceSessionsCompleted: this.stats.practiceSessionsCompleted,
+        vocabStudied: this.stats.vocabStudied,
+        lastUpdated: serverTimestamp()
+      }));
+      
+      // 3. Performance metrics document
+      batch.push(setDoc(doc(userStatsRef, 'performance'), {
+        overallAccuracy: this.stats.overallAccuracy,
+        drillAccuracy: this.stats.drillAccuracy,
+        kanjiAccuracy: this.stats.kanjiAccuracy,
+        gameAccuracy: this.stats.gameAccuracy,
+        totalQuestionsAnswered: this.stats.totalQuestionsAnswered,
+        totalCorrectAnswers: this.stats.totalCorrectAnswers,
+        totalKanjiLearned: this.stats.totalKanjiLearned,
+        totalWordsLearned: this.stats.totalWordsLearned,
+        totalGameScore: this.stats.totalGameScore,
+        drillStats: this.stats.drillStats,
+        kanjiStats: this.stats.kanjiStats,
+        gameStats: this.stats.gameStats,
+        lastUpdated: serverTimestamp()
+      }));
+      
+      // 4. Metadata document
+      batch.push(setDoc(doc(userStatsRef, 'metadata'), {
+        userId: this.stats.userId,
+        email: this.currentUser.email || '',
+        version: this.stats.version,
+        lastUpdated: serverTimestamp()
+      }));
+      
+      // Execute all saves
+      console.log(`📤 [StatsTracker] Saving ${batch.length} documents to Firebase...`);
+      console.log('📊 [StatsTracker] Current stats before save:', {
+        gamesPlayed: this.stats.gamesPlayed,
+        articlesRead: this.stats.articlesRead,
+        drillsCompleted: this.stats.drillsCompleted
+      });
+      
+      await Promise.all(batch);
+      
+      console.log('☁️ [StatsTracker] Saved stats to cloud with new structure');
+      console.log('📍 [StatsTracker] Documents saved to:', `userStats/${this.currentUser.uid}/current/`);
+      
+      // Verify the documents were created and check the content
+      const [summaryDoc, activitiesDoc] = await Promise.all([
+        getDoc(doc(db, 'userStats', this.currentUser.uid, 'current', 'summary')),
+        getDoc(doc(db, 'userStats', this.currentUser.uid, 'current', 'activities'))
+      ]);
+      
+      console.log('✅ [StatsTracker] Verification - docs exist:', {
+        summary: summaryDoc.exists(),
+        activities: activitiesDoc.exists()
+      });
+      
+      if (activitiesDoc.exists()) {
+        console.log('📋 [StatsTracker] Activities in Firebase:', activitiesDoc.data());
+      }
     } catch (error) {
       console.error('❌ [StatsTracker] Error saving to cloud:', error);
       // Don't throw - just log the error
@@ -401,11 +592,18 @@ export class StatsTracker {
 
     const activities = [...this.pendingActivities];
     this.pendingActivities = [];
+    
+    console.log(`📋 [StatsTracker] Processing ${activities.length} pending activities`);
 
     for (const activity of activities) {
       await this.processActivity(activity);
     }
 
+    // Update last updated timestamp to ensure we don't overwrite with older cloud data
+    if (this.stats) {
+      this.stats.lastUpdated = Date.now();
+    }
+    
     // Save stats
     await this.saveToIndexedDB();
     
@@ -504,15 +702,20 @@ export class StatsTracker {
       return;
     }
 
+    console.log(`📊 [StatsTracker] Updating stats for activity type: ${event.type}`);
+    
     switch (event.type) {
       case 'drill':
         this.stats.drillsCompleted++;
+        console.log(`✅ Drills completed: ${this.stats.drillsCompleted}`);
         break;
       case 'story':
         this.stats.storiesRead++;
+        console.log(`✅ Stories read: ${this.stats.storiesRead}`);
         break;
       case 'article':
         this.stats.articlesRead++;
+        console.log(`✅ Articles read: ${this.stats.articlesRead}`);
         break;
       case 'kanji':
         this.stats.kanjiStudySessions++;
@@ -524,6 +727,7 @@ export class StatsTracker {
         break;
       case 'game':
         this.stats.gamesPlayed++;
+        console.log(`✅ Games played: ${this.stats.gamesPlayed}`);
         // Track unique Pokemon caught
         if (event.details.gameType === 'pokemon' && event.details.itemId) {
           if (!this.stats.caughtPokemonSet.includes(event.details.itemId)) {
@@ -795,6 +999,12 @@ export class StatsTracker {
    * Save daily activity to storage
    */
   private async saveDailyActivity(date: string, activity: DailyActivity): Promise<void> {
+    // Guest users should not persist activities
+    if (!this.currentUser) {
+      console.log('👤 [StatsTracker] Guest user - skipping activity save');
+      return;
+    }
+    
     try {
       // Don't include the date as a separate field since it's already the key
       const activityToSave = {
@@ -817,6 +1027,12 @@ export class StatsTracker {
    */
   private async loadActivitiesRange(startDate: string, endDate: string): Promise<DailyActivity[]> {
     const activities: DailyActivity[] = [];
+    
+    // Guest users should not load from storage
+    if (!this.currentUser) {
+      console.log('👤 [StatsTracker] Guest user - skipping activity load');
+      return activities;
+    }
     
     try {
       const current = new Date(startDate);
@@ -852,7 +1068,13 @@ export class StatsTracker {
     const thirtyDaysAgo = this.getDateString(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const today = this.getDateString(Date.now());
     
+    // First load from IndexedDB
     await this.loadActivitiesRange(thirtyDaysAgo, today);
+    
+    // For premium users, also check cloud for any newer activities
+    if (this.currentUser && this.isPremium) {
+      await this.loadActivitiesFromCloud(thirtyDaysAgo, today);
+    }
   }
 
   /**
@@ -872,10 +1094,11 @@ export class StatsTracker {
     this.lastSyncTime = now;
 
     try {
+      console.log('☁️ [StatsTracker] Starting cloud sync...');
       // Save stats
       await this.saveToCloud();
       
-      // Save recent activities
+      // Save recent activities to new structure
       const recentActivities = Array.from(this.activities.entries())
         .filter(([date]) => {
           const activityTime = new Date(date).getTime();
@@ -883,7 +1106,9 @@ export class StatsTracker {
         });
 
       for (const [date, activity] of recentActivities) {
+        // New collection structure: /userStats/{userId}/dailyActivities/{date}/
         const activityRef = doc(db, 'userStats', this.currentUser.uid, 'dailyActivities', date);
+        
         // Ensure all fields are defined before saving to Firebase
         const sanitizedActivity = this.sanitizeDailyActivity(activity);
         
@@ -891,19 +1116,16 @@ export class StatsTracker {
           // Final sanitization: use JSON stringify/parse to remove any undefined values
           const finalSanitized = JSON.parse(JSON.stringify(sanitizedActivity));
           
-          // Debug: Check for any remaining issues
-          const debugStr = JSON.stringify(finalSanitized);
-          if (debugStr.includes('undefined') || debugStr.includes('null,"')) {
-            console.warn(`⚠️ [StatsTracker] Potential issue with activity for ${date}`);
-            console.warn('Sanitized data:', finalSanitized);
-          }
+          // Add metadata for the new structure
+          const activityData = {
+            ...finalSanitized,
+            lastUpdated: serverTimestamp()
+          };
           
-          await setDoc(activityRef, finalSanitized);
+          await setDoc(activityRef, activityData);
         } catch (error) {
           console.error(`❌ [StatsTracker] Error saving activity for ${date}:`, error);
           console.error('Activity data:', sanitizedActivity);
-          // Log the stringified version to see what might be wrong
-          console.error('Stringified:', JSON.stringify(sanitizedActivity, null, 2));
           
           // Try to identify the problematic field
           if (error instanceof Error && error.message && error.message.includes('undefined')) {
@@ -937,6 +1159,50 @@ export class StatsTracker {
       console.log(`☁️ [StatsTracker] Synced ${recentActivities.length} daily activities`);
     } catch (error) {
       console.error('❌ [StatsTracker] Sync error:', error);
+    }
+  }
+
+  /**
+   * Load activities from cloud for a date range
+   */
+  private async loadActivitiesFromCloud(startDate: string, endDate: string): Promise<void> {
+    if (!this.currentUser || !this.isPremium) return;
+    
+    try {
+      const activitiesRef = collection(db, 'userStats', this.currentUser.uid, 'dailyActivities');
+      
+      // Query activities within date range
+      const q = query(
+        activitiesRef,
+        where('date', '>=', startDate),
+        where('date', '<=', endDate),
+        orderBy('date')
+      );
+      
+      const snapshot = await getDocs(q);
+      
+      snapshot.forEach(doc => {
+        const activity = doc.data() as DailyActivity;
+        const date = doc.id; // Document ID is the date
+        
+        // Check if cloud version is newer than local
+        const localActivity = this.activities.get(date);
+        if (!localActivity || 
+            (activity.lastUpdated && localActivity.lastUpdated && 
+             activity.lastUpdated > localActivity.lastUpdated)) {
+          
+          // Sanitize and store the cloud activity
+          const sanitized = this.sanitizeDailyActivity(activity);
+          this.activities.set(date, sanitized);
+          
+          // Also save to IndexedDB for offline access
+          this.saveDailyActivity(date, sanitized);
+        }
+      });
+      
+      console.log(`☁️ [StatsTracker] Loaded ${snapshot.size} activities from cloud`);
+    } catch (error) {
+      console.error('❌ [StatsTracker] Error loading activities from cloud:', error);
     }
   }
 
@@ -992,15 +1258,13 @@ export class StatsTracker {
    * Create initial stats object
    */
   private createInitialStats(): UserStatsV2 {
-    const today = this.getDateString(Date.now());
-    
     return {
       userId: this.currentUser?.uid || '',
       currentStreak: 0,
       longestStreak: 0,
       totalDaysActive: 0,
-      lastActiveDate: today,
-      firstActiveDate: today,
+      lastActiveDate: '',  // Empty string initially - will be set on first activity
+      firstActiveDate: '', // Empty string initially - will be set on first activity
       totalActivities: 0,
       drillsCompleted: 0,
       storiesRead: 0,
@@ -1185,6 +1449,56 @@ export class StatsTracker {
     return allActivities
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, limit);
+  }
+
+  /**
+   * Get activities data for StatsBar display
+   */
+  async getActivitiesData(): Promise<{
+    today: DailyActivity | null;
+    week: DailyActivity[];
+    month: DailyActivity[];
+  }> {
+    const today = this.getDateString(Date.now());
+    const weekAgo = this.getDateString(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = this.getDateString(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    
+    // Ensure we have recent activities loaded
+    await this.loadActivitiesRange(monthAgo, today);
+    
+    // Get today's activity
+    const todayActivity = this.activities.get(today) || null;
+    
+    // Get last 7 days
+    const weekActivities: DailyActivity[] = [];
+    const weekStart = new Date(weekAgo);
+    const todayDate = new Date(today);
+    
+    for (let d = new Date(weekStart); d <= todayDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = this.getDateString(d.getTime());
+      const activity = this.activities.get(dateStr);
+      if (activity) {
+        weekActivities.push(activity);
+      }
+    }
+    
+    // Get last 30 days
+    const monthActivities: DailyActivity[] = [];
+    const monthStart = new Date(monthAgo);
+    
+    for (let d = new Date(monthStart); d <= todayDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = this.getDateString(d.getTime());
+      const activity = this.activities.get(dateStr);
+      if (activity) {
+        monthActivities.push(activity);
+      }
+    }
+    
+    return {
+      today: todayActivity,
+      week: weekActivities,
+      month: monthActivities
+    };
   }
 
   /**

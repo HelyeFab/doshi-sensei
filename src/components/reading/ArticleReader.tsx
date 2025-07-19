@@ -524,33 +524,46 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
   // Track reading progress
   const handleScroll = () => {
-    if (articleRef.current) {
-      const element = articleRef.current;
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = element.offsetHeight;
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Calculate progress based on how much of the total document has been scrolled
+    const scrollableHeight = documentHeight - windowHeight;
+    const progress = scrollableHeight > 0 
+      ? Math.min(100, (scrollTop / scrollableHeight) * 100)
+      : 100;
 
-      const progress = Math.min(
-        100,
-        Math.max(0, ((scrollTop + windowHeight - element.offsetTop) / documentHeight) * 100)
-      );
+    // Debug logging
+    console.log('📖 [ArticleReader] Scroll progress:', {
+      progress: progress.toFixed(2),
+      readingProgress: readingProgress.toFixed(2),
+      scrollTop,
+      windowHeight,
+      documentHeight,
+      scrollableHeight,
+      calculation: `${scrollTop} / ${scrollableHeight} * 100`
+    });
 
-      setReadingProgress(progress);
+    setReadingProgress(progress);
 
-      // Track article completion when progress reaches 100%
-      if (progress >= 100 && readingProgress < 100) {
-        const readingTime = Math.ceil((Date.now() - readingStartTime.getTime()) / 60000); // in minutes
-        trackArticleRead(article.id, article.title, readingTime).catch(error => {
-          console.error('Failed to track article read:', error);
-        });
-      }
+    // Track article completion when progress reaches 95% (accounting for footer)
+    if (progress >= 95 && readingProgress < 95) {
+      console.log('✅ [ArticleReader] Article completed! Tracking read...');
+      const readingTime = Math.ceil((Date.now() - readingStartTime.getTime()) / 60000); // in minutes
+      trackArticleRead(article.id, article.title, readingTime).catch(error => {
+        console.error('Failed to track article read:', error);
+      });
     }
   };
 
   useEffect(() => {
+    console.log('🎯 [ArticleReader] Setting up scroll listener, articleRef:', articleRef.current);
     window.addEventListener('scroll', handleScroll);
+    // Call it once immediately to check initial state
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [readingProgress]); // Add readingProgress to dependencies
 
   // Process article content when settings change - WITH CACHING
   useEffect(() => {

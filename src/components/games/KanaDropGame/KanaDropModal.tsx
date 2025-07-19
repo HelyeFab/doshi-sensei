@@ -31,6 +31,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [hasIncrementedUsage, setHasIncrementedUsage] = useState(false);
+  const [lastGameScore, setLastGameScore] = useState(0);
   const [gameState, setGameState] = useState<GameState>({
     score: 0,
     selectedKana,
@@ -229,6 +230,53 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     return () => clearTimeout(timer);
   }, [countdown]);
 
+  // Save the score when game is playing
+  useEffect(() => {
+    if (gameState.isPlaying && gameState.score !== 0) {
+      setLastGameScore(gameState.score);
+    }
+  }, [gameState.isPlaying, gameState.score]);
+
+  // Track game completion when game ends (both win and lose)
+  useEffect(() => {
+    console.log('[KanaDrop] Game state changed:', {
+      isPlaying: gameState.isPlaying,
+      startTime: gameState.startTime,
+      score: gameState.score,
+      lastGameScore,
+      hasIncrementedUsage
+    });
+    
+    if (!gameState.isPlaying && gameState.startTime > 0 && !hasIncrementedUsage) {
+      const timePlayed = Date.now() - gameState.startTime;
+      const finalScore = gameState.score || lastGameScore;
+      
+      console.log('[KanaDrop] Game ended, checking tracking conditions:', {
+        timePlayed: Math.round(timePlayed / 1000),
+        needsMoreThan5Seconds: timePlayed > 5000,
+        finalScore
+      });
+      
+      // Only track if game lasted more than 5 seconds (to avoid tracking immediate quits)
+      if (timePlayed > 5000) {
+        console.log('[KanaDrop] Game ended, tracking completion:', {
+          score: finalScore,
+          timePlayed: Math.round(timePlayed / 1000),
+          isWin: finalScore >= GAME_CONSTANTS.WINNING_SCORE,
+          isLoss: finalScore <= -50
+        });
+        
+        // Track game completion
+        trackGamePlayed('kana-drop', finalScore).catch(error => {
+          console.error('Failed to track game completion:', error);
+        });
+        
+        setHasIncrementedUsage(true);
+        setLastGameScore(0); // Reset for next game
+      }
+    }
+  }, [gameState.isPlaying, gameState.startTime, gameState.score, lastGameScore, hasIncrementedUsage]);
+
   // Check for victory
   useEffect(() => {
     if (gameState.score >= GAME_CONSTANTS.WINNING_SCORE && gameState.isPlaying && !hasIncrementedUsage) {
@@ -260,12 +308,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       setShowVictory(true);
       
       // Usage tracking is now handled automatically by checkAndTrack
-      setHasIncrementedUsage(true);
-      
-      // Track game completion in stats system
-      trackGamePlayed('Kana Drop', gameState.score, timeTaken).catch(error => {
-        console.error('Failed to track game completion:', error);
-      });
+      // Game completion tracking is now handled in the general game end useEffect
       
       // Play victory sound
       getGameAudioManager().playSound('victory').catch(() => {
@@ -312,6 +355,35 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       });
     }
   }, []);
+
+  // Handle end game button click
+  const handleEndGame = () => {
+    console.log('[KanaDrop] End game button clicked');
+    
+    // Track the game if it's been playing for more than 5 seconds
+    if (gameState.startTime > 0 && !hasIncrementedUsage) {
+      const timePlayed = Date.now() - gameState.startTime;
+      const finalScore = gameState.score || lastGameScore;
+      
+      if (timePlayed > 5000) {
+        console.log('[KanaDrop] Tracking game before closing:', {
+          score: finalScore,
+          timePlayed: Math.round(timePlayed / 1000)
+        });
+        
+        trackGamePlayed('kana-drop', finalScore).catch(error => {
+          console.error('Failed to track game completion:', error);
+        });
+        
+        setHasIncrementedUsage(true);
+      }
+    }
+    
+    // Close the modal after tracking
+    setTimeout(() => {
+      onClose();
+    }, 100);
+  };
 
   // Play again
   const handlePlayAgain = () => {
@@ -809,7 +881,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={onClose}
+                      onClick={handleEndGame}
                       className="px-8 py-4 bg-destructive text-destructive-foreground rounded-lg font-semibold text-xl hover:bg-destructive/90 transition-colors"
                     >
                       End Game
@@ -836,7 +908,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                     Resume Game
                   </button>
                   <button
-                    onClick={onClose}
+                    onClick={handleEndGame}
                     className="px-8 py-4 bg-destructive text-destructive-foreground rounded-lg font-semibold text-xl hover:bg-destructive/90 transition-colors"
                   >
                     End Game

@@ -273,6 +273,19 @@ service cloud.firestore {
       // Only admin can delete stats
       allow delete: if isAdmin();
       
+      // New structure: current stats subcollection
+      match /current/{documentType} {
+        // Users can read/write their own current stats documents
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId;
+        
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
       // Daily activities subcollection
       match /dailyActivities/{date} {
         // Users can read their own daily activities

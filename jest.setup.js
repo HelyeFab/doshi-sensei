@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom'
 
+// Mock fetch for Firebase in test environment
+global.fetch = jest.fn();
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {

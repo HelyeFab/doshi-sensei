@@ -227,14 +227,39 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     setReadingProgress(progress);
   }, [currentPageIndex, story.pages.length]);
 
+  // Track if story was just completed
+  const [hasTrackedCompletion, setHasTrackedCompletion] = useState(false);
+
   // Save progress
   useEffect(() => {
     if (user && story.id) {
+      // Check if story is completed (reached last page)
+      const isCompleted = currentPageIndex === story.pages.length - 1;
+      
+      // Track story completion only once when reaching the last page
+      if (isCompleted && !hasTrackedCompletion) {
+        const trackCompletion = async () => {
+          try {
+            const { trackStoryRead } = await import('@/lib/stats/trackingEvents');
+            await trackStoryRead(story.id, story.title);
+            setHasTrackedCompletion(true);
+            
+            // Call the onComplete callback if provided
+            if (onComplete) {
+              onComplete();
+            }
+          } catch (error) {
+            console.error('Error tracking story completion:', error);
+          }
+        };
+        trackCompletion();
+      }
+      
       // Save to Firebase
       storyManager.saveProgress(user.uid, {
         storyId: story.id,
         currentPage: currentPageIndex,
-        completed: false,
+        completed: isCompleted,
         savedWords: Array.from(savedWords),
         quizAttempts: 0,
         lastReadAt: new Date()
@@ -245,11 +270,11 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
         user.uid,
         story.id,
         currentPageIndex,
-        false,
+        isCompleted,
         Array.from(savedWords)
       );
     }
-  }, [currentPageIndex, user, story.id, savedWords]);
+  }, [currentPageIndex, user, story.id, savedWords, story.pages.length, hasTrackedCompletion, onComplete]);
 
   const handleWordClick = async (word: string, event: React.MouseEvent) => {
     if (!word) return;

@@ -15,7 +15,6 @@ interface CherryBlossom {
   rotation: number;
 }
 
-import { StatsBar } from '@/components/stats/StatsBar';
 
 interface ToriiGateProps {
   profile?: any;
@@ -63,7 +62,7 @@ export function ToriiGate({
   }, []);
 
   return (
-    <div className="relative min-h-screen" style={{ background: 'transparent' }}>
+    <div className="relative">
       <style jsx>{`
         @keyframes glowPulse {
           0%, 100% {
@@ -130,7 +129,7 @@ export function ToriiGate({
 
 
         {/* Content Container - Constrained width */}
-        <div className="relative mx-auto" style={{ background: 'transparent', width: '100%', maxWidth: '1200px' }}>
+        <div className="relative mx-auto" style={{ width: '100%', maxWidth: '1200px' }}>
           {/* Torii Gate SVG - Wrapped in Link */}
           <div className="flex flex-col items-center w-full">
             <Link href="/practice" className="block group cursor-pointer mx-auto">
@@ -160,7 +159,7 @@ export function ToriiGate({
                 <img
                   src="/flat-icons/tori/torii.svg"
                   alt="Torii Gate"
-                  className="w-40 h-40 sm:w-48 sm:h-48 md:w-80 md:h-80 lg:w-96 lg:h-96 relative z-10 drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
+                  className="w-32 h-32 sm:w-40 sm:h-40 md:w-56 md:h-56 lg:w-64 lg:h-64 relative z-10 drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
                                                       style={{
                     filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1)) drop-shadow(8px 8px 16px rgba(0, 0, 0, 0.4))',
                     transform: 'translate(4px, 4px)'
@@ -190,26 +189,6 @@ export function ToriiGate({
                }}>
               Begin your Japanese adventure through the sacred torii
             </p>
-            <div
-              className="mt-8 inline-flex items-center gap-3 text-2xl md:text-3xl font-semibold text-orange-600 dark:text-orange-400 group-hover:text-orange-500 px-8 py-4 rounded-full backdrop-blur-md transition-all duration-300 group-hover:scale-105 animate-pulse"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-                border: '2px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-              }}
-            >
-              <span style={{
-                textShadow: '1px 1px 0px rgba(0, 0, 0, 0.3)',
-                letterSpacing: '0.1em'
-              }}>Start Learning</span>
-              <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                style={{
-                  filter: 'drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.3))'
-                }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
           </motion.div>
           </Link>
           </div>
@@ -223,7 +202,7 @@ export function ToriiGate({
           />
 
           {/* Feature Cards Grid - with overflow control */}
-          <div className="w-full max-w-3xl mx-auto overflow-hidden mt-8 md:mt-12 px-4">
+          <div className="w-full max-w-3xl mx-auto overflow-hidden px-4">
             <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6 justify-items-center">
               {featureCards.map((card, index) => (
                 <FeatureCard
@@ -236,14 +215,6 @@ export function ToriiGate({
                 />
               ))}
             </div>
-          </div>
-
-          {/* Stats Bar */}
-          <div className="w-full mx-auto px-6 sm:px-4 mb-8" style={{ maxWidth: '380px' }}>
-            <StatsBar className="mt-6 md:mt-8 scale-90 sm:scale-100 md:hidden" />
-          </div>
-          <div className="hidden md:block w-full mx-auto px-6 mb-8" style={{ maxWidth: '900px' }}>
-            <StatsBar className="mt-8" />
           </div>
 
 

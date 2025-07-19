@@ -11,6 +11,7 @@ import GameControls, { InputMode } from './GameControls';
 import ScoreDisplay from './ScoreDisplay';
 import GameOverModal from './GameOverModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 // Using localStorage directly for game-specific data
 
 export interface PracticeSet {
@@ -298,6 +299,15 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
         await saveProgress(updatedProgress);
       }
       
+      // Track game completion
+      const timePlayed = Date.now() - gameState.startTime;
+      if (timePlayed > 10000) { // Only track if played for more than 10 seconds
+        const accuracy = Math.round((gameState.totalStrokes / Math.max(gameState.totalStrokes + gameState.incorrectAttempts, 1)) * 100);
+        trackGamePlayed('stroke-order-practice', gameState.score, gameState.completedKanji, gameState.completedKanji).catch(error => {
+          console.error('Failed to track game completion:', error);
+        });
+      }
+      
       setIsGameOver(true);
     }
   };
@@ -341,6 +351,21 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const handleBack = () => {
+    // Track early exit if game has been playing
+    const timePlayed = Date.now() - gameState.startTime;
+    if (gameState.completedKanji > 0 && timePlayed > 10000) { // Only track if played for more than 10 seconds
+      const accuracy = gameState.totalStrokes > 0 
+        ? Math.round((gameState.totalStrokes / (gameState.totalStrokes + gameState.incorrectAttempts)) * 100)
+        : 0;
+      trackGamePlayed('stroke-order-practice', gameState.score, gameState.completedKanji, gameState.completedKanji).catch(error => {
+        console.error('Failed to track early exit:', error);
+      });
+    }
+    
+    onBack();
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Virtual Companion Section - 1/6th of screen height */}
@@ -358,7 +383,7 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
           <PageHeader 
             title={practiceSet.name}
             showBackButton={true}
-            onBack={onBack}
+            onBack={handleBack}
           />
 
           <div className="mb-4 mt-8">
@@ -477,7 +502,7 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
         accuracy={Math.round((gameState.totalStrokes / (gameState.totalStrokes + gameState.incorrectAttempts)) * 100)}
         maxCombo={gameState.maxCombo}
         onRestart={handleRestart}
-        onBack={onBack}
+        onBack={handleBack}
       />
     </div>
   );

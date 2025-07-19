@@ -80,7 +80,7 @@ export async function trackKanjiStudy(
 
 // Game tracking
 export async function trackGamePlayed(
-  gameType: 'kana-drop' | 'kanji-quest',
+  gameType: 'kana-drop' | 'kanji-quest' | 'kanji-simon' | 'reading-routes' | 'matching-game' | 'sentence-scramble' | 'stroke-order-practice',
   score: number,
   questionsAnswered?: number,
   correctAnswers?: number

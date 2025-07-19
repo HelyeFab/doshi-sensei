@@ -29,7 +29,7 @@ export default function MobileHome() {
     const debugTimestamp = new Date().toISOString();
     console.log(`📱 [${debugTimestamp}] MobileHome: StatsManager useEffect triggered`);
     console.log(`📱 [${debugTimestamp}] MobileHome: Dependencies - user:`, user?.uid || 'none', 'subscription:', subscription?.status || 'none');
-    
+
     if (user) {
       const canSync = subscription?.status === 'active';
       console.log(`📱 [${debugTimestamp}] MobileHome: Setting user context, canSync:`, canSync);
@@ -48,12 +48,12 @@ export default function MobileHome() {
     const debugTimestamp = new Date().toISOString();
     console.log(`📱 [${debugTimestamp}] MobileHome: loadStats() called`);
     console.log(`📱 [${debugTimestamp}] MobileHome: Current state - loading:`, loading);
-    
+
     try {
       console.log(`📱 [${debugTimestamp}] MobileHome: Getting user stats...`);
       const userStats = await StatsManager.getUserStats();
       console.log(`📱 [${debugTimestamp}] MobileHome: User stats received:`, JSON.stringify(userStats, null, 2));
-      
+
       console.log(`📱 [${debugTimestamp}] MobileHome: Updating component state...`);
       setStats(prevStats => {
         console.log(`📱 [${debugTimestamp}] MobileHome: Previous stats:`, JSON.stringify(prevStats, null, 2));
@@ -71,19 +71,19 @@ export default function MobileHome() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 pb-24">
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 w-full max-w-sm mx-auto">
         <div className="flex flex-col items-center justify-center mb-3">
           <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-3">
             <span className="text-xl font-bold text-primary-foreground japanese-text">動</span>
           </div>
-          <h1 className="text-2xl font-bold text-foreground app-name">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground app-name">
             {useStrings().appName}
           </h1>
         </div>
         <p className="text-sm text-muted-foreground japanese-text mb-4">
           動詞 先生
         </p>
-        <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+        <p className="text-sm text-muted-foreground max-w-xs mx-auto px-2">
           {useStrings().home.subtitle}
         </p>
       </div>

@@ -531,6 +531,92 @@ if (authLoading) {
 3. **Don't use window.location** - Use Next.js router
 4. **Don't mix old and new systems** - Fully migrate each component
 
+## Game Tracking Requirements
+
+### Critical Compliance for Three-Pillar Architecture
+
+All games and interactive features in Doshi Sensei **MUST** implement comprehensive tracking to maintain the integrity of the freemium model. This is not optional - it's a critical requirement for the three-pillar architecture to function correctly.
+
+#### Why This Matters
+
+The three-pillar architecture (Entitlements, Features, Subscriptions) relies on accurate usage tracking to enforce limits. Without proper tracking, users can bypass freemium restrictions, undermining the business model.
+
+#### Mandatory Implementation Pattern
+
+Every game or interactive feature must follow this pattern:
+
+```typescript
+// 1. Import tracking at the top of your component
+import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+
+// 2. Track on ALL exit paths
+const handleGameEnd = (reason: 'complete' | 'quit' | 'timeout' | 'failure') => {
+  // ALWAYS track first, before any UI changes
+  trackGamePlayed(gameType, score, totalItems, correctItems);
+  
+  // Then handle UI/navigation
+  onClose();
+};
+
+// 3. Handle edge cases
+useEffect(() => {
+  return () => {
+    // Track if game was abandoned (component unmount)
+    if (gameInProgress && gameDuration > 5000) {
+      trackGamePlayed(gameType, currentScore, totalItems, correctItems);
+    }
+  };
+}, [gameInProgress, gameDuration, currentScore]);
+```
+
+#### Required Exit Scenarios
+
+Every game MUST track in these scenarios:
+- ✅ Game completed successfully
+- ✅ Game failed or lost
+- ✅ User manually exits/quits
+- ✅ Game times out
+- ✅ Browser refresh or modal close
+- ✅ Component unmounts unexpectedly
+
+#### Integration with Access Control
+
+Games should use the three-pillar architecture hooks:
+
+```typescript
+const { checkAndTrack } = useAccess();
+
+const startGame = async () => {
+  // Access control checks first
+  const canPlay = await checkAndTrack('game_feature_name');
+  if (!canPlay) {
+    return; // Modal shown automatically
+  }
+  
+  // Initialize game
+  initializeGame();
+};
+```
+
+#### Consequences of Non-Compliance
+
+Games that don't implement proper tracking:
+- Break the freemium model
+- Allow unlimited usage by free/guest users
+- Undermine revenue generation
+- Create unfair advantages for non-paying users
+
+#### Verification Checklist
+
+Before deploying any new game:
+- [ ] All exit paths have tracking calls
+- [ ] Tracking happens BEFORE UI state changes
+- [ ] Minimum duration checks prevent spam
+- [ ] Edge cases (unmount, refresh) are handled
+- [ ] Integration tests verify tracking behavior
+
+For detailed implementation guidelines and examples, see [Game Tracking Audit Documentation](/docs/stats/GAME_TRACKING_AUDIT.md).
+
 ## Conclusion
 
 **🎉 MIGRATION COMPLETE - January 7, 2025 🎉**

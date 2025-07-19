@@ -314,7 +314,7 @@ export default function Home() {
           </div>
 
           {/* Stats Bar Component */}
-          <div className="mt-8">
+          <div className="mt-8 mb-8">
             <StatsBar />
           </div>
         </div>

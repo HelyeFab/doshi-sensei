@@ -6,6 +6,9 @@ import { PageHeader } from '@/components/PageHeader';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ProductionSnakePath } from '@/components/ProductionSnakePath';
+import { JourneyDropdown } from '@/components/JourneyDropdown';
+import { PageHelpIcon } from '@/components/PageHelpIcon';
+import { pageHelpContent } from '@/config/pageHelp';
 // Removed React Spring to use pure CSS animations
 
 // Structured Data for Practice Page
@@ -578,6 +581,7 @@ function ProductionLearningPath() {
 
 export default function PracticePage() {
   const strings = useStrings();
+  const [isJourneyDropdownOpen, setIsJourneyDropdownOpen] = useState(false);
 
     return (
     <>
@@ -592,8 +596,11 @@ export default function PracticePage() {
         {/* Virtual Companion Button positioned within this section */}
       </div>
 
+      {/* Spacer to ensure content doesn't overlap with virtual companion */}
+      <div className="h-4"></div>
+
       {/* Main Content */}
-      <div className="container mx-auto px-0 md:px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <div className="container mx-auto px-0 md:px-4 py-8 min-h-screen pb-24 md:pb-8 relative z-10">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -603,8 +610,29 @@ export default function PracticePage() {
         />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
-          {/* Page Header */}
-          <PageHeader title={strings.practice?.title || "Practice Mode"} helpKey="practice" />
+          {/* Header with Back Button and Help Icon */}
+          <div className="flex items-center justify-between mb-4">
+            <Link
+              href="/"
+              className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors inline-flex items-center justify-center"
+              aria-label="Go back"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+
+            <PageHelpIcon
+              title="Practice Mode"
+              description="Master Japanese fundamentals through interactive practice. Start with kana charts and conjugation practice to build strong foundations."
+              tips={[
+                "Click 'Begin Your Journey Here' to learn more about the practice features",
+                "Use the learning path to navigate between different practice areas",
+                "Start with hiragana and katakana if you're new to Japanese",
+                "Practice conjugation to understand Japanese grammar patterns"
+              ]}
+            />
+          </div>
 
           {/* Hero Section */}
           <div className="mb-12">
@@ -626,32 +654,10 @@ export default function PracticePage() {
                 </span>
               </h2>
 
-              <p className="text-xl font-semibold text-foreground mb-4">
-                {strings.practice?.hero?.subtitle || "Begin Your Journey Here"}
-              </p>
-
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                Welcome to the foundation of your Japanese learning adventure. Master the essentials with our
-                <span className="font-semibold text-rose-600"> {strings.practice?.hero?.kanaChartsHighlight || 'Kana Charts'}</span> and
-                <span className="font-semibold text-orange-600"> {strings.practice?.hero?.conjugationPracticeHighlight || 'Conjugation Practice'}</span> —
-                the building blocks every learner needs.
-              </p>
-
-              {/* Stats or motivational elements */}
-              <div className="flex flex-wrap gap-6 justify-center text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🌸</span>
-                  <span className="text-muted-foreground">{strings.practice?.hero?.stats?.hiraganaKatakana || "Start with Hiragana & Katakana"}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🎯</span>
-                  <span className="text-muted-foreground">{strings.practice?.hero?.stats?.verbConjugations || "Master verb conjugations"}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🚀</span>
-                  <span className="text-muted-foreground">{strings.practice?.hero?.stats?.strongFoundations || "Build strong foundations"}</span>
-                </div>
-              </div>
+              <JourneyDropdown
+                isOpen={isJourneyDropdownOpen}
+                onToggle={() => setIsJourneyDropdownOpen(!isJourneyDropdownOpen)}
+              />
             </div>
           </div>
 

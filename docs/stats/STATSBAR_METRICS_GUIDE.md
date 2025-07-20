@@ -8,14 +8,19 @@ The StatsBar displays 3 key metrics that provide users with a quick overview of 
 
 ## Metrics Breakdown
 
-### 1. 🔥 Streak
+### 1. 🔥 Streak (or ⚠️ when at risk)
 **What it tracks**: Consecutive days of activity on the platform
 
 **How it's calculated**:
 - Increments by 1 for each consecutive day with at least one activity
-- Resets to 0 if no activity is recorded for a full calendar day
+- Preserves yesterday's streak until 23:59 today if user was active yesterday
+- Resets to 0 only if user missed yesterday entirely
 - Activities include: flashcards, articles, stories, games, drills, or any tracked learning activity
 - Based on the user's local timezone
+
+**Visual indicators**:
+- **🔥 Streak**: User has completed an activity today or hasn't needed to yet
+- **⚠️ At Risk!**: User was active yesterday but hasn't done any activity today (streak will be lost at midnight)
 
 **Data source**: `stats.currentStreak` from UserStatsV2
 

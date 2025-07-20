@@ -12,6 +12,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { X, Play, Clock, Star, RotateCcw } from 'lucide-react';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import {
   GameState,
   ScrambledSentence,
@@ -33,6 +34,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
   const { checkAndTrack } = useAccess();
   const { showNotification } = useNotification();
   const strings = useStrings();
+  const { trackGameComplete } = useAnalytics();
 
   // Game state
   const [gameState, setGameState] = useState<GameState>({
@@ -489,6 +491,11 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
       trackGamePlayed('sentence-scramble', score, gameState.sentences.length, gameState.totalScore).catch(error => {
         console.error('Failed to track game completion:', error);
       });
+      
+      // Track with new analytics
+      const accuracy = gameState.sentences.length > 0 ? (gameState.totalScore / gameState.sentences.length) * 100 : 0;
+      trackGameComplete('sentence_scramble', score, accuracy);
+      console.log('[SentenceScramble] Analytics tracked:', { game: 'sentence_scramble', score, accuracy });
     }
 
     showNotification({
@@ -542,6 +549,11 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
         trackGamePlayed('sentence-scramble', score, gameState.currentSentenceIndex + 1, gameState.totalScore).catch(error => {
           console.error('Failed to track early exit:', error);
         });
+        
+        // Track with new analytics
+        const accuracy = (gameState.currentSentenceIndex + 1) > 0 ? (gameState.totalScore / (gameState.currentSentenceIndex + 1)) * 100 : 0;
+        trackGameComplete('sentence_scramble', score, accuracy);
+        console.log('[SentenceScramble] Analytics tracked (early exit):', { game: 'sentence_scramble', score, accuracy });
       }
     }
     

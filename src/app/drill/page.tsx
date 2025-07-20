@@ -16,6 +16,7 @@ import { Analytics } from '@/utils/analytics';
 import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
 import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import flashcardManager, { FlashcardQuestion, FlashcardSessionConfig } from '@/utils/flashcards';
 import FlashcardCard from '@/components/flashcards/FlashcardCard';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
@@ -67,6 +68,7 @@ export default function DrillPage() {
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
   const { isPremium, userType } = useSubscription2();
+  const { trackDrillComplete } = useAnalytics();
   const strings = useStrings();
 
   // Tab state
@@ -805,6 +807,10 @@ export default function DrillPage() {
           mode: drillMode,
           completedAt: new Date().toISOString(),
         });
+        
+        // Track in new analytics system
+        trackDrillComplete(drillMode, newScore, questions.length);
+        console.log('📊 [Analytics] Drill completion tracked:', { type: drillMode, correct: newScore, total: questions.length });
       }, 100);
     }
 
@@ -868,6 +874,10 @@ export default function DrillPage() {
     try {
       const wordsStudied = questions.map(q => q.word.id);
       await trackDrillCompleted('conjugation-drill', questions.length, actualScore, wordsStudied);
+      
+      // Track in new analytics system
+      trackDrillComplete('conjugation', actualScore, questions.length);
+      console.log('📊 [Analytics] Drill session recorded:', { type: 'conjugation', correct: actualScore, total: questions.length });
 
       // Usage tracking is now handled automatically by checkAndTrack
     } catch (err) {

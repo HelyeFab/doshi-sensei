@@ -11,9 +11,10 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import StudyListManager from '@/utils/studyListManager';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
-import { SRS } from '@/utils/srs';
+import { AnkiSRS, ReviewRating } from '@/utils/ankiSRS';
 import { trackFlashcardReviewed, trackFlashcardSessionCompleted } from '@/lib/stats/trackingEvents';
 
 // Structured Data for Flashcard Review Page
@@ -61,9 +62,9 @@ export default function FlashcardReviewPage() {
   const { user } = useAuth();
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining, isLoading: featureLoading } = useFeature('flashcard_review');
+  const { track } = useAnalytics();
   const { isPremium, userType } = useSubscription2();
   const strings = useStrings();
-  const srs = new SRS();
 
   // Review state
   const [cards, setCards] = useState<JapaneseWord[]>([]);
@@ -121,13 +122,40 @@ export default function FlashcardReviewPage() {
 
       if (reviewMode === 'srs') {
         // Load cards due for SRS review
-        const dueCards = await srs.getDueCards();
-        reviewCards = dueCards;
+        // TODO: Implement SRS loading using AnkiSRS
+        // For now, load all cards from lists
+        const allLists = await StudyListManager.getAllStudyLists();
+        for (const list of allLists) {
+          const { words, ankiCards } = await StudyListManager.getItemsInList(list.id);
+          const ankiAsWords = ankiCards.map(card => ({
+            id: card.id,
+            itemType: 'anki_card' as const,
+            ankiData: card.ankiData,
+            kanji: card.ankiData?.front || '',
+            kana: '',
+            meaning: card.ankiData?.back || '',
+            type: 'anki' as any
+          }));
+          reviewCards = [...reviewCards, ...words, ...ankiAsWords];
+        }
       } else if (reviewMode === 'lists' && selectedLists.length > 0) {
         // Load cards from selected lists
         for (const listId of selectedLists) {
-          const { words } = await StudyListManager.getItemsInList(listId);
-          reviewCards = [...reviewCards, ...words];
+          const { words, ankiCards } = await StudyListManager.getItemsInList(listId);
+          // Convert words to flashcard format
+          const wordCards = words;
+          // Convert anki cards to flashcard format
+          const ankiFlashcards = ankiCards.map(card => ({
+            id: card.id,
+            itemType: 'anki_card' as const,
+            ankiData: card.ankiData,
+            // Add basic fields for compatibility
+            kanji: card.ankiData?.front || '',
+            kana: '',
+            meaning: card.ankiData?.back || '',
+            type: 'anki' as any
+          }));
+          reviewCards = [...reviewCards, ...wordCards, ...ankiFlashcards];
         }
       } else if (reviewMode === 'random') {
         // Load random cards from user's saved words
@@ -135,8 +163,18 @@ export default function FlashcardReviewPage() {
         let allWords: JapaneseWord[] = [];
         
         for (const list of allLists) {
-          const { words } = await StudyListManager.getItemsInList(list.id);
-          allWords = [...allWords, ...words];
+          const { words, ankiCards } = await StudyListManager.getItemsInList(list.id);
+          // Include anki cards converted to word format
+          const ankiAsWords = ankiCards.map(card => ({
+            id: card.id,
+            itemType: 'anki_card' as const,
+            ankiData: card.ankiData,
+            kanji: card.ankiData?.front || '',
+            kana: '',
+            meaning: card.ankiData?.back || '',
+            type: 'anki' as any
+          }));
+          allWords = [...allWords, ...words, ...ankiAsWords];
         }
         
         // Shuffle and take first 20
@@ -168,6 +206,15 @@ export default function FlashcardReviewPage() {
       flipDirection,
       cardOrder
     });
+    
+    // Track in new analytics system
+    track('flashcard_session_started', {
+      mode: reviewMode,
+      selectedLists: selectedLists.length,
+      flipDirection,
+      cardOrder
+    });
+    console.log('📊 [Analytics] Flashcard session started:', { mode: reviewMode, lists: selectedLists.length });
 
     setSessionStarted(true);
     setCurrentCardIndex(0);
@@ -186,12 +233,14 @@ export default function FlashcardReviewPage() {
     setShowAnswer(true);
   };
 
-  const handleRating = async (rating: 'easy' | 'good' | 'hard' | 'again') => {
+  const handleRating = async (rating: ReviewRating) => {
     const currentCard = cards[currentCardIndex];
     
     // Update SRS data if in SRS mode
     if (reviewMode === 'srs' && currentCard) {
-      await srs.updateCard(currentCard.id, rating);
+      // TODO: Update SRS data using AnkiSRS
+      // For now, we'll need to store SRS data with the card
+      // await updateCardSRSData(currentCard, rating);
     }
 
     // Update session stats
@@ -230,6 +279,19 @@ export default function FlashcardReviewPage() {
         accuracy: (newStats.correct / newStats.reviewed) * 100,
         mode: reviewMode
       });
+      
+      // Track in new analytics system
+      track('flashcard_session_completed', {
+        reviewed: newStats.reviewed,
+        correct: newStats.correct,
+        accuracy: (newStats.correct / newStats.reviewed) * 100,
+        mode: reviewMode
+      });
+      console.log('📊 [Analytics] Flashcard session completed:', { 
+        reviewed: newStats.reviewed, 
+        correct: newStats.correct, 
+        accuracy: Math.round((newStats.correct / newStats.reviewed) * 100) 
+      });
     }
   };
 
@@ -263,7 +325,13 @@ export default function FlashcardReviewPage() {
   };
 
   // Determine card display based on flip direction
-  const getCardDisplay = (card: JapaneseWord, side: 'front' | 'back') => {
+  const getCardDisplay = (card: any, side: 'front' | 'back') => {
+    // Handle Anki cards
+    if (card.itemType === 'anki_card' && card.ankiData) {
+      return side === 'front' ? card.ankiData.front : card.ankiData.back;
+    }
+    
+    // Handle regular cards
     let showJapanese = flipDirection === 'japanese-english';
     
     if (flipDirection === 'mixed') {

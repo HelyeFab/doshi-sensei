@@ -73,6 +73,12 @@ export function StatsBar({ className = '' }: { className?: string }) {
     // Get today's date string
     const today = new Date().toISOString().split('T')[0];
     const todayActivity = activities.today;
+    
+    // Check if user was active yesterday but not today (streak at risk)
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const wasActiveYesterday = stats.lastActiveDate === yesterday;
+    const hasActivityToday = todayActivity && todayActivity.summary.totalActivities > 0;
+    const streakAtRisk = wasActiveYesterday && !hasActivityToday && stats.currentStreak > 0;
 
     // Calculate this week (last 7 days)
     const weekTotal = activities.week.reduce((acc, day) => ({
@@ -109,8 +115,8 @@ export function StatsBar({ className = '' }: { className?: string }) {
     const items: StatItem[] = [
       {
         id: 'streak',
-        icon: '🔥',
-        label: 'Streak',
+        icon: streakAtRisk ? '⚠️' : '🔥',
+        label: streakAtRisk ? 'At Risk!' : 'Streak',
         value: stats.currentStreak,
         loading
       },

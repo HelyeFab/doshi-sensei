@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from './useAccess';
 import { LoginPromptModal } from '@/components/LoginPromptModal';
 import { UpgradePromptModal } from '@/components/UpgradePromptModal';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface UseAccessWithModalsReturn {
   checkAndTrack: (featureId: string) => Promise<boolean>;
@@ -15,6 +16,7 @@ interface UseAccessWithModalsReturn {
 export function useAccessWithModals(): UseAccessWithModalsReturn {
   const { user } = useAuth();
   const { canAccess, checkAndTrack: originalCheckAndTrack, isChecking } = useAccess();
+  const { trackLimitReached } = useAnalytics();
   
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -47,6 +49,15 @@ export function useAccessWithModals(): UseAccessWithModalsReturn {
             : '';
           setModalMessage(`Daily limit reached (${result.usage}/${result.limit})${resetTime}`);
           setModalFeature(featureName);
+          
+          // Track limit reached
+          trackLimitReached(featureId);
+          console.log('📊 [Analytics] Feature limit reached:', { 
+            feature: featureId, 
+            usage: result.usage, 
+            limit: result.limit 
+          });
+          
           setShowUpgradeModal(true);
           break;
           

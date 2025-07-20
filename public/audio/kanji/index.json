@@ -1,0 +1,667 @@
+{
+  "N5": {
+    "characters": {
+      "一": "/audio/kanji/n5/character/一.mp3",
+      "七": "/audio/kanji/n5/character/七.mp3",
+      "万": "/audio/kanji/n5/character/万.mp3",
+      "三": "/audio/kanji/n5/character/三.mp3",
+      "上": "/audio/kanji/n5/character/上.mp3",
+      "下": "/audio/kanji/n5/character/下.mp3",
+      "中": "/audio/kanji/n5/character/中.mp3",
+      "九": "/audio/kanji/n5/character/九.mp3",
+      "二": "/audio/kanji/n5/character/二.mp3",
+      "五": "/audio/kanji/n5/character/五.mp3",
+      "人": "/audio/kanji/n5/character/人.mp3",
+      "今": "/audio/kanji/n5/character/今.mp3",
+      "休": "/audio/kanji/n5/character/休.mp3",
+      "何": "/audio/kanji/n5/character/何.mp3",
+      "先": "/audio/kanji/n5/character/先.mp3",
+      "入": "/audio/kanji/n5/character/入.mp3",
+      "八": "/audio/kanji/n5/character/八.mp3",
+      "六": "/audio/kanji/n5/character/六.mp3",
+      "円": "/audio/kanji/n5/character/円.mp3",
+      "出": "/audio/kanji/n5/character/出.mp3",
+      "分": "/audio/kanji/n5/character/分.mp3",
+      "前": "/audio/kanji/n5/character/前.mp3",
+      "北": "/audio/kanji/n5/character/北.mp3",
+      "十": "/audio/kanji/n5/character/十.mp3",
+      "千": "/audio/kanji/n5/character/千.mp3",
+      "午": "/audio/kanji/n5/character/午.mp3",
+      "半": "/audio/kanji/n5/character/半.mp3",
+      "南": "/audio/kanji/n5/character/南.mp3",
+      "友": "/audio/kanji/n5/character/友.mp3",
+      "右": "/audio/kanji/n5/character/右.mp3",
+      "名": "/audio/kanji/n5/character/名.mp3",
+      "四": "/audio/kanji/n5/character/四.mp3",
+      "国": "/audio/kanji/n5/character/国.mp3",
+      "土": "/audio/kanji/n5/character/土.mp3",
+      "外": "/audio/kanji/n5/character/外.mp3",
+      "大": "/audio/kanji/n5/character/大.mp3",
+      "天": "/audio/kanji/n5/character/天.mp3",
+      "女": "/audio/kanji/n5/character/女.mp3",
+      "子": "/audio/kanji/n5/character/子.mp3",
+      "学": "/audio/kanji/n5/character/学.mp3",
+      "小": "/audio/kanji/n5/character/小.mp3",
+      "山": "/audio/kanji/n5/character/山.mp3",
+      "川": "/audio/kanji/n5/character/川.mp3",
+      "左": "/audio/kanji/n5/character/左.mp3",
+      "年": "/audio/kanji/n5/character/年.mp3",
+      "後": "/audio/kanji/n5/character/後.mp3",
+      "日": "/audio/kanji/n5/character/日.mp3",
+      "時": "/audio/kanji/n5/character/時.mp3",
+      "書": "/audio/kanji/n5/character/書.mp3",
+      "月": "/audio/kanji/n5/character/月.mp3",
+      "木": "/audio/kanji/n5/character/木.mp3",
+      "本": "/audio/kanji/n5/character/本.mp3",
+      "来": "/audio/kanji/n5/character/来.mp3",
+      "東": "/audio/kanji/n5/character/東.mp3",
+      "校": "/audio/kanji/n5/character/校.mp3",
+      "母": "/audio/kanji/n5/character/母.mp3",
+      "毎": "/audio/kanji/n5/character/毎.mp3",
+      "気": "/audio/kanji/n5/character/気.mp3",
+      "水": "/audio/kanji/n5/character/水.mp3",
+      "火": "/audio/kanji/n5/character/火.mp3",
+      "父": "/audio/kanji/n5/character/父.mp3",
+      "生": "/audio/kanji/n5/character/生.mp3",
+      "男": "/audio/kanji/n5/character/男.mp3",
+      "白": "/audio/kanji/n5/character/白.mp3",
+      "百": "/audio/kanji/n5/character/百.mp3",
+      "聞": "/audio/kanji/n5/character/聞.mp3",
+      "行": "/audio/kanji/n5/character/行.mp3",
+      "西": "/audio/kanji/n5/character/西.mp3",
+      "見": "/audio/kanji/n5/character/見.mp3",
+      "話": "/audio/kanji/n5/character/話.mp3",
+      "語": "/audio/kanji/n5/character/語.mp3",
+      "読": "/audio/kanji/n5/character/読.mp3",
+      "車": "/audio/kanji/n5/character/車.mp3",
+      "金": "/audio/kanji/n5/character/金.mp3",
+      "長": "/audio/kanji/n5/character/長.mp3",
+      "間": "/audio/kanji/n5/character/間.mp3",
+      "雨": "/audio/kanji/n5/character/雨.mp3",
+      "電": "/audio/kanji/n5/character/電.mp3",
+      "食": "/audio/kanji/n5/character/食.mp3",
+      "高": "/audio/kanji/n5/character/高.mp3"
+    },
+    "onyomi": {
+      "一": {
+        "イチ": "/audio/kanji/n5/onyomi/一_イチ.mp3",
+        "イツ": "/audio/kanji/n5/onyomi/一_イツ.mp3"
+      },
+      "七": {
+        "シチ": "/audio/kanji/n5/onyomi/七_シチ.mp3"
+      },
+      "万": {
+        "バン": "/audio/kanji/n5/onyomi/万_バン.mp3",
+        "マン": "/audio/kanji/n5/onyomi/万_マン.mp3"
+      },
+      "三": {
+        "サン": "/audio/kanji/n5/onyomi/三_サン.mp3"
+      },
+      "上": {
+        "ショウ": "/audio/kanji/n5/onyomi/上_ショウ.mp3",
+        "ジョウ": "/audio/kanji/n5/onyomi/上_ジョウ.mp3"
+      },
+      "下": {
+        "カ": "/audio/kanji/n5/onyomi/下_カ.mp3",
+        "ゲ": "/audio/kanji/n5/onyomi/下_ゲ.mp3"
+      },
+      "中": {
+        "ジュウ": "/audio/kanji/n5/onyomi/中_ジュウ.mp3",
+        "チュウ": "/audio/kanji/n5/onyomi/中_チュウ.mp3"
+      },
+      "九": {
+        "キュウ": "/audio/kanji/n5/onyomi/九_キュウ.mp3",
+        "ク": "/audio/kanji/n5/onyomi/九_ク.mp3"
+      },
+      "二": {
+        "ニ": "/audio/kanji/n5/onyomi/二_ニ.mp3"
+      },
+      "五": {
+        "ゴ": "/audio/kanji/n5/onyomi/五_ゴ.mp3"
+      },
+      "人": {
+        "ジン": "/audio/kanji/n5/onyomi/人_ジン.mp3",
+        "ニン": "/audio/kanji/n5/onyomi/人_ニン.mp3"
+      },
+      "今": {
+        "キン": "/audio/kanji/n5/onyomi/今_キン.mp3",
+        "コン": "/audio/kanji/n5/onyomi/今_コン.mp3"
+      },
+      "休": {
+        "キュウ": "/audio/kanji/n5/onyomi/休_キュウ.mp3"
+      },
+      "何": {
+        "カ": "/audio/kanji/n5/onyomi/何_カ.mp3"
+      },
+      "先": {
+        "セン": "/audio/kanji/n5/onyomi/先_セン.mp3"
+      },
+      "入": {
+        "ニュウ": "/audio/kanji/n5/onyomi/入_ニュウ.mp3"
+      },
+      "八": {
+        "ハチ": "/audio/kanji/n5/onyomi/八_ハチ.mp3"
+      },
+      "六": {
+        "ロク": "/audio/kanji/n5/onyomi/六_ロク.mp3"
+      },
+      "円": {
+        "エン": "/audio/kanji/n5/onyomi/円_エン.mp3"
+      },
+      "出": {
+        "シュツ": "/audio/kanji/n5/onyomi/出_シュツ.mp3",
+        "スイ": "/audio/kanji/n5/onyomi/出_スイ.mp3"
+      },
+      "分": {
+        "フン": "/audio/kanji/n5/onyomi/分_フン.mp3",
+        "ブ": "/audio/kanji/n5/onyomi/分_ブ.mp3",
+        "ブン": "/audio/kanji/n5/onyomi/分_ブン.mp3"
+      },
+      "前": {
+        "ゼン": "/audio/kanji/n5/onyomi/前_ゼン.mp3"
+      },
+      "北": {
+        "ホク": "/audio/kanji/n5/onyomi/北_ホク.mp3"
+      },
+      "十": {
+        "ジッ": "/audio/kanji/n5/onyomi/十_ジッ.mp3",
+        "ジュウ": "/audio/kanji/n5/onyomi/十_ジュウ.mp3"
+      },
+      "千": {
+        "セン": "/audio/kanji/n5/onyomi/千_セン.mp3"
+      },
+      "午": {
+        "ゴ": "/audio/kanji/n5/onyomi/午_ゴ.mp3"
+      },
+      "半": {
+        "ハン": "/audio/kanji/n5/onyomi/半_ハン.mp3"
+      },
+      "南": {
+        "ナ": "/audio/kanji/n5/onyomi/南_ナ.mp3",
+        "ナン": "/audio/kanji/n5/onyomi/南_ナン.mp3"
+      },
+      "友": {
+        "ユウ": "/audio/kanji/n5/onyomi/友_ユウ.mp3"
+      },
+      "右": {
+        "ウ": "/audio/kanji/n5/onyomi/右_ウ.mp3",
+        "ユウ": "/audio/kanji/n5/onyomi/右_ユウ.mp3"
+      },
+      "名": {
+        "ミョウ": "/audio/kanji/n5/onyomi/名_ミョウ.mp3",
+        "メイ": "/audio/kanji/n5/onyomi/名_メイ.mp3"
+      },
+      "四": {
+        "シ": "/audio/kanji/n5/onyomi/四_シ.mp3"
+      },
+      "国": {
+        "コク": "/audio/kanji/n5/onyomi/国_コク.mp3"
+      },
+      "土": {
+        "ト": "/audio/kanji/n5/onyomi/土_ト.mp3",
+        "ド": "/audio/kanji/n5/onyomi/土_ド.mp3"
+      },
+      "外": {
+        "ガイ": "/audio/kanji/n5/onyomi/外_ガイ.mp3",
+        "ゲ": "/audio/kanji/n5/onyomi/外_ゲ.mp3"
+      },
+      "大": {
+        "タイ": "/audio/kanji/n5/onyomi/大_タイ.mp3",
+        "ダイ": "/audio/kanji/n5/onyomi/大_ダイ.mp3"
+      },
+      "天": {
+        "テン": "/audio/kanji/n5/onyomi/天_テン.mp3"
+      },
+      "女": {
+        "ジョ": "/audio/kanji/n5/onyomi/女_ジョ.mp3",
+        "ニョ": "/audio/kanji/n5/onyomi/女_ニョ.mp3",
+        "ニョウ": "/audio/kanji/n5/onyomi/女_ニョウ.mp3"
+      },
+      "子": {
+        "シ": "/audio/kanji/n5/onyomi/子_シ.mp3",
+        "ス": "/audio/kanji/n5/onyomi/子_ス.mp3"
+      },
+      "学": {
+        "ガク": "/audio/kanji/n5/onyomi/学_ガク.mp3"
+      },
+      "小": {
+        "ショウ": "/audio/kanji/n5/onyomi/小_ショウ.mp3"
+      },
+      "山": {
+        "サン": "/audio/kanji/n5/onyomi/山_サン.mp3"
+      },
+      "川": {
+        "セン": "/audio/kanji/n5/onyomi/川_セン.mp3"
+      },
+      "左": {
+        "サ": "/audio/kanji/n5/onyomi/左_サ.mp3"
+      },
+      "年": {
+        "ネン": "/audio/kanji/n5/onyomi/年_ネン.mp3"
+      },
+      "後": {
+        "コウ": "/audio/kanji/n5/onyomi/後_コウ.mp3",
+        "ゴ": "/audio/kanji/n5/onyomi/後_ゴ.mp3"
+      },
+      "日": {
+        "ジツ": "/audio/kanji/n5/onyomi/日_ジツ.mp3",
+        "ニチ": "/audio/kanji/n5/onyomi/日_ニチ.mp3"
+      },
+      "時": {
+        "ジ": "/audio/kanji/n5/onyomi/時_ジ.mp3"
+      },
+      "書": {
+        "ショ": "/audio/kanji/n5/onyomi/書_ショ.mp3"
+      },
+      "月": {
+        "ガツ": "/audio/kanji/n5/onyomi/月_ガツ.mp3",
+        "ゲツ": "/audio/kanji/n5/onyomi/月_ゲツ.mp3"
+      },
+      "木": {
+        "ボク": "/audio/kanji/n5/onyomi/木_ボク.mp3",
+        "モク": "/audio/kanji/n5/onyomi/木_モク.mp3"
+      },
+      "本": {
+        "ホン": "/audio/kanji/n5/onyomi/本_ホン.mp3"
+      },
+      "来": {
+        "ライ": "/audio/kanji/n5/onyomi/来_ライ.mp3"
+      },
+      "東": {
+        "トウ": "/audio/kanji/n5/onyomi/東_トウ.mp3"
+      },
+      "校": {
+        "コウ": "/audio/kanji/n5/onyomi/校_コウ.mp3"
+      },
+      "母": {
+        "ボ": "/audio/kanji/n5/onyomi/母_ボ.mp3"
+      },
+      "毎": {
+        "マイ": "/audio/kanji/n5/onyomi/毎_マイ.mp3"
+      },
+      "気": {
+        "キ": "/audio/kanji/n5/onyomi/気_キ.mp3",
+        "ケ": "/audio/kanji/n5/onyomi/気_ケ.mp3"
+      },
+      "水": {
+        "スイ": "/audio/kanji/n5/onyomi/水_スイ.mp3"
+      },
+      "火": {
+        "カ": "/audio/kanji/n5/onyomi/火_カ.mp3"
+      },
+      "父": {
+        "フ": "/audio/kanji/n5/onyomi/父_フ.mp3"
+      },
+      "生": {
+        "ショウ": "/audio/kanji/n5/onyomi/生_ショウ.mp3",
+        "セイ": "/audio/kanji/n5/onyomi/生_セイ.mp3"
+      },
+      "男": {
+        "ダン": "/audio/kanji/n5/onyomi/男_ダン.mp3",
+        "ナン": "/audio/kanji/n5/onyomi/男_ナン.mp3"
+      },
+      "白": {
+        "ハク": "/audio/kanji/n5/onyomi/白_ハク.mp3"
+      },
+      "百": {
+        "ヒャク": "/audio/kanji/n5/onyomi/百_ヒャク.mp3"
+      },
+      "聞": {
+        "ブン": "/audio/kanji/n5/onyomi/聞_ブン.mp3",
+        "モン": "/audio/kanji/n5/onyomi/聞_モン.mp3"
+      },
+      "行": {
+        "アン": "/audio/kanji/n5/onyomi/行_アン.mp3",
+        "ギョウ": "/audio/kanji/n5/onyomi/行_ギョウ.mp3",
+        "コウ": "/audio/kanji/n5/onyomi/行_コウ.mp3"
+      },
+      "西": {
+        "サイ": "/audio/kanji/n5/onyomi/西_サイ.mp3",
+        "セイ": "/audio/kanji/n5/onyomi/西_セイ.mp3"
+      },
+      "見": {
+        "ケン": "/audio/kanji/n5/onyomi/見_ケン.mp3"
+      },
+      "話": {
+        "ワ": "/audio/kanji/n5/onyomi/話_ワ.mp3"
+      },
+      "語": {
+        "ゴ": "/audio/kanji/n5/onyomi/語_ゴ.mp3"
+      },
+      "読": {
+        "トウ": "/audio/kanji/n5/onyomi/読_トウ.mp3",
+        "トク": "/audio/kanji/n5/onyomi/読_トク.mp3",
+        "ドク": "/audio/kanji/n5/onyomi/読_ドク.mp3"
+      },
+      "車": {
+        "シャ": "/audio/kanji/n5/onyomi/車_シャ.mp3"
+      },
+      "金": {
+        "キン": "/audio/kanji/n5/onyomi/金_キン.mp3",
+        "コン": "/audio/kanji/n5/onyomi/金_コン.mp3"
+      },
+      "長": {
+        "チョウ": "/audio/kanji/n5/onyomi/長_チョウ.mp3"
+      },
+      "間": {
+        "カン": "/audio/kanji/n5/onyomi/間_カン.mp3",
+        "ケン": "/audio/kanji/n5/onyomi/間_ケン.mp3"
+      },
+      "雨": {
+        "ウ": "/audio/kanji/n5/onyomi/雨_ウ.mp3"
+      },
+      "電": {
+        "デン": "/audio/kanji/n5/onyomi/電_デン.mp3"
+      },
+      "食": {
+        "ショク": "/audio/kanji/n5/onyomi/食_ショク.mp3",
+        "ジキ": "/audio/kanji/n5/onyomi/食_ジキ.mp3"
+      },
+      "高": {
+        "コウ": "/audio/kanji/n5/onyomi/高_コウ.mp3"
+      }
+    },
+    "kunyomi": {
+      "一": {
+        "ひと-": "/audio/kanji/n5/kunyomi/一_ひと-.mp3",
+        "ひと.つ": "/audio/kanji/n5/kunyomi/一_ひと.つ.mp3"
+      },
+      "七": {
+        "なな": "/audio/kanji/n5/kunyomi/七_なな.mp3",
+        "なな.つ": "/audio/kanji/n5/kunyomi/七_なな.つ.mp3",
+        "なの": "/audio/kanji/n5/kunyomi/七_なの.mp3"
+      },
+      "三": {
+        "み": "/audio/kanji/n5/kunyomi/三_み.mp3",
+        "みっ.つ": "/audio/kanji/n5/kunyomi/三_みっ.つ.mp3"
+      },
+      "上": {
+        "あ.がる": "/audio/kanji/n5/kunyomi/上_あ.がる.mp3",
+        "あ.げる": "/audio/kanji/n5/kunyomi/上_あ.げる.mp3",
+        "うえ": "/audio/kanji/n5/kunyomi/上_うえ.mp3",
+        "うわ-": "/audio/kanji/n5/kunyomi/上_うわ-.mp3",
+        "かみ": "/audio/kanji/n5/kunyomi/上_かみ.mp3",
+        "のぼ.す": "/audio/kanji/n5/kunyomi/上_のぼ.す.mp3",
+        "のぼ.せる": "/audio/kanji/n5/kunyomi/上_のぼ.せる.mp3",
+        "のぼ.る": "/audio/kanji/n5/kunyomi/上_のぼ.る.mp3"
+      },
+      "下": {
+        "お.りる": "/audio/kanji/n5/kunyomi/下_お.りる.mp3",
+        "お.ろす": "/audio/kanji/n5/kunyomi/下_お.ろす.mp3",
+        "くだ.さる": "/audio/kanji/n5/kunyomi/下_くだ.さる.mp3",
+        "くだ.す": "/audio/kanji/n5/kunyomi/下_くだ.す.mp3",
+        "くだ.る": "/audio/kanji/n5/kunyomi/下_くだ.る.mp3",
+        "さ.がる": "/audio/kanji/n5/kunyomi/下_さ.がる.mp3",
+        "さ.げる": "/audio/kanji/n5/kunyomi/下_さ.げる.mp3",
+        "した": "/audio/kanji/n5/kunyomi/下_した.mp3",
+        "しも": "/audio/kanji/n5/kunyomi/下_しも.mp3",
+        "もと": "/audio/kanji/n5/kunyomi/下_もと.mp3"
+      },
+      "中": {
+        "なか": "/audio/kanji/n5/kunyomi/中_なか.mp3"
+      },
+      "九": {
+        "ここの.つ": "/audio/kanji/n5/kunyomi/九_ここの.つ.mp3"
+      },
+      "二": {
+        "ふた": "/audio/kanji/n5/kunyomi/二_ふた.mp3",
+        "ふた.つ": "/audio/kanji/n5/kunyomi/二_ふた.つ.mp3"
+      },
+      "五": {
+        "いつ-": "/audio/kanji/n5/kunyomi/五_いつ-.mp3",
+        "いつ.つ": "/audio/kanji/n5/kunyomi/五_いつ.つ.mp3"
+      },
+      "人": {
+        "ひと": "/audio/kanji/n5/kunyomi/人_ひと.mp3"
+      },
+      "今": {
+        "いま": "/audio/kanji/n5/kunyomi/今_いま.mp3"
+      },
+      "休": {
+        "やす.まる": "/audio/kanji/n5/kunyomi/休_やす.まる.mp3",
+        "やす.む": "/audio/kanji/n5/kunyomi/休_やす.む.mp3",
+        "やす.める": "/audio/kanji/n5/kunyomi/休_やす.める.mp3"
+      },
+      "何": {
+        "なに": "/audio/kanji/n5/kunyomi/何_なに.mp3",
+        "なん": "/audio/kanji/n5/kunyomi/何_なん.mp3"
+      },
+      "先": {
+        "さき": "/audio/kanji/n5/kunyomi/先_さき.mp3"
+      },
+      "入": {
+        "い.る": "/audio/kanji/n5/kunyomi/入_い.る.mp3",
+        "い.れる": "/audio/kanji/n5/kunyomi/入_い.れる.mp3",
+        "はい.る": "/audio/kanji/n5/kunyomi/入_はい.る.mp3"
+      },
+      "八": {
+        "や": "/audio/kanji/n5/kunyomi/八_や.mp3",
+        "や.つ": "/audio/kanji/n5/kunyomi/八_や.つ.mp3",
+        "よう": "/audio/kanji/n5/kunyomi/八_よう.mp3"
+      },
+      "六": {
+        "む": "/audio/kanji/n5/kunyomi/六_む.mp3",
+        "む.つ": "/audio/kanji/n5/kunyomi/六_む.つ.mp3",
+        "むい": "/audio/kanji/n5/kunyomi/六_むい.mp3",
+        "むっ.つ": "/audio/kanji/n5/kunyomi/六_むっ.つ.mp3"
+      },
+      "円": {
+        "まる.い": "/audio/kanji/n5/kunyomi/円_まる.い.mp3"
+      },
+      "出": {
+        "だ.す": "/audio/kanji/n5/kunyomi/出_だ.す.mp3",
+        "で.る": "/audio/kanji/n5/kunyomi/出_で.る.mp3"
+      },
+      "分": {
+        "わ.かつ": "/audio/kanji/n5/kunyomi/分_わ.かつ.mp3",
+        "わ.かる": "/audio/kanji/n5/kunyomi/分_わ.かる.mp3",
+        "わ.かれる": "/audio/kanji/n5/kunyomi/分_わ.かれる.mp3",
+        "わ.ける": "/audio/kanji/n5/kunyomi/分_わ.ける.mp3"
+      },
+      "前": {
+        "まえ": "/audio/kanji/n5/kunyomi/前_まえ.mp3"
+      },
+      "北": {
+        "きた": "/audio/kanji/n5/kunyomi/北_きた.mp3"
+      },
+      "十": {
+        "と": "/audio/kanji/n5/kunyomi/十_と.mp3",
+        "とお": "/audio/kanji/n5/kunyomi/十_とお.mp3"
+      },
+      "千": {
+        "ち": "/audio/kanji/n5/kunyomi/千_ち.mp3"
+      },
+      "半": {
+        "なか.ば": "/audio/kanji/n5/kunyomi/半_なか.ば.mp3"
+      },
+      "南": {
+        "みなみ": "/audio/kanji/n5/kunyomi/南_みなみ.mp3"
+      },
+      "友": {
+        "とも": "/audio/kanji/n5/kunyomi/友_とも.mp3"
+      },
+      "右": {
+        "みぎ": "/audio/kanji/n5/kunyomi/右_みぎ.mp3"
+      },
+      "名": {
+        "な": "/audio/kanji/n5/kunyomi/名_な.mp3"
+      },
+      "四": {
+        "よ": "/audio/kanji/n5/kunyomi/四_よ.mp3",
+        "よ.つ": "/audio/kanji/n5/kunyomi/四_よ.つ.mp3",
+        "よっ.つ": "/audio/kanji/n5/kunyomi/四_よっ.つ.mp3",
+        "よん": "/audio/kanji/n5/kunyomi/四_よん.mp3"
+      },
+      "国": {
+        "くに": "/audio/kanji/n5/kunyomi/国_くに.mp3"
+      },
+      "土": {
+        "つち": "/audio/kanji/n5/kunyomi/土_つち.mp3"
+      },
+      "外": {
+        "そと": "/audio/kanji/n5/kunyomi/外_そと.mp3",
+        "はず.す": "/audio/kanji/n5/kunyomi/外_はず.す.mp3",
+        "はず.れる": "/audio/kanji/n5/kunyomi/外_はず.れる.mp3",
+        "ほか": "/audio/kanji/n5/kunyomi/外_ほか.mp3"
+      },
+      "大": {
+        "おお-": "/audio/kanji/n5/kunyomi/大_おお-.mp3",
+        "おお.いに": "/audio/kanji/n5/kunyomi/大_おお.いに.mp3",
+        "おお.きい": "/audio/kanji/n5/kunyomi/大_おお.きい.mp3"
+      },
+      "天": {
+        "あま-": "/audio/kanji/n5/kunyomi/天_あま-.mp3",
+        "あめ": "/audio/kanji/n5/kunyomi/天_あめ.mp3"
+      },
+      "女": {
+        "おんな": "/audio/kanji/n5/kunyomi/女_おんな.mp3",
+        "め": "/audio/kanji/n5/kunyomi/女_め.mp3"
+      },
+      "子": {
+        "こ": "/audio/kanji/n5/kunyomi/子_こ.mp3"
+      },
+      "学": {
+        "まな.ぶ": "/audio/kanji/n5/kunyomi/学_まな.ぶ.mp3"
+      },
+      "小": {
+        "お-": "/audio/kanji/n5/kunyomi/小_お-.mp3",
+        "こ-": "/audio/kanji/n5/kunyomi/小_こ-.mp3",
+        "ちい.さい": "/audio/kanji/n5/kunyomi/小_ちい.さい.mp3"
+      },
+      "山": {
+        "やま": "/audio/kanji/n5/kunyomi/山_やま.mp3"
+      },
+      "川": {
+        "かわ": "/audio/kanji/n5/kunyomi/川_かわ.mp3"
+      },
+      "左": {
+        "ひだり": "/audio/kanji/n5/kunyomi/左_ひだり.mp3"
+      },
+      "年": {
+        "とし": "/audio/kanji/n5/kunyomi/年_とし.mp3"
+      },
+      "後": {
+        "あと": "/audio/kanji/n5/kunyomi/後_あと.mp3",
+        "うし.ろ": "/audio/kanji/n5/kunyomi/後_うし.ろ.mp3",
+        "おく.れる": "/audio/kanji/n5/kunyomi/後_おく.れる.mp3",
+        "のち": "/audio/kanji/n5/kunyomi/後_のち.mp3"
+      },
+      "日": {
+        "か": "/audio/kanji/n5/kunyomi/日_か.mp3",
+        "ひ": "/audio/kanji/n5/kunyomi/日_ひ.mp3"
+      },
+      "時": {
+        "とき": "/audio/kanji/n5/kunyomi/時_とき.mp3"
+      },
+      "書": {
+        "か.く": "/audio/kanji/n5/kunyomi/書_か.く.mp3"
+      },
+      "月": {
+        "つき": "/audio/kanji/n5/kunyomi/月_つき.mp3"
+      },
+      "木": {
+        "き": "/audio/kanji/n5/kunyomi/木_き.mp3",
+        "こ-": "/audio/kanji/n5/kunyomi/木_こ-.mp3"
+      },
+      "本": {
+        "もと": "/audio/kanji/n5/kunyomi/本_もと.mp3"
+      },
+      "来": {
+        "きた.す": "/audio/kanji/n5/kunyomi/来_きた.す.mp3",
+        "きた.る": "/audio/kanji/n5/kunyomi/来_きた.る.mp3",
+        "く.る": "/audio/kanji/n5/kunyomi/来_く.る.mp3"
+      },
+      "東": {
+        "ひがし": "/audio/kanji/n5/kunyomi/東_ひがし.mp3"
+      },
+      "母": {
+        "はは": "/audio/kanji/n5/kunyomi/母_はは.mp3"
+      },
+      "水": {
+        "みず": "/audio/kanji/n5/kunyomi/水_みず.mp3"
+      },
+      "火": {
+        "ひ": "/audio/kanji/n5/kunyomi/火_ひ.mp3",
+        "ほ-": "/audio/kanji/n5/kunyomi/火_ほ-.mp3"
+      },
+      "父": {
+        "ちち": "/audio/kanji/n5/kunyomi/父_ちち.mp3"
+      },
+      "生": {
+        "い.かす": "/audio/kanji/n5/kunyomi/生_い.かす.mp3",
+        "い.きる": "/audio/kanji/n5/kunyomi/生_い.きる.mp3",
+        "い.ける": "/audio/kanji/n5/kunyomi/生_い.ける.mp3",
+        "う.まれる": "/audio/kanji/n5/kunyomi/生_う.まれる.mp3",
+        "う.む": "/audio/kanji/n5/kunyomi/生_う.む.mp3",
+        "お.う": "/audio/kanji/n5/kunyomi/生_お.う.mp3",
+        "き": "/audio/kanji/n5/kunyomi/生_き.mp3",
+        "なま": "/audio/kanji/n5/kunyomi/生_なま.mp3",
+        "は.える": "/audio/kanji/n5/kunyomi/生_は.える.mp3",
+        "は.やす": "/audio/kanji/n5/kunyomi/生_は.やす.mp3"
+      },
+      "男": {
+        "おとこ": "/audio/kanji/n5/kunyomi/男_おとこ.mp3"
+      },
+      "白": {
+        "しら-": "/audio/kanji/n5/kunyomi/白_しら-.mp3",
+        "しろ": "/audio/kanji/n5/kunyomi/白_しろ.mp3",
+        "しろ.い": "/audio/kanji/n5/kunyomi/白_しろ.い.mp3"
+      },
+      "聞": {
+        "き.く": "/audio/kanji/n5/kunyomi/聞_き.く.mp3",
+        "き.こえる": "/audio/kanji/n5/kunyomi/聞_き.こえる.mp3"
+      },
+      "行": {
+        "い.く": "/audio/kanji/n5/kunyomi/行_い.く.mp3",
+        "おこな.う": "/audio/kanji/n5/kunyomi/行_おこな.う.mp3",
+        "ゆ.く": "/audio/kanji/n5/kunyomi/行_ゆ.く.mp3"
+      },
+      "西": {
+        "にし": "/audio/kanji/n5/kunyomi/西_にし.mp3"
+      },
+      "見": {
+        "み.える": "/audio/kanji/n5/kunyomi/見_み.える.mp3",
+        "み.せる": "/audio/kanji/n5/kunyomi/見_み.せる.mp3",
+        "み.る": "/audio/kanji/n5/kunyomi/見_み.る.mp3"
+      },
+      "話": {
+        "はな.す": "/audio/kanji/n5/kunyomi/話_はな.す.mp3",
+        "はなし": "/audio/kanji/n5/kunyomi/話_はなし.mp3"
+      },
+      "語": {
+        "かた.らう": "/audio/kanji/n5/kunyomi/語_かた.らう.mp3",
+        "かた.る": "/audio/kanji/n5/kunyomi/語_かた.る.mp3"
+      },
+      "読": {
+        "よ.む": "/audio/kanji/n5/kunyomi/読_よ.む.mp3"
+      },
+      "車": {
+        "くるま": "/audio/kanji/n5/kunyomi/車_くるま.mp3"
+      },
+      "金": {
+        "かね": "/audio/kanji/n5/kunyomi/金_かね.mp3"
+      },
+      "長": {
+        "なが.い": "/audio/kanji/n5/kunyomi/長_なが.い.mp3"
+      },
+      "間": {
+        "あいだ": "/audio/kanji/n5/kunyomi/間_あいだ.mp3",
+        "ま": "/audio/kanji/n5/kunyomi/間_ま.mp3"
+      },
+      "雨": {
+        "あま-": "/audio/kanji/n5/kunyomi/雨_あま-.mp3",
+        "あめ": "/audio/kanji/n5/kunyomi/雨_あめ.mp3"
+      },
+      "食": {
+        "く.う": "/audio/kanji/n5/kunyomi/食_く.う.mp3",
+        "た.べる": "/audio/kanji/n5/kunyomi/食_た.べる.mp3"
+      },
+      "高": {
+        "たか": "/audio/kanji/n5/kunyomi/高_たか.mp3",
+        "たか.い": "/audio/kanji/n5/kunyomi/高_たか.い.mp3",
+        "たか.まる": "/audio/kanji/n5/kunyomi/高_たか.まる.mp3",
+        "たか.める": "/audio/kanji/n5/kunyomi/高_たか.める.mp3"
+      }
+    }
+  }
+}

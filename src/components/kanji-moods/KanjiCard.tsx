@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Bookmark } from 'lucide-react';
 import StudyListManager from '@/utils/studyListManager';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function KanjiCard({
   kanji,
@@ -20,6 +21,7 @@ export default function KanjiCard({
   const [isKanjiSaved, setIsKanjiSaved] = useState(false);
   const strings = useStrings();
   const { user } = useAuth();
+  const { track } = useAnalytics();
 
   // Check if kanji is already saved when component mounts
   useEffect(() => {
@@ -54,6 +56,14 @@ export default function KanjiCard({
       return;
     }
     setIsModalOpen(true);
+    
+    // Track kanji view
+    track('kanji_viewed', {
+      kanji: kanji.char,
+      jlptLevel: kanji.jlpt || 'unknown',
+      source: 'moodboard'
+    });
+    console.log('📊 [Analytics] Kanji viewed from moodboard:', { kanji: kanji.char });
   };
 
   const handleBookmarkClick = (e: React.MouseEvent) => {

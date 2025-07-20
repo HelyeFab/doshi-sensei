@@ -44,7 +44,7 @@ export function PageHeader({ title, emoji, icon, subtitle, showBackButton = true
 
         <div className="absolute inset-0 flex items-center justify-center">
           {icon ? (
-            <div className="text-4xl sm:text-6xl md:text-7xl text-center">
+            <div className="text-4xl sm:text-6xl md:text-7xl text-center mt-4 mb-8">
               <img src={icon} alt="Page icon" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24" />
             </div>
           ) : emoji ? (

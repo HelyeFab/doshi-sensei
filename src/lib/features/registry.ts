@@ -159,6 +159,18 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
   
+  'flashcard_review': {
+    id: 'flashcard_review',
+    name: 'Flashcard Review',
+    description: 'Review vocabulary and kanji using spaced repetition flashcards',
+    category: 'learning',
+    icon: '🗂️',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+  
   // Storage Features
   'word_lists': {
     id: 'word_lists',
@@ -302,6 +314,22 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: true,
     requiresSubscription: true,
     status: 'planned'
+  },
+  
+  'anki_import': {
+    id: 'anki_import',
+    name: 'Import Anki Decks',
+    description: 'Import your Anki decks into study lists (Premium)',
+    category: 'storage',
+    icon: '📥',
+    limitType: 'none',
+    requiresAuth: true,
+    requiresSubscription: true,
+    status: 'active',
+    metadata: {
+      maxFileSize: 200 * 1024 * 1024,
+      allowedFormats: ['.apkg', '.anki2']
+    }
   }
 };
 

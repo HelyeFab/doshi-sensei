@@ -42,30 +42,68 @@ export async function POST(request: NextRequest) {
     // Try to auto-save in development
     if (isDevelopment) {
       try {
-        // Path to the ProductionSnakePath.tsx file
-        const filePath = path.join(process.cwd(), 'src/components/ProductionSnakePath.tsx');
+        let allUpdatesSuccessful = true;
         
-        // Read the current file
-        const currentContent = fs.readFileSync(filePath, 'utf-8');
+        // Update ProductionSnakePath.tsx with positions
+        const snakePathFile = path.join(process.cwd(), 'src/components/ProductionSnakePath.tsx');
+        const snakePathContent = fs.readFileSync(snakePathFile, 'utf-8');
         
-        // Replace the PRODUCTION_POSITIONS array
-        const regex = /const PRODUCTION_POSITIONS = \[\n([\s\S]*?)\];/;
+        const positionsRegex = /const PRODUCTION_POSITIONS = \[\n([\s\S]*?)\];/;
         const newPositionsArray = `const PRODUCTION_POSITIONS = [\n${positionsString}\n];`;
         
-        if (regex.test(currentContent)) {
-          const updatedContent = currentContent.replace(regex, newPositionsArray);
-          
-          // Write the updated file
-          fs.writeFileSync(filePath, updatedContent, 'utf-8');
-          
+        if (positionsRegex.test(snakePathContent)) {
+          const updatedSnakePathContent = snakePathContent.replace(positionsRegex, newPositionsArray);
+          fs.writeFileSync(snakePathFile, updatedSnakePathContent, 'utf-8');
+        } else {
+          allUpdatesSuccessful = false;
+        }
+        
+        // Update snake path nodes configuration file
+        const nodesConfigFile = path.join(process.cwd(), 'src/config/snakePathNodes.ts');
+        
+        // Generate the nodes array string with pill positions
+        const nodesString = nodes.map((node: any) => {
+          const nodeStr = `  {
+    id: '${node.id}',
+    type: '${node.type}',
+    icon: '${node.icon || ''}',
+    title: '${node.title}',
+    subtitle: '${node.subtitle || ''}'${node.completed ? ',\n    completed: true' : ''}${node.current ? ',\n    current: true' : ''}${node.href ? `,\n    href: '${node.href}'` : ''}${node.pillPosition ? `,\n    pillPosition: '${node.pillPosition}'` : ''}
+  }`;
+          return nodeStr;
+        }).join(',\n');
+        
+        // Generate the complete configuration file content
+        const nodesConfigContent = `// Shared configuration for snake path nodes
+// This file is used by both the practice page and admin dashboard
+
+export interface PathNode {
+  id: string;
+  type: 'lesson' | 'checkpoint' | 'locked';
+  icon?: string;
+  title: string;
+  subtitle?: string;
+  completed?: boolean;
+  current?: boolean;
+  href?: string;
+  pillPosition?: 'left' | 'right' | 'top';
+}
+
+export const SNAKE_PATH_NODES: PathNode[] = [
+${nodesString}
+];`;
+        
+        fs.writeFileSync(nodesConfigFile, nodesConfigContent, 'utf-8');
+        
+        if (allUpdatesSuccessful) {
           return NextResponse.json({ 
             success: true,
             autoSaved: true,
-            message: 'File updated successfully! Next.js will hot-reload automatically.',
+            message: 'Files updated successfully! Next.js will hot-reload automatically.',
             positions: positions.length
           });
         } else {
-          throw new Error('Could not find PRODUCTION_POSITIONS array in file');
+          throw new Error('Could not update all files');
         }
       } catch (error) {
         console.error('Auto-save failed:', error);
@@ -73,7 +111,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate the complete file content for manual copy-paste
+    // Read the current ProductionSnakePath file to preserve the complete implementation
+    let currentFileContent = '';
+    try {
+      const filePath = path.join(process.cwd(), 'src/components/ProductionSnakePath.tsx');
+      currentFileContent = fs.readFileSync(filePath, 'utf-8');
+    } catch (error) {
+      console.error('Could not read current file for reference:', error);
+    }
+
+    // Generate the complete file content with all features
     const fileContent = `'use client';
 
 import React from 'react';
@@ -94,15 +141,18 @@ interface PathNode {
   completed?: boolean;
   current?: boolean;
   href?: string; // Link for navigation
+  pillPosition?: 'left' | 'right' | 'top';
 }
 
 interface ProductionSnakePathProps {
   nodes: PathNode[];
   onNodeClick?: (node: PathNode) => void;
   __testPositions?: Array<{ x: number; y: number }>; // For admin preview only
+  __testRegularSize?: number; // For admin preview only
+  __testCheckpointSize?: number; // For admin preview only
 }
 
-export function ProductionSnakePath({ nodes, onNodeClick, __testPositions }: ProductionSnakePathProps) {
+export function ProductionSnakePath({ nodes, onNodeClick, __testPositions, __testRegularSize, __testCheckpointSize }: ProductionSnakePathProps) {
   const router = useRouter();
 
   const handleNodeClick = (node: PathNode) => {
@@ -170,7 +220,9 @@ export function ProductionSnakePath({ nodes, onNodeClick, __testPositions }: Pro
             <ProductionNode 
               node={node} 
               index={index}
-              onClick={() => handleNodeClick(node)} 
+              onClick={() => handleNodeClick(node)}
+              regularSize={__testRegularSize}
+              checkpointSize={__testCheckpointSize}
             />
           </motion.div>
         );
@@ -183,14 +235,26 @@ interface ProductionNodeProps {
   node: PathNode;
   index: number;
   onClick: () => void;
+  regularSize?: number;
+  checkpointSize?: number;
 }
 
-function ProductionNode({ node, index, onClick }: ProductionNodeProps) {
+function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: ProductionNodeProps) {
   const isLocked = node.type === 'locked';
   const isCheckpoint = node.type === 'checkpoint';
   const isCurrent = node.current;
   
-  const nodeSize = isCheckpoint ? 'w-20 h-20' : 'w-16 h-16';
+  // Use test sizes if provided, otherwise use defaults
+  const defaultRegularSize = 64; // w-16 h-16
+  const defaultCheckpointSize = 80; // w-20 h-20
+  const nodePixelSize = isCheckpoint 
+    ? (checkpointSize || defaultCheckpointSize)
+    : (regularSize || defaultRegularSize);
+  
+  // For backwards compatibility, use Tailwind classes when no custom size
+  const nodeSize = !regularSize && !checkpointSize 
+    ? (isCheckpoint ? 'w-20 h-20' : 'w-16 h-16')
+    : '';
   
   return (
     <div className="relative group">
@@ -203,42 +267,74 @@ function ProductionNode({ node, index, onClick }: ProductionNodeProps) {
           \${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'}
           \${isCurrent ? 'animate-pulse' : ''}
         \`}
+        style={regularSize || checkpointSize ? {
+          width: \`\${nodePixelSize}px\`,
+          height: \`\${nodePixelSize}px\`
+        } : undefined}
       >
         {/* Glow effect on hover */}
         {!isLocked && (
           <div className={\`
             absolute -inset-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity
-            bg-gradient-to-r \${isCheckpoint ? 'from-yellow-400/20 to-amber-500/20' : 'from-primary/20 to-accent/20'}
+            bg-gradient-to-r \${isCheckpoint ? 'from-pink-200/20 to-pink-300/20' : 'from-pink-100/20 to-pink-200/20'}
             blur-xl
           \`} />
         )}
         
-        {/* Node background */}
+        
+        {/* Node background with 3D coin appearance */}
         <div
           className={\`
-            absolute inset-0 rounded-full shadow-lg transform transition-all
-            \${isLocked ? 'bg-gray-300' : ''}
-            \${isCheckpoint ? 'bg-gradient-to-br from-yellow-400 to-amber-500' : ''}
-            \${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-green-400 to-emerald-500' : ''}
-            \${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-purple-400 to-violet-500' : ''}
-            \${!isLocked && 'group-hover:shadow-xl'}
+            absolute inset-0 rounded-full transform transition-all
+            \${isLocked ? 'bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400' : ''}
+            \${isCheckpoint ? 'bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300' : ''}
+            \${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-white via-pink-50 to-pink-100' : ''}
+            \${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-pink-200 via-pink-300 to-pink-400' : ''}
+            \${!isLocked && 'group-hover:shadow-2xl'}
           \`}
+          style={{
+            boxShadow: isLocked 
+              ? '0 4px 8px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,0.6)' 
+              : '0 4px 8px rgba(236,72,153,0.2), inset 0 1px 2px rgba(255,255,255,0.7)'
+          }}
+        />
+        
+        {/* Crescent shadow for 3D depth */}
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none overflow-hidden"
+          style={{
+            background: isLocked 
+              ? 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(0,0,0,0.15) 75%, rgba(0,0,0,0.25) 85%, rgba(0,0,0,0.35) 95%)'
+              : isCheckpoint 
+                ? 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(236,72,153,0.2) 75%, rgba(236,72,153,0.3) 85%, rgba(236,72,153,0.4) 95%)'
+                : node.completed
+                  ? 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(236,72,153,0.1) 75%, rgba(236,72,153,0.2) 85%, rgba(236,72,153,0.3) 95%)'
+                  : 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(236,72,153,0.25) 75%, rgba(236,72,153,0.35) 85%, rgba(236,72,153,0.45) 95%)'
+          }}
+        />
+        
+        {/* Subtle shine effect */}
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%)',
+          }}
         />
         
         {/* Pulse ring animation for all nodes */}
         {!isLocked && (
           <div 
             className={\`absolute inset-0 rounded-full border-2 md:border-4 animate-pulse-ring \${
-              isCheckpoint ? 'border-yellow-400/70' : 
-              node.completed ? 'border-green-400/70' : 
-              'border-purple-400/70'
+              isCheckpoint ? 'border-pink-200/70' : 
+              node.completed ? 'border-pink-100/70' : 
+              'border-pink-300/70'
             }\`}
           />
         )}
         
         {/* Current node indicator */}
         {isCurrent && (
-          <div className="absolute -inset-2 rounded-full border-4 border-purple-500 animate-pulse" />
+          <div className="absolute -inset-2 rounded-full border-4 border-pink-400 animate-pulse" />
         )}
         
         {/* Progress ring for completed nodes */}
@@ -257,39 +353,54 @@ function ProductionNode({ node, index, onClick }: ProductionNodeProps) {
         
         {/* Node content */}
         <div className="relative flex items-center justify-center h-full">
-          {isLocked ? (
-            <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          ) : node.icon ? (
-            <span className={\`\${isCheckpoint ? 'text-3xl' : 'text-2xl'}\`}>{node.icon}</span>
-          ) : (
-            <span className="text-xl text-white font-bold">
-              {node.completed ? '✓' : index + 1}
-            </span>
-          )}
+          {/* Inner coin rim effect */}
+          <div className="absolute inset-2 rounded-full" style={{
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.5)'
+          }}></div>
+          
+          {/* Icon content */}
+          <div className="relative z-10">
+            {isLocked ? (
+              <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            ) : node.icon ? (
+              <span className={\`\${isCheckpoint ? 'text-3xl' : 'text-2xl'}\`}>{node.icon}</span>
+            ) : (
+              <span className="text-xl text-white font-bold">
+                {node.completed ? '✓' : index + 1}
+              </span>
+            )}
+          </div>
         </div>
       </button>
       
-      {/* Node label - appears on hover */}
-      <div className={\`
-        absolute top-full mt-2 left-1/2 transform -translate-x-1/2 text-center
-        transition-all duration-200 pointer-events-none
-        \${isLocked ? 'opacity-50' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-1'}
-      \`}>
-        {node.title && (
-          <div className="bg-background/90 backdrop-blur-sm px-3 py-1 rounded-lg shadow-lg border border-border whitespace-nowrap">
-            <div className="text-sm font-semibold text-foreground">
-              {node.title}
-            </div>
-            {node.subtitle && (
-              <div className="text-xs text-muted-foreground">
-                {node.subtitle}
-              </div>
-            )}
+      {/* Node label pill - positioned based on pillPosition prop */}
+      {node.title && !isLocked && node.pillPosition && (
+        <motion.div 
+          className={\`
+            absolute
+            \${
+              node.pillPosition === 'top' 
+                ? '-top-20 left-1/2 -translate-x-1/2' 
+                : node.pillPosition === 'right' 
+                  ? '-right-28 md:-right-32 top-1/2 -translate-y-1/2' 
+                  : '-left-28 md:-left-32 top-1/2 -translate-y-1/2'
+            }
+          \`}
+          initial={{ 
+            opacity: 0, 
+            x: node.pillPosition === 'top' ? 0 : (node.pillPosition === 'right' ? 20 : -20),
+            y: node.pillPosition === 'top' ? -10 : 0
+          }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          transition={{ delay: index * 0.08 + 0.2, duration: 0.5 }}
+        >
+          <div className="bg-primary text-white text-xs md:text-sm font-medium px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap transition-all hover:shadow-xl hover:scale-105">
+            {node.title}
           </div>
-        )}
-      </div>
+        </motion.div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface LoginPromptModalProps {
   isOpen: boolean;
@@ -12,15 +13,34 @@ interface LoginPromptModalProps {
 
 export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPromptModalProps) {
   const { signInWithGoogle } = useAuth();
+  const { track } = useAnalytics();
+
+  // Track modal shown
+  useEffect(() => {
+    if (isOpen) {
+      track('login_modal_shown', { feature });
+      console.log('📊 [Analytics] Login modal shown:', { feature });
+    }
+  }, [isOpen, feature, track]);
 
   if (!isOpen) return null;
 
   const handleLogin = async () => {
     try {
+      track('registration_started', { method: 'google', feature });
+      console.log('📊 [Analytics] Registration/login started:', { method: 'google', feature });
+      
       await signInWithGoogle();
+      
+      // Track successful registration/login
+      track('registration_completed', { method: 'google', feature });
+      console.log('📊 [Analytics] Registration/login completed:', { method: 'google', feature });
+      
       onClose();
     } catch (error) {
       // Login failed
+      track('registration_failed', { method: 'google', feature, error: error.message });
+      console.error('📊 [Analytics] Registration/login failed:', error);
     }
   };
 
@@ -38,7 +58,11 @@ export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPro
 
           <div className="flex gap-3">
             <button
-              onClick={onClose}
+              onClick={() => {
+                track('login_modal_dismissed', { feature });
+                console.log('📊 [Analytics] Login modal dismissed:', { feature });
+                onClose();
+              }}
               className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
             >
               Maybe Later

@@ -2,6 +2,7 @@ import { StudyList, StudyListType, SavedStudyItem, StudyItemType, JapaneseWord, 
 import { DatabaseManager } from './indexedDB';
 import CloudSync, { SyncResult } from './cloudSync';
 import { User } from 'firebase/auth';
+import { analyticsTracker } from '@/lib/analytics/analyticsTracker';
 
 // Color palette for study lists
 const STUDY_LIST_COLORS = [
@@ -135,6 +136,14 @@ export class StudyListManager {
 
       // Auto-sync for premium users
       await this.autoSyncLists(user, subscriptionStatus);
+
+      // Track list creation
+      analyticsTracker.track('list_created', { 
+        listType: type,
+        listName: name,
+        hasDescription: !!description
+      });
+      console.log('📊 [Analytics] Study list created:', { type, name });
 
       return newList;
     } catch (error) {
@@ -406,6 +415,88 @@ export class StudyListManager {
   }
 
   /**
+   * Save a pre-created SavedStudyItem (for Anki imports)
+   */
+  static async saveItem(item: SavedStudyItem): Promise<void> {
+    try {
+      const savedItems = await this.getSavedStudyItems();
+      
+      // Check if item already exists
+      const existingIndex = savedItems.findIndex(si => si.id === item.id);
+      
+      if (existingIndex >= 0) {
+        // Update existing item
+        savedItems[existingIndex] = item;
+      } else {
+        // Add new item
+        savedItems.push(item);
+      }
+      
+      // Save to storage
+      await this.saveSavedStudyItemsToStorage(savedItems);
+      
+      // Update the lists to include this item
+      const lists = await this.getAllStudyLists();
+      let listsUpdated = false;
+      
+      for (const listId of item.listIds) {
+        const listIndex = lists.findIndex(l => l.id === listId);
+        if (listIndex >= 0 && !lists[listIndex].itemIds.includes(item.id)) {
+          lists[listIndex].itemIds.push(item.id);
+          lists[listIndex].updatedAt = new Date();
+          listsUpdated = true;
+        }
+      }
+      
+      if (listsUpdated) {
+        await this.saveStudyListsToStorage(lists);
+      }
+      
+      // Track the save
+      analyticsTracker.trackListEvent('item_saved', {
+        itemType: item.itemType,
+        listCount: item.listIds.length
+      });
+    } catch (error) {
+      console.error('Error saving item:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update list metadata
+   */
+  static async updateListMetadata(
+    listId: string,
+    metadata: Record<string, any>
+  ): Promise<void> {
+    try {
+      const lists = await this.getAllStudyLists();
+      const listIndex = lists.findIndex(l => l.id === listId);
+      
+      if (listIndex === -1) {
+        throw new Error(`List with ID ${listId} not found`);
+      }
+      
+      // Update the metadata
+      lists[listIndex].metadata = metadata;
+      lists[listIndex].updatedAt = new Date();
+      
+      // Save the updated lists
+      await this.saveStudyListsToStorage(lists);
+      
+      // Track the update
+      analyticsTracker.trackListEvent('list_metadata_updated', {
+        listId,
+        metadataKeys: Object.keys(metadata)
+      });
+    } catch (error) {
+      console.error('Error updating list metadata:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Delete a study list and remove all associations
    */
   static async deleteStudyList(
@@ -450,7 +541,13 @@ export class StudyListManager {
   /**
    * Get all items in a specific list
    */
-  static async getItemsInList(listId: string): Promise<{ words: JapaneseWord[]; kanji: Kanji[]; sentences: Sentence[] }> {
+  static async getItemsInList(listId: string): Promise<{ 
+    words: JapaneseWord[]; 
+    kanji: Kanji[]; 
+    sentences: Sentence[];
+    ankiCards: SavedStudyItem[];
+    allItems: SavedStudyItem[];
+  }> {
     try {
       const savedItems = await this.getSavedStudyItems();
       const listItems = savedItems.filter(saved => saved.listIds.includes(listId));
@@ -458,6 +555,7 @@ export class StudyListManager {
       const words: JapaneseWord[] = [];
       const kanji: Kanji[] = [];
       const sentences: Sentence[] = [];
+      const ankiCards: SavedStudyItem[] = [];
 
       listItems.forEach(item => {
         if (item.itemType === 'word' && item.word) {
@@ -466,13 +564,15 @@ export class StudyListManager {
           kanji.push(item.kanji);
         } else if (item.itemType === 'sentence' && item.sentence) {
           sentences.push(item.sentence);
+        } else if (item.itemType === 'anki_card') {
+          ankiCards.push(item);
         }
       });
 
-      return { words, kanji, sentences };
+      return { words, kanji, sentences, ankiCards, allItems: listItems };
     } catch (error) {
       console.error('Error getting items in list:', error);
-      return { words: [], kanji: [], sentences: [] };
+      return { words: [], kanji: [], sentences: [], ankiCards: [], allItems: [] };
     }
   }
 

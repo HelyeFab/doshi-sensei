@@ -6,6 +6,8 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import { useRouter } from 'next/navigation';
 import { ProductionSnakePath } from '@/components/ProductionSnakePath';
 import { useAuth } from '@/contexts/AuthContext';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { SNAKE_PATH_NODES } from '@/config/snakePathNodes';
 
 // Prevent static generation for admin pages
 export const dynamic = 'force-dynamic';
@@ -29,24 +31,6 @@ const DEFAULT_POSITIONS = [
   { x: 49.0, y: 2010 },
 ];
 
-// Default nodes
-const DEFAULT_NODES = [
-  { id: 'welcome', type: 'checkpoint' as const, icon: '⭐', title: 'Welcome!', subtitle: 'Start your journey', completed: true },
-  { id: 'hiragana', type: 'lesson' as const, icon: 'あ', title: 'Hiragana', subtitle: 'Basic Characters', completed: true, href: '/practice/hiragana' },
-  { id: 'katakana', type: 'lesson' as const, icon: 'ア', title: 'Katakana', subtitle: 'Phonetic Script', completed: true, href: '/practice/katakana' },
-  { id: 'checkpoint1', type: 'checkpoint' as const, icon: '⭐', title: 'Checkpoint 1', subtitle: 'Play games!', completed: false, href: '/games' },
-  { id: 'conjugation', type: 'lesson' as const, icon: '動', title: 'Conjugation', subtitle: 'Verb Forms', completed: false, current: true, href: '/practice/conjugation' },
-  { id: 'dummy1', type: 'lesson' as const, icon: '1', title: 'Lesson 1', subtitle: 'Coming Soon', completed: false },
-  { id: 'dummy2', type: 'lesson' as const, icon: '2', title: 'Lesson 2', subtitle: 'Coming Soon', completed: false },
-  { id: 'checkpoint2', type: 'checkpoint' as const, icon: '⭐', title: 'Checkpoint 2', subtitle: 'More games!', completed: false, href: '/games' },
-  { id: 'dummy3', type: 'lesson' as const, icon: '3', title: 'Lesson 3', subtitle: 'Coming Soon', completed: false },
-  { id: 'dummy4', type: 'lesson' as const, icon: '4', title: 'Lesson 4', subtitle: 'Coming Soon', completed: false },
-  { id: 'dummy5', type: 'lesson' as const, icon: '5', title: 'Lesson 5', subtitle: 'Coming Soon', completed: false },
-  { id: 'checkpoint3', type: 'checkpoint' as const, icon: '⭐', title: 'Checkpoint 3', subtitle: 'Final games!', completed: false, href: '/games' },
-  { id: 'locked1', type: 'locked' as const, title: 'Coming Soon', subtitle: 'Stay tuned!' },
-  { id: 'locked2', type: 'locked' as const, title: 'Coming Soon', subtitle: 'Stay tuned!' },
-  { id: 'locked3', type: 'locked' as const, title: 'Coming Soon', subtitle: 'Stay tuned!' },
-];
 
 type DeviceType = 'mobile' | 'tablet' | 'desktop' | 'bigscreen';
 
@@ -59,6 +43,7 @@ interface PathNode {
   completed?: boolean;
   current?: boolean;
   href?: string;
+  pillPosition?: 'left' | 'right' | 'top';
 }
 
 interface NodePosition {
@@ -76,11 +61,14 @@ interface ResponsivePositions {
 function SnakePathEditor() {
   const router = useRouter();
   const { user } = useAuth();
-  const [nodes, setNodes] = useState<PathNode[]>(DEFAULT_NODES);
+  const [nodes, setNodes] = useState<PathNode[]>(SNAKE_PATH_NODES);
   const [nodeSpacing] = useState(140);
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>('desktop');
   const [isSaving, setIsSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   
   // Node size controls
   const [regularNodeSize, setRegularNodeSize] = useState(64); // Default 64px (w-16 h-16)
@@ -140,7 +128,8 @@ function SnakePathEditor() {
       icon: `${newNodeNumber + 5}`,
       title: `Lesson ${newNodeNumber + 5}`,
       subtitle: 'Coming Soon',
-      completed: false
+      completed: false,
+      pillPosition: nodes.length % 2 === 0 ? 'left' : 'right'
     };
     
     setNodes([...nodes, newNode]);
@@ -174,14 +163,20 @@ function SnakePathEditor() {
     console.log('];');
   };
 
+  const handleSaveClick = () => {
+    setShowSaveModal(true);
+  };
+
   const saveToProduction = async () => {
     setIsSaving(true);
+    setSaveSuccess(false);
+    setSaveError(null);
     
     try {
       // Get the user's auth token
       const token = await user?.getIdToken();
       if (!token) {
-        alert('Authentication error. Please refresh the page.');
+        setSaveError('Authentication error. Please refresh the page.');
         return;
       }
 
@@ -207,8 +202,13 @@ function SnakePathEditor() {
 
       // Check if file was auto-saved in development
       if (result.autoSaved) {
-        alert('✅ Success! The ProductionSnakePath.tsx file has been updated automatically.\n\n' +
-              'Next.js will hot-reload the changes momentarily.');
+        setSaveSuccess(true);
+        setShowSaveModal(false);
+        
+        // Show success modal
+        setTimeout(() => {
+          setShowSaveModal(true);
+        }, 100);
         
         // Still export to console as backup
         console.log('=== BACKUP: Snake Path Positions ===');
@@ -219,12 +219,13 @@ function SnakePathEditor() {
       // Otherwise, copy the file content to clipboard
       if (navigator.clipboard && result.fileContent) {
         await navigator.clipboard.writeText(result.fileContent);
-        alert('Success! The updated ProductionSnakePath.tsx content has been copied to your clipboard.\n\n' +
-              'To apply the changes:\n' +
-              '1. Open /src/components/ProductionSnakePath.tsx\n' +
-              '2. Select all (Ctrl/Cmd + A)\n' +
-              '3. Paste (Ctrl/Cmd + V)\n' +
-              '4. Save the file');
+        setSaveSuccess(true);
+        setShowSaveModal(false);
+        
+        // Show success modal
+        setTimeout(() => {
+          setShowSaveModal(true);
+        }, 100);
       } else {
         // Fallback: create a textarea and copy
         const textarea = document.createElement('textarea');
@@ -236,12 +237,13 @@ function SnakePathEditor() {
         document.execCommand('copy');
         document.body.removeChild(textarea);
         
-        alert('Success! The updated ProductionSnakePath.tsx content has been copied to your clipboard.\n\n' +
-              'To apply the changes:\n' +
-              '1. Open /src/components/ProductionSnakePath.tsx\n' +
-              '2. Select all (Ctrl/Cmd + A)\n' +
-              '3. Paste (Ctrl/Cmd + V)\n' +
-              '4. Save the file');
+        setSaveSuccess(true);
+        setShowSaveModal(false);
+        
+        // Show success modal
+        setTimeout(() => {
+          setShowSaveModal(true);
+        }, 100);
       }
 
       // Also export to console as backup
@@ -249,7 +251,7 @@ function SnakePathEditor() {
       exportPositions();
     } catch (error) {
       console.error('Error saving positions:', error);
-      alert(`Failed to save positions: ${error instanceof Error ? error.message : 'Unknown error'}\n\nCheck the console for manual export.`);
+      setSaveError(error instanceof Error ? error.message : 'Unknown error');
       
       // Export to console as fallback
       exportPositions();
@@ -330,7 +332,7 @@ function SnakePathEditor() {
                 Export to Console
               </button>
               <button
-                onClick={saveToProduction}
+                onClick={handleSaveClick}
                 disabled={isSaving}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm disabled:opacity-50"
               >
@@ -465,6 +467,32 @@ function SnakePathEditor() {
                         {node.title}
                       </span>
                     </div>
+                    
+                    {/* Pill position controls */}
+                    {node.type !== 'locked' && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs text-muted-foreground">Pill:</span>
+                        <div className="flex gap-1">
+                          {(['left', 'right', 'top'] as const).map((position) => (
+                            <button
+                              key={position}
+                              onClick={() => {
+                                setNodes(prev => prev.map((n, i) => 
+                                  i === index ? { ...n, pillPosition: position } : n
+                                ));
+                              }}
+                              className={`px-2 py-1 text-xs rounded ${
+                                node.pillPosition === position 
+                                  ? 'bg-primary text-primary-foreground' 
+                                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                              }`}
+                            >
+                              {position}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -513,6 +541,55 @@ function SnakePathEditor() {
           <li className="ml-4">• In production: Code copies to clipboard for manual update</li>
         </ul>
       </div>
+
+      {/* Save confirmation modal */}
+      <ConfirmationDialog
+        isOpen={showSaveModal && !saveSuccess && !saveError}
+        title="Save Snake Path to Production"
+        message="Are you sure you want to save these changes? The snake path positions and pill labels will be updated."
+        confirmText="Save Changes"
+        cancelText="Cancel"
+        isDestructive={false}
+        onConfirm={saveToProduction}
+        onCancel={() => setShowSaveModal(false)}
+        loading={isSaving}
+      />
+
+      {/* Success modal */}
+      <ConfirmationDialog
+        isOpen={showSaveModal && saveSuccess}
+        title="✅ Success!"
+        message={
+          process.env.NODE_ENV === 'development'
+            ? "The ProductionSnakePath.tsx file has been updated automatically. Next.js will hot-reload the changes momentarily."
+            : "The updated ProductionSnakePath.tsx content has been copied to your clipboard.\n\nTo apply the changes:\n1. Open /src/components/ProductionSnakePath.tsx\n2. Select all (Ctrl/Cmd + A)\n3. Paste (Ctrl/Cmd + V)\n4. Save the file"
+        }
+        confirmText="OK"
+        cancelText=""
+        isDestructive={false}
+        onConfirm={() => {
+          setShowSaveModal(false);
+          setSaveSuccess(false);
+        }}
+        onCancel={() => {}}
+        loading={false}
+      />
+
+      {/* Error modal */}
+      <ConfirmationDialog
+        isOpen={showSaveModal && !!saveError}
+        title="❌ Error"
+        message={`Failed to save positions: ${saveError}\n\nCheck the console for manual export.`}
+        confirmText="OK"
+        cancelText=""
+        isDestructive={true}
+        onConfirm={() => {
+          setShowSaveModal(false);
+          setSaveError(null);
+        }}
+        onCancel={() => {}}
+        loading={false}
+      />
     </div>
   );
 }

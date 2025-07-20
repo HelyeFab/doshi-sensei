@@ -16,6 +16,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -63,6 +64,7 @@ export default function KanjiBrowserPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const strings = useStrings();
+  const { track } = useAnalytics();
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
@@ -229,6 +231,14 @@ export default function KanjiBrowserPage() {
 
   const handleKanjiClick = (kanji: Kanji) => {
     setModalKanji(kanji);
+    
+    // Track kanji view
+    track('kanji_viewed', {
+      kanji: kanji.character,
+      jlptLevel: kanji.jlpt,
+      source: 'kanji_browser'
+    });
+    console.log('📊 [Analytics] Kanji viewed:', { kanji: kanji.character, level: kanji.jlpt });
   };
 
   const handleKanjiSave = (kanji: Kanji) => {

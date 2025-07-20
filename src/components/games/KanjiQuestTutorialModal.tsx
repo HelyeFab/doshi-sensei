@@ -28,24 +28,24 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
             onClick={(e) => e.stopPropagation()}
           >
             {/* Decorative Pokemon icons in corners */}
-            <img 
-              src="/flat-icons/1752632-pokemon/png/017-gaming.png" 
+            <img
+              src="/flat-icons/1752632-pokemon/png/017-gaming.png"
               alt="Pokeball"
               className="absolute top-4 right-4 w-12 h-12 opacity-20 animate-bounce"
             />
-            <img 
-              src="/flat-icons/1752632-pokemon/png/028-gaming.png" 
+            <img
+              src="/flat-icons/1752632-pokemon/png/028-gaming.png"
               alt="Pokemon"
               className="absolute bottom-4 left-4 w-12 h-12 opacity-20 animate-bounce"
               style={{ animationDelay: '0.5s' }}
             />
-            <img 
-              src="/flat-icons/1752632-pokemon/png/055-gaming.png" 
+            <img
+              src="/flat-icons/1752632-pokemon/png/055-gaming.png"
               alt="Pokemon"
               className="absolute top-4 left-16 w-10 h-10 opacity-15 animate-pulse"
             />
-            <img 
-              src="/flat-icons/1752632-pokemon/png/040-gaming.png" 
+            <img
+              src="/flat-icons/1752632-pokemon/png/040-gaming.png"
               alt="Pokemon"
               className="absolute bottom-4 right-16 w-10 h-10 opacity-15 animate-pulse"
               style={{ animationDelay: '1s' }}
@@ -59,8 +59,8 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                   transition={{ duration: 2, repeat: Infinity }}
                   className="inline-block"
                 >
-                  <img 
-                    src="/flat-icons/1752632-pokemon/png/025-gaming.png" 
+                  <img
+                    src="/flat-icons/1752632-pokemon/png/025-gaming.png"
                     alt="Pokemon"
                     className="w-20 h-20 mx-auto mb-4"
                   />
@@ -69,14 +69,14 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                   Welcome to Kanji Quest! 🎮
                 </h2>
                 <p className="text-lg text-gray-600 dark:text-gray-200">
-                  Catch 'em all... but with Kanji! 
+                  Catch 'em all... but with Kanji!
                 </p>
               </div>
 
               {/* Game Rules */}
               <div className="space-y-6 mb-8">
                 {/* Step 1 */}
-                <motion.div 
+                <motion.div
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -84,8 +84,8 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                 >
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                      <img 
-                        src="/flat-icons/1752632-pokemon/png/017-gaming.png" 
+                      <img
+                        src="/flat-icons/1752632-pokemon/png/017-gaming.png"
                         alt="Pokemon"
                         className="w-8 h-8"
                       />
@@ -102,7 +102,7 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                 </motion.div>
 
                 {/* Step 2 */}
-                <motion.div 
+                <motion.div
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
@@ -110,8 +110,8 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                 >
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                      <img 
-                        src="/flat-icons/1752632-pokemon/png/028-gaming.png" 
+                      <img
+                        src="/flat-icons/1752632-pokemon/png/028-gaming.png"
                         alt="Pokemon"
                         className="w-8 h-8"
                       />
@@ -125,13 +125,13 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                       Kanji appear randomly like wild Pokémon! Each kanji needs to be defeated by answering:
                     </p>
                     <ul className="mt-2 space-y-1 ml-4">
-                      <li className="flex items-center gap-2">
+                      <li className="flex items-center gap-2 text-white">
                         <span className="text-blue-500">●</span> On'yomi reading (if it has one)
                       </li>
-                      <li className="flex items-center gap-2">
+                      <li className="flex items-center gap-2 text-white">
                         <span className="text-green-500">●</span> Kun'yomi reading (if it has one)
                       </li>
-                      <li className="flex items-center gap-2">
+                      <li className="flex items-center gap-2 text-white">
                         <span className="text-purple-500">●</span> Meaning (all kanji have this!)
                       </li>
                     </ul>
@@ -139,7 +139,7 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                 </motion.div>
 
                 {/* Step 3 */}
-                <motion.div 
+                <motion.div
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.6 }}
@@ -147,8 +147,8 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                 >
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                      <img 
-                        src="/flat-icons/1752632-pokemon/png/035-gaming.png" 
+                      <img
+                        src="/flat-icons/1752632-pokemon/png/035-gaming.png"
                         alt="Pokemon"
                         className="w-8 h-8"
                       />
@@ -165,7 +165,7 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                 </motion.div>
 
                 {/* Step 4 */}
-                <motion.div 
+                <motion.div
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.8 }}
@@ -173,8 +173,8 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                 >
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                      <img 
-                        src="/flat-icons/1752632-pokemon/png/019-gaming.png" 
+                      <img
+                        src="/flat-icons/1752632-pokemon/png/019-gaming.png"
                         alt="Pokemon"
                         className="w-8 h-8"
                       />
@@ -215,8 +215,8 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                   onClick={onClose}
                   className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-2"
                 >
-                  <img 
-                    src="/flat-icons/1752632-pokemon/png/030-gaming.png" 
+                  <img
+                    src="/flat-icons/1752632-pokemon/png/030-gaming.png"
                     alt="Sleep"
                     className="w-5 h-5 opacity-70"
                   />
@@ -229,8 +229,8 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
                   className="px-8 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg font-bold shadow-lg hover:from-red-600 hover:to-orange-600 transition-all flex items-center gap-2"
                 >
                   <span>Let's Battle!</span>
-                  <img 
-                    src="/flat-icons/1752632-pokemon/png/017-gaming.png" 
+                  <img
+                    src="/flat-icons/1752632-pokemon/png/017-gaming.png"
                     alt="Pokeball"
                     className="w-6 h-6"
                   />

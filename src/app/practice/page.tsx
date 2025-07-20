@@ -9,7 +9,7 @@ import { ProductionSnakePath } from '@/components/ProductionSnakePath';
 import { JourneyDropdown } from '@/components/JourneyDropdown';
 import { PageHelpIcon } from '@/components/PageHelpIcon';
 import { pageHelpContent } from '@/config/pageHelp';
-import DecorativeBackground from '@/components/DecorativeBackground';
+import { SNAKE_PATH_NODES } from '@/config/snakePathNodes';
 // Removed React Spring to use pure CSS animations
 
 // Structured Data for Practice Page
@@ -88,7 +88,7 @@ function InfiniteScrollingBackground() {
       <div
         className="absolute inset-0 -left-32 -right-32"
         style={{
-          transform: `rotate(-15deg)`,
+          transform: `rotate(-15deg) scale(1.3)`,
         }}
       >
         {/* Instagram-style grid columns */}
@@ -113,8 +113,7 @@ function InfiniteScrollingBackground() {
         <div className="absolute inset-0 bg-gradient-to-tl from-violet-600/15 via-transparent to-purple-400/8" />
         {/* Subtle white overlay for better text contrast */}
         <div className="absolute inset-0 bg-white/5 dark:bg-black/10" />
-        {/* Frosted glass effect */}
-        <div className="absolute inset-0 backdrop-blur-[3px]" />
+        {/* Frosted glass effect - removed blur */}
       </div>
     </div>
   );
@@ -423,132 +422,8 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
 
 // Production Learning Path Component with Snake Path
 function ProductionLearningPath() {
-  const nodes = [
-    {
-      id: 'start',
-      type: 'checkpoint' as const,
-      icon: '🌸',
-      title: 'Welcome!',
-      subtitle: 'Start here',
-      completed: true
-    },
-    {
-      id: 'hiragana',
-      type: 'lesson' as const,
-      icon: 'あ',
-      title: 'Hiragana',
-      subtitle: 'Basic syllabary',
-      completed: true,
-      href: '/practice/hiragana'
-    },
-    {
-      id: 'katakana',
-      type: 'lesson' as const,
-      icon: 'ア',
-      title: 'Katakana',
-      subtitle: 'Foreign words',
-      completed: true,
-      href: '/practice/katakana',
-      current: true
-    },
-    {
-      id: 'conjugation',
-      type: 'lesson' as const,
-      icon: '動',
-      title: 'Conjugation',
-      subtitle: 'Verb forms',
-      href: '/practice/conjugation'
-    },
-    {
-      id: 'checkpoint-1',
-      type: 'checkpoint' as const,
-      icon: '🎮',
-      title: 'Checkpoint 1',
-      subtitle: 'Play games!',
-      completed: true,
-      href: '/games'
-    },
-    {
-      id: 'conjugation-drill',
-      type: 'lesson' as const,
-      icon: '⚡',
-      title: 'Conjugation Drill',
-      subtitle: 'Quick practice',
-      href: '/drill/conjugation'
-    },
-    {
-      id: 'flashcards',
-      type: 'lesson' as const,
-      icon: '🎴',
-      title: 'Flashcards',
-      subtitle: 'Spaced repetition',
-      href: '/drill/flashcards'
-    },
-    {
-      id: 'checkpoint-2',
-      type: 'checkpoint' as const,
-      icon: '🕹️',
-      title: 'Checkpoint 2',
-      subtitle: 'More games!',
-      href: '/games'
-    },
-    {
-      id: 'kanji-browser',
-      type: 'lesson' as const,
-      icon: '漢',
-      title: 'Kanji Browser',
-      subtitle: 'Explore kanji',
-      href: '/kanji-browser'
-    },
-    {
-      id: 'vocabulary',
-      type: 'lesson' as const,
-      icon: '📚',
-      title: 'Vocabulary',
-      subtitle: 'Browse words',
-      href: '/vocabulary'
-    },
-    {
-      id: 'mood-boards',
-      type: 'lesson' as const,
-      icon: '🎭',
-      title: 'Mood Boards',
-      subtitle: 'Kanji by feeling',
-      href: '/kanji-moods'
-    },
-    {
-      id: 'checkpoint-3',
-      type: 'checkpoint' as const,
-      icon: '🎯',
-      title: 'Checkpoint 3',
-      subtitle: 'Game time!',
-      href: '/games'
-    },
-    {
-      id: 'news',
-      type: 'lesson' as const,
-      icon: '📰',
-      title: 'News',
-      subtitle: 'Latest updates',
-      href: '/news'
-    },
-    {
-      id: 'ai-stories',
-      type: 'lesson' as const,
-      icon: '🤖',
-      title: 'AI Stories',
-      subtitle: 'Interactive tales',
-      href: '/stories'
-    },
-    {
-      id: 'resources',
-      type: 'lesson' as const,
-      icon: '🎌',
-      title: 'Resources',
-      subtitle: 'Learning tools',
-      href: '/resources'
-    }
-  ];
+  // Use the shared nodes configuration
+  const nodes = SNAKE_PATH_NODES;
 
   return (
     <div className="w-full md:max-w-5xl mx-auto px-0 md:px-4 relative">
@@ -560,9 +435,6 @@ function ProductionLearningPath() {
       <div className="relative overflow-hidden rounded-3xl">
         {/* Infinite Scrolling Background - Local to Learning Path */}
         <InfiniteScrollingBackground />
-
-        {/* Decorative Background Elements */}
-        <DecorativeBackground />
         
         {/* Snake Path Content */}
         <div className="relative z-10 p-8">

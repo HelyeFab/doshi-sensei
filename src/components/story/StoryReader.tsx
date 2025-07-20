@@ -17,6 +17,7 @@ import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/Gram
 import { PageHeader } from '@/components/PageHeader';
 import dynamic from 'next/dynamic';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Dynamic import to avoid SSR issues
 const EnhancedArticleAudioPlayer = dynamic(
@@ -162,8 +163,10 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   const { user } = useAuth();
   const { userType } = useSubscription2();
   const { speakSentence, isPlaying, isCacheLoading } = useStoryTTS();
+  const { trackArticleView, trackArticleComplete } = useAnalytics();
 
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [startTime] = useState(new Date());
   const [selectedWord, setSelectedWord] = useState<SelectedWord | null>(null);
   const [savedWords, setSavedWords] = useState<Set<string>>(new Set());
   const [showQuiz, setShowQuiz] = useState(false);
@@ -197,6 +200,11 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   useEffect(() => {
     if (story.id) {
       storyManager.trackStoryView(story.id);
+      
+      // Track in analytics system
+      const level = story.jlptLevel || 'N5';
+      trackArticleView(`stories.${level}`, story.id);
+      console.log('📊 [Analytics] Story view tracked:', { level, storyId: story.id });
 
       // Cache story for offline reading
       storyOfflineManager.cacheStory(story).catch(error => {
@@ -242,6 +250,13 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
           try {
             const { trackStoryRead } = await import('@/lib/stats/trackingEvents');
             await trackStoryRead(story.id, story.title);
+            
+            // Track in new analytics system
+            const readingTime = Math.ceil((Date.now() - startTime.getTime()) / 1000); // in seconds
+            const level = story.jlptLevel || 'N5';
+            trackArticleComplete(`stories.${level}`, readingTime, story.id);
+            console.log('📊 [Analytics] Story completion tracked:', { level, storyId: story.id, readingTime });
+            
             setHasTrackedCompletion(true);
             
             // Call the onComplete callback if provided

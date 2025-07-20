@@ -40,6 +40,7 @@ export interface DailyActivity {
     totalCorrect: number;
     totalQuestions: number;
   };
+  lastUpdated?: number; // Timestamp for when this was last updated
 }
 
 export interface UserStatsV2 {
@@ -921,23 +922,37 @@ export class StatsTracker {
     // Calculate actual current streak (counting backwards from today)
     let actualStreak = 0;
     const today = this.getDateString(Date.now());
+    const yesterday = this.getDateString(Date.now() - 24 * 60 * 60 * 1000);
     let checkDate = today;
 
     console.log(`📊 [StatsTracker] Checking streak from today (${today}) backwards...`);
-    while (activityDates.has(checkDate)) {
-      actualStreak++;
-      console.log(`✅ [StatsTracker] Activity found on ${checkDate}, streak now: ${actualStreak}`);
-      const prevDate = new Date(checkDate + 'T00:00:00.000Z'); // Ensure UTC
-      prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-      checkDate = this.getDateString(prevDate.getTime());
-    }
     
-    if (actualStreak === 0 && activityDates.has(sortedDates[sortedDates.length - 1])) {
-      // Check if last activity was yesterday (streak might be at risk)
-      const yesterday = this.getDateString(Date.now() - 24 * 60 * 60 * 1000);
-      if (sortedDates[sortedDates.length - 1] === yesterday) {
-        console.log(`⚠️ [StatsTracker] Last activity was yesterday - streak at risk! Activity needed today.`);
+    // First check if user has activity today
+    if (activityDates.has(today)) {
+      // User has activity today, count backwards normally
+      while (activityDates.has(checkDate)) {
+        actualStreak++;
+        console.log(`✅ [StatsTracker] Activity found on ${checkDate}, streak now: ${actualStreak}`);
+        const prevDate = new Date(checkDate + 'T00:00:00.000Z'); // Ensure UTC
+        prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+        checkDate = this.getDateString(prevDate.getTime());
       }
+    } else if (activityDates.has(yesterday)) {
+      // No activity today yet, but was active yesterday - preserve streak
+      console.log(`⚠️ [StatsTracker] No activity today yet, but was active yesterday - preserving streak`);
+      checkDate = yesterday;
+      while (activityDates.has(checkDate)) {
+        actualStreak++;
+        console.log(`✅ [StatsTracker] Activity found on ${checkDate}, streak now: ${actualStreak}`);
+        const prevDate = new Date(checkDate + 'T00:00:00.000Z'); // Ensure UTC
+        prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+        checkDate = this.getDateString(prevDate.getTime());
+      }
+      console.log(`⏰ [StatsTracker] Streak preserved at ${actualStreak} - activity needed today to continue!`);
+    } else {
+      // No activity yesterday or today - streak is broken
+      console.log(`❌ [StatsTracker] No activity yesterday or today - streak is 0`);
+      actualStreak = 0;
     }
 
     // Calculate longest streak ever

@@ -1,6 +1,7 @@
 import EnhancedStorageManager2 from '@/utils/enhancedStorageManager2';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import { trackEvent } from '@/utils/analytics';
+import { analyticsTracker } from '@/lib/analytics/analyticsTracker';
 
 interface KanjiSimonProgress {
   boardId: string;
@@ -61,6 +62,11 @@ export async function saveKanjiSimonProgress(
       result.totalQuestions,
       result.correctAnswers
     );
+    
+    // Track with new analytics
+    const accuracy = result.totalQuestions > 0 ? (result.correctAnswers / result.totalQuestions) * 100 : 0;
+    analyticsTracker.trackGameComplete('kanji_simon', result.score, accuracy);
+    console.log('[KanjiSimon] Analytics tracked:', { game: 'kanji_simon', score: result.score, accuracy });
 
     // Track analytics event
     if (userId) {

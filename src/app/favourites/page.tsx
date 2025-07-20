@@ -16,6 +16,7 @@ import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import ListSelectionModal from '@/components/ListSelectionModal';
 import { useStrings } from '@/contexts/LanguageContext';
 import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
+import { AnkiImportModal } from '@/components/anki/AnkiImportModal';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -72,6 +73,7 @@ export default function FavouritesPage() {
   const [listSentences, setListSentences] = useState<Sentence[]>([]);
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
+  const [showAnkiImportModal, setShowAnkiImportModal] = useState(false);
 
   // Articles state
   const [bookmarkedArticles, setBookmarkedArticles] = useState<any[]>([]);
@@ -214,10 +216,11 @@ export default function FavouritesPage() {
     try {
       setSelectedList(list);
       // Use the unified system to get words, kanji, and sentences from the list
-      const { words, kanji, sentences } = await StudyListManager.getItemsInList(list.id);
+      const { words, kanji, sentences, ankiCards } = await StudyListManager.getItemsInList(list.id);
       setListWords(words);
       setListKanji(kanji);
       setListSentences(sentences);
+      // Note: ankiCards can be displayed separately or converted as needed
     } catch (error) {
       console.error('Error loading list items:', error);
     }
@@ -610,15 +613,26 @@ export default function FavouritesPage() {
                 <p className="text-muted-foreground mb-6">
                   {strings.favourites.lists.emptyState.description}
                 </p>
-                <button
-                  onClick={() => handleCreateListClick()}
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  {strings.favourites.lists.emptyState.createButton}
-                </button>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => handleCreateListClick()}
+                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    {strings.favourites.lists.emptyState.createButton}
+                  </button>
+                  {isPremium && (
+                    <button
+                      onClick={() => setShowAnkiImportModal(true)}
+                      className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    >
+                      <span>📥</span>
+                      Import Anki Deck
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <>
@@ -632,6 +646,15 @@ export default function FavouritesPage() {
                     >
                       {strings.favourites.lists.actions.createList}
                     </button>
+                    {isPremium && (
+                      <button
+                        onClick={() => setShowAnkiImportModal(true)}
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+                      >
+                        <span>📥</span>
+                        Import Anki
+                      </button>
+                    )}
                     {wordLists.length > 0 && (
                       <button
                         onClick={clearAllSaved}
@@ -1155,6 +1178,16 @@ export default function FavouritesPage() {
           title="Create New Study List"
           createButtonText="Create List"
           allowedTypes={['flashcard', 'drillable', 'sentence']}
+        />
+
+        {/* Anki Import Modal */}
+        <AnkiImportModal
+          isOpen={showAnkiImportModal}
+          onClose={() => {
+            setShowAnkiImportModal(false);
+            // Reload lists after successful import
+            loadWordLists();
+          }}
         />
 
         <ConfirmationDialog

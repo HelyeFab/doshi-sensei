@@ -1,6 +1,7 @@
 import EnhancedStorageManager2 from '@/utils/enhancedStorageManager2';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import { trackEvent } from '@/utils/analytics';
+import { analyticsTracker } from '@/lib/analytics/analyticsTracker';
 
 interface ReadingRoutesProgress {
   boardId: string;
@@ -62,6 +63,11 @@ export async function saveReadingRoutesProgress(
       result.totalQuestions,
       result.correctAnswers
     );
+    
+    // Track with new analytics
+    const accuracy = result.totalQuestions > 0 ? (result.correctAnswers / result.totalQuestions) * 100 : 0;
+    analyticsTracker.trackGameComplete('reading_routes', result.score, accuracy);
+    console.log('[ReadingRoutes] Analytics tracked:', { game: 'reading_routes', score: result.score, accuracy });
 
     // Track analytics event
     if (userId) {

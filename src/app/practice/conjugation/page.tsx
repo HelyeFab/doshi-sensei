@@ -13,6 +13,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import StudyListManager from '@/utils/studyListManager';
 import StatsManager from '@/utils/stats';
 import TTSManager from '@/utils/tts';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -63,6 +64,7 @@ export default function ConjugationPage() {
   const { checkAndTrack } = useAccess();
   const { isPremium, userType } = useSubscription2();
   const strings = useStrings();
+  const { track } = useAnalytics();
   const [words, setWords] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,6 +106,14 @@ export default function ConjugationPage() {
       setError(null);
       const searchResults = await searchWords(searchTerm, 50);
       setWords(searchResults);
+      
+      // Track word search
+      track('word_search', { 
+        searchTerm, 
+        resultsCount: searchResults.length,
+        source: 'conjugation_practice' 
+      });
+      console.log('📊 [Analytics] Word search tracked:', { term: searchTerm, results: searchResults.length, source: 'conjugation_practice' });
     } catch (err) {
       setError(strings.errors.networkError);
       console.error('Error searching words:', err);

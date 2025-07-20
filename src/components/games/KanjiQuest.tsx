@@ -12,6 +12,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useTTS } from '@/hooks/useTTS';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Types
 interface StudySession {
@@ -135,6 +136,7 @@ export default function KanjiQuest({
   const { isPremium, userType, isLoading: subscriptionLoading } = useSubscription2();
   const { showNotification } = useNotification();
   const { speak } = useTTS();
+  const { trackGameComplete } = useAnalytics();
   const battleMusicRef = useRef<HTMLAudioElement | null>(null);
   const [isMuted, setIsMuted] = useState(false);
 
@@ -1318,9 +1320,15 @@ export default function KanjiQuest({
     
     // Only track if game lasted more than 10 seconds (to avoid tracking immediate quits)
     if (timeTaken > 10) {
+      // Track with old system
       trackGamePlayed('kanji-quest', score, questionsAnswered, correctAnswers).catch(error => {
         console.error('Failed to track game completion:', error);
       });
+      
+      // Track with new analytics
+      const accuracy = questionsAnswered > 0 ? (correctAnswers / questionsAnswered) * 100 : 0;
+      trackGameComplete('kanji_quest', score, accuracy);
+      console.log('[KanjiQuest] Analytics tracked:', { game: 'kanji_quest', score, accuracy });
     }
 
     if (passed) {
@@ -1637,9 +1645,16 @@ export default function KanjiQuest({
                             answer === quizQuestions[index]?.correctIndex
                           ).length;
                           const score = questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 0;
+                          
+                          // Track with old system
                           trackGamePlayed('kanji-quest', score, questionsAnswered, correctAnswers).catch(error => {
                             console.error('Failed to track early exit:', error);
                           });
+                          
+                          // Track with new analytics
+                          const accuracy = questionsAnswered > 0 ? (correctAnswers / questionsAnswered) * 100 : 0;
+                          trackGameComplete('kanji_quest', score, accuracy);
+                          console.log('[KanjiQuest] Analytics tracked (early exit):', { game: 'kanji_quest', score, accuracy });
                         }
                       }
                       onBack();

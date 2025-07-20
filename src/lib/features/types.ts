@@ -18,6 +18,8 @@ export interface Feature {
   status: FeatureStatus;
   // For shared limits (e.g., all games share a counter)
   sharedLimitGroup?: string;
+  // Optional metadata for feature-specific configuration
+  metadata?: Record<string, any>;
 }
 
 export interface FeatureRegistry {

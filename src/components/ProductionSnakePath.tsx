@@ -6,21 +6,21 @@ import { useRouter } from 'next/navigation';
 
 // Production positions from your adjustments
 const PRODUCTION_POSITIONS = [
-  { x: 20.0, y: 50 }, // Welcome!
-  { x: 26.0, y: 190 }, // Hiragana
-  { x: 46.0, y: 330 }, // Katakana
-  { x: 59.0, y: 470 }, // Checkpoint 1
-  { x: 64.0, y: 610 }, // Conjugation
-  { x: 45.0, y: 750 }, // Lesson 1
-  { x: 32.0, y: 890 }, // Lesson 2
-  { x: 28.0, y: 1030 }, // Checkpoint 2
-  { x: 41.0, y: 1170 }, // Lesson 3
-  { x: 62.0, y: 1310 }, // Lesson 4
-  { x: 45.0, y: 1450 }, // Lesson 5
-  { x: 29.0, y: 1590 }, // Checkpoint 3
-  { x: 34.0, y: 1730 }, // Coming Soon
-  { x: 52.0, y: 1870 }, // Coming Soon
-  { x: 68.0, y: 2010 }, // Coming Soon
+  { x: 39.0, y: 50 }, // Welcome!
+  { x: 46.0, y: 190 }, // Hiragana
+  { x: 38.0, y: 330 }, // Katakana
+  { x: 43.0, y: 470 }, // Checkpoint 1
+  { x: 40.0, y: 610 }, // Conjugation
+  { x: 47.0, y: 750 }, // Conjugation Drill
+  { x: 57.0, y: 890 }, // Flashcards
+  { x: 51.0, y: 1030 }, // Checkpoint 2
+  { x: 41.0, y: 1170 }, // Kanji Browser
+  { x: 44.0, y: 1310 }, // Vocabulary
+  { x: 51.0, y: 1450 }, // Mood Boards
+  { x: 59.0, y: 1590 }, // Checkpoint 3
+  { x: 52.0, y: 1730 }, // News
+  { x: 44.0, y: 1870 }, // AI Stories
+  { x: 49.0, y: 2010 }, // Resources
 ];
 
 interface PathNode {
@@ -32,6 +32,7 @@ interface PathNode {
   completed?: boolean;
   current?: boolean;
   href?: string; // Link for navigation
+  pillPosition?: 'left' | 'right' | 'top';
 }
 
 interface ProductionSnakePathProps {
@@ -171,16 +172,44 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
           `} />
         )}
         
-        {/* Node background */}
+        
+        {/* Node background with 3D coin appearance */}
         <div
           className={`
-            absolute inset-0 rounded-full shadow-lg transform transition-all
-            ${isLocked ? 'bg-gray-300' : ''}
-            ${isCheckpoint ? 'bg-gradient-to-br from-pink-100 to-pink-200' : ''}
-            ${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-white to-pink-50' : ''}
-            ${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-pink-200 to-pink-300' : ''}
-            ${!isLocked && 'group-hover:shadow-xl'}
+            absolute inset-0 rounded-full transform transition-all
+            ${isLocked ? 'bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400' : ''}
+            ${isCheckpoint ? 'bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300' : ''}
+            ${!isLocked && !isCheckpoint && node.completed ? 'bg-gradient-to-br from-white via-pink-50 to-pink-100' : ''}
+            ${!isLocked && !isCheckpoint && !node.completed ? 'bg-gradient-to-br from-pink-200 via-pink-300 to-pink-400' : ''}
+            ${!isLocked && 'group-hover:shadow-2xl'}
           `}
+          style={{
+            boxShadow: isLocked 
+              ? '0 4px 8px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,0.6)' 
+              : '0 4px 8px rgba(236,72,153,0.2), inset 0 1px 2px rgba(255,255,255,0.7)'
+          }}
+        />
+        
+        {/* Crescent shadow for 3D depth */}
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none overflow-hidden"
+          style={{
+            background: isLocked 
+              ? 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(0,0,0,0.15) 75%, rgba(0,0,0,0.25) 85%, rgba(0,0,0,0.35) 95%)'
+              : isCheckpoint 
+                ? 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(236,72,153,0.2) 75%, rgba(236,72,153,0.3) 85%, rgba(236,72,153,0.4) 95%)'
+                : node.completed
+                  ? 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(236,72,153,0.1) 75%, rgba(236,72,153,0.2) 85%, rgba(236,72,153,0.3) 95%)'
+                  : 'radial-gradient(circle at 50% 30%, transparent 65%, rgba(236,72,153,0.25) 75%, rgba(236,72,153,0.35) 85%, rgba(236,72,153,0.45) 95%)'
+          }}
+        />
+        
+        {/* Subtle shine effect */}
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%)',
+          }}
         />
         
         {/* Pulse ring animation for all nodes */}
@@ -215,8 +244,10 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
         
         {/* Node content */}
         <div className="relative flex items-center justify-center h-full">
-          {/* White circle border */}
-          <div className="absolute inset-2 rounded-full border-2 border-white"></div>
+          {/* Inner coin rim effect */}
+          <div className="absolute inset-2 rounded-full" style={{
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.5)'
+          }}></div>
           
           {/* Icon content */}
           <div className="relative z-10">
@@ -235,25 +266,32 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
         </div>
       </button>
       
-      {/* Node label - appears on hover */}
-      <div className={`
-        absolute top-full mt-2 left-1/2 transform -translate-x-1/2 text-center
-        transition-all duration-200 pointer-events-none
-        ${isLocked ? 'opacity-50' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-1'}
-      `}>
-        {node.title && (
-          <div className="bg-background/90 backdrop-blur-sm px-3 py-1 rounded-lg shadow-lg border border-border whitespace-nowrap">
-            <div className="text-sm font-semibold text-foreground">
-              {node.title}
-            </div>
-            {node.subtitle && (
-              <div className="text-xs text-muted-foreground">
-                {node.subtitle}
-              </div>
-            )}
+      {/* Node label pill - positioned based on pillPosition prop */}
+      {node.title && !isLocked && node.pillPosition && (
+        <motion.div 
+          className={`
+            absolute
+            ${
+              node.pillPosition === 'top' 
+                ? '-top-20 left-1/2 -translate-x-1/2' 
+                : node.pillPosition === 'right' 
+                  ? '-right-28 md:-right-32 top-1/2 -translate-y-1/2' 
+                  : '-left-28 md:-left-32 top-1/2 -translate-y-1/2'
+            }
+          `}
+          initial={{ 
+            opacity: 0, 
+            x: node.pillPosition === 'top' ? 0 : (node.pillPosition === 'right' ? 20 : -20),
+            y: node.pillPosition === 'top' ? -10 : 0
+          }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          transition={{ delay: index * 0.08 + 0.2, duration: 0.5 }}
+        >
+          <div className="bg-primary text-white text-xs md:text-sm font-medium px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap transition-all hover:shadow-xl hover:scale-105">
+            {node.title}
           </div>
-        )}
-      </div>
+        </motion.div>
+      )}
     </div>
   );
 }

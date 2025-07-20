@@ -7,12 +7,14 @@ import MoodBoard from '@/components/kanji-moods/MoodBoard';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { Analytics } from '@/utils/analytics';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function MoodBoardPage() {
   const router = useRouter();
   const params = useParams();
   const boardId = params.boardId as string;
   const { user } = useAuth();
+  const { trackArticleView } = useAnalytics();
   const { moodBoards, loading: boardsLoading } = useMoodBoards();
 
   const [board, setBoard] = useState<MoodBoardType | null>(null);
@@ -43,6 +45,10 @@ export default function MoodBoardPage() {
               kanjiCount: boardData.kanji?.length || 0,
               viewedAt: new Date().toISOString(),
             });
+            
+            // Track in new analytics system
+            trackArticleView('moodboards', boardId);
+            console.log('📊 [Analytics] Moodboard view tracked:', { boardId, title: boardData.title });
           } else {
           setNotFound(true);
         }

@@ -64,9 +64,23 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
     }
   };
 
+  // Helper to render content that may contain HTML (for Anki cards)
+  const renderContent = (content: string) => {
+    // Check if content contains HTML tags (common in Anki cards)
+    if (content.includes('<') && content.includes('>')) {
+      return (
+        <div 
+          className="anki-content"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
+    }
+    return content;
+  };
+
   return (
     <div className="max-w-md mx-auto">
-      {/* Custom CSS for 3D flip animation */}
+      {/* Custom CSS for 3D flip animation and Anki content */}
       <style jsx>{`
         .flip-container {
           perspective: 1000px;
@@ -92,6 +106,15 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
         .flip-card-back {
           transform: rotateY(180deg);
         }
+        .anki-content img {
+          max-width: 100%;
+          height: auto;
+          margin: 0.5rem auto;
+        }
+        .anki-content audio {
+          margin: 0.5rem auto;
+          display: block;
+        }
       `}</style>
 
       {/* Card Type Indicator */}
@@ -111,7 +134,7 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
           <div className="flip-card-front bg-card border border-border rounded-xl shadow-lg flex flex-col items-center justify-center p-6">
             <div className="text-center mb-6">
               <div className="text-4xl japanese-text font-medium text-card-foreground mb-4">
-                {question.question}
+                {renderContent(question.question)}
               </div>
               {showHint && question.hint && (
                 <div className="text-lg japanese-text text-muted-foreground">
@@ -143,7 +166,7 @@ export default function FlashcardCard({ question, onAnswer, showHint = false }: 
 
               {/* Main answer */}
               <div className="text-4xl japanese-text font-medium text-card-foreground mb-4">
-                {question.answer}
+                {renderContent(question.answer)}
               </div>
 
               {/* Show additional info only if it's different from what's already shown */}

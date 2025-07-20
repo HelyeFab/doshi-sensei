@@ -93,13 +93,54 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // Analytics collection - admin read access, authenticated users can write events
-    match /analytics/{analyticsId} {
-      // Allow admin to read all analytics data
+    // Analytics collection - admin-only access for aggregated data
+    match /analytics/{date} {
+      // Only admin can read analytics data
       allow read: if isAdmin();
+      
+      // No direct client writes allowed (analytics are aggregated server-side)
+      allow write: if false;
+      
+      // Daily aggregated analytics subcollection
+      match /daily/{documentType} {
+        // Admin can read all daily analytics
+        allow read: if isAdmin();
+        
+        // Allow the analytics system to write aggregated data
+        // Note: In production, use a service account or Cloud Function
+        allow write: if request.auth != null;
+      }
+      
+      // Weekly/monthly aggregates
+      match /aggregated/{period} {
+        allow read: if isAdmin();
+        allow write: if request.auth != null;
+      }
+    }
 
-      // Allow any authenticated user to create analytics events
-      allow write: if request.auth != null;
+    // Site Analytics collection - admin-only access for aggregated data (new analytics system)
+    match /site-analytics/{date} {
+      // Only admin can read analytics data
+      allow read: if isAdmin();
+      
+      // No direct client writes allowed (analytics are aggregated server-side)
+      allow write: if false;
+      
+      // Daily aggregated analytics subcollection
+      match /daily/{documentType} {
+        // Admin can read all daily analytics
+        allow read: if isAdmin();
+        
+        // Allow the analytics system to write aggregated data
+        // Note: In production, use a service account or Cloud Function
+        allow write: if request.auth != null;
+      }
+      
+      // Weekly/monthly aggregates
+      match /aggregated/{period} {
+        allow read: if isAdmin();
+        allow write: if request.auth != null;
+      }
     }
 
     // Webhook events collection - server-side only

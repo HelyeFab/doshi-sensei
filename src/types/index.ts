@@ -302,7 +302,7 @@ export interface CachedAPIResponse {
 
 // Unified Study List Types
 export type StudyListType = 'drillable' | 'flashcard' | 'sentence';
-export type StudyItemType = 'word' | 'kanji' | 'sentence';
+export type StudyItemType = 'word' | 'kanji' | 'sentence' | 'anki_card';
 
 export interface StudyList {
   id: string;
@@ -313,16 +313,38 @@ export interface StudyList {
   createdAt: Date;
   updatedAt: Date;
   color: string; // Pastel color for the pill
+  metadata?: Record<string, any>; // Optional metadata for special lists (e.g., Anki imports)
 }
 
 export interface SavedStudyItem {
   id: string;
-  itemType: StudyItemType; // 'word', 'kanji', or 'sentence'
+  itemType: StudyItemType; // 'word', 'kanji', 'sentence', or 'anki_card'
   word?: JapaneseWord; // Present if itemType is 'word'
   kanji?: Kanji; // Present if itemType is 'kanji'
   sentence?: Sentence; // Present if itemType is 'sentence'
   savedAt: Date;
   listIds: string[]; // Which lists this item belongs to
+  
+  // Anki-specific data (present if itemType is 'anki_card')
+  ankiData?: {
+    originalId: string;
+    deckName: string;
+    cardType: 'basic' | 'cloze' | 'reverse';
+    front: string;
+    back: string;
+    tags: string[];
+    media: string[]; // Firebase Storage URLs
+    
+    // SRS data preserved from Anki
+    srsData: {
+      due: Date;
+      interval: number;
+      ease: number;
+      reviews: number;
+      lapses: number;
+      lastReview?: Date;
+    };
+  };
 }
 
 // Legacy types for backward compatibility (will be removed)

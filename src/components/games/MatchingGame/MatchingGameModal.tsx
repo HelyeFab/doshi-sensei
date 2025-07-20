@@ -11,6 +11,7 @@ import VictoryScreen from './VictoryScreen';
 import { useGameTTS } from '@/hooks/useTTS';
 import { useStrings } from '@/contexts/LanguageContext';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface MatchingGameModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ interface MatchingGameModalProps {
 export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain }: MatchingGameModalProps) {
   const strings = useStrings();
   const { speakGameText } = useGameTTS();
+  const { trackGameComplete } = useAnalytics();
   
   // Calculate number of pairs based on available words
   const pairCount = useMemo(() => {
@@ -262,6 +264,11 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                     console.error('Failed to track game completion:', error);
                   });
                   
+                  // Track with new analytics
+                  const accuracy = newMoves > 0 ? (prev.totalPairs / newMoves) * 100 : 0;
+                  trackGameComplete('matching_game', score, accuracy);
+                  console.log('[MatchingGame] Analytics tracked:', { game: 'matching_game', score, accuracy });
+                  
                   setGameStats({
                     totalMoves: newMoves,
                     timeTaken,
@@ -458,6 +465,11 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                         trackGamePlayed('matching-game', score, gameState.totalPairs, gameState.matchedPairs).catch(error => {
                           console.error('Failed to track early exit:', error);
                         });
+                        
+                        // Track with new analytics
+                        const accuracy = gameState.moves > 0 ? (gameState.matchedPairs / gameState.moves) * 100 : 0;
+                        trackGameComplete('matching_game', score, accuracy);
+                        console.log('[MatchingGame] Analytics tracked (early exit):', { game: 'matching_game', score, accuracy });
                       }
                       
                       onClose();

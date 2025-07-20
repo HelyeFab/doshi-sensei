@@ -34,6 +34,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     href: '/admin/features',
   },
   {
+    id: 'analytics' as AdminSection,
+    labelKey: 'analytics',
+    iconKey: 'analytics',
+    href: '/admin/analytics',
+  },
+  {
     id: 'mood-boards' as AdminSection,
     labelKey: 'moodBoards',
     iconKey: 'moodBoards',
@@ -98,10 +104,12 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     ...item,
     label: strings.navigation?.admin?.[item.labelKey]?.label || 
            (item.labelKey === 'debug' ? 'Debug Tools' : 
-            item.labelKey === 'snakePath' ? 'Snake Path' : item.labelKey),
+            item.labelKey === 'snakePath' ? 'Snake Path' : 
+            item.labelKey === 'analytics' ? 'Analytics' : item.labelKey),
     icon: strings.navigation?.admin?.[item.labelKey]?.icon || 
           (item.labelKey === 'debug' ? '🐛' : 
-           item.labelKey === 'snakePath' ? '🐍' : '📋'),
+           item.labelKey === 'snakePath' ? '🐍' : 
+           item.labelKey === 'analytics' ? '📊' : '📋'),
   }));
 
   const handleSectionClick = (section: AdminSection) => {
@@ -131,7 +139,13 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="text-2xl">🎯</div>
+              <div className="w-8 h-8 relative">
+                <img 
+                  src="/flat-icons/ui/navbar/dashboard.svg" 
+                  alt="Admin Dashboard" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <div>
                 <h1 className="text-lg font-bold text-foreground">{strings.admin?.title || 'Admin'}</h1>
                 <p className="text-sm text-muted-foreground">{strings.appName || 'Doshi Sensei'}</p>

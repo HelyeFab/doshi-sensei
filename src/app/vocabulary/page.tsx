@@ -10,6 +10,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
 import { StudyListManager } from '@/utils/studyListManager';
 import { ExampleSentencesBlock } from '@/components/vocabulary/ExampleSentencesBlock';
@@ -22,6 +23,7 @@ export default function VocabularyPage() {
   const { user } = useAuth();
   const { subscription } = useSubscription2();
   const strings = useStrings();
+  const { track } = useAnalytics();
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -115,6 +117,14 @@ export default function VocabularyPage() {
         resultsCount: searchResults.length,
         searchedAt: new Date().toISOString(),
       });
+      
+      // Track in new analytics system
+      track('word_search', { 
+        searchTerm: term, 
+        resultsCount: searchResults.length,
+        source: searchSource 
+      });
+      console.log('📊 [Analytics] Word search tracked:', { term, results: searchResults.length, source: searchSource });
     } catch (err) {
       setError('Search failed. Please try again.');
       console.error('Error searching words:', err);

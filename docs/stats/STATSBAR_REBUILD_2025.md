@@ -398,9 +398,34 @@ The Firebase stats structure migration was completed successfully:
    - ✅ Cloud sync no longer overwrites recent updates
    - ✅ Race conditions prevented with timestamp checks
 
+### Streak Display Enhancement (January 20, 2025)
+
+#### Problem
+Users experienced confusion when their streak appeared to reset to 0 each day before completing their first activity, even though they were active the previous day. This created a poor UX with streaks jumping from 0 to their actual value after the first activity.
+
+#### Solution
+Modified the streak calculation logic to preserve yesterday's streak value until the end of the current day if the user was active yesterday:
+
+1. **Streak Preservation Logic** (`validateAndFixStreak` in statsTracker.ts):
+   - If user has no activity today but was active yesterday, the streak is preserved
+   - Streak only resets to 0 if user missed yesterday entirely
+   - When user completes first activity today, streak increments properly
+
+2. **Visual Indicators** (StatsBar.tsx):
+   - When streak is at risk (active yesterday, no activity today):
+     - Icon changes from 🔥 to ⚠️
+     - Label changes from "Streak" to "At Risk!"
+   - Clear visual feedback that action is needed today
+
+#### User Experience Flow
+- **Previous behavior**: Streak 1 → Open app next day → Shows 0 → Do activity → Shows 2
+- **New behavior**: Streak 1 → Open app next day → Shows 1 with ⚠️ "At Risk!" → Do activity → Shows 2 with 🔥
+
+This provides a more intuitive experience where users understand their streak is maintained but requires action today to continue.
+
 ---
 
 *Document created: January 2025*  
 *Author: Claude (AI Assistant)*  
 *Status: ✅ Complete - All critical bugs fixed*  
-*Last Updated: January 19, 2025*
+*Last Updated: January 20, 2025*

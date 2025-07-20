@@ -5,6 +5,8 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { useEffect } from 'react';
 
 interface UpgradePromptModalProps {
   isOpen: boolean;
@@ -16,6 +18,15 @@ interface UpgradePromptModalProps {
 export function UpgradePromptModal({ isOpen, onClose, message, feature }: UpgradePromptModalProps) {
   const { createCheckoutSession } = useSubscription2();
   const strings = useStrings();
+  const { trackUpgradeModalShown, track } = useAnalytics();
+
+  // Track modal shown
+  useEffect(() => {
+    if (isOpen) {
+      trackUpgradeModalShown('feature_limit', feature);
+      console.log('📊 [Analytics] Upgrade modal shown:', { trigger: 'feature_limit', feature });
+    }
+  }, [isOpen, feature, trackUpgradeModalShown]);
 
   if (!isOpen) return null;
 
@@ -24,6 +35,10 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
 
   const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
     try {
+      // Track upgrade plan selected
+      track('upgrade_plan_selected', { plan, feature });
+      console.log('📊 [Analytics] Upgrade plan selected:', { plan, feature });
+      
       const priceId = plan === 'monthly'
         ? STRIPE_CONFIG.priceIds.monthly
         : STRIPE_CONFIG.priceIds.yearly;
@@ -82,7 +97,11 @@ export function UpgradePromptModal({ isOpen, onClose, message, feature }: Upgrad
           </div>
 
           <button
-            onClick={onClose}
+            onClick={() => {
+              track('upgrade_modal_dismissed', { feature });
+              console.log('📊 [Analytics] Upgrade modal dismissed:', { feature });
+              onClose();
+            }}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {strings.subscriptions.maybeLater}

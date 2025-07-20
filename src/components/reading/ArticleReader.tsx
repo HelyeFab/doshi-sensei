@@ -32,6 +32,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { cleanTextForTTS } from '@/utils/japaneseParser';
 import { useStrings } from '@/contexts/LanguageContext';
 import { trackArticleRead } from '@/lib/stats/trackingEvents';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -342,6 +343,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const { userType } = useSubscription2();
   const isPremium = userType === 'monthly' || userType === 'yearly';
   const router = useRouter();
+  const { trackArticleView, trackArticleComplete } = useAnalytics();
 
   const [settings, setSettings] = useState<ReadingSettings>(() => {
     // Load settings from localStorage
@@ -383,6 +385,13 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [vocabularyEncountered, setVocabularyEncountered] = useState<Set<string>>(new Set());
   const [statsVisible, setStatsVisible] = useState(false);
   const [showShadowingMode, setShowShadowingMode] = useState(false);
+
+  // Track article view on mount
+  useEffect(() => {
+    const category = article.category || 'uncategorized';
+    trackArticleView(category, article.id);
+    console.log('📊 [Analytics] Article view tracked:', { category, articleId: article.id });
+  }, [article.id, article.category, trackArticleView]);
   const [userRequestedStats, setUserRequestedStats] = useState(false);
   const [showGrammarLegend, setShowGrammarLegend] = useState(false);
   const [stableWPM, setStableWPM] = useState(0);
@@ -551,9 +560,15 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     if (progress >= 95 && readingProgress < 95) {
       console.log('✅ [ArticleReader] Article completed! Tracking read...');
       const readingTime = Math.ceil((Date.now() - readingStartTime.getTime()) / 60000); // in minutes
+      
+      // Track in both systems during migration
       trackArticleRead(article.id, article.title, readingTime).catch(error => {
         console.error('Failed to track article read:', error);
       });
+      
+      // Track in new analytics system
+      const category = article.category || 'uncategorized';
+      trackArticleComplete(category, readingTime * 60, article.id); // Convert minutes to seconds
     }
   };
 

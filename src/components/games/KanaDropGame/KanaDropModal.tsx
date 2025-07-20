@@ -15,6 +15,8 @@ import KanaChart from '@/components/kana/KanaChart';
 import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { PageHeader } from '@/components/PageHeader';
 
 interface KanaDropModalProps {
   isOpen: boolean;
@@ -27,7 +29,8 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining } = useFeature('kana_drop');
   const { isPremium, userType } = useSubscription2();
-  
+  const { trackGameComplete } = useAnalytics();
+
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [hasIncrementedUsage, setHasIncrementedUsage] = useState(false);
@@ -144,7 +147,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   // Handle start game with selected kana
   const handleStartWithSelectedKana = () => {
     const kanaData = getSelectedKanaData;
-    
+
     if (kanaData.length === 0) {
       showNotification({
         title: 'No Characters Selected',
@@ -153,7 +156,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       });
       return;
     }
-    
+
     if (kanaData.length > 10) {
       showNotification({
         title: 'Too Many Characters',
@@ -165,13 +168,13 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
     // Set the selected kana and proceed to how-to-play
     setInternalSelectedKana(kanaData);
-    
+
     // Update game state with the selected kana
     setGameState(prev => ({
       ...prev,
       selectedKana: kanaData
     }));
-    
+
     setShowKanaSelection(false);
     setShowHowToPlay(true);
   };
@@ -246,17 +249,17 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       lastGameScore,
       hasIncrementedUsage
     });
-    
+
     if (!gameState.isPlaying && gameState.startTime > 0 && !hasIncrementedUsage) {
       const timePlayed = Date.now() - gameState.startTime;
       const finalScore = gameState.score || lastGameScore;
-      
+
       console.log('[KanaDrop] Game ended, checking tracking conditions:', {
         timePlayed: Math.round(timePlayed / 1000),
         needsMoreThan5Seconds: timePlayed > 5000,
         finalScore
       });
-      
+
       // Only track if game lasted more than 5 seconds (to avoid tracking immediate quits)
       if (timePlayed > 5000) {
         console.log('[KanaDrop] Game ended, tracking completion:', {
@@ -265,12 +268,16 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
           isWin: finalScore >= GAME_CONSTANTS.WINNING_SCORE,
           isLoss: finalScore <= -50
         });
-        
+
         // Track game completion
         trackGamePlayed('kana-drop', finalScore).catch(error => {
           console.error('Failed to track game completion:', error);
         });
         
+        // Track with new analytics (no accuracy metric for this game)
+        trackGameComplete('kana_drop', finalScore);
+        console.log('[KanaDrop] Analytics tracked:', { game: 'kana_drop', score: finalScore });
+
         setHasIncrementedUsage(true);
         setLastGameScore(0); // Reset for next game
       }
@@ -306,10 +313,10 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       }));
 
       setShowVictory(true);
-      
+
       // Usage tracking is now handled automatically by checkAndTrack
       // Game completion tracking is now handled in the general game end useEffect
-      
+
       // Play victory sound
       getGameAudioManager().playSound('victory').catch(() => {
         console.warn('[KanaDrop] Failed to play victory sound');
@@ -359,26 +366,30 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   // Handle end game button click
   const handleEndGame = () => {
     console.log('[KanaDrop] End game button clicked');
-    
+
     // Track the game if it's been playing for more than 5 seconds
     if (gameState.startTime > 0 && !hasIncrementedUsage) {
       const timePlayed = Date.now() - gameState.startTime;
       const finalScore = gameState.score || lastGameScore;
-      
+
       if (timePlayed > 5000) {
         console.log('[KanaDrop] Tracking game before closing:', {
           score: finalScore,
           timePlayed: Math.round(timePlayed / 1000)
         });
-        
+
         trackGamePlayed('kana-drop', finalScore).catch(error => {
           console.error('Failed to track game completion:', error);
         });
         
+        // Track with new analytics (no accuracy metric for this game)
+        trackGameComplete('kana_drop', finalScore);
+        console.log('[KanaDrop] Analytics tracked (early exit):', { game: 'kana_drop', score: finalScore });
+
         setHasIncrementedUsage(true);
       }
     }
-    
+
     // Close the modal after tracking
     setTimeout(() => {
       onClose();
@@ -390,10 +401,10 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
     setShowVictory(false);
     setGameStats(null);
     setHasIncrementedUsage(false); // Reset usage tracking
-    
+
     // Use the current game state's selectedKana to ensure consistency
     const currentSelectedKana = gameState.selectedKana.length > 0 ? gameState.selectedKana : effectiveSelectedKana;
-    
+
     setGameState({
       score: 0,
       selectedKana: currentSelectedKana,
@@ -424,7 +435,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       setShowVictory(false);
       setGameStats(null);
       setHasIncrementedUsage(false); // Reset usage tracking
-      
+
       // If no kana provided (games page flow), show kana selection
       if (selectedKana.length === 0) {
         setShowKanaSelection(true);
@@ -438,7 +449,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
         setShowKanaSelection(false);
         setShowHowToPlay(true);
       }
-      
+
       setGameState({
         score: 0,
         selectedKana: effectiveSelectedKana,
@@ -520,28 +531,26 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative w-full h-full md:w-[900px] md:h-[700px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
+            className="relative w-full h-full md:w-[900px] md:h-[900px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
           >
-            {/* Header */}
-            <div className="p-6 border-b border-border">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Select Kana for Kana Drop</h2>
-                <button
-                  onClick={onClose}
-                  className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <p className="text-muted-foreground mt-2">
-                Select 1-10 kana characters to practice. Click the purple corner to select.
-              </p>
+            {/* Virtual Companion Section - 1/6th of screen height */}
+            <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
+              {/* Gradient Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+
+              {/* Gradient to White Fade */}
+              <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
             </div>
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Page Header */}
+              <PageHeader
+                icon="/flat-icons/root-icons/kana-drop.svg"
+                showBackButton={true}
+                onBackClick={onClose}
+              />
+
               {/* Chart Type Toggle */}
               <div className="flex justify-center gap-2">
                 <button
@@ -600,27 +609,27 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
             {/* Footer with Start Button */}
             <div className="p-6 border-t border-border bg-muted/50">
               <div className="text-center space-y-4">
-                <div className={`text-sm ${(selectedHiragana.size + selectedKatakana.size) > 10 
-                  ? 'text-red-600 font-medium' 
+                <div className={`text-sm ${(selectedHiragana.size + selectedKatakana.size) > 10
+                  ? 'text-red-600 font-medium'
                   : 'text-muted-foreground'
                 }`}>
-                  {selectedHiragana.size + selectedKatakana.size} characters selected 
-                  {(selectedHiragana.size + selectedKatakana.size) > 10 
-                    ? ' (Too many! Maximum is 10)' 
+                  {selectedHiragana.size + selectedKatakana.size} characters selected
+                  {(selectedHiragana.size + selectedKatakana.size) > 10
+                    ? ' (Too many! Maximum is 10)'
                     : ' (1-10 required)'
                   }
                 </div>
-                <div className="flex gap-4 justify-center">
+                <div className="flex gap-3 justify-center">
                   <button
                     onClick={onClose}
-                    className="px-8 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors"
+                    className="px-6 py-2 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors text-sm"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleStartWithSelectedKana}
                     disabled={getSelectedKanaData.length === 0 || getSelectedKanaData.length > 10}
-                    className="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                   >
                     Start Game ({getSelectedKanaData.length} selected)
                   </button>
@@ -647,13 +656,13 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
             }
           }}
         >
-          <motion.div
+                    <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative w-full h-full md:w-[800px] md:h-[600px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col items-center justify-center"
+            className="relative w-full h-full md:w-[800px] md:h-[600px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
           >
-            <div className="p-8 text-center">
+                        <div className="p-8 text-center">
               <h2 className="text-3xl font-bold mb-4">How to Play Kana Drop</h2>
               <ul className="text-lg text-muted-foreground mb-6 space-y-2 text-left max-w-md mx-auto">
                 <li>• Score <span className="font-bold text-primary">100 points</span> to win!</li>
@@ -676,13 +685,13 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
               </div>
               <button
                 onClick={handleStartGame}
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-xl hover:bg-primary/90 transition-colors mt-4"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors mt-4"
               >
                 Start Game
               </button>
               <button
                 onClick={onClose}
-                className="ml-4 px-8 py-4 bg-muted text-foreground rounded-lg font-semibold text-xl hover:bg-muted/90 transition-colors mt-4"
+                className="ml-3 px-6 py-3 bg-muted text-foreground rounded-lg font-semibold text-lg hover:bg-muted/90 transition-colors mt-4"
               >
                 Cancel
               </button>
@@ -710,8 +719,10 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="relative w-full h-full md:w-[800px] md:h-[600px] bg-background rounded-lg shadow-2xl overflow-hidden"
+          className="relative w-full h-full md:w-[900px] md:h-[700px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
         >
+
+
           {/* Game controls - Close/Pause and Mute buttons */}
           {!showVictory && (
             <div className="absolute top-4 right-4 z-30 flex gap-2">

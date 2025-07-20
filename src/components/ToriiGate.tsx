@@ -129,7 +129,7 @@ export function ToriiGate({
 
 
         {/* Content Container - Constrained width */}
-        <div className="relative mx-auto" style={{ width: '100%', maxWidth: '1200px' }}>
+        <div className="relative mx-auto px-4 md:px-0" style={{ width: '100%', maxWidth: '1200px' }}>
           {/* Torii Gate SVG - Wrapped in Link */}
           <div className="flex flex-col items-center w-full">
             <Link href="/practice" className="block group cursor-pointer mx-auto">
@@ -172,7 +172,7 @@ export function ToriiGate({
           {/* Invitation Text */}
           <Link href="/practice" className="block">
           <motion.div
-            className="text-center w-full cursor-pointer group"
+            className="text-center w-full cursor-pointer group px-6 md:px-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -182,7 +182,7 @@ export function ToriiGate({
                 Enter the Gateway
               </span>
             </h3>
-            <p className="text-2xl md:text-3xl text-white font-semibold leading-relaxed mx-auto"
+            <p className="text-2xl md:text-3xl text-white font-semibold leading-relaxed mx-auto max-w-xs md:max-w-none"
                style={{
                  textShadow: '1px 1px 0px rgba(128, 128, 128, 0.8)',
                  letterSpacing: '0.02em'

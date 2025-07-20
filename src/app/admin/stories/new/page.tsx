@@ -504,7 +504,7 @@ export default function NewStoryPage() {
       <div className="container mx-auto px-4 py-8 min-h-screen">
         <div className="max-w-6xl mx-auto space-y-6 mt-8 mb-8">
           {/* Header */}
-          <div className="flex justify-between items-start">
+          <div className="space-y-4">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => router.push('/admin/stories')}
@@ -517,7 +517,9 @@ export default function NewStoryPage() {
               </button>
               <h1 className="text-3xl font-bold text-foreground">Create New Story</h1>
             </div>
-            <div className="flex gap-2">
+
+            {/* Action Buttons - Moved to separate row */}
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setShowJsonImport(!showJsonImport)}

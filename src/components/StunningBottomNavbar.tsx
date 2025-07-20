@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useAuth } from '@/contexts/AuthContext';
+import { ADMIN_EMAIL } from '@/types/admin';
 
 interface NavItem {
   id: string;
@@ -14,12 +16,28 @@ interface NavItem {
   activeIcon: string;
 }
 
+/**
+ * SECURITY CRITICAL COMPONENT
+ * 
+ * This navbar includes admin access. Security measures:
+ * 1. Admin email is hardcoded in a separate type file
+ * 2. Double-checks authentication at component level
+ * 3. Double-checks before rendering each admin link
+ * 4. Uses exact email match - no role-based access
+ * 5. Admin routes are also protected server-side
+ * 
+ * NEVER modify the admin check logic without security review
+ */
 export default function StunningBottomNavbar() {
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState<string>('');
   const [showIndicator, setShowIndicator] = useState(false);
+  const { user } = useAuth();
+  
+  // STRICT SECURITY CHECK - Only show admin icon if email matches exactly
+  const isAdmin = user?.email === ADMIN_EMAIL;
 
-  const navItems: NavItem[] = [
+  const baseNavItems: NavItem[] = [
     {
       id: 'home',
       label: 'Home',
@@ -50,6 +68,19 @@ export default function StunningBottomNavbar() {
     }
   ];
 
+  // ONLY add admin item if user is verified admin
+  const navItems = isAdmin ? [
+    ...baseNavItems.slice(0, 3), // home, practice, games
+    {
+      id: 'admin',
+      label: 'Admin',
+      href: '/admin',
+      icon: '/flat-icons/ui/navbar/dashboard.svg',
+      activeIcon: '/flat-icons/ui/navbar/dashboard.svg'
+    },
+    baseNavItems[3] // account
+  ] : baseNavItems;
+
   useEffect(() => {
     const active = navItems.find(item => {
       if (pathname === item.href) return true;
@@ -61,12 +92,13 @@ export default function StunningBottomNavbar() {
       setActiveItem(active.id);
       setShowIndicator(true);
     }
-  }, [pathname]);
+  }, [pathname, navItems.length]); // Re-run when navItems changes (admin login/logout)
 
   const getIndicatorPosition = () => {
     const index = navItems.findIndex(item => item.id === activeItem);
     if (index === -1) return '0%';
-    return `${(index * 25) + 12.5}%`;
+    const itemWidth = 100 / navItems.length;
+    return `${(index * itemWidth) + (itemWidth / 2)}%`;
   };
 
   return (
@@ -82,6 +114,11 @@ export default function StunningBottomNavbar() {
 
             {navItems.map((item) => {
               const isActive = item.id === activeItem;
+              
+              // DOUBLE SECURITY CHECK: Never render admin link unless user is verified admin
+              if (item.id === 'admin' && user?.email !== ADMIN_EMAIL) {
+                return null;
+              }
               
               return (
                 <Link

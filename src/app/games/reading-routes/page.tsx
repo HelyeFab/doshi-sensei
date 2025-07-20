@@ -43,7 +43,7 @@ export default function ReadingRoutesPage() {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 pb-20">
-          <PageHeader title="Reading Routes" showBackButton={true} />
+          <PageHeader title="Reading Routes" showBackButton={true} backHref="/games" />
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin text-4xl mb-4">⏳</div>
@@ -76,7 +76,7 @@ export default function ReadingRoutesPage() {
       <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
-          <PageHeader title="Reading Routes" showBackButton={true} />
+          <PageHeader title="Reading Routes" showBackButton={true} backHref="/games" />
 
           {/* Hero Section */}
           <div className="mb-12">

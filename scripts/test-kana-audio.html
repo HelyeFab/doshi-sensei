@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Kana Audio Playback</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .kana-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .kana-button {
+            aspect-ratio: 1;
+            font-size: 24px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .kana-button:hover {
+            background: #f0f0f0;
+            border-color: #999;
+            transform: scale(1.05);
+        }
+        .kana-button:active {
+            transform: scale(0.95);
+        }
+        .kana-button.playing {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        #test-results {
+            margin-top: 20px;
+        }
+        .result-item {
+            padding: 5px 10px;
+            margin: 2px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .result-item.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .result-item.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kana Audio Playback Test</h1>
+
+    <div class="test-section">
+        <h2>System Check</h2>
+        <div id="status" class="status info">Checking audio files...</div>
+        <button onclick="runSystemCheck()">Run System Check</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Hiragana (ひらがな)</h2>
+        <div class="kana-grid" id="hiragana-grid"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Katakana (カタカナ)</h2>
+        <div class="kana-grid" id="katakana-grid"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Kana data (simplified version)
+        const kanaData = [
+            { id: 'a', hiragana: 'あ', katakana: 'ア' },
+            { id: 'i', hiragana: 'い', katakana: 'イ' },
+            { id: 'u', hiragana: 'う', katakana: 'ウ' },
+            { id: 'e', hiragana: 'え', katakana: 'エ' },
+            { id: 'o', hiragana: 'お', katakana: 'オ' },
+            { id: 'ka', hiragana: 'か', katakana: 'カ' },
+            { id: 'ki', hiragana: 'き', katakana: 'キ' },
+            { id: 'ku', hiragana: 'く', katakana: 'ク' },
+            { id: 'ke', hiragana: 'け', katakana: 'ケ' },
+            { id: 'ko', hiragana: 'こ', katakana: 'コ' },
+            { id: 'sa', hiragana: 'さ', katakana: 'サ' },
+            { id: 'shi', hiragana: 'し', katakana: 'シ' },
+            { id: 'su', hiragana: 'す', katakana: 'ス' },
+            { id: 'se', hiragana: 'せ', katakana: 'セ' },
+            { id: 'so', hiragana: 'そ', katakana: 'ソ' },
+            { id: 'ta', hiragana: 'た', katakana: 'タ' },
+            { id: 'chi', hiragana: 'ち', katakana: 'チ' },
+            { id: 'tsu', hiragana: 'つ', katakana: 'ツ' },
+            { id: 'te', hiragana: 'て', katakana: 'テ' },
+            { id: 'to', hiragana: 'と', katakana: 'ト' },
+            { id: 'na', hiragana: 'な', katakana: 'ナ' },
+            { id: 'ni', hiragana: 'に', katakana: 'ニ' },
+            { id: 'nu', hiragana: 'ぬ', katakana: 'ヌ' },
+            { id: 'ne', hiragana: 'ね', katakana: 'ネ' },
+            { id: 'no', hiragana: 'の', katakana: 'ノ' },
+            { id: 'n', hiragana: 'ん', katakana: 'ン' },
+            { id: 'kya', hiragana: 'きゃ', katakana: 'キャ' },
+            { id: 'kyu', hiragana: 'きゅ', katakana: 'キュ' },
+            { id: 'kyo', hiragana: 'きょ', katakana: 'キョ' }
+        ];
+
+        let audioIndex = null;
+        const testResults = [];
+
+        // Load audio index
+        async function loadAudioIndex() {
+            try {
+                const response = await fetch('/audio/kana/index.json');
+                if (response.ok) {
+                    audioIndex = await response.json();
+                    updateStatus('Audio index loaded successfully', 'success');
+                    return true;
+                } else {
+                    updateStatus('Failed to load audio index', 'error');
+                    return false;
+                }
+            } catch (error) {
+                updateStatus('Error loading audio index: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Update status message
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        // Play kana audio
+        async function playKanaAudio(kanaId, type) {
+            if (!audioIndex) {
+                updateStatus('Audio index not loaded', 'error');
+                return;
+            }
+
+            const audioPath = audioIndex[type][kanaId];
+            if (!audioPath) {
+                addTestResult(`No audio path for ${type} ${kanaId}`, 'error');
+                return;
+            }
+
+            try {
+                const audio = new Audio(audioPath);
+                const button = document.querySelector(`[data-kana-id="${kanaId}"][data-type="${type}"]`);
+                
+                if (button) {
+                    button.classList.add('playing');
+                }
+
+                await new Promise((resolve, reject) => {
+                    audio.addEventListener('ended', () => {
+                        if (button) {
+                            button.classList.remove('playing');
+                        }
+                        addTestResult(`✓ Played ${type} ${kanaId}`, 'success');
+                        resolve();
+                    });
+                    
+                    audio.addEventListener('error', (error) => {
+                        if (button) {
+                            button.classList.remove('playing');
+                        }
+                        addTestResult(`✗ Failed to play ${type} ${kanaId}: ${error.type}`, 'error');
+                        reject(error);
+                    });
+                    
+                    audio.play().catch(reject);
+                });
+            } catch (error) {
+                addTestResult(`✗ Error playing ${type} ${kanaId}: ${error.message}`, 'error');
+            }
+        }
+
+        // Add test result
+        function addTestResult(message, type) {
+            testResults.push({ message, type });
+            const resultsEl = document.getElementById('test-results');
+            const resultEl = document.createElement('div');
+            resultEl.className = `result-item ${type}`;
+            resultEl.textContent = message;
+            resultsEl.appendChild(resultEl);
+        }
+
+        // Create kana buttons
+        function createKanaButtons() {
+            const hiraganaGrid = document.getElementById('hiragana-grid');
+            const katakanaGrid = document.getElementById('katakana-grid');
+
+            kanaData.forEach(kana => {
+                // Hiragana button
+                const hiraganaBtn = document.createElement('button');
+                hiraganaBtn.className = 'kana-button';
+                hiraganaBtn.textContent = kana.hiragana;
+                hiraganaBtn.dataset.kanaId = kana.id;
+                hiraganaBtn.dataset.type = 'hiragana';
+                hiraganaBtn.onclick = () => playKanaAudio(kana.id, 'hiragana');
+                hiraganaGrid.appendChild(hiraganaBtn);
+
+                // Katakana button
+                const katakanaBtn = document.createElement('button');
+                katakanaBtn.className = 'kana-button';
+                katakanaBtn.textContent = kana.katakana;
+                katakanaBtn.dataset.kanaId = kana.id;
+                katakanaBtn.dataset.type = 'katakana';
+                katakanaBtn.onclick = () => playKanaAudio(kana.id, 'katakana');
+                katakanaGrid.appendChild(katakanaBtn);
+            });
+        }
+
+        // Run system check
+        async function runSystemCheck() {
+            updateStatus('Running system check...', 'info');
+            const resultsEl = document.getElementById('test-results');
+            resultsEl.innerHTML = '';
+            testResults.length = 0;
+
+            if (!audioIndex) {
+                addTestResult('Audio index not loaded', 'error');
+                return;
+            }
+
+            let successCount = 0;
+            let errorCount = 0;
+
+            // Test each audio file
+            for (const kana of kanaData) {
+                // Test hiragana
+                const hiraganaPath = audioIndex.hiragana[kana.id];
+                if (hiraganaPath) {
+                    try {
+                        const response = await fetch(hiraganaPath, { method: 'HEAD' });
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                            addTestResult(`✗ Hiragana ${kana.id} (${kana.hiragana}): File not found`, 'error');
+                        }
+                    } catch (error) {
+                        errorCount++;
+                        addTestResult(`✗ Hiragana ${kana.id} (${kana.hiragana}): ${error.message}`, 'error');
+                    }
+                } else {
+                    errorCount++;
+                    addTestResult(`✗ Hiragana ${kana.id} (${kana.hiragana}): No path in index`, 'error');
+                }
+
+                // Test katakana
+                const katakanaPath = audioIndex.katakana[kana.id];
+                if (katakanaPath) {
+                    try {
+                        const response = await fetch(katakanaPath, { method: 'HEAD' });
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                            addTestResult(`✗ Katakana ${kana.id} (${kana.katakana}): File not found`, 'error');
+                        }
+                    } catch (error) {
+                        errorCount++;
+                        addTestResult(`✗ Katakana ${kana.id} (${kana.katakana}): ${error.message}`, 'error');
+                    }
+                } else {
+                    errorCount++;
+                    addTestResult(`✗ Katakana ${kana.id} (${kana.katakana}): No path in index`, 'error');
+                }
+            }
+
+            const total = kanaData.length * 2;
+            updateStatus(`Check complete: ${successCount}/${total} files OK, ${errorCount} errors`, 
+                         errorCount === 0 ? 'success' : 'error');
+            
+            if (successCount === total) {
+                addTestResult('✓ All audio files are accessible!', 'success');
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            const loaded = await loadAudioIndex();
+            if (loaded) {
+                createKanaButtons();
+                updateStatus('Ready! Click any kana to test audio playback', 'success');
+            }
+        });
+    </script>
+</body>
+</html>

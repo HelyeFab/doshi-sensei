@@ -91,6 +91,21 @@ export function useStats(): UseStatsReturn {
     return unsubscribe;
   }, []);
 
+  // Periodically refresh Pokemon count (every 30 seconds)
+  useEffect(() => {
+    if (!profile) return;
+
+    const interval = setInterval(async () => {
+      try {
+        await statsTracker.refreshPokemonCount();
+      } catch (err) {
+        console.error('❌ [useStats] Error refreshing Pokemon count:', err);
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [profile]);
+
   // Track activity wrapper
   const trackActivity = useCallback(async (
     type: ActivityType, 

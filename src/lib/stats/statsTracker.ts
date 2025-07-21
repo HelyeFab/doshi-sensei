@@ -1423,26 +1423,31 @@ export class StatsTracker {
     if (!this.currentUser || !this.stats) return;
 
     try {
-      // Check if we need to sync Pokemon count
-      if (this.stats.pokemonCaught === 0) {
-        // Try to get Pokemon count from Firebase
-        const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
-        if (userDoc.exists()) {
-          const pokedex = userDoc.data().pokedex;
-          if (pokedex && pokedex.caught && Array.isArray(pokedex.caught)) {
-            const actualCount = pokedex.caught.length;
-            if (actualCount > 0) {
-              console.log(`🔄 [StatsTracker] Syncing Pokemon count: ${actualCount}`);
-              this.stats.pokemonCaught = actualCount;
-              await this.saveToIndexedDB();
-              this.notifyListeners();
-            }
+      // Always sync Pokemon count from Firebase (not just when it's 0)
+      const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
+      if (userDoc.exists()) {
+        const pokedex = userDoc.data().pokedex;
+        if (pokedex && pokedex.caught && Array.isArray(pokedex.caught)) {
+          const actualCount = pokedex.caught.length;
+          // Update if count has changed
+          if (actualCount !== this.stats.pokemonCaught) {
+            console.log(`🔄 [StatsTracker] Syncing Pokemon count: ${this.stats.pokemonCaught} → ${actualCount}`);
+            this.stats.pokemonCaught = actualCount;
+            await this.saveToIndexedDB();
+            this.notifyListeners();
           }
         }
       }
     } catch (error) {
       console.error('❌ [StatsTracker] Error syncing Pokemon count:', error);
     }
+  }
+
+  /**
+   * Force refresh Pokemon count (public method)
+   */
+  async refreshPokemonCount(): Promise<void> {
+    await this.syncPokemonCount();
   }
 
   /**

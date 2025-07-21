@@ -13,7 +13,7 @@ import { SettingsManager } from "@/utils/indexedDB";
 export function ClientThemeWrapper({ children }: { children: React.ReactNode }) {
   const { settings, isLoading } = useSettings();
   const [mounted, setMounted] = useState(false);
-  const [initialTheme, setInitialTheme] = useState<AppSettings['theme']>('system');
+  const [initialTheme, setInitialTheme] = useState<AppSettings['theme']>('light'); // Changed from 'system' to 'light'
 
   // Load theme from IndexedDB immediately to prevent flash
   useEffect(() => {

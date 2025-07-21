@@ -63,13 +63,19 @@ async function migrateStoryProgress(): Promise<MigrationResult> {
         const data = doc.data();
         const progressId = doc.id;
         
-        // Extract userId and storyId from the composite ID (format: userId_storyId)
-        const [userId, ...storyIdParts] = progressId.split('_');
-        const storyId = storyIdParts.join('_'); // Handle story IDs that might contain underscores
+        // Get userId from the document data, not from the ID
+        const userId = data.userId;
+        const storyId = data.storyId || progressId; // Use progressId as storyId if not in data
 
-        if (!userId || !storyId) {
+        if (!userId) {
           result.failed++;
-          result.errors.push(`Invalid progress ID format: ${progressId}`);
+          result.errors.push(`No userId found in document: ${progressId}`);
+          continue;
+        }
+
+        if (!storyId) {
+          result.failed++;
+          result.errors.push(`No storyId found for document: ${progressId}`);
           continue;
         }
 

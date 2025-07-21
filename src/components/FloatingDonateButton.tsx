@@ -18,8 +18,8 @@ export default function FloatingDonateButton() {
     setIsModalOpen(false);
   };
 
-  // Don't render on admin pages
-  if (pathname?.startsWith('/admin')) {
+  // Don't render on admin pages or homepage
+  if (pathname?.startsWith('/admin') || pathname === '/') {
     return null;
   }
 

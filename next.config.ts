@@ -64,6 +64,7 @@ const nextConfig: NextConfig = {
         crypto: false,
         stream: false,
         path: false,
+        buffer: require.resolve('buffer/'),
       };
     }
     
@@ -92,6 +93,12 @@ const nextConfig: NextConfig = {
       },
     });
     
+    // Add support for WASM files (for anki-reader)
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'webassembly/async',
+    });
+    
     // Ensure proper chunking
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
@@ -116,6 +123,8 @@ const nextConfig: NextConfig = {
     webpackBuildWorker: false,
     // Improve module resolution
     optimizePackageImports: ['framer-motion', 'lucide-react'],
+    // Enable async WebAssembly
+    asyncWebAssembly: true,
   },
 };
 

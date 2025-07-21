@@ -16,7 +16,7 @@ import { safeNavigator, runInBrowser } from './browserCheck';
 // Database configuration
 const DB_CONFIG: DatabaseConfig = {
   name: 'DoshiSenseiDB',
-  version: 5, // Updated for stats system v2
+  version: 7, // Updated for Anki media storage
   stores: {
     settings: {
       keyPath: 'id',
@@ -171,6 +171,14 @@ const DB_CONFIG: DatabaseConfig = {
       indexes: [
         { name: 'date', keyPath: 'date' },
         { name: 'totalActivities', keyPath: 'summary.totalActivities' }
+      ]
+    },
+    ankiMedia: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'createdAt', keyPath: 'createdAt' },
+        { name: 'type', keyPath: 'type' },
+        { name: 'size', keyPath: 'size' }
       ]
     }
   }
@@ -767,6 +775,54 @@ export async function getStorageUsage(): Promise<{
 
 // Generic Database Manager for flashcard operations
 export class DatabaseManager {
+  // Study Lists specific methods
+  async getAllStudyLists(): Promise<any[]> {
+    try {
+      return await this.getAll('studyLists');
+    } catch (error) {
+      console.error('Error getting study lists from IndexedDB:', error);
+      return [];
+    }
+  }
+
+  async saveAllStudyLists(lists: any[]): Promise<void> {
+    try {
+      await this.clear('studyLists');
+      for (const list of lists) {
+        await this.add('studyLists', list);
+      }
+    } catch (error) {
+      console.error('Error saving study lists to IndexedDB:', error);
+      throw error;
+    }
+  }
+
+  async getAllSavedStudyItems(): Promise<any[]> {
+    try {
+      return await this.getAll('savedStudyItems');
+    } catch (error) {
+      console.error('Error getting saved study items from IndexedDB:', error);
+      return [];
+    }
+  }
+
+  async saveAllSavedStudyItems(items: any[]): Promise<void> {
+    try {
+      await this.clear('savedStudyItems');
+      // Save in batches to avoid transaction size limits
+      const BATCH_SIZE = 100;
+      for (let i = 0; i < items.length; i += BATCH_SIZE) {
+        const batch = items.slice(i, i + BATCH_SIZE);
+        for (const item of batch) {
+          await this.add('savedStudyItems', item);
+        }
+      }
+    } catch (error) {
+      console.error('Error saving study items to IndexedDB:', error);
+      throw error;
+    }
+  }
+
   async add<K extends keyof DatabaseSchema>(
     storeName: K,
     data: DatabaseSchema[K]

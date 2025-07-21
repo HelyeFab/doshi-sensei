@@ -114,54 +114,57 @@ export default function AdminFeaturesPage() {
 
   return (
     <AdminLayout title={strings.admin.features.title}>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="mb-8 sm:mb-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
             <div>
-              <h1 className="text-3xl font-bold">{strings.admin.features.title}</h1>
-              <p className="text-muted-foreground mt-1">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">{strings.admin.features.title}</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 {strings.admin.features.description}
               </p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={toggleEditMode}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base ${
                   isEditMode
                     ? 'bg-yellow-500 text-white hover:bg-yellow-600'
                     : 'bg-secondary text-secondary-foreground hover:bg-secondary/90'
                 }`}
               >
-                <span className="text-lg">{isEditMode ? '💾' : '✏️'}</span>
-                {isEditMode ? strings.admin.features.saveMode : strings.admin.features.editLimits}
+                <span className="text-base sm:text-lg">{isEditMode ? '💾' : '✏️'}</span>
+                <span className="hidden sm:inline">{isEditMode ? strings.admin.features.saveMode : strings.admin.features.editLimits}</span>
+                <span className="sm:hidden">{isEditMode ? 'Save' : 'Edit'}</span>
               </button>
 
               <button
                 onClick={refresh}
-                className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90"
+                className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 text-sm sm:text-base"
+                title={strings.forms.buttons.refresh}
               >
-                <span className="text-lg">🔄</span>
-                {strings.forms.buttons.refresh}
+                <span className="text-base sm:text-lg">🔄</span>
+                <span className="hidden sm:inline">{strings.forms.buttons.refresh}</span>
               </button>
 
               <div className="relative group">
-                <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">
-                  <span className="text-lg">📥</span>
-                  {strings.forms.buttons.export}
+                <button className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm sm:text-base">
+                  <span className="text-base sm:text-lg">📥</span>
+                  <span className="hidden sm:inline">{strings.forms.buttons.export}</span>
+                  <span className="sm:hidden">Export</span>
                 </button>
 
-                <div className="absolute right-0 mt-2 w-40 bg-popover border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <div className="absolute right-0 mt-2 w-40 bg-popover border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                   <button
                     onClick={handleExportCSV}
-                    className="w-full px-4 py-2 text-left hover:bg-muted rounded-t-lg"
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-muted rounded-t-lg"
                   >
                     {strings.admin.features.exportCsv}
                   </button>
                   <button
                     onClick={handleExportJSON}
-                    className="w-full px-4 py-2 text-left hover:bg-muted rounded-b-lg"
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-muted rounded-b-lg"
                   >
                     {strings.admin.features.exportJson}
                   </button>
@@ -171,7 +174,7 @@ export default function AdminFeaturesPage() {
           </div>
 
           {/* Last updated */}
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {strings.admin.features.lastUpdated}: {new Date(data.lastUpdated).toLocaleString()}
           </p>
         </div>
@@ -195,12 +198,12 @@ export default function AdminFeaturesPage() {
         )}
 
         {/* Info Box */}
-        <div className="mt-6 p-4 bg-muted rounded-lg">
-          <h3 className="font-semibold mb-2">
+        <div className="mt-6 p-3 sm:p-4 bg-muted rounded-lg">
+          <h3 className="font-semibold mb-2 text-sm sm:text-base">
             {isEditMode ? strings.admin.features.editingLimits : strings.admin.features.understandingMatrix}
           </h3>
           {isEditMode ? (
-            <ul className="text-sm space-y-1 text-muted-foreground">
+            <ul className="text-xs sm:text-sm space-y-1 text-muted-foreground">
               <li>• Click on any number to edit the limit</li>
               <li>• Use -1 for unlimited access</li>
               <li>• Changes are saved immediately to the database</li>
@@ -208,7 +211,7 @@ export default function AdminFeaturesPage() {
               <li>• Consider user behavior patterns when adjusting limits</li>
             </ul>
           ) : (
-            <ul className="text-sm space-y-1 text-muted-foreground">
+            <ul className="text-xs sm:text-sm space-y-1 text-muted-foreground">
               <li>• This matrix shows all features available in Doshi Sensei and their access levels</li>
               <li>• Limits are enforced automatically by the new access control system</li>
               <li>• Shared limit groups (like games) use the same counter for all features in the group</li>

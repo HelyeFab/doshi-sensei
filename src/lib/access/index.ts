@@ -103,7 +103,10 @@ export class AccessControl {
       'progress_saving': 'save_progress',
       'kanji_moods': 'kanji_moods',
       'kanji_stroke_order': 'view_stroke_order',
-      'stroke_order_practice': 'view_stroke_order'
+      'stroke_order_practice': 'view_stroke_order',
+      'anki_import': 'create_lists',
+      'anki_set_creation': 'create_lists',
+      'flashcard_review': 'do_drills'
     };
     
     const permission = permissionMap[featureId];

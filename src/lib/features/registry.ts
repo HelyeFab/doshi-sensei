@@ -168,7 +168,8 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     limitType: 'daily',
     requiresAuth: false,
     requiresSubscription: false,
-    status: 'active'
+    status: 'active',
+    sharedLimitGroup: 'drill_practice'
   },
   
   // Storage Features
@@ -330,6 +331,18 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       maxFileSize: 200 * 1024 * 1024,
       allowedFormats: ['.apkg', '.anki2']
     }
+  },
+  
+  'anki_set_creation': {
+    id: 'anki_set_creation',
+    name: 'Create Anki Sets',
+    description: 'Create custom Anki-style flashcard sets',
+    category: 'storage',
+    icon: '🎴',
+    limitType: 'daily',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active'
   }
 };
 

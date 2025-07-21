@@ -334,6 +334,9 @@ export interface SavedStudyItem {
     back: string;
     tags: string[];
     media: string[]; // Firebase Storage URLs
+    fields?: string[]; // ALL original fields from Anki
+    rawFront?: string; // Original front before processing
+    rawBack?: string; // Original back before processing
     
     // SRS data preserved from Anki
     srsData: {

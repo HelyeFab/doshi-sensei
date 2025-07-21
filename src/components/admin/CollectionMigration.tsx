@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, CheckCircle2, XCircle, RefreshCw, ArrowRight } from 'lucide-react';
 import { runMigration, verifyMigration } from '@/scripts/migrateObsoleteCollections';
@@ -227,24 +226,34 @@ export default function CollectionMigration() {
               </div>
             ))}
 
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Summary</AlertTitle>
-              <AlertDescription className="whitespace-pre-wrap text-sm mt-2">
-                {migrationStatus.results.summary}
-              </AlertDescription>
-            </Alert>
+            <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">Summary</h4>
+                  <div className="whitespace-pre-wrap text-sm text-blue-800 dark:text-blue-200">
+                    {migrationStatus.results.summary}
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
 
       {/* Migration Error */}
       {migrationStatus.error && (
-        <Alert variant="destructive">
-          <XCircle className="h-4 w-4" />
-          <AlertTitle>Migration Failed</AlertTitle>
-          <AlertDescription>{migrationStatus.error}</AlertDescription>
-        </Alert>
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <div className="flex items-start gap-3">
+            <XCircle className="h-5 w-5 text-destructive mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-semibold text-destructive mb-1">Migration Failed</h4>
+              <div className="text-sm text-destructive/90">
+                {migrationStatus.error}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Verification Results */}

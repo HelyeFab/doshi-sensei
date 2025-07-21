@@ -775,7 +775,7 @@ export default function DrillPage() {
           setConjugableLists(conjugableOnly);
 
         } catch (error) {
-          console.error('🎴 Error force loading lists:', error);
+          console.error('Error force loading lists:', error);
         }
       };
 
@@ -989,7 +989,10 @@ export default function DrillPage() {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              🎴 Flashcard Review
+              <span className="flex items-center gap-2">
+                <img src="/flat-icons/ui/flash-card.svg" alt="Flashcards" className="w-5 h-5" />
+                Flashcard Review
+              </span>
               {dueCards.length > 0 && (
                 <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                   {dueCards.length > 99 ? '99+' : dueCards.length}
@@ -1320,7 +1323,9 @@ export default function DrillPage() {
               </div>
             ) : allLists.length === 0 ? (
               <div className="text-center max-w-md mx-auto">
-                <div className="text-6xl mb-4">🎴</div>
+                <div className="mb-4">
+                  <img src="/flat-icons/ui/flash-card.svg" alt="Flashcards" className="w-16 h-16 mx-auto" />
+                </div>
                 <h3 className="text-lg font-medium text-foreground mb-2">
                   No Lists Found
                 </h3>

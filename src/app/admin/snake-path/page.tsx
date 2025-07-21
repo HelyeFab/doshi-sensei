@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AdminGuard } from '@/components/admin/AdminGuard';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useRouter } from 'next/navigation';
 import { ProductionSnakePath } from '@/components/ProductionSnakePath';
 import { useAuth } from '@/contexts/AuthContext';
@@ -265,21 +266,13 @@ function SnakePathEditor() {
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
       <div className="bg-card border border-border rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <span>🐍</span> Snake Path Editor
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Adjust the learning path positions for different screen sizes
-            </p>
-          </div>
-          <button
-            onClick={() => router.push('/admin')}
-            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
-          >
-            Back to Admin
-          </button>
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <span>🐍</span> Snake Path Editor
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Adjust the learning path positions for different screen sizes
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -660,7 +653,9 @@ function AdjustableNode({ node, index, regularSize, checkpointSize }: Adjustable
 export default function AdminSnakePathPage() {
   return (
     <AdminGuard>
-      <SnakePathEditor />
+      <AdminLayout title="Snake Path Editor">
+        <SnakePathEditor />
+      </AdminLayout>
     </AdminGuard>
   );
 }

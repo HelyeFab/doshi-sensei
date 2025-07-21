@@ -50,7 +50,7 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
   
   const getAccessDisplay = (access: FeatureAccess) => {
     if (!access.allowed) return { text: '❌', className: 'text-red-500' };
-    if (access.limit === -1) return { text: '∞', className: 'text-green-500 font-bold text-lg' };
+    if (access.limit === -1) return { text: '∞', className: 'text-green-500 font-bold sm:text-lg' };
     if (access.limit === 0) return { text: '✅', className: 'text-green-500' };
     
     // Format limit display
@@ -71,16 +71,16 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
   const renderFeatureRows = (features: FeatureMatrixRow[]) => {
     return features.map(row => (
       <tr key={row.feature.id} className="border-t hover:bg-muted/50 transition-colors">
-        <td className="p-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">{row.feature.icon}</span>
+        <td className="p-2 sm:p-4">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <span className="text-base sm:text-xl">{row.feature.icon}</span>
             <div>
-              <div className="font-medium">{row.feature.name}</div>
-              <div className="text-sm text-muted-foreground">{row.feature.description}</div>
+              <div className="font-medium text-xs sm:text-sm">{row.feature.name}</div>
+              <div className="text-xs text-muted-foreground hidden sm:block">{row.feature.description}</div>
             </div>
           </div>
         </td>
-        <td className="p-4">
+        <td className="p-2 sm:p-4 hidden sm:table-cell">
           <span className={`inline-flex px-2 py-1 text-xs rounded-full ${getCategoryColor(row.feature.category)}`}>
             {row.feature.category}
           </span>
@@ -93,14 +93,16 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
           return (
             <td 
               key={userType} 
-              className="p-4 text-center relative"
+              className="p-2 sm:p-4 text-center relative"
               onMouseEnter={() => setHoveredCell({ feature: row.feature.id, userType })}
               onMouseLeave={() => setHoveredCell(null)}
             >
-              <span className={display.className}>
+              <span className={`${display.className} text-xs sm:text-sm`}>
                 {display.text}
-                {access.limit > 0 && row.feature.limitType === 'daily' && '/day'}
-                {access.limit > 0 && row.feature.limitType === 'total' && ' max'}
+                <span className="hidden sm:inline">
+                  {access.limit > 0 && row.feature.limitType === 'daily' && '/day'}
+                  {access.limit > 0 && row.feature.limitType === 'total' && ' max'}
+                </span>
               </span>
               
               {/* Hover tooltip */}
@@ -138,21 +140,21 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
         <div className="flex gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`px-3 py-1 rounded-lg transition-colors ${
+            className={`px-2 sm:px-3 py-1 rounded-lg transition-colors text-sm sm:text-base ${
               filter === 'all' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-muted hover:bg-muted/80'
             }`}
           >
-            All Features
+            All
           </button>
           <button
             onClick={() => setFilter('active')}
-            className={`px-3 py-1 rounded-lg transition-colors ${
+            className={`px-2 sm:px-3 py-1 rounded-lg transition-colors text-sm sm:text-base ${
               filter === 'active' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-muted hover:bg-muted/80'
@@ -162,7 +164,7 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
           </button>
           <button
             onClick={() => setFilter('planned')}
-            className={`px-3 py-1 rounded-lg transition-colors ${
+            className={`px-2 sm:px-3 py-1 rounded-lg transition-colors text-sm sm:text-base ${
               filter === 'planned' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-muted hover:bg-muted/80'
@@ -178,20 +180,20 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
             placeholder="Search features..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-xs px-3 py-1 rounded-lg border bg-background"
+            className="w-full sm:max-w-xs px-3 py-1 rounded-lg border bg-background text-sm sm:text-base"
           />
         </div>
       </div>
       
       {/* Table */}
-      <div className="bg-card rounded-lg overflow-hidden border">
-        <table className="w-full">
+      <div className="bg-card rounded-lg border overflow-x-auto">
+        <table className="w-full min-w-[640px]">
           <thead className="bg-muted">
             <tr>
-              <th className="text-left p-4 font-semibold">Feature</th>
-              <th className="text-left p-4 font-semibold">Category</th>
+              <th className="text-left p-2 sm:p-4 font-semibold text-xs sm:text-sm">Feature</th>
+              <th className="text-left p-2 sm:p-4 font-semibold text-xs sm:text-sm hidden sm:table-cell">Category</th>
               {userTypes.map(type => (
-                <th key={type} className="text-center p-4 font-semibold capitalize">
+                <th key={type} className="text-center p-2 sm:p-4 font-semibold capitalize text-xs sm:text-sm">
                   {type}
                 </th>
               ))}
@@ -201,7 +203,7 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
             {activeFeatures.length > 0 && (
               <>
                 <tr>
-                  <td colSpan={2 + userTypes.length} className="bg-muted/50 px-4 py-2 font-medium">
+                  <td colSpan={2 + userTypes.length} className="bg-muted/50 px-2 sm:px-4 py-1 sm:py-2 font-medium text-xs sm:text-sm">
                     Active Features ({activeFeatures.length})
                   </td>
                 </tr>
@@ -212,7 +214,7 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
             {plannedFeatures.length > 0 && (
               <>
                 <tr>
-                  <td colSpan={2 + userTypes.length} className="bg-muted/50 px-4 py-2 font-medium">
+                  <td colSpan={2 + userTypes.length} className="bg-muted/50 px-2 sm:px-4 py-1 sm:py-2 font-medium text-xs sm:text-sm">
                     🚧 Planned Features ({plannedFeatures.length})
                   </td>
                 </tr>
@@ -224,11 +226,12 @@ export function FeatureMatrixTable({ matrix, userTypes }: FeatureMatrixTableProp
       </div>
       
       {/* Legend */}
-      <div className="flex gap-6 text-sm text-muted-foreground">
+      <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
         <span>❌ Not Available</span>
         <span>✅ Available</span>
         <span>∞ Unlimited</span>
-        <span>Numbers = Daily/Total Limits</span>
+        <span className="hidden sm:inline">Numbers = Daily/Total Limits</span>
+        <span className="sm:hidden">## = Limits</span>
       </div>
     </div>
   );

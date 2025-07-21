@@ -75,7 +75,7 @@ export const SNAKE_PATH_NODES: PathNode[] = [
   {
     id: 'flashcards',
     type: 'lesson',
-    icon: '🎴',
+    icon: '/flat-icons/ui/flash-card.svg',
     title: 'Flashcards',
     subtitle: 'Spaced repetition',
     href: '/drill/flashcards',

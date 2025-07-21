@@ -197,6 +197,51 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Anki card content styling */
+.anki-content {
+  line-height: 1.6;
+}
+
+.anki-content p {
+  margin-bottom: 0.5rem;
+}
+
+.anki-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem auto;
+  display: block;
+}
+
+.anki-content b, 
+.anki-content strong {
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+
+.anki-content u {
+  text-decoration-color: hsl(var(--primary) / 0.5);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.anki-content .cloze {
+  font-weight: 600;
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.anki-content audio,
+.anki-audio {
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  display: block;
+}
+
 /* Animation classes */
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
@@ -868,4 +913,50 @@ input[type="range"].slider::-moz-range-thumb:active {
   body > div > div > div > *:last-child {
     padding-bottom: 6rem;
   }
+}
+
+/* Anki content styles */
+.anki-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto;
+  border-radius: 0.5rem;
+}
+
+.anki-content audio {
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  display: block;
+}
+
+.anki-content video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto;
+  border-radius: 0.5rem;
+}
+
+.anki-audio {
+  width: 100%;
+  max-width: 250px;
+  height: 40px;
+  margin: 0.5rem 0;
+}
+
+/* Preserve Anki formatting */
+.anki-content table {
+  border-collapse: collapse;
+  margin: 1rem auto;
+}
+
+.anki-content td, .anki-content th {
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+}
+
+.anki-content center {
+  text-align: center;
 }

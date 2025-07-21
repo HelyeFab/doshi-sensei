@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 import { NotificationProvider } from './AdminNotifications';
@@ -8,10 +8,9 @@ import { NotificationProvider } from './AdminNotifications';
 interface AdminLayoutProps {
   title?: string;
   children: React.ReactNode;
-  hideHeader?: boolean;
 }
 
-export function AdminLayout({ title, children, hideHeader = false }: AdminLayoutProps) {
+export function AdminLayout({ title, children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleMenuClick = () => {
@@ -22,6 +21,8 @@ export function AdminLayout({ title, children, hideHeader = false }: AdminLayout
     setSidebarOpen(false);
   };
 
+
+
   return (
     <NotificationProvider>
       <div className="min-h-screen bg-background flex">
@@ -30,8 +31,8 @@ export function AdminLayout({ title, children, hideHeader = false }: AdminLayout
 
         {/* Main content area */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Header */}
-          {!hideHeader && <AdminHeader onMenuClick={handleMenuClick} title={title || ''} />}
+          {/* Header - Always shown */}
+          <AdminHeader onMenuClick={handleMenuClick} title={title || ''} />
 
           {/* Main content */}
           <main className="flex-1 overflow-y-auto overflow-x-hidden">

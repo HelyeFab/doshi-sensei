@@ -12,6 +12,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import StudyListManager from '@/utils/studyListManager';
 import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
@@ -65,6 +66,7 @@ export default function ConjugationDrillPage() {
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
   const { isPremium, userType } = useSubscription2();
+  const { track } = useAnalytics();
   const strings = useStrings();
 
   // Drill state
@@ -220,7 +222,7 @@ export default function ConjugationDrillPage() {
     const canProceed = await checkAndTrack('drill_practice');
     if (!canProceed) return;
 
-    Analytics.track('drill_started', {
+    track('drill_started', {
       mode: drillMode,
       wordTypeFilter,
       selectedLists: selectedLists.length,
@@ -291,7 +293,7 @@ export default function ConjugationDrillPage() {
     } else {
       // Track completion
       trackDrillCompleted(user?.uid || 'anonymous', score, questions.length);
-      Analytics.track('drill_completed', {
+      track('drill_completed', {
         score,
         totalQuestions: questions.length,
         accuracy: (score / questions.length) * 100,

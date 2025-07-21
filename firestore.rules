@@ -453,6 +453,32 @@ service cloud.firestore {
         isPremiumUser(userId);
     }
 
+    // SRS Data for flashcards - premium feature
+    match /users/{userId}/srsData/{cardId} {
+      // Premium users can read their own SRS data
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can write their own SRS data with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['interval', 'ease', 'due', 'lapses', 'reviews', 'status', 'lastModified']) &&
+        request.resource.data.interval is number &&
+        request.resource.data.ease is number &&
+        request.resource.data.due is string &&
+        request.resource.data.lapses is number &&
+        request.resource.data.reviews is number &&
+        request.resource.data.status in ['new', 'learning', 'review', 'relearning'] &&
+        request.resource.data.lastModified is string;
+      
+      // Premium users can delete their own SRS data
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

@@ -10,6 +10,7 @@ import { JLPTLevel, JLPT_LEVELS } from "@/types/kanji";
 import { storyManager } from "@/utils/storyManager";
 import { marked } from "marked";
 import { useStrings } from '@/contexts/LanguageContext';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 export default function EditStoryPage() {
     const strings = useStrings();
@@ -195,32 +196,8 @@ export default function EditStoryPage() {
     const currentPage = formData.pages[currentPageIndex];
 
     return (
-        <>
-            {/* Top Gradient Section */}
-            <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-                <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-            </div>
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-8 min-h-screen">
-                <div className="max-w-6xl mx-auto space-y-6 mt-8 mb-8">
-                    <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => router.push('/admin/stories')}
-                                className="mr-2 p-2 rounded-full hover:bg-muted transition-colors"
-                                title="Back to Stories List"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <h1 className="text-3xl font-bold text-foreground">Edit Story</h1>
-                        </div>
-                        <div className="flex gap-2">
-                            <button onClick={() => router.push("/admin/stories")} className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90">Back</button>
-                        </div>
-                    </div>
+        <AdminLayout title="Edit Story">
+            <div className="max-w-6xl mx-auto space-y-6">
                     <form onSubmit={e => { e.preventDefault(); handleSave(false); }} className="space-y-8">
                         {/* Title, JLPT, Theme, Slug */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -361,8 +338,7 @@ export default function EditStoryPage() {
                             </div>
                         </div>
                     </form>
-                </div>
             </div>
-        </>
+        </AdminLayout>
     );
 }

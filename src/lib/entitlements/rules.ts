@@ -71,7 +71,9 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         speaking_practice: -1,
         ai_tutor: 10, // Even premium has some limits on expensive features
         kanji_stroke_order: -1,
-        stroke_order_practice: -1
+        stroke_order_practice: -1,
+        anki_import: -1, // Unlimited Anki imports
+        anki_set_creation: -1 // Unlimited Anki set creation
       },
       total: {
         word_lists: -1,
@@ -95,7 +97,9 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         speaking_practice: -1,
         ai_tutor: -1, // Yearly gets truly unlimited
         kanji_stroke_order: -1,
-        stroke_order_practice: -1
+        stroke_order_practice: -1,
+        anki_import: -1, // Unlimited Anki imports
+        anki_set_creation: -1 // Unlimited Anki set creation
       },
       total: {
         word_lists: -1,

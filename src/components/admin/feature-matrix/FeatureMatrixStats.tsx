@@ -52,15 +52,15 @@ export function FeatureMatrixStats({ stats }: FeatureMatrixStatsProps) {
   ];
   
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-4 mb-8 sm:mb-10">
       {statCards.map((stat) => (
         <div
           key={stat.label}
-          className="bg-card border rounded-lg p-4 text-center"
+          className="bg-card border rounded-lg p-4 sm:p-5 text-center"
         >
-          <div className="text-2xl mb-2">{stat.icon}</div>
-          <div className="text-2xl font-bold mb-1">{stat.value}</div>
-          <div className="text-sm text-muted-foreground">{stat.label}</div>
+          <div className="text-xl sm:text-2xl mb-1 sm:mb-2">{stat.icon}</div>
+          <div className="text-xl sm:text-2xl font-bold mb-1">{stat.value}</div>
+          <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
         </div>
       ))}
     </div>

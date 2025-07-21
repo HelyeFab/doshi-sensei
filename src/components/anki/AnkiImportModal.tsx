@@ -1,28 +1,42 @@
 'use client';
 
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import dynamic from 'next/dynamic';
+
+import { useState, useEffect } from 'react';
 import { Progress } from '@/components/ui/progress';
-import { Upload, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { AnkiImporter, ImportResult } from '@/utils/ankiImporter';
 import StudyListManager from '@/utils/studyListManager';
-import { trackEvent } from '@/lib/analytics';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { useRouter } from 'next/navigation';
 
 interface AnkiImportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onImportSuccess?: () => void;
 }
 
-export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
+export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImportModalProps) {
   const { user } = useAuth();
   const { checkAndTrack } = useAccess();
-  const { isPremium } = useSubscription2();
+  const { isPremium, userType, subscription } = useSubscription2();
+  const { track } = useAnalytics();
   const router = useRouter();
+  
+  // Debug logging
+  useEffect(() => {
+    if (isOpen) {
+      console.log('AnkiImportModal Debug:', {
+        isPremium,
+        userType,
+        subscription,
+        user: user?.email
+      });
+    }
+  }, [isOpen, isPremium, userType, subscription, user]);
   
   const [file, setFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
@@ -78,9 +92,31 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
   const handleImport = async () => {
     if (!file || !user) return;
     
+    console.log('handleImport - Pre-access check:', {
+      isPremium,
+      userType,
+      subscription,
+      user: user?.email
+    });
+    
     // Check access
     const canImport = await checkAndTrack('anki_import');
+    console.log('handleImport - Access check result:', canImport);
+    
     if (!canImport) return;
+    
+    // Check list count for free users
+    if (!isPremium) {
+      try {
+        const currentLists = await StudyListManager.getAllStudyLists();
+        if (currentLists.length >= 3) {
+          setError('Free users can only have up to 3 study lists. Please upgrade to premium for unlimited lists.');
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to check list count:', err);
+      }
+    }
     
     setImporting(true);
     setProgress(0);
@@ -88,37 +124,63 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
     
     try {
       // Track import start
-      trackEvent('anki_import_started', {
+      track('anki_import_started', {
         fileSize: file.size,
         fileName: file.name
       });
       
       // Import the deck
-      const result = await AnkiImporter.importDeck(file, {
-        userId: user.uid,
-        onProgress: (progress, message) => {
-          setProgress(progress);
-          setProgressMessage(message);
+      let result;
+      try {
+        result = await AnkiImporter.importDeck(file, {
+          userId: user.uid,
+          onProgress: (progress, message) => {
+            setProgress(progress);
+            setProgressMessage(message);
+          }
+        });
+      } catch (importError) {
+        console.error('Anki import error:', importError);
+        // Provide more specific error messages
+        if (importError.message?.includes('RootLayout')) {
+          throw new Error('Failed to load Anki reader. Please refresh the page and try again.');
         }
-      });
+        if (importError.message?.includes('storage/unauthorized')) {
+          throw new Error('Storage access denied. Please ensure you are logged in and try again.');
+        }
+        if (importError.message?.includes('storage/unauthenticated')) {
+          throw new Error('You must be logged in to import Anki decks.');
+        }
+        if (importError.message?.includes('Firebase Storage')) {
+          throw new Error('Storage service error. Please try again later.');
+        }
+        if (importError.message?.includes('Failed to parse Anki file')) {
+          throw new Error(importError.message);
+        }
+        if (importError.message?.includes('sql.js')) {
+          throw new Error('Failed to initialize Anki reader. This may be due to browser compatibility. Please try using Chrome or Firefox.');
+        }
+        throw importError;
+      }
       
       if (result.success && result.listId) {
-        // The importer returns the list and items, but we need to save them
-        // For now, we'll use the StudyListManager to create the list
-        // TODO: Implement the actual saving logic
-        
         setImportResult(result);
         
         // Track success
-        trackEvent('anki_import_completed', {
+        track('anki_import_completed', {
           cardsImported: result.cardsImported,
           listName: result.listName
         });
+        
+        // Call success callback to refresh lists
+        if (onImportSuccess) {
+          onImportSuccess();
+        }
       } else {
         setError(result.error || 'Import failed');
         
         // Track failure
-        trackEvent('anki_import_failed', {
+        track('anki_import_failed', {
           error: result.error
         });
       }
@@ -126,7 +188,7 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
       setError(err.message || 'An error occurred during import');
       
       // Track error
-      trackEvent('anki_import_error', {
+      track('anki_import_error', {
         error: err.message
       });
     } finally {
@@ -136,8 +198,14 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
   
   const handleViewList = () => {
     if (importResult?.listId) {
-      router.push(`/vocabulary?list=${importResult.listId}`);
+      // Close modal and refresh lists
       onClose();
+      if (onImportSuccess) {
+        onImportSuccess();
+      }
+      // Navigate to flashcard review with the imported list pre-selected
+      // For now, just close the modal - the user can select the list from the dropdown
+      // TODO: Add query param to pre-select the list in review mode
     }
   };
   
@@ -149,19 +217,34 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
     setProgressMessage('');
   };
   
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Import Anki Deck</DialogTitle>
-        </DialogHeader>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      
+      {/* Modal */}
+      <div className="relative bg-card border border-border rounded-lg shadow-lg max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <h2 className="text-xl font-semibold text-card-foreground">Import Anki Deck</h2>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-accent rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
         
-        <div className="space-y-4">
+        {/* Content */}
+        <div className="p-6 overflow-y-auto flex-1">
+          <div className="space-y-4">
           {/* Premium only notice */}
           {!isPremium && (
-            <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" />
-              <p className="text-sm text-amber-900 dark:text-amber-100">
+            <div className="bg-warning/10 border border-warning/20 p-3 rounded-lg flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-warning mt-0.5" />
+              <p className="text-sm text-foreground">
                 Anki import is a premium feature. Upgrade to import your decks.
               </p>
             </div>
@@ -172,16 +255,35 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
             <div className="text-center py-8 space-y-4">
               <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
               <h3 className="text-lg font-semibold">Import Successful!</h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-2">
                 Imported {importResult.cardsImported} cards to "{importResult.listName}"
               </p>
+              <p className="text-sm text-muted-foreground">
+                Your imported deck is now available in the "From Lists" review mode.
+              </p>
               <div className="flex gap-3 justify-center">
-                <Button onClick={handleViewList}>
-                  View List
-                </Button>
-                <Button variant="outline" onClick={handleReset}>
+                <button
+                  onClick={() => {
+                    // Call success callback first to ensure lists are refreshed
+                    if (onImportSuccess) {
+                      onImportSuccess();
+                    }
+                    // Small delay to ensure the list is saved before navigation
+                    setTimeout(() => {
+                      router.push('/favourites');
+                      onClose();
+                    }, 100);
+                  }}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  View in My Favourites
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+                >
                   Import Another
-                </Button>
+                </button>
               </div>
             </div>
           ) : (
@@ -189,13 +291,13 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
               {/* File upload area */}
               {!file && !importing && (
                 <div
-                  className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                  className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
                   onClick={() => document.getElementById('file-input')?.click()}
                 >
-                  <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-lg font-medium mb-1">
+                  <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-lg font-medium text-card-foreground mb-1">
                     Drop your .apkg file here
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -213,21 +315,20 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
               
               {/* Selected file display */}
               {file && !importing && (
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-3">
+                <div className="bg-muted rounded-lg p-4 flex items-center gap-3">
                   <FileText className="w-8 h-8 text-primary" />
                   <div className="flex-1">
-                    <p className="font-medium">{file.name}</p>
+                    <p className="font-medium text-foreground">{file.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  <button
                     onClick={() => setFile(null)}
+                    className="px-3 py-1 text-sm border border-border rounded-lg hover:bg-accent transition-colors text-foreground"
                   >
                     Remove
-                  </Button>
+                  </button>
                 </div>
               )}
               
@@ -243,9 +344,9 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
               
               {/* Error display */}
               {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
-                  <p className="text-sm text-red-900 dark:text-red-100">
+                <div className="bg-destructive/10 border border-destructive/20 p-3 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+                  <p className="text-sm text-foreground">
                     {error}
                   </p>
                 </div>
@@ -254,21 +355,26 @@ export function AnkiImportModal({ isOpen, onClose }: AnkiImportModalProps) {
               {/* Action buttons */}
               {!importing && (
                 <div className="flex gap-3 justify-end">
-                  <Button variant="outline" onClick={onClose}>
+                  <button
+                    onClick={onClose}
+                    className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-accent transition-colors"
+                  >
                     Cancel
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={handleImport}
                     disabled={!file || !isPremium}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Import Deck
-                  </Button>
+                  </button>
                 </div>
               )}
             </>
           )}
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

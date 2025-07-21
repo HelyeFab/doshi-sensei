@@ -17,6 +17,7 @@ import ListSelectionModal from '@/components/ListSelectionModal';
 import { useStrings } from '@/contexts/LanguageContext';
 import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { AnkiImportModal } from '@/components/anki/AnkiImportModal';
+import { AnkiCardModal } from '@/components/anki/AnkiCardModal';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -71,9 +72,15 @@ export default function FavouritesPage() {
   const [listWords, setListWords] = useState<JapaneseWord[]>([]);
   const [listKanji, setListKanji] = useState<Kanji[]>([]);
   const [listSentences, setListSentences] = useState<Sentence[]>([]);
+  const [listAnkiCards, setListAnkiCards] = useState<any[]>([]);
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
+  const [selectedAnkiCard, setSelectedAnkiCard] = useState<any>(null);
   const [showAnkiImportModal, setShowAnkiImportModal] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
 
   // Articles state
   const [bookmarkedArticles, setBookmarkedArticles] = useState<any[]>([]);
@@ -215,12 +222,19 @@ export default function FavouritesPage() {
   const handleListClick = useCallback(async (list: WordList) => {
     try {
       setSelectedList(list);
+      setCurrentPage(1); // Reset to first page when selecting a new list
       // Use the unified system to get words, kanji, and sentences from the list
       const { words, kanji, sentences, ankiCards } = await StudyListManager.getItemsInList(list.id);
+      console.log(`Loading items for list ${list.id}:`, {
+        words: words.length,
+        kanji: kanji.length,
+        sentences: sentences.length,
+        ankiCards: ankiCards.length
+      });
       setListWords(words);
       setListKanji(kanji);
       setListSentences(sentences);
-      // Note: ankiCards can be displayed separately or converted as needed
+      setListAnkiCards(ankiCards);
     } catch (error) {
       console.error('Error loading list items:', error);
     }
@@ -730,6 +744,8 @@ export default function FavouritesPage() {
                       setListWords([]);
                       setListKanji([]);
                       setListSentences([]);
+                      setListAnkiCards([]);
+                      setCurrentPage(1); // Reset pagination
                     }}
                     className="p-2 hover:bg-muted rounded-lg transition-colors"
                   >
@@ -743,7 +759,7 @@ export default function FavouritesPage() {
                       style={{ backgroundColor: selectedList.color }}
                     ></div>
                     <h2 className="text-xl font-semibold text-foreground">{selectedList.name}</h2>
-                    <span className="text-sm text-muted-foreground">({selectedList.wordIds.length} items)</span>
+                    <span className="text-sm text-muted-foreground">({selectedList.itemIds?.length || 0} items)</span>
                   </div>
                 </div>
                 <button
@@ -755,42 +771,168 @@ export default function FavouritesPage() {
               </div>
 
               {/* List Items */}
-              {listWords.length > 0 || listKanji.length > 0 || listSentences.length > 0 ? (
-                <div className="space-y-4 mb-32 md:mb-8">
-                  {/* Words */}
-                  {listWords.map((word) => (
-                    <WordCard
-                      key={word.id}
-                      word={word}
-                      onWordClick={() => setSelectedWord(word)}
-                      onRemoveClick={() => handleWordRemoveFromList(word.id)}
-                      showRemoveButton={true}
-                    />
-                  ))}
-
-                  {/* Kanji */}
-                  {listKanji.map((kanji) => (
-                    <KanjiCard
-                      key={kanji.kanji}
-                      kanji={kanji}
-                      onKanjiClick={() => { }}
-                      onRemoveClick={() => handleKanjiRemoveFromList(kanji.kanji)}
-                      showRemoveButton={true}
-                    />
-                  ))}
-
-                  {/* Sentences */}
-                  {listSentences
-                    .filter(sentence => sentence && typeof sentence === 'object' && sentence.id)
-                    .map((sentence) => (
-                      <SentenceCard
-                        key={sentence.id}
-                        sentence={sentence}
-                        onRemoveClick={() => handleSentenceRemoveFromList(sentence.id)}
-                        showRemoveButton={true}
-                      />
-                    ))}
-                </div>
+              {listWords.length > 0 || listKanji.length > 0 || listSentences.length > 0 || listAnkiCards.length > 0 ? (
+                <>
+                  {/* Calculate pagination */}
+                  {(() => {
+                    // Combine all items for pagination
+                    const allItems = [
+                      ...listWords.map(word => ({ type: 'word', data: word })),
+                      ...listKanji.map(kanji => ({ type: 'kanji', data: kanji })),
+                      ...listSentences.filter(sentence => sentence && typeof sentence === 'object' && sentence.id)
+                        .map(sentence => ({ type: 'sentence', data: sentence })),
+                      ...listAnkiCards.map(card => ({ type: 'anki', data: card }))
+                    ];
+                    
+                    const totalItems = allItems.length;
+                    const totalPages = Math.ceil(totalItems / itemsPerPage);
+                    const startIndex = (currentPage - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    const currentItems = allItems.slice(startIndex, endIndex);
+                    
+                    return (
+                      <>
+                        {/* Items count and pagination info */}
+                        <div className="flex items-center justify-between mb-4">
+                          <p className="text-sm text-muted-foreground">
+                            Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} items
+                          </p>
+                          
+                          {/* Pagination controls */}
+                          {totalPages > 1 && (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                              </button>
+                              
+                              <div className="flex items-center gap-1">
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                  let pageNum;
+                                  if (totalPages <= 5) {
+                                    pageNum = i + 1;
+                                  } else if (currentPage <= 3) {
+                                    pageNum = i + 1;
+                                  } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i;
+                                  } else {
+                                    pageNum = currentPage - 2 + i;
+                                  }
+                                  
+                                  if (pageNum < 1 || pageNum > totalPages) return null;
+                                  
+                                  return (
+                                    <button
+                                      key={pageNum}
+                                      onClick={() => setCurrentPage(pageNum)}
+                                      className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                                        currentPage === pageNum
+                                          ? 'bg-primary text-primary-foreground'
+                                          : 'hover:bg-muted'
+                                      }`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              
+                              <button
+                                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Render current page items */}
+                        <div className="space-y-4 mb-32 md:mb-8">
+                          {currentItems.map((item, index) => {
+                            if (item.type === 'word') {
+                              const word = item.data as JapaneseWord;
+                              return (
+                                <WordCard
+                                  key={`word-${word.id}`}
+                                  word={word}
+                                  onWordClick={() => setSelectedWord(word)}
+                                  onRemoveClick={() => handleWordRemoveFromList(word.id)}
+                                  showRemoveButton={true}
+                                />
+                              );
+                            } else if (item.type === 'kanji') {
+                              const kanji = item.data as Kanji;
+                              return (
+                                <KanjiCard
+                                  key={`kanji-${kanji.kanji}`}
+                                  kanji={kanji}
+                                  onKanjiClick={() => { }}
+                                  onRemoveClick={() => handleKanjiRemoveFromList(kanji.kanji)}
+                                  showRemoveButton={true}
+                                />
+                              );
+                            } else if (item.type === 'sentence') {
+                              const sentence = item.data as Sentence;
+                              return (
+                                <SentenceCard
+                                  key={`sentence-${sentence.id}`}
+                                  sentence={sentence}
+                                  onRemoveClick={() => handleSentenceRemoveFromList(sentence.id)}
+                                  showRemoveButton={true}
+                                />
+                              );
+                            } else if (item.type === 'anki') {
+                              const ankiCard = item.data;
+                              return (
+                                <div 
+                                  key={`anki-${ankiCard.id}`}
+                                  className="bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer"
+                                  onClick={() => setSelectedAnkiCard(ankiCard)}
+                                >
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex-1">
+                                      <h4 className="font-medium text-foreground mb-2">
+                                        {ankiCard.ankiData?.front || 'No front content'}
+                                      </h4>
+                                      <p className="text-sm text-muted-foreground">
+                                        {ankiCard.ankiData?.back || 'No back content'}
+                                      </p>
+                                    </div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleWordRemoveFromList(ankiCard.id);
+                                      }}
+                                      className="ml-4 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                      title="Remove from list"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground mt-2">
+                                    Anki Card • {ankiCard.ankiData?.tags?.join(', ') || 'No tags'}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
               ) : (
                 <div className="text-center py-12">
                   <div className="text-4xl mb-4">📝</div>
@@ -1167,6 +1309,14 @@ export default function FavouritesPage() {
           <WordModal
             word={selectedWord}
             onClose={() => setSelectedWord(null)}
+          />
+        )}
+        
+        {/* Anki Card Modal */}
+        {selectedAnkiCard && (
+          <AnkiCardModal
+            card={selectedAnkiCard}
+            onClose={() => setSelectedAnkiCard(null)}
           />
         )}
 

@@ -3,6 +3,8 @@ import { DatabaseManager } from './indexedDB';
 import CloudSync, { SyncResult } from './cloudSync';
 import { User } from 'firebase/auth';
 import { analyticsTracker } from '@/lib/analytics/analyticsTracker';
+import { largeDataStorage } from './largeDataStorage';
+import { AnkiMediaStore } from './ankiMediaStore';
 
 // Color palette for study lists
 const STUDY_LIST_COLORS = [
@@ -398,6 +400,15 @@ export class StudyListManager {
 
         // If the item is no longer in any lists, remove it completely
         if (savedItems[savedItemIndex].listIds.length === 0) {
+          const itemToDelete = savedItems[savedItemIndex];
+          
+          // Clean up media if this is an Anki card
+          if (itemToDelete.itemType === 'anki_card' && itemToDelete.ankiData?.media) {
+            console.log(`Cleaning up media for deleted Anki card ${itemId}`);
+            const mediaStore = AnkiMediaStore.getInstance();
+            await mediaStore.deleteMedia(itemToDelete.ankiData.media);
+          }
+          
           savedItems.splice(savedItemIndex, 1);
         }
 
@@ -453,7 +464,8 @@ export class StudyListManager {
       }
       
       // Track the save
-      analyticsTracker.trackListEvent('item_saved', {
+      analyticsTracker.track('list_used', {
+        action: 'item_saved',
         itemType: item.itemType,
         listCount: item.listIds.length
       });
@@ -486,7 +498,8 @@ export class StudyListManager {
       await this.saveStudyListsToStorage(lists);
       
       // Track the update
-      analyticsTracker.trackListEvent('list_metadata_updated', {
+      analyticsTracker.track('list_used', {
+        action: 'metadata_updated',
         listId,
         metadataKeys: Object.keys(metadata)
       });
@@ -512,6 +525,29 @@ export class StudyListManager {
 
       // Remove list associations from saved items
       const savedItems = await this.getSavedStudyItems();
+      
+      // Before filtering, collect media files from Anki cards that will be deleted
+      const itemsToDelete = savedItems.filter(saved => {
+        // Item will be deleted if this is its only list
+        const remainingLists = saved.listIds.filter(id => id !== listId);
+        return remainingLists.length === 0;
+      });
+      
+      // Collect media filenames from deleted Anki cards
+      const mediaToDelete: string[] = [];
+      for (const item of itemsToDelete) {
+        if (item.itemType === 'anki_card' && item.ankiData?.media) {
+          mediaToDelete.push(...item.ankiData.media);
+        }
+      }
+      
+      // Delete media files if any
+      if (mediaToDelete.length > 0) {
+        console.log(`Cleaning up ${mediaToDelete.length} media files from deleted Anki cards`);
+        const mediaStore = AnkiMediaStore.getInstance();
+        await mediaStore.deleteMedia(mediaToDelete);
+      }
+      
       const updatedSavedItems = savedItems
         .map(saved => ({
           ...saved,
@@ -581,10 +617,37 @@ export class StudyListManager {
    */
   static async getSavedStudyItems(): Promise<SavedStudyItem[]> {
     try {
+      // Try our simple IndexedDB storage first
+      try {
+        const indexedDBItems = await largeDataStorage.getAllItems();
+        if (indexedDBItems && indexedDBItems.length > 0) {
+          console.log(`Loaded ${indexedDBItems.length} items from IndexedDB`);
+          return indexedDBItems.map(saved => ({
+            ...saved,
+            savedAt: new Date(saved.savedAt)
+          }));
+        }
+      } catch (dbError) {
+        console.log('IndexedDB not available, falling back to localStorage:', dbError);
+      }
+      
+      // Fallback to localStorage
       const savedData = localStorage.getItem(SAVED_STUDY_ITEMS_KEY);
       if (!savedData) return [];
 
       const savedItems = JSON.parse(savedData) as SavedStudyItem[];
+      
+      // Migrate to IndexedDB if we have items
+      if (savedItems.length > 0) {
+        console.log(`Migrating ${savedItems.length} saved items from localStorage to IndexedDB`);
+        try {
+          await largeDataStorage.saveAllItems(savedItems);
+          // Don't remove from localStorage yet, keep as backup
+        } catch (migrationError) {
+          console.error('Failed to migrate to IndexedDB:', migrationError);
+        }
+      }
+      
       // Convert date strings back to Date objects
       return savedItems.map(saved => ({
         ...saved,
@@ -631,11 +694,19 @@ export class StudyListManager {
     try {
       const lists = await this.getAllStudyLists();
       
-      // Sync to Firebase
-      await CloudSync.uploadData(user, 'studyLists', 'data', {
-        studyLists: lists,
-        updatedAt: new Date()
-      });
+      // Filter out Anki-imported lists - we don't sync those to Firebase
+      const listsToSync = lists.filter(list => 
+        !list.metadata?.source || list.metadata.source !== 'anki'
+      );
+      
+      // Only sync if there are non-Anki lists
+      if (listsToSync.length > 0) {
+        // Sync to Firebase
+        await CloudSync.uploadData(user, 'studyLists', 'data', {
+          studyLists: listsToSync,
+          updatedAt: new Date()
+        });
+      }
     } catch (error) {
       console.error('Study lists auto-sync failed:', error);
       // Don't throw - auto-sync should be silent
@@ -653,11 +724,17 @@ export class StudyListManager {
     try {
       const items = await this.getSavedStudyItems();
       
-      // Sync to Firebase
-      await CloudSync.uploadData(user, 'savedStudyItems', 'data', {
-        savedStudyItems: items,
-        updatedAt: new Date()
-      });
+      // Filter out Anki cards - we don't sync those to Firebase
+      const itemsToSync = items.filter(item => item.itemType !== 'anki_card');
+      
+      // Only sync if there are non-Anki items
+      if (itemsToSync.length > 0) {
+        // Sync to Firebase
+        await CloudSync.uploadData(user, 'savedStudyItems', 'data', {
+          savedStudyItems: itemsToSync,
+          updatedAt: new Date()
+        });
+      }
     } catch (error) {
       console.error('Saved study items auto-sync failed:', error);
       // Don't throw - auto-sync should be silent
@@ -676,9 +753,8 @@ export class StudyListManager {
     try {
       console.log('Starting sync from cloud for user:', user.uid);
       
-      // Clear existing data first to avoid conflicts
-      await this.clearAllStudyLists();
-      console.log('Cleared existing localStorage data');
+      // Don't clear existing data - merge instead
+      console.log('Starting cloud sync without clearing local data');
       
       // Download study lists
       const listsResult = await CloudSync.downloadData<{
@@ -692,27 +768,79 @@ export class StudyListManager {
         updatedAt: Date;
       }>(user, 'savedStudyItems', 'data');
 
+      // Get current local lists
+      const currentLists = await this.getAllStudyLists();
+      const currentListIds = new Set(currentLists.map(l => l.id));
+      
       if (listsResult.data?.studyLists) {
         console.log('Downloaded study lists from Firebase:', listsResult.data.studyLists);
         // Convert date strings back to Date objects
-        const lists = listsResult.data.studyLists.map(list => ({
+        const cloudLists = listsResult.data.studyLists.map(list => ({
           ...list,
           createdAt: new Date(list.createdAt),
           updatedAt: new Date(list.updatedAt)
         }));
-        await this.saveStudyListsToStorage(lists);
-        console.log('Saved study lists to localStorage');
+        
+        // Merge cloud lists with local lists
+        const mergedLists = [...currentLists];
+        
+        // Add or update lists from cloud (but never overwrite Anki lists)
+        for (const cloudList of cloudLists) {
+          const existingIndex = mergedLists.findIndex(l => l.id === cloudList.id);
+          if (existingIndex >= 0) {
+            // Skip if it's an existing Anki-imported list (preserve local Anki data)
+            if (mergedLists[existingIndex].metadata?.source === 'anki') {
+              continue;
+            }
+            // Update existing list if cloud version is newer
+            if (new Date(cloudList.updatedAt) > new Date(mergedLists[existingIndex].updatedAt)) {
+              mergedLists[existingIndex] = cloudList;
+            }
+          } else {
+            // Add new list from cloud
+            mergedLists.push(cloudList);
+          }
+        }
+        
+        await this.saveStudyListsToStorage(mergedLists);
+        console.log('Merged and saved study lists to localStorage');
       } else {
         console.log('No study lists found in Firebase');
       }
 
       if (itemsResult.data?.savedStudyItems) {
+        // Get current local items
+        const currentItems = await this.getSavedStudyItems();
+        
         // Convert date strings back to Date objects
-        const items = itemsResult.data.savedStudyItems.map(item => ({
+        const cloudItems = itemsResult.data.savedStudyItems.map(item => ({
           ...item,
           savedAt: new Date(item.savedAt)
         }));
-        await this.saveSavedStudyItemsToStorage(items);
+        
+        // Merge cloud items with local items
+        const itemMap = new Map<string, SavedStudyItem>();
+        
+        // Add all current local items
+        for (const item of currentItems) {
+          itemMap.set(item.id, item);
+        }
+        
+        // Add or update items from cloud (but never overwrite Anki cards)
+        for (const cloudItem of cloudItems) {
+          const existing = itemMap.get(cloudItem.id);
+          // Skip if it's an existing Anki card (preserve local Anki data)
+          if (existing && existing.itemType === 'anki_card') {
+            continue;
+          }
+          if (!existing || new Date(cloudItem.savedAt) > new Date(existing.savedAt)) {
+            itemMap.set(cloudItem.id, cloudItem);
+          }
+        }
+        
+        const mergedItems = Array.from(itemMap.values());
+        await this.saveSavedStudyItemsToStorage(mergedItems);
+        console.log('Merged and saved study items to localStorage');
       }
 
       return true;
@@ -747,9 +875,38 @@ export class StudyListManager {
    */
   private static async saveSavedStudyItemsToStorage(savedItems: SavedStudyItem[]): Promise<void> {
     try {
-      localStorage.setItem(SAVED_STUDY_ITEMS_KEY, JSON.stringify(savedItems));
+      // Calculate size for logging
+      const data = JSON.stringify(savedItems);
+      const sizeInBytes = new Blob([data]).size;
+      const sizeInMB = sizeInBytes / (1024 * 1024);
+      console.log(`Saving ${savedItems.length} items, size: ${sizeInMB.toFixed(2)} MB`);
+      
+      // Save to IndexedDB (no size limits!)
+      try {
+        await largeDataStorage.saveAllItems(savedItems);
+        console.log(`Successfully saved ${savedItems.length} items to IndexedDB`);
+      } catch (dbError) {
+        console.error('Failed to save to IndexedDB, falling back to localStorage:', dbError);
+        
+        // Fallback to localStorage if IndexedDB fails
+        // Check localStorage quota
+        if ('storage' in navigator && 'estimate' in navigator.storage) {
+          const estimate = await navigator.storage.estimate();
+          console.log(`Storage quota: ${estimate.quota} bytes, used: ${estimate.usage} bytes`);
+        }
+        
+        localStorage.setItem(SAVED_STUDY_ITEMS_KEY, data);
+        
+        // Verify save
+        const saved = localStorage.getItem(SAVED_STUDY_ITEMS_KEY);
+        const parsedSaved = JSON.parse(saved || '[]');
+        console.log(`Verified save: ${parsedSaved.length} items saved to localStorage`);
+      }
     } catch (error) {
       console.error('Error saving study items to storage:', error);
+      if (error.name === 'QuotaExceededError') {
+        console.error('LocalStorage quota exceeded! This is why we need IndexedDB.');
+      }
       throw error;
     }
   }

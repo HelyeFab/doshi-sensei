@@ -163,6 +163,21 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {/* Navigation */}
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
+              {/* Home Link */}
+              <li>
+                <Link
+                  href="/"
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
+                >
+                  <span className="text-lg">🏠</span>
+                  <span className="font-medium">Home</span>
+                </Link>
+              </li>
+              {/* Divider */}
+              <li className="pt-2 pb-1">
+                <div className="h-px bg-border"></div>
+              </li>
               {sidebarItems.map((item) => {
                 const isActive = pathname === item.href ||
                   (item.id !== 'dashboard' && pathname.startsWith(item.href));

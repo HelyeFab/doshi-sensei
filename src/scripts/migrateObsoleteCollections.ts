@@ -7,6 +7,8 @@
  * Usage: Add this to a temporary admin page or run via Firebase Functions
  */
 
+'use client';
+
 import { db } from '@/lib/firebase';
 import { 
   collection, 
@@ -220,59 +222,3 @@ export async function verifyMigration(): Promise<{
   }
 }
 
-/**
- * Create an admin button component to run migration
- */
-export function MigrationButton() {
-  const handleMigration = async () => {
-    if (!confirm('Are you sure you want to run the migration? This will copy data from old collections to new ones.')) {
-      return;
-    }
-
-    try {
-      const result = await runMigration();
-      alert(result.summary);
-    } catch (error) {
-      alert(`Migration failed: ${error}`);
-    }
-  };
-
-  const handleVerification = async () => {
-    try {
-      const result = await verifyMigration();
-      alert(`
-Verification Results:
-====================
-Story Progress:
-  Old collection: ${result.storyProgress.old} documents
-  New collection: ${result.storyProgress.new} documents
-  Match: ${result.storyProgress.match ? '✅ Yes' : '❌ No'}
-      `);
-    } catch (error) {
-      alert(`Verification failed: ${error}`);
-    }
-  };
-
-  return (
-    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-      <h3 className="text-lg font-semibold mb-2">Collection Migration</h3>
-      <p className="text-sm mb-4">
-        Migrate data from obsolete collections to new ones. This is a one-time operation.
-      </p>
-      <div className="space-x-2">
-        <button
-          onClick={handleMigration}
-          className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-        >
-          Run Migration
-        </button>
-        <button
-          onClick={handleVerification}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Verify Migration
-        </button>
-      </div>
-    </div>
-  );
-}

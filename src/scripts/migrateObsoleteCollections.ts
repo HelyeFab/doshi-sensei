@@ -86,19 +86,29 @@ async function migrateStoryProgress(): Promise<MigrationResult> {
         const newProgressId = `${userId}_story_${storyId}`;
         const newProgressRef = doc(db, 'reading_progress', newProgressId);
         
-        const newProgressData = {
+        const newProgressData: any = {
           userId,
           contentId: storyId,
           contentType: 'story' as const,
           progress: data.progress || 0,
           updatedAt: data.lastReadAt || Timestamp.now(),
           completed: data.completed || false,
-          completedAt: data.completedAt || (data.completed ? data.lastReadAt : null),
-          currentPage: data.currentPage,
-          totalPages: data.totalPages,
-          lastReadSection: data.lastReadSection,
           timeSpent: 0 // Legacy doesn't track this
         };
+
+        // Only add optional fields if they exist
+        if (data.completedAt || (data.completed && data.lastReadAt)) {
+          newProgressData.completedAt = data.completedAt || data.lastReadAt;
+        }
+        if (data.currentPage !== undefined) {
+          newProgressData.currentPage = data.currentPage;
+        }
+        if (data.totalPages !== undefined) {
+          newProgressData.totalPages = data.totalPages;
+        }
+        if (data.lastReadSection !== undefined) {
+          newProgressData.lastReadSection = data.lastReadSection;
+        }
 
         batch.set(newProgressRef, newProgressData);
         batchCount++;

@@ -58,10 +58,10 @@ async function migrateStoryProgress(): Promise<MigrationResult> {
     let batchCount = 0;
     const BATCH_SIZE = 500;
 
-    for (const doc of snapshot.docs) {
+    for (const docSnapshot of snapshot.docs) {
       try {
-        const data = doc.data();
-        const progressId = doc.id;
+        const data = docSnapshot.data();
+        const progressId = docSnapshot.id;
         
         // Parse userId and storyId from the document ID
         // Format appears to be: userId_storyId (e.g., "WawMEtfq0dcoVPMr3nuwpFAzr9F2_aki-went-to-school")
@@ -112,7 +112,7 @@ async function migrateStoryProgress(): Promise<MigrationResult> {
         }
       } catch (error) {
         result.failed++;
-        result.errors.push(`Failed to migrate ${doc.id}: ${error}`);
+        result.errors.push(`Failed to migrate ${docSnapshot.id}: ${error}`);
       }
     }
 

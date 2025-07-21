@@ -4,18 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useRouter } from 'next/navigation';
 import { statsTracker } from '@/lib/stats/statsTracker';
-import { doc, getDoc, setDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-
-interface ActivityTypeConfig {
-  type: string;
-  displayName: string;
-  icon: string;
-  statsField: string;
-  description: string;
-  trackingFunction?: string;
-  enabled: boolean;
-}
+import { AdminLayout } from '@/components/admin/AdminLayout';
+import { activityTypesManager, ActivityTypeConfig } from '@/utils/activityTypes';
 
 interface ActivityEvent {
   id: string;
@@ -37,82 +29,7 @@ export default function ActivitiesPage() {
   const [searchUserId, setSearchUserId] = useState('');
   const [userActivities, setUserActivities] = useState<Record<string, ActivityEvent[]>>({});
   const [loadingUserActivities, setLoadingUserActivities] = useState(false);
-
-  // Default activity types
-  const defaultActivityTypes: ActivityTypeConfig[] = [
-    {
-      type: 'drill',
-      displayName: 'Drill Practice',
-      icon: '⚡',
-      statsField: 'drillsCompleted',
-      description: 'Conjugation drill exercises',
-      trackingFunction: 'trackDrillCompleted',
-      enabled: true
-    },
-    {
-      type: 'story',
-      displayName: 'Story Reading',
-      icon: '📖',
-      statsField: 'storiesRead',
-      description: 'Story reading sessions',
-      trackingFunction: 'trackStoryRead',
-      enabled: true
-    },
-    {
-      type: 'article',
-      displayName: 'Article Reading',
-      icon: '📰',
-      statsField: 'articlesRead',
-      description: 'News article reading',
-      trackingFunction: 'trackArticleRead',
-      enabled: true
-    },
-    {
-      type: 'kanji',
-      displayName: 'Kanji Study',
-      icon: '漢',
-      statsField: 'kanjiStudySessions',
-      description: 'Kanji learning sessions',
-      trackingFunction: 'trackKanjiStudy',
-      enabled: true
-    },
-    {
-      type: 'game',
-      displayName: 'Games',
-      icon: '🎮',
-      statsField: 'gamesPlayed',
-      description: 'Educational games',
-      trackingFunction: 'trackGamePlayed',
-      enabled: true
-    },
-    {
-      type: 'vocab',
-      displayName: 'Vocabulary',
-      icon: '📝',
-      statsField: 'vocabStudied',
-      description: 'Vocabulary study',
-      trackingFunction: 'trackVocabStudied',
-      enabled: true
-    },
-    {
-      type: 'flashcard',
-      displayName: 'Flashcards',
-      icon: '🎴',
-      statsField: 'flashcardsReviewed',
-      description: 'Flashcard reviews',
-      trackingFunction: 'trackFlashcardReviewed',
-      enabled: true
-    },
-    {
-      type: 'practice',
-      displayName: 'Practice Sessions',
-      icon: '🎯',
-      statsField: 'practiceSessionsCompleted',
-      description: 'General practice sessions (kana, verbs)',
-      trackingFunction: 'trackPracticeSession',
-      enabled: true
-    }
-  ];
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -128,17 +45,11 @@ export default function ActivitiesPage() {
 
   const loadActivityTypes = async () => {
     try {
-      const configDoc = await getDoc(doc(db, 'admin', 'activityTypes'));
-      if (configDoc.exists()) {
-        setActivityTypes(configDoc.data().types || defaultActivityTypes);
-      } else {
-        // Initialize with defaults
-        setActivityTypes(defaultActivityTypes);
-        await saveActivityTypes(defaultActivityTypes);
-      }
+      const data = await activityTypesManager.getActivityTypes();
+      setActivityTypes(data.types);
     } catch (error) {
       console.error('Error loading activity types:', error);
-      setActivityTypes(defaultActivityTypes);
+      // The manager already handles fallback internally
     } finally {
       setLoading(false);
     }
@@ -155,10 +66,10 @@ export default function ActivitiesPage() {
 
   const saveActivityTypes = async (types: ActivityTypeConfig[]) => {
     try {
-      await setDoc(doc(db, 'admin', 'activityTypes'), {
-        types,
-        lastUpdated: new Date().toISOString()
-      });
+      await activityTypesManager.updateActivityTypes(types);
+      // Force refresh from Firebase to ensure consistency
+      activityTypesManager.clearCache();
+      await loadActivityTypes();
     } catch (error) {
       console.error('Error saving activity types:', error);
       alert('Failed to save activity types');
@@ -180,28 +91,36 @@ export default function ActivitiesPage() {
       return;
     }
 
-    const newActivityType: ActivityTypeConfig = {
-      type: newType.type,
-      displayName: newType.displayName,
-      icon: newType.icon || '📊',
-      statsField: newType.statsField,
-      description: newType.description || '',
-      enabled: true
-    };
-
-    const updatedTypes = [...activityTypes, newActivityType];
-    setActivityTypes(updatedTypes);
-    await saveActivityTypes(updatedTypes);
-    setShowAddForm(false);
-    setNewType({});
+    try {
+      await activityTypesManager.addActivityType({
+        type: newType.type,
+        displayName: newType.displayName,
+        icon: newType.icon || '📊',
+        statsField: newType.statsField,
+        description: newType.description || '',
+        trackingFunction: newType.trackingFunction,
+        enabled: true
+      });
+      
+      // Refresh the list
+      await loadActivityTypes();
+      setShowAddForm(false);
+      setNewType({});
+    } catch (error) {
+      console.error('Error adding activity type:', error);
+      alert(error instanceof Error ? error.message : 'Failed to add activity type');
+    }
   };
 
   const handleToggleType = async (type: string) => {
-    const updatedTypes = activityTypes.map(t => 
-      t.type === type ? { ...t, enabled: !t.enabled } : t
-    );
-    setActivityTypes(updatedTypes);
-    await saveActivityTypes(updatedTypes);
+    try {
+      await activityTypesManager.toggleActivityType(type);
+      // Refresh the list
+      await loadActivityTypes();
+    } catch (error) {
+      console.error('Error toggling activity type:', error);
+      alert('Failed to toggle activity type');
+    }
   };
 
   const getActivityCount = (type: string) => {
@@ -252,38 +171,41 @@ export default function ActivitiesPage() {
   };
 
   if (adminLoading || loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading activity tracking...</p>
-        </div>
-      </div>
-    );
+    return <div>Loading activity tracking...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Activity Tracking Management</h1>
-          <p className="mt-2 text-gray-600">Configure and monitor activity types tracked by the stats system</p>
-        </div>
+    <AdminLayout title="Activity Tracking Management">
+      <div className="space-y-6">
+        <p className="text-muted-foreground">Configure and monitor activity types tracked by the stats system</p>
 
         {/* Activity Types Configuration */}
-        <div className="bg-white shadow rounded-lg mb-8">
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">Activity Types</h2>
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-            >
-              Add New Type
-            </button>
+        <div className="bg-card shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-border flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-foreground">Activity Types</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  setLoading(true);
+                  activityTypesManager.clearCache();
+                  await loadActivityTypes();
+                }}
+                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90"
+                title="Refresh from Firebase"
+              >
+                🔄 Refresh
+              </button>
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                Add New Type
+              </button>
+            </div>
           </div>
 
           {showAddForm && (
-            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="px-6 py-4 bg-muted border-b border-border">
               <h3 className="text-lg font-medium mb-4">Add New Activity Type</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
@@ -291,28 +213,28 @@ export default function ActivitiesPage() {
                   placeholder="Type ID (e.g., 'reading')"
                   value={newType.type || ''}
                   onChange={(e) => setNewType({ ...newType, type: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 border border-border rounded-md"
                 />
                 <input
                   type="text"
                   placeholder="Display Name"
                   value={newType.displayName || ''}
                   onChange={(e) => setNewType({ ...newType, displayName: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 border border-border rounded-md"
                 />
                 <input
                   type="text"
                   placeholder="Icon (emoji)"
                   value={newType.icon || ''}
                   onChange={(e) => setNewType({ ...newType, icon: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 border border-border rounded-md"
                 />
                 <input
                   type="text"
                   placeholder="Stats Field Name"
                   value={newType.statsField || ''}
                   onChange={(e) => setNewType({ ...newType, statsField: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 border border-border rounded-md"
                 />
                 <input
                   type="text"
@@ -325,7 +247,7 @@ export default function ActivitiesPage() {
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={handleAddType}
-                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                  className="px-4 py-2 bg-green-600 text-primary-foreground rounded-md hover:bg-green-700"
                 >
                   Add Type
                 </button>
@@ -334,7 +256,7 @@ export default function ActivitiesPage() {
                     setShowAddForm(false);
                     setNewType({});
                   }}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                  className="px-4 py-2 bg-muted text-foreground rounded-md hover:bg-muted/80"
                 >
                   Cancel
                 </button>
@@ -343,36 +265,40 @@ export default function ActivitiesPage() {
           )}
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Display Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Stats Field
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Recent Count
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {activityTypes.map((activityType) => (
                   <tr key={activityType.type}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <span className="text-2xl mr-2">{activityType.icon}</span>
-                        <span className="text-sm font-medium text-gray-900">{activityType.type}</span>
+                        {activityType.icon?.startsWith('/') ? (
+                          <img src={activityType.icon} alt={activityType.displayName} className="w-6 h-6 mr-2" />
+                        ) : (
+                          <span className="text-2xl mr-2">{activityType.icon}</span>
+                        )}
+                        <span className="text-sm font-medium text-foreground">{activityType.type}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -388,19 +314,19 @@ export default function ActivitiesPage() {
                             );
                             setActivityTypes(updated);
                           }}
-                          className="px-2 py-1 border border-gray-300 rounded"
+                          className="px-2 py-1 border border-border rounded"
                         />
                       ) : (
-                        <span className="text-sm text-gray-900">{activityType.displayName}</span>
+                        <span className="text-sm text-foreground">{activityType.displayName}</span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <code className="text-sm bg-gray-100 px-2 py-1 rounded">
+                      <code className="text-sm bg-muted px-2 py-1 rounded">
                         {activityType.statsField}
                       </code>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">{getActivityCount(activityType.type)}</span>
+                      <span className="text-sm text-foreground">{getActivityCount(activityType.type)}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
@@ -425,7 +351,7 @@ export default function ActivitiesPage() {
                           </button>
                           <button
                             onClick={() => setEditingType(null)}
-                            className="text-gray-600 hover:text-gray-900"
+                            className="text-muted-foreground hover:text-foreground"
                           >
                             Cancel
                           </button>
@@ -433,7 +359,7 @@ export default function ActivitiesPage() {
                       ) : (
                         <button
                           onClick={() => setEditingType(activityType.type)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-primary hover:text-primary/80"
                         >
                           Edit
                         </button>
@@ -447,52 +373,56 @@ export default function ActivitiesPage() {
         </div>
 
         {/* Recent Activities */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Activities (Last 50)</h2>
+        <div className="bg-card shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="text-xl font-semibold text-foreground">Recent Activities (Last 50)</h2>
           </div>
           <div className="max-h-96 overflow-y-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 sticky top-0">
+              <thead className="bg-muted sticky top-0">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Time
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Details
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     User
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {recentActivities.map((activity) => {
                   const activityConfig = activityTypes.find(t => t.type === activity.type);
                   return (
                     <tr key={activity.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                         {new Date(activity.timestamp).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <span className="text-lg mr-2">
-                            {activityConfig?.icon || '📊'}
-                          </span>
-                          <span className="text-sm font-medium text-gray-900">
+                          {activityConfig?.icon?.startsWith('/') ? (
+                            <img src={activityConfig.icon} alt={activityConfig.displayName} className="w-5 h-5 mr-2" />
+                          ) : (
+                            <span className="text-lg mr-2">
+                              {activityConfig?.icon || '📊'}
+                            </span>
+                          )}
+                          <span className="text-sm font-medium text-foreground">
                             {activityConfig?.displayName || activity.type}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        <pre className="text-xs bg-gray-100 p-2 rounded max-w-xs overflow-x-auto">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
+                        <pre className="text-xs bg-muted p-2 rounded max-w-xs overflow-x-auto">
                           {JSON.stringify(activity.details, null, 2)}
                         </pre>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         {activity.userId || 'Anonymous'}
                       </td>
                     </tr>
@@ -504,10 +434,10 @@ export default function ActivitiesPage() {
         </div>
 
         {/* User Activity Viewer */}
-        <div className="bg-white shadow rounded-lg mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">User Activity Viewer</h2>
-            <p className="text-sm text-gray-600 mt-1">View all activities for a specific user, organized by day</p>
+        <div className="bg-card shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="text-xl font-semibold text-foreground">User Activity Viewer</h2>
+            <p className="text-sm text-muted-foreground mt-1">View all activities for a specific user, organized by day</p>
           </div>
           <div className="p-6">
             <div className="flex gap-4 mb-6">
@@ -516,12 +446,12 @@ export default function ActivitiesPage() {
                 placeholder="Enter User ID (e.g., WawMEtfq0dcoVPMr3nuwpFAzr9F2)"
                 value={searchUserId}
                 onChange={(e) => setSearchUserId(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <button
                 onClick={loadUserActivities}
                 disabled={loadingUserActivities}
-                className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400"
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted"
               >
                 {loadingUserActivities ? 'Loading...' : 'Load Activities'}
               </button>
@@ -532,34 +462,38 @@ export default function ActivitiesPage() {
                 {Object.entries(userActivities)
                   .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
                   .map(([date, activities]) => (
-                    <div key={date} className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-lg mb-3 text-gray-800">
+                    <div key={date} className="border border-border rounded-lg p-4">
+                      <h4 className="font-semibold text-lg mb-3 text-foreground">
                         {new Date(date).toLocaleDateString('en-US', {
                           weekday: 'long',
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
                         })}
-                        <span className="ml-2 text-sm text-gray-500">({activities.length} activities)</span>
+                        <span className="ml-2 text-sm text-muted-foreground">({activities.length} activities)</span>
                       </h4>
                       <div className="space-y-2">
                         {activities.map((activity, idx) => {
                           const activityConfig = activityTypes.find(t => t.type === activity.type);
                           return (
-                            <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded">
-                              <span className="text-2xl mt-1">
-                                {activityConfig?.icon || '📊'}
-                              </span>
+                            <div key={idx} className="flex items-start gap-3 p-3 bg-muted rounded">
+                              {activityConfig?.icon?.startsWith('/') ? (
+                                <img src={activityConfig.icon} alt={activityConfig.displayName} className="w-8 h-8 mt-1" />
+                              ) : (
+                                <span className="text-2xl mt-1">
+                                  {activityConfig?.icon || '📊'}
+                                </span>
+                              )}
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-gray-900">
+                                  <span className="font-medium text-foreground">
                                     {activityConfig?.displayName || activity.type}
                                   </span>
-                                  <span className="text-sm text-gray-500">
+                                  <span className="text-sm text-muted-foreground">
                                     {new Date(activity.timestamp).toLocaleTimeString()}
                                   </span>
                                 </div>
-                                <div className="mt-1 text-sm text-gray-600">
+                                <div className="mt-1 text-sm text-muted-foreground">
                                   {activity.details.itemTitle && (
                                     <div>Title: {activity.details.itemTitle}</div>
                                   )}
@@ -590,7 +524,7 @@ export default function ActivitiesPage() {
             )}
 
             {searchUserId && !loadingUserActivities && Object.keys(userActivities).length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>No activities found for user ID: {searchUserId}</p>
                 <p className="text-sm mt-2">Note: Only premium users have cloud-synced activity data</p>
               </div>
@@ -599,20 +533,20 @@ export default function ActivitiesPage() {
         </div>
 
         {/* Implementation Guide */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">Implementation Guide</h3>
-          <p className="text-blue-800 mb-4">
+        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">Implementation Guide</h3>
+          <p className="text-blue-800 dark:text-blue-200 mb-4">
             To track a new activity type in your code:
           </p>
-          <ol className="list-decimal list-inside space-y-2 text-blue-800">
+          <ol className="list-decimal list-inside space-y-2 text-blue-800 dark:text-blue-200">
             <li>Add the activity type configuration above</li>
-            <li>Create a tracking function in <code className="bg-blue-100 px-1 rounded">/src/lib/stats/trackingEvents.ts</code></li>
-            <li>Add the corresponding field to <code className="bg-blue-100 px-1 rounded">UserStatsV2</code> interface</li>
-            <li>Update the stats processing logic in <code className="bg-blue-100 px-1 rounded">statsTracker.ts</code></li>
+            <li>Create a tracking function in <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded">/src/lib/stats/trackingEvents.ts</code></li>
+            <li>Add the corresponding field to <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded">UserStatsV2</code> interface</li>
+            <li>Update the stats processing logic in <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded">statsTracker.ts</code></li>
             <li>Import and call your tracking function where the activity occurs</li>
           </ol>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

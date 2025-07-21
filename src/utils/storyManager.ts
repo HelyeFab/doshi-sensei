@@ -18,10 +18,12 @@ import { db } from '@/lib/firebase';
 import { Story, StoryProgress, StoryStats } from '@/types/story';
 import { JLPTLevel } from '@/types/kanji';
 import { trackStoryRead } from '@/lib/stats/trackingEvents';
+import { readingProgressManager } from '@/utils/readingProgressManager';
+import { analyticsTracker } from '@/lib/analytics/analyticsTracker';
 
 class StoryManager {
   private readonly STORIES_COLLECTION = 'stories';
-  private readonly PROGRESS_COLLECTION = 'storyProgress';
+  private readonly PROGRESS_COLLECTION = 'storyProgress'; // Kept for backward compatibility
   private readonly STATS_COLLECTION = 'userStats';
 
   // Create or update a story (admin only)
@@ -199,39 +201,57 @@ class StoryManager {
     }
   }
 
-  // Save user progress
+  // Save user progress - migrated to use new reading_progress collection
   async saveProgress(userId: string, progress: Omit<StoryProgress, 'userId'>): Promise<void> {
     try {
-      const progressId = `${userId}_${progress.storyId}`;
-      const progressRef = doc(db, this.PROGRESS_COLLECTION, progressId);
-
-      await setDoc(progressRef, {
-        ...progress,
+      // Save to new reading_progress collection
+      await readingProgressManager.saveProgress(
         userId,
-        lastReadAt: serverTimestamp()
-      }, { merge: true });
+        progress.storyId,
+        'story',
+        progress.progress,
+        {
+          currentPage: progress.currentPage,
+          totalPages: progress.totalPages,
+          lastReadSection: progress.lastReadSection
+        }
+      );
+
+      // Track analytics
+      if (progress.progress > 0 && progress.progress < 100) {
+        analyticsTracker.track('story_start', {
+          storyId: progress.storyId,
+          level: 'unknown' // You might want to pass the story level here
+        });
+      }
     } catch (error) {
       console.error('Error saving progress:', error);
       throw error;
     }
   }
 
-  // Get user progress for a story
+  // Get user progress for a story - migrated to use new reading_progress collection
   async getUserProgress(userId: string, storyId: string): Promise<StoryProgress | null> {
     try {
-      const progressId = `${userId}_${storyId}`;
-      const progressRef = doc(db, this.PROGRESS_COLLECTION, progressId);
-      const progressDoc = await getDoc(progressRef);
-
-      if (!progressDoc.exists()) {
+      // Get from new reading_progress collection
+      const progress = await readingProgressManager.getProgress(userId, storyId, 'story');
+      
+      if (!progress) {
         return null;
       }
 
-      const data = progressDoc.data();
+      // Convert to legacy StoryProgress format for backward compatibility
       return {
-        ...data,
-        lastReadAt: data.lastReadAt?.toDate() || new Date(),
-        completedAt: data.completedAt?.toDate()
+        storyId,
+        userId,
+        progress: progress.progress,
+        completed: progress.completed || false,
+        currentPage: progress.currentPage,
+        totalPages: progress.totalPages,
+        lastReadSection: progress.lastReadSection,
+        lastReadAt: progress.updatedAt.toDate(),
+        completedAt: progress.completedAt?.toDate(),
+        quizScore: undefined // Quiz scores are tracked separately now
       } as StoryProgress;
     } catch (error) {
       console.error('Error getting user progress:', error);
@@ -239,24 +259,25 @@ class StoryManager {
     }
   }
 
-  // Mark story as completed
+  // Mark story as completed - migrated to use new reading_progress collection
   async markStoryCompleted(userId: string, storyId: string, quizScore?: number): Promise<void> {
     try {
-      const progressId = `${userId}_${storyId}`;
-      const progressRef = doc(db, this.PROGRESS_COLLECTION, progressId);
-
       // Get story details for tracking
       const story = await this.getStory(storyId);
       const storyTitle = story?.title || 'Unknown Story';
+      const storyLevel = story?.jlptLevel || 'unknown';
 
-      await setDoc(progressRef, {
+      // Mark as completed in new reading_progress collection
+      await readingProgressManager.markCompleted(userId, storyId, 'story', {
+        quizScore
+      });
+
+      // Track analytics
+      analyticsTracker.track('story_complete', {
         storyId,
-        userId,
-        completed: true,
-        completedAt: serverTimestamp(),
-        quizScore,
-        lastReadAt: serverTimestamp()
-      }, { merge: true });
+        level: storyLevel,
+        readTime: 0 // You might want to track actual read time
+      });
 
       // Update story completion count
       const storyRef = doc(db, this.STORIES_COLLECTION, storyId);

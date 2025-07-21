@@ -230,8 +230,8 @@ export default function CollectionMigration() {
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">Summary</h4>
-                  <div className="whitespace-pre-wrap text-sm text-blue-800 dark:text-blue-200">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Summary</h4>
+                  <div className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-200">
                     {migrationStatus.results.summary}
                   </div>
                 </div>

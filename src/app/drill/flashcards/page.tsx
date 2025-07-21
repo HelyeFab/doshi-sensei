@@ -26,6 +26,7 @@ import { getKanjiAudioPath } from '@/utils/kanjiAudio';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import TTSManager from '@/utils/tts';
 import { useTTS } from '@/hooks/useTTS';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Structured Data for Flashcard Review Page
 const flashcardReviewStructuredData = {
@@ -738,7 +739,7 @@ export default function FlashcardReviewPage() {
         </div>
         
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8 -mt-20">
+        <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen md:pb-8 -mt-20">
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
@@ -982,7 +983,7 @@ export default function FlashcardReviewPage() {
               </button>
             </div>
           </main>
-        </div>
+        </MobileAwareContainer>
 
         {/* Import Anki Modal */}
         {showImportModal && (
@@ -1033,7 +1034,7 @@ export default function FlashcardReviewPage() {
   return (
     <>
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen md:pb-8">
         <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Session Stats Bar */}
           <SessionStats
@@ -1128,7 +1129,7 @@ export default function FlashcardReviewPage() {
             />
           ) : null}
         </main>
-      </div>
+      </MobileAwareContainer>
 
       {/* Save Word Modal */}
       {showSaveModal && wordToSave && (

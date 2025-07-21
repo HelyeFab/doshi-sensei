@@ -18,6 +18,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { AnkiImportModal } from '@/components/anki/AnkiImportModal';
 import { AnkiCardModal } from '@/components/anki/AnkiCardModal';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -571,7 +572,7 @@ export default function FavouritesPage() {
         {/* Virtual Companion Button positioned within this section */}
       </div>
 
-      <div className="container mx-auto px-4 pb-20">
+      <MobileAwareContainer className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
           <PageHeader title={strings.favourites.title} helpKey="favourites" />
@@ -1406,7 +1407,7 @@ export default function FavouritesPage() {
             <button className="ml-4 underline" onClick={() => setErrorMessage(null)}>Dismiss</button>
           </div>
         )}
-      </div>
+      </MobileAwareContainer>
     </div>
   );
 }

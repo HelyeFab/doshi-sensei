@@ -7,6 +7,7 @@ import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard as MoodBoardType, KanjiItem } from '@/types/moodBoard';
 import { useFeature } from '@/hooks/useFeature';
 import ReadingRoutesGame from '@/components/games/ReadingRoutes/ReadingRoutesGame';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function ReadingRoutesGamePage() {
   const router = useRouter();
@@ -100,7 +101,7 @@ export default function ReadingRoutesGamePage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
           <PageHeader
@@ -115,7 +116,7 @@ export default function ReadingRoutesGamePage() {
             remainingPlays={remaining}
           />
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

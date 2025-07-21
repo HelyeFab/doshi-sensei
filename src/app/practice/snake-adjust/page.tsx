@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AdjustableSnakePath } from '@/components/AdjustableSnakePath';
 import { PageHeader } from '@/components/PageHeader';
 import { useRouter } from 'next/navigation';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Example nodes for demonstration
 const PRACTICE_NODES = [
@@ -126,7 +127,7 @@ export default function SnakeAdjustPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-4xl mx-auto">
           <PageHeader 
             title="Adjustable Snake Path" 
@@ -181,7 +182,7 @@ export default function SnakeAdjustPage() {
             </div>
           )}
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

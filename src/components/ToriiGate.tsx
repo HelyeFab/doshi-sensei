@@ -77,7 +77,7 @@ export function ToriiGate({
       `}</style>
 
       {/* Welcome Header - Above torii gate */}
-      <div className="relative pt-32 md:pt-16 pb-8 text-center z-20">
+      <div className="relative pt-24 md:pt-16 pb-8 text-center z-20">
         <div className="flex items-center justify-center gap-3 mb-2">
           {typeof window !== 'undefined' && profile?.avatar ? (
             <img

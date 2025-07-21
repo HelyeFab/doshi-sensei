@@ -28,6 +28,7 @@ const EnhancedArticleAudioPlayer = dynamic(
   }
 );
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { PageHeader } from '@/components/PageHeader';
 import { cleanTextForTTS } from '@/utils/japaneseParser';
 import { useStrings } from '@/contexts/LanguageContext';
@@ -808,7 +809,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       <div className="container mx-auto px-4">
         <PageHeader title={article.title} showBackButton={true} onBackClick={onBack} />
       </div>
-      <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen md:pb-8">
         <div className="max-w-4xl mx-auto">
           {/* Header with navigation and controls */}
           <div className="flex items-center justify-between mb-6">
@@ -1241,7 +1242,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             />
           )}
         </div>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

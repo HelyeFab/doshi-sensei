@@ -284,7 +284,7 @@ function ProductionNode({ node, index, onClick, regularSize, checkpointSize }: P
                 ? '-top-20 left-1/2 -translate-x-1/2' 
                 : node.pillPosition === 'right' 
                   ? '-right-28 md:-right-32 top-1/2 -translate-y-1/2' 
-                  : '-left-28 md:-left-32 top-1/2 -translate-y-1/2'
+                  : '-left-32 md:-left-40 top-1/2 -translate-y-1/2'
             }
           `}
           initial={{ 

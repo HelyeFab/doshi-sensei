@@ -14,6 +14,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import Link from 'next/link';
 import { useStrings } from '@/contexts/LanguageContext';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function StoriesPage() {
   const router = useRouter();
@@ -115,7 +116,7 @@ export default function StoriesPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <PageHeader icon="/flat-icons/root-icons/story.svg" showBackButton={true} helpKey="stories" className="mb-8 sm:mb-8 md:mb-12" />
         <p className="text-muted-foreground text-center mt-2">
           {strings.stories.description}
@@ -326,7 +327,7 @@ export default function StoriesPage() {
             </div>
           )}
         </div>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

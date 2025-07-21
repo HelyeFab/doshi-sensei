@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function ResourcePostPage() {
   const params = useParams();
@@ -84,12 +85,12 @@ export default function ResourcePostPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
         </div>
-        <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+        <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="text-6xl mb-4">📖</div>
             <p className="text-muted-foreground">Loading resource...</p>
           </div>
-        </div>
+        </MobileAwareContainer>
       </>
     );
   }
@@ -101,7 +102,7 @@ export default function ResourcePostPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
         </div>
-        <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+        <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
           <PageHeader title="Resource Not Found" showBackButton={true} />
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="text-6xl mb-4">📄</div>
@@ -116,7 +117,7 @@ export default function ResourcePostPage() {
               Browse All Resources
             </Link>
           </div>
-        </div>
+        </MobileAwareContainer>
       </>
     );
   }
@@ -141,7 +142,7 @@ export default function ResourcePostPage() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
         <div className="max-w-4xl mx-auto">
           {/* Back Navigation */}
           <div className="mb-6">
@@ -301,7 +302,7 @@ export default function ResourcePostPage() {
             </div>
           </footer>
         </div>
-      </div>
+      </MobileAwareContainer>
 
       {/* Info Message Modal */}
       {infoMessage && (

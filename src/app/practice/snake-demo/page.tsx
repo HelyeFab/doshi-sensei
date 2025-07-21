@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { SnakePath } from '@/components/SnakePath';
 import { PageHeader } from '@/components/PageHeader';
 import { useRouter } from 'next/navigation';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Example nodes for demonstration
 const PRACTICE_NODES = [
@@ -115,7 +116,7 @@ export default function SnakeDemoPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-3xl mx-auto">
           <PageHeader 
             title="Learning Path (Snake Demo)" 
@@ -197,7 +198,7 @@ export default function SnakeDemoPage() {
             </div>
           )}
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

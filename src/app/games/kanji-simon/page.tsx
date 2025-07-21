@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import KanjiSimonBoardSelection from '@/components/games/KanjiSimon/KanjiSimonBoardSelection';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function KanjiSimonPage() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function KanjiSimonPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
           <PageHeader
@@ -123,7 +124,7 @@ export default function KanjiSimonPage() {
 
           <KanjiSimonBoardSelection onSelect={handleBoardSelect} />
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

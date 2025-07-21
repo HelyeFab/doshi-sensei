@@ -198,7 +198,7 @@ export default function Home() {
       }}
     >
       {/* Main Content */}
-      <div className="relative">
+      <div className="relative -mt-8 sm:mt-0">
         {/* Falling Sakura Animation */}
         <div className="fixed inset-0 pointer-events-none z-20">
           {sakuraPetals.map((petal) => (

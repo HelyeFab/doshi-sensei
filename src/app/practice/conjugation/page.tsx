@@ -16,6 +16,7 @@ import TTSManager from '@/utils/tts';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { getCachedCommonWordsForPractice, getCachedFilteredWords, PracticeCache } from '@/utils/practiceCache';
 import { useNotification } from '@/contexts/NotificationContext';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Structured Data for Conjugation Practice Page
 const conjugationStructuredData = {
@@ -158,7 +159,7 @@ export default function ConjugationPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -205,7 +206,7 @@ export default function ConjugationPage() {
             />
           </>
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

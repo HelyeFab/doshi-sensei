@@ -11,6 +11,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { LoginPromptModal } from '@/components/LoginPromptModal';
 import { UpgradePromptModal } from '@/components/UpgradePromptModal';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Loading skeleton component
 function ArticleCardSkeleton() {
@@ -392,7 +393,7 @@ export default function NewsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <PageHeader emoji="📰" showBackButton={true} helpKey="news" />
 
         <div className="max-w-6xl mx-auto">
@@ -514,7 +515,7 @@ export default function NewsPage() {
             </button>
           </div>
         </div>
-      </div>
+      </MobileAwareContainer>
 
       {/* Modals */}
       <LoginPromptModal

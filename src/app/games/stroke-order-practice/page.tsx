@@ -10,6 +10,7 @@ import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 const PRACTICE_SETS = [
   {
@@ -170,7 +171,7 @@ export default function StrokeOrderPracticePage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
           <PageHeader
@@ -439,7 +440,7 @@ export default function StrokeOrderPracticePage() {
             </div>
           )}
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

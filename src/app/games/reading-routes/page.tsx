@@ -8,6 +8,7 @@ import { getAllProgress } from '@/utils/moodBoardProgress';
 import { MoodBoardsProgress } from '@/types/moodBoard';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function ReadingRoutesPage() {
   const router = useRouter();
@@ -73,7 +74,7 @@ export default function ReadingRoutesPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
           <PageHeader title="Reading Routes" showBackButton={true} backHref="/games" />
@@ -236,7 +237,7 @@ export default function ReadingRoutesPage() {
             </div>
           </div>
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

@@ -15,6 +15,7 @@ import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory'
 import { StudyListManager } from '@/utils/studyListManager';
 import { ExampleSentencesBlock } from '@/components/vocabulary/ExampleSentencesBlock';
 import StrokeOrderModal from '@/components/kanji/StrokeOrderModal';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Add JMdict search utility import (to be implemented)
 import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
@@ -296,7 +297,7 @@ export default function VocabularyPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <PageHeader emoji="📖" helpKey="vocabulary" />
         <p className="text-muted-foreground text-center mt-2">
           {strings.vocab.searchPlaceholder}
@@ -536,7 +537,7 @@ export default function VocabularyPage() {
         {searching && (
           <SearchLoadingOverlay searchTerm={searchTerm || currentSearchTerm} />
         )}
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

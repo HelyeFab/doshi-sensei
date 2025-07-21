@@ -10,6 +10,9 @@ import { JourneyDropdown } from '@/components/JourneyDropdown';
 import { PageHelpIcon } from '@/components/PageHelpIcon';
 import { pageHelpContent } from '@/config/pageHelp';
 import { SNAKE_PATH_NODES } from '@/config/snakePathNodes';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { useSettings } from '@/contexts/SettingsContext';
+import { colorPalettes } from '@/utils/themes';
 // Removed React Spring to use pure CSS animations
 
 // Structured Data for Practice Page
@@ -107,13 +110,12 @@ function InfiniteScrollingBackground() {
 
       {/* Purple frosted glass gradient overlay - covers entire background */}
       <div className="absolute inset-0 -top-32 -bottom-32 -left-32 -right-32">
-        {/* Primary purple gradient - slightly stronger */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-purple-500/10 to-transparent" />
+        {/* Primary purple gradient - very subtle */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-purple-500/5 to-transparent" />
         {/* Secondary gradient for depth */}
-        <div className="absolute inset-0 bg-gradient-to-tl from-violet-600/15 via-transparent to-purple-400/8" />
+        <div className="absolute inset-0 bg-gradient-to-tl from-violet-600/8 via-transparent to-purple-400/4" />
         {/* Subtle white overlay for better text contrast */}
-        <div className="absolute inset-0 bg-white/5 dark:bg-black/10" />
-        {/* Frosted glass effect - removed blur */}
+        <div className="absolute inset-0 bg-white/3 dark:bg-black/5" />
       </div>
     </div>
   );
@@ -147,7 +149,7 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
                   : 'min-h-[120px] md:min-h-[140px]'
               }`}
               style={{
-                opacity: 0.12,  // Reduced to 12%
+                opacity: 0.30,  // Increased to 30%
                 background: card.bgColor,
               }}
             >
@@ -202,7 +204,7 @@ function InfiniteColumn({ colIndex, offset, speed, reverse }: { colIndex: number
                   : 'min-h-[120px] md:min-h-[140px]'
               }`}
               style={{
-                opacity: 0.12,  // Reduced to 12%
+                opacity: 0.30,  // Increased to 30%
                 background: card.bgColor,
               }}
             >
@@ -424,6 +426,24 @@ function StationCircle({ station, isHovered = false }: { station: any; isHovered
 function ProductionLearningPath() {
   // Use the shared nodes configuration
   const nodes = SNAKE_PATH_NODES;
+  const { settings } = useSettings();
+  
+  // Get user's color scheme colors
+  const colorScheme = settings.colorScheme || 'default';
+  const palette = colorPalettes[colorScheme]?.colors || colorPalettes['default'].colors;
+  
+  // Convert HSL to hex for better gradient support
+  const hslToHex = (hsl: string) => {
+    const match = hsl.match(/hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)/);
+    if (!match) return '#8b5cf6'; // fallback purple
+    return `hsl(${match[1]}, ${match[2]}%, ${match[3]}%)`;
+  };
+  
+  const gradientColors = {
+    primary: hslToHex(palette.primary),
+    accent: hslToHex(palette.accent),
+    secondary: hslToHex(palette.secondary)
+  };
 
   return (
     <div className="w-full md:max-w-5xl mx-auto px-0 md:px-4 relative">
@@ -476,7 +496,7 @@ export default function PracticePage() {
       <div className="h-4"></div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-0 md:px-4 py-8 min-h-screen pb-24 md:pb-8 relative z-10">
+      <MobileAwareContainer className="container mx-auto px-0 md:px-4 py-8 min-h-screen md:pb-8 relative z-10">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -540,7 +560,7 @@ export default function PracticePage() {
           {/* Learning Path with Production Snake Path */}
           <ProductionLearningPath />
         </main>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

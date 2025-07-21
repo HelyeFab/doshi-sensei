@@ -13,6 +13,7 @@ import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
 import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { KanaChar } from '@/components/games/KanaDropGame/types';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Structured Data for Hiragana Page
 const hiraganaStructuredData = {
@@ -185,7 +186,7 @@ export default function HiraganaPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -295,7 +296,7 @@ export default function HiraganaPage() {
             </div>
           </div>
         </main>
-      </div>
+      </MobileAwareContainer>
 
       {/* Study Modal */}
       {showKanaStudyModal && (

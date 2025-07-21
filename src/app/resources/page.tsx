@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { getResourceColorTheme, getResourceIcon, getCategoryEmoji } from '@/utils/resourceVisuals';
 import { useStrings } from '@/contexts/LanguageContext';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function ResourcesPage() {
   const searchParams = useSearchParams();
@@ -110,7 +111,7 @@ export default function ResourcesPage() {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
         <PageHeader emoji="🎌" showBackButton={true} helpKey="resources" className="mb-4 sm:mb-8 md:mb-12" />
 
         {/* Search and Filters */}
@@ -410,7 +411,7 @@ export default function ResourcesPage() {
             </>
           )}
         </div>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

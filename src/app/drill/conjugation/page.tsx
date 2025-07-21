@@ -18,6 +18,7 @@ import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
 import { PracticeCache } from '@/utils/practiceCache';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Structured Data for Conjugation Drill Page
 const conjugationDrillStructuredData = {
@@ -334,7 +335,7 @@ export default function ConjugationDrillPage() {
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+        <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
@@ -490,7 +491,7 @@ export default function ConjugationDrillPage() {
               </button>
             </div>
           </main>
-        </div>
+        </MobileAwareContainer>
       </>
     );
   }
@@ -508,7 +509,7 @@ export default function ConjugationDrillPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-3xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Progress Bar */}
           <div className="mb-8">
@@ -668,7 +669,7 @@ export default function ConjugationDrillPage() {
             </>
           ) : null}
         </main>
-      </div>
+      </MobileAwareContainer>
 
       {/* Save Word Modal */}
       {showSaveModal && wordToSave && (

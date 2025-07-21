@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 import { NotificationProvider } from './AdminNotifications';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 interface AdminLayoutProps {
   title?: string;
@@ -36,9 +37,9 @@ export function AdminLayout({ title, children }: AdminLayoutProps) {
 
           {/* Main content */}
           <main className="flex-1 overflow-y-auto overflow-x-hidden">
-            <div className="p-4 sm:p-6 pb-40 md:pb-20 max-w-full overflow-hidden">
+            <MobileAwareContainer className="p-4 sm:p-6 max-w-full overflow-hidden" extraPadding={40}>
               {children}
-            </div>
+            </MobileAwareContainer>
           </main>
         </div>
       </div>

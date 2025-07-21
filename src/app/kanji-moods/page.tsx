@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/PageHeader';
 import MoodBoardCard from '@/components/kanji-moods/MoodBoardCard';
 import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
 import { Search, Filter, X } from 'lucide-react';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function KanjiMoodsPage() {
   const router = useRouter();
@@ -149,7 +150,7 @@ export default function KanjiMoodsPage() {
         {/* Virtual Companion Button positioned within this section */}
       </div>
 
-      <div className="container mx-auto px-4 pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4">
         <div className="mb-16 md:mb-24">
           <PageHeader icon="/flat-icons/ui/kanji.svg" showBackButton={true} helpKey="kanji-moods" />
         </div>
@@ -603,7 +604,7 @@ export default function KanjiMoodsPage() {
           </div>
         </div>
       </div>
-      </div>
+      </MobileAwareContainer>
     </div>
   );
 }

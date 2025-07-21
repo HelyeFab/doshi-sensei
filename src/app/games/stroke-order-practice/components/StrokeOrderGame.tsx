@@ -12,6 +12,7 @@ import ScoreDisplay from './ScoreDisplay';
 import GameOverModal from './GameOverModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 // Using localStorage directly for game-specific data
 
 export interface PracticeSet {
@@ -377,7 +378,7 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
         <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
           <PageHeader 
@@ -492,7 +493,7 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
           </div>
         </div>
         </main>
-      </div>
+      </MobileAwareContainer>
 
       <GameOverModal
         isOpen={isGameOver}

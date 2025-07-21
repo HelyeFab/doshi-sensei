@@ -161,8 +161,9 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4">
-            <ul className="space-y-2">
+          <nav className="flex-1 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="p-4">
+              <ul className="space-y-2">
               {/* Home Link */}
               <li>
                 <Link
@@ -202,6 +203,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 );
               })}
             </ul>
+            </div>
           </nav>
 
           {/* Footer */}

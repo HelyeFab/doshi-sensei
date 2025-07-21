@@ -20,6 +20,7 @@ import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useStrings } from '@/contexts/LanguageContext';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -858,7 +859,7 @@ export default function GamesPage() {
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+        <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
           <PageHeader
             title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.modes.listening.title}
             showBackButton={true}
@@ -881,7 +882,7 @@ export default function GamesPage() {
               {strings.games.goToVocabulary}
             </button>
           </div>
-        </div>
+        </MobileAwareContainer>
       </>
     );
   }
@@ -896,7 +897,7 @@ export default function GamesPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         {/* Page Header - for mobile consistency */}
         <PageHeader helpKey="games" />
 
@@ -1498,7 +1499,7 @@ export default function GamesPage() {
             setShowKanjiQuestLevelSelect(true);
           }}
         />
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

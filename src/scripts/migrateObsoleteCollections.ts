@@ -63,19 +63,22 @@ async function migrateStoryProgress(): Promise<MigrationResult> {
         const data = doc.data();
         const progressId = doc.id;
         
-        // Get userId from the document data, not from the ID
-        const userId = data.userId;
-        const storyId = data.storyId || progressId; // Use progressId as storyId if not in data
-
-        if (!userId) {
+        // Parse userId and storyId from the document ID
+        // Format appears to be: userId_storyId (e.g., "WawMEtfq0dcoVPMr3nuwpFAzr9F2_aki-went-to-school")
+        const underscoreIndex = progressId.indexOf('_');
+        
+        if (underscoreIndex === -1) {
           result.failed++;
-          result.errors.push(`No userId found in document: ${progressId}`);
+          result.errors.push(`Invalid document ID format (no underscore): ${progressId}`);
           continue;
         }
+        
+        const userId = progressId.substring(0, underscoreIndex);
+        const storyId = progressId.substring(underscoreIndex + 1);
 
-        if (!storyId) {
+        if (!userId || !storyId) {
           result.failed++;
-          result.errors.push(`No storyId found for document: ${progressId}`);
+          result.errors.push(`Failed to parse userId/storyId from: ${progressId}`);
           continue;
         }
 

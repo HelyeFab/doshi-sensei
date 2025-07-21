@@ -24,6 +24,8 @@ import { CardSettingsModal } from '@/components/flashcards/CardSettingsModal';
 import { speakJapanese } from '@/utils/speech';
 import { getKanjiAudioPath } from '@/utils/kanjiAudio';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import TTSManager from '@/utils/tts';
+import { useTTS } from '@/hooks/useTTS';
 
 // Structured Data for Flashcard Review Page
 const flashcardReviewStructuredData = {
@@ -97,6 +99,7 @@ export default function FlashcardReviewPage() {
   const { track } = useAnalytics();
   const { isPremium, userType, subscription } = useSubscription2();
   const strings = useStrings();
+  const { speak: speakTTS, state: ttsState } = useTTS();
 
   // Review state
   const [cards, setCards] = useState<JapaneseWord[]>([]);
@@ -193,18 +196,29 @@ export default function FlashcardReviewPage() {
           e.preventDefault();
           await handleUndo();
           break;
+        case 'a':
+        case 'A':
+          e.preventDefault();
+          const currentCard = cards[currentCardIndex];
+          if (currentCard) {
+            await playCardAudio(currentCard, showAnswer ? 'back' : 'front');
+          }
+          break;
       }
     };
     
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [sessionStarted, showAnswer, currentCardIndex]);
+  }, [sessionStarted, showAnswer, currentCardIndex, cards]);
 
-  // Load user's word lists on mount
+  // Load user's word lists on mount and initialize TTS
   useEffect(() => {
     if (user) {
       loadUserLists();
     }
+    
+    // Initialize TTS Manager
+    TTSManager.initialize();
   }, [user]);
 
   // Close dropdown when clicking outside
@@ -496,37 +510,59 @@ export default function FlashcardReviewPage() {
   const playCardAudio = async (card: any, side: 'front' | 'back') => {
     try {
       let textToSpeak = '';
+      let context = 'flashcard';
+      let provider: 'google' | 'elevenlabs' | undefined;
       
       if (card.itemType === 'anki_card' && card.ankiData) {
         textToSpeak = side === 'front' ? card.ankiData.front : card.ankiData.back;
         // Strip HTML for TTS
-        textToSpeak = textToSpeak.replace(/<[^>]*>/g, '');
+        textToSpeak = textToSpeak.replace(/<[^>]*>/g, '').trim();
+        
+        // Use ElevenLabs for longer content (sentences)
+        if (textToSpeak.length > 30 || textToSpeak.includes('。') || textToSpeak.includes('、')) {
+          provider = 'elevenlabs';
+          context = 'sentence';
+        }
       } else {
         const display = getCardDisplay(card, side);
         if (display.type === 'japanese') {
           textToSpeak = display.primary;
+          
+          // Determine context based on content
+          // Single kanji
+          if (textToSpeak.length === 1 && /[\u4e00-\u9faf]/.test(textToSpeak)) {
+            context = 'kanji';
+          }
+          // Kana only
+          else if (/^[\u3040-\u309f\u30a0-\u30ff]+$/.test(textToSpeak)) {
+            context = 'kana';
+          }
+          // Mixed or longer content
+          else if (textToSpeak.length > 10) {
+            provider = 'elevenlabs';
+            context = 'sentence';
+          } else {
+            context = 'vocabulary';
+          }
+        } else {
+          // For English text, skip TTS
+          console.log('Skipping TTS for English text');
+          return;
         }
       }
       
       if (!textToSpeak) return;
       
-      // Check if it's a single kanji
-      if (textToSpeak.length === 1 && /[\u4e00-\u9faf]/.test(textToSpeak)) {
-        // Use local audio for single kanji
-        const audioPath = getKanjiAudioPath(textToSpeak);
-        if (audioPath) {
-          const audio = new Audio(audioPath);
-          await audio.play();
-          return;
-        }
-      }
+      // Use the TTS hook with proper context and provider
+      // The TTS system will automatically check for local audio first
+      await speakTTS(textToSpeak, {
+        voice: 'female',
+        speed: 1.0,
+        context: context,
+        provider: provider
+      });
       
-      // Use ElevenLabs TTS for everything else
-      try {
-        await speakJapanese(textToSpeak);
-      } catch (ttsError) {
-        console.warn('TTS not available, skipping audio playback:', ttsError);
-      }
+      console.log(`🎵 Playing audio for ${context}: "${textToSpeak.substring(0, 30)}${textToSpeak.length > 30 ? '...' : ''}"`);
     } catch (error) {
       console.error('Error playing audio:', error);
     }
@@ -928,9 +964,9 @@ export default function FlashcardReviewPage() {
                   <div><kbd className="px-2 py-1 bg-orange-400 dark:bg-orange-600 text-white rounded font-medium">2</kbd> Hard</div>
                   <div><kbd className="px-2 py-1 bg-blue-400 dark:bg-blue-600 text-white rounded font-medium">3</kbd> Good</div>
                   <div><kbd className="px-2 py-1 bg-green-400 dark:bg-green-600 text-white rounded font-medium">4</kbd> Easy</div>
+                  <div><kbd className="px-2 py-1 bg-pink-400 dark:bg-pink-600 text-white rounded font-medium">A</kbd> Audio</div>
                   <div><kbd className="px-2 py-1 bg-slate-400 dark:bg-slate-600 text-white rounded font-medium">Z</kbd> Undo</div>
                   <div><kbd className="px-2 py-1 bg-amber-400 dark:bg-amber-600 text-white rounded font-medium">S</kbd> Suspend</div>
-                  <div><kbd className="px-2 py-1 bg-indigo-400 dark:bg-indigo-600 text-white rounded font-medium">E</kbd> Edit</div>
                 </div>
               </div>
             </div>

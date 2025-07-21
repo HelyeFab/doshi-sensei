@@ -479,6 +479,29 @@ service cloud.firestore {
         isPremiumUser(userId);
     }
 
+    // Translations collection - cached translations from Google Translate
+    match /translations/{translationId} {
+      // Anyone can read cached translations
+      allow read: if true;
+      
+      // Only authenticated users can create translations (when requesting new ones)
+      allow create: if request.auth != null &&
+        request.resource.data.keys().hasAll(['originalText', 'translatedText', 'language', 'createdAt', 'lastAccessed']) &&
+        request.resource.data.originalText is string &&
+        request.resource.data.translatedText is string &&
+        request.resource.data.language is string &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Allow updating lastAccessed timestamp only
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastAccessed']) &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Only admin can delete translations
+      allow delete: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

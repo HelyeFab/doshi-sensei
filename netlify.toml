@@ -102,8 +102,9 @@
 # Scheduled Functions
 [functions]
   # Daily news scraping - runs at 6 AM JST (9 PM UTC previous day)
-  [functions."scrape-news-scheduled"]
-    schedule = "0 21 * * *"
+  # DISABLED: Using enhanced version instead (was fetching English content from todaiinews.com)
+  # [functions."scrape-news-scheduled"]
+  #   schedule = "0 21 * * *"
   
   # Enhanced daily news scraping with all 6 sources
   [functions."scrape-news-scheduled-enhanced"]

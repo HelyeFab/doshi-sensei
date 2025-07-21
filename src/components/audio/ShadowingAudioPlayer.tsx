@@ -11,6 +11,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAccess } from '@/hooks/useAccess';
 import { useNotification } from '@/contexts/NotificationContext';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Settings, Bookmark } from 'lucide-react';
+import { translationService } from '@/services/translationService';
 
 interface ShadowingAudioPlayerProps {
   article: NewsArticle;
@@ -22,6 +23,7 @@ interface SentenceData {
   startIndex: number;
   endIndex: number;
   furiganaText?: string;
+  translation?: string;
 }
 
 export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudioPlayerProps) {
@@ -46,6 +48,8 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
   const [currentRepeat, setCurrentRepeat] = useState(0);
   const [showFurigana, setShowFurigana] = useState(false);
   const [loadingFurigana, setLoadingFurigana] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [loadingTranslations, setLoadingTranslations] = useState(false);
   
   // Sentence saving state
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -70,6 +74,36 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
       setSentences(parsedSentences);
     }
   }, [article]);
+
+  // Load translations when toggled
+  useEffect(() => {
+    const loadTranslations = async () => {
+      if (showTranslation && sentences.length > 0 && !sentences[0].translation) {
+        setLoadingTranslations(true);
+        try {
+          const sentenceTexts = sentences.map(s => s.text);
+          const translations = await translationService.translateSentences(sentenceTexts);
+          
+          // Update sentences with translations
+          const updatedSentences = sentences.map((sentence, index) => ({
+            ...sentence,
+            translation: translations[index]?.translation || 'Translation unavailable'
+          }));
+          
+          setSentences(updatedSentences);
+        } catch (error) {
+          console.error('Failed to load translations:', error);
+          showNotification('Failed to load translations', 'error');
+        } finally {
+          setLoadingTranslations(false);
+        }
+      }
+    };
+
+    if (showTranslation) {
+      loadTranslations();
+    }
+  }, [showTranslation, sentences.length]);
 
   // Cleanup
   useEffect(() => {
@@ -591,6 +625,22 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
                     <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   )}
                 </label>
+                
+                <label className="flex items-center gap-3 cursor-pointer mt-3">
+                  <input
+                    type="checkbox"
+                    checked={showTranslation}
+                    onChange={(e) => setShowTranslation(e.target.checked)}
+                    className="rounded border-border"
+                  />
+                  <div>
+                    <span className="text-sm font-medium">Show Translation</span>
+                    <p className="text-xs text-muted-foreground">Display English translation below sentences</p>
+                  </div>
+                  {loadingTranslations && (
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  )}
+                </label>
               </div>
             </div>
           </div>
@@ -629,6 +679,23 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
                 <p className="text-muted-foreground">No sentence available</p>
               )}
             </div>
+            
+            {/* Translation Display */}
+            {showTranslation && currentSentence && (
+              <div className="mt-3 p-4 bg-muted/30 rounded-lg">
+                <div className="text-xs text-muted-foreground mb-1">English Translation:</div>
+                {loadingTranslations ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                    <span className="text-sm text-muted-foreground">Loading translation...</span>
+                  </div>
+                ) : (
+                  <p className="text-sm text-foreground/90">
+                    {currentSentence.translation || 'Translation not available'}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Progress Bar */}

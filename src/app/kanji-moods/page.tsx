@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { getAllProgress } from '@/utils/moodBoardProgress';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import MoodBoardCard from '@/components/kanji-moods/MoodBoardCard';
 import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
 import { Search, Filter, X } from 'lucide-react';
@@ -112,20 +112,9 @@ export default function KanjiMoodsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        {/* Virtual Companion Section - 1/6th of screen height */}
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          {/* Gradient Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-          {/* Gradient to White Fade */}
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-          {/* Virtual Companion Button positioned within this section */}
-        </div>
-
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Kanji Moods" backHref="/" />
         <div className="container mx-auto px-4 pb-20">
-          <PageHeader icon="/flat-icons/ui/kanji.svg" showBackButton={true} helpKey="kanji-moods" />
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin text-4xl mb-4">⏳</div>
@@ -138,23 +127,10 @@ export default function KanjiMoodsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Kanji Moods" backHref="/" />
+      
       <MobileAwareContainer className="container mx-auto px-4">
-        <div className="mb-16 md:mb-24">
-          <PageHeader icon="/flat-icons/ui/kanji.svg" showBackButton={true} helpKey="kanji-moods" />
-        </div>
-
         {/* Search and Filter Section */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row gap-3">

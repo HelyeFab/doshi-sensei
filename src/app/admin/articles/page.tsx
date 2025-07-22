@@ -14,6 +14,7 @@ import {
   triggerNHKNewsScraping,
   triggerYahooNewsScraping,
   triggerMainichiShogakuseiScraping,
+  triggerMainichiNewsScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult
@@ -136,6 +137,24 @@ export default function ArticlesManagementPage() {
     }
   };
 
+  const handleMainichiNewsScraping = async () => {
+    setLoading(true);
+    setStatus('📰 Scraping Mainichi Shimbun...');
+
+    try {
+      const result = await triggerMainichiNewsScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.mainichiNews));
+
+      if (result.success) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleAllSourcesScraping = async () => {
     setLoading(true);
@@ -153,7 +172,8 @@ export default function ArticlesManagementPage() {
         formatScrapingResult(results.nhkNews, NEWS_SOURCES.nhkNews),
         formatScrapingResult(results.yahooNews, NEWS_SOURCES.yahooNews),
         formatScrapingResult(results.mainichiShogakusei, NEWS_SOURCES.mainichiShogakusei),
-        `\n🎉 Overall: ${overall.totalArticles} total articles from ${overall.successfulSources}/6 sources (${overall.totalTimeElapsed}s)`
+        formatScrapingResult(results.mainichiNews, NEWS_SOURCES.mainichiNews),
+        `\n🎉 Overall: ${overall.totalArticles} total articles from ${overall.successfulSources}/7 sources (${overall.totalTimeElapsed}s)`
       ];
 
       setStatus(statusMessages.join('\n'));
@@ -320,6 +340,18 @@ export default function ArticlesManagementPage() {
                 <div className="text-left">
                   <div className="font-medium">{NEWS_SOURCES.mainichiShogakusei.name}</div>
                   <div className="text-xs opacity-90">{NEWS_SOURCES.mainichiShogakusei.description}</div>
+                </div>
+              </button>
+
+              <button
+                onClick={handleMainichiNewsScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.mainichiNews.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.mainichiNews.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.mainichiNews.description}</div>
                 </div>
               </button>
 

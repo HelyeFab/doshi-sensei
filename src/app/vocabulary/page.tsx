@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import { searchWords } from '@/utils/api';
 import { useStrings } from '@/contexts/LanguageContext';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -284,21 +284,11 @@ export default function VocabularyPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Vocabulary" backHref="/" />
+      
       {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
-        <PageHeader emoji="📖" helpKey="vocabulary" />
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <p className="text-muted-foreground text-center mt-2">
           {strings.vocab.searchPlaceholder}
         </p>
@@ -538,7 +528,7 @@ export default function VocabularyPage() {
           <SearchLoadingOverlay searchTerm={searchTerm || currentSearchTerm} />
         )}
       </MobileAwareContainer>
-    </>
+    </div>
   );
 }
 

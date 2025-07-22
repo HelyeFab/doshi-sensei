@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from './useAccess';
 import { LoginPromptModal } from '@/components/LoginPromptModal';
-import { UpgradePromptModal } from '@/components/UpgradePromptModal';
+import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
 import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface UseAccessWithModalsReturn {
@@ -83,7 +83,7 @@ export function useAccessWithModals(): UseAccessWithModalsReturn {
         feature={modalFeature}
       />
       
-      <UpgradePromptModal
+      <UpgradeSlideUpModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         message={modalMessage}

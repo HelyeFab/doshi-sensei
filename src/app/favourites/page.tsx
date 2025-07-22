@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { JapaneseWord, WordList, StudyList, StudyListType, Kanji, Sentence } from '@/types';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useFeature } from '@/hooks/useFeature';
@@ -552,7 +552,7 @@ export default function FavouritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -561,22 +561,12 @@ export default function FavouritesPage() {
         }}
       />
 
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
+      <StandardPageHeader title={strings.favourites.title} />
 
       <MobileAwareContainer className="container mx-auto px-4">
-        {/* Header */}
+        {/* Description */}
         <div className="mb-8">
-          <PageHeader title={strings.favourites.title} helpKey="favourites" />
-          <p className="text-muted-foreground text-center mt-2">
+          <p className="text-muted-foreground text-center">
             {strings.favourites.description}
           </p>
         </div>
@@ -652,9 +642,9 @@ export default function FavouritesPage() {
             ) : (
               <>
                 {/* Controls */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-foreground">{strings.favourites.lists.title}</h2>
-                  <div className="flex gap-2">
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-foreground mb-4">{strings.favourites.lists.title}</h2>
+                  <div className="grid grid-cols-2 sm:flex gap-2">
                     <button
                       onClick={() => handleCreateListClick()}
                       className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
@@ -664,7 +654,7 @@ export default function FavouritesPage() {
                     {isPremium && (
                       <button
                         onClick={() => setShowAnkiImportModal(true)}
-                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2 justify-center"
                       >
                         <span>📥</span>
                         Import Anki
@@ -673,7 +663,7 @@ export default function FavouritesPage() {
                     {wordLists.length > 0 && (
                       <button
                         onClick={clearAllSaved}
-                        className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors text-sm font-medium"
+                        className="col-span-2 sm:col-span-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors text-sm font-medium"
                       >
                         {strings.favourites.lists.actions.clearAll}
                       </button>

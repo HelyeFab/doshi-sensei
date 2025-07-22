@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -80,6 +81,7 @@ export default function Home() {
   const { settings } = useSettings();
   const strings = useStrings();
   const [showPokedexModal, setShowPokedexModal] = useState(false);
+  const [dayProgress, setDayProgress] = useState(0);
 
   // Ensure strings are loaded
   if (!strings || !strings.home || !strings.home.featureCards) {
@@ -153,6 +155,31 @@ export default function Home() {
     }
   }, [profile?.displayName, profile?.email]);
 
+  // Calculate day progress (0-100%)
+  useEffect(() => {
+    const calculateDayProgress = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      
+      // Total seconds in a day: 24 * 60 * 60 = 86400
+      const totalSecondsInDay = 86400;
+      const currentSeconds = (hours * 3600) + (minutes * 60) + seconds;
+      const progress = (currentSeconds / totalSecondsInDay) * 100;
+      
+      setDayProgress(progress);
+    };
+
+    // Calculate initial progress
+    calculateDayProgress();
+
+    // Update every minute
+    const interval = setInterval(calculateDayProgress, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Generate falling sakura petals
   const [sakuraPetals, setSakuraPetals] = useState<Array<{
     id: number;
@@ -191,142 +218,120 @@ export default function Home() {
   }, []);
 
   return (
-    <div
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        backgroundImage: 'linear-gradient(to right bottom, #d16ba5, #d16fb1, #d173bd, #cf78ca, #cb7ed6, #de81cf, #ee86c8, #fb8cc1, #ff9eaa, #ffb59e, #ffcda2, #f5e3b5)'
-      }}
-    >
-      {/* Main Content */}
-      <div className="relative -mt-8 sm:mt-0">
-        {/* Falling Sakura Animation */}
-        <div className="fixed inset-0 pointer-events-none z-20">
-          {sakuraPetals.map((petal) => (
-            <div
-              key={petal.id}
-              className="absolute animate-fall"
-              style={{
-                left: `${petal.left}%`,
-                animationDelay: `${petal.delay}s`,
-                animationDuration: `${petal.duration}s`,
-                '--sway-duration': `${petal.swayDuration}s`
-              } as React.CSSProperties}
-            >
-              <img
-                src={petal.svg}
-                alt="Sakura petal"
-                className="animate-sway opacity-70"
-                style={{
-                  width: `${petal.size}px`,
-                  height: `${petal.size}px`,
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                }}
+    <div className="min-h-screen bg-background">
+      {/* Structured Data for SEO - keeping for SEO purposes */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
+      {/* Welcome Section */}
+      <header className="px-4 pt-6 pb-4" role="banner">
+        <div className="flex items-center gap-3">
+          {/* User Avatar */}
+          <div className="relative w-12 h-12 flex-shrink-0" role="img" aria-label={`${displayName}'s avatar`}>
+            {profile?.photoURL ? (
+              <Image 
+                src={profile.photoURL} 
+                alt={`${displayName}'s avatar`}
+                fill
+                className="rounded-full object-cover"
+                sizes="48px"
+                priority
               />
-            </div>
-          ))}
+            ) : (
+              <div className="w-full h-full rounded-full bg-blue-500 flex items-center justify-center text-white font-medium text-lg" aria-hidden="true">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+          
+          {/* Greeting Text */}
+          <div className="flex-1">
+            <h1 className="text-xl font-semibold text-gray-900">
+              {strings.home.greeting} {displayName}-san! <span className="inline-block animate-wave">👋</span>
+            </h1>
+            <p className="text-sm text-gray-600">{strings.home.readyToPractice}</p>
+          </div>
         </div>
+      </header>
 
-        <style jsx>{`
-          @keyframes fall {
-            from {
-              transform: translateY(-100px);
-            }
-            to {
-              transform: translateY(calc(100vh + 100px));
-            }
-          }
-
-          @keyframes sway {
-            0%, 100% {
-              transform: translateX(0) rotate(0deg);
-            }
-            25% {
-              transform: translateX(-20px) rotate(-5deg);
-            }
-            75% {
-              transform: translateX(20px) rotate(5deg);
-            }
-          }
-
-          .animate-fall {
-            animation: fall linear infinite;
-          }
-
-          .animate-sway {
-            animation: sway var(--sway-duration) ease-in-out infinite;
-          }
-        `}</style>
-        {/* Structured Data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
-
-        {/* ToriiGate Section */}
-        <div className="w-full">
-          <ToriiGate
-            profile={profile}
-            displayName={displayName}
-            greeting={strings.home.greeting}
-            readyText={strings.home.readyToPractice}
+      {/* Today's Date Section */}
+      <section className="px-4 pb-4">
+        <h2 className="text-lg font-medium text-gray-700 mb-2">
+          Today, {(() => {
+            const date = new Date();
+            const day = date.getDate();
+            const month = date.toLocaleDateString('en-US', { month: 'long' });
+            const year = date.getFullYear();
+            return `${day} ${month} ${year}`;
+          })()}
+        </h2>
+        
+        {/* Day Progress Bar */}
+        <div className="relative h-0.5 w-full bg-gray-200 overflow-hidden">
+          <div 
+            className="absolute left-0 top-0 h-full transition-all duration-300 ease-out"
+            style={{
+              width: `${dayProgress}%`,
+              backgroundColor: 'var(--primary)'
+            }}
           />
         </div>
-
-        {/* Feature Cards Grid */}
-        <div className="container mx-auto px-4 mt-8 mb-16">
-          <div className="flex justify-center">
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-8 xl:gap-10" style={{ width: 'fit-content' }}>
-              {FEATURE_CARDS.map((card, index) => (
-                <Link key={card.href} href={card.href} className="block">
-                  <div
-                    className={`group relative rounded-2xl backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 ${CARD_COLORS[desktopColors[index]].bg} ${CARD_COLORS[desktopColors[index]].text}`}
-                    style={{
-                      border: '2px solid white',
-                      boxShadow: `inset 0 0 0 1px ${CARD_COLORS[desktopColors[index]].inset}, 0 4px 12px rgba(0,0,0,0.1)`
-                    }}
-                  >
-                    {/* Frosted glass overlay effect */}
-                    <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-
-                    <div className="relative flex flex-col items-center justify-center text-center h-full p-2">
-                      <div className="text-2xl sm:text-3xl md:text-4xl drop-shadow-sm mb-1">
-                        {card.icon.startsWith('/') ? (
-                          <img
-                            src={card.icon}
-                            alt={card.title}
-                            className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain"
-                          />
-                        ) : (
-                          card.icon
-                        )}
-                      </div>
-                      <h3 className="text-xs sm:text-sm md:text-base font-bold">
-                        {card.title}
-                      </h3>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-              
-              {/* Stats Bar - spans 2 columns on all screen sizes */}
-              <div className="col-span-2">
-                <StatsBar className="h-full" />
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Pokédex Modal */}
-        <PokedexModal
-          isOpen={showPokedexModal}
-          onClose={() => setShowPokedexModal(false)}
-          userId={profile?.uid}
-        />
+      </section>
+      
+      {/* Stats Bar */}
+      <div className="px-4 pb-4">
+        <StatsBar />
       </div>
 
+      {/* Feature Cards - Scrollable Container */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
+        <div className="space-y-3">
+          {FEATURE_CARDS.map((card) => (
+            <Link key={card.href} href={card.href} className="block">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                  {/* Icon */}
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center">
+                    {card.icon.startsWith('/') ? (
+                      <Image
+                        src={card.icon}
+                        alt={card.title}
+                        width={24}
+                        height={24}
+                        className="opacity-70"
+                      />
+                    ) : (
+                      <span className="text-2xl">{card.icon}</span>
+                    )}
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{card.title}</h3>
+                    <p className="text-sm text-gray-500">{card.description}</p>
+                  </div>
+                  
+                  {/* Arrow */}
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Pokédex Modal - keeping but hidden */}
+      <PokedexModal
+        isOpen={showPokedexModal}
+        onClose={() => setShowPokedexModal(false)}
+        userId={profile?.uid}
+      />
     </div>
   );
 }

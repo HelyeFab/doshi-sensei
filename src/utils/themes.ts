@@ -153,7 +153,7 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
 
   // Light theme variants
   return {
-    '--background': 'hsl(0, 0%, 100%)',
+    '--background': 'hsl(210, 20%, 98%)',
     '--foreground': 'hsl(222.2, 84%, 4.9%)',
     '--card': 'hsl(0, 0%, 100%)',
     '--card-foreground': 'hsl(222.2, 84%, 4.9%)',

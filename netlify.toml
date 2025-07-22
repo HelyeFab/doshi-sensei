@@ -129,6 +129,9 @@
   [functions."scrape-mainichi-shogakusei"]
     memory = 1024
   
+  [functions."scrape-mainichi-news"]
+    memory = 1024
+  
   # Alternative times if you want multiple daily scrapes:
   # Morning scrape at 6 AM JST (9 PM UTC)
   # [functions."scrape-news-morning"]

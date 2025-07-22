@@ -9,6 +9,7 @@ import StoryReader from '@/components/story/StoryReader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 
 export default function StoryPage() {
   const router = useRouter();
@@ -92,10 +93,13 @@ export default function StoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading story...</p>
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Loading..." backHref="/stories" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading story...</p>
+          </div>
         </div>
       </div>
     );
@@ -106,12 +110,15 @@ export default function StoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <StoryReader
-        story={story}
-        onComplete={handleComplete}
-        onExit={handleExit}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title={story.title} backHref="/stories" />
+      <div className="py-8">
+        <StoryReader
+          story={story}
+          onComplete={handleComplete}
+          onExit={handleExit}
+        />
+      </div>
     </div>
   );
 }

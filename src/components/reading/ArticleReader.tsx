@@ -255,11 +255,11 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
             </span>
             <button
               onClick={handleToggleFurigana}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
+              className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
                 }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-1'
+                className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-0'
                   }`}
               />
             </button>
@@ -274,13 +274,13 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
             </span>
             <button
               onClick={handleToggleVocabularyHighlight}
-              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors px-1 ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'}`}
+              className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'}`}
               style={{ minWidth: 56 }}
               aria-pressed={settings.highlightVocabulary}
               tabIndex={0}
             >
               <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-0'}`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-0'}`}
               />
             </button>
           </label>

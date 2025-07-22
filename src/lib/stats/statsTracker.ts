@@ -1588,6 +1588,61 @@ export class StatsTracker {
     this.notifyListeners();
   }
 
+  /**
+   * Recalculate totalActivities from existing activity counts
+   * Useful for fixing stats that have incorrect totalActivities
+   */
+  async recalculateTotalActivities(): Promise<{ before: number, after: number }> {
+    if (!this.stats) {
+      throw new Error('Stats not initialized');
+    }
+
+    const before = this.stats.totalActivities;
+    
+    // Calculate total from all activity types
+    const calculatedTotal = 
+      this.stats.drillsCompleted +
+      this.stats.storiesRead +
+      this.stats.articlesRead +
+      this.stats.kanjiStudySessions +
+      this.stats.gamesPlayed +
+      this.stats.vocabStudied +
+      this.stats.flashcardsReviewed +
+      this.stats.practiceSessionsCompleted;
+    
+    console.log('📊 [StatsTracker] Recalculating totalActivities:', {
+      before,
+      calculated: calculatedTotal,
+      breakdown: {
+        drills: this.stats.drillsCompleted,
+        stories: this.stats.storiesRead,
+        articles: this.stats.articlesRead,
+        kanji: this.stats.kanjiStudySessions,
+        games: this.stats.gamesPlayed,
+        vocab: this.stats.vocabStudied,
+        flashcards: this.stats.flashcardsReviewed,
+        practice: this.stats.practiceSessionsCompleted
+      }
+    });
+    
+    // Update if different
+    if (this.stats.totalActivities !== calculatedTotal) {
+      this.stats.totalActivities = calculatedTotal;
+      this.stats.lastUpdated = Date.now();
+      
+      // Save to storage
+      await this.saveToIndexedDB();
+      if (this.currentUser && this.isPremium) {
+        await this.saveToCloud();
+      }
+      
+      // Notify listeners
+      this.notifyListeners();
+    }
+    
+    return { before, after: calculatedTotal };
+  }
+
 }
 
 // Export singleton instance

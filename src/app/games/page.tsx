@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord, StudyList } from '@/types';
 import TTSManager from '@/utils/tts';
@@ -15,12 +15,12 @@ import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
 import SentenceScrambleModal from '@/components/games/SentenceScrambleGame/SentenceScrambleModal';
 import KanjiQuestTutorialModal from '@/components/games/KanjiQuestTutorialModal';
 import MatchingGameModal from '@/components/games/MatchingGame/MatchingGameModal';
-import MatchingInstructionScreen from '@/components/games/MatchingGame/InstructionScreen';
 import { getPokedexData } from '@/utils/kanjiUtils';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import SlideUpModal from '@/components/SlideUpModal';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -852,20 +852,12 @@ export default function GamesPage() {
 
   if ((currentGameMode === 'listening' || currentGameMode === 'assembly') && studyLists.length === 0) {
     return (
-      <>
-        {/* Virtual Companion Section */}
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        </div>
-
-        <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
-          <PageHeader
-            title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.modes.listening.title}
-            showBackButton={true}
-            helpKey="games"
-            onBackClick={handleBackToGameSelection}
-          />
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader
+          title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.modes.listening.title}
+          backHref="/games"
+        />
+        <MobileAwareContainer className="container mx-auto px-4 py-6">
 
           <div className="max-w-2xl mx-auto text-center py-16">
             <div className="text-8xl mb-6">🎧</div>
@@ -883,23 +875,17 @@ export default function GamesPage() {
             </button>
           </div>
         </MobileAwareContainer>
-      </>
+      </div>
     );
   }
 
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Games" backHref="/" />
+      
       {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
-        {/* Page Header - for mobile consistency */}
-        <PageHeader helpKey="games" />
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
 
         <div className="max-w-2xl mx-auto">
           {/* Game Selection */}
@@ -1428,22 +1414,104 @@ export default function GamesPage() {
           })()}
         </div>
 
-        {/* Matching Game Instructions */}
-        {!showGameSelection && showMatchingInstructions && (
-          <MatchingInstructionScreen
-            wordCount={savedWords.length}
-            pairCount={savedWords.length >= 10 ? 15 : savedWords.length >= 7 ? 12 : 10}
-            maxWords={15} // Maximum words we'll use from their list
-            onStart={() => {
-              setShowMatchingInstructions(false);
-              setShowMatchingGameModal(true);
-            }}
-            onBack={() => {
-              setShowMatchingInstructions(false);
-              setShowListSelection(true);
-            }}
-          />
-        )}
+        {/* Matching Game Instructions Modal */}
+        <SlideUpModal
+          isOpen={showMatchingInstructions}
+          onClose={() => {
+            setShowMatchingInstructions(false);
+            setShowListSelection(true);
+          }}
+          title="Matching Game Instructions"
+          height="auto"
+          showHandle={true}
+        >
+          <div className="space-y-6">
+            {/* Game Icon and Title */}
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-red-500 rounded-lg flex items-center justify-center">
+                <img
+                  src="/flat-icons/root-icons/matching.svg"
+                  alt="Matching Game"
+                  className="w-14 h-14 object-contain"
+                />
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Test your memory with your vocabulary!
+              </p>
+            </div>
+
+            {/* How to Play */}
+            <div className="bg-card rounded-lg border border-border p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <span className="text-2xl">🎮</span>
+                How to Play
+              </h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">1.</span>
+                  <span>Tap any tile to reveal what's hidden underneath</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">2.</span>
+                  <span>Find matching pairs - they could be:
+                    <ul className="mt-1 ml-4 text-sm">
+                      <li>• Same word twice</li>
+                      <li>• Word and its reading (kana)</li>
+                      <li>• Word and its meaning</li>
+                    </ul>
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">3.</span>
+                  <span>Clear all pairs to win the game!</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">4.</span>
+                  <span>Try to complete with as few moves as possible</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Game Info */}
+            <div className="flex justify-center">
+              <div className="bg-muted rounded-lg p-6 text-center">
+                <div className="text-3xl font-bold text-primary mb-1">
+                  {savedWords.length >= 10 ? 15 : savedWords.length >= 7 ? 12 : 10}
+                </div>
+                <div className="text-sm text-muted-foreground">Pairs to Match</div>
+              </div>
+            </div>
+
+            {/* Tips */}
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+              <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                <span className="font-semibold">💡 Tip:</span> Pay attention to the word pronunciation when you flip a tile - it helps with memorization!
+              </p>
+            </div>
+            
+            {/* Word limit notification */}
+            {savedWords.length > 15 && (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <p className="text-sm text-blue-600 dark:text-blue-400">
+                  <span className="font-semibold">ℹ️ Note:</span> Your list has {savedWords.length} words. We'll randomly select 15 words for this game to keep it manageable.
+                </p>
+              </div>
+            )}
+
+            {/* Action Button */}
+            <div className="pt-4">
+              <button
+                onClick={() => {
+                  setShowMatchingInstructions(false);
+                  setShowMatchingGameModal(true);
+                }}
+                className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg"
+              >
+                Start Game
+              </button>
+            </div>
+          </div>
+        </SlideUpModal>
 
         {/* KanaDrop Modal */}
         {showKanaDropModal && (
@@ -1499,7 +1567,97 @@ export default function GamesPage() {
             setShowKanjiQuestLevelSelect(true);
           }}
         />
+
+        {/* Listening Game Instructions Modal */}
+        <SlideUpModal
+          isOpen={showListeningInstructions}
+          onClose={() => {
+            setShowListeningInstructions(false);
+            setShowListSelection(true);
+            setGameStarted(false);
+          }}
+          title="Listening Quiz Instructions"
+          height="auto"
+          showHandle={true}
+        >
+          <div className="space-y-6">
+            {/* Game Icon and Title */}
+            <div className="text-center">
+              <div className="text-7xl mb-4">🎧</div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                {strings.games.readyToStart}
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                {strings.games.listenAndSelect}
+              </p>
+            </div>
+
+            {/* How to Play */}
+            <div className="bg-card rounded-lg border border-border p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <span className="text-2xl">🎮</span>
+                How to Play
+              </h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">1.</span>
+                  <span>Listen to the Japanese word pronunciation</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">2.</span>
+                  <span>Choose the correct word from the four options</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">3.</span>
+                  <span>You can replay the audio as many times as needed</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">4.</span>
+                  <span>Get instant feedback on your answer</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Game Info */}
+            <div className="bg-muted rounded-lg p-4 text-center">
+              <div className="text-sm text-muted-foreground">
+                📚 Using <span className="font-semibold">{savedWords.length} words</span> from <span className="font-semibold">{selectedListIds.length} lists</span>
+              </div>
+            </div>
+
+            {/* Tips */}
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+              <p className="text-sm text-primary-foreground">
+                <span className="font-semibold">💡 Pro Tip:</span> Focus on the pitch accent and intonation patterns. This will help you distinguish between similar-sounding words!
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3 pt-4">
+              <button
+                onClick={() => {
+                  setShowListeningInstructions(false);
+                  startNewQuestion();
+                }}
+                disabled={!canPlayMore}
+                className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-lg font-semibold transition-colors"
+              >
+                {canPlayMore ? strings.games.startQuiz : strings.games.dailyLimitReached}
+              </button>
+              
+              <button
+                onClick={() => {
+                  setShowListeningInstructions(false);
+                  handleBackToListSelection();
+                }}
+                className="w-full text-sm text-primary hover:text-primary/80 underline"
+              >
+                {strings.games.changeLists}
+              </button>
+            </div>
+          </div>
+        </SlideUpModal>
       </MobileAwareContainer>
-    </>
+    </div>
   );
 }

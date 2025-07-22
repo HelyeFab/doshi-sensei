@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Kanji, JLPTLevel, KanjiByLevel, KanjiList, StudyList, StudyListType } from '@/types';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAccess } from '@/hooks/useAccess';
@@ -364,30 +364,24 @@ export default function KanjiBrowserPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{strings.kanjiBrowser.loadingKanjiData}</p>
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Loading..." backHref="/" />
+        <div className="container mx-auto px-4 py-8 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-muted-foreground">{strings.kanjiBrowser.loadingKanjiData}</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Kanji Browser" backHref="/" />
+      
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
+      <div className="container mx-auto px-4 py-8">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -398,7 +392,6 @@ export default function KanjiBrowserPage() {
 
         {/* Header */}
         <div className="mb-12 md:mb-24">
-          <PageHeader emoji="漢" helpKey="kanji-browser" />
 
           {/* Study Buttons */}
           {studySelection.size > 0 && (
@@ -667,7 +660,7 @@ export default function KanjiBrowserPage() {
           }}
         />
       </div>
-    </>
+    </div>
   );
 }
 

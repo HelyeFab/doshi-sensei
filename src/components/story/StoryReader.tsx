@@ -109,11 +109,11 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
           <label className="text-sm font-medium">Show Furigana</label>
           <button
             onClick={handleToggleFurigana}
-            className={`w-12 h-6 rounded-full transition-colors ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
+            className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
               }`}
           >
-            <div
-              className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-1'
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-0'
                 }`}
             />
           </button>
@@ -124,11 +124,11 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
           <label className="text-sm font-medium">Highlight Vocabulary</label>
           <button
             onClick={handleToggleVocabularyHighlight}
-            className={`w-12 h-6 rounded-full transition-colors ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'
+            className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'
               }`}
           >
-            <div
-              className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-1'
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-0'
                 }`}
             />
           </button>

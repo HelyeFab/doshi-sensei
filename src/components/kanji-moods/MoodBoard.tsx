@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import KanjiCard from './KanjiCard';
 import ProgressIndicator from './ProgressIndicator';
 import KanjiStudyModal from './KanjiStudyModal';
-import { UpgradePromptModal } from '@/components/UpgradePromptModal';
+import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
 import { useStrings } from '@/contexts/LanguageContext';
 import { SaveMultipleKanjiModal } from './SaveMultipleKanjiModal';
 import { JapaneseWord } from '@/types';
@@ -334,7 +334,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
       />
 
       {/* Upgrade Prompt Modal */}
-      <UpgradePromptModal
+      <UpgradeSlideUpModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         feature="Unlimited Kanji Study"

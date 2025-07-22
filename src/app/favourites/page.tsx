@@ -552,7 +552,7 @@ export default function FavouritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -903,7 +903,7 @@ export default function FavouritesPage() {
                                         e.stopPropagation();
                                         handleWordRemoveFromList(ankiCard.id);
                                       }}
-                                      className="ml-4 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                      className="ml-4 p-2 text-red-400 hover:text-red-600 hover:bg-red-500/10 rounded transition-colors"
                                       title="Remove from list"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1424,7 +1424,7 @@ function WordCard({ word, onWordClick, onRemoveClick, showRemoveButton }: WordCa
       case 'na-adjective':
         return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
       default:
-        return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+        return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 

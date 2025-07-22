@@ -47,56 +47,44 @@ html, body {
   :where(.dark) &;
 }
 
-:root, .dark {
-  /* Dark theme as primary */
-  --background: #0f0f23;
-  --foreground: #e2e8f0;
-  --card: #1e1e2e;
-  --card-foreground: #e2e8f0;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #374151;
-  --secondary-foreground: #e2e8f0;
-  --muted: #374151;
-  --muted-foreground: #9ca3af;
-  --accent: #4f46e5;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --success: #22c55e;
-  --success-foreground: #ffffff;
-  --border: #374151;
-  --input: #374151;
-  --ring: #6366f1;
+/* Theme variables are set by the theme system in themes.ts */
+/* These are placeholder values that will be overridden by the theme system */
+:root {
+  /* Default theme variables - will be overridden by theme system */
+  --background: 210 20% 98%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 239 84% 67%;
   --radius: 0.5rem;
-}
-
-/* Light theme override */
-.light {
-  --background: #fdfcff;
-  --foreground: #2d2438;
-  --card: #f9f7fc;
-  --card-foreground: #2d2438;
-  --primary: #8b7cb6;
-  --primary-foreground: #ffffff;
-  --secondary: #f0ecf7;
-  --secondary-foreground: #2d2438;
-  --muted: #f0ecf7;
-  --muted-foreground: #6b5b73;
-  --accent: #e8dff2;
-  --accent-foreground: #2d2438;
-  --destructive: #d97066;
-  --destructive-foreground: #ffffff;
-  --success: #16a34a;
-  --success-foreground: #ffffff;
-  --border: #e8dff2;
-  --input: #f0ecf7;
-  --ring: #8b7cb6;
+  
+  /* Additional colors */
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 98%;
   
   /* Bottom navbar dimensions */
   --bottom-nav-height: 4rem; /* 64px */
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --bottom-nav-total-height: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+}
+
+/* Dark mode - variables will be set by theme system */
+.dark {
+  /* Theme system will override these */
 }
 
 @theme inline {

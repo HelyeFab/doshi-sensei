@@ -33,6 +33,7 @@ export const ar = {
     "settingsButton": "الإعدادات",
     "greeting": "مرحبا",
     "readyToPractice": "هل أنت مستعد لممارسة بعض اليابانية؟",
+    "dayProgressTooltip": "تقدم اليوم - يعرض كم من اليوم قد مضى",
     "featureCards": {
       "practice": {
         "title": "ممارسة",

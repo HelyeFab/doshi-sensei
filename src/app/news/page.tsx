@@ -385,7 +385,7 @@ export default function NewsPage() {
 
   // Main article list view
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <StandardPageHeader title="News" backHref="/" />
       
       {/* Main Content */}

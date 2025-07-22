@@ -134,21 +134,21 @@ export default function SlideUpModal({
         {/* Handle */}
         {showHandle && (
           <div className="modal-handle flex justify-center pt-3 pb-2">
-            <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
+            <div className="w-12 h-1.5 bg-muted rounded-full" />
           </div>
         )}
 
         {/* Header */}
         {title && (
-          <div className="modal-header flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="modal-header flex items-center justify-between px-6 py-4 border-b border-border">
             <h2 className="text-xl font-semibold text-foreground">{title}</h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Close modal"
             >
               <svg
-                className="w-6 h-6 text-gray-500 dark:text-gray-400"
+                className="w-6 h-6 text-muted-foreground"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

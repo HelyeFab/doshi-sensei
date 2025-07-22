@@ -6,7 +6,7 @@ import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import KanjiSimonBoardSelection from '@/components/games/KanjiSimon/KanjiSimonBoardSelection';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
-import { SlideUpModal } from '@/components/ui/SlideUpModal';
+import SlideUpModal from '@/components/SlideUpModal';
 
 export default function KanjiSimonPage() {
   const router = useRouter();
@@ -44,9 +44,11 @@ export default function KanjiSimonPage() {
           <SlideUpModal
             isOpen={showInstructions}
             onClose={() => setShowInstructions(false)}
-            className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5"
+            height="90%"
+            showHandle={true}
+            title="How to Play Kanji Simon"
           >
-            <div className="p-6 pb-8">
+            <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 -m-6 p-6 pb-8">
               {/* Hero Section */}
               <div className="mb-12">
                 <div className="text-center max-w-3xl mx-auto">

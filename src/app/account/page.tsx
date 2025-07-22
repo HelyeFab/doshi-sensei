@@ -195,7 +195,7 @@ export default function AccountPage() {
 
   if (user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <StandardPageHeader title="Account" />
 
         {/* Main Content */}
@@ -245,7 +245,7 @@ export default function AccountPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-2 border-b border-border">
                     <span className="text-sm text-muted-foreground">Account Status</span>
-                    <span className="text-sm text-green-500 font-medium">Active</span>
+                    <span className="text-sm text-green-600 font-medium">Active</span>
                   </div>
                   <div className="flex items-center justify-between py-2">
                     <span className="text-sm text-muted-foreground">Member Since</span>
@@ -258,16 +258,16 @@ export default function AccountPage() {
 
               {/* Admin Access Section - Only show for admin user */}
               {user.email === ADMIN_EMAIL && (
-                <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-900/40 dark:to-blue-900/40 border border-slate-300 dark:border-slate-600 rounded-lg p-6">
+                <div className="bg-gradient-to-r from-muted/50 to-blue-50 dark:from-muted/40 dark:to-blue-900/40 border border-border rounded-lg p-6">
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
                       <span className="text-2xl">🛡️</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                      <h3 className="text-lg font-semibold text-foreground">
                         Administrator Access
                       </h3>
-                      <p className="text-sm text-slate-700 dark:text-slate-300">
+                      <p className="text-sm text-muted-foreground">
                         Manage users, content, and system settings
                       </p>
                     </div>
@@ -359,7 +359,7 @@ export default function AccountPage() {
 
         {/* Avatar selection modal */}
         {showAvatarModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
             <div className="bg-card rounded-lg p-6 max-w-lg w-full mx-2 relative">
               <button
                 className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"

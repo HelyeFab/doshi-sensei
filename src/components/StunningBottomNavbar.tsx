@@ -102,7 +102,7 @@ export default function StunningBottomNavbar() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background border-t border-border" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       {/* Navigation items container */}
       <div className="flex items-center justify-around" style={{ height: 'var(--bottom-nav-height)' }}>
         {navItems.map((item) => {
@@ -140,8 +140,8 @@ export default function StunningBottomNavbar() {
               {/* Label */}
               <span className={`text-xs transition-colors ${
                 isActive 
-                  ? 'text-blue-600 font-medium' 
-                  : 'text-gray-500'
+                  ? 'text-primary font-medium' 
+                  : 'text-muted-foreground'
               }`}>
                 {item.label}
               </span>

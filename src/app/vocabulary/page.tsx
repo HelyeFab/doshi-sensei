@@ -284,7 +284,7 @@ export default function VocabularyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <StandardPageHeader title="Vocabulary" backHref="/" />
       
       {/* Main Content */}
@@ -549,7 +549,7 @@ function SearchLoadingOverlay({ searchTerm }: SearchLoadingOverlayProps) {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-card border border-border rounded-lg p-8 flex flex-col items-center gap-4 shadow-lg max-w-md mx-4">
         <div className="relative">
           <div className="animate-spin w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full"></div>
@@ -648,7 +648,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
         onClick={onClose}
       >
       <div
@@ -710,7 +710,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
             {word.kanji && /[\u4e00-\u9faf]/.test(word.kanji) && (
               <button
                 onClick={handleStrokeOrderClick}
-                className="block w-full px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors text-center font-medium"
+                className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-center font-medium"
               >
                 <span className="flex items-center justify-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -837,7 +837,7 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
           {isSentence ? 'Save Example Sentence to Lists' : `Save "${word.kanji}" to Lists`}

@@ -136,6 +136,7 @@ export default function GamesPage() {
   const [showKanjiQuestTutorial, setShowKanjiQuestTutorial] = useState(false);
   const [showMatchingGameModal, setShowMatchingGameModal] = useState(false);
   const [showMatchingInstructions, setShowMatchingInstructions] = useState(false);
+  const [showListeningInstructions, setShowListeningInstructions] = useState(false);
 
   const strings = useStrings();
 
@@ -580,13 +581,19 @@ export default function GamesPage() {
       return;
     }
 
+    // For listening game, show instructions first
+    if (currentGameMode === 'listening') {
+      if (savedWords.length < 4) return;
+      setShowListeningInstructions(true);
+      setShowListSelection(false);
+      setGameStarted(true);
+      return;
+    }
+
     setShowListSelection(false);
     setGameStarted(true);
 
-    if (currentGameMode === 'listening') {
-      if (savedWords.length < 4) return;
-      startNewQuestion();
-    } else if (currentGameMode === 'assembly') {
+    if (currentGameMode === 'assembly') {
       startNewAssemblyQuestion();
     }
   };
@@ -852,7 +859,7 @@ export default function GamesPage() {
 
   if ((currentGameMode === 'listening' || currentGameMode === 'assembly') && studyLists.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <StandardPageHeader
           title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.modes.listening.title}
           backHref="/games"
@@ -881,7 +888,7 @@ export default function GamesPage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <StandardPageHeader title="Games" backHref="/" />
       
       {/* Main Content */}
@@ -1119,7 +1126,7 @@ export default function GamesPage() {
 
               <div className="mt-6 space-y-2">
                 <div className="text-sm text-muted-foreground">
-                  📚 {strings.games.usingWordsFromLists.replace('{words}', savedWords.length).replace('{lists}', selectedListIds.length)}
+                  📚 {strings.games.usingWordsFromLists?.replace('{words}', savedWords.length.toString())?.replace('{lists}', selectedListIds.length.toString()) || `Using ${savedWords.length} words from ${selectedListIds.length} lists`}
                 </div>
                 <button
                   onClick={handleBackToListSelection}
@@ -1356,7 +1363,7 @@ export default function GamesPage() {
                     <button
                       key={level}
                       onClick={() => handleKanjiQuestStart(level)}
-                      className="relative group overflow-hidden rounded-2xl border-2 border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 hover:border-primary hover:shadow-xl transition-all transform hover:scale-105"
+                      className="relative group overflow-hidden rounded-2xl border-2 border-border bg-gradient-to-br from-muted/50 to-muted dark:from-muted to-muted/50 hover:border-primary hover:shadow-xl transition-all transform hover:scale-105"
                     >
                       {/* Pokémon-style gradient background */}
                       <div className={`absolute inset-0 bg-gradient-to-br ${levelColors[level as keyof typeof levelColors]} opacity-20 group-hover:opacity-30 transition-opacity`} />

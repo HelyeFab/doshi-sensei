@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { SlideUpModal } from '@/components/ui/SlideUpModal';
+import SlideUpModal from '@/components/SlideUpModal';
 
 interface KanjiQuestTutorialModalProps {
   isOpen: boolean;
@@ -14,37 +14,21 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
     <SlideUpModal
       isOpen={isOpen}
       onClose={onClose}
-      className="bg-gradient-to-br from-yellow-100 via-orange-50 to-red-50 dark:from-purple-900 dark:via-purple-800 dark:to-pink-900"
+      height="90%"
+      showHandle={false}
     >
-      <div className="relative overflow-hidden">
-        {/* Decorative Pokemon icons in corners - inside content wrapper */}
-        <div className="absolute inset-0 pointer-events-none">
-          <img
-            src="/flat-icons/1752632-pokemon/png/017-gaming.png"
-            alt="Pokeball"
-            className="absolute top-4 right-4 w-12 h-12 opacity-20 animate-bounce"
-          />
-          <img
-            src="/flat-icons/1752632-pokemon/png/028-gaming.png"
-            alt="Pokemon"
-            className="absolute bottom-4 left-4 w-12 h-12 opacity-20 animate-bounce"
-            style={{ animationDelay: '0.5s' }}
-          />
-          <img
-            src="/flat-icons/1752632-pokemon/png/055-gaming.png"
-            alt="Pokemon"
-            className="absolute top-4 left-16 w-10 h-10 opacity-15 animate-pulse"
-          />
-          <img
-            src="/flat-icons/1752632-pokemon/png/040-gaming.png"
-            alt="Pokemon"
-            className="absolute bottom-4 right-16 w-10 h-10 opacity-15 animate-pulse"
-            style={{ animationDelay: '1s' }}
-          />
-        </div>
-
-        {/* Scrollable content */}
-        <div className="relative z-10 p-8">
+      <div className="bg-gradient-to-br from-yellow-100 via-orange-50 to-red-50 dark:from-purple-900 dark:via-purple-800 dark:to-pink-900 -m-6 p-6 relative">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-md"
+            aria-label="Close modal"
+          >
+            <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
           {/* Header with Pokemon */}
           <div className="text-center mb-6">
             <motion.div
@@ -230,7 +214,6 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
             </motion.button>
           </div>
         </div>
-      </div>
     </SlideUpModal>
   );
 }

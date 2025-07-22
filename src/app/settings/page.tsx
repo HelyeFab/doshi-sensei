@@ -383,7 +383,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <StandardPageHeader title={strings.settings.title} />
 
       {/* Main Content */}
@@ -678,7 +678,7 @@ export default function SettingsPage() {
 
         {/* Sync Modal */}
         {syncModal.show && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">
@@ -706,7 +706,7 @@ export default function SettingsPage() {
 
         {/* Reset Confirmation Modal */}
         {showResetModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">⚠️</div>
@@ -755,7 +755,7 @@ export default function SettingsPage() {
 
         {/* Cache Clear Modal */}
         {showCacheModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">🧹</div>

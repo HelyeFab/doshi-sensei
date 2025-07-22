@@ -55,7 +55,7 @@ export default function PracticePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Structured Data for SEO - keeping for SEO purposes */}
       <script
         type="application/ld+json"
@@ -73,16 +73,16 @@ export default function PracticePage() {
           {/* Back Button */}
           <Link 
             href="/"
-            className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
             aria-label="Go back to home"
           >
-            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
           
           {/* Page Title */}
-          <h1 className="text-xl font-bold text-gray-900">
+          <h1 className="text-xl font-bold text-foreground">
             {strings.practice?.title || "Practice Mode"}
           </h1>
         </div>
@@ -90,7 +90,7 @@ export default function PracticePage() {
 
       {/* Begin Journey Section */}
       <section className="px-4 pb-6">
-        <h2 className="text-lg font-medium text-gray-700 mb-4">
+        <h2 className="text-lg font-medium text-foreground mb-4">
           {strings.practice?.hero?.subtitle || "Begin Your Journey Here"}
         </h2>
         
@@ -101,8 +101,8 @@ export default function PracticePage() {
             {/* Block 1: Kana Charts */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Intro Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Welcome to the foundation of your Japanese learning adventure. Master the essentials with our{' '}
                   <span className="font-semibold text-pink-500">Kana Charts</span>
                   {' '}and{' '}
@@ -114,19 +114,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🌸</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {strings.practice?.hero?.stats?.hiraganaKatakana || "Start with Hiragana & Katakana"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎯</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {strings.practice?.hero?.stats?.verbConjugations || "Master verb conjugations"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🚀</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {strings.practice?.hero?.stats?.strongFoundations || "Build strong foundations"}
                     </p>
                   </div>
@@ -134,7 +134,7 @@ export default function PracticePage() {
               </div>
 
               {/* Kana Tab Navigation */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border mb-4">
                 <div className="flex">
                   <button
                     onClick={() => setActiveTab('hiragana')}
@@ -166,10 +166,10 @@ export default function PracticePage() {
               </div>
 
               {/* Tab Content */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
                 {activeTab === 'hiragana' ? (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">
                       Master Hiragana - The Foundation
                     </h3>
                     <p className="text-gray-600 mb-6">
@@ -180,9 +180,9 @@ export default function PracticePage() {
                     {/* Quick Preview Grid */}
                     <div className="grid grid-cols-5 gap-3 mb-6">
                       {['あ', 'か', 'さ', 'た', 'な'].map((char, idx) => (
-                        <div key={idx} className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="text-2xl font-medium text-gray-900 japanese-text">{char}</div>
-                          <div className="text-xs text-gray-500 mt-1">
+                        <div key={idx} className="text-center p-3 bg-muted rounded-lg">
+                          <div className="text-2xl font-medium text-foreground japanese-text">{char}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
                             {['a', 'ka', 'sa', 'ta', 'na'][idx]}
                           </div>
                         </div>
@@ -201,7 +201,7 @@ export default function PracticePage() {
                   </div>
                 ) : (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">
                       Master Katakana - Foreign Words
                     </h3>
                     <p className="text-gray-600 mb-6">
@@ -212,9 +212,9 @@ export default function PracticePage() {
                     {/* Quick Preview Grid */}
                     <div className="grid grid-cols-5 gap-3 mb-6">
                       {['ア', 'カ', 'サ', 'タ', 'ナ'].map((char, idx) => (
-                        <div key={idx} className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="text-2xl font-medium text-gray-900 japanese-text">{char}</div>
-                          <div className="text-xs text-gray-500 mt-1">
+                        <div key={idx} className="text-center p-3 bg-muted rounded-lg">
+                          <div className="text-2xl font-medium text-foreground japanese-text">{char}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
                             {['a', 'ka', 'sa', 'ta', 'na'][idx]}
                           </div>
                         </div>
@@ -238,8 +238,8 @@ export default function PracticePage() {
             {/* Block 2: Vocabulary Search */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Vocabulary Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Search millions of words with our powerful{' '}
                   <span className="font-semibold text-blue-500">JMDict</span> integration and{' '}
                   <span className="font-semibold text-purple-500">WaniKani</span> data.
@@ -250,19 +250,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🔍</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {strings.vocabulary?.searchPlaceholder || "Search in English, Japanese, or romaji"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📖</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Detailed definitions with examples
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎌</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       JLPT levels and WaniKani data
                     </p>
                   </div>
@@ -270,8 +270,8 @@ export default function PracticePage() {
               </div>
 
               {/* Vocabulary Search Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Quick Vocabulary Search
                 </h3>
                 
@@ -313,8 +313,8 @@ export default function PracticePage() {
             {/* Block 3: Drills */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Drills Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Test yourself with our <span className="font-semibold text-green-500">interactive drills</span>. 
                   Practice conjugations, vocabulary, and more with instant feedback.
                 </p>
@@ -322,19 +322,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">⚡</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Quick practice sessions
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📊</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Track your accuracy
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎯</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Focus on weak areas
                     </p>
                   </div>
@@ -342,8 +342,8 @@ export default function PracticePage() {
               </div>
 
               {/* Drill Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Quick Drill Practice
                 </h3>
                 
@@ -386,8 +386,8 @@ export default function PracticePage() {
             {/* Block 4: Flashcards */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Flashcards Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Build your memory with <span className="font-semibold text-indigo-500">spaced repetition</span>. 
                   Our SRS algorithm ensures you review at the perfect time.
                 </p>
@@ -395,19 +395,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🧠</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Smart review scheduling
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📈</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Optimize memory retention
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <img src="/flat-icons/ui/flash-card.svg" alt="Flashcard" className="w-8 h-8" />
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Custom card creation
                     </p>
                   </div>
@@ -415,8 +415,8 @@ export default function PracticePage() {
               </div>
 
               {/* Flashcard Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Today's Reviews
                 </h3>
                 
@@ -443,8 +443,8 @@ export default function PracticePage() {
             {/* Block 5: Anki Integration */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Anki Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Import your <span className="font-semibold text-purple-500">Anki decks</span> seamlessly. 
                   Continue your studies with all your existing cards and progress.
                   <span className="ml-1 text-xs text-orange-500 font-semibold">Premium</span>
@@ -453,19 +453,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📥</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Import .apkg files
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🔄</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Sync across devices
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">⚙️</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Full SRS algorithm
                     </p>
                   </div>
@@ -473,8 +473,8 @@ export default function PracticePage() {
               </div>
 
               {/* Anki Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Anki Integration
                 </h3>
                 
@@ -501,8 +501,8 @@ export default function PracticePage() {
             {/* Block 6: Games */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Games Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Learning is fun with our <span className="font-semibold text-pink-500">interactive games</span>! 
                   From Kanji Quest to listening challenges, make progress while playing.
                 </p>
@@ -510,19 +510,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎮</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       6+ engaging games
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🏆</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Achievements & rewards
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎯</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Learn while having fun
                     </p>
                   </div>
@@ -530,8 +530,8 @@ export default function PracticePage() {
               </div>
 
               {/* Games Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Featured Games
                 </h3>
                 
@@ -541,7 +541,7 @@ export default function PracticePage() {
                       <span className="text-3xl">🎌</span>
                       <div>
                         <p className="font-medium">Kanji Quest</p>
-                        <p className="text-sm text-gray-600">Catch 'em all with kanji!</p>
+                        <p className="text-sm text-muted-foreground">Catch 'em all with kanji!</p>
                       </div>
                     </div>
                   </button>
@@ -551,7 +551,7 @@ export default function PracticePage() {
                       <span className="text-3xl">🎧</span>
                       <div>
                         <p className="font-medium">Listening Challenge</p>
-                        <p className="text-sm text-gray-600">Train your ears!</p>
+                        <p className="text-sm text-muted-foreground">Train your ears!</p>
                       </div>
                     </div>
                   </button>
@@ -572,8 +572,8 @@ export default function PracticePage() {
             {/* Block 7: Reading Content */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Reading Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Read real Japanese with our <span className="font-semibold text-blue-500">news articles</span> and{' '}
                   <span className="font-semibold text-orange-500">stories</span>. 
                   Furigana support helps you read confidently.
@@ -582,19 +582,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📰</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Daily news updates
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📚</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Graded stories
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🔤</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Toggle furigana support
                     </p>
                   </div>
@@ -602,8 +602,8 @@ export default function PracticePage() {
               </div>
 
               {/* Reading Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Today's Reading
                 </h3>
                 
@@ -614,7 +614,7 @@ export default function PracticePage() {
                       <span className="text-xs text-gray-500">5 min read</span>
                     </div>
                     <h4 className="font-medium mb-1">Japan's Cherry Blossom Season</h4>
-                    <p className="text-sm text-gray-600">今年の桜の開花予想は...</p>
+                    <p className="text-sm text-muted-foreground">今年の桜の開花予想は...</p>
                   </div>
 
                   <div className="p-4 border border-gray-200 rounded-lg">
@@ -623,7 +623,7 @@ export default function PracticePage() {
                       <span className="text-xs text-gray-500">10 min read</span>
                     </div>
                     <h4 className="font-medium mb-1">The Helpful Tanuki</h4>
-                    <p className="text-sm text-gray-600">昔々、ある山に...</p>
+                    <p className="text-sm text-muted-foreground">昔々、ある山に...</p>
                   </div>
 
                   <div className="flex gap-2">
@@ -647,8 +647,8 @@ export default function PracticePage() {
             {/* Block 8: Kanji by JLPT */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Kanji JLPT Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Master kanji systematically by <span className="font-semibold text-green-500">JLPT level</span>. 
                   From N5 basics to N1 advanced, build your kanji knowledge step by step.
                 </p>
@@ -656,19 +656,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🈯</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       2,000+ kanji organized
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📝</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Stroke order practice
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎓</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       JLPT N5 to N1 levels
                     </p>
                   </div>
@@ -676,8 +676,8 @@ export default function PracticePage() {
               </div>
 
               {/* Kanji JLPT Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Browse Kanji by JLPT Level
                 </h3>
                 
@@ -721,8 +721,8 @@ export default function PracticePage() {
             {/* Block 9: Kanji Mood Boards */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Mood Boards Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Explore beautiful <span className="font-semibold text-purple-500">kanji mood boards</span> with themes. 
                   Each board tells a story to help you remember kanji naturally.
                 </p>
@@ -730,19 +730,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎨</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Themed collections
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📖</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Story-based learning
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🌸</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Visual memory aids
                     </p>
                   </div>
@@ -750,8 +750,8 @@ export default function PracticePage() {
               </div>
 
               {/* Mood Boards Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Featured Mood Boards
                 </h3>
                 
@@ -786,8 +786,8 @@ export default function PracticePage() {
             {/* Block 10: Shadowing */}
             <div className="w-[400px] flex-shrink-0 lg:w-auto">
               {/* Shadowing Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Perfect your pronunciation with <span className="font-semibold text-teal-500">shadowing practice</span>. 
                   Listen and repeat with articles and stories at your level.
                 </p>
@@ -795,19 +795,19 @@ export default function PracticePage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎧</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Native audio support
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🗣️</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Practice speaking
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📱</span>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Mobile-friendly practice
                     </p>
                   </div>
@@ -815,8 +815,8 @@ export default function PracticePage() {
               </div>
 
               {/* Shadowing Interface */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Shadowing Practice
                 </h3>
                 

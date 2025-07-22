@@ -9,7 +9,7 @@ import { MoodBoardsProgress } from '@/types/moodBoard';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
-import { SlideUpModal } from '@/components/ui/SlideUpModal';
+import SlideUpModal from '@/components/SlideUpModal';
 
 export default function ReadingRoutesPage() {
   const router = useRouter();
@@ -145,9 +145,11 @@ export default function ReadingRoutesPage() {
           <SlideUpModal
             isOpen={showInstructions}
             onClose={() => setShowInstructions(false)}
-            className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5"
+            height="90%"
+            showHandle={true}
+            title="Master Kanji Readings"
           >
-            <div className="p-6 pb-8">
+            <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 -m-6 p-6 pb-8">
               {/* Hero Section */}
               <div className="mb-12">
                 <div className="text-center max-w-3xl mx-auto">

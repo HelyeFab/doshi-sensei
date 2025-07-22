@@ -10,10 +10,15 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import { pokemonManager } from '@/utils/pokemonManager';
-import PokedexModal from '@/components/games/PokedexModal';
 import { colorPalettes } from '@/utils/themes';
 import { ToriiGate } from '@/components/ToriiGate';
 import { StatsBar } from '@/components/stats/StatsBar';
+import { useAuth } from '@/contexts/AuthContext';
+
+// Import debug utility in development
+if (process.env.NODE_ENV === 'development') {
+  import('@/utils/debugStats');
+}
 
 // Structured Data for SEO
 const structuredData = {
@@ -80,7 +85,6 @@ export default function Home() {
   const { subscription } = useSubscription2();
   const { settings } = useSettings();
   const strings = useStrings();
-  const [showPokedexModal, setShowPokedexModal] = useState(false);
   const [dayProgress, setDayProgress] = useState(0);
 
   // Ensure strings are loaded
@@ -242,7 +246,7 @@ export default function Home() {
                 priority
               />
             ) : (
-              <div className="w-full h-full rounded-full bg-blue-500 flex items-center justify-center text-white font-medium text-lg" aria-hidden="true">
+              <div className="w-full h-full rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium text-lg" aria-hidden="true">
                 {displayName.charAt(0).toUpperCase()}
               </div>
             )}
@@ -250,17 +254,17 @@ export default function Home() {
           
           {/* Greeting Text */}
           <div className="flex-1">
-            <h1 className="text-xl font-semibold text-gray-900">
+            <h1 className="text-xl font-semibold text-foreground">
               {strings.home.greeting} {displayName}-san! <span className="inline-block animate-wave">👋</span>
             </h1>
-            <p className="text-sm text-gray-600">{strings.home.readyToPractice}</p>
+            <p className="text-sm text-muted-foreground">{strings.home.readyToPractice}</p>
           </div>
         </div>
       </header>
 
       {/* Today's Date Section */}
       <section className="px-4 pb-4">
-        <h2 className="text-lg font-medium text-gray-700 mb-2">
+        <h2 className="text-lg font-medium text-foreground mb-2">
           Today, {(() => {
             const date = new Date();
             const day = date.getDate();
@@ -271,7 +275,15 @@ export default function Home() {
         </h2>
         
         {/* Day Progress Bar */}
-        <div className="relative h-0.5 w-full bg-gray-200 overflow-hidden">
+        <div 
+          className="relative h-0.5 w-full bg-muted overflow-hidden"
+          role="progressbar"
+          aria-label={strings.home.dayProgressTooltip}
+          aria-valuenow={Math.round(dayProgress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          title={strings.home.dayProgressTooltip}
+        >
           <div 
             className="absolute left-0 top-0 h-full transition-all duration-300 ease-out"
             style={{
@@ -280,6 +292,7 @@ export default function Home() {
             }}
           />
         </div>
+        <p className="text-xs text-muted-foreground mt-1">{strings.home.dayProgressTooltip}</p>
       </section>
       
       {/* Stats Bar */}
@@ -292,10 +305,10 @@ export default function Home() {
         <div className="space-y-3">
           {FEATURE_CARDS.map((card) => (
             <Link key={card.href} href={card.href} className="block">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
                   {/* Icon */}
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
                     {card.icon.startsWith('/') ? (
                       <Image
                         src={card.icon}
@@ -311,12 +324,12 @@ export default function Home() {
                   
                   {/* Content */}
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{card.title}</h3>
-                    <p className="text-sm text-gray-500">{card.description}</p>
+                    <h3 className="font-medium text-foreground">{card.title}</h3>
+                    <p className="text-sm text-muted-foreground">{card.description}</p>
                   </div>
                   
                   {/* Arrow */}
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -326,12 +339,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Pokédex Modal - keeping but hidden */}
-      <PokedexModal
-        isOpen={showPokedexModal}
-        onClose={() => setShowPokedexModal(false)}
-        userId={profile?.uid}
-      />
     </div>
   );
 }
@@ -489,7 +496,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
         }}
       >
         {/* Frosted glass overlay effect - pointer-events-none to prevent click interference */}
-        <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+        <div className="absolute inset-0 rounded-2xl bg-card/15 dark:bg-card/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
         <div className="relative flex flex-col items-center justify-center text-center h-full">
           <div className="text-2xl md:text-3xl drop-shadow-sm mb-2">

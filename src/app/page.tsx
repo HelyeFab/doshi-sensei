@@ -14,6 +14,7 @@ import { colorPalettes } from '@/utils/themes';
 import { ToriiGate } from '@/components/ToriiGate';
 import { StatsBar } from '@/components/stats/StatsBar';
 import { useAuth } from '@/contexts/AuthContext';
+import UserAvatar from '@/components/UserAvatar';
 
 // Import debug utility in development
 if (process.env.NODE_ENV === 'development') {
@@ -81,7 +82,7 @@ function pastelizeHSL(hsl: string) {
 }
 
 export default function Home() {
-  const { profile } = useUserProfile();
+  const { profile, profilePicture } = useUserProfile();
   const { subscription } = useSubscription2();
   const { settings } = useSettings();
   const strings = useStrings();
@@ -235,22 +236,7 @@ export default function Home() {
       <header className="px-4 pt-6 pb-4" role="banner">
         <div className="flex items-center gap-3">
           {/* User Avatar */}
-          <div className="relative w-12 h-12 flex-shrink-0" role="img" aria-label={`${displayName}'s avatar`}>
-            {profile?.photoURL ? (
-              <Image 
-                src={profile.photoURL} 
-                alt={`${displayName}'s avatar`}
-                fill
-                className="rounded-full object-cover"
-                sizes="48px"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium text-lg" aria-hidden="true">
-                {displayName.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
+          <UserAvatar size="md" />
           
           {/* Greeting Text */}
           <div className="flex-1">

@@ -60,11 +60,11 @@ export default function StunningBottomNavbar() {
       activeIcon: '/flat-icons/ui/navbar/game-console.svg'
     },
     {
-      id: 'account',
-      label: 'You',
-      href: '/account',
-      icon: '/flat-icons/ui/navbar/account.svg',
-      activeIcon: '/flat-icons/ui/navbar/account.svg'
+      id: 'read',
+      label: 'Read',
+      href: '/read',
+      icon: '/flat-icons/ui/navbar/books.svg',
+      activeIcon: '/flat-icons/ui/navbar/books.svg'
     }
   ];
 
@@ -78,7 +78,7 @@ export default function StunningBottomNavbar() {
       icon: '/flat-icons/ui/navbar/dashboard.svg',
       activeIcon: '/flat-icons/ui/navbar/dashboard.svg'
     },
-    baseNavItems[3] // account
+    baseNavItems[3] // read
   ] : baseNavItems;
 
   useEffect(() => {

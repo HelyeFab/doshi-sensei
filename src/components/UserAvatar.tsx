@@ -1,11 +1,13 @@
 'use client';
 
 import { useUserProfile } from '@/hooks/useUserProfile';
+import Link from 'next/link';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   showBorder?: boolean;
+  clickable?: boolean;
 }
 
 const sizeClasses = {
@@ -15,7 +17,7 @@ const sizeClasses = {
   xl: 'w-20 h-20 text-xl',
 };
 
-export default function UserAvatar({ size = 'md', className = '', showBorder = true }: UserAvatarProps) {
+export default function UserAvatar({ size = 'md', className = '', showBorder = true, clickable = true }: UserAvatarProps) {
   const { profile, profilePicture, loading } = useUserProfile();
 
   // While loading, show a placeholder that matches the final size
@@ -28,27 +30,34 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
     );
   }
 
-  // If we have a profile picture (custom avatar or Google photo), show it
-  if (profilePicture) {
+  const avatarElement = profilePicture ? (
+    <img
+      src={profilePicture}
+      alt={profile?.displayName || profile?.email || 'User avatar'}
+      className={`${sizeClasses[size]} rounded-full object-cover ${clickable ? 'hover:opacity-90 transition-opacity' : ''} ${className}`}
+      style={showBorder ? { boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' } : {}}
+    />
+  ) : (
+    <div
+      className={`${sizeClasses[size]} rounded-full bg-primary text-primary-foreground flex items-center justify-center font-medium ${clickable ? 'hover:opacity-90 transition-opacity' : ''} ${className}`}
+      style={showBorder ? { boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' } : {}}
+    >
+      {profile?.displayName?.[0] || profile?.email?.[0]?.toUpperCase() || '?'}
+    </div>
+  );
+
+  // Wrap in Link if clickable
+  if (clickable) {
     return (
-      <img
-        src={profilePicture}
-        alt={profile?.displayName || profile?.email || 'User avatar'}
-        className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
-        style={showBorder ? { boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' } : {}}
-      />
+      <Link 
+        href="/account" 
+        className="inline-block cursor-pointer"
+        aria-label="Go to account page"
+      >
+        {avatarElement}
+      </Link>
     );
   }
 
-  // Fallback to initials
-  const initials = profile?.displayName?.[0] || profile?.email?.[0]?.toUpperCase() || '?';
-  
-  return (
-    <div
-      className={`${sizeClasses[size]} rounded-full bg-primary text-primary-foreground flex items-center justify-center font-medium ${className}`}
-      style={showBorder ? { boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' } : {}}
-    >
-      {initials}
-    </div>
-  );
+  return avatarElement;
 }

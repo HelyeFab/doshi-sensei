@@ -1,15 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useStats } from '@/hooks/useStats';
 import { statsTracker } from '@/lib/stats/statsTracker';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, RefreshCw, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Download, RefreshCw, Trash2, AlertCircle, CheckCircle, Calculator } from 'lucide-react';
 
 export function AdminStatsDebugPanel() {
   const { stats, loading, error, refreshStats } = useStats();
+  const [recalculating, setRecalculating] = useState(false);
+  const [recalcResult, setRecalcResult] = useState<{ before: number, after: number } | null>(null);
 
   const exportDebugData = async () => {
     try {
@@ -65,6 +67,28 @@ export function AdminStatsDebugPanel() {
     } catch (err) {
       console.error('Failed to clear stats:', err);
       alert('Failed to clear stats. Check console for details.');
+    }
+  };
+
+  const recalculateTotalActivities = async () => {
+    setRecalculating(true);
+    setRecalcResult(null);
+    
+    try {
+      const result = await statsTracker.recalculateTotalActivities();
+      setRecalcResult(result);
+      await refreshStats();
+      
+      if (result.before !== result.after) {
+        alert(`✅ Total activities recalculated successfully!\n\nBefore: ${result.before}\nAfter: ${result.after}`);
+      } else {
+        alert('ℹ️ Total activities is already correct. No changes were made.');
+      }
+    } catch (err) {
+      console.error('Failed to recalculate total activities:', err);
+      alert('Failed to recalculate total activities. Check console for details.');
+    } finally {
+      setRecalculating(false);
     }
   };
 
@@ -247,6 +271,15 @@ export function AdminStatsDebugPanel() {
             <Button onClick={() => statsTracker.forceSync?.()} variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-2" />
               Force Cloud Sync
+            </Button>
+            <Button 
+              onClick={recalculateTotalActivities} 
+              variant="outline" 
+              size="sm"
+              disabled={recalculating}
+            >
+              <Calculator className="h-4 w-4 mr-2" />
+              {recalculating ? 'Recalculating...' : 'Fix Total Activities'}
             </Button>
             <Button onClick={clearAllStats} variant="destructive" size="sm">
               <Trash2 className="h-4 w-4 mr-2" />

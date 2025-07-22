@@ -8,6 +8,7 @@ import ArticleReader from '@/components/reading/ArticleReader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 
 export default function ArticlePage() {
     const router = useRouter();
@@ -89,10 +90,13 @@ export default function ArticlePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">Loading article...</p>
+            <div className="min-h-screen bg-gray-50">
+                <StandardPageHeader title="Loading..." backHref="/news" />
+                <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-muted-foreground">Loading article...</p>
+                    </div>
                 </div>
             </div>
         );
@@ -103,7 +107,8 @@ export default function ArticlePage() {
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-50">
+            <StandardPageHeader title={article.title} backHref="/news" />
             <ArticleReader
                 article={article}
                 onBack={handleExit}

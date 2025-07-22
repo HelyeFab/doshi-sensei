@@ -129,11 +129,11 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
   if (mode === 'dark') {
     // Dark theme - use darker variants
     return {
-      '--background': 'hsl(222.2, 84%, 4.9%)',
+      '--background': 'hsl(234, 14%, 31%)',
       '--foreground': 'hsl(210, 40%, 98%)',
-      '--card': 'hsl(222.2, 84%, 4.9%)',
+      '--card': 'hsl(234, 14%, 31%)',
       '--card-foreground': 'hsl(210, 40%, 98%)',
-      '--popover': 'hsl(222.2, 84%, 4.9%)',
+      '--popover': 'hsl(234, 14%, 31%)',
       '--popover-foreground': 'hsl(210, 40%, 98%)',
       '--primary': palette.colors.primary,
       '--primary-foreground': palette.colors.primaryForeground,
@@ -153,7 +153,7 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
 
   // Light theme variants
   return {
-    '--background': 'hsl(0, 0%, 100%)',
+    '--background': 'hsl(210, 20%, 98%)',
     '--foreground': 'hsl(222.2, 84%, 4.9%)',
     '--card': 'hsl(0, 0%, 100%)',
     '--card-foreground': 'hsl(222.2, 84%, 4.9%)',

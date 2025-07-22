@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { useFeature } from '@/hooks/useFeature';
@@ -88,27 +88,15 @@ export default function KanjiSimonGamePage() {
   }
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader
+        title={`Kanji Simon: ${board.title}`}
+        backHref="/games/kanji-simon"
+      />
 
       {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
-          {/* Page Header */}
-          <PageHeader
-            title={`Kanji Simon: ${board.title}`}
-            showBackButton={true}
-            onBack={handleBack}
-          />
 
           <KanjiSimonGameWrapper
             board={board}
@@ -117,6 +105,6 @@ export default function KanjiSimonGamePage() {
           />
         </main>
       </MobileAwareContainer>
-    </>
+    </div>
   );
 }

@@ -1,13 +1,14 @@
 'use client';
 
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 
 export default function AcknowledgmentsPage() {
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <PageHeader title="Acknowledgments" />
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Acknowledgments" backHref="/settings" />
 
-      <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
+      <div className="container mx-auto px-4">
+        <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
         <div className="bg-card border border-border rounded-lg overflow-hidden">
           <div className="p-6 space-y-6">
             <div className="text-center mb-6">
@@ -194,6 +195,7 @@ export default function AcknowledgmentsPage() {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 }

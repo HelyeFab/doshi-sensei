@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { JapaneseWord, WordList } from '@/types';
 import { Upload, Settings, ChevronDown, Volume2, Keyboard, BarChart3, BookOpen, Zap, Clock, Hash } from 'lucide-react';
 import { useStrings } from '@/contexts/LanguageContext';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
@@ -729,17 +729,11 @@ export default function FlashcardReviewPage() {
 
   if (!sessionStarted) {
     return (
-      <>
-        {/* Gradient Header Section */}
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          {/* Gradient Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          {/* Gradient to White Fade */}
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        </div>
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Flashcard Review" backHref="/drill" />
         
         {/* Main Content */}
-        <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen md:pb-8 -mt-20">
+        <MobileAwareContainer className="container mx-auto px-4 py-8 md:pb-8">
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
@@ -748,12 +742,6 @@ export default function FlashcardReviewPage() {
           />
 
           <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe relative z-10">
-            <PageHeader 
-              title="Flashcard Review" 
-              helpKey="flashcards" 
-              showBackButton={true} 
-              onBackClick={() => router.push('/practice')} 
-            />
 
             {/* Target Icon */}
             <div className="flex justify-center mb-6">
@@ -977,9 +965,9 @@ export default function FlashcardReviewPage() {
               <button
                 onClick={startSession}
                 disabled={reviewMode === 'lists' && selectedLists.length === 0}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-8 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-center"
               >
-                Start Review
+                Start Review Session
               </button>
             </div>
           </main>
@@ -1021,7 +1009,7 @@ export default function FlashcardReviewPage() {
           onCancel={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
           loading={confirmDialog.loading}
         />
-      </>
+      </div>
     );
   }
 
@@ -1032,9 +1020,11 @@ export default function FlashcardReviewPage() {
   const totalTimeSpent = Date.now() - sessionStats.startTime;
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Flashcard Review" backHref="/drill" />
+      
       {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8 md:pb-8">
         <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Session Stats Bar */}
           <SessionStats
@@ -1178,6 +1168,6 @@ export default function FlashcardReviewPage() {
         onCancel={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
         loading={confirmDialog.loading}
       />
-    </>
+    </div>
   );
 }

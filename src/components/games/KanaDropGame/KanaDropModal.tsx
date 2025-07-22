@@ -17,6 +17,7 @@ import { kanaData, getBasicKana } from '@/data/kanaData';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { PageHeader } from '@/components/PageHeader';
+import SlideUpModal from '@/components/SlideUpModal';
 
 interface KanaDropModalProps {
   isOpen: boolean;
@@ -96,8 +97,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
     return selectedData;
   }, [selectedHiragana, selectedKatakana]);
-
-  // Handle kana chart selection
   const handleToggleKana = (kanaId: string) => {
     if (kanaChartType === 'hiragana') {
       const newSelection = new Set(selectedHiragana);
@@ -515,35 +514,26 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   // Kana Selection Screen (for games page flow)
   if (showKanaSelection) {
     return (
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              onClose();
-            }
-          }}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="relative w-full h-full md:w-[900px] md:h-[900px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
-          >
-            {/* Virtual Companion Section - 1/6th of screen height */}
-            <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-              {/* Gradient Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-              {/* Gradient to White Fade */}
-              <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-            </div>
+      <SlideUpModal
+        isOpen={true}
+        onClose={onClose}
+        height="90%"
+        showHandle={false}
+      >
+        <div className="h-full flex flex-col relative">
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-md"
+              aria-label="Close modal"
+            >
+              <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 pt-16">
               {/* Page Header */}
               <PageHeader
                 icon="/flat-icons/root-icons/kana-drop.svg"
@@ -636,9 +626,8 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                 </div>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
+          </div>
+        </SlideUpModal>
     );
   }
 

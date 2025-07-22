@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useFeature } from '@/hooks/useFeature';
@@ -195,21 +195,11 @@ export default function AccountPage() {
 
   if (user) {
     return (
-      <>
-        {/* Virtual Companion Section - 1/6th of screen height */}
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          {/* Gradient Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-          {/* Gradient to White Fade */}
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-          {/* Virtual Companion Button positioned within this section */}
-        </div>
+      <div className="min-h-screen bg-background">
+        <StandardPageHeader title="Account" />
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8 min-h-screen">
-          <PageHeader helpKey="account" />
+        <div className="container mx-auto px-4">
 
           <main className="max-w-4xl mx-auto mb-32 md:mb-8 pb-safe">
             <div className="space-y-6">
@@ -255,7 +245,7 @@ export default function AccountPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-2 border-b border-border">
                     <span className="text-sm text-muted-foreground">Account Status</span>
-                    <span className="text-sm text-green-500 font-medium">Active</span>
+                    <span className="text-sm text-green-600 font-medium">Active</span>
                   </div>
                   <div className="flex items-center justify-between py-2">
                     <span className="text-sm text-muted-foreground">Member Since</span>
@@ -268,16 +258,16 @@ export default function AccountPage() {
 
               {/* Admin Access Section - Only show for admin user */}
               {user.email === ADMIN_EMAIL && (
-                <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-900/40 dark:to-blue-900/40 border border-slate-300 dark:border-slate-600 rounded-lg p-6">
+                <div className="bg-gradient-to-r from-muted/50 to-blue-50 dark:from-muted/40 dark:to-blue-900/40 border border-border rounded-lg p-6">
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
                       <span className="text-2xl">🛡️</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                      <h3 className="text-lg font-semibold text-foreground">
                         Administrator Access
                       </h3>
-                      <p className="text-sm text-slate-700 dark:text-slate-300">
+                      <p className="text-sm text-muted-foreground">
                         Manage users, content, and system settings
                       </p>
                     </div>
@@ -369,7 +359,7 @@ export default function AccountPage() {
 
         {/* Avatar selection modal */}
         {showAvatarModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
             <div className="bg-card rounded-lg p-6 max-w-lg w-full mx-2 relative">
               <button
                 className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
@@ -413,26 +403,16 @@ export default function AccountPage() {
             loading={false}
           />
         )}
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Account" />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        <PageHeader helpKey="account" />
+      <div className="container mx-auto px-4">
 
         <main className="max-w-md mx-auto mb-32 md:mb-8 pb-safe">
           <div className="bg-card border border-border rounded-lg p-6">
@@ -600,6 +580,6 @@ export default function AccountPage() {
         error={error}
         onClose={() => setShowErrorModal(false)}
       />
-    </>
+    </div>
   );
 }

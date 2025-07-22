@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lato, Dancing_Script } from "next/font/google";
+import { Geist, Geist_Mono, Rubik, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -36,10 +36,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const lato = Lato({
-  variable: "--font-lato",
+const rubik = Rubik({
+  variable: "--font-rubik",
   subsets: ["latin"],
-  weight: ["300", "400", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const savoyeFont = Dancing_Script({
@@ -169,7 +169,7 @@ export default function RootLayout({
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${lato.variable} ${savoyeFont.variable} antialiased min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${savoyeFont.variable} antialiased min-h-screen`}
         suppressHydrationWarning
       >
         <EnvProvider>
@@ -189,7 +189,9 @@ export default function RootLayout({
                                   <OfflineNotification />
                                   <JMdictInitializer />
                                   <CacheSystemInitializer />
-                                  {children}
+                                  <div className="mobile-nav-padding">
+                                    {children}
+                                  </div>
                                   <StunningBottomNavbar />
                                   <MobileMenu />
                                   <DesktopNavMenu />

@@ -169,14 +169,14 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
                   className="sr-only"
                 />
                 <div
-                  className={`w-14 h-8 rounded-full transition-colors px-1 ${showRomaji ? 'bg-primary' : 'bg-muted'}`}
+                  className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${showRomaji ? 'bg-primary' : 'bg-muted'}`}
                   style={{ minWidth: 56 }}
                   aria-pressed={showRomaji}
                   tabIndex={0}
                 >
-                  <div
-                    className={`w-6 h-6 bg-white rounded-full shadow transition-transform ${showRomaji ? 'translate-x-6' : 'translate-x-0'}`}
-                  ></div>
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${showRomaji ? 'translate-x-6' : 'translate-x-0'}`}
+                  />
                 </div>
               </div>
             </label>

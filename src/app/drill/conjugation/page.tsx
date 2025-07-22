@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList } from '@/types';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
@@ -327,15 +327,11 @@ export default function ConjugationDrillPage() {
 
   if (!gameStarted) {
     return (
-      <>
-        {/* Virtual Companion Section */}
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        </div>
-
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Conjugation Drill" backHref="/drill" />
+        
         {/* Main Content */}
-        <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
+        <MobileAwareContainer className="container mx-auto px-4 py-8">
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
@@ -344,12 +340,6 @@ export default function ConjugationDrillPage() {
           />
 
           <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
-            <PageHeader 
-              title="Conjugation Drill" 
-              helpKey="drill" 
-              showBackButton={true} 
-              onBackClick={() => router.push('/practice')} 
-            />
 
             {/* Target Icon */}
             <div className="flex justify-center mb-6">
@@ -492,7 +482,7 @@ export default function ConjugationDrillPage() {
             </div>
           </main>
         </MobileAwareContainer>
-      </>
+      </div>
     );
   }
 
@@ -501,15 +491,11 @@ export default function ConjugationDrillPage() {
   const isGameComplete = currentQuestionIndex >= questions.length - 1 && showResult;
 
   return (
-    <>
-      {/* Virtual Companion Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
-      {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Conjugation Drill" backHref="/drill" />
+      
+      {/* Main Content */>
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <main className="max-w-3xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Progress Bar */}
           <div className="mb-8">
@@ -681,6 +667,6 @@ export default function ConjugationDrillPage() {
           }}
         />
       )}
-    </>
+    </div>
   );
 }

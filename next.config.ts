@@ -80,6 +80,21 @@ const nextConfig: NextConfig = {
           '**/coverage/**',
           '**/.vscode/**',
           '**/.idea/**',
+          // Static assets (23,000+ files)
+          '**/public/data/**',      // 7,159 KanjiVG SVG files
+          '**/public/audio/**',     // 6,733 audio files
+          '**/flat-icons/**',       // 2,343 icon files
+          // Build artifacts
+          '**/.netlify/**',         // Netlify build artifacts
+          '**/netlify/functions/**', // Netlify functions
+          // Test files
+          '**/__tests__/**',        // Test directories
+          '**/*.test.*',            // Test files
+          '**/*.spec.*',            // Spec files
+          // Other directories
+          '**/scripts/**',          // Script files
+          '**/.claude/**',          // Claude artifacts
+          '**/.kiro/**',            // Kiro artifacts
         ],
       };
     }

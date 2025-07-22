@@ -8,7 +8,6 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { AVAILABLE_NAV_ITEMS, HOME_NAV_ITEM } from '@/config/navigation';
-import PokedexModal from '@/components/games/PokedexModal';
 import { useStrings } from '@/contexts/LanguageContext';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useStats } from '@/hooks/useStats';
@@ -16,7 +15,6 @@ import { toggleDevHelper } from '@/components/DevHelper';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showPokedex, setShowPokedex] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   const { profile } = useUserProfile();
@@ -38,16 +36,11 @@ export default function MobileMenu() {
     router.push(href);
   };
 
-  const togglePokedex = () => {
-    setIsOpen(false);
-    setShowPokedex(true);
-  };
 
   // Create a simple menu items array like in your image
   const simpleMenuItems = [
     { label: strings.nav.home || 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: strings.nav.adminDashboard || 'Admin Dashboard', icon: '🛡️', href: '/admin' }] : []),
-    ...(stats.pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: stats.pokemonCaught }] : []),
     { label: strings.nav.practice || 'Practice', icon: '📚', href: '/practice' },
     { label: strings.nav.drill || 'Drill', icon: '⚡', href: '/drill' },
     { label: strings.nav.vocab || 'Vocabulary', icon: '📖', href: '/vocabulary' },
@@ -124,27 +117,6 @@ export default function MobileMenu() {
               const isActive = pathname === item.href ||
                 (item.href !== '/' && pathname.startsWith(item.href));
 
-              if (item.action === 'pokedex') {
-                return (
-                  <button
-                    key={index}
-                    onClick={togglePokedex}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
-                  >
-                    {item.icon.startsWith('/') ? (
-                      <img src={item.icon} alt={item.label} className="w-5 h-5 object-contain" />
-                    ) : (
-                      <span className="text-lg">{item.icon}</span>
-                    )}
-                    <span className="font-medium">{item.label}</span>
-                    {item.count && (
-                      <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                        {item.count}
-                      </span>
-                    )}
-                  </button>
-                );
-              }
 
               return (
                 <Link
@@ -215,13 +187,6 @@ export default function MobileMenu() {
         </div>
       </div>
 
-      {/* Pokedex Modal */}
-      {showPokedex && (
-        <PokedexModal
-          isOpen={showPokedex}
-          onClose={() => setShowPokedex(false)}
-        />
-      )}
     </>
   );
 }

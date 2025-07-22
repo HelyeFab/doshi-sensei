@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { SnakePath } from '@/components/SnakePath';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useRouter } from 'next/navigation';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
@@ -108,21 +108,12 @@ export default function SnakeDemoPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
+        <StandardPageHeader title="Learning Path (Snake Demo)" backHref="/practice" />
+        
         <main className="max-w-3xl mx-auto">
-          <PageHeader 
-            title="Learning Path (Snake Demo)" 
-            showBackButton={true} 
-            onBackClick={() => router.push('/practice')} 
-          />
 
           {/* Progress Stats */}
           <div className="mb-8 p-4 bg-card border border-border rounded-lg">
@@ -199,6 +190,6 @@ export default function SnakeDemoPage() {
           )}
         </main>
       </MobileAwareContainer>
-    </>
+    </div>
   );
 }

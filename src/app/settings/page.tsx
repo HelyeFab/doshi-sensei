@@ -7,7 +7,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { clearProgress } from '@/utils/storage';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import EnhancedStorageManager from '@/utils/storage';
 import StudyListManager from '@/utils/studyListManager';
 import { usePremiumSync } from '@/hooks/usePremiumSync';
@@ -383,24 +383,11 @@ export default function SettingsPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
+    <div className="min-h-screen bg-background">
+      <StandardPageHeader title={strings.settings.title} />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        {/* Header */}
-        <PageHeader helpKey="settings" />
-
-        {/* Main Content */}
+      <div className="container mx-auto px-4">
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="space-y-8">
             {/* Virtual Companion Settings */}
@@ -415,21 +402,6 @@ export default function SettingsPage() {
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">
                     {strings.settings.virtualCompanionInfo}
-                  </p>
-                </div>
-              </div>
-            </SettingsSection>
-
-            {/* Language Settings */}
-            <SettingsSection title={strings.settings.language}>
-              <div className="space-y-4">
-                <div className="text-sm text-muted-foreground mb-3">
-                  {strings.settings.languageDesc}
-                </div>
-                <LanguageSelector />
-                <div className="pt-2 border-t border-border">
-                  <p className="text-xs text-muted-foreground">
-                    {strings.settings.languageInfo}
                   </p>
                 </div>
               </div>
@@ -464,46 +436,6 @@ export default function SettingsPage() {
               </div>
             </SettingsSection>
 
-            {/* Goals & Progress */}
-            <SettingsSection title={strings.settings.goalsProgress}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-foreground">
-                    {strings.settings.dailyGoalWords}
-                  </label>
-                  <div className="flex items-center space-x-4">
-                    <input
-                      type="range"
-                      min="5"
-                      max="50"
-                      step="5"
-                      value={settings.dailyGoal}
-                      onChange={(e) => updateSetting('dailyGoal', parseInt(e.target.value))}
-                      className="flex-1"
-                    />
-                    <span className="text-foreground font-medium w-8 text-center">
-                      {settings.dailyGoal}
-                    </span>
-                  </div>
-                </div>
-
-
-                <div className="pt-2">
-                  <div>
-                    <button
-                      onClick={() => setShowResetModal(true)}
-                      className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
-                    >
-                      {strings.settings.resetAllData}
-                    </button>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {strings.settings.resetAllDataDesc}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </SettingsSection>
-
             {/* Data Management */}
             <SettingsSection title={strings.settings.dataManagement}>
               <div className="space-y-4">
@@ -517,6 +449,17 @@ export default function SettingsPage() {
                   description={strings.settings.importDataDesc}
                   onClick={handleImportData}
                 />
+                <div className="pt-4 border-t border-border">
+                  <button
+                    onClick={() => setShowResetModal(true)}
+                    className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
+                  >
+                    {strings.settings.resetAllData}
+                  </button>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {strings.settings.resetAllDataDesc}
+                  </p>
+                </div>
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">
                     {strings.settings.dataManagementInfo}
@@ -735,7 +678,7 @@ export default function SettingsPage() {
 
         {/* Sync Modal */}
         {syncModal.show && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">
@@ -763,7 +706,7 @@ export default function SettingsPage() {
 
         {/* Reset Confirmation Modal */}
         {showResetModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">⚠️</div>
@@ -812,7 +755,7 @@ export default function SettingsPage() {
 
         {/* Cache Clear Modal */}
         {showCacheModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">🧹</div>
@@ -870,7 +813,7 @@ export default function SettingsPage() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -914,13 +857,13 @@ function ToggleSetting({ label, description, checked, onChange }: ToggleSettingP
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors px-1 ${checked ? 'bg-primary' : 'bg-muted'}`}
+        className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${checked ? 'bg-primary' : 'bg-muted'}`}
         style={{ minWidth: 56 }}
         aria-pressed={checked}
         tabIndex={0}
       >
         <span
-          className={`inline-block h-6 w-6 transform rounded-full bg-background shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`}
+          className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`}
         />
       </button>
     </div>

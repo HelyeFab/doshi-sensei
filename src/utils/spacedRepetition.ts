@@ -403,7 +403,7 @@ export function isCardDueForReview(
   let dueDate = progress.nextReviewDate;
 
   // Add session buffer to prevent immediate due status after study session
-  if (excludeRecentSession) {
+  if (excludeRecentSession && progress.lastReviewDate) {
     const sessionBuffer = 2 * 60 * 60 * 1000; // 2 hours minimum buffer
     const minDueTime = new Date(progress.lastReviewDate.getTime() + sessionBuffer);
 
@@ -435,6 +435,7 @@ export function isCardForImmediateReview(progress: FlashcardProgress): boolean {
   // 1. It's due now, AND
   // 2. It was reviewed recently (within session buffer)
   return dueDate <= now &&
+         progress.lastReviewDate &&
          (now.getTime() - progress.lastReviewDate.getTime()) < sessionBuffer;
 }
 

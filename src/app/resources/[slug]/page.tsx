@@ -7,7 +7,7 @@ import { getResourcePostBySlug, incrementResourceViews } from '@/utils/resources
 import { marked } from 'marked';
 import { formatDistanceToNow, format } from 'date-fns';
 import Link from 'next/link';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
@@ -80,30 +80,23 @@ export default function ResourcePostPage() {
 
   if (loading) {
     return (
-      <>
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        </div>
-        <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Loading..." backHref="/resources" />
+        <MobileAwareContainer className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="text-6xl mb-4">📖</div>
             <p className="text-muted-foreground">Loading resource...</p>
           </div>
         </MobileAwareContainer>
-      </>
+      </div>
     );
   }
 
   if (error || !resource) {
     return (
-      <>
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        </div>
-        <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
-          <PageHeader title="Resource Not Found" showBackButton={true} />
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Resource Not Found" backHref="/resources" />
+        <MobileAwareContainer className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="text-6xl mb-4">📄</div>
             <h2 className="text-2xl font-semibold mb-4">Resource Not Found</h2>
@@ -118,14 +111,16 @@ export default function ResourcePostPage() {
             </Link>
           </div>
         </MobileAwareContainer>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title={resource.title} backHref="/resources" />
+      
       {/* Hero Section */}
-      {resource.imageUrl ? (
+      {resource.imageUrl && (
         <div className="relative w-full h-[40vh] min-h-[300px] overflow-hidden">
           <img
             src={resource.imageUrl}
@@ -133,16 +128,10 @@ export default function ResourcePostPage() {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-background to-transparent" />
-        </div>
-      ) : (
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
         </div>
       )}
 
-      <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen">
+      <MobileAwareContainer className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
           {/* Back Navigation */}
           <div className="mb-6">
@@ -318,6 +307,6 @@ export default function ResourcePostPage() {
           loading={false}
         />
       )}
-    </>
+    </div>
   );
 }

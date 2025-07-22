@@ -32,6 +32,7 @@ export const en = {
     settingsButton: "Settings",
     greeting: "Hello", // Will be followed by user's name
     readyToPractice: "Ready to practice some Japanese?",
+    dayProgressTooltip: "Day progress - Shows how much of the day has passed",
     featureCards: {
       practice: {
         title: "Practice",
@@ -669,6 +670,10 @@ export const en = {
     tapWhatYouHear: "Tap What You Hear",
     selectListsForAssembly: "Select study lists to practice building kana spelling from audio.",
     selectListsForListening: "Select one or more study lists to include in your listening quiz.",
+    startQuiz: "Start Quiz",
+    dailyLimitReached: "Daily Limit Reached",
+    usingWordsFromLists: "Using {words} words from {lists} lists",
+    changeLists: "Change Lists",
 
     // Game Modes
     modes: {

@@ -102,86 +102,53 @@ export default function StunningBottomNavbar() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden px-4 pb-4 pointer-events-none">
-      {/* Main container - removed extra wrapper */}
-      <div className="relative bg-card/5 backdrop-blur-[6px] border border-gray-300/30 rounded-3xl shadow-2xl overflow-hidden pointer-events-auto">
-          {/* Gradient border effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 opacity-50 blur-xl" />
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background border-t border-border" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      {/* Navigation items container */}
+      <div className="flex items-center justify-around" style={{ height: 'var(--bottom-nav-height)' }}>
+        {navItems.map((item) => {
+          const isActive = item.id === activeItem;
           
-          {/* Navigation items container */}
-          <div className="relative flex items-center justify-around px-2 py-3">
-            {/* Animated indicator - removed */}
-
-            {navItems.map((item) => {
-              const isActive = item.id === activeItem;
+          // DOUBLE SECURITY CHECK: Never render admin link unless user is verified admin
+          if (item.id === 'admin' && user?.email !== ADMIN_EMAIL) {
+            return null;
+          }
+          
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="flex flex-col items-center justify-center flex-1 h-full py-2 transition-colors"
+              onClick={() => setActiveItem(item.id)}
+            >
+              {/* Icon */}
+              <div className="relative w-6 h-6 mb-1">
+                <Image
+                  src={item.icon}
+                  alt={item.label}
+                  fill
+                  className={`object-contain transition-all ${
+                    isActive 
+                      ? 'opacity-100 filter-none' 
+                      : 'opacity-60 grayscale'
+                  }`}
+                  style={{
+                    filter: isActive ? 'none' : 'grayscale(100%)'
+                  }}
+                />
+              </div>
               
-              // DOUBLE SECURITY CHECK: Never render admin link unless user is verified admin
-              if (item.id === 'admin' && user?.email !== ADMIN_EMAIL) {
-                return null;
-              }
-              
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className="relative flex flex-col items-center justify-center w-16 h-16 rounded-2xl transition-all duration-300 group"
-                  onClick={() => setActiveItem(item.id)}
-                >
-                  {/* Hover/tap effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-primary/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    whileTap={{ scale: 0.95 }}
-                  />
-                  
-                  {/* Icon container */}
-                  <motion.div
-                    className="relative z-10 p-2 rounded-xl transition-all duration-300 group-hover:bg-muted"
-                    animate={{
-                      y: 0,
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 500,
-                      damping: 30
-                    }}
-                  >
-                    <div className={`relative transition-all duration-300 ${
-                      isActive ? 'w-8 h-8' : 'w-7 h-7 group-hover:scale-110'
-                    }`}>
-                      <Image
-                        src={item.icon}
-                        alt={item.label}
-                        fill
-                        className={`object-contain transition-all duration-300 ${
-                          isActive ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'
-                        }`}
-                      />
-                    </div>
-                  </motion.div>
-                  
-                  {/* Label - hidden */}
-                  <motion.span
-                    className="absolute -bottom-1 text-xs font-medium transition-all duration-300 text-muted-foreground opacity-0"
-                    animate={{
-                      y: 4,
-                      opacity: 0
-                    }}
-                    transition={{
-                      duration: 0.2
-                    }}
-                  >
-                    {item.label}
-                  </motion.span>
-
-                  {/* Active dot indicator - removed */}
-                </Link>
-              );
-            })}
-          </div>
+              {/* Label */}
+              <span className={`text-xs transition-colors ${
+                isActive 
+                  ? 'text-primary font-medium' 
+                  : 'text-muted-foreground'
+              }`}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
       </div>
-
-      {/* Safe area padding for iOS */}
-      <div className="h-safe-area-bottom" />
     </nav>
   );
 }

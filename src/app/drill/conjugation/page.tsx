@@ -494,7 +494,7 @@ export default function ConjugationDrillPage() {
     <div className="min-h-screen bg-gray-50">
       <StandardPageHeader title="Conjugation Drill" backHref="/drill" />
       
-      {/* Main Content */>
+      {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8">
         <main className="max-w-3xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Progress Bar */}

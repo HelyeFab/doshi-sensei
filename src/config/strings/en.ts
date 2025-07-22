@@ -93,6 +93,11 @@ export const en = {
         title: "AI Stories",
         icon: "/flat-icons/root-icons/story.svg",
         description: "Interactive tales"
+      },
+      youtubeShadowing: {
+        title: "YouTube Shadowing",
+        icon: "🎥",
+        description: "Practice with videos"
       }
     }
   },
@@ -1253,6 +1258,35 @@ export const en = {
     removeArticleConfirm: "Are you sure you want to remove this article from your saved items? This action cannot be undone.",
     removeStory: "Remove Story",
     removeStoryConfirm: "Are you sure you want to remove this story from your saved items? This action cannot be undone."
+  },
+
+  // YouTube Shadowing
+  youtubeShadowing: {
+    title: "YouTube Shadowing",
+    subtitle: "Practice Japanese with YouTube",
+    description: "Paste a YouTube link to extract audio, get transcripts, and practice shadowing to improve your pronunciation and listening skills.",
+    urlLabel: "YouTube URL",
+    extractButton: "Extract Audio & Start",
+    processing: "Processing...",
+    supportedFormats: "Supported formats:",
+    recentSessions: "Recent Sessions",
+    noSessions: "No recent sessions yet. Start by pasting a YouTube link above!",
+    extractingAudio: "Extracting Audio",
+    extractingMessage: "Extracting audio from YouTube...",
+    extractingNote: "This may take a minute depending on the video length",
+    extractSuccess: "Audio extracted successfully!",
+    extractErrorNote: "Make sure the video is public and not age-restricted",
+    tryAgain: "Try again",
+    loadingTranscript: "Loading Transcript",
+    fetchingTranscript: "Fetching transcript...",
+    transcriptNote: "Looking for captions or generating transcript...",
+    transcriptSuccess: "Transcript loaded successfully!",
+    transcriptErrorNote: "The video might not have captions available",
+    errors: {
+      emptyUrl: "Please enter a YouTube URL",
+      invalidUrl: "Please enter a valid YouTube URL",
+      extractFailed: "Could not extract video ID from URL"
+    }
   },
 
   // Stories

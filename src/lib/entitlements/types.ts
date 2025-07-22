@@ -14,6 +14,8 @@ export type Permission =
   | 'save_progress'
   | 'cloud_sync'
   | 'kanji_moods'
+  | 'view_stroke_order'
+  | 'youtube_shadowing'
   | 'premium_features'
   | '*'; // Wildcard for all permissions
 

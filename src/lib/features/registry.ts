@@ -172,6 +172,27 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     sharedLimitGroup: 'drill_practice'
   },
   
+  'youtube_shadowing': {
+    id: 'youtube_shadowing',
+    name: 'YouTube Shadowing',
+    description: 'Practice Japanese through YouTube videos with line-by-line audio shadowing',
+    category: 'learning',
+    icon: '🎥',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      maxVideosPerDay: { guest: 3, free: 5, premium: -1 }, // -1 means unlimited
+      maxVideoLength: { guest: 300, free: 600, premium: -1 }, // in seconds
+      features: {
+        guest: ['basic_playback', 'transcript_view'],
+        free: ['basic_playback', 'transcript_view', 'recording', 'vocabulary_lookup'],
+        premium: ['basic_playback', 'transcript_view', 'recording', 'vocabulary_lookup', 'offline_caching', 'advanced_analysis']
+      }
+    }
+  },
+  
   // Storage Features
   'word_lists': {
     id: 'word_lists',

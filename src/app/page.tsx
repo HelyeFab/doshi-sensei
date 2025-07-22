@@ -104,7 +104,8 @@ export default function Home() {
     { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
     { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description },
     { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
-    { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description }
+    { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
+    { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description }
   ];
 
   // Use predefined color patterns for better visual distribution

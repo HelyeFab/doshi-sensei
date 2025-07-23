@@ -5,6 +5,7 @@ import { User } from 'firebase/auth';
 import { analyticsTracker } from '@/lib/analytics/analyticsTracker';
 import { largeDataStorage } from './largeDataStorage';
 import { AnkiMediaStore } from './ankiMediaStore';
+import { AchievementManager } from '@/lib/achievements/manager';
 
 // Color palette for study lists
 const STUDY_LIST_COLORS = [
@@ -359,6 +360,18 @@ export class StudyListManager {
       // Auto-sync for premium users
       await this.autoSyncItems(user, subscriptionStatus);
       await this.autoSyncLists(user, subscriptionStatus);
+
+      // Update achievement progress for word saving
+      try {
+        if (itemType === 'word') {
+          const newlyUnlocked = await AchievementManager.updateStats('wordsSaved', validListIds.length);
+          if (newlyUnlocked.length > 0) {
+            console.log('🏆 [Achievements] New achievements unlocked from word saving:', newlyUnlocked);
+          }
+        }
+      } catch (error) {
+        console.error('Error updating achievement progress for word saving:', error);
+      }
 
       return { success: true, errors };
     } catch (error) {

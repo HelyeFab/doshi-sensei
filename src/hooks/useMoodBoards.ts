@@ -89,16 +89,19 @@ export function useMoodBoards(): UseMoodBoardsReturn {
       setError(null);
 
       if (!db) {
-        // Firebase not initialized - no fallback data available
-        console.warn('Firebase not initialized, no mood boards available');
+        // This should rarely happen as Firebase is initialized for all users
+        console.error('Firebase Firestore not initialized');
+        setError('Database connection failed');
         setMoodBoards([]);
         setLoading(false);
         return;
       }
 
+      console.log('Fetching mood boards from Firestore...');
       const moodBoardsRef = collection(db, 'moodBoards');
       const q = query(moodBoardsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
+      console.log('Fetched mood boards:', snapshot.size);
 
       const fetchedMoodBoards: MoodBoard[] = snapshot.docs.map(doc => {
         const firebaseMoodBoard: FirebaseMoodBoard = {
@@ -129,10 +132,7 @@ export function useMoodBoards(): UseMoodBoardsReturn {
     } catch (err) {
       console.error('Error fetching mood boards:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch mood boards');
-
-      // No fallback data available
       setMoodBoards([]);
-
       setLoading(false);
     }
   };
@@ -298,7 +298,7 @@ export function useMoodBoards(): UseMoodBoardsReturn {
 
     const setupRealtimeListener = () => {
       if (!db) {
-        // If no Firebase, just fetch JSON data
+        // If no Firebase, fetch default data for guest users
         fetchMoodBoards();
         return;
       }
@@ -342,7 +342,7 @@ export function useMoodBoards(): UseMoodBoardsReturn {
           setError(err.message || 'Failed to listen to mood board changes');
           setLoading(false);
 
-          // Fallback to JSON data
+          // Fallback to default data
           fetchMoodBoards();
         }
       );

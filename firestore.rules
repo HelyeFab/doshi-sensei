@@ -79,8 +79,8 @@ service cloud.firestore {
       // Allow admin full access to mood boards
       allow read, write: if isAdmin();
 
-      // Allow authenticated users to read mood boards
-      allow read: if request.auth != null;
+      // Allow anyone to read mood boards (guest users included)
+      allow read: if true;
     }
 
     // Admin logs collection
@@ -474,6 +474,69 @@ service cloud.firestore {
         request.resource.data.lastModified is string;
       
       // Premium users can delete their own SRS data
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Achievement Stats - premium sync feature
+    match /users/{userId}/achievementStats/current {
+      // Premium users can read their own achievement stats
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can write their own achievement stats with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['currentStreak', 'longestStreak', 'drillsCompleted', 'wordsSaved', 
+          'sentencesRead', 'storiesCompleted', 'gamesPlayed', 'articlesRead', 'flashcardSessions', 
+          'totalXP', 'lastStudyDate', 'totalStudyTime', 'listsCreated', 'kanjiStudied', 'updatedAt']) &&
+        request.resource.data.currentStreak is number &&
+        request.resource.data.longestStreak is number &&
+        request.resource.data.drillsCompleted is number &&
+        request.resource.data.wordsSaved is number &&
+        request.resource.data.sentencesRead is number &&
+        request.resource.data.storiesCompleted is number &&
+        request.resource.data.gamesPlayed is number &&
+        request.resource.data.articlesRead is number &&
+        request.resource.data.flashcardSessions is number &&
+        request.resource.data.totalXP is number &&
+        request.resource.data.lastStudyDate is string &&
+        request.resource.data.totalStudyTime is number &&
+        request.resource.data.listsCreated is number &&
+        request.resource.data.kanjiStudied is number &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Premium users can delete their own achievement stats
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Unlocked Achievements - premium sync feature
+    match /users/{userId}/unlockedAchievements/{achievementId} {
+      // Premium users can read their own unlocked achievements
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can create/update their own unlocked achievements with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'achievementId', 'unlockedAt', 'progress', 'notificationShown', 'updatedAt']) &&
+        request.resource.data.id is string &&
+        request.resource.data.achievementId is string &&
+        request.resource.data.unlockedAt is string &&
+        request.resource.data.progress is number &&
+        request.resource.data.progress >= 0 &&
+        request.resource.data.progress <= 100 &&
+        request.resource.data.notificationShown is bool &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Premium users can delete their own unlocked achievements
       allow delete: if request.auth != null && 
         request.auth.uid == userId && 
         isPremiumUser(userId);

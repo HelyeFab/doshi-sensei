@@ -16,9 +16,9 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
 
   const validateYouTubeUrl = (url: string): boolean => {
     const patterns = [
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[\w-]+(&[\w=]*)?$/,
-      /^(https?:\/\/)?(www\.)?youtube\.com\/shorts\/[\w-]+$/,
-      /^(https?:\/\/)?(m\.)?youtube\.com\/watch\?v=[\w-]+(&[\w=]*)?$/
+      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[\w-]+.*$/,
+      /^(https?:\/\/)?(www\.)?youtube\.com\/shorts\/[\w-]+.*$/,
+      /^(https?:\/\/)?(m\.)?youtube\.com\/watch\?v=[\w-]+.*$/
     ];
     
     return patterns.some(pattern => pattern.test(url));

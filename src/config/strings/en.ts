@@ -96,8 +96,33 @@ export const en = {
       },
       youtubeShadowing: {
         title: "YouTube Shadowing",
-        icon: "🎥",
+        icon: "/flat-icons/ui/youtube.svg",
         description: "Practice with videos"
+      },
+      hiragana: {
+        title: "Hiragana",
+        icon: "あ",
+        description: "Learn hiragana"
+      },
+      katakana: {
+        title: "Katakana",
+        icon: "ア",
+        description: "Learn katakana"
+      },
+      conjugation: {
+        title: "Conjugation Engine",
+        icon: "🔤",
+        description: "Practice conjugations"
+      },
+      read: {
+        title: "Read",
+        icon: "📖",
+        description: "News & Stories"
+      },
+      practice: {
+        title: "Practice Hub",
+        icon: "🎯",
+        description: "All practice modes"
       }
     }
   },
@@ -1286,6 +1311,12 @@ export const en = {
       emptyUrl: "Please enter a YouTube URL",
       invalidUrl: "Please enter a valid YouTube URL",
       extractFailed: "Could not extract video ID from URL"
+    },
+    controls: {
+      furigana: "Furigana",
+      grammar: "Grammar",
+      startShadowing: "Start Shadowing Practice",
+      exitShadowing: "Exit Shadowing Mode"
     }
   },
 

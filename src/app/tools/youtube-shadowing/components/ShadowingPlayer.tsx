@@ -34,8 +34,15 @@ export default function ShadowingPlayer({ session, onLineChange }: ShadowingPlay
 
   const currentLine = session.transcript[session.currentLineIndex];
 
-  // Initialize audio element
+  // Initialize audio element or YouTube player control
   useEffect(() => {
+    if (session.audioUrl === 'youtube-player') {
+      // For YouTube player mode, we'll control the embedded player
+      // This would require YouTube IFrame API integration
+      console.log('YouTube player mode - playback controls will be limited');
+      return;
+    }
+    
     if (session.audioUrl && !audioRef.current) {
       const audio = new Audio(session.audioUrl);
       audio.playbackRate = playbackSpeed;
@@ -185,6 +192,16 @@ export default function ShadowingPlayer({ session, onLineChange }: ShadowingPlay
 
   return (
     <div className="space-y-4">
+      {/* YouTube Player Mode Notice */}
+      {session.audioUrl === 'youtube-player' && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <p className="text-sm text-amber-800">
+            <strong>Note:</strong> You're using YouTube's embedded player. Some features like speed control and segment looping are limited. 
+            Control playback using the YouTube player above.
+          </p>
+        </div>
+      )}
+      
       {/* Current Line Display */}
       <div className="bg-card rounded-lg shadow-sm border border-border p-6">
         <div className="text-center mb-6">

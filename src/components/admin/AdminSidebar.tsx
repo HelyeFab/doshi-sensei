@@ -34,6 +34,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     href: '/admin/features',
   },
   {
+    id: 'achievements' as AdminSection,
+    labelKey: 'achievements',
+    iconKey: 'achievements',
+    href: '/admin/achievements',
+  },
+  {
     id: 'analytics' as AdminSection,
     labelKey: 'analytics',
     iconKey: 'analytics',
@@ -105,11 +111,13 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     label: strings.navigation?.admin?.[item.labelKey]?.label || 
            (item.labelKey === 'debug' ? 'Debug Tools' : 
             item.labelKey === 'snakePath' ? 'Snake Path' : 
-            item.labelKey === 'analytics' ? 'Analytics' : item.labelKey),
+            item.labelKey === 'analytics' ? 'Analytics' : 
+            item.labelKey === 'achievements' ? 'Achievements' : item.labelKey),
     icon: strings.navigation?.admin?.[item.labelKey]?.icon || 
           (item.labelKey === 'debug' ? '🐛' : 
            item.labelKey === 'snakePath' ? '🐍' : 
-           item.labelKey === 'analytics' ? '📊' : '📋'),
+           item.labelKey === 'analytics' ? '📊' : 
+           item.labelKey === 'achievements' ? '🏆' : '📋'),
   }));
 
   const handleSectionClick = (section: AdminSection) => {

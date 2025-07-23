@@ -16,7 +16,7 @@ import { safeNavigator, runInBrowser } from './browserCheck';
 // Database configuration
 const DB_CONFIG: DatabaseConfig = {
   name: 'DoshiSenseiDB',
-  version: 7, // Updated for Anki media storage
+  version: 8, // Updated for Achievement system
   stores: {
     settings: {
       keyPath: 'id',
@@ -179,6 +179,28 @@ const DB_CONFIG: DatabaseConfig = {
         { name: 'createdAt', keyPath: 'createdAt' },
         { name: 'type', keyPath: 'type' },
         { name: 'size', keyPath: 'size' }
+      ]
+    },
+    // Achievement system stores
+    userStats: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'lastUpdated', keyPath: 'lastUpdated' }
+      ]
+    },
+    unlockedAchievements: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'achievementId', keyPath: 'achievementId' },
+        { name: 'unlockedAt', keyPath: 'unlockedAt' },
+        { name: 'notificationShown', keyPath: 'notificationShown' }
+      ]
+    },
+    achievementProgress: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'achievementId', keyPath: 'achievementId' },
+        { name: 'lastUpdated', keyPath: 'lastUpdated' }
       ]
     }
   }
@@ -885,6 +907,127 @@ export class DatabaseManager {
   }
 }
 
+// User Stats Management
+class UserStatsManager {
+  private static readonly STATS_ID = 'user_stats';
+
+  static async getUserStats(): Promise<import('@/lib/achievements/types').UserStats | null> {
+    try {
+      const stats = await performDBOperation('userStats', 'readonly', (store) =>
+        store.get(this.STATS_ID)
+      );
+
+      if (!stats) return null;
+
+      // Remove metadata before returning
+      const { id, lastUpdated, ...userStats } = stats;
+      return userStats as import('@/lib/achievements/types').UserStats;
+    } catch (error) {
+      console.error('Error loading user stats from IndexedDB:', error);
+      return null;
+    }
+  }
+
+  static async saveUserStats(stats: import('@/lib/achievements/types').UserStats): Promise<void> {
+    const statsWithMetadata = {
+      ...stats,
+      id: this.STATS_ID,
+      lastUpdated: new Date().toISOString()
+    };
+
+    await performDBOperation('userStats', 'readwrite', (store) =>
+      store.put(statsWithMetadata)
+    );
+  }
+
+  static async clearUserStats(): Promise<void> {
+    await performDBOperation('userStats', 'readwrite', (store) =>
+      store.delete(this.STATS_ID)
+    );
+  }
+}
+
+// Achievements Management
+class AchievementsManager {
+  static async getUnlockedAchievements(): Promise<import('@/lib/achievements/types').UnlockedAchievement[]> {
+    try {
+      return await performDBOperation('unlockedAchievements', 'readonly', (store) =>
+        store.getAll()
+      );
+    } catch (error) {
+      console.error('Error loading unlocked achievements from IndexedDB:', error);
+      return [];
+    }
+  }
+
+  static async saveUnlockedAchievement(unlockedAchievement: import('@/lib/achievements/types').UnlockedAchievement): Promise<void> {
+    await performDBOperation('unlockedAchievements', 'readwrite', (store) =>
+      store.put(unlockedAchievement)
+    );
+  }
+
+  static async getUnlockedAchievementsByIds(achievementIds: string[]): Promise<import('@/lib/achievements/types').UnlockedAchievement[]> {
+    const allUnlocked = await this.getUnlockedAchievements();
+    return allUnlocked.filter(unlocked => achievementIds.includes(unlocked.achievementId));
+  }
+
+  static async markNotificationShown(unlockedAchievementId: string): Promise<void> {
+    try {
+      const unlocked = await performDBOperation('unlockedAchievements', 'readonly', (store) =>
+        store.get(unlockedAchievementId)
+      );
+
+      if (unlocked) {
+        unlocked.notificationShown = true;
+        await performDBOperation('unlockedAchievements', 'readwrite', (store) =>
+          store.put(unlocked)
+        );
+      }
+    } catch (error) {
+      console.error('Error marking notification as shown:', error);
+    }
+  }
+
+  static async getAchievementProgress(): Promise<import('@/lib/achievements/types').AchievementProgress[]> {
+    try {
+      return await performDBOperation('achievementProgress', 'readonly', (store) =>
+        store.getAll()
+      );
+    } catch (error) {
+      console.error('Error loading achievement progress from IndexedDB:', error);
+      return [];
+    }
+  }
+
+  static async saveAchievementProgress(progress: import('@/lib/achievements/types').AchievementProgress): Promise<void> {
+    await performDBOperation('achievementProgress', 'readwrite', (store) =>
+      store.put(progress)
+    );
+  }
+
+  static async getProgressForAchievement(achievementId: string): Promise<import('@/lib/achievements/types').AchievementProgress | null> {
+    try {
+      const allProgress = await performDBOperation('achievementProgress', 'readonly', (store) =>
+        store.index('achievementId').getAll(achievementId)
+      );
+
+      return allProgress.length > 0 ? allProgress[0] : null;
+    } catch (error) {
+      console.error('Error getting achievement progress:', error);
+      return null;
+    }
+  }
+
+  static async clearAllAchievements(): Promise<void> {
+    await performDBOperation('unlockedAchievements', 'readwrite', (store) =>
+      store.clear()
+    );
+    await performDBOperation('achievementProgress', 'readwrite', (store) =>
+      store.clear()
+    );
+  }
+}
+
 // Export all managers
 export {
   SettingsManager,
@@ -894,5 +1037,7 @@ export {
   APICacheManager,
   WordsManager,
   StudySessionManager,
-  DrillSessionManager
+  DrillSessionManager,
+  UserStatsManager,
+  AchievementsManager
 };

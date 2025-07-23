@@ -499,6 +499,10 @@ export interface DatabaseSchema {
   // Sentence system
   sentenceLists: import('@/types/sentences').SentenceList;
   savedSentences: import('@/types/sentences').SavedSentence;
+  // Achievement system
+  userStats: import('@/lib/achievements/types').UserStats & { id: string; lastUpdated: string };
+  unlockedAchievements: import('@/lib/achievements/types').UnlockedAchievement;
+  achievementProgress: import('@/lib/achievements/types').AchievementProgress;
 }
 
 // IndexedDB Configuration

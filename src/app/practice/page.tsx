@@ -99,7 +99,7 @@ export default function PracticePage() {
           <div className="flex gap-6 w-max lg:grid lg:grid-cols-3 lg:gap-6 lg:max-w-7xl lg:mx-auto lg:w-auto">
             
             {/* Block 1: Kana Charts */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Intro Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -236,7 +236,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 2: Vocabulary Search */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Vocabulary Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -311,7 +311,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 3: Drills */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Drills Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -384,7 +384,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 4: Flashcards */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Flashcards Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -441,7 +441,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 5: Anki Integration */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Anki Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -499,7 +499,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 6: Games */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Games Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -570,7 +570,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 7: Reading Content */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Reading Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -645,7 +645,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 8: Kanji by JLPT */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Kanji JLPT Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -719,7 +719,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 9: Kanji Mood Boards */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Mood Boards Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -784,7 +784,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 10: Shadowing */}
-            <div className="w-[400px] flex-shrink-0 lg:w-auto">
+            <div className="w-96 flex-shrink-0 lg:w-auto">
               {/* Shadowing Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">

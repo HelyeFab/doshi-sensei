@@ -25,6 +25,8 @@ import { ModalProvider } from "@/contexts/ModalContext";
 import { KanjiSelectionProvider } from '@/contexts/KanjiSelectionContext';
 import { CacheSystemInitializer } from '@/components/CacheSystemInitializer';
 import { DevHelper } from '@/components/DevHelper';
+import { AchievementToastManager } from '@/components/achievements/AchievementToast';
+import { AchievementInitializer } from '@/components/achievements/AchievementInitializer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -185,23 +187,26 @@ export default function RootLayout({
                           <ClientThemeWrapper>
                             <PWAWrapper>
                               <OnboardingWrapper>
-                                <div className="min-h-screen bg-background text-foreground">
-                                  <OfflineNotification />
-                                  <JMdictInitializer />
-                                  <CacheSystemInitializer />
-                                  <div className="mobile-nav-padding">
-                                    {children}
+                                <AchievementToastManager>
+                                  <div className="min-h-screen bg-background text-foreground">
+                                    <OfflineNotification />
+                                    <JMdictInitializer />
+                                    <CacheSystemInitializer />
+                                    <AchievementInitializer />
+                                    <div className="mobile-nav-padding">
+                                      {children}
+                                    </div>
+                                    <StunningBottomNavbar />
+                                    <MobileMenu />
+                                    <DesktopNavMenu />
+                                    <PWAInstaller />
+                                    <PWAUpdateNotification />
+                                    <FloatingDonateButton />
+                                    <CompanionTrigger />
+                                    <ToastContainer />
+                                    <DevHelper />
                                   </div>
-                                  <StunningBottomNavbar />
-                                  <MobileMenu />
-                                  <DesktopNavMenu />
-                                  <PWAInstaller />
-                                  <PWAUpdateNotification />
-                                  <FloatingDonateButton />
-                                  <CompanionTrigger />
-                                  <ToastContainer />
-                                  <DevHelper />
-                                </div>
+                                </AchievementToastManager>
                               </OnboardingWrapper>
                             </PWAWrapper>
                           </ClientThemeWrapper>

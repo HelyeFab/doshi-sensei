@@ -18,6 +18,7 @@ import StudyListManager from '@/utils/studyListManager';
 import KanjiListManager from '@/utils/kanjiListManager';
 import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAchievements } from '@/hooks/useAchievements';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
 import { PracticeCache } from '@/utils/practiceCache';
 
@@ -64,6 +65,7 @@ export default function DrillPage() {
   const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
   const { isPremium, userType } = useSubscription2();
   const { trackDrillComplete } = useAnalytics();
+  const { updateProgress } = useAchievements();
   const strings = useStrings();
 
   // Conjugation drill state
@@ -549,6 +551,16 @@ export default function DrillPage() {
         // Track in new analytics system
         trackDrillComplete(drillMode, newScore, questions.length);
         console.log('📊 [Analytics] Drill completion tracked:', { type: drillMode, correct: newScore, total: questions.length });
+        
+        // Update achievement progress
+        try {
+          const newlyUnlocked = await updateProgress('drillsCompleted');
+          if (newlyUnlocked.length > 0) {
+            console.log('🏆 [Achievements] New achievements unlocked:', newlyUnlocked);
+          }
+        } catch (error) {
+          console.error('Error updating achievement progress:', error);
+        }
       }, 100);
     }
 

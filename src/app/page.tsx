@@ -15,6 +15,7 @@ import { ToriiGate } from '@/components/ToriiGate';
 import { StatsBar } from '@/components/stats/StatsBar';
 import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
+import UserAchievements from '@/components/achievements/UserAchievements';
 
 // Import debug utility in development
 if (process.env.NODE_ENV === 'development') {
@@ -87,6 +88,7 @@ export default function Home() {
   const { settings } = useSettings();
   const strings = useStrings();
   const [dayProgress, setDayProgress] = useState(0);
+  const [todayDate, setTodayDate] = useState<string>('');
 
   // Ensure strings are loaded
   if (!strings || !strings.home || !strings.home.featureCards) {
@@ -95,17 +97,22 @@ export default function Home() {
 
   // Generate feature cards from strings (excluding Practice and Drill)
   const FEATURE_CARDS = [
+    { title: strings.home.featureCards.practice.title, icon: strings.home.featureCards.practice.icon, href: '/practice', description: strings.home.featureCards.practice.description },
+    { title: strings.home.featureCards.hiragana.title, icon: strings.home.featureCards.hiragana.icon, href: '/practice/hiragana', description: strings.home.featureCards.hiragana.description },
+    { title: strings.home.featureCards.katakana.title, icon: strings.home.featureCards.katakana.icon, href: '/practice/katakana', description: strings.home.featureCards.katakana.description },
+    { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description },
     { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
+    { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
     { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
     { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
+    { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description },
+    { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
+    { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
+    { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
+    { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
     { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description },
     { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
-    { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description },
-    { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
-    { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description },
-    { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
-    { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
-    { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description }
+    { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description }
   ];
 
   // Use predefined color patterns for better visual distribution
@@ -161,7 +168,7 @@ export default function Home() {
     }
   }, [profile?.displayName, profile?.email]);
 
-  // Calculate day progress (0-100%)
+  // Calculate day progress and date (0-100%)
   useEffect(() => {
     const calculateDayProgress = () => {
       const now = new Date();
@@ -175,6 +182,12 @@ export default function Home() {
       const progress = (currentSeconds / totalSecondsInDay) * 100;
       
       setDayProgress(progress);
+      
+      // Format date
+      const day = now.getDate();
+      const month = now.toLocaleDateString('en-US', { month: 'long' });
+      const year = now.getFullYear();
+      setTodayDate(`${day} ${month} ${year}`);
     };
 
     // Calculate initial progress
@@ -186,42 +199,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Generate falling sakura petals
-  const [sakuraPetals, setSakuraPetals] = useState<Array<{
-    id: number;
-    left: number;
-    delay: number;
-    duration: number;
-    size: number;
-    swayDuration: number;
-    svg: string;
-  }>>([]);
-
-  useEffect(() => {
-    // Available sakura SVGs
-    const sakuraSvgs = [
-      '/flat-icons/sakura/petals.svg',
-      '/flat-icons/sakura/sakura (1).svg',
-      '/flat-icons/sakura/sakura (2).svg',
-      '/flat-icons/sakura/sakura (5).svg',
-      '/flat-icons/sakura/sakura (6).svg'
-    ];
-
-    // Generate random sakura petals
-    const petals = [];
-    for (let i = 0; i < 25; i++) {
-      petals.push({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 10,
-        duration: 15 + Math.random() * 20,
-        size: 20 + Math.random() * 30,
-        swayDuration: 3 + Math.random() * 2,
-        svg: sakuraSvgs[Math.floor(Math.random() * sakuraSvgs.length)]
-      });
-    }
-    setSakuraPetals(petals);
-  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -252,13 +229,7 @@ export default function Home() {
       {/* Today's Date Section */}
       <section className="px-4 pb-4">
         <h2 className="text-lg font-medium text-foreground mb-2">
-          Today, {(() => {
-            const date = new Date();
-            const day = date.getDate();
-            const month = date.toLocaleDateString('en-US', { month: 'long' });
-            const year = date.getFullYear();
-            return `${day} ${month} ${year}`;
-          })()}
+          {todayDate ? `Today, ${todayDate}` : 'Today'}
         </h2>
         
         {/* Day Progress Bar */}
@@ -282,6 +253,9 @@ export default function Home() {
         <p className="text-xs text-muted-foreground mt-1">{strings.home.dayProgressTooltip}</p>
       </section>
       
+      {/* User Achievements */}
+      <UserAchievements />
+      
       {/* Stats Bar */}
       <div className="px-4 pb-4">
         <StatsBar />
@@ -289,40 +263,203 @@ export default function Home() {
 
       {/* Feature Cards - Scrollable Container */}
       <div className="flex-1 overflow-y-auto px-4 pb-4">
-        <div className="space-y-3">
-          {FEATURE_CARDS.map((card) => (
-            <Link key={card.href} href={card.href} className="block">
-              <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  {/* Icon */}
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-                    {card.icon.startsWith('/') ? (
-                      <Image
-                        src={card.icon}
-                        alt={card.title}
-                        width={24}
-                        height={24}
-                        className="opacity-70"
-                      />
-                    ) : (
-                      <span className="text-2xl">{card.icon}</span>
-                    )}
+        <div className="space-y-6">
+          {/* Foundation Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Foundation</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.hiragana.title, icon: strings.home.featureCards.hiragana.icon, href: '/practice/hiragana', description: strings.home.featureCards.hiragana.description },
+                { title: strings.home.featureCards.katakana.title, icon: strings.home.featureCards.katakana.icon, href: '/practice/katakana', description: strings.home.featureCards.katakana.description }
+              ].map((card) => (
+                <Link key={card.href} href={card.href} className="block">
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1">
-                    <h3 className="font-medium text-foreground">{card.title}</h3>
-                    <p className="text-sm text-muted-foreground">{card.description}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Core Learning Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Core Learning</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
+                { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description },
+                { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
+                { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description }
+              ].map((card) => (
+                <Link key={card.href} href={card.href} className="block">
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
-                  
-                  {/* Arrow */}
-                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
-            </Link>
-          ))}
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Practice & Review Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Practice & Review</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.practice.title, icon: strings.home.featureCards.practice.icon, href: '/practice', description: strings.home.featureCards.practice.description },
+                { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
+                { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description }
+              ].map((card) => (
+                <Link key={card.href} href={card.href} className="block">
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Immersion Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Immersion</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
+                { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
+                { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description }
+              ].map((card) => (
+                <Link key={card.href} href={card.href} className="block">
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                        {card.icon.startsWith('/') ? (
+                          <Image
+                            src={card.icon}
+                            alt={card.title}
+                            width={24}
+                            height={24}
+                            className="opacity-70"
+                          />
+                        ) : (
+                          <span className="text-2xl">{card.icon}</span>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Tools & Resources Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Tools & Resources</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
+                { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description }
+              ].map((card) => (
+                <Link key={card.href} href={card.href} className="block">
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* App Settings Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">App Settings</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
+                { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description }
+              ].map((card) => (
+                <Link key={card.href} href={card.href} className="block">
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
 

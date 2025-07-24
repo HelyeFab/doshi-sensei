@@ -107,7 +107,9 @@ export class AccessControl {
       'youtube_shadowing': 'youtube_shadowing',
       'anki_import': 'create_lists',
       'anki_set_creation': 'create_lists',
-      'flashcard_review': 'do_drills'
+      'flashcard_review': 'do_drills',
+      'ai_context_explanation': 'ai_explanations',
+      'textbook_vocabulary': 'textbook_vocabulary'
     };
     
     const permission = permissionMap[featureId];

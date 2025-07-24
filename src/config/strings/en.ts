@@ -114,6 +114,11 @@ export const en = {
         icon: "🔤",
         description: "Practice conjugations"
       },
+      textbookVocabulary: {
+        title: "Textbook Vocabulary",
+        icon: "📚",
+        description: "Learn from Genki & Minna"
+      },
       read: {
         title: "Read",
         icon: "📖",

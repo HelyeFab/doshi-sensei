@@ -1,0 +1,18 @@
+{
+  "title": "Genki 1",
+  "subtitle": "Elementary Japanese",
+  "jlptLevels": [
+    "N5",
+    "N4"
+  ],
+  "description": "The first volume of the popular Genki textbook series",
+  "color": {
+    "primary": "#EC4899",
+    "secondary": "#A855F7",
+    "gradient": "from-pink-400 to-purple-500"
+  },
+  "totalCards": 317,
+  "lessons": [
+    1
+  ]
+}

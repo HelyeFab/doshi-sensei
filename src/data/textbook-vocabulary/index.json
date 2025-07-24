@@ -1,0 +1,89 @@
+{
+  "totalCards": 9635,
+  "textbooks": {
+    "genki-1": {
+      "title": "Genki 1",
+      "cardCount": 317,
+      "lessons": [
+        1
+      ]
+    },
+    "genki-2": {
+      "title": "Genki 2",
+      "cardCount": 0,
+      "lessons": []
+    },
+    "minna-1": {
+      "title": "Minna no Nihongo 1",
+      "cardCount": 7096,
+      "lessons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        28,
+        41
+      ]
+    },
+    "minna-2": {
+      "title": "Minna no Nihongo 2",
+      "cardCount": 2222,
+      "lessons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    }
+  },
+  "jlptDistribution": {
+    "N5": 9075,
+    "N4": 560,
+    "N3": 0,
+    "N2": 0,
+    "N1": 0,
+    "null": 0
+  }
+}

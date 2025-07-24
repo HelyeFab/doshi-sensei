@@ -4,21 +4,31 @@ import { useEffect, useState } from 'react';
 import { TranscriptLine } from '../page';
 import { useStrings } from '@/contexts/LanguageContext';
 import SubtitleUploader from './SubtitleUploader';
+import { TranscriptCacheManager } from '@/utils/transcriptCache';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TranscriptDisplayProps {
   videoUrl: string;
   audioUrl: string;
+  fileInfo?: {
+    name: string;
+    size: number;
+    type: string;
+  };
   onTranscriptLoaded: (transcript: TranscriptLine[]) => void;
 }
 
 export default function TranscriptDisplay({ 
   videoUrl, 
   audioUrl, 
+  fileInfo,
   onTranscriptLoaded 
 }: TranscriptDisplayProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'completed' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
   const strings = useStrings();
+  const { user } = useAuth();
 
   useEffect(() => {
     loadTranscript();
@@ -27,18 +37,26 @@ export default function TranscriptDisplay({
   const loadTranscript = async () => {
     setStatus('loading');
     setError(null);
+    
+    // Add global error handler to prevent page reload
+    const handleError = (e: ErrorEvent) => {
+      console.error('Global error caught:', e);
+      e.preventDefault();
+      setStatus('error');
+      setError('An unexpected error occurred. Please try again.');
+    };
+    
+    window.addEventListener('error', handleError);
 
     try {
       // For YouTube player mode, try to extract subtitles first
       if (audioUrl === 'youtube-player') {
-        // Use the new unified endpoint
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://yt-dl.onrender.com';
-        const response = await fetch(`${backendUrl}/extract-youtube-content`, {
+        // Use local Next.js API route
+        const response = await fetch('/api/youtube/extract', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            url: videoUrl,
-            preferCaptions: true 
+            url: videoUrl
           })
         });
 
@@ -55,18 +73,9 @@ export default function TranscriptDisplay({
               setStatus('completed');
               onTranscriptLoaded(data.transcript);
               return;
-            } else if (data.methods) {
-              // No captions found, show what was tried
-              let errorMessage = 'No Japanese captions found for this video.\n\n';
-              errorMessage += 'Methods tried:\n';
-              
-              if (data.methods.youtubeApi) {
-                errorMessage += `• YouTube API: ${data.methods.youtubeApi.error || 'No captions'}\n`;
-              }
-              if (data.methods.ytDlpSubtitles) {
-                errorMessage += `• yt-dlp: ${data.methods.ytDlpSubtitles.error || 'No subtitles'}\n`;
-              }
-              
+            } else {
+              // No captions found
+              const errorMessage = data.message || 'No Japanese captions found for this video.';
               console.log('No captions found:', data);
               setStatus('error');
               setError(errorMessage);
@@ -116,16 +125,81 @@ export default function TranscriptDisplay({
         return;
       }
       
-      // Call the Whisper transcription API for regular audio URLs
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://yt-dl.onrender.com';
-      const response = await fetch(`${backendUrl}/transcribe-audio`, {
+      // First, check if we have a cached transcript
+      setLoadingMessage('Checking for cached transcript...');
+      
+      // Generate content ID for cache lookup
+      let contentId: string;
+      if (videoUrl && !fileInfo) {
+        // YouTube video
+        contentId = TranscriptCacheManager.generateContentId({
+          type: 'youtube',
+          videoUrl: videoUrl
+        });
+      } else if (fileInfo) {
+        // Uploaded file
+        contentId = TranscriptCacheManager.generateContentId({
+          type: fileInfo.type.startsWith('video/') ? 'video' : 'audio',
+          fileName: fileInfo.name,
+          fileSize: fileInfo.size
+        });
+      } else {
+        // Fallback
+        contentId = 'unknown_' + Date.now();
+      }
+
+      // Try to get cached transcript
+      const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
+      
+      if (cachedTranscript && cachedTranscript.transcript.length > 0) {
+        console.log('Using cached transcript!');
+        setLoadingMessage('Found cached transcript!');
+        setStatus('completed');
+        onTranscriptLoaded(cachedTranscript.transcript);
+        return;
+      }
+
+      // No cache hit, proceed with transcription
+      setLoadingMessage('Generating new transcript...');
+      
+      // Call our local Whisper transcription API
+      let requestBody: any = {
+        language: 'ja' // Japanese language
+      };
+
+      // Handle blob URLs by converting to base64
+      if (audioUrl.startsWith('blob:')) {
+        try {
+          const response = await fetch(audioUrl);
+          const blob = await response.blob();
+          const reader = new FileReader();
+          const base64Promise = new Promise<string>((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+          });
+          reader.readAsDataURL(blob);
+          const base64Data = await base64Promise;
+          requestBody.audioBlob = base64Data;
+        } catch (error) {
+          console.error('Failed to convert blob URL to base64:', error);
+          requestBody.audioUrl = audioUrl; // Fallback to URL
+        }
+      } else {
+        requestBody.audioUrl = audioUrl;
+      }
+
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      
+      const response = await fetch('/api/transcribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          audioUrl: audioUrl,
-          language: 'ja' // Japanese language
-        })
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const contentType = response.headers.get('content-type');
@@ -136,7 +210,7 @@ export default function TranscriptDisplay({
           errorMessage = errorData.error || errorMessage;
           
           if (response.status === 401) {
-            errorMessage = 'OpenAI API key not configured on server. Please contact support.';
+            errorMessage = 'OpenAI API key not configured or invalid. Please check the configuration.';
           } else if (response.status === 429) {
             errorMessage = 'Rate limit exceeded. Please try again in a few minutes.';
           } else if (errorMessage.includes('API key not configured')) {
@@ -153,13 +227,47 @@ export default function TranscriptDisplay({
         throw new Error('No transcript generated. The audio might be too short or unclear.');
       }
 
+      // Save to cache for future use
+      setLoadingMessage('Saving transcript for future use...');
+      await TranscriptCacheManager.saveTranscriptToCache({
+        contentId,
+        contentType: videoUrl ? 'youtube' : 'audio',
+        videoUrl: videoUrl || undefined,
+        videoTitle: undefined, // We could extract this from YouTube if needed
+        transcript: data.transcript,
+        language: data.language || 'ja',
+        duration: data.duration,
+        userId: user?.uid,
+        metadata: {
+          youtubeVideoId: videoUrl ? TranscriptCacheManager.generateContentId({
+            type: 'youtube',
+            videoUrl
+          }).replace('youtube_', '') : undefined
+        }
+      });
+
       setStatus('completed');
       onTranscriptLoaded(data.transcript);
 
     } catch (err) {
       setStatus('error');
-      setError(err instanceof Error ? err.message : 'Failed to load transcript');
       console.error('Transcript loading error:', err);
+      
+      // Handle different error types
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          setError('Request timed out. The transcription is taking too long. Please try a shorter audio file.');
+        } else if (err.message.includes('Failed to fetch')) {
+          setError('Network error. Please check your connection and try again.');
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('Failed to load transcript');
+      }
+    } finally {
+      // Clean up error handler
+      window.removeEventListener('error', handleError);
     }
   };
 
@@ -181,7 +289,7 @@ export default function TranscriptDisplay({
             <span className="text-sm text-muted-foreground">
               {audioUrl === 'youtube-player' 
                 ? 'Checking for YouTube subtitles...' 
-                : (strings.youtubeShadowing?.fetchingTranscript || 'Generating transcript with AI...')}
+                : (loadingMessage || strings.youtubeShadowing?.fetchingTranscript || 'Transcribing audio with OpenAI Whisper...')}
             </span>
           </div>
           
@@ -202,11 +310,18 @@ export default function TranscriptDisplay({
       )}
 
       {status === 'completed' && (
-        <div className="flex items-center gap-3 text-green-600">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <span className="text-sm">{strings.youtubeShadowing?.transcriptSuccess || 'Transcript loaded successfully!'}</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 text-green-600">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-sm">{strings.youtubeShadowing?.transcriptSuccess || 'Transcript loaded successfully!'}</span>
+          </div>
+          {loadingMessage.includes('cached') && (
+            <p className="text-xs text-muted-foreground ml-8">
+              Using cached transcript - loaded instantly from community database! 🚀
+            </p>
+          )}
         </div>
       )}
 

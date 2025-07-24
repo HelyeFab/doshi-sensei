@@ -19,10 +19,13 @@
     "chunk-jmdict": "node scripts/chunk-jmdict.js",
     "prepare-deploy": "node scripts/prepare-deploy.js",
     "cleanup:test-articles": "node scripts/delete-test-articles.js",
-    "cleanup:test-articles:delete": "node scripts/delete-test-articles.js --delete"
+    "cleanup:test-articles:delete": "node scripts/delete-test-articles.js --delete",
+    "import:textbook-vocab": "tsx scripts/import-textbook-vocabulary.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.3.1",
+    "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
     "@google/generative-ai": "^0.24.1",
     "@lixen/edge-tts": "^1.2.6",
     "@monaco-editor/react": "^4.7.0",
@@ -35,7 +38,7 @@
     "@types/jszip": "^3.4.0",
     "@types/kuromoji": "^0.1.3",
     "anki-apkg-parser": "github:74Genesis/anki-apkg-parser",
-    "axios": "^1.9.0",
+    "axios": "^1.11.0",
     "buffer": "^6.0.3",
     "cheerio": "^1.1.0",
     "date-fns": "^4.1.0",
@@ -49,8 +52,6 @@
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.525.0",
     "marked": "^15.0.12",
-    "@ffmpeg/ffmpeg": "^0.12.10",
-    "@ffmpeg/util": "^0.12.1",
     "next": "15.3.3",
     "next-pwa": "^5.6.0",
     "openai": "^5.9.0",
@@ -63,7 +64,9 @@
     "sass": "^1.89.2",
     "sql.js": "^1.13.0",
     "stripe": "^18.2.1",
-    "validator": "^13.15.15"
+    "ts-fsrs": "^5.2.1",
+    "validator": "^13.15.15",
+    "ytdl-core": "^4.11.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -84,6 +87,7 @@
     "jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

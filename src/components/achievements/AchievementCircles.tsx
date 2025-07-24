@@ -117,7 +117,7 @@ export function AchievementCircles({ achievements, className = '' }: Achievement
                 ) : (
                   <>
                     {/* Progress state */}
-                    <div className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <div className="text-xl sm:text-2xl font-bold text-foreground">
                       {percentage.toFixed(0)}%
                     </div>
                     <div className="text-xs sm:text-sm text-muted-foreground">

@@ -16,6 +16,8 @@ export type Permission =
   | 'kanji_moods'
   | 'view_stroke_order'
   | 'youtube_shadowing'
+  | 'ai_explanations'
+  | 'textbook_vocabulary'
   | 'premium_features'
   | '*'; // Wildcard for all permissions
 

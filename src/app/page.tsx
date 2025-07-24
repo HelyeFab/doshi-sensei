@@ -301,6 +301,7 @@ export default function Home() {
             <div className="space-y-3">
               {[
                 { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
+                { title: strings.home.featureCards.textbookVocabulary.title, icon: strings.home.featureCards.textbookVocabulary.icon, href: '/tools/textbook-vocabulary', description: strings.home.featureCards.textbookVocabulary.description },
                 { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description },
                 { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
                 { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description }

@@ -1,5 +1,85 @@
 # Claude Development Notes
 
+## YouTube Shadowing Feature - Complete Architecture (January 2025)
+
+### Overview
+Successfully implemented a robust YouTube shadowing practice feature with transcript caching and community sharing.
+
+### Major Achievement: SupaData AI Integration
+**Problem Solved**: The "biggest wall" - many YouTube videos don't have Japanese captions available.
+
+**Solution**: Integrated SupaData AI API (https://supadata.ai) for reliable transcript extraction.
+
+#### Implementation Details
+1. **API Integration** (`/src/app/api/youtube/extract/route.ts`)
+   - Added SupaData as the primary extraction method
+   - Fallback chain: SupaData → ytdl-core → get_video_info → alternative endpoints
+   - Environment variable: `SUPA_YOUTUBE_API_KEY`
+   - Request Japanese subtitles specifically with `lang: 'ja'` parameter
+
+2. **Response Format**
+   ```json
+   {
+     "lang": "ja",
+     "content": [
+       {
+         "text": "Japanese text",
+         "duration": 7080,  // milliseconds
+         "offset": 31400,   // milliseconds
+         "lang": "ja"
+       }
+     ]
+   }
+   ```
+
+### Complete Architecture
+
+#### 1. Transcript Caching System
+- **Firestore Collection**: `transcriptCache`
+- **Caching Flow**:
+  1. User A loads YouTube video → Check cache
+  2. Cache miss → Extract via SupaData → Save to Firestore
+  3. User B loads same video → Cache hit → Instant access + increment count
+  4. Popular videos bubble up naturally
+
+#### 2. Popular Videos Dashboard (`/tools/popular-videos`)
+- Shows most accessed YouTube videos with cached transcripts
+- Two views: "Most Popular" and "Trending" (last 7 days)
+- Direct links to practice with cached transcripts
+- Community impact stats (API calls saved)
+- **Safety**: Only YouTube videos shown publicly (not user uploads)
+
+#### 3. Multiple Input Methods
+- YouTube URLs (with SupaData extraction)
+- Direct audio upload (OpenAI Whisper transcription)
+- Video file upload (ffmpeg.wasm for audio extraction)
+- Manual subtitle upload
+
+#### 4. Enhanced Player Features
+- Unified player supporting YouTube, video files, and audio
+- Synchronized highlighting
+- Furigana support
+- Grammar explanations
+- Shadowing practice mode
+
+### Key Files
+- `/src/app/api/youtube/extract/route.ts` - SupaData integration
+- `/src/utils/transcriptCache.ts` - Caching logic
+- `/src/app/tools/popular-videos/page.tsx` - Popular videos dashboard
+- `/src/app/tools/youtube-shadowing/` - Main feature components
+- `firestore.indexes.json` - Required Firestore indexes added
+
+### Recommendations
+- SupaData Mega plan ($29/month) - 10,000 credits
+- With caching, each video only costs credits once
+- Popular content serves thousands of users for one credit cost
+
+### Future Enhancements
+- Add video thumbnail caching
+- Implement user favorites
+- Add difficulty ratings
+- Create curated playlists
+
 ## Stroke Order Practice Game Plan
 
 ### Overview
@@ -310,3 +390,23 @@ export default function PageName() {
 - Keep SEO structured data
 - Reuse existing data/logic
 - Never hardcode strings
+
+## Textbook Vocabulary Feature (January 2025)
+
+The Textbook Vocabulary feature provides interactive vocabulary learning from Genki and Minna no Nihongo textbooks with state-of-the-art spaced repetition.
+
+### Key Implementation Details
+- **Data**: 9,635 vocabulary cards imported from MCP server (stored as static JSON)
+- **Algorithm**: FSRS spaced repetition using ts-fsrs library
+- **Storage**: IndexedDB for all users, Firebase sync ready for premium
+- **Access**: Daily limits via Three-Pillar Architecture (Guest: 20, Free: 50, Premium: unlimited)
+- **UI**: Interactive flip cards with Framer Motion animations
+
+### File Locations
+- `/src/app/tools/textbook-vocabulary/` - Main feature components
+- `/src/services/textbook-vocabulary/` - Storage and SRS services
+- `/src/data/textbook-vocabulary/` - Static vocabulary JSON files
+- `/docs/features/textbook-vocabulary/` - Comprehensive documentation
+
+### Usage
+The feature is fully integrated with the Three-Pillar Architecture and tracks usage automatically. Access via the "Textbook Vocabulary" card on the homepage.

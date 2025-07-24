@@ -565,6 +565,31 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Transcript Cache collection - for YouTube shadowing feature
+    match /transcriptCache/{transcriptId} {
+      // Anyone can read cached transcripts (including guests)
+      allow read: if true;
+      
+      // Only authenticated users can create new transcript cache entries
+      allow create: if request.auth != null &&
+        request.resource.data.keys().hasAll(['videoUrl', 'transcript', 'createdAt', 'lastAccessed', 'accessCount', 'contentType']) &&
+        request.resource.data.videoUrl is string &&
+        request.resource.data.transcript is list &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastAccessed is timestamp &&
+        request.resource.data.accessCount is number &&
+        request.resource.data.contentType in ['youtube', 'audio', 'video'];
+      
+      // Allow updating access count and last accessed time
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accessCount', 'lastAccessed', 'videoTitle', 'metadata']) &&
+        request.resource.data.accessCount == resource.data.accessCount + 1 &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Only admin can delete transcript cache entries
+      allow delete: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

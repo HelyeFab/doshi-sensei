@@ -5,6 +5,7 @@ import { ShadowingSession, TranscriptLine } from '../page';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Settings, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { AIExplanationTrigger } from '@/components/AIExplanation';
 
 interface ShadowingPlayerProps {
   session: ShadowingSession;
@@ -205,9 +206,19 @@ export default function ShadowingPlayer({ session, onLineChange }: ShadowingPlay
       {/* Current Line Display */}
       <div className="bg-card rounded-lg shadow-sm border border-border p-6">
         <div className="text-center mb-6">
-          <p className="text-2xl font-medium text-foreground mb-2">
-            {currentLine?.text || ''}
-          </p>
+          <div className="flex items-center justify-center gap-2">
+            <p className="text-2xl font-medium text-foreground mb-2">
+              {currentLine?.text || ''}
+            </p>
+            {currentLine?.text && (
+              <AIExplanationTrigger
+                text={currentLine.text}
+                contextType="sentence"
+                className="mb-2"
+                size="md"
+              />
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
             Line {session.currentLineIndex + 1} of {session.transcript.length}
           </p>

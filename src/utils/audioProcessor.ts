@@ -38,8 +38,9 @@ export const loadFFmpeg = async (): Promise<FFmpeg> => {
 };
 
 export interface AudioProcessingProgress {
-  stage: 'loading' | 'processing' | 'uploading' | 'transcribing';
+  stage: 'loading' | 'processing' | 'uploading' | 'transcribing' | string;
   progress: number;
+  percent: number;
 }
 
 // Process audio from a video blob
@@ -48,10 +49,10 @@ export const processVideoAudio = async (
   onProgress?: (progress: AudioProcessingProgress) => void
 ): Promise<Blob> => {
   try {
-    onProgress?.({ stage: 'loading', progress: 0 });
+    onProgress?.({ stage: 'loading', progress: 0, percent: 0 });
     const ff = await loadFFmpeg();
     
-    onProgress?.({ stage: 'processing', progress: 0.1 });
+    onProgress?.({ stage: 'processing', progress: 0.1, percent: 10 });
     
     const inputFileName = 'input_video';
     const outputFileName = 'output_audio.mp3';
@@ -62,7 +63,12 @@ export const processVideoAudio = async (
     // Set up progress tracking
     ff.on('progress', (event: any) => {
       if (onProgress && typeof event === 'object' && 'ratio' in event) {
-        onProgress({ stage: 'processing', progress: 0.1 + (event.ratio as number) * 0.8 });
+        const percent = 10 + Math.round((event.ratio as number) * 80);
+        onProgress({ 
+          stage: 'Extracting audio...', 
+          progress: 0.1 + (event.ratio as number) * 0.8,
+          percent 
+        });
       }
     });
 
@@ -81,7 +87,7 @@ export const processVideoAudio = async (
     const audioData = await ff.readFile(outputFileName);
     const audioBlob = new Blob([audioData], { type: 'audio/mp3' });
     
-    onProgress?.({ stage: 'processing', progress: 1 });
+    onProgress?.({ stage: 'processing', progress: 1, percent: 100 });
     
     console.log('Audio extraction complete, size:', audioBlob.size, 'bytes');
     return audioBlob;

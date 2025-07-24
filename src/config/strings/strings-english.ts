@@ -1,5 +1,5 @@
 export const strings = {
-  "appName": "Doshi Sensei",
+  "appName": "Dōshi Sensei",
   "appDescription": "Master Japanese verb and adjective conjugations",
   "nav": {
     "home": "Home",
@@ -19,7 +19,7 @@ export const strings = {
     "stories": "Stories"
   },
   "home": {
-    "title": "Welcome to Doshi Sensei",
+    "title": "Welcome to Dōshi Sensei",
     "subtitle": "Master Japanese verb and adjective conjugations",
     "practiceButton": "Practice Conjugations",
     "drillButton": "Drill Mode",
@@ -206,9 +206,9 @@ export const strings = {
     "dataUsage": "Data Usage",
     "dataUsageDesc": "What data we collect and why",
     "build": "Build",
-    "aboutInfo": "Doshi Sensei is a Japanese verb and adjective conjugation practice app. Built with Next.js and designed to help you master Japanese conjugations.",
+    "aboutInfo": "Dōshi Sensei is a Japanese verb and adjective conjugation practice app. Built with Next.js and designed to help you master Japanese conjugations.",
     "rateApp": "Rate the App",
-    "rateAppDesc": "Help others discover Doshi Sensei",
+    "rateAppDesc": "Help others discover Dōshi Sensei",
     "shareWithFriends": "Share with Friends",
     "shareWithFriendsDesc": "Spread the word about learning Japanese",
     "acknowledgments": "Acknowledgments",
@@ -433,7 +433,7 @@ export const strings = {
       "weakPassword": {
         "title": "Let's make that password stronger! 🔒",
         "message": "Your password needs to be at least 6 characters long. Consider using a mix of letters, numbers, and symbols for better security.",
-        "suggestion": "Pro tip: Use a passphrase like 'DoshiSensei2024!' - it's easier to remember and super secure!"
+        "suggestion": "Pro tip: Use a passphrase like 'DōshiSensei2024!' - it's easier to remember and super secure!"
       },
       "invalidEmail": {
         "title": "Email format looks off! ✉️",
@@ -1269,7 +1269,7 @@ export const strings = {
     "upgradeToPremium": "Upgrade to Premium",
     "premiumBenefits": "Premium Benefits:",
     "cancelAnytime": "Cancel anytime • Secure payment via Stripe",
-    "supportDeveloper": "Support Doshi Sensei",
+    "supportDeveloper": "Support Dōshi Sensei",
     "supportDescription": "Help keep this app free and growing!",
     "chooseDonationAmount": "Choose donation amount:",
     "customAmount": "Custom amount",
@@ -1364,7 +1364,7 @@ export const strings = {
     },
     "admin": {
       "label": "Admin",
-      "description": "Doshi Sensei",
+      "description": "Dōshi Sensei",
       "dashboard": {
         "label": "Dashboard",
         "icon": "📊",
@@ -1429,7 +1429,7 @@ export const strings = {
       "next": "Next"
     },
     "app": {
-      "name": "Doshi Sensei",
+      "name": "Dōshi Sensei",
       "tagline": "Japanese Conjugation Practice",
       "version": "v1.0",
       "branch": "feature/admin-dashboard"
@@ -1782,7 +1782,7 @@ export const strings = {
   },
   "tutorial": {
     "welcome": {
-      "title": "Welcome to Doshi Sensei!",
+      "title": "Welcome to Dōshi Sensei!",
       "description": "Your complete Japanese learning platform with everything you need to master the language.",
       "emphasis": "Let's explore your new learning universe!",
       "features": {
@@ -1799,7 +1799,7 @@ export const strings = {
     },
     "paths": {
       "title": "Choose Your Learning Path 🗺️",
-      "description": "Doshi Sensei adapts to your learning style. Pick what excites you most!",
+      "description": "Dōshi Sensei adapts to your learning style. Pick what excites you most!",
       "scholar": {
         "title": "📖 The Scholar",
         "description": "Deep dive into grammar and conjugations",
@@ -1936,7 +1936,7 @@ export const strings = {
       "continueButton": "Choose Later →"
     },
     "success": {
-      "title": "おめでとう！ Welcome to the Doshi Sensei Family!",
+      "title": "おめでとう！ Welcome to the Dōshi Sensei Family!",
       "description": "You're now part of a growing community of Japanese learners.",
       "emphasis": "Your adventure begins now!",
       "checklistHeader": "🎯 Your Journey Checklist:",
@@ -2288,7 +2288,7 @@ export const strings = {
       "features_page_changes_are_saved_immediately": "• Changes are saved immediately to the database",
       "features_page_users_will_see_updated_limits": "• Users will see updated limits on their next action",
       "features_page_consider_user_behavior_patter": "• Consider user behavior patterns when adjusting limits",
-      "features_page_this_matrix_shows_all_feature": "• This matrix shows all features available in Doshi Sensei and their access levels",
+      "features_page_this_matrix_shows_all_feature": "• This matrix shows all features available in Dōshi Sensei and their access levels",
       "features_page_limits_are_enforced_automatic": "• Limits are enforced automatically by the new access control system",
       "features_page_shared_limit_groups_like_game": "• Shared limit groups (like games) use the same counter for all features in the group",
       "features_page_planned_features_are_shown_fo": "• Planned features are shown for future development reference",

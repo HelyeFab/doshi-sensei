@@ -1,9 +1,9 @@
 [
   {
     "id": "minna-1-4-1508238250195",
-    "japanese": "（－分）（－ぷん）",
-    "reading": "（－分）（－ぷん）",
-    "meaning": "- minute",
+    "japanese": "- minute",
+    "reading": "- minute",
+    "meaning": "（－分）（－ぷん）",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -22,9 +22,9 @@
   },
   {
     "id": "minna-1-4-1544776574372",
-    "japanese": "（－分）（－ぷん）",
-    "reading": "（－分）（－ぷん）",
-    "meaning": "- minute",
+    "japanese": "- minute",
+    "reading": "- minute",
+    "meaning": "（－分）（－ぷん）",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -43,9 +43,9 @@
   },
   {
     "id": "minna-1-4-1508238250195",
-    "japanese": "（－分）（－ぷん）",
-    "reading": "（－分）（－ぷん）",
-    "meaning": "- minute",
+    "japanese": "- minute",
+    "reading": "- minute",
+    "meaning": "（－分）（－ぷん）",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -64,9 +64,9 @@
   },
   {
     "id": "minna-1-4-1544776574372",
-    "japanese": "（－分）（－ぷん）",
-    "reading": "（－分）（－ぷん）",
-    "meaning": "- minute",
+    "japanese": "- minute",
+    "reading": "- minute",
+    "meaning": "（－分）（－ぷん）",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -84,262 +84,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240260057",
-    "japanese": "～から",
-    "reading": "～から",
-    "meaning": "from ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "〜から",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574404",
-    "japanese": "～から",
-    "reading": "～から",
-    "meaning": "from ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "〜から",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240260057",
-    "japanese": "～から",
-    "reading": "～から",
-    "meaning": "from ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "〜から",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574404",
-    "japanese": "～から",
-    "reading": "～から",
-    "meaning": "from ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "〜から",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240294065",
-    "japanese": "～と～",
-    "reading": "～と～",
-    "meaning": "and (used to connect nouns)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~と~",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574406",
-    "japanese": "～と～",
-    "reading": "～と～",
-    "meaning": "and (used to connect nouns)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~と~",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240294065",
-    "japanese": "～と～",
-    "reading": "～と～",
-    "meaning": "and (used to connect nouns)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~と~",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574406",
-    "japanese": "～と～",
-    "reading": "～と～",
-    "meaning": "and (used to connect nouns)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~と~",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240272953",
-    "japanese": "～まで",
-    "reading": "～まで",
-    "meaning": "up to ~, until ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~まで",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574405",
-    "japanese": "～まで",
-    "reading": "～まで",
-    "meaning": "up to ~, until ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~まで",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240272953",
-    "japanese": "～まで",
-    "reading": "～まで",
-    "meaning": "up to ~, until ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~まで",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574405",
-    "japanese": "～まで",
-    "reading": "～まで",
-    "meaning": "up to ~, until ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~まで",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1508238199723",
-    "japanese": "ーじ",
-    "reading": "ーじ",
-    "meaning": "- o`clock",
+    "japanese": "- o`clock",
+    "reading": "- o`clock",
+    "meaning": "ーじ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -358,9 +106,9 @@
   },
   {
     "id": "minna-1-4-1544776574371",
-    "japanese": "ーじ",
-    "reading": "ーじ",
-    "meaning": "- o`clock",
+    "japanese": "- o`clock",
+    "reading": "- o`clock",
+    "meaning": "ーじ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -379,9 +127,9 @@
   },
   {
     "id": "minna-1-4-1508238199723",
-    "japanese": "ーじ",
-    "reading": "ーじ",
-    "meaning": "- o`clock",
+    "japanese": "- o`clock",
+    "reading": "- o`clock",
+    "meaning": "ーじ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -400,9 +148,9 @@
   },
   {
     "id": "minna-1-4-1544776574371",
-    "japanese": "ーじ",
-    "reading": "ーじ",
-    "meaning": "- o`clock",
+    "japanese": "- o`clock",
+    "reading": "- o`clock",
+    "meaning": "ーじ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -420,15 +168,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238535947",
-    "japanese": "あさって",
-    "reading": "あさって",
-    "meaning": "the day after tomorrow",
+    "id": "minna-1-4-1508239690010",
+    "japanese": "A rest, a holiday, a day off",
+    "reading": "A rest, a holiday, a day off",
+    "meaning": "やすみ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "あさって",
+        "japanese": "やすみ",
         "reading": "",
         "english": "4"
       }
@@ -441,15 +189,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574385",
-    "japanese": "あさって",
-    "reading": "あさって",
-    "meaning": "the day after tomorrow",
+    "id": "minna-1-4-1544776574388",
+    "japanese": "A rest, a holiday, a day off",
+    "reading": "A rest, a holiday, a day off",
+    "meaning": "やすみ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "あさって",
+        "japanese": "やすみ",
         "reading": "",
         "english": "4"
       }
@@ -462,15 +210,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238535947",
-    "japanese": "あさって",
-    "reading": "あさって",
-    "meaning": "the day after tomorrow",
+    "id": "minna-1-4-1508239690010",
+    "japanese": "A rest, a holiday, a day off",
+    "reading": "A rest, a holiday, a day off",
+    "meaning": "やすみ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "あさって",
+        "japanese": "やすみ",
         "reading": "",
         "english": "4"
       }
@@ -483,15 +231,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574385",
-    "japanese": "あさって",
-    "reading": "あさって",
-    "meaning": "the day after tomorrow",
+    "id": "minna-1-4-1544776574388",
+    "japanese": "A rest, a holiday, a day off",
+    "reading": "A rest, a holiday, a day off",
+    "meaning": "やすみ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "あさって",
+        "japanese": "やすみ",
         "reading": "",
         "english": "4"
       }
@@ -504,277 +252,20 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238515539",
-    "japanese": "あした",
-    "reading": "あした",
-    "meaning": "tomorrow",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あした",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574384",
-    "japanese": "あした",
-    "reading": "あした",
-    "meaning": "tomorrow",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あした",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238515539",
-    "japanese": "あした",
-    "reading": "あした",
-    "meaning": "tomorrow",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あした",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574384",
-    "japanese": "あした",
-    "reading": "あした",
-    "meaning": "tomorrow",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あした",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729372842",
-    "japanese": "えーと",
-    "reading": "えーと",
-    "meaning": "well, let me see",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729372843",
-    "japanese": "えーと",
-    "reading": "えーと",
-    "meaning": "well, let me see",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729372842",
-    "japanese": "えーと",
-    "reading": "えーと",
-    "meaning": "well, let me see",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729372843",
-    "japanese": "えーと",
-    "reading": "えーと",
-    "meaning": "well, let me see",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238483060",
-    "japanese": "おととい",
-    "reading": "おととい",
-    "meaning": "the day before yesterday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "おととい",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574381",
-    "japanese": "おととい",
-    "reading": "おととい",
-    "meaning": "the day before yesterday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "おととい",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238483060",
-    "japanese": "おととい",
-    "reading": "おととい",
-    "meaning": "the day before yesterday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "おととい",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574381",
-    "japanese": "おととい",
-    "reading": "おととい",
-    "meaning": "the day before yesterday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "おととい",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729372844",
-    "japanese": "お願いします。",
-    "reading": "お願いします。",
-    "meaning": "お 願[ねが]いします。",
+    "id": "minna-1-4-1508238363355",
+    "japanese": "a.m., morning",
+    "reading": "a.m., morning",
+    "meaning": "午前",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "Please.",
+        "japanese": "午前[ごぜん]",
         "reading": "",
         "english": "4"
       }
     ],
     "tags": [
-      "chapter4",
       "n5",
       "lesson-4"
     ],
@@ -782,21 +273,20 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1609729372845",
-    "japanese": "お願いします。",
-    "reading": "お願いします。",
-    "meaning": "お 願[ねが]いします。",
+    "id": "minna-1-4-1544776574376",
+    "japanese": "a.m., morning",
+    "reading": "a.m., morning",
+    "meaning": "午前",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "Please.",
+        "japanese": "午前[ごぜん]",
         "reading": "",
         "english": "4"
       }
     ],
     "tags": [
-      "chapter4",
       "n5",
       "lesson-4"
     ],
@@ -804,21 +294,20 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1609729372844",
-    "japanese": "お願いします。",
-    "reading": "お願いします。",
-    "meaning": "お 願[ねが]いします。",
+    "id": "minna-1-4-1508238363355",
+    "japanese": "a.m., morning",
+    "reading": "a.m., morning",
+    "meaning": "午前",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "Please.",
+        "japanese": "午前[ごぜん]",
         "reading": "",
         "english": "4"
       }
     ],
     "tags": [
-      "chapter4",
       "n5",
       "lesson-4"
     ],
@@ -826,37 +315,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1609729372845",
-    "japanese": "お願いします。",
-    "reading": "お願いします。",
-    "meaning": "お 願[ねが]いします。",
+    "id": "minna-1-4-1544776574376",
+    "japanese": "a.m., morning",
+    "reading": "a.m., morning",
+    "meaning": "午前",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "Please.",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238496251",
-    "japanese": "きのう",
-    "reading": "きのう",
-    "meaning": "yesterday",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "きのう",
+        "japanese": "午前[ごぜん]",
         "reading": "",
         "english": "4"
       }
@@ -869,15 +336,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574382",
-    "japanese": "きのう",
-    "reading": "きのう",
-    "meaning": "yesterday",
+    "id": "minna-1-4-1508240294065",
+    "japanese": "and (used to connect nouns)",
+    "reading": "and (used to connect nouns)",
+    "meaning": "～と～",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "きのう",
+        "japanese": "~と~",
         "reading": "",
         "english": "4"
       }
@@ -890,15 +357,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238496251",
-    "japanese": "きのう",
-    "reading": "きのう",
-    "meaning": "yesterday",
+    "id": "minna-1-4-1544776574406",
+    "japanese": "and (used to connect nouns)",
+    "reading": "and (used to connect nouns)",
+    "meaning": "～と～",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "きのう",
+        "japanese": "~と~",
         "reading": "",
         "english": "4"
       }
@@ -911,15 +378,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574382",
-    "japanese": "きのう",
-    "reading": "きのう",
-    "meaning": "yesterday",
+    "id": "minna-1-4-1508240294065",
+    "japanese": "and (used to connect nouns)",
+    "reading": "and (used to connect nouns)",
+    "meaning": "～と～",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "きのう",
+        "japanese": "~と~",
         "reading": "",
         "english": "4"
       }
@@ -932,15 +399,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238505010",
-    "japanese": "きょう",
-    "reading": "きょう",
-    "meaning": "today",
+    "id": "minna-1-4-1544776574406",
+    "japanese": "and (used to connect nouns)",
+    "reading": "and (used to connect nouns)",
+    "meaning": "～と～",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "きょう",
+        "japanese": "~と~",
         "reading": "",
         "english": "4"
       }
@@ -953,15 +420,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574383",
-    "japanese": "きょう",
-    "reading": "きょう",
-    "meaning": "today",
+    "id": "minna-1-4-1508238117554",
+    "japanese": "art museum, art gallery",
+    "reading": "art museum, art gallery",
+    "meaning": "美術館",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "きょう",
+        "japanese": "美術館[びじゅつかん]",
         "reading": "",
         "english": "4"
       }
@@ -974,15 +441,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238505010",
-    "japanese": "きょう",
-    "reading": "きょう",
-    "meaning": "today",
+    "id": "minna-1-4-1544776574369",
+    "japanese": "art museum, art gallery",
+    "reading": "art museum, art gallery",
+    "meaning": "美術館",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "きょう",
+        "japanese": "美術館[びじゅつかん]",
         "reading": "",
         "english": "4"
       }
@@ -995,15 +462,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574383",
-    "japanese": "きょう",
-    "reading": "きょう",
-    "meaning": "today",
+    "id": "minna-1-4-1508238117554",
+    "japanese": "art museum, art gallery",
+    "reading": "art museum, art gallery",
+    "meaning": "美術館",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "きょう",
+        "japanese": "美術館[びじゅつかん]",
         "reading": "",
         "english": "4"
       }
@@ -1016,15 +483,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238557690",
-    "japanese": "けさ",
-    "reading": "けさ",
-    "meaning": "this morning",
+    "id": "minna-1-4-1544776574369",
+    "japanese": "art museum, art gallery",
+    "reading": "art museum, art gallery",
+    "meaning": "美術館",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "けさ",
+        "japanese": "美術館[びじゅつかん]",
         "reading": "",
         "english": "4"
       }
@@ -1037,15 +504,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574386",
-    "japanese": "けさ",
-    "reading": "けさ",
-    "meaning": "this morning",
+    "id": "minna-1-4-1508238022283",
+    "japanese": "bank",
+    "reading": "bank",
+    "meaning": "銀行",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "けさ",
+        "japanese": "銀行[ぎんこう]",
         "reading": "",
         "english": "4"
       }
@@ -1058,15 +525,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238557690",
-    "japanese": "けさ",
-    "reading": "けさ",
-    "meaning": "this morning",
+    "id": "minna-1-4-1544776574366",
+    "japanese": "bank",
+    "reading": "bank",
+    "meaning": "銀行",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "けさ",
+        "japanese": "銀行[ぎんこう]",
         "reading": "",
         "english": "4"
       }
@@ -1079,15 +546,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574386",
-    "japanese": "けさ",
-    "reading": "けさ",
-    "meaning": "this morning",
+    "id": "minna-1-4-1508238022283",
+    "japanese": "bank",
+    "reading": "bank",
+    "meaning": "銀行",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "けさ",
+        "japanese": "銀行[ぎんこう]",
         "reading": "",
         "english": "4"
       }
@@ -1100,15 +567,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1550629720243",
-    "japanese": "そちら",
-    "reading": "そちら",
-    "meaning": "your place",
+    "id": "minna-1-4-1544776574366",
+    "japanese": "bank",
+    "reading": "bank",
+    "meaning": "銀行",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "そちら",
+        "japanese": "銀行[ぎんこう]",
         "reading": "",
         "english": "4"
       }
@@ -1121,15 +588,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1550629720250",
-    "japanese": "そちら",
-    "reading": "そちら",
-    "meaning": "your place",
+    "id": "minna-1-4-1508240489345",
+    "japanese": "Beijing",
+    "reading": "Beijing",
+    "meaning": "ペキン　（北京）",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "そちら",
+        "japanese": "ペキン　（ 北京[ぺきん]）",
         "reading": "",
         "english": "4"
       }
@@ -1142,15 +609,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1550629720243",
-    "japanese": "そちら",
-    "reading": "そちら",
-    "meaning": "your place",
+    "id": "minna-1-4-1544776574412",
+    "japanese": "Beijing",
+    "reading": "Beijing",
+    "meaning": "ペキン　（北京）",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "そちら",
+        "japanese": "ペキン　（ 北京[ぺきん]）",
         "reading": "",
         "english": "4"
       }
@@ -1163,15 +630,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1550629720250",
-    "japanese": "そちら",
-    "reading": "そちら",
-    "meaning": "your place",
+    "id": "minna-1-4-1508240489345",
+    "japanese": "Beijing",
+    "reading": "Beijing",
+    "meaning": "ペキン　（北京）",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "そちら",
+        "japanese": "ペキン　（ 北京[ぺきん]）",
         "reading": "",
         "english": "4"
       }
@@ -1184,15 +651,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240356721",
-    "japanese": "たいへんですね。",
-    "reading": "たいへんですね。",
-    "meaning": "That's tough isn't it? (used when expressing sympathy)",
+    "id": "minna-1-4-1544776574412",
+    "japanese": "Beijing",
+    "reading": "Beijing",
+    "meaning": "ペキン　（北京）",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "たいへんですね。",
+        "japanese": "ペキン　（ 北京[ぺきん]）",
         "reading": "",
         "english": "4"
       }
@@ -1205,15 +672,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574407",
-    "japanese": "たいへんですね。",
-    "reading": "たいへんですね。",
-    "meaning": "That's tough isn't it? (used when expressing sympathy)",
+    "id": "minna-1-4-1508238429435",
+    "japanese": "daytime, noon",
+    "reading": "daytime, noon",
+    "meaning": "昼",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "たいへんですね。",
+        "japanese": "昼[ひる]",
         "reading": "",
         "english": "4"
       }
@@ -1226,15 +693,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240356721",
-    "japanese": "たいへんですね。",
-    "reading": "たいへんですね。",
-    "meaning": "That's tough isn't it? (used when expressing sympathy)",
+    "id": "minna-1-4-1544776574379",
+    "japanese": "daytime, noon",
+    "reading": "daytime, noon",
+    "meaning": "昼",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "たいへんですね。",
+        "japanese": "昼[ひる]",
         "reading": "",
         "english": "4"
       }
@@ -1247,15 +714,36 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574407",
-    "japanese": "たいへんですね。",
-    "reading": "たいへんですね。",
-    "meaning": "That's tough isn't it? (used when expressing sympathy)",
+    "id": "minna-1-4-1508238429435",
+    "japanese": "daytime, noon",
+    "reading": "daytime, noon",
+    "meaning": "昼",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "たいへんですね。",
+        "japanese": "昼[ひる]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574379",
+    "japanese": "daytime, noon",
+    "reading": "daytime, noon",
+    "meaning": "昼",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "昼[ひる]",
         "reading": "",
         "english": "4"
       }
@@ -1269,9 +757,9 @@
   },
   {
     "id": "minna-1-4-1508237999131",
-    "japanese": "デパート",
-    "reading": "デパート",
-    "meaning": "department store",
+    "japanese": "department store",
+    "reading": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1290,9 +778,9 @@
   },
   {
     "id": "minna-1-4-1544776574365",
-    "japanese": "デパート",
-    "reading": "デパート",
-    "meaning": "department store",
+    "japanese": "department store",
+    "reading": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1311,9 +799,9 @@
   },
   {
     "id": "minna-1-4-1609729373096",
-    "japanese": "デパート",
+    "japanese": "department store",
     "reading": "デパート",
-    "meaning": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1334,9 +822,9 @@
   },
   {
     "id": "minna-1-4-1609729373097",
-    "japanese": "デパート",
+    "japanese": "department store",
     "reading": "デパート",
-    "meaning": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1357,9 +845,9 @@
   },
   {
     "id": "minna-1-4-1508237999131",
-    "japanese": "デパート",
-    "reading": "デパート",
-    "meaning": "department store",
+    "japanese": "department store",
+    "reading": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1378,9 +866,9 @@
   },
   {
     "id": "minna-1-4-1544776574365",
-    "japanese": "デパート",
-    "reading": "デパート",
-    "meaning": "department store",
+    "japanese": "department store",
+    "reading": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1399,9 +887,9 @@
   },
   {
     "id": "minna-1-4-1609729373096",
-    "japanese": "デパート",
+    "japanese": "department store",
     "reading": "デパート",
-    "meaning": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1422,9 +910,9 @@
   },
   {
     "id": "minna-1-4-1609729373097",
-    "japanese": "デパート",
+    "japanese": "department store",
     "reading": "デパート",
-    "meaning": "department store",
+    "meaning": "デパート",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1444,351 +932,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240381329",
-    "japanese": "なんばん",
-    "reading": "なんばん",
-    "meaning": "what number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんばん",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574409",
-    "japanese": "なんばん",
-    "reading": "なんばん",
-    "meaning": "what number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんばん",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240381329",
-    "japanese": "なんばん",
-    "reading": "なんばん",
-    "meaning": "what number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんばん",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574409",
-    "japanese": "なんばん",
-    "reading": "なんばん",
-    "meaning": "what number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんばん",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240434697",
-    "japanese": "ニューヨーク",
-    "reading": "ニューヨーク",
-    "meaning": "New York",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ニューヨーク",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574411",
-    "japanese": "ニューヨーク",
-    "reading": "ニューヨーク",
-    "meaning": "New York",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ニューヨーク",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240434697",
-    "japanese": "ニューヨーク",
-    "reading": "ニューヨーク",
-    "meaning": "New York",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ニューヨーク",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574411",
-    "japanese": "ニューヨーク",
-    "reading": "ニューヨーク",
-    "meaning": "New York",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ニューヨーク",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238456594",
-    "japanese": "ばん　（よる）",
-    "reading": "ばん　（よる）",
-    "meaning": "night, evening",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばん　（よる）",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574380",
-    "japanese": "ばん　（よる）",
-    "reading": "ばん　（よる）",
-    "meaning": "night, evening",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばん　（よる）",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238456594",
-    "japanese": "ばん　（よる）",
-    "reading": "ばん　（よる）",
-    "meaning": "night, evening",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばん　（よる）",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574380",
-    "japanese": "ばん　（よる）",
-    "reading": "ばん　（よる）",
-    "meaning": "night, evening",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばん　（よる）",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240369753",
-    "japanese": "ばんごう",
-    "reading": "ばんごう",
-    "meaning": "number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばんごう",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574408",
-    "japanese": "ばんごう",
-    "reading": "ばんごう",
-    "meaning": "number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばんごう",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240369753",
-    "japanese": "ばんごう",
-    "reading": "ばんごう",
-    "meaning": "number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばんごう",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574408",
-    "japanese": "ばんごう",
-    "reading": "ばんごう",
-    "meaning": "number",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばんごう",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240489345",
-    "japanese": "ペキン　（北京）",
-    "reading": "ペキン　（北京）",
-    "meaning": "Beijing",
+    "id": "minna-1-4-1508239920970",
+    "japanese": "every day",
+    "reading": "every day",
+    "meaning": "毎日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "ペキン　（ 北京[ぺきん]）",
+        "japanese": "毎日[まいにち]",
         "reading": "",
         "english": "4"
       }
@@ -1801,15 +953,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574412",
-    "japanese": "ペキン　（北京）",
-    "reading": "ペキン　（北京）",
-    "meaning": "Beijing",
+    "id": "minna-1-4-1544776574395",
+    "japanese": "every day",
+    "reading": "every day",
+    "meaning": "毎日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "ペキン　（ 北京[ぺきん]）",
+        "japanese": "毎日[まいにち]",
         "reading": "",
         "english": "4"
       }
@@ -1822,15 +974,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240489345",
-    "japanese": "ペキン　（北京）",
-    "reading": "ペキン　（北京）",
-    "meaning": "Beijing",
+    "id": "minna-1-4-1508239920970",
+    "japanese": "every day",
+    "reading": "every day",
+    "meaning": "毎日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "ペキン　（ 北京[ぺきん]）",
+        "japanese": "毎日[まいにち]",
         "reading": "",
         "english": "4"
       }
@@ -1843,15 +995,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574412",
-    "japanese": "ペキン　（北京）",
-    "reading": "ペキン　（北京）",
-    "meaning": "Beijing",
+    "id": "minna-1-4-1544776574395",
+    "japanese": "every day",
+    "reading": "every day",
+    "meaning": "毎日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "ペキン　（ 北京[ぺきん]）",
+        "japanese": "毎日[まいにち]",
         "reading": "",
         "english": "4"
       }
@@ -1864,15 +1016,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508237960099",
-    "japanese": "べんきょうします",
-    "reading": "べんきょうします",
-    "meaning": "To study",
+    "id": "minna-1-4-1508239880882",
+    "japanese": "every morning",
+    "reading": "every morning",
+    "meaning": "毎朝",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "べんきょうします",
+        "japanese": "毎朝[まいあさ]",
         "reading": "",
         "english": "4"
       }
@@ -1885,15 +1037,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574363",
-    "japanese": "べんきょうします",
-    "reading": "べんきょうします",
-    "meaning": "To study",
+    "id": "minna-1-4-1544776574393",
+    "japanese": "every morning",
+    "reading": "every morning",
+    "meaning": "毎朝",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "べんきょうします",
+        "japanese": "毎朝[まいあさ]",
         "reading": "",
         "english": "4"
       }
@@ -1906,15 +1058,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508237960099",
-    "japanese": "べんきょうします",
-    "reading": "べんきょうします",
-    "meaning": "To study",
+    "id": "minna-1-4-1508239880882",
+    "japanese": "every morning",
+    "reading": "every morning",
+    "meaning": "毎朝",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "べんきょうします",
+        "japanese": "毎朝[まいあさ]",
         "reading": "",
         "english": "4"
       }
@@ -1927,15 +1079,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574363",
-    "japanese": "べんきょうします",
-    "reading": "べんきょうします",
-    "meaning": "To study",
+    "id": "minna-1-4-1544776574393",
+    "japanese": "every morning",
+    "reading": "every morning",
+    "meaning": "毎朝",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "べんきょうします",
+        "japanese": "毎朝[まいあさ]",
         "reading": "",
         "english": "4"
       }
@@ -1948,15 +1100,351 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508239690010",
-    "japanese": "やすみ",
-    "reading": "やすみ",
-    "meaning": "A rest, a holiday, a day off",
+    "id": "minna-1-4-1508239903713",
+    "japanese": "every night",
+    "reading": "every night",
+    "meaning": "毎晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "毎晩[まいばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574394",
+    "japanese": "every night",
+    "reading": "every night",
+    "meaning": "毎晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "毎晩[まいばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239903713",
+    "japanese": "every night",
+    "reading": "every night",
+    "meaning": "毎晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "毎晩[まいばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574394",
+    "japanese": "every night",
+    "reading": "every night",
+    "meaning": "毎晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "毎晩[まいばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239779922",
+    "japanese": "examination, test",
+    "reading": "examination, test",
+    "meaning": "試験",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "試験[しけん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574390",
+    "japanese": "examination, test",
+    "reading": "examination, test",
+    "meaning": "試験",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "試験[しけん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239779922",
+    "japanese": "examination, test",
+    "reading": "examination, test",
+    "meaning": "試験",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "試験[しけん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574390",
+    "japanese": "examination, test",
+    "reading": "examination, test",
+    "meaning": "試験",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "試験[しけん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239861178",
+    "japanese": "film, movie",
+    "reading": "film, movie",
+    "meaning": "映画",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "映画[えいが]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574392",
+    "japanese": "film, movie",
+    "reading": "film, movie",
+    "meaning": "映画",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "映画[えいが]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239861178",
+    "japanese": "film, movie",
+    "reading": "film, movie",
+    "meaning": "映画",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "映画[えいが]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574392",
+    "japanese": "film, movie",
+    "reading": "film, movie",
+    "meaning": "映画",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "映画[えいが]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240064610",
+    "japanese": "Friday",
+    "reading": "Friday",
+    "meaning": "金曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "金曜日[きんようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574400",
+    "japanese": "Friday",
+    "reading": "Friday",
+    "meaning": "金曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "金曜日[きんようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240064610",
+    "japanese": "Friday",
+    "reading": "Friday",
+    "meaning": "金曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "金曜日[きんようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574400",
+    "japanese": "Friday",
+    "reading": "Friday",
+    "meaning": "金曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "金曜日[きんようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240260057",
+    "japanese": "from ~",
+    "reading": "from ~",
+    "meaning": "～から",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "やすみ",
+        "japanese": "〜から",
         "reading": "",
         "english": "4"
       }
@@ -1969,15 +1457,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574388",
-    "japanese": "やすみ",
-    "reading": "やすみ",
-    "meaning": "A rest, a holiday, a day off",
+    "id": "minna-1-4-1544776574404",
+    "japanese": "from ~",
+    "reading": "from ~",
+    "meaning": "～から",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "やすみ",
+        "japanese": "〜から",
         "reading": "",
         "english": "4"
       }
@@ -1990,15 +1478,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508239690010",
-    "japanese": "やすみ",
-    "reading": "やすみ",
-    "meaning": "A rest, a holiday, a day off",
+    "id": "minna-1-4-1508240260057",
+    "japanese": "from ~",
+    "reading": "from ~",
+    "meaning": "～から",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "やすみ",
+        "japanese": "〜から",
         "reading": "",
         "english": "4"
       }
@@ -2011,15 +1499,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574388",
-    "japanese": "やすみ",
-    "reading": "やすみ",
-    "meaning": "A rest, a holiday, a day off",
+    "id": "minna-1-4-1544776574404",
+    "japanese": "from ~",
+    "reading": "from ~",
+    "meaning": "～から",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "やすみ",
+        "japanese": "〜から",
         "reading": "",
         "english": "4"
       }
@@ -2032,15 +1520,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240519617",
-    "japanese": "ロサンゼルス",
-    "reading": "ロサンゼルス",
-    "meaning": "Los Angeles",
+    "id": "minna-1-4-1508237852284",
+    "japanese": "get up, wake up",
+    "reading": "get up, wake up",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "ロサンゼルス",
+        "japanese": "起[お]きます",
         "reading": "",
         "english": "4"
       }
@@ -2053,15 +1541,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574413",
-    "japanese": "ロサンゼルス",
-    "reading": "ロサンゼルス",
-    "meaning": "Los Angeles",
+    "id": "minna-1-4-1544776574359",
+    "japanese": "get up, wake up",
+    "reading": "get up, wake up",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "ロサンゼルス",
+        "japanese": "起[お]きます",
         "reading": "",
         "english": "4"
       }
@@ -2074,15 +1562,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240519617",
-    "japanese": "ロサンゼルス",
-    "reading": "ロサンゼルス",
-    "meaning": "Los Angeles",
+    "id": "minna-1-4-1508237852284",
+    "japanese": "get up, wake up",
+    "reading": "get up, wake up",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "ロサンゼルス",
+        "japanese": "起[お]きます",
         "reading": "",
         "english": "4"
       }
@@ -2095,21 +1583,189 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1544776574413",
-    "japanese": "ロサンゼルス",
-    "reading": "ロサンゼルス",
-    "meaning": "Los Angeles",
+    "id": "minna-1-4-1544776574359",
+    "japanese": "get up, wake up",
+    "reading": "get up, wake up",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "ロサンゼルス",
+        "japanese": "起[お]きます",
         "reading": "",
         "english": "4"
       }
     ],
     "tags": [
       "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238276442",
+    "japanese": "half",
+    "reading": "half",
+    "meaning": "半",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "半[はん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574373",
+    "japanese": "half",
+    "reading": "half",
+    "meaning": "半",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "半[はん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238276442",
+    "japanese": "half",
+    "reading": "half",
+    "meaning": "半",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "半[はん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574373",
+    "japanese": "half",
+    "reading": "half",
+    "meaning": "半",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "半[はん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238078259",
+    "japanese": "library",
+    "reading": "library",
+    "meaning": "図書館",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "図書館[としょかん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574368",
+    "japanese": "library",
+    "reading": "library",
+    "meaning": "図書館",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "図書館[としょかん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238078259",
+    "japanese": "library",
+    "reading": "library",
+    "meaning": "図書館",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "図書館[としょかん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574368",
+    "japanese": "library",
+    "reading": "library",
+    "meaning": "図書館",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "図書館[としょかん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
       "lesson-4"
     ],
     "lesson": 4,
@@ -2117,9 +1773,9 @@
   },
   {
     "id": "minna-1-4-1508240531113",
-    "japanese": "ロンドン",
-    "reading": "ロンドン",
-    "meaning": "London",
+    "japanese": "London",
+    "reading": "London",
+    "meaning": "ロンドン",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2138,9 +1794,9 @@
   },
   {
     "id": "minna-1-4-1544776574414",
-    "japanese": "ロンドン",
-    "reading": "ロンドン",
-    "meaning": "London",
+    "japanese": "London",
+    "reading": "London",
+    "meaning": "ロンドン",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2159,9 +1815,9 @@
   },
   {
     "id": "minna-1-4-1508240531113",
-    "japanese": "ロンドン",
-    "reading": "ロンドン",
-    "meaning": "London",
+    "japanese": "London",
+    "reading": "London",
+    "meaning": "ロンドン",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2180,9 +1836,9 @@
   },
   {
     "id": "minna-1-4-1544776574414",
-    "japanese": "ロンドン",
-    "reading": "ロンドン",
-    "meaning": "London",
+    "japanese": "London",
+    "reading": "London",
+    "meaning": "ロンドン",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2193,6 +1849,3210 @@
       }
     ],
     "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240519617",
+    "japanese": "Los Angeles",
+    "reading": "Los Angeles",
+    "meaning": "ロサンゼルス",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ロサンゼルス",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574413",
+    "japanese": "Los Angeles",
+    "reading": "Los Angeles",
+    "meaning": "ロサンゼルス",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ロサンゼルス",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240519617",
+    "japanese": "Los Angeles",
+    "reading": "Los Angeles",
+    "meaning": "ロサンゼルス",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ロサンゼルス",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574413",
+    "japanese": "Los Angeles",
+    "reading": "Los Angeles",
+    "meaning": "ロサンゼルス",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ロサンゼルス",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239741210",
+    "japanese": "lunchtime (lit. noon/afternoon break)",
+    "reading": "lunchtime (lit. noon/afternoon break)",
+    "meaning": "昼休み",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "昼休[ひるやす]み",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574389",
+    "japanese": "lunchtime (lit. noon/afternoon break)",
+    "reading": "lunchtime (lit. noon/afternoon break)",
+    "meaning": "昼休み",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "昼休[ひるやす]み",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239741210",
+    "japanese": "lunchtime (lit. noon/afternoon break)",
+    "reading": "lunchtime (lit. noon/afternoon break)",
+    "meaning": "昼休み",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "昼休[ひるやす]み",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574389",
+    "japanese": "lunchtime (lit. noon/afternoon break)",
+    "reading": "lunchtime (lit. noon/afternoon break)",
+    "meaning": "昼休み",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "昼休[ひるやす]み",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239839802",
+    "japanese": "meeting, conference (～を　します：hold a meeting)",
+    "reading": "meeting, conference (～を　します：hold a meeting)",
+    "meaning": "会議",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "会議[かいぎ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574391",
+    "japanese": "meeting, conference (～を　します：hold a meeting)",
+    "reading": "meeting, conference (～を　します：hold a meeting)",
+    "meaning": "会議",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "会議[かいぎ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239839802",
+    "japanese": "meeting, conference (～を　します：hold a meeting)",
+    "reading": "meeting, conference (～を　します：hold a meeting)",
+    "meaning": "会議",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "会議[かいぎ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574391",
+    "japanese": "meeting, conference (～を　します：hold a meeting)",
+    "reading": "meeting, conference (～を　します：hold a meeting)",
+    "meaning": "会議",
+    "jlptLevel": "N4",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "会議[かいぎ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239946193",
+    "japanese": "Monday",
+    "reading": "Monday",
+    "meaning": "月曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "月曜日[げつようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574396",
+    "japanese": "Monday",
+    "reading": "Monday",
+    "meaning": "月曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "月曜日[げつようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239946193",
+    "japanese": "Monday",
+    "reading": "Monday",
+    "meaning": "月曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "月曜日[げつようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574396",
+    "japanese": "Monday",
+    "reading": "Monday",
+    "meaning": "月曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "月曜日[げつようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238410491",
+    "japanese": "morning",
+    "reading": "morning",
+    "meaning": "朝",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "朝[あさ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574378",
+    "japanese": "morning",
+    "reading": "morning",
+    "meaning": "朝",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "朝[あさ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238410491",
+    "japanese": "morning",
+    "reading": "morning",
+    "meaning": "朝",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "朝[あさ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574378",
+    "japanese": "morning",
+    "reading": "morning",
+    "meaning": "朝",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "朝[あさ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240434697",
+    "japanese": "New York",
+    "reading": "New York",
+    "meaning": "ニューヨーク",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ニューヨーク",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574411",
+    "japanese": "New York",
+    "reading": "New York",
+    "meaning": "ニューヨーク",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ニューヨーク",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240434697",
+    "japanese": "New York",
+    "reading": "New York",
+    "meaning": "ニューヨーク",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ニューヨーク",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574411",
+    "japanese": "New York",
+    "reading": "New York",
+    "meaning": "ニューヨーク",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ニューヨーク",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238456594",
+    "japanese": "night, evening",
+    "reading": "night, evening",
+    "meaning": "ばん　（よる）",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばん　（よる）",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574380",
+    "japanese": "night, evening",
+    "reading": "night, evening",
+    "meaning": "ばん　（よる）",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばん　（よる）",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238456594",
+    "japanese": "night, evening",
+    "reading": "night, evening",
+    "meaning": "ばん　（よる）",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばん　（よる）",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574380",
+    "japanese": "night, evening",
+    "reading": "night, evening",
+    "meaning": "ばん　（よる）",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばん　（よる）",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238139235",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今[いま]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574370",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今[いま]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729373822",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今[いま]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "ニューヨークは今何時ですか。"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729373823",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今[いま]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "ニューヨークは今何時ですか。"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238139235",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今[いま]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574370",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今[いま]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729373822",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今[いま]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "ニューヨークは今何時ですか。"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729373823",
+    "japanese": "now",
+    "reading": "now",
+    "meaning": "今[いま]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "ニューヨークは今何時ですか。"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240369753",
+    "japanese": "number",
+    "reading": "number",
+    "meaning": "ばんごう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばんごう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574408",
+    "japanese": "number",
+    "reading": "number",
+    "meaning": "ばんごう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばんごう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240369753",
+    "japanese": "number",
+    "reading": "number",
+    "meaning": "ばんごう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばんごう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574408",
+    "japanese": "number",
+    "reading": "number",
+    "meaning": "ばんごう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばんごう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238388315",
+    "japanese": "p.m., afternoon",
+    "reading": "p.m., afternoon",
+    "meaning": "午後",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "午後[ごご]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574377",
+    "japanese": "p.m., afternoon",
+    "reading": "p.m., afternoon",
+    "meaning": "午後",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "午後[ごご]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238388315",
+    "japanese": "p.m., afternoon",
+    "reading": "p.m., afternoon",
+    "meaning": "午後",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "午後[ごご]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574377",
+    "japanese": "p.m., afternoon",
+    "reading": "p.m., afternoon",
+    "meaning": "午後",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "午後[ごご]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238050571",
+    "japanese": "post office",
+    "reading": "post office",
+    "meaning": "郵便局",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "郵便[ゆうびん] 局[きょく]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574367",
+    "japanese": "post office",
+    "reading": "post office",
+    "meaning": "郵便局",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "郵便[ゆうびん] 局[きょく]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238050571",
+    "japanese": "post office",
+    "reading": "post office",
+    "meaning": "郵便局",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "郵便[ゆうびん] 局[きょく]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574367",
+    "japanese": "post office",
+    "reading": "post office",
+    "meaning": "郵便局",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "郵便[ゆうびん] 局[きょく]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240190913",
+    "japanese": "Saturday",
+    "reading": "Saturday",
+    "meaning": "土曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "土曜日[どようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574401",
+    "japanese": "Saturday",
+    "reading": "Saturday",
+    "meaning": "土曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "土曜日[どようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240190913",
+    "japanese": "Saturday",
+    "reading": "Saturday",
+    "meaning": "土曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "土曜日[どようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574401",
+    "japanese": "Saturday",
+    "reading": "Saturday",
+    "meaning": "土曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "土曜日[どようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237870027",
+    "japanese": "sleep, go to bed",
+    "reading": "sleep, go to bed",
+    "meaning": "寝ます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "寝[ね]ます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574360",
+    "japanese": "sleep, go to bed",
+    "reading": "sleep, go to bed",
+    "meaning": "寝ます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "寝[ね]ます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237870027",
+    "japanese": "sleep, go to bed",
+    "reading": "sleep, go to bed",
+    "meaning": "寝ます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "寝[ね]ます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574360",
+    "japanese": "sleep, go to bed",
+    "reading": "sleep, go to bed",
+    "meaning": "寝ます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "寝[ね]ます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240211449",
+    "japanese": "Sunday",
+    "reading": "Sunday",
+    "meaning": "日曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日曜日[にちようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574402",
+    "japanese": "Sunday",
+    "reading": "Sunday",
+    "meaning": "日曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日曜日[にちようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240211449",
+    "japanese": "Sunday",
+    "reading": "Sunday",
+    "meaning": "日曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日曜日[にちようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574402",
+    "japanese": "Sunday",
+    "reading": "Sunday",
+    "meaning": "日曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日曜日[にちようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240356721",
+    "japanese": "That's tough isn't it? (used when expressing sympathy)",
+    "reading": "That's tough isn't it? (used when expressing sympathy)",
+    "meaning": "たいへんですね。",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "たいへんですね。",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574407",
+    "japanese": "That's tough isn't it? (used when expressing sympathy)",
+    "reading": "That's tough isn't it? (used when expressing sympathy)",
+    "meaning": "たいへんですね。",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "たいへんですね。",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240356721",
+    "japanese": "That's tough isn't it? (used when expressing sympathy)",
+    "reading": "That's tough isn't it? (used when expressing sympathy)",
+    "meaning": "たいへんですね。",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "たいへんですね。",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574407",
+    "japanese": "That's tough isn't it? (used when expressing sympathy)",
+    "reading": "That's tough isn't it? (used when expressing sympathy)",
+    "meaning": "たいへんですね。",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "たいへんですね。",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238535947",
+    "japanese": "the day after tomorrow",
+    "reading": "the day after tomorrow",
+    "meaning": "あさって",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あさって",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574385",
+    "japanese": "the day after tomorrow",
+    "reading": "the day after tomorrow",
+    "meaning": "あさって",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あさって",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238535947",
+    "japanese": "the day after tomorrow",
+    "reading": "the day after tomorrow",
+    "meaning": "あさって",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あさって",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574385",
+    "japanese": "the day after tomorrow",
+    "reading": "the day after tomorrow",
+    "meaning": "あさって",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あさって",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238483060",
+    "japanese": "the day before yesterday",
+    "reading": "the day before yesterday",
+    "meaning": "おととい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "おととい",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574381",
+    "japanese": "the day before yesterday",
+    "reading": "the day before yesterday",
+    "meaning": "おととい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "おととい",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238483060",
+    "japanese": "the day before yesterday",
+    "reading": "the day before yesterday",
+    "meaning": "おととい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "おととい",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574381",
+    "japanese": "the day before yesterday",
+    "reading": "the day before yesterday",
+    "meaning": "おととい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "おととい",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238580931",
+    "japanese": "this evening, tonight",
+    "reading": "this evening, tonight",
+    "meaning": "今晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今晩[こんばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574387",
+    "japanese": "this evening, tonight",
+    "reading": "this evening, tonight",
+    "meaning": "今晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今晩[こんばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238580931",
+    "japanese": "this evening, tonight",
+    "reading": "this evening, tonight",
+    "meaning": "今晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今晩[こんばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574387",
+    "japanese": "this evening, tonight",
+    "reading": "this evening, tonight",
+    "meaning": "今晩",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "今晩[こんばん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238557690",
+    "japanese": "this morning",
+    "reading": "this morning",
+    "meaning": "けさ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "けさ",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574386",
+    "japanese": "this morning",
+    "reading": "this morning",
+    "meaning": "けさ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "けさ",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238557690",
+    "japanese": "this morning",
+    "reading": "this morning",
+    "meaning": "けさ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "けさ",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574386",
+    "japanese": "this morning",
+    "reading": "this morning",
+    "meaning": "けさ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "けさ",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240010266",
+    "japanese": "Thursday",
+    "reading": "Thursday",
+    "meaning": "木曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "木曜日[もくようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574399",
+    "japanese": "Thursday",
+    "reading": "Thursday",
+    "meaning": "木曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "木曜日[もくようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240010266",
+    "japanese": "Thursday",
+    "reading": "Thursday",
+    "meaning": "木曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "木曜日[もくようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574399",
+    "japanese": "Thursday",
+    "reading": "Thursday",
+    "meaning": "木曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "木曜日[もくようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237986411",
+    "japanese": "To finish",
+    "reading": "To finish",
+    "meaning": "終わります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "終[お]わります",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574364",
+    "japanese": "To finish",
+    "reading": "To finish",
+    "meaning": "終わります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "終[お]わります",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237986411",
+    "japanese": "To finish",
+    "reading": "To finish",
+    "meaning": "終わります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "終[お]わります",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574364",
+    "japanese": "To finish",
+    "reading": "To finish",
+    "meaning": "終わります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "終[お]わります",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237960099",
+    "japanese": "To study",
+    "reading": "To study",
+    "meaning": "べんきょうします",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "べんきょうします",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574363",
+    "japanese": "To study",
+    "reading": "To study",
+    "meaning": "べんきょうします",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "べんきょうします",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237960099",
+    "japanese": "To study",
+    "reading": "To study",
+    "meaning": "べんきょうします",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "べんきょうします",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574363",
+    "japanese": "To study",
+    "reading": "To study",
+    "meaning": "べんきょうします",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "べんきょうします",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237915859",
+    "japanese": "To take a rest, take a holiday",
+    "reading": "To take a rest, take a holiday",
+    "meaning": "休みます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "休[やす]みます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574362",
+    "japanese": "To take a rest, take a holiday",
+    "reading": "To take a rest, take a holiday",
+    "meaning": "休みます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "休[やす]みます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237915859",
+    "japanese": "To take a rest, take a holiday",
+    "reading": "To take a rest, take a holiday",
+    "meaning": "休みます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "休[やす]みます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574362",
+    "japanese": "To take a rest, take a holiday",
+    "reading": "To take a rest, take a holiday",
+    "meaning": "休みます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "休[やす]みます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237887956",
+    "japanese": "To work",
+    "reading": "To work",
+    "meaning": "働きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "働[はたら]きます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574361",
+    "japanese": "To work",
+    "reading": "To work",
+    "meaning": "働きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "働[はたら]きます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508237887956",
+    "japanese": "To work",
+    "reading": "To work",
+    "meaning": "働きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "働[はたら]きます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574361",
+    "japanese": "To work",
+    "reading": "To work",
+    "meaning": "働きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "働[はたら]きます",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238505010",
+    "japanese": "today",
+    "reading": "today",
+    "meaning": "きょう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きょう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574383",
+    "japanese": "today",
+    "reading": "today",
+    "meaning": "きょう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きょう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238505010",
+    "japanese": "today",
+    "reading": "today",
+    "meaning": "きょう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きょう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574383",
+    "japanese": "today",
+    "reading": "today",
+    "meaning": "きょう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きょう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238515539",
+    "japanese": "tomorrow",
+    "reading": "tomorrow",
+    "meaning": "あした",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あした",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574384",
+    "japanese": "tomorrow",
+    "reading": "tomorrow",
+    "meaning": "あした",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あした",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238515539",
+    "japanese": "tomorrow",
+    "reading": "tomorrow",
+    "meaning": "あした",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あした",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574384",
+    "japanese": "tomorrow",
+    "reading": "tomorrow",
+    "meaning": "あした",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "あした",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239964362",
+    "japanese": "Tuesday",
+    "reading": "Tuesday",
+    "meaning": "火曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "火曜日[かようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574397",
+    "japanese": "Tuesday",
+    "reading": "Tuesday",
+    "meaning": "火曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "火曜日[かようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239964362",
+    "japanese": "Tuesday",
+    "reading": "Tuesday",
+    "meaning": "火曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "火曜日[かようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574397",
+    "japanese": "Tuesday",
+    "reading": "Tuesday",
+    "meaning": "火曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "火曜日[かようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240272953",
+    "japanese": "up to ~, until ~",
+    "reading": "up to ~, until ~",
+    "meaning": "～まで",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "~まで",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574405",
+    "japanese": "up to ~, until ~",
+    "reading": "up to ~, until ~",
+    "meaning": "～まで",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "~まで",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240272953",
+    "japanese": "up to ~, until ~",
+    "reading": "up to ~, until ~",
+    "meaning": "～まで",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "~まで",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574405",
+    "japanese": "up to ~, until ~",
+    "reading": "up to ~, until ~",
+    "meaning": "～まで",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "~まで",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239986633",
+    "japanese": "Wednesday",
+    "reading": "Wednesday",
+    "meaning": "水曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "水曜日[すいようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574398",
+    "japanese": "Wednesday",
+    "reading": "Wednesday",
+    "meaning": "水曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "水曜日[すいようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508239986633",
+    "japanese": "Wednesday",
+    "reading": "Wednesday",
+    "meaning": "水曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "水曜日[すいようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574398",
+    "japanese": "Wednesday",
+    "reading": "Wednesday",
+    "meaning": "水曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "水曜日[すいようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372842",
+    "japanese": "well, let me see",
+    "reading": "えーと",
+    "meaning": "えーと",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372843",
+    "japanese": "well, let me see",
+    "reading": "えーと",
+    "meaning": "えーと",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372842",
+    "japanese": "well, let me see",
+    "reading": "えーと",
+    "meaning": "えーと",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372843",
+    "japanese": "well, let me see",
+    "reading": "えーと",
+    "meaning": "えーと",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "4",
+        "reading": "",
+        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240243266",
+    "japanese": "what day of the week",
+    "reading": "what day of the week",
+    "meaning": "何曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何[なん] 曜日[ようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574403",
+    "japanese": "what day of the week",
+    "reading": "what day of the week",
+    "meaning": "何曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何[なん] 曜日[ようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240243266",
+    "japanese": "what day of the week",
+    "reading": "what day of the week",
+    "meaning": "何曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何[なん] 曜日[ようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574403",
+    "japanese": "what day of the week",
+    "reading": "what day of the week",
+    "meaning": "何曜日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何[なん] 曜日[ようび]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238336443",
+    "japanese": "what minute",
+    "reading": "what minute",
+    "meaning": "何分",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何分[なんぷん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574375",
+    "japanese": "what minute",
+    "reading": "what minute",
+    "meaning": "何分",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何分[なんぷん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238336443",
+    "japanese": "what minute",
+    "reading": "what minute",
+    "meaning": "何分",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何分[なんぷん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574375",
+    "japanese": "what minute",
+    "reading": "what minute",
+    "meaning": "何分",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何分[なんぷん]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240381329",
+    "japanese": "what number",
+    "reading": "what number",
+    "meaning": "なんばん",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんばん",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574409",
+    "japanese": "what number",
+    "reading": "what number",
+    "meaning": "なんばん",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんばん",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508240381329",
+    "japanese": "what number",
+    "reading": "what number",
+    "meaning": "なんばん",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんばん",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574409",
+    "japanese": "what number",
+    "reading": "what number",
+    "meaning": "なんばん",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんばん",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238309299",
+    "japanese": "what time",
+    "reading": "what time",
+    "meaning": "何時",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何時[なんじ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574374",
+    "japanese": "what time",
+    "reading": "what time",
+    "meaning": "何時",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何時[なんじ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238309299",
+    "japanese": "what time",
+    "reading": "what time",
+    "meaning": "何時",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何時[なんじ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574374",
+    "japanese": "what time",
+    "reading": "what time",
+    "meaning": "何時",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "何時[なんじ]",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238496251",
+    "japanese": "yesterday",
+    "reading": "yesterday",
+    "meaning": "きのう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きのう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574382",
+    "japanese": "yesterday",
+    "reading": "yesterday",
+    "meaning": "きのう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きのう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1508238496251",
+    "japanese": "yesterday",
+    "reading": "yesterday",
+    "meaning": "きのう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きのう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1544776574382",
+    "japanese": "yesterday",
+    "reading": "yesterday",
+    "meaning": "きのう",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "きのう",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1550629720243",
+    "japanese": "your place",
+    "reading": "your place",
+    "meaning": "そちら",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "そちら",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1550629720250",
+    "japanese": "your place",
+    "reading": "your place",
+    "meaning": "そちら",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "そちら",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1550629720243",
+    "japanese": "your place",
+    "reading": "your place",
+    "meaning": "そちら",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "そちら",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1550629720250",
+    "japanese": "your place",
+    "reading": "your place",
+    "meaning": "そちら",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "そちら",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372844",
+    "japanese": "お 願[ねが]いします。",
+    "reading": "お 願[ねが]いします。",
+    "meaning": "お願いします。",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Please.",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372845",
+    "japanese": "お 願[ねが]いします。",
+    "reading": "お 願[ねが]いします。",
+    "meaning": "お願いします。",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Please.",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372844",
+    "japanese": "お 願[ねが]いします。",
+    "reading": "お 願[ねが]いします。",
+    "meaning": "お願いします。",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Please.",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "chapter4",
+      "n5",
+      "lesson-4"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-4-1609729372845",
+    "japanese": "お 願[ねが]いします。",
+    "reading": "お 願[ねが]いします。",
+    "meaning": "お願いします。",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Please.",
+        "reading": "",
+        "english": "4"
+      }
+    ],
+    "tags": [
+      "chapter4",
       "n5",
       "lesson-4"
     ],
@@ -2201,9 +5061,9 @@
   },
   {
     "id": "minna-1-4-1609729372846",
-    "japanese": "畏まりました。",
-    "reading": "畏まりました。",
-    "meaning": "畏[かしこ]まりました。",
+    "japanese": "畏[かしこ]まりました。",
+    "reading": "畏[かしこ]まりました。",
+    "meaning": "畏まりました。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2223,9 +5083,9 @@
   },
   {
     "id": "minna-1-4-1609729372847",
-    "japanese": "畏まりました。",
-    "reading": "畏まりました。",
-    "meaning": "畏[かしこ]まりました。",
+    "japanese": "畏[かしこ]まりました。",
+    "reading": "畏[かしこ]まりました。",
+    "meaning": "畏まりました。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2245,9 +5105,9 @@
   },
   {
     "id": "minna-1-4-1609729372846",
-    "japanese": "畏まりました。",
-    "reading": "畏まりました。",
-    "meaning": "畏[かしこ]まりました。",
+    "japanese": "畏[かしこ]まりました。",
+    "reading": "畏[かしこ]まりました。",
+    "meaning": "畏まりました。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2267,9 +5127,9 @@
   },
   {
     "id": "minna-1-4-1609729372847",
-    "japanese": "畏まりました。",
-    "reading": "畏まりました。",
-    "meaning": "畏[かしこ]まりました。",
+    "japanese": "畏[かしこ]まりました。",
+    "reading": "畏[かしこ]まりました。",
+    "meaning": "畏まりました。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2288,556 +5148,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508239861178",
-    "japanese": "映画",
-    "reading": "映画",
-    "meaning": "film, movie",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "映画[えいが]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574392",
-    "japanese": "映画",
-    "reading": "映画",
-    "meaning": "film, movie",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "映画[えいが]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239861178",
-    "japanese": "映画",
-    "reading": "映画",
-    "meaning": "film, movie",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "映画[えいが]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574392",
-    "japanese": "映画",
-    "reading": "映画",
-    "meaning": "film, movie",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "映画[えいが]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238309299",
-    "japanese": "何時",
-    "reading": "何時",
-    "meaning": "what time",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何時[なんじ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574374",
-    "japanese": "何時",
-    "reading": "何時",
-    "meaning": "what time",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何時[なんじ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238309299",
-    "japanese": "何時",
-    "reading": "何時",
-    "meaning": "what time",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何時[なんじ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574374",
-    "japanese": "何時",
-    "reading": "何時",
-    "meaning": "what time",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何時[なんじ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238336443",
-    "japanese": "何分",
-    "reading": "何分",
-    "meaning": "what minute",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何分[なんぷん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574375",
-    "japanese": "何分",
-    "reading": "何分",
-    "meaning": "what minute",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何分[なんぷん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238336443",
-    "japanese": "何分",
-    "reading": "何分",
-    "meaning": "what minute",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何分[なんぷん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574375",
-    "japanese": "何分",
-    "reading": "何分",
-    "meaning": "what minute",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何分[なんぷん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240243266",
-    "japanese": "何曜日",
-    "reading": "何曜日",
-    "meaning": "what day of the week",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何[なん] 曜日[ようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574403",
-    "japanese": "何曜日",
-    "reading": "何曜日",
-    "meaning": "what day of the week",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何[なん] 曜日[ようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240243266",
-    "japanese": "何曜日",
-    "reading": "何曜日",
-    "meaning": "what day of the week",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何[なん] 曜日[ようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574403",
-    "japanese": "何曜日",
-    "reading": "何曜日",
-    "meaning": "what day of the week",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "何[なん] 曜日[ようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239964362",
-    "japanese": "火曜日",
-    "reading": "火曜日",
-    "meaning": "Tuesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "火曜日[かようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574397",
-    "japanese": "火曜日",
-    "reading": "火曜日",
-    "meaning": "Tuesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "火曜日[かようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239964362",
-    "japanese": "火曜日",
-    "reading": "火曜日",
-    "meaning": "Tuesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "火曜日[かようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574397",
-    "japanese": "火曜日",
-    "reading": "火曜日",
-    "meaning": "Tuesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "火曜日[かようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239839802",
-    "japanese": "会議",
-    "reading": "会議",
-    "meaning": "meeting, conference (～を　します：hold a meeting)",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574391",
-    "japanese": "会議",
-    "reading": "会議",
-    "meaning": "meeting, conference (～を　します：hold a meeting)",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239839802",
-    "japanese": "会議",
-    "reading": "会議",
-    "meaning": "meeting, conference (～を　します：hold a meeting)",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574391",
-    "japanese": "会議",
-    "reading": "会議",
-    "meaning": "meeting, conference (～を　します：hold a meeting)",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508237852284",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "get up, wake up",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "起[お]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574359",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "get up, wake up",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "起[お]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372308",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "起[お]きます",
+    "japanese": "起[お]きます",
+    "reading": "起[お]きます",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -2852,9 +5166,9 @@
   },
   {
     "id": "minna-1-4-1609729372309",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "起[お]きます",
+    "japanese": "起[お]きます",
+    "reading": "起[お]きます",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -2868,52 +5182,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508237852284",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "get up, wake up",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "起[お]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574359",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "get up, wake up",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "起[お]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372308",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "起[お]きます",
+    "japanese": "起[お]きます",
+    "reading": "起[お]きます",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -2928,225 +5200,15 @@
   },
   {
     "id": "minna-1-4-1609729372309",
-    "japanese": "起きます",
-    "reading": "起きます",
-    "meaning": "起[お]きます",
+    "japanese": "起[お]きます",
+    "reading": "起[お]きます",
+    "meaning": "起きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
     "tags": [
       "chapter4",
       "verb",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508237915859",
-    "japanese": "休みます",
-    "reading": "休みます",
-    "meaning": "To take a rest, take a holiday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "休[やす]みます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574362",
-    "japanese": "休みます",
-    "reading": "休みます",
-    "meaning": "To take a rest, take a holiday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "休[やす]みます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508237915859",
-    "japanese": "休みます",
-    "reading": "休みます",
-    "meaning": "To take a rest, take a holiday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "休[やす]みます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574362",
-    "japanese": "休みます",
-    "reading": "休みます",
-    "meaning": "To take a rest, take a holiday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "休[やす]みます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240064610",
-    "japanese": "金曜日",
-    "reading": "金曜日",
-    "meaning": "Friday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "金曜日[きんようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574400",
-    "japanese": "金曜日",
-    "reading": "金曜日",
-    "meaning": "Friday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "金曜日[きんようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240064610",
-    "japanese": "金曜日",
-    "reading": "金曜日",
-    "meaning": "Friday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "金曜日[きんようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574400",
-    "japanese": "金曜日",
-    "reading": "金曜日",
-    "meaning": "Friday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "金曜日[きんようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238022283",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "bank",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "銀行[ぎんこう]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574366",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "bank",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "銀行[ぎんこう]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
       "n5",
       "lesson-4"
     ],
@@ -3155,9 +5217,9 @@
   },
   {
     "id": "minna-1-4-1609729373098",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "銀行[ぎんこう]",
+    "japanese": "銀行[ぎんこう]",
+    "reading": "銀行[ぎんこう]",
+    "meaning": "銀行",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3178,9 +5240,9 @@
   },
   {
     "id": "minna-1-4-1609729373099",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "銀行[ぎんこう]",
+    "japanese": "銀行[ぎんこう]",
+    "reading": "銀行[ぎんこう]",
+    "meaning": "銀行",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3200,52 +5262,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238022283",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "bank",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "銀行[ぎんこう]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574366",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "bank",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "銀行[ぎんこう]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373098",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "銀行[ぎんこう]",
+    "japanese": "銀行[ぎんこう]",
+    "reading": "銀行[ぎんこう]",
+    "meaning": "銀行",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3266,9 +5286,9 @@
   },
   {
     "id": "minna-1-4-1609729373099",
-    "japanese": "銀行",
-    "reading": "銀行",
-    "meaning": "銀行[ぎんこう]",
+    "japanese": "銀行[ぎんこう]",
+    "reading": "銀行[ぎんこう]",
+    "meaning": "銀行",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3288,644 +5308,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508239946193",
-    "japanese": "月曜日",
-    "reading": "月曜日",
-    "meaning": "Monday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "月曜日[げつようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574396",
-    "japanese": "月曜日",
-    "reading": "月曜日",
-    "meaning": "Monday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "月曜日[げつようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239946193",
-    "japanese": "月曜日",
-    "reading": "月曜日",
-    "meaning": "Monday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "月曜日[げつようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574396",
-    "japanese": "月曜日",
-    "reading": "月曜日",
-    "meaning": "Monday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "月曜日[げつようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238388315",
-    "japanese": "午後",
-    "reading": "午後",
-    "meaning": "p.m., afternoon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午後[ごご]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574377",
-    "japanese": "午後",
-    "reading": "午後",
-    "meaning": "p.m., afternoon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午後[ごご]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238388315",
-    "japanese": "午後",
-    "reading": "午後",
-    "meaning": "p.m., afternoon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午後[ごご]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574377",
-    "japanese": "午後",
-    "reading": "午後",
-    "meaning": "p.m., afternoon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午後[ごご]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238363355",
-    "japanese": "午前",
-    "reading": "午前",
-    "meaning": "a.m., morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午前[ごぜん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574376",
-    "japanese": "午前",
-    "reading": "午前",
-    "meaning": "a.m., morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午前[ごぜん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238363355",
-    "japanese": "午前",
-    "reading": "午前",
-    "meaning": "a.m., morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午前[ごぜん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574376",
-    "japanese": "午前",
-    "reading": "午前",
-    "meaning": "a.m., morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "午前[ごぜん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238139235",
-    "japanese": "今",
-    "reading": "今",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今[いま]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574370",
-    "japanese": "今",
-    "reading": "今",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今[いま]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238139235",
-    "japanese": "今",
-    "reading": "今",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今[いま]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574370",
-    "japanese": "今",
-    "reading": "今",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今[いま]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729373822",
-    "japanese": "今[いま]",
-    "reading": "今[いま]",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "ニューヨークは今何時ですか。"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729373823",
-    "japanese": "今[いま]",
-    "reading": "今[いま]",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "ニューヨークは今何時ですか。"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729373822",
-    "japanese": "今[いま]",
-    "reading": "今[いま]",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "ニューヨークは今何時ですか。"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729373823",
-    "japanese": "今[いま]",
-    "reading": "今[いま]",
-    "meaning": "now",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "ニューヨークは今何時ですか。"
-      }
-    ],
-    "tags": [
-      "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238580931",
-    "japanese": "今晩",
-    "reading": "今晩",
-    "meaning": "this evening, tonight",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今晩[こんばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574387",
-    "japanese": "今晩",
-    "reading": "今晩",
-    "meaning": "this evening, tonight",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今晩[こんばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238580931",
-    "japanese": "今晩",
-    "reading": "今晩",
-    "meaning": "this evening, tonight",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今晩[こんばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574387",
-    "japanese": "今晩",
-    "reading": "今晩",
-    "meaning": "this evening, tonight",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "今晩[こんばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239779922",
-    "japanese": "試験",
-    "reading": "試験",
-    "meaning": "examination, test",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "試験[しけん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574390",
-    "japanese": "試験",
-    "reading": "試験",
-    "meaning": "examination, test",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "試験[しけん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239779922",
-    "japanese": "試験",
-    "reading": "試験",
-    "meaning": "examination, test",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "試験[しけん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574390",
-    "japanese": "試験",
-    "reading": "試験",
-    "meaning": "examination, test",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "試験[しけん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508237986411",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "To finish",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "終[お]わります",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574364",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "To finish",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "終[お]わります",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372318",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "終[お]わります",
+    "japanese": "終[お]わります",
+    "reading": "終[お]わります",
+    "meaning": "終わります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3940,9 +5326,9 @@
   },
   {
     "id": "minna-1-4-1609729372319",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "終[お]わります",
+    "japanese": "終[お]わります",
+    "reading": "終[お]わります",
+    "meaning": "終わります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3956,52 +5342,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508237986411",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "To finish",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "終[お]わります",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574364",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "To finish",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "終[お]わります",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372318",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "終[お]わります",
+    "japanese": "終[お]わります",
+    "reading": "終[お]わります",
+    "meaning": "終わります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4016,9 +5360,9 @@
   },
   {
     "id": "minna-1-4-1609729372319",
-    "japanese": "終わります",
-    "reading": "終わります",
-    "meaning": "終[お]わります",
+    "japanese": "終[お]わります",
+    "reading": "終[お]わります",
+    "meaning": "終わります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4032,52 +5376,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508237870027",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "sleep, go to bed",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "寝[ね]ます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574360",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "sleep, go to bed",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "寝[ね]ます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372310",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "寝[ね]ます",
+    "japanese": "寝[ね]ます",
+    "reading": "寝[ね]ます",
+    "meaning": "寝ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4092,9 +5394,9 @@
   },
   {
     "id": "minna-1-4-1609729372311",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "寝[ね]ます",
+    "japanese": "寝[ね]ます",
+    "reading": "寝[ね]ます",
+    "meaning": "寝ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4108,52 +5410,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508237870027",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "sleep, go to bed",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "寝[ね]ます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574360",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "sleep, go to bed",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "寝[ね]ます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372310",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "寝[ね]ます",
+    "japanese": "寝[ね]ます",
+    "reading": "寝[ね]ます",
+    "meaning": "寝ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4168,9 +5428,9 @@
   },
   {
     "id": "minna-1-4-1609729372311",
-    "japanese": "寝ます",
-    "reading": "寝ます",
-    "meaning": "寝[ね]ます",
+    "japanese": "寝[ね]ます",
+    "reading": "寝[ね]ます",
+    "meaning": "寝ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4178,48 +5438,6 @@
       "chapter4",
       "verb",
       "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238078259",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "library",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "図書館[としょかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574368",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "library",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "図書館[としょかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
       "lesson-4"
     ],
     "lesson": 4,
@@ -4227,9 +5445,9 @@
   },
   {
     "id": "minna-1-4-1609729373102",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "図書館[としょかん]",
+    "japanese": "図書館[としょかん]",
+    "reading": "図書館[としょかん]",
+    "meaning": "図書館",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -4250,9 +5468,9 @@
   },
   {
     "id": "minna-1-4-1609729373103",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "図書館[としょかん]",
+    "japanese": "図書館[としょかん]",
+    "reading": "図書館[としょかん]",
+    "meaning": "図書館",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -4272,52 +5490,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238078259",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "library",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "図書館[としょかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574368",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "library",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "図書館[としょかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373102",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "図書館[としょかん]",
+    "japanese": "図書館[としょかん]",
+    "reading": "図書館[としょかん]",
+    "meaning": "図書館",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -4338,9 +5514,9 @@
   },
   {
     "id": "minna-1-4-1609729373103",
-    "japanese": "図書館",
-    "reading": "図書館",
-    "meaning": "図書館[としょかん]",
+    "japanese": "図書館[としょかん]",
+    "reading": "図書館[としょかん]",
+    "meaning": "図書館",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -4360,94 +5536,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508239986633",
-    "japanese": "水曜日",
-    "reading": "水曜日",
-    "meaning": "Wednesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "水曜日[すいようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574398",
-    "japanese": "水曜日",
-    "reading": "水曜日",
-    "meaning": "Wednesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "水曜日[すいようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239986633",
-    "japanese": "水曜日",
-    "reading": "水曜日",
-    "meaning": "Wednesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "水曜日[すいようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574398",
-    "japanese": "水曜日",
-    "reading": "水曜日",
-    "meaning": "Wednesday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "水曜日[すいようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372840",
-    "japanese": "大変ですね。",
-    "reading": "大変ですね。",
-    "meaning": "大変[たいへん]ですね。",
+    "japanese": "大変[たいへん]ですね。",
+    "reading": "大変[たいへん]ですね。",
+    "meaning": "大変ですね。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4467,9 +5559,9 @@
   },
   {
     "id": "minna-1-4-1609729372841",
-    "japanese": "大変ですね。",
-    "reading": "大変ですね。",
-    "meaning": "大変[たいへん]ですね。",
+    "japanese": "大変[たいへん]ですね。",
+    "reading": "大変[たいへん]ですね。",
+    "meaning": "大変ですね。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4489,9 +5581,9 @@
   },
   {
     "id": "minna-1-4-1609729372840",
-    "japanese": "大変ですね。",
-    "reading": "大変ですね。",
-    "meaning": "大変[たいへん]ですね。",
+    "japanese": "大変[たいへん]ですね。",
+    "reading": "大変[たいへん]ですね。",
+    "meaning": "大変ですね。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4511,9 +5603,9 @@
   },
   {
     "id": "minna-1-4-1609729372841",
-    "japanese": "大変ですね。",
-    "reading": "大変ですね。",
-    "meaning": "大変[たいへん]ですね。",
+    "japanese": "大変[たいへん]ですね。",
+    "reading": "大変[たいへん]ですね。",
+    "meaning": "大変ですね。",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4525,48 +5617,6 @@
     ],
     "tags": [
       "chapter4",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238429435",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "daytime, noon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼[ひる]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574379",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "daytime, noon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼[ひる]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
       "n5",
       "lesson-4"
     ],
@@ -4575,9 +5625,9 @@
   },
   {
     "id": "minna-1-4-1609729373108",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "昼[ひる]",
+    "japanese": "昼[ひる]",
+    "reading": "昼[ひる]",
+    "meaning": "昼",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4598,9 +5648,9 @@
   },
   {
     "id": "minna-1-4-1609729373109",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "昼[ひる]",
+    "japanese": "昼[ひる]",
+    "reading": "昼[ひる]",
+    "meaning": "昼",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4620,52 +5670,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238429435",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "daytime, noon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼[ひる]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574379",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "daytime, noon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼[ひる]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373108",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "昼[ひる]",
+    "japanese": "昼[ひる]",
+    "reading": "昼[ひる]",
+    "meaning": "昼",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4686,9 +5694,9 @@
   },
   {
     "id": "minna-1-4-1609729373109",
-    "japanese": "昼",
-    "reading": "昼",
-    "meaning": "昼[ひる]",
+    "japanese": "昼[ひる]",
+    "reading": "昼[ひる]",
+    "meaning": "昼",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4708,136 +5716,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508239741210",
-    "japanese": "昼休み",
-    "reading": "昼休み",
-    "meaning": "lunchtime (lit. noon/afternoon break)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼休[ひるやす]み",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574389",
-    "japanese": "昼休み",
-    "reading": "昼休み",
-    "meaning": "lunchtime (lit. noon/afternoon break)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼休[ひるやす]み",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239741210",
-    "japanese": "昼休み",
-    "reading": "昼休み",
-    "meaning": "lunchtime (lit. noon/afternoon break)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼休[ひるやす]み",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574389",
-    "japanese": "昼休み",
-    "reading": "昼休み",
-    "meaning": "lunchtime (lit. noon/afternoon break)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "昼休[ひるやす]み",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238410491",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "朝[あさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574378",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "朝[あさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373106",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "朝[あさ]",
+    "japanese": "朝[あさ]",
+    "reading": "朝[あさ]",
+    "meaning": "朝",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4858,9 +5740,9 @@
   },
   {
     "id": "minna-1-4-1609729373107",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "朝[あさ]",
+    "japanese": "朝[あさ]",
+    "reading": "朝[あさ]",
+    "meaning": "朝",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4880,52 +5762,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238410491",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "朝[あさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574378",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "朝[あさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373106",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "朝[あさ]",
+    "japanese": "朝[あさ]",
+    "reading": "朝[あさ]",
+    "meaning": "朝",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4946,9 +5786,9 @@
   },
   {
     "id": "minna-1-4-1609729373107",
-    "japanese": "朝",
-    "reading": "朝",
-    "meaning": "朝[あさ]",
+    "japanese": "朝[あさ]",
+    "reading": "朝[あさ]",
+    "meaning": "朝",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -4968,136 +5808,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508240190913",
-    "japanese": "土曜日",
-    "reading": "土曜日",
-    "meaning": "Saturday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "土曜日[どようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574401",
-    "japanese": "土曜日",
-    "reading": "土曜日",
-    "meaning": "Saturday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "土曜日[どようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240190913",
-    "japanese": "土曜日",
-    "reading": "土曜日",
-    "meaning": "Saturday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "土曜日[どようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574401",
-    "japanese": "土曜日",
-    "reading": "土曜日",
-    "meaning": "Saturday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "土曜日[どようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508237887956",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "To work",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "働[はたら]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574361",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "To work",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "働[はたら]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372312",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "働[はたら]きます",
+    "japanese": "働[はたら]きます",
+    "reading": "働[はたら]きます",
+    "meaning": "働きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -5112,9 +5826,9 @@
   },
   {
     "id": "minna-1-4-1609729372313",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "働[はたら]きます",
+    "japanese": "働[はたら]きます",
+    "reading": "働[はたら]きます",
+    "meaning": "働きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -5128,52 +5842,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508237887956",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "To work",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "働[はたら]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574361",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "To work",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "働[はたら]きます",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729372312",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "働[はたら]きます",
+    "japanese": "働[はたら]きます",
+    "reading": "働[はたら]きます",
+    "meaning": "働きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -5188,183 +5860,15 @@
   },
   {
     "id": "minna-1-4-1609729372313",
-    "japanese": "働きます",
-    "reading": "働きます",
-    "meaning": "働[はたら]きます",
+    "japanese": "働[はたら]きます",
+    "reading": "働[はたら]きます",
+    "meaning": "働きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
     "tags": [
       "chapter4",
       "verb",
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240211449",
-    "japanese": "日曜日",
-    "reading": "日曜日",
-    "meaning": "Sunday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日曜日[にちようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574402",
-    "japanese": "日曜日",
-    "reading": "日曜日",
-    "meaning": "Sunday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日曜日[にちようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240211449",
-    "japanese": "日曜日",
-    "reading": "日曜日",
-    "meaning": "Sunday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日曜日[にちようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574402",
-    "japanese": "日曜日",
-    "reading": "日曜日",
-    "meaning": "Sunday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日曜日[にちようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238276442",
-    "japanese": "半",
-    "reading": "半",
-    "meaning": "half",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "半[はん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574373",
-    "japanese": "半",
-    "reading": "半",
-    "meaning": "half",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "半[はん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238276442",
-    "japanese": "半",
-    "reading": "半",
-    "meaning": "half",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "半[はん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574373",
-    "japanese": "半",
-    "reading": "半",
-    "meaning": "half",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "半[はん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
       "n5",
       "lesson-4"
     ],
@@ -5373,9 +5877,9 @@
   },
   {
     "id": "minna-1-4-1609729373110",
-    "japanese": "晩(夜)",
-    "reading": "晩(夜)",
-    "meaning": "晩[ばん]( 夜[よる])",
+    "japanese": "晩[ばん]( 夜[よる])",
+    "reading": "晩[ばん]( 夜[よる])",
+    "meaning": "晩(夜)",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5396,9 +5900,9 @@
   },
   {
     "id": "minna-1-4-1609729373111",
-    "japanese": "晩(夜)",
-    "reading": "晩(夜)",
-    "meaning": "晩[ばん]( 夜[よる])",
+    "japanese": "晩[ばん]( 夜[よる])",
+    "reading": "晩[ばん]( 夜[よる])",
+    "meaning": "晩(夜)",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5419,9 +5923,9 @@
   },
   {
     "id": "minna-1-4-1609729373110",
-    "japanese": "晩(夜)",
-    "reading": "晩(夜)",
-    "meaning": "晩[ばん]( 夜[よる])",
+    "japanese": "晩[ばん]( 夜[よる])",
+    "reading": "晩[ばん]( 夜[よる])",
+    "meaning": "晩(夜)",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5442,9 +5946,9 @@
   },
   {
     "id": "minna-1-4-1609729373111",
-    "japanese": "晩(夜)",
-    "reading": "晩(夜)",
-    "meaning": "晩[ばん]( 夜[よる])",
+    "japanese": "晩[ばん]( 夜[よる])",
+    "reading": "晩[ばん]( 夜[よる])",
+    "meaning": "晩(夜)",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5464,52 +5968,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238117554",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "art museum, art gallery",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "美術館[びじゅつかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574369",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "art museum, art gallery",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "美術館[びじゅつかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373104",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "美術館[びじゅつかん]",
+    "japanese": "美術館[びじゅつかん]",
+    "reading": "美術館[びじゅつかん]",
+    "meaning": "美術館",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5530,9 +5992,9 @@
   },
   {
     "id": "minna-1-4-1609729373105",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "美術館[びじゅつかん]",
+    "japanese": "美術館[びじゅつかん]",
+    "reading": "美術館[びじゅつかん]",
+    "meaning": "美術館",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5552,52 +6014,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238117554",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "art museum, art gallery",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "美術館[びじゅつかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574369",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "art museum, art gallery",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "美術館[びじゅつかん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373104",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "美術館[びじゅつかん]",
+    "japanese": "美術館[びじゅつかん]",
+    "reading": "美術館[びじゅつかん]",
+    "meaning": "美術館",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5618,9 +6038,9 @@
   },
   {
     "id": "minna-1-4-1609729373105",
-    "japanese": "美術館",
-    "reading": "美術館",
-    "meaning": "美術館[びじゅつかん]",
+    "japanese": "美術館[びじゅつかん]",
+    "reading": "美術館[びじゅつかん]",
+    "meaning": "美術館",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -5641,9 +6061,9 @@
   },
   {
     "id": "minna-1-4-1609729372316",
-    "japanese": "勉強します",
-    "reading": "勉強します",
-    "meaning": "勉強[べんきょう]します",
+    "japanese": "勉強[べんきょう]します",
+    "reading": "勉強[べんきょう]します",
+    "meaning": "勉強します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -5658,9 +6078,9 @@
   },
   {
     "id": "minna-1-4-1609729372317",
-    "japanese": "勉強します",
-    "reading": "勉強します",
-    "meaning": "勉強[べんきょう]します",
+    "japanese": "勉強[べんきょう]します",
+    "reading": "勉強[べんきょう]します",
+    "meaning": "勉強します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -5675,9 +6095,9 @@
   },
   {
     "id": "minna-1-4-1609729372316",
-    "japanese": "勉強します",
-    "reading": "勉強します",
-    "meaning": "勉強[べんきょう]します",
+    "japanese": "勉強[べんきょう]します",
+    "reading": "勉強[べんきょう]します",
+    "meaning": "勉強します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -5692,9 +6112,9 @@
   },
   {
     "id": "minna-1-4-1609729372317",
-    "japanese": "勉強します",
-    "reading": "勉強します",
-    "meaning": "勉強[べんきょう]します",
+    "japanese": "勉強[べんきょう]します",
+    "reading": "勉強[べんきょう]します",
+    "meaning": "勉強します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -5708,388 +6128,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508239880882",
-    "japanese": "毎朝",
-    "reading": "毎朝",
-    "meaning": "every morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎朝[まいあさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574393",
-    "japanese": "毎朝",
-    "reading": "毎朝",
-    "meaning": "every morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎朝[まいあさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239880882",
-    "japanese": "毎朝",
-    "reading": "毎朝",
-    "meaning": "every morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎朝[まいあさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574393",
-    "japanese": "毎朝",
-    "reading": "毎朝",
-    "meaning": "every morning",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎朝[まいあさ]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239920970",
-    "japanese": "毎日",
-    "reading": "毎日",
-    "meaning": "every day",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎日[まいにち]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574395",
-    "japanese": "毎日",
-    "reading": "毎日",
-    "meaning": "every day",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎日[まいにち]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239920970",
-    "japanese": "毎日",
-    "reading": "毎日",
-    "meaning": "every day",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎日[まいにち]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574395",
-    "japanese": "毎日",
-    "reading": "毎日",
-    "meaning": "every day",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎日[まいにち]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239903713",
-    "japanese": "毎晩",
-    "reading": "毎晩",
-    "meaning": "every night",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎晩[まいばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574394",
-    "japanese": "毎晩",
-    "reading": "毎晩",
-    "meaning": "every night",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎晩[まいばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508239903713",
-    "japanese": "毎晩",
-    "reading": "毎晩",
-    "meaning": "every night",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎晩[まいばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574394",
-    "japanese": "毎晩",
-    "reading": "毎晩",
-    "meaning": "every night",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "毎晩[まいばん]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240010266",
-    "japanese": "木曜日",
-    "reading": "木曜日",
-    "meaning": "Thursday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "木曜日[もくようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574399",
-    "japanese": "木曜日",
-    "reading": "木曜日",
-    "meaning": "Thursday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "木曜日[もくようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508240010266",
-    "japanese": "木曜日",
-    "reading": "木曜日",
-    "meaning": "Thursday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "木曜日[もくようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574399",
-    "japanese": "木曜日",
-    "reading": "木曜日",
-    "meaning": "Thursday",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "木曜日[もくようび]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1508238050571",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "post office",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "郵便[ゆうびん] 局[きょく]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574367",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "post office",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "郵便[ゆうびん] 局[きょく]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373100",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "郵便[ゆうびん] 局[きょく]",
+    "japanese": "郵便[ゆうびん] 局[きょく]",
+    "reading": "郵便[ゆうびん] 局[きょく]",
+    "meaning": "郵便局",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -6110,9 +6152,9 @@
   },
   {
     "id": "minna-1-4-1609729373101",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "郵便[ゆうびん] 局[きょく]",
+    "japanese": "郵便[ゆうびん] 局[きょく]",
+    "reading": "郵便[ゆうびん] 局[きょく]",
+    "meaning": "郵便局",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -6132,52 +6174,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-4-1508238050571",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "post office",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "郵便[ゆうびん] 局[きょく]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1544776574367",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "post office",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "郵便[ゆうびん] 局[きょく]",
-        "reading": "",
-        "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-4-1609729373100",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "郵便[ゆうびん] 局[きょく]",
+    "japanese": "郵便[ゆうびん] 局[きょく]",
+    "reading": "郵便[ゆうびん] 局[きょく]",
+    "meaning": "郵便局",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -6198,9 +6198,9 @@
   },
   {
     "id": "minna-1-4-1609729373101",
-    "japanese": "郵便局",
-    "reading": "郵便局",
-    "meaning": "郵便[ゆうびん] 局[きょく]",
+    "japanese": "郵便[ゆうびん] 局[きょく]",
+    "reading": "郵便[ゆうびん] 局[きょく]",
+    "meaning": "郵便局",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [

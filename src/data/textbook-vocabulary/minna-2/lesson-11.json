@@ -1,9 +1,9 @@
 [
   {
     "id": "minna-2-11-1549948567257",
-    "japanese": "ー世紀",
-    "reading": "ー世紀",
-    "meaning": "-th century",
+    "japanese": "-th century",
+    "reading": "-th century",
+    "meaning": "ー世紀",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -22,9 +22,9 @@
   },
   {
     "id": "minna-2-11-1549948567258",
-    "japanese": "ー世紀",
-    "reading": "ー世紀",
-    "meaning": "-th century",
+    "japanese": "-th century",
+    "reading": "-th century",
+    "meaning": "ー世紀",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -42,766 +42,10 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-11-1549946946843",
-    "japanese": "あいます［事故に〜］",
-    "reading": "あいます［事故に〜］",
-    "meaning": "to encounter [an accident]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "あいます［ 事故[じこ]に〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549946946844",
-    "japanese": "あいます［事故に〜］",
-    "reading": "あいます［事故に〜］",
-    "meaning": "to encounter [an accident]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "あいます［ 事故[じこ]に〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948045128",
-    "japanese": "お客様",
-    "reading": "お客様",
-    "meaning": "visitor, guest, customer, client (respectful equivalent of おきゃくさん)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "お 客様[きゃくさま]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948045129",
-    "japanese": "お客様",
-    "reading": "お客様",
-    "meaning": "visitor, guest, customer, client (respectful equivalent of おきゃくさん)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "お 客様[きゃくさま]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947667666",
-    "japanese": "かなり",
-    "reading": "かなり",
-    "meaning": "fairly",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "かなり",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947667667",
-    "japanese": "かなり",
-    "reading": "かなり",
-    "meaning": "fairly",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "かなり",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947646862",
-    "japanese": "このごろ",
-    "reading": "このごろ",
-    "meaning": "these days",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "このごろ",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947646863",
-    "japanese": "このごろ",
-    "reading": "このごろ",
-    "meaning": "these days",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "このごろ",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948199632",
-    "japanese": "して　いらっしゃいます",
-    "reading": "して　いらっしゃいます",
-    "meaning": "to be doing (respectful equivalent of して　います）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "して　いらっしゃいます",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948199633",
-    "japanese": "して　いらっしゃいます",
-    "reading": "して　いらっしゃいます",
-    "meaning": "to be doing (respectful equivalent of して　います）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "して　いらっしゃいます",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948398754",
-    "japanese": "チャレンジします",
-    "reading": "チャレンジします",
-    "meaning": "to challenge",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "チャレンジします",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948398755",
-    "japanese": "チャレンジします",
-    "reading": "チャレンジします",
-    "meaning": "to challenge",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "チャレンジします",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947907515",
-    "japanese": "できるだけ",
-    "reading": "できるだけ",
-    "meaning": "as much as possible",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "できるだけ",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947907516",
-    "japanese": "できるだけ",
-    "reading": "できるだけ",
-    "meaning": "as much as possible",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "できるだけ",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947975175",
-    "japanese": "ほとんど",
-    "reading": "ほとんど",
-    "meaning": "almost all (in affirmative sentences), hardly, scarcely (in negative sentences)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ほとんど",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947975176",
-    "japanese": "ほとんど",
-    "reading": "ほとんど",
-    "meaning": "almost all (in affirmative sentences), hardly, scarcely (in negative sentences)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ほとんど",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947658330",
-    "japanese": "やっと",
-    "reading": "やっと",
-    "meaning": "finally",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "やっと",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947658331",
-    "japanese": "やっと",
-    "reading": "やっと",
-    "meaning": "finally",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "やっと",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947331819",
-    "japanese": "ラッシュ",
-    "reading": "ラッシュ",
-    "meaning": "rush hour",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ラッシュ",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947331820",
-    "japanese": "ラッシュ",
-    "reading": "ラッシュ",
-    "meaning": "rush hour",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ラッシュ",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947467582",
-    "japanese": "宇宙",
-    "reading": "宇宙",
-    "meaning": "space, universe",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "宇宙[うちゅう]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947467583",
-    "japanese": "宇宙",
-    "reading": "宇宙",
-    "meaning": "space, universe",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "宇宙[うちゅう]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948804952",
-    "japanese": "運びます",
-    "reading": "運びます",
-    "meaning": "to carry, transport",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "運[はこ]びます",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948804953",
-    "japanese": "運びます",
-    "reading": "運びます",
-    "meaning": "to carry, transport",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "運[はこ]びます",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948612784",
-    "japanese": "遠く",
-    "reading": "遠く",
-    "meaning": "far, remote place",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "遠[とお]く",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948612785",
-    "japanese": "遠く",
-    "reading": "遠く",
-    "meaning": "far, remote place",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "遠[とお]く",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947071984",
-    "japanese": "過ぎます［７時を〜］",
-    "reading": "過ぎます［７時を〜］",
-    "meaning": "to pass [7 o'clock]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "過[す]ぎます［７ 時[じ]を〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947071985",
-    "japanese": "過ぎます［７時を〜］",
-    "reading": "過ぎます［７時を〜］",
-    "meaning": "to pass [7 o'clock]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "過[す]ぎます［７ 時[じ]を〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947146861",
-    "japanese": "慣れます［仕事に〜］",
-    "reading": "慣れます［仕事に〜］",
-    "meaning": "to get accustomed to [one's job]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "慣[な]れます［ 仕事[しごと]に〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947146862",
-    "japanese": "慣れます［仕事に〜］",
-    "reading": "慣れます［仕事に〜］",
-    "meaning": "to get accustomed to [one's job]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "慣[な]れます［ 仕事[しごと]に〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948425903",
-    "japanese": "気持ち",
-    "reading": "気持ち",
-    "meaning": "spirit, mood",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "気持[きも]ち",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948425904",
-    "japanese": "気持ち",
-    "reading": "気持ち",
-    "meaning": "spirit, mood",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "気持[きも]ち",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948697687",
-    "japanese": "汽車",
-    "reading": "汽車",
-    "meaning": "locomotive",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "汽車[きしゃ]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948697688",
-    "japanese": "汽車",
-    "reading": "汽車",
-    "meaning": "locomotive",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "汽車[きしゃ]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948735425",
-    "japanese": "汽船",
-    "reading": "汽船",
-    "meaning": "steam boat",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "汽船[きせん]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948735426",
-    "japanese": "汽船",
-    "reading": "汽船",
-    "meaning": "steam boat",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "汽船[きせん]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-11-1549947528266",
-    "japanese": "曲",
-    "reading": "曲",
-    "meaning": "a piece of music",
+    "japanese": "a piece of music",
+    "reading": "a piece of music",
+    "meaning": "曲",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -820,9 +64,9 @@
   },
   {
     "id": "minna-2-11-1549947528267",
-    "japanese": "曲",
-    "reading": "曲",
-    "meaning": "a piece of music",
+    "japanese": "a piece of music",
+    "reading": "a piece of music",
+    "meaning": "曲",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -840,304 +84,10 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-11-1549947261304",
-    "japanese": "剣道",
-    "reading": "剣道",
-    "meaning": "kendo (Japanese style fencing)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "剣道[けんどう]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947261305",
-    "japanese": "剣道",
-    "reading": "剣道",
-    "meaning": "kendo (Japanese style fencing)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "剣道[けんどう]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948377493",
-    "japanese": "使って　いらっしゃるんですね。",
-    "reading": "使って　いらっしゃるんですね。",
-    "meaning": "You're using, aren't you? (respectful equivalent of つかって　いるんですね）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "使[つか]って　いらっしゃるんですね。",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948377494",
-    "japanese": "使って　いらっしゃるんですね。",
-    "reading": "使って　いらっしゃるんですね。",
-    "meaning": "You're using, aren't you? (respectful equivalent of つかって　いるんですね）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "使[つか]って　いらっしゃるんですね。",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948870690",
-    "japanese": "自由に",
-    "reading": "自由に",
-    "meaning": "freely",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "自由[じゆう]に",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948870691",
-    "japanese": "自由に",
-    "reading": "自由に",
-    "meaning": "freely",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "自由[じゆう]に",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947290527",
-    "japanese": "柔道",
-    "reading": "柔道",
-    "meaning": "judo",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "柔道[じゅうどう]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947290528",
-    "japanese": "柔道",
-    "reading": "柔道",
-    "meaning": "judo",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "柔道[じゅうどう]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947821971",
-    "japanese": "上手に",
-    "reading": "上手に",
-    "meaning": "well, skillfully",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "上手[じょうず]に",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947821972",
-    "japanese": "上手に",
-    "reading": "上手に",
-    "meaning": "well, skillfully",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "上手[じょうず]に",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948453498",
-    "japanese": "乗り物",
-    "reading": "乗り物",
-    "meaning": "vehicle, means of transportation",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "乗り物[のりもの]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948453499",
-    "japanese": "乗り物",
-    "reading": "乗り物",
-    "meaning": "vehicle, means of transportation",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "乗り物[のりもの]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948244403",
-    "japanese": "水泳",
-    "reading": "水泳",
-    "meaning": "swimming",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "水泳[すいえい]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948244404",
-    "japanese": "水泳",
-    "reading": "水泳",
-    "meaning": "swimming",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "水泳[すいえい]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-11-1549947725636",
-    "japanese": "絶対に",
-    "reading": "絶対に",
-    "meaning": "absolutely",
+    "japanese": "absolutely",
+    "reading": "absolutely",
+    "meaning": "絶対に",
     "jlptLevel": "N5",
     "partOfSpeech": "adverb",
     "examples": [
@@ -1156,9 +106,9 @@
   },
   {
     "id": "minna-2-11-1549947725637",
-    "japanese": "絶対に",
-    "reading": "絶対に",
-    "meaning": "absolutely",
+    "japanese": "absolutely",
+    "reading": "absolutely",
+    "meaning": "絶対に",
     "jlptLevel": "N5",
     "partOfSpeech": "adverb",
     "examples": [
@@ -1176,15 +126,15 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-11-1549948776847",
-    "japanese": "大勢の　〜",
-    "reading": "大勢の　〜",
-    "meaning": "many (people)",
+    "id": "minna-2-11-1549947975175",
+    "japanese": "almost all (in affirmative sentences), hardly, scarcely (in negative sentences)",
+    "reading": "almost all (in affirmative sentences), hardly, scarcely (in negative sentences)",
+    "meaning": "ほとんど",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "大勢[たいせい]の　〜",
+        "japanese": "ほとんど",
         "reading": "",
         "english": "36"
       }
@@ -1197,15 +147,15 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-11-1549948776848",
-    "japanese": "大勢の　〜",
-    "reading": "大勢の　〜",
-    "meaning": "many (people)",
+    "id": "minna-2-11-1549947975176",
+    "japanese": "almost all (in affirmative sentences), hardly, scarcely (in negative sentences)",
+    "reading": "almost all (in affirmative sentences), hardly, scarcely (in negative sentences)",
+    "meaning": "ほとんど",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "大勢[たいせい]の　〜",
+        "japanese": "ほとんど",
         "reading": "",
         "english": "36"
       }
@@ -1218,15 +168,15 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-11-1549946999336",
-    "japanese": "貯金します",
-    "reading": "貯金します",
-    "meaning": "to save money",
+    "id": "minna-2-11-1549947907515",
+    "japanese": "as much as possible",
+    "reading": "as much as possible",
+    "meaning": "できるだけ",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "貯金[ちょきん]します",
+        "japanese": "できるだけ",
         "reading": "",
         "english": "36"
       }
@@ -1239,189 +189,21 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-11-1549946999337",
-    "japanese": "貯金します",
-    "reading": "貯金します",
-    "meaning": "to save money",
+    "id": "minna-2-11-1549947907516",
+    "japanese": "as much as possible",
+    "reading": "as much as possible",
+    "meaning": "できるだけ",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "貯金[ちょきん]します",
+        "japanese": "できるだけ",
         "reading": "",
         "english": "36"
       }
     ],
     "tags": [
       "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948642936",
-    "japanese": "珍しい",
-    "reading": "珍しい",
-    "meaning": "rare, uncommon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "珍[めずら]しい",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948642937",
-    "japanese": "珍しい",
-    "reading": "珍しい",
-    "meaning": "rare, uncommon",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "珍[めずら]しい",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948094401",
-    "japanese": "特別［な］",
-    "reading": "特別［な］",
-    "meaning": "special",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "特別[とくべつ]［な］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948094402",
-    "japanese": "特別［な］",
-    "reading": "特別［な］",
-    "meaning": "special",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "特別[とくべつ]［な］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947699090",
-    "japanese": "必ず",
-    "reading": "必ず",
-    "meaning": "without fail, by any means",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "必[かなら]ず",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947699091",
-    "japanese": "必ず",
-    "reading": "必ず",
-    "meaning": "without fail, by any means",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "必[かなら]ず",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947227317",
-    "japanese": "腐ります［食べ物が〜］",
-    "reading": "腐ります［食べ物が〜］",
-    "meaning": "to [food] rot",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "腐[くさ]ります［ 食べ物[たべもの]が〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-11"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947227318",
-    "japanese": "腐ります［食べ物が〜］",
-    "reading": "腐ります［食べ物が〜］",
-    "meaning": "to [food] rot",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "腐[くさ]ります［ 食べ物[たべもの]が〜］",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n4",
       "lesson-11"
     ],
     "lesson": 11,
@@ -1429,9 +211,9 @@
   },
   {
     "id": "minna-2-11-1549947579754",
-    "japanese": "毎月",
-    "reading": "毎月",
-    "meaning": "every month",
+    "japanese": "every month",
+    "reading": "every month",
+    "meaning": "毎月",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1450,9 +232,9 @@
   },
   {
     "id": "minna-2-11-1549947579755",
-    "japanese": "毎月",
-    "reading": "毎月",
-    "meaning": "every month",
+    "japanese": "every month",
+    "reading": "every month",
+    "meaning": "毎月",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1471,9 +253,9 @@
   },
   {
     "id": "minna-2-11-1549947550974",
-    "japanese": "毎週",
-    "reading": "毎週",
-    "meaning": "every week",
+    "japanese": "every week",
+    "reading": "every week",
+    "meaning": "毎週",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1492,9 +274,9 @@
   },
   {
     "id": "minna-2-11-1549947550975",
-    "japanese": "毎週",
-    "reading": "毎週",
-    "meaning": "every week",
+    "japanese": "every week",
+    "reading": "every week",
+    "meaning": "毎週",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1513,9 +295,9 @@
   },
   {
     "id": "minna-2-11-1549947624006",
-    "japanese": "毎年",
-    "reading": "毎年",
-    "meaning": "every year",
+    "japanese": "every year",
+    "reading": "every year",
+    "meaning": "毎年",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1534,9 +316,9 @@
   },
   {
     "id": "minna-2-11-1549947624007",
-    "japanese": "毎年",
-    "reading": "毎年",
-    "meaning": "every year",
+    "japanese": "every year",
+    "reading": "every year",
+    "meaning": "毎年",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1554,10 +336,1018 @@
     "textbook": "minna-2"
   },
   {
+    "id": "minna-2-11-1549947667666",
+    "japanese": "fairly",
+    "reading": "fairly",
+    "meaning": "かなり",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "かなり",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947667667",
+    "japanese": "fairly",
+    "reading": "fairly",
+    "meaning": "かなり",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "かなり",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948612784",
+    "japanese": "far, remote place",
+    "reading": "far, remote place",
+    "meaning": "遠く",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "遠[とお]く",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948612785",
+    "japanese": "far, remote place",
+    "reading": "far, remote place",
+    "meaning": "遠く",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "遠[とお]く",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947658330",
+    "japanese": "finally",
+    "reading": "finally",
+    "meaning": "やっと",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "やっと",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947658331",
+    "japanese": "finally",
+    "reading": "finally",
+    "meaning": "やっと",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "やっと",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948870690",
+    "japanese": "freely",
+    "reading": "freely",
+    "meaning": "自由に",
+    "jlptLevel": "N5",
+    "partOfSpeech": "adverb",
+    "examples": [
+      {
+        "japanese": "自由[じゆう]に",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948870691",
+    "japanese": "freely",
+    "reading": "freely",
+    "meaning": "自由に",
+    "jlptLevel": "N5",
+    "partOfSpeech": "adverb",
+    "examples": [
+      {
+        "japanese": "自由[じゆう]に",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947290527",
+    "japanese": "judo",
+    "reading": "judo",
+    "meaning": "柔道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "柔道[じゅうどう]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947290528",
+    "japanese": "judo",
+    "reading": "judo",
+    "meaning": "柔道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "柔道[じゅうどう]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947261304",
+    "japanese": "kendo (Japanese style fencing)",
+    "reading": "kendo (Japanese style fencing)",
+    "meaning": "剣道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "剣道[けんどう]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947261305",
+    "japanese": "kendo (Japanese style fencing)",
+    "reading": "kendo (Japanese style fencing)",
+    "meaning": "剣道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "剣道[けんどう]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948697687",
+    "japanese": "locomotive",
+    "reading": "locomotive",
+    "meaning": "汽車",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "汽車[きしゃ]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948697688",
+    "japanese": "locomotive",
+    "reading": "locomotive",
+    "meaning": "汽車",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "汽車[きしゃ]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948776847",
+    "japanese": "many (people)",
+    "reading": "many (people)",
+    "meaning": "大勢の　〜",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "大勢[たいせい]の　〜",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948776848",
+    "japanese": "many (people)",
+    "reading": "many (people)",
+    "meaning": "大勢の　〜",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "大勢[たいせい]の　〜",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948642936",
+    "japanese": "rare, uncommon",
+    "reading": "rare, uncommon",
+    "meaning": "珍しい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "珍[めずら]しい",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948642937",
+    "japanese": "rare, uncommon",
+    "reading": "rare, uncommon",
+    "meaning": "珍しい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "珍[めずら]しい",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947331819",
+    "japanese": "rush hour",
+    "reading": "rush hour",
+    "meaning": "ラッシュ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ラッシュ",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947331820",
+    "japanese": "rush hour",
+    "reading": "rush hour",
+    "meaning": "ラッシュ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ラッシュ",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947467582",
+    "japanese": "space, universe",
+    "reading": "space, universe",
+    "meaning": "宇宙",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "宇宙[うちゅう]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947467583",
+    "japanese": "space, universe",
+    "reading": "space, universe",
+    "meaning": "宇宙",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "宇宙[うちゅう]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948094401",
+    "japanese": "special",
+    "reading": "special",
+    "meaning": "特別［な］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "特別[とくべつ]［な］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948094402",
+    "japanese": "special",
+    "reading": "special",
+    "meaning": "特別［な］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "特別[とくべつ]［な］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948425903",
+    "japanese": "spirit, mood",
+    "reading": "spirit, mood",
+    "meaning": "気持ち",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "気持[きも]ち",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948425904",
+    "japanese": "spirit, mood",
+    "reading": "spirit, mood",
+    "meaning": "気持ち",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "気持[きも]ち",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948735425",
+    "japanese": "steam boat",
+    "reading": "steam boat",
+    "meaning": "汽船",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "汽船[きせん]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948735426",
+    "japanese": "steam boat",
+    "reading": "steam boat",
+    "meaning": "汽船",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "汽船[きせん]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948244403",
+    "japanese": "swimming",
+    "reading": "swimming",
+    "meaning": "水泳",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "水泳[すいえい]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948244404",
+    "japanese": "swimming",
+    "reading": "swimming",
+    "meaning": "水泳",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "水泳[すいえい]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947646862",
+    "japanese": "these days",
+    "reading": "these days",
+    "meaning": "このごろ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "このごろ",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947646863",
+    "japanese": "these days",
+    "reading": "these days",
+    "meaning": "このごろ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "このごろ",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947227317",
+    "japanese": "to [food] rot",
+    "reading": "to [food] rot",
+    "meaning": "腐ります［食べ物が〜］",
+    "jlptLevel": "N4",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "腐[くさ]ります［ 食べ物[たべもの]が〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947227318",
+    "japanese": "to [food] rot",
+    "reading": "to [food] rot",
+    "meaning": "腐ります［食べ物が〜］",
+    "jlptLevel": "N4",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "腐[くさ]ります［ 食べ物[たべもの]が〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948199632",
+    "japanese": "to be doing (respectful equivalent of して　います）",
+    "reading": "to be doing (respectful equivalent of して　います）",
+    "meaning": "して　いらっしゃいます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "して　いらっしゃいます",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948199633",
+    "japanese": "to be doing (respectful equivalent of して　います）",
+    "reading": "to be doing (respectful equivalent of して　います）",
+    "meaning": "して　いらっしゃいます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "して　いらっしゃいます",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948804952",
+    "japanese": "to carry, transport",
+    "reading": "to carry, transport",
+    "meaning": "運びます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "運[はこ]びます",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948804953",
+    "japanese": "to carry, transport",
+    "reading": "to carry, transport",
+    "meaning": "運びます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "運[はこ]びます",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948398754",
+    "japanese": "to challenge",
+    "reading": "to challenge",
+    "meaning": "チャレンジします",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "チャレンジします",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948398755",
+    "japanese": "to challenge",
+    "reading": "to challenge",
+    "meaning": "チャレンジします",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "チャレンジします",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549946946843",
+    "japanese": "to encounter [an accident]",
+    "reading": "to encounter [an accident]",
+    "meaning": "あいます［事故に〜］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "あいます［ 事故[じこ]に〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549946946844",
+    "japanese": "to encounter [an accident]",
+    "reading": "to encounter [an accident]",
+    "meaning": "あいます［事故に〜］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "あいます［ 事故[じこ]に〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947146861",
+    "japanese": "to get accustomed to [one's job]",
+    "reading": "to get accustomed to [one's job]",
+    "meaning": "慣れます［仕事に〜］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "慣[な]れます［ 仕事[しごと]に〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947146862",
+    "japanese": "to get accustomed to [one's job]",
+    "reading": "to get accustomed to [one's job]",
+    "meaning": "慣れます［仕事に〜］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "慣[な]れます［ 仕事[しごと]に〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947071984",
+    "japanese": "to pass [7 o'clock]",
+    "reading": "to pass [7 o'clock]",
+    "meaning": "過ぎます［７時を〜］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "過[す]ぎます［７ 時[じ]を〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947071985",
+    "japanese": "to pass [7 o'clock]",
+    "reading": "to pass [7 o'clock]",
+    "meaning": "過ぎます［７時を〜］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "過[す]ぎます［７ 時[じ]を〜］",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549946999336",
+    "japanese": "to save money",
+    "reading": "to save money",
+    "meaning": "貯金します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "貯金[ちょきん]します",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549946999337",
+    "japanese": "to save money",
+    "reading": "to save money",
+    "meaning": "貯金します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "貯金[ちょきん]します",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-11-1549948847171",
-    "japanese": "利用します",
-    "reading": "利用します",
-    "meaning": "to use",
+    "japanese": "to use",
+    "reading": "to use",
+    "meaning": "利用します",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
@@ -1576,14 +1366,224 @@
   },
   {
     "id": "minna-2-11-1549948847172",
-    "japanese": "利用します",
-    "reading": "利用します",
-    "meaning": "to use",
+    "japanese": "to use",
+    "reading": "to use",
+    "meaning": "利用します",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
       {
         "japanese": "利用[りよう]します",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948453498",
+    "japanese": "vehicle, means of transportation",
+    "reading": "vehicle, means of transportation",
+    "meaning": "乗り物",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "乗り物[のりもの]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948453499",
+    "japanese": "vehicle, means of transportation",
+    "reading": "vehicle, means of transportation",
+    "meaning": "乗り物",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "乗り物[のりもの]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948045128",
+    "japanese": "visitor, guest, customer, client (respectful equivalent of おきゃくさん)",
+    "reading": "visitor, guest, customer, client (respectful equivalent of おきゃくさん)",
+    "meaning": "お客様",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "お 客様[きゃくさま]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948045129",
+    "japanese": "visitor, guest, customer, client (respectful equivalent of おきゃくさん)",
+    "reading": "visitor, guest, customer, client (respectful equivalent of おきゃくさん)",
+    "meaning": "お客様",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "お 客様[きゃくさま]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947821971",
+    "japanese": "well, skillfully",
+    "reading": "well, skillfully",
+    "meaning": "上手に",
+    "jlptLevel": "N5",
+    "partOfSpeech": "adverb",
+    "examples": [
+      {
+        "japanese": "上手[じょうず]に",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947821972",
+    "japanese": "well, skillfully",
+    "reading": "well, skillfully",
+    "meaning": "上手に",
+    "jlptLevel": "N5",
+    "partOfSpeech": "adverb",
+    "examples": [
+      {
+        "japanese": "上手[じょうず]に",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947699090",
+    "japanese": "without fail, by any means",
+    "reading": "without fail, by any means",
+    "meaning": "必ず",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "必[かなら]ず",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549947699091",
+    "japanese": "without fail, by any means",
+    "reading": "without fail, by any means",
+    "meaning": "必ず",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "必[かなら]ず",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948377493",
+    "japanese": "You're using, aren't you? (respectful equivalent of つかって　いるんですね）",
+    "reading": "You're using, aren't you? (respectful equivalent of つかって　いるんですね）",
+    "meaning": "使って　いらっしゃるんですね。",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "使[つか]って　いらっしゃるんですね。",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-11-1549948377494",
+    "japanese": "You're using, aren't you? (respectful equivalent of つかって　いるんですね）",
+    "reading": "You're using, aren't you? (respectful equivalent of つかって　いるんですね）",
+    "meaning": "使って　いらっしゃるんですね。",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "使[つか]って　いらっしゃるんですね。",
         "reading": "",
         "english": "36"
       }

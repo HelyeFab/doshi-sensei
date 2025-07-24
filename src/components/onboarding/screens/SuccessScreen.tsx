@@ -7,9 +7,10 @@ import { useStrings } from '@/contexts/LanguageContext';
 
 export interface SuccessScreenProps {
   onComplete: () => void;
+  onBack?: () => void;
 }
 
-export function SuccessScreen({ onComplete }: SuccessScreenProps) {
+export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
   const strings = useStrings();
   const tutorial = strings.tutorial;
   const [settingsShown, setSettingsShown] = useState(false);
@@ -49,6 +50,11 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
       }
     }
 
+    // Redirect to home page
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
+
     onComplete();
   };
 
@@ -73,7 +79,7 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-6 space-y-3">
+          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-6 space-y-3 max-w-2xl md:max-w-md mx-auto">
             <h3 className="font-semibold text-foreground">{tutorial.success.checklistHeader}</h3>
             <div className="grid grid-cols-1 gap-2 text-sm">
               <div className="flex items-center gap-2">
@@ -99,18 +105,7 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <TutorialButton
-              onClick={handleSettingsDemo}
-              variant="secondary"
-              className="mb-2"
-            >
-              {tutorial.success.settingsButton}
-            </TutorialButton>
-            <p className="text-xs text-muted-foreground">
-              {tutorial.success.settingsSubtext}
-            </p>
-          </div>
+          {/* Settings button removed to avoid duplication with navigation bar */}
         </div>
       ) : (
         // Settings Demo
@@ -198,23 +193,33 @@ export function SuccessScreen({ onComplete }: SuccessScreenProps) {
         </div>
       )}
 
-      {/* Final Action */}
-      <div className="text-center pt-4">
-        {!settingsShown ? (
-          <TutorialButton onClick={handleFinish} variant="primary" size="large">
-            🚀 Start Learning Japanese!
+      {/* Get Started Button - Only shown when not in settings demo */}
+      {!settingsShown && (
+        <div className="text-center pt-4">
+          <button
+            onClick={handleFinish}
+            className="px-8 py-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all transform hover:scale-105 text-lg"
+          >
+            🚀 Get Started
+          </button>
+        </div>
+      )}
+
+      {/* Settings Demo Button */}
+      {!settingsShown && (
+        <div className="text-center pt-4">
+          <TutorialButton
+            onClick={handleSettingsDemo}
+            variant="secondary"
+            className="mb-2"
+          >
+            {tutorial.success.settingsButton}
           </TutorialButton>
-        ) : (
-          <div className="space-y-3">
-            <TutorialButton onClick={handleFinish} variant="primary" size="large">
-              {tutorial.success.startButtonSettings}
-            </TutorialButton>
-            <p className="text-xs text-muted-foreground">
-              {tutorial.success.settingsNote}
-            </p>
-          </div>
-        )}
-      </div>
+          <p className="text-xs text-white/70">
+            {tutorial.success.settingsSubtext}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,114 +1,9 @@
 [
   {
-    "id": "genki-1-1-1475123917035",
-    "japanese": "<div>to trust, to believe</div>しん<div><br /></div>",
-    "reading": "<div>to trust, to believe</div>しん<div><br /></div>",
-    "meaning": "信",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464693774509",
-    "japanese": "after<div>ご</div><div>あと、うし</div>",
-    "reading": "after<div>ご</div><div>あと、うし</div>",
-    "meaning": "後",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697668518",
-    "japanese": "age, replace<div>だい</div><div>か</div>",
-    "reading": "age, replace<div>だい</div><div>か</div>",
-    "meaning": "代",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691885330",
-    "japanese": "ahead, previous<div>せん</div><div>さき</div>",
-    "reading": "ahead, previous<div>せん</div><div>さき</div>",
-    "meaning": "先",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698940390",
-    "japanese": "all<div>ぜん</div><div>まった、すべ</div>",
-    "reading": "all<div>ぜん</div><div>まった、すべ</div>",
-    "meaning": "全",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695573289",
-    "japanese": "ancient times<div><br /><div>むかし</div></div>",
-    "reading": "ancient times<div><br /><div>むかし</div></div>",
-    "meaning": "昔",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744595603",
-    "japanese": "answer<div>とう</div><div>こた、こたえ</div>",
-    "reading": "answer<div>とう</div><div>こた、こたえ</div>",
-    "meaning": "答",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470880827013",
-    "japanese": "autumn<div>しゅう</div><div>あき</div>",
-    "reading": "autumn<div>しゅう</div><div>あき</div>",
-    "meaning": "秋",
+    "id": "genki-1-1-1464695617243",
+    "japanese": "々",
+    "reading": "々",
+    "meaning": "repitition symbol",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -121,264 +16,9 @@
   },
   {
     "id": "genki-1-1-1464697381440",
-    "japanese": "bad, wrong<div>あく</div><div>わる</div>",
-    "reading": "bad, wrong<div>あく</div><div>わる</div>",
-    "meaning": "悪",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464693861665",
-    "japanese": "before<div>ぜん</div><div>まえ</div>",
-    "reading": "before<div>ぜん</div><div>まえ</div>",
-    "meaning": "前",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694178196",
-    "japanese": "between<div>かん</div><div>あいだ</div>",
-    "reading": "between<div>かん</div><div>あいだ</div>",
-    "meaning": "間",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691997029",
-    "japanese": "big<div>だい、たい</div><div>おお</div>",
-    "reading": "big<div>だい、たい</div><div>おお</div>",
-    "meaning": "大",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697064471",
-    "japanese": "bird<div>ちょう</div><div>とり</div>",
-    "reading": "bird<div>ちょう</div><div>とり</div>",
-    "meaning": "鳥",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691965618",
-    "japanese": "birth, life<div>せい、しょう</div><div>う、なま</div>",
-    "reading": "birth, life<div>せい、しょう</div><div>う、なま</div>",
-    "meaning": "生",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735401946",
-    "japanese": "black<div>こく</div><div>くろ</div>",
-    "reading": "black<div>こく</div><div>くろ</div>",
-    "meaning": "黒",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695961940",
-    "japanese": "blue<div>せい</div><div>あお</div>",
-    "reading": "blue<div>せい</div><div>あお</div>",
-    "meaning": "青",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697398092",
-    "japanese": "body<div>たい</div><div>からだ</div>",
-    "reading": "body<div>たい</div><div>からだ</div>",
-    "meaning": "体",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690758372",
-    "japanese": "book, basis<div>ほん</div><div>もと</div>",
-    "reading": "book, basis<div>ほん</div><div>もと</div>",
-    "meaning": "本",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017623410",
-    "japanese": "both<div>りょう</div><div><br /></div>",
-    "reading": "both<div>りょう</div><div><br /></div>",
-    "meaning": "両",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694998697",
-    "japanese": "bright<div>めい</div><div>あか</div>",
-    "reading": "bright<div>めい</div><div>あか</div>",
-    "meaning": "明",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700538345",
-    "japanese": "building, hall<div>かん</div><div><br /></div>",
-    "reading": "building, hall<div>かん</div><div><br /></div>",
-    "meaning": "館",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699061999",
-    "japanese": "by means of, compared with<div>い</div><div><br /></div>",
-    "reading": "by means of, compared with<div>い</div><div><br /></div>",
-    "meaning": "以",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692123706",
-    "japanese": "capital<div>きょう</div><div><br /></div>",
-    "reading": "capital<div>きょう</div><div><br /></div>",
-    "meaning": "京",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692661861",
-    "japanese": "car<div>しゃ</div><div>くるま</div>",
-    "reading": "car<div>しゃ</div><div>くるま</div>",
-    "meaning": "車",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744169950",
-    "japanese": "change, abnormal<div>へん</div><div>か</div>",
-    "reading": "change, abnormal<div>へん</div><div>か</div>",
-    "meaning": "変",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699837307",
-    "japanese": "character, letter<div>じ</div><div><br /></div>",
-    "reading": "character, letter<div>じ</div><div><br /></div>",
-    "meaning": "字",
+    "japanese": "悪",
+    "reading": "あく",
+    "meaning": "bad, wrong",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -391,909 +31,9 @@
   },
   {
     "id": "genki-1-1-1464697280538",
-    "japanese": "cheap, ease<div>あん</div><div>やす</div>",
-    "reading": "cheap, ease<div>あん</div><div>やす</div>",
-    "meaning": "安",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692138766",
-    "japanese": "child<div>し</div><div>こ</div>",
-    "reading": "child<div>し</div><div>こ</div>",
-    "meaning": "子",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881105884",
-    "japanese": "China<div>かん</div><div><br /></div>",
-    "reading": "China<div>かん</div><div><br /></div>",
-    "meaning": "漢",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695341321",
-    "japanese": "city<div>し</div><div>いち</div>",
-    "reading": "city<div>し</div><div>いち</div>",
-    "meaning": "市",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700221412",
-    "japanese": "clothes<div>ふく</div><div><br /></div>",
-    "reading": "clothes<div>ふく</div><div><br /></div>",
-    "meaning": "服",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695990984",
-    "japanese": "colour<div>しき、しょく</div><div>いろ</div>",
-    "reading": "colour<div>しき、しょく</div><div>いろ</div>",
-    "meaning": "色",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698842251",
-    "japanese": "companion, offer<div>きょう</div><div>ども、そな</div>",
-    "reading": "companion, offer<div>きょう</div><div>ども、そな</div>",
-    "meaning": "供",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692219172",
-    "japanese": "company<div>しゃ、じゃ</div><div><br /></div>",
-    "reading": "company<div>しゃ、じゃ</div><div><br /></div>",
-    "meaning": "社",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692069808",
-    "japanese": "country<div>こく、ごく</div><div>くに</div>",
-    "reading": "country<div>こく、ごく</div><div>くに</div>",
-    "meaning": "国",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695728039",
-    "japanese": "cow<div>ぎゅう</div><div>うし</div>",
-    "reading": "cow<div>ぎゅう</div><div>うし</div>",
-    "meaning": "牛",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881177784",
-    "japanese": "craft, construction<div>こう、く</div><div><br /></div>",
-    "reading": "craft, construction<div>こう、く</div><div><br /></div>",
-    "meaning": "工",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690732652",
-    "japanese": "day, sun<div>に、にち</div><div>び、ひ</div>",
-    "reading": "day, sun<div>に、にち</div><div>び、ひ</div>",
-    "meaning": "日",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698153271",
-    "japanese": "death, to die<div>し</div><div>し</div>",
-    "reading": "death, to die<div>し</div><div>し</div>",
-    "meaning": "死",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699244576",
-    "japanese": "direction, way, person<div>ほう</div><div>かた、がた</div>",
-    "reading": "direction, way, person<div>ほう</div><div>かた、がた</div>",
-    "meaning": "方",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698104764",
-    "japanese": "doctor, medicine<div>い</div><div><br /></div>",
-    "reading": "doctor, medicine<div>い</div><div><br /></div>",
-    "meaning": "医",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124021521",
-    "japanese": "dog<div>けん</div><div>いぬ</div>",
-    "reading": "dog<div>けん</div><div>いぬ</div>",
-    "meaning": "犬",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691044440",
-    "japanese": "down<div>か、へ</div><div>した、くだ</div>",
-    "reading": "down<div>か、へ</div><div>した、くだ</div>",
-    "meaning": "下",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700513464",
-    "japanese": "drawing, to devise<div>と、ず</div><div>はか</div>",
-    "reading": "drawing, to devise<div>と、ず</div><div>はか</div>",
-    "meaning": "図",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695681472",
-    "japanese": "early<div>そう</div><div>はや</div>",
-    "reading": "early<div>そう</div><div>はや</div>",
-    "meaning": "早",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691550496",
-    "japanese": "east<div>とう</div><div>ひがし</div>",
-    "reading": "east<div>とう</div><div>ひがし</div>",
-    "meaning": "東",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464592607139",
-    "japanese": "eight<div>はち、はっ</div><div>やっ</div>",
-    "reading": "eight<div>はち、はっ</div><div>やっ</div>",
-    "meaning": "八",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692634006",
-    "japanese": "electricity<div>でん</div><div><br /></div>",
-    "reading": "electricity<div>でん</div><div><br /></div>",
-    "meaning": "電",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744120782",
-    "japanese": "emotion, condition<div>じょう</div><div>なさ</div>",
-    "reading": "emotion, condition<div>じょう</div><div>なさ</div>",
-    "meaning": "情",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700584116",
-    "japanese": "end, over, last<div>しゅう</div><div>お</div>",
-    "reading": "end, over, last<div>しゅう</div><div>お</div>",
-    "meaning": "終",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697868436",
-    "japanese": "English, excellent<div>えい</div><div><br /></div>",
-    "reading": "English, excellent<div>えい</div><div><br /></div>",
-    "meaning": "英",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735386246",
-    "japanese": "evening<div><br /></div><div>ゆう</div>",
-    "reading": "evening<div><br /></div><div>ゆう</div>",
-    "meaning": "夕",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692336856",
-    "japanese": "every<div>まい</div><div><br /></div>",
-    "reading": "every<div>まい</div><div><br /></div>",
-    "meaning": "毎",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700101630",
-    "japanese": "eye<div>もく</div><div>め</div>",
-    "reading": "eye<div>もく</div><div>め</div>",
-    "meaning": "目",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744068373",
-    "japanese": "face<div>がん</div><div>かお、がお</div>",
-    "reading": "face<div>がん</div><div>かお、がお</div>",
-    "meaning": "顔",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697768235",
-    "japanese": "family<div>ぞく</div><div><br /></div>",
-    "reading": "family<div>ぞく</div><div><br /></div>",
-    "meaning": "族",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692246270",
-    "japanese": "father<div>ふ</div><div>ちち、とう</div>",
-    "reading": "father<div>ふ</div><div>ちち、とう</div>",
-    "meaning": "父",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694241106",
-    "japanese": "few, little bit<br /><div>しょう</div><div>すこ、すく</div>",
-    "reading": "few, little bit<br /><div>しょう</div><div>すこ、すく</div>",
-    "meaning": "<div>少</div>",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700086096",
-    "japanese": "field<div>や</div><div>の</div>",
-    "reading": "field<div>や</div><div>の</div>",
-    "meaning": "野",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690846975",
-    "japanese": "fire<div>か</div><div>ひ、び</div>",
-    "reading": "fire<div>か</div><div>ひ、び</div>",
-    "meaning": "火",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124114652",
-    "japanese": "first<div>しょ</div><div>はじ、はつ</div>",
-    "reading": "first<div>しょ</div><div>はじ、はつ</div>",
-    "meaning": "初",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698390751",
-    "japanese": "fish<div>ぎょ</div><div>さかな、うお</div>",
-    "reading": "fish<div>ぎょ</div><div>さかな、うお</div>",
-    "meaning": "魚",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464529842129",
-    "japanese": "five<div>ご</div><div>いつ</div>",
-    "reading": "five<div>ご</div><div>いつ</div>",
-    "meaning": "五",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698224971",
-    "japanese": "flavour, tastes<div>み</div><div>あじ</div>",
-    "reading": "flavour, tastes<div>み</div><div>あじ</div>",
-    "meaning": "味",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470880892699",
-    "japanese": "flower<div>か</div><div>はな、ばな</div>",
-    "reading": "flower<div>か</div><div>はな、ばな</div>",
-    "meaning": "花",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697322605",
-    "japanese": "food, cooked rice<div>はん</div><div><br /></div>",
-    "reading": "food, cooked rice<div>はん</div><div><br /></div>",
-    "meaning": "飯",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698675425",
-    "japanese": "foot, leg<div>そく</div><div>あし、た</div>",
-    "reading": "foot, leg<div>そく</div><div>あし、た</div>",
-    "meaning": "足",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464529806520",
-    "japanese": "four<div>し</div><div>よん、よ、よっ</div>",
-    "reading": "four<div>し</div><div>よん、よ、よっ</div>",
-    "meaning": "四",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694040453",
-    "japanese": "friend<div>ゆう</div><div>とも</div>",
-    "reading": "friend<div>ゆう</div><div>とも</div>",
-    "meaning": "友",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744526173",
-    "japanese": "fruit, result<div>か</div><div>は</div>",
-    "reading": "fruit, result<div>か</div><div>は</div>",
-    "meaning": "果",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698863208",
-    "japanese": "generation<div>せ、せい</div><div>よ</div>",
-    "reading": "generation<div>せ、せい</div><div>よ</div>",
-    "meaning": "世",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695659515",
-    "japanese": "God<div>じん、しん、こう</div><div>かみ</div>",
-    "reading": "God<div>じん、しん、こう</div><div>かみ</div>",
-    "meaning": "神",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690904388",
-    "japanese": "gold, money<div>きん</div><div>かね</div>",
-    "reading": "gold, money<div>きん</div><div>かね</div>",
-    "meaning": "金",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699807906",
-    "japanese": "goods, refinement<div>ひん</div><div>じな、しな</div>",
-    "reading": "goods, refinement<div>ひん</div><div>じな、しな</div>",
-    "meaning": "品",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698611766",
-    "japanese": "ground<div>ち、じ</div><div><br /></div>",
-    "reading": "ground<div>ち、じ</div><div><br /></div>",
-    "meaning": "地",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691077556",
-    "japanese": "half<div>はん</div><div><br /></div>",
-    "reading": "half<div>はん</div><div><br /></div>",
-    "meaning": "半",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700264583",
-    "japanese": "hall<div>どう</div><div><br /></div>",
-    "reading": "hall<div>どう</div><div><br /></div>",
-    "meaning": "堂",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694876123",
-    "japanese": "hand<div>しゅ</div><div>て</div>",
-    "reading": "hand<div>しゅ</div><div>て</div>",
-    "meaning": "手",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124198003",
-    "japanese": "happiness<div>こう</div><div>しあわ、さいわ</div>",
-    "reading": "happiness<div>こう</div><div>しあわ、さいわ</div>",
-    "meaning": "幸",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697616428",
-    "japanese": "he<div><br /><div>かれ、かの</div></div>",
-    "reading": "he<div><br /><div>かれ、かの</div></div>",
-    "meaning": "彼",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017910260",
-    "japanese": "heart, mind<div>しん</div><div>こころ</div>",
-    "reading": "heart, mind<div>しん</div><div>こころ</div>",
-    "meaning": "心",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691214391",
-    "japanese": "heaven<div>てん</div><div><br /></div>",
-    "reading": "heaven<div>てん</div><div><br /></div>",
-    "meaning": "天",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124073469",
-    "japanese": "heavy, to pile up<div>じゅう、ちょう</div><div>おも、かさ</div>",
-    "reading": "heavy, to pile up<div>じゅう、ちょう</div><div>おも、かさ</div>",
-    "meaning": "重",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692292962",
-    "japanese": "high<div>こう</div><div>たか</div>",
-    "reading": "high<div>こう</div><div>たか</div>",
-    "meaning": "高",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694188114",
-    "japanese": "house<div>か</div><div>いえ</div>",
-    "reading": "house<div>か</div><div>いえ</div>",
-    "meaning": "家",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690567817",
-    "japanese": "hundred<div>ひゃく、ぴゃく、びゃく</div><div><br /></div>",
-    "reading": "hundred<div>ひゃく、ぴゃく、びゃく</div><div><br /></div>",
-    "meaning": "百",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691257309",
-    "japanese": "I, private<div>し</div><div>わたし</div>",
-    "reading": "I, private<div>し</div><div>わたし</div>",
-    "meaning": "私",
+    "japanese": "安",
+    "reading": "あん",
+    "meaning": "cheap, ease",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -1306,9 +46,9 @@
   },
   {
     "id": "genki-1-1-1475735634644",
-    "japanese": "idea, proposal<div>あん</div><div><br /></div>",
-    "reading": "idea, proposal<div>あん</div><div><br /></div>",
-    "meaning": "案",
+    "japanese": "案",
+    "reading": "あん",
+    "meaning": "idea, proposal",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -1320,250 +60,10 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1464695022640",
-    "japanese": "ill, sick<div>びょう</div><div><br /></div>",
-    "reading": "ill, sick<div>びょう</div><div><br /></div>",
-    "meaning": "病",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697150661",
-    "japanese": "ingredients, fare<div>りょう</div><div><br /></div>",
-    "reading": "ingredients, fare<div>りょう</div><div><br /></div>",
-    "meaning": "料",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700617184",
-    "japanese": "inn, to lodge in<div>しゅく</div><div>やど</div>",
-    "reading": "inn, to lodge in<div>しゅく</div><div>やど</div>",
-    "meaning": "宿",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735662903",
-    "japanese": "inside, inner<div>ない</div><div>うち</div>",
-    "reading": "inside, inner<div>ない</div><div>うち</div>",
-    "meaning": "内",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695055327",
-    "japanese": "institution<div>いん</div><div><br /></div>",
-    "reading": "institution<div>いん</div><div><br /></div>",
-    "meaning": "院",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124260167",
-    "japanese": "late<div>ち</div><div>おく、おそ</div>",
-    "reading": "late<div>ち</div><div>おく、おそ</div>",
-    "meaning": "遅",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692028798",
-    "japanese": "learning<div>がく、がっ</div><div>まな</div>",
-    "reading": "learning<div>がく、がっ</div><div>まな</div>",
-    "meaning": "学",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691775046",
-    "japanese": "left<div>さ</div><div>ひだり</div>",
-    "reading": "left<div>さ</div><div>ひだり</div>",
-    "meaning": "左",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699873096",
-    "japanese": "lively, active<div>かつ、かっ</div><div><br /></div>",
-    "reading": "lively, active<div>かつ、かっ</div><div><br /></div>",
-    "meaning": "活",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694630924",
-    "japanese": "long<div>ちょう</div><div>なが</div>",
-    "reading": "long<div>ちょう</div><div>なが</div>",
-    "meaning": "長",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699449936",
-    "japanese": "main, lord, master<div>しゅ</div><div>おも、ぬし</div>",
-    "reading": "main, lord, master<div>しゅ</div><div>おも、ぬし</div>",
-    "meaning": "主",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691359981",
-    "japanese": "man<div>だん</div><div>おとこ</div>",
-    "reading": "man<div>だん</div><div>おとこ</div>",
-    "meaning": "男",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881443219",
-    "japanese": "many, much<div>た</div><div>おお</div>",
-    "reading": "many, much<div>た</div><div>おお</div>",
-    "meaning": "多",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699546891",
-    "japanese": "marriage<div>こん</div><div><br /></div>",
-    "reading": "marriage<div>こん</div><div><br /></div>",
-    "meaning": "婚",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697348920",
-    "japanese": "meat<div>にく</div><div><br /></div>",
-    "reading": "meat<div>にく</div><div><br /></div>",
-    "meaning": "肉",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692458596",
-    "japanese": "member<br />いん<div><br /></div>",
-    "reading": "member<br />いん<div><br /></div>",
-    "meaning": "員",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691064208",
-    "japanese": "middle<div>ちゅう、じゅう</div><div>なか</div>",
-    "reading": "middle<div>ちゅう、じゅう</div><div>なか</div>",
-    "meaning": "中",
+    "id": "genki-1-1-1464699061999",
+    "japanese": "以",
+    "reading": "い",
+    "meaning": "by means of, compared with",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -1576,1674 +76,9 @@
   },
   {
     "id": "genki-1-1-1464698179112",
-    "japanese": "mind, meaning<div>い</div><div><br /></div>",
-    "reading": "mind, meaning<div>い</div><div><br /></div>",
-    "meaning": "意",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691826843",
-    "japanese": "minute, to divide<div>ふん、ぶん、ぷん</div><div>わ</div>",
-    "reading": "minute, to divide<div>ふん、ぶん、ぷん</div><div>わ</div>",
-    "meaning": "分",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690814726",
-    "japanese": "moon, month<div>げつ、がつ</div><div>つき</div>",
-    "reading": "moon, month<div>げつ、がつ</div><div>つき</div>",
-    "meaning": "月",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694820922",
-    "japanese": "morning<div>ちょう</div><div>あさ</div>",
-    "reading": "morning<div>ちょう</div><div>あさ</div>",
-    "meaning": "朝",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692263588",
-    "japanese": "mother<div>ぼ</div><div>はは、かあ</div>",
-    "reading": "mother<div>ぼ</div><div>はは、かあ</div>",
-    "meaning": "母",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691101462",
-    "japanese": "mountain<div>さん</div><div>やま</div>",
-    "reading": "mountain<div>さん</div><div>やま</div>",
-    "meaning": "山",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691702048",
-    "japanese": "mouth<div>こう</div><div>くち、ぐち</div>",
-    "reading": "mouth<div>こう</div><div>くち、ぐち</div>",
-    "meaning": "口",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470880959403",
-    "japanese": "Mr, Mrs, condition<div>よう</div><div>さま</div>",
-    "reading": "Mr, Mrs, condition<div>よう</div><div>さま</div>",
-    "meaning": "様",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744192322",
-    "japanese": "mutual<div>しょう、そう</div><div>あい</div>",
-    "reading": "mutual<div>しょう、そう</div><div>あい</div>",
-    "meaning": "相",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464693885499",
-    "japanese": "name<div>めい</div><div>な</div>",
-    "reading": "name<div>めい</div><div>な</div>",
-    "meaning": "名",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694969007",
-    "japanese": "near, close<div>きん</div><div>ちか</div>",
-    "reading": "near, close<div>きん</div><div>ちか</div>",
-    "meaning": "近",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881001766",
-    "japanese": "negative, non-<div>ふ、ぶ</div><div><br /></div>",
-    "reading": "negative, non-<div>ふ、ぶ</div><div><br /></div>",
-    "meaning": "不",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692485484",
-    "japanese": "new<div>しん</div><div>あたら</div>",
-    "reading": "new<div>しん</div><div>あたら</div>",
-    "meaning": "新",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692775840",
-    "japanese": "next<div>じ</div><div>つぎ</div>",
-    "reading": "next<div>じ</div><div>つぎ</div>",
-    "meaning": "次",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694796868",
-    "japanese": "night<div>や</div><div>よる、よ</div>",
-    "reading": "night<div>や</div><div>よる、よ</div>",
-    "meaning": "夜",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690350669",
-    "japanese": "nine<div>きゅう、く</div><div>ここの</div>",
-    "reading": "nine<div>きゅう、く</div><div>ここの</div>",
-    "meaning": "九",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017670616",
-    "japanese": "none<div>む、ぶ</div><div>な</div>",
-    "reading": "none<div>む、ぶ</div><div>な</div>",
-    "meaning": "無",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697594147",
-    "japanese": "noon, daytime<div>ちゅう</div><div>ひる</div>",
-    "reading": "noon, daytime<div>ちゅう</div><div>ひる</div>",
-    "meaning": "昼",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464693753247",
-    "japanese": "noon<div>ご</div><div><br /></div>",
-    "reading": "noon<div>ご</div><div><br /></div>",
-    "meaning": "午",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691638507",
-    "japanese": "north<div>ほく、ほっ</div><div>きた</div>",
-    "reading": "north<div>ほく、ほっ</div><div>きた</div>",
-    "meaning": "北",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691280040",
-    "japanese": "now<div>こん</div><div>いま</div>",
-    "reading": "now<div>こん</div><div>いま</div>",
-    "meaning": "今",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735367931",
-    "japanese": "number of times, to turn<div>かい</div><div>まわ</div>",
-    "reading": "number of times, to turn<div>かい</div><div>まわ</div>",
-    "meaning": "回",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700203382",
-    "japanese": "ocean, overseas, Western<div>よう</div><div><br /></div>",
-    "reading": "ocean, overseas, Western<div>よう</div><div><br /></div>",
-    "meaning": "洋",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694259070",
-    "japanese": "old<div>こ</div><div>ふる</div>",
-    "reading": "old<div>こ</div><div>ふる</div>",
-    "meaning": "古",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881069766",
-    "japanese": "older brother<div>きょう</div><div>あに、にい</div>",
-    "reading": "older brother<div>きょう</div><div>あに、にい</div>",
-    "meaning": "兄",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881027928",
-    "japanese": "older sister<div>し</div><div>あね、ねえ</div>",
-    "reading": "older sister<div>し</div><div>あね、ねえ</div>",
-    "meaning": "姉",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464529102166",
-    "japanese": "one<div>いち、いっ</div><div>ひと</div>",
-    "reading": "one<div>いち、いっ</div><div>ひと</div>",
-    "meaning": "一",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472018039545",
-    "japanese": "opposite<div>たい</div><div>つい</div>",
-    "reading": "opposite<div>たい</div><div>つい</div>",
-    "meaning": "対",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735563211",
-    "japanese": "order, number<div>ばん</div><div><br /></div>",
-    "reading": "order, number<div>ばん</div><div><br /></div>",
-    "meaning": "番",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691175675",
-    "japanese": "origin<div>げん、がん</div><div>もと</div>",
-    "reading": "origin<div>げん、がん</div><div>もと</div>",
-    "meaning": "元",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692042886",
-    "japanese": "outside<div>がい</div><div>そと</div>",
-    "reading": "outside<div>がい</div><div>そと</div>",
-    "meaning": "外",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472018073047",
-    "japanese": "pain<div>つう</div><div>いた</div>",
-    "reading": "pain<div>つう</div><div>いた</div>",
-    "meaning": "痛",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694902586",
-    "japanese": "paper<div>し</div><div>がみ、かみ</div>",
-    "reading": "paper<div>し</div><div>がみ、かみ</div>",
-    "meaning": "紙",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697805748",
-    "japanese": "parent, intimacy<div>しん</div><div>おや、した</div>",
-    "reading": "parent, intimacy<div>しん</div><div>おや、した</div>",
-    "meaning": "親",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698975764",
-    "japanese": "part, section<div>ぶ、へ</div><div><br /></div>",
-    "reading": "part, section<div>ぶ、へ</div><div><br /></div>",
-    "meaning": "部",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697940457",
-    "japanese": "past,to leave<div>きょ、こ</div><div>さ</div>",
-    "reading": "past,to leave<div>きょ、こ</div><div>さ</div>",
-    "meaning": "去",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698129463",
-    "japanese": "person<div>しゃ</div><div>もの</div>",
-    "reading": "person<div>しゃ</div><div>もの</div>",
-    "meaning": "者",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690783438",
-    "japanese": "person<div>じん、にん</div><div>ひと</div>",
-    "reading": "person<div>じん、にん</div><div>ひと</div>",
-    "meaning": "人",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695310972",
-    "japanese": "picture<div>が、かく</div><div><br /></div>",
-    "reading": "picture<div>が、かく</div><div><br /></div>",
-    "meaning": "画",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695375327",
-    "japanese": "place<div>じょ、しょ</div><div>ところ、どころ</div>",
-    "reading": "place<div>じょ、しょ</div><div>ところ、どころ</div>",
-    "meaning": "所",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698655762",
-    "japanese": "place<div>じょう</div><div>ば</div>",
-    "reading": "place<div>じょう</div><div>ば</div>",
-    "meaning": "場",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017458451",
-    "japanese": "plate<div><br /></div><div>さら、ざら</div>",
-    "reading": "plate<div><br /></div><div>さら、ざら</div>",
-    "meaning": "皿",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698088258",
-    "japanese": "pleasure<div>がく、がっ、らく</div><div>たの</div>",
-    "reading": "pleasure<div>がく、がっ、らく</div><div>たの</div>",
-    "meaning": "楽",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697487250",
-    "japanese": "port, harbour<div>こう</div><div>みなと</div>",
-    "reading": "port, harbour<div>こう</div><div>みなと</div>",
-    "meaning": "港",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700164877",
-    "japanese": "power<div>りょく、りき</div><div>ちから</div>",
-    "reading": "power<div>りょく、りき</div><div>ちから</div>",
-    "meaning": "力",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881282723",
-    "japanese": "quality, matter<div>しつ、しち</div><div><br /></div>",
-    "reading": "quality, matter<div>しつ、しち</div><div><br /></div>",
-    "meaning": "質",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881405439",
-    "japanese": "question<div>もん</div><div>と</div>",
-    "reading": "question<div>もん</div><div>と</div>",
-    "meaning": "問",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464693924039",
-    "japanese": "rain<div>う</div><div>あめ</div>",
-    "reading": "rain<div>う</div><div>あめ</div>",
-    "meaning": "雨",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697181475",
-    "japanese": "reason<div>り</div><div><br /></div>",
-    "reading": "reason<div>り</div><div><br /></div>",
-    "meaning": "理",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695944424",
-    "japanese": "red<div>せき</div><div>あか</div>",
-    "reading": "red<div>せき</div><div>あか</div>",
-    "meaning": "赤",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695617243",
-    "japanese": "repitition symbol<br /><div><br /></div><div><br /></div>",
-    "reading": "repitition symbol<br /><div><br /></div><div><br /></div>",
-    "meaning": "々",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470891183628",
-    "japanese": "research<div>きゅう</div><div>きわ</div>",
-    "reading": "research<div>きゅう</div><div>きわ</div>",
-    "meaning": "究",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691304817",
-    "japanese": "rice field<div><br /></div><div>た、だ</div>",
-    "reading": "rice field<div><br /></div><div>た、だ</div>",
-    "meaning": "田",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694410459",
-    "japanese": "right, correct<div>しょう</div><div>ただ</div>",
-    "reading": "right, correct<div>しょう</div><div>ただ</div>",
-    "meaning": "正",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691756541",
-    "japanese": "right<div>う、ゆう</div><div>みぎ</div>",
-    "reading": "right<div>う、ゆう</div><div>みぎ</div>",
-    "meaning": "右",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691136016",
-    "japanese": "river<div><br /></div><div>かわ、がわ</div>",
-    "reading": "river<div><br /></div><div>かわ、がわ</div>",
-    "meaning": "川",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699351564",
-    "japanese": "room<div>しつ</div><div><br /></div>",
-    "reading": "room<div>しつ</div><div><br /></div>",
-    "meaning": "室",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744397782",
-    "japanese": "sad<div>ひ</div><div>かな</div>",
-    "reading": "sad<div>ひ</div><div>かな</div>",
-    "meaning": "悲",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697551609",
-    "japanese": "same<div>どう</div><div>おな</div>",
-    "reading": "same<div>どう</div><div>おな</div>",
-    "meaning": "同",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692320669",
-    "japanese": "school<div>こう</div><div><br /></div>",
-    "reading": "school<div>こう</div><div><br /></div>",
-    "meaning": "校",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697563397",
-    "japanese": "sea<div>かい</div><div>うみ</div>",
-    "reading": "sea<div>かい</div><div>うみ</div>",
-    "meaning": "海",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694757549",
-    "japanese": "self<div>じ</div><div><br /></div>",
-    "reading": "self<div>じ</div><div><br /></div>",
-    "meaning": "自",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692378451",
-    "japanese": "sentence, writing<div>ぶん</div><div><br /></div>",
-    "reading": "sentence, writing<div>ぶん</div><div><br /></div>",
-    "meaning": "文",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464592546725",
-    "japanese": "seven<div>しち</div><div>なな</div>",
-    "reading": "seven<div>しち</div><div>なな</div>",
-    "meaning": "七",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017590789",
-    "japanese": "sheet of something<div>まい</div><div><br /></div>",
-    "reading": "sheet of something<div>まい</div><div><br /></div>",
-    "meaning": "枚",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699179599",
-    "japanese": "shop, house<div>おく</div><div>や</div>",
-    "reading": "shop, house<div>おく</div><div>や</div>",
-    "meaning": "屋",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697887595",
-    "japanese": "shop<div>てん</div><div>みせ</div>",
-    "reading": "shop<div>てん</div><div>みせ</div>",
-    "meaning": "店",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744221346",
-    "japanese": "sideways<div>おう</div><div>よこ</div>",
-    "reading": "sideways<div>おう</div><div>よこ</div>",
-    "meaning": "横",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735296571",
-    "japanese": "silver<br /><div>ぎん</div><div><br /></div>",
-    "reading": "silver<br /><div>ぎん</div><div><br /></div>",
-    "meaning": "銀",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464592487333",
-    "japanese": "six<div>ろく、ろっ</div><div>むっ</div>",
-    "reading": "six<div>ろく、ろっ</div><div>むっ</div>",
-    "meaning": "六",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697452909",
-    "japanese": "sky, empty<div>くう</div><div>そら、あ、から</div>",
-    "reading": "sky, empty<div>くう</div><div>そら、あ、から</div>",
-    "meaning": "空",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692162606",
-    "japanese": "small<div>しょう</div><div>ちい</div>",
-    "reading": "small<div>しょう</div><div>ちい</div>",
-    "meaning": "小",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694706814",
-    "japanese": "snow<div>せつ</div><div>ゆき</div>",
-    "reading": "snow<div>せつ</div><div>ゆき</div>",
-    "meaning": "雪",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690932572",
-    "japanese": "soil<div>ど、と</div><div>つち</div>",
-    "reading": "soil<div>ど、と</div><div>つち</div>",
-    "meaning": "土",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698045710",
-    "japanese": "sound<div>おん</div><div>おと、ね</div>",
-    "reading": "sound<div>おん</div><div>おと、ね</div>",
-    "meaning": "音",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691600881",
-    "japanese": "south<div>なん</div><div>みなみ</div>",
-    "reading": "south<div>なん</div><div>みなみ</div>",
-    "meaning": "南",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697214966",
-    "japanese": "special<div>とく、とっ</div><div><br /></div>",
-    "reading": "special<div>とく、とっ</div><div><br /></div>",
-    "meaning": "特",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691197766",
-    "japanese": "spirit<div>き</div><div><br /></div>",
-    "reading": "spirit<div>き</div><div><br /></div>",
-    "meaning": "気",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470880798889",
-    "japanese": "spring<div>しゅん</div><div>はる</div>",
-    "reading": "spring<div>しゅん</div><div>はる</div>",
-    "meaning": "春",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475123986082",
-    "japanese": "stand, number of machines<div>たい、だい</div><div><br /></div>",
-    "reading": "stand, number of machines<div>たい、だい</div><div><br /></div>",
-    "meaning": "台",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735574248",
-    "japanese": "station<div>えき</div><div><br /></div>",
-    "reading": "station<div>えき</div><div><br /></div>",
-    "meaning": "駅",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695479918",
-    "japanese": "strong<div>きょう、ごう</div><div>つよ</div>",
-    "reading": "strong<div>きょう、ごう</div><div>つよ</div>",
-    "meaning": "強",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698355548",
-    "japanese": "summer<div>か</div><div>なつ</div>",
-    "reading": "summer<div>か</div><div>なつ</div>",
-    "meaning": "夏",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700138737",
-    "japanese": "target, -ish<div>てき</div><div>まと</div>",
-    "reading": "target, -ish<div>てき</div><div>まと</div>",
-    "meaning": "的",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735427739",
-    "japanese": "task, to use<div>よう</div><div><br /></div>",
-    "reading": "task, to use<div>よう</div><div><br /></div>",
-    "meaning": "用",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017516062",
-    "japanese": "tea<div>ちゃ、さ</div><div><br /></div>",
-    "reading": "tea<div>ちゃ、さ</div><div><br /></div>",
-    "meaning": "茶",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698409902",
-    "japanese": "temple<div>じ</div><div>てら、でら</div>",
-    "reading": "temple<div>じ</div><div>てら、でら</div>",
-    "meaning": "寺",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690608891",
-    "japanese": "ten thousand<div>まん</div><div><br /></div>",
-    "reading": "ten thousand<div>まん</div><div><br /></div>",
-    "meaning": "万",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690438068",
-    "japanese": "ten<div>じゅう、じゅっ、じっ</div><div>とお</div>",
-    "reading": "ten<div>じゅう、じゅっ、じっ</div><div>とお</div>",
-    "meaning": "十",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700401715",
-    "japanese": "test, to try<div>し</div><div>こころ</div>",
-    "reading": "test, to try<div>し</div><div>こころ</div>",
-    "meaning": "試",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735485481",
-    "japanese": "the end of<div>まつ</div><div>すえ</div>",
-    "reading": "the end of<div>まつ</div><div>すえ</div>",
-    "meaning": "末",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735606196",
-    "japanese": "theory, to explain<div>せつ、せっ</div><div><br /></div>",
-    "reading": "theory, to explain<div>せつ、せっ</div><div><br /></div>",
-    "meaning": "説",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692617918",
-    "japanese": "thing (intangible)<div>し</div><div>ごと、こと</div>",
-    "reading": "thing (intangible)<div>し</div><div>ごと、こと</div>",
-    "meaning": "事",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697044579",
-    "japanese": "thing (tangible)<div>ぶつ</div><div>もの</div>",
-    "reading": "thing (tangible)<div>ぶつ</div><div>もの</div>",
-    "meaning": "物",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690590777",
-    "japanese": "thousand<div>せん、ぜん</div><div><br /></div>",
-    "reading": "thousand<div>せん、ぜん</div><div><br /></div>",
-    "meaning": "千",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464529562538",
-    "japanese": "three<div>さん</div><div>みっ</div>",
-    "reading": "three<div>さん</div><div>みっ</div>",
-    "meaning": "三",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695925523",
-    "japanese": "time, degrees<div>ど</div><div><br /></div>",
-    "reading": "time, degrees<div>ど</div><div><br /></div>",
-    "meaning": "度",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690675874",
-    "japanese": "time<div>じ</div><div>とき</div>",
-    "reading": "time<div>じ</div><div>とき</div>",
-    "meaning": "時",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700644134",
-    "japanese": "title, topic<div>だい</div><div><br /></div>",
-    "reading": "title, topic<div>だい</div><div><br /></div>",
-    "meaning": "題",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697532723",
-    "japanese": "to arrive/reach, to wear<div>ちゃく</div><div>つ、き</div>",
-    "reading": "to arrive/reach, to wear<div>ちゃく</div><div>つ、き</div>",
-    "meaning": "着",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699001040",
-    "japanese": "to begin<div>し</div><div>はじ</div>",
-    "reading": "to begin<div>し</div><div>はじ</div>",
-    "meaning": "始",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698542961",
-    "japanese": "to borrow<div>しゃく、しゃっ</div><div>か</div>",
-    "reading": "to borrow<div>しゃく、しゃっ</div><div>か</div>",
-    "meaning": "借",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698589593",
-    "japanese": "to build<div>けん</div><div>たて、た</div>",
-    "reading": "to build<div>けん</div><div>たて、た</div>",
-    "meaning": "建",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694477275",
-    "japanese": "to buy<div>ばい</div><div>か</div>",
-    "reading": "to buy<div>ばい</div><div>か</div>",
-    "meaning": "買",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744314231",
-    "japanese": "to change into<div>か、け</div><div>ば</div>",
-    "reading": "to change into<div>か、け</div><div>ば</div>",
-    "meaning": "化",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699662350",
-    "japanese": "to collect, to gather<div>しゅう</div><div>あつ</div>",
-    "reading": "to collect, to gather<div>しゅう</div><div>あつ</div>",
-    "meaning": "集",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694313285",
-    "japanese": "to come<div>らい</div><div>く、き、こ</div>",
-    "reading": "to come<div>らい</div><div>く、き、こ</div>",
-    "meaning": "来",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744236163",
-    "japanese": "to compare<div>ひ</div><div>くら</div>",
-    "reading": "to compare<div>ひ</div><div>くら</div>",
-    "meaning": "比",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472018154534",
-    "japanese": "to continue<div>ぞく</div><div>つづ</div>",
-    "reading": "to continue<div>ぞく</div><div>つづ</div>",
-    "meaning": "続",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699933040",
-    "japanese": "to copy, capture image<div>しゃ</div><div>うつ</div>",
-    "reading": "to copy, capture image<div>しゃ</div><div>うつ</div>",
-    "meaning": "写",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697838923",
-    "japanese": "to cut<div>せつ</div><div>き、きっ</div>",
-    "reading": "to cut<div>せつ</div><div>き、きっ</div>",
-    "meaning": "切",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124293274",
-    "japanese": "to deliver<div>ぱい、はい</div><div>くば</div>",
-    "reading": "to deliver<div>ぱい、はい</div><div>くば</div>",
-    "meaning": "配",
+    "japanese": "意",
+    "reading": "い",
+    "meaning": "mind, meaning",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3256,9 +91,9 @@
   },
   {
     "id": "genki-1-1-1475744345381",
-    "japanese": "to differ<div>い</div><div>ちが</div>",
-    "reading": "to differ<div>い</div><div>ちが</div>",
-    "meaning": "違",
+    "japanese": "違",
+    "reading": "い",
+    "meaning": "to differ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3270,10 +105,40 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1472018010128",
-    "japanese": "to discontinue<div>ぜっ、ぜつ</div><div>た</div>",
-    "reading": "to discontinue<div>ぜっ、ぜつ</div><div>た</div>",
-    "meaning": "絶",
+    "id": "genki-1-1-1464698104764",
+    "japanese": "医",
+    "reading": "い",
+    "meaning": "doctor, medicine",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464529102166",
+    "japanese": "一",
+    "reading": "いち、いっ",
+    "meaning": "one",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692458596",
+    "japanese": "員",
+    "reading": "員",
+    "meaning": "memberいん",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3286,9 +151,9 @@
   },
   {
     "id": "genki-1-1-1464691505104",
-    "japanese": "to drink<div>いん</div><div>の</div>",
-    "reading": "to drink<div>いん</div><div>の</div>",
-    "meaning": "飲",
+    "japanese": "飲",
+    "reading": "いん",
+    "meaning": "to drink",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3300,10 +165,10 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1464691485717",
-    "japanese": "to eat<div>しょく</div><div>た</div>",
-    "reading": "to eat<div>しょく</div><div>た</div>",
-    "meaning": "食",
+    "id": "genki-1-1-1464695055327",
+    "japanese": "院",
+    "reading": "いん",
+    "meaning": "institution",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3315,10 +180,10 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1464692429942",
-    "japanese": "to enter<div>にゅう</div><div>はい、いり、い</div>",
-    "reading": "to enter<div>にゅう</div><div>はい、いり、い</div>",
-    "meaning": "入",
+    "id": "genki-1-1-1464691756541",
+    "japanese": "右",
+    "reading": "う、ゆう",
+    "meaning": "right",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3330,1000 +195,10 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1464700457130",
-    "japanese": "to examine<div>けん</div><div><br /></div>",
-    "reading": "to examine<div>けん</div><div><br /></div>",
-    "meaning": "験",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695525421",
-    "japanese": "to exist<div>ゆう</div><div>あ</div>",
-    "reading": "to exist<div>ゆう</div><div>あ</div>",
-    "meaning": "有",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691738921",
-    "japanese": "to exit<div>しゅっ、しゅつ</div><div>で、だ</div>",
-    "reading": "to exit<div>しゅっ、しゅつ</div><div>で、だ</div>",
-    "meaning": "出",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699768473",
-    "japanese": "to express, to surface<div>ぴょう、ひょう</div><div>あらわ、おもて</div>",
-    "reading": "to express, to surface<div>ぴょう、ひょう</div><div>あらわ、おもて</div>",
-    "meaning": "表",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735680410",
-    "japanese": "to forget<div>ぼう</div><div>わす</div>",
-    "reading": "to forget<div>ぼう</div><div>わす</div>",
-    "meaning": "忘",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744149705",
-    "japanese": "to get angry<div>ど</div><div>おこ、いか</div>",
-    "reading": "to get angry<div>ど</div><div>おこ、いか</div>",
-    "meaning": "怒",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695708453",
-    "japanese": "to get up<div>き</div><div>お</div>",
-    "reading": "to get up<div>き</div><div>お</div>",
-    "meaning": "起",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698729848",
-    "japanese": "to go through, to commute<div>つう</div><div>とお、かよ</div>",
-    "reading": "to go through, to commute<div>つう</div><div>とお、かよ</div>",
-    "meaning": "通",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691449664",
-    "japanese": "to go<div>こう、ぎょう</div><div>い</div>",
-    "reading": "to go<div>こう、ぎょう</div><div>い</div>",
-    "meaning": "行",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881127712",
-    "japanese": "to graduate<div>そつ</div><div><br /></div>",
-    "reading": "to graduate<div>そつ</div><div><br /></div>",
-    "meaning": "卒",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698024234",
-    "japanese": "to hit<div>とう</div><div>あ</div>",
-    "reading": "to hit<div>とう</div><div>あ</div>",
-    "meaning": "当",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694858516",
-    "japanese": "to hold<div>じ</div><div>も</div>",
-    "reading": "to hold<div>じ</div><div>も</div>",
-    "meaning": "持",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697968017",
-    "japanese": "to hurry, emergency<div>きゅう</div><div>いそ</div>",
-    "reading": "to hurry, emergency<div>きゅう</div><div>いそ</div>",
-    "meaning": "急",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744490326",
-    "japanese": "to inspect<div>さ</div><div><br /></div>",
-    "reading": "to inspect<div>さ</div><div><br /></div>",
-    "meaning": "査",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700296235",
-    "japanese": "to instruct<div>じゅ</div><div>さず</div>",
-    "reading": "to instruct<div>じゅ</div><div>さず</div>",
-    "meaning": "授",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744470893",
-    "japanese": "to investigate<div>ちょう</div><div>しら</div>",
-    "reading": "to investigate<div>ちょう</div><div>しら</div>",
-    "meaning": "調",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735459122",
-    "japanese": "to keep, to protect<div>す、しゅ</div><div>まも</div>",
-    "reading": "to keep, to protect<div>す、しゅ</div><div>まも</div>",
-    "meaning": "守",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694282454",
-    "japanese": "to know<div>ち</div><div>し</div>",
-    "reading": "to know<div>ち</div><div>し</div>",
-    "meaning": "知",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017970474",
-    "japanese": "to laugh<div>しょう</div><div>わら、え</div>",
-    "reading": "to laugh<div>しょう</div><div>わら、え</div>",
-    "meaning": "笑",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699418813",
-    "japanese": "to learn<div>しゅう</div><div>なら</div>",
-    "reading": "to learn<div>しゅう</div><div>なら</div>",
-    "meaning": "習",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700482198",
-    "japanese": "to lend, loan<div>たい</div><div>か</div>",
-    "reading": "to lend, loan<div>たい</div><div>か</div>",
-    "meaning": "貸",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694936760",
-    "japanese": "to like, be fond of<div>こう</div><div>す、この</div>",
-    "reading": "to like, be fond of<div>こう</div><div>す、この</div>",
-    "meaning": "好",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695873208",
-    "japanese": "to link, to lead<div>れん</div><div>つ</div>",
-    "reading": "to link, to lead<div>れん</div><div>つ</div>",
-    "meaning": "連",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692505026",
-    "japanese": "to listen<div>ぶん</div><div>き</div>",
-    "reading": "to listen<div>ぶん</div><div>き</div>",
-    "meaning": "聞",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694374090",
-    "japanese": "to live (locationwise)<div>じゅう</div><div>す</div>",
-    "reading": "to live (locationwise)<div>じゅう</div><div>す</div>",
-    "meaning": "住",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695431381",
-    "japanese": "to make efforts<div>べん</div><div>つと</div>",
-    "reading": "to make efforts<div>べん</div><div>つと</div>",
-    "meaning": "勉",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692526527",
-    "japanese": "to make<div>さく</div><div>つく</div>",
-    "reading": "to make<div>さく</div><div>つく</div>",
-    "meaning": "作",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124231612",
-    "japanese": "to measure<div>けい</div><div>はか</div>",
-    "reading": "to measure<div>けい</div><div>はか</div>",
-    "meaning": "計",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692184595",
-    "japanese": "to meet<div>かい</div><div>あ</div>",
-    "reading": "to meet<div>かい</div><div>あ</div>",
-    "meaning": "会",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699305018",
-    "japanese": "to move<div>どう</div><div>うご</div>",
-    "reading": "to move<div>どう</div><div>うご</div>",
-    "meaning": "動",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699139602",
-    "japanese": "to open<div>かい</div><div>あ、ひら</div>",
-    "reading": "to open<div>かい</div><div>あ、ひら</div>",
-    "meaning": "開",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475123951767",
-    "japanese": "to pass through<div>けい</div><div><br /></div>",
-    "reading": "to pass through<div>けい</div><div><br /></div>",
-    "meaning": "経",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017835560",
-    "japanese": "to pay<div><br /><div>はら、ばら</div></div>",
-    "reading": "to pay<div><br /><div>はら、ばら</div></div>",
-    "meaning": "払",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470881231754",
-    "japanese": "to polish, study<div>けん</div><div>と</div>",
-    "reading": "to polish, study<div>けん</div><div>と</div>",
-    "meaning": "研",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698332155",
-    "japanese": "to pour, to shed tears<div>ちゅう</div><div>そそ</div>",
-    "reading": "to pour, to shed tears<div>ちゅう</div><div>そそ</div>",
-    "meaning": "注",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692737896",
-    "japanese": "to read<div>どく</div><div>よ</div>",
-    "reading": "to read<div>どく</div><div>よ</div>",
-    "meaning": "読",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695182360",
-    "japanese": "to reflect, projection<div>えい</div><div>うつ</div>",
-    "reading": "to reflect, projection<div>えい</div><div>うつ</div>",
-    "meaning": "映",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735547582",
-    "japanese": "to remain<div>ざん</div><div>のこ</div>",
-    "reading": "to remain<div>ざん</div><div>のこ</div>",
-    "meaning": "残",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692689901",
-    "japanese": "to rest<div>きゅう</div><div>やす</div>",
-    "reading": "to rest<div>きゅう</div><div>やす</div>",
-    "meaning": "休",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692402249",
-    "japanese": "to return<div>き</div><div>かえ</div>",
-    "reading": "to return<div>き</div><div>かえ</div>",
-    "meaning": "帰",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697990442",
-    "japanese": "to ride<div>じょう</div><div>の</div>",
-    "reading": "to ride<div>じょう</div><div>の</div>",
-    "meaning": "乗",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698493225",
-    "japanese": "to roll<div>てん</div><div>ころ</div>",
-    "reading": "to roll<div>てん</div><div>ころ</div>",
-    "meaning": "転",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698558960",
-    "japanese": "to run<div>そう</div><div>はし</div>",
-    "reading": "to run<div>そう</div><div>はし</div>",
-    "meaning": "走",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692718027",
-    "japanese": "to say<div>げん</div><div>い、こと</div>",
-    "reading": "to say<div>げん</div><div>い、こと</div>",
-    "meaning": "言",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691384648",
-    "japanese": "to see<div>けん</div><div>み</div>",
-    "reading": "to see<div>けん</div><div>み</div>",
-    "meaning": "見",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694449430",
-    "japanese": "to sell<div>ばい</div><div>う</div>",
-    "reading": "to sell<div>ばい</div><div>う</div>",
-    "meaning": "売",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124157875",
-    "japanese": "to send<div>そう</div><div>おく</div>",
-    "reading": "to send<div>そう</div><div>おく</div>",
-    "meaning": "送",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475744554177",
-    "japanese": "to sense, to feel<div>かん</div><div><br /></div>",
-    "reading": "to sense, to feel<div>かん</div><div><br /></div>",
-    "meaning": "感",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695894727",
-    "japanese": "to separate<div>べつ</div><div>わか</div>",
-    "reading": "to separate<div>べつ</div><div>わか</div>",
-    "meaning": "別",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692569467",
-    "japanese": "to serve, work<div>し</div><div>つか</div>",
-    "reading": "to serve, work<div>し</div><div>つか</div>",
-    "meaning": "仕",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695328024",
-    "japanese": "to sing<div>か</div><div>うた</div>",
-    "reading": "to sing<div>か</div><div>うた</div>",
-    "meaning": "歌",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694211778",
-    "japanese": "to speak<div>わ</div><div>はな、はなし</div>",
-    "reading": "to speak<div>わ</div><div>はな、はなし</div>",
-    "meaning": "話",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694734761",
-    "japanese": "to stand<div>りつ</div><div>た</div>",
-    "reading": "to stand<div>りつ</div><div>た</div>",
-    "meaning": "立",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699725488",
-    "japanese": "to start, to reveal<div>はっ、はつ、ぱつ</div><div><br /></div>",
-    "reading": "to start, to reveal<div>はっ、はつ、ぱつ</div><div><br /></div>",
-    "meaning": "発",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464697743060",
-    "japanese": "to stay, to keep<div>りゅう、る</div><div><br /></div>",
-    "reading": "to stay, to keep<div>りゅう、る</div><div><br /></div>",
-    "meaning": "留",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017548106",
-    "japanese": "to stop<div>し</div><div>と</div>",
-    "reading": "to stop<div>し</div><div>と</div>",
-    "meaning": "止",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699327822",
-    "japanese": "to teach<div>きょう</div><div>おし</div>",
-    "reading": "to teach<div>きょう</div><div>おし</div>",
-    "meaning": "教",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699111786",
-    "japanese": "to think, consider, idea<div>こう</div><div>かんが</div>",
-    "reading": "to think, consider, idea<div>こう</div><div>かんが</div>",
-    "meaning": "考",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692757369",
-    "japanese": "to think<div>し</div><div>おも</div>",
-    "reading": "to think<div>し</div><div>おも</div>",
-    "meaning": "思",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699505515",
-    "japanese": "to tie, to join<div>けっ、けつ</div><div>むす</div>",
-    "reading": "to tie, to join<div>けっ、けつ</div><div>むす</div>",
-    "meaning": "結",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695749557",
-    "japanese": "to use<div>し</div><div>つか</div>",
-    "reading": "to use<div>し</div><div>つか</div>",
-    "meaning": "使",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735514486",
-    "japanese": "to wait<div>たい</div><div>ま、まち</div>",
-    "reading": "to wait<div>たい</div><div>ま、まち</div>",
-    "meaning": "待",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700056303",
-    "japanese": "to walk<div>ほ、ぽ</div><div>ある</div>",
-    "reading": "to walk<div>ほ、ぽ</div><div>ある</div>",
-    "meaning": "歩",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464695784343",
-    "japanese": "to work<div>どう</div><div>はたら、ばたら</div>",
-    "reading": "to work<div>どう</div><div>はたら、ばたら</div>",
-    "meaning": "働",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475735271963",
-    "japanese": "to write down<div>き</div><div><br /></div>",
-    "reading": "to write down<div>き</div><div><br /></div>",
-    "meaning": "記",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694015112",
-    "japanese": "to write<div>しょ</div><div>か</div>",
-    "reading": "to write<div>しょ</div><div>か</div>",
-    "meaning": "書",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694493985",
-    "japanese": "town<div>ちょう</div><div>まち</div>",
-    "reading": "town<div>ちょう</div><div>まち</div>",
-    "meaning": "町",
+    "id": "genki-1-1-1464693924039",
+    "japanese": "雨",
+    "reading": "う",
+    "meaning": "rain",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4336,9 +211,9 @@
   },
   {
     "id": "genki-1-1-1464699277945",
-    "japanese": "transport, luck<div>うん</div><div>はこ</div>",
-    "reading": "transport, luck<div>うん</div><div>はこ</div>",
-    "meaning": "運",
+    "japanese": "運",
+    "reading": "うん",
+    "meaning": "transport, luck",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4350,10 +225,10 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1464695549736",
-    "japanese": "travel<div>りょ</div><div>たび</div>",
-    "reading": "travel<div>りょ</div><div>たび</div>",
-    "meaning": "旅",
+    "id": "genki-1-1-1464695182360",
+    "japanese": "映",
+    "reading": "えい",
+    "meaning": "to reflect, projection",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4365,10 +240,10 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1464690882063",
-    "japanese": "tree<div>もく</div><div>き</div>",
-    "reading": "tree<div>もく</div><div>き</div>",
-    "meaning": "木",
+    "id": "genki-1-1-1464697868436",
+    "japanese": "英",
+    "reading": "えい",
+    "meaning": "English, excellent",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4380,310 +255,10 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1464700028880",
-    "japanese": "true, genuine<div>しん</div><div>ま</div>",
-    "reading": "true, genuine<div>しん</div><div>ま</div>",
-    "meaning": "真",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464529251086",
-    "japanese": "two<div>に</div><div>ふた</div>",
-    "reading": "two<div>に</div><div>ふた</div>",
-    "meaning": "二",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691003693",
-    "japanese": "up<div>じょう</div><div>うえ、のぼ</div>",
-    "reading": "up<div>じょう</div><div>うえ、のぼ</div>",
-    "meaning": "上",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472018110295",
-    "japanese": "utmost<div>さい</div><div>もっと</div>",
-    "reading": "utmost<div>さい</div><div>もっと</div>",
-    "meaning": "最",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464700353727",
-    "japanese": "vocation, business<div>ぎょう</div><div><br /></div>",
-    "reading": "vocation, business<div>ぎょう</div><div><br /></div>",
-    "meaning": "業",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1472017486097",
-    "japanese": "voice<div>せい</div><div>こえ</div>",
-    "reading": "voice<div>せい</div><div>こえ</div>",
-    "meaning": "声",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690861842",
-    "japanese": "water<div>すい</div><div>みず</div>",
-    "reading": "water<div>すい</div><div>みず</div>",
-    "meaning": "水",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694670177",
-    "japanese": "way, road<div>どう</div><div>みち</div>",
-    "reading": "way, road<div>どう</div><div>みち</div>",
-    "meaning": "道",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699014162",
-    "japanese": "week<div>しゅう</div><div><br /></div>",
-    "reading": "week<div>しゅう</div><div><br /></div>",
-    "meaning": "週",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464690963334",
-    "japanese": "weekday<div>よう</div><div><br /></div>",
-    "reading": "weekday<div>よう</div><div><br /></div>",
-    "meaning": "曜",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691572059",
-    "japanese": "west<div>せい、さい</div><div>にし</div>",
-    "reading": "west<div>せい、さい</div><div>にし</div>",
-    "meaning": "西",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692792302",
-    "japanese": "what<div><br /><div>なに、なん</div></div>",
-    "reading": "what<div><br /><div>なに、なん</div></div>",
-    "meaning": "何",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464693905232",
-    "japanese": "white<div>はく</div><div>しろ</div>",
-    "reading": "white<div>はく</div><div>しろ</div>",
-    "meaning": "白",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698440557",
-    "japanese": "wide, spacious<div>こう</div><div>ひろ</div>",
-    "reading": "wide, spacious<div>こう</div><div>ひろ</div>",
-    "meaning": "広",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1475124005224",
-    "japanese": "wind<div>ふう、ふ</div><div>かぜ</div>",
-    "reading": "wind<div>ふう、ふ</div><div>かぜ</div>",
-    "meaning": "風",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1470880851972",
-    "japanese": "winter<div>とう</div><div>ふゆ</div>",
-    "reading": "winter<div>とう</div><div>ふゆ</div>",
-    "meaning": "冬",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464691340524",
-    "japanese": "woman<div>じょ</div><div>おんな</div>",
-    "reading": "woman<div>じょ</div><div>おんな</div>",
-    "meaning": "女",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464692349579",
-    "japanese": "word, language<div>ご</div><div><br /></div>",
-    "reading": "word, language<div>ご</div><div><br /></div>",
-    "meaning": "語",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464698913380",
-    "japanese": "world, view, limit<div>かい</div><div><br /></div>",
-    "reading": "world, view, limit<div>かい</div><div><br /></div>",
-    "meaning": "界",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464699401636",
-    "japanese": "year, age<div>さい、せい</div><div><br /></div>",
-    "reading": "year, age<div>さい、せい</div><div><br /></div>",
-    "meaning": "歳",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "n5",
-      "lesson-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1464694432317",
-    "japanese": "year<div>ねん</div><div>とし</div>",
-    "reading": "year<div>ねん</div><div>とし</div>",
-    "meaning": "年",
+    "id": "genki-1-1-1475735574248",
+    "japanese": "駅",
+    "reading": "えき",
+    "meaning": "station",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4696,9 +271,1734 @@
   },
   {
     "id": "genki-1-1-1464690642880",
-    "japanese": "yen, circle<div>えん</div><div>まる</div>",
-    "reading": "yen, circle<div>えん</div><div>まる</div>",
-    "meaning": "円",
+    "japanese": "円",
+    "reading": "えん",
+    "meaning": "yen, circle",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744221346",
+    "japanese": "横",
+    "reading": "おう",
+    "meaning": "sideways",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699179599",
+    "japanese": "屋",
+    "reading": "おく",
+    "meaning": "shop, house",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698045710",
+    "japanese": "音",
+    "reading": "おん",
+    "meaning": "sound",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691044440",
+    "japanese": "下",
+    "reading": "か、へ",
+    "meaning": "down",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744314231",
+    "japanese": "化",
+    "reading": "か、け",
+    "meaning": "to change into",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692792302",
+    "japanese": "何",
+    "reading": "なに、なん",
+    "meaning": "what",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698355548",
+    "japanese": "夏",
+    "reading": "か",
+    "meaning": "summer",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694188114",
+    "japanese": "家",
+    "reading": "か",
+    "meaning": "house",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744526173",
+    "japanese": "果",
+    "reading": "か",
+    "meaning": "fruit, result",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695328024",
+    "japanese": "歌",
+    "reading": "か",
+    "meaning": "to sing",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690846975",
+    "japanese": "火",
+    "reading": "か",
+    "meaning": "fire",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470880892699",
+    "japanese": "花",
+    "reading": "か",
+    "meaning": "flower",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695310972",
+    "japanese": "画",
+    "reading": "が、かく",
+    "meaning": "picture",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692184595",
+    "japanese": "会",
+    "reading": "かい",
+    "meaning": "to meet",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735367931",
+    "japanese": "回",
+    "reading": "かい",
+    "meaning": "number of times, to turn",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697563397",
+    "japanese": "海",
+    "reading": "かい",
+    "meaning": "sea",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698913380",
+    "japanese": "界",
+    "reading": "かい",
+    "meaning": "world, view, limit",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699139602",
+    "japanese": "開",
+    "reading": "かい",
+    "meaning": "to open",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692042886",
+    "japanese": "外",
+    "reading": "がい",
+    "meaning": "outside",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692028798",
+    "japanese": "学",
+    "reading": "がく、がっ",
+    "meaning": "learning",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698088258",
+    "japanese": "楽",
+    "reading": "がく、がっ、らく",
+    "meaning": "pleasure",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699873096",
+    "japanese": "活",
+    "reading": "かつ、かっ",
+    "meaning": "lively, active",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744554177",
+    "japanese": "感",
+    "reading": "かん",
+    "meaning": "to sense, to feel",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881105884",
+    "japanese": "漢",
+    "reading": "かん",
+    "meaning": "China",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694178196",
+    "japanese": "間",
+    "reading": "かん",
+    "meaning": "between",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700538345",
+    "japanese": "館",
+    "reading": "かん",
+    "meaning": "building, hall",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744068373",
+    "japanese": "顔",
+    "reading": "がん",
+    "meaning": "face",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692402249",
+    "japanese": "帰",
+    "reading": "き",
+    "meaning": "to return",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691197766",
+    "japanese": "気",
+    "reading": "き",
+    "meaning": "spirit",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735271963",
+    "japanese": "記",
+    "reading": "き",
+    "meaning": "to write down",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695708453",
+    "japanese": "起",
+    "reading": "き",
+    "meaning": "to get up",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692689901",
+    "japanese": "休",
+    "reading": "きゅう",
+    "meaning": "to rest",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697968017",
+    "japanese": "急",
+    "reading": "きゅう",
+    "meaning": "to hurry, emergency",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470891183628",
+    "japanese": "究",
+    "reading": "きゅう",
+    "meaning": "research",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695728039",
+    "japanese": "牛",
+    "reading": "ぎゅう",
+    "meaning": "cow",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697940457",
+    "japanese": "去",
+    "reading": "きょ、こ",
+    "meaning": "past,to leave",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698390751",
+    "japanese": "魚",
+    "reading": "ぎょ",
+    "meaning": "fish",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692123706",
+    "japanese": "京",
+    "reading": "きょう",
+    "meaning": "capital",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698842251",
+    "japanese": "供",
+    "reading": "きょう",
+    "meaning": "companion, offer",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695479918",
+    "japanese": "強",
+    "reading": "きょう、ごう",
+    "meaning": "strong",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699327822",
+    "japanese": "教",
+    "reading": "きょう",
+    "meaning": "to teach",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700353727",
+    "japanese": "業",
+    "reading": "ぎょう",
+    "meaning": "vocation, business",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694969007",
+    "japanese": "近",
+    "reading": "きん",
+    "meaning": "near, close",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690904388",
+    "japanese": "金",
+    "reading": "きん",
+    "meaning": "gold, money",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735296571",
+    "japanese": "銀",
+    "reading": "ぎん",
+    "meaning": "silver",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690350669",
+    "japanese": "九",
+    "reading": "きゅう、く",
+    "meaning": "nine",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697452909",
+    "japanese": "空",
+    "reading": "くう",
+    "meaning": "sky, empty",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881069766",
+    "japanese": "兄",
+    "reading": "きょう",
+    "meaning": "older brother",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475123951767",
+    "japanese": "経",
+    "reading": "けい",
+    "meaning": "to pass through",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124231612",
+    "japanese": "計",
+    "reading": "けい",
+    "meaning": "to measure",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699505515",
+    "japanese": "結",
+    "reading": "けっ、けつ",
+    "meaning": "to tie, to join",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690814726",
+    "japanese": "月",
+    "reading": "げつ、がつ",
+    "meaning": "moon, month",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698589593",
+    "japanese": "建",
+    "reading": "けん",
+    "meaning": "to build",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124021521",
+    "japanese": "犬",
+    "reading": "けん",
+    "meaning": "dog",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881231754",
+    "japanese": "研",
+    "reading": "けん",
+    "meaning": "to polish, study",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691384648",
+    "japanese": "見",
+    "reading": "けん",
+    "meaning": "to see",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700457130",
+    "japanese": "験",
+    "reading": "けん",
+    "meaning": "to examine",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691175675",
+    "japanese": "元",
+    "reading": "げん、がん",
+    "meaning": "origin",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692718027",
+    "japanese": "言",
+    "reading": "げん",
+    "meaning": "to say",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694259070",
+    "japanese": "古",
+    "reading": "こ",
+    "meaning": "old",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464529842129",
+    "japanese": "五",
+    "reading": "ご",
+    "meaning": "five",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464693753247",
+    "japanese": "午",
+    "reading": "ご",
+    "meaning": "noon",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464693774509",
+    "japanese": "後",
+    "reading": "ご",
+    "meaning": "after",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692349579",
+    "japanese": "語",
+    "reading": "ご",
+    "meaning": "word, language",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691702048",
+    "japanese": "口",
+    "reading": "こう",
+    "meaning": "mouth",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694936760",
+    "japanese": "好",
+    "reading": "こう",
+    "meaning": "to like, be fond of",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881177784",
+    "japanese": "工",
+    "reading": "こう、く",
+    "meaning": "craft, construction",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124198003",
+    "japanese": "幸",
+    "reading": "こう",
+    "meaning": "happiness",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698440557",
+    "japanese": "広",
+    "reading": "こう",
+    "meaning": "wide, spacious",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692320669",
+    "japanese": "校",
+    "reading": "こう",
+    "meaning": "school",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697487250",
+    "japanese": "港",
+    "reading": "こう",
+    "meaning": "port, harbour",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699111786",
+    "japanese": "考",
+    "reading": "こう",
+    "meaning": "to think, consider, idea",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691449664",
+    "japanese": "行",
+    "reading": "こう、ぎょう",
+    "meaning": "to go",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692292962",
+    "japanese": "高",
+    "reading": "こう",
+    "meaning": "high",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692069808",
+    "japanese": "国",
+    "reading": "こく、ごく",
+    "meaning": "country",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735401946",
+    "japanese": "黒",
+    "reading": "こく",
+    "meaning": "black",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691280040",
+    "japanese": "今",
+    "reading": "こん",
+    "meaning": "now",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699546891",
+    "japanese": "婚",
+    "reading": "こん",
+    "meaning": "marriage",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691775046",
+    "japanese": "左",
+    "reading": "さ",
+    "meaning": "left",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744490326",
+    "japanese": "査",
+    "reading": "さ",
+    "meaning": "to inspect",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472018110295",
+    "japanese": "最",
+    "reading": "さい",
+    "meaning": "utmost",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699401636",
+    "japanese": "歳",
+    "reading": "さい、せい",
+    "meaning": "year, age",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692526527",
+    "japanese": "作",
+    "reading": "さく",
+    "meaning": "to make",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017458451",
+    "japanese": "皿",
+    "reading": "さら、ざら",
+    "meaning": "plate",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464529562538",
+    "japanese": "三",
+    "reading": "さん",
+    "meaning": "three",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691101462",
+    "japanese": "山",
+    "reading": "さん",
+    "meaning": "mountain",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735547582",
+    "japanese": "残",
+    "reading": "ざん",
+    "meaning": "to remain",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692569467",
+    "japanese": "仕",
+    "reading": "し",
+    "meaning": "to serve, work",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695749557",
+    "japanese": "使",
+    "reading": "し",
+    "meaning": "to use",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464529806520",
+    "japanese": "四",
+    "reading": "し",
+    "meaning": "four",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699001040",
+    "japanese": "始",
+    "reading": "し",
+    "meaning": "to begin",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881027928",
+    "japanese": "姉",
+    "reading": "し",
+    "meaning": "older sister",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692138766",
+    "japanese": "子",
+    "reading": "し",
+    "meaning": "child",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695341321",
+    "japanese": "市",
+    "reading": "し",
+    "meaning": "city",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692757369",
+    "japanese": "思",
+    "reading": "し",
+    "meaning": "to think",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017548106",
+    "japanese": "止",
+    "reading": "し",
+    "meaning": "to stop",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698153271",
+    "japanese": "死",
+    "reading": "し",
+    "meaning": "death, to die",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691257309",
+    "japanese": "私",
+    "reading": "し",
+    "meaning": "I, private",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694902586",
+    "japanese": "紙",
+    "reading": "し",
+    "meaning": "paper",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700401715",
+    "japanese": "試",
+    "reading": "し",
+    "meaning": "test, to try",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692617918",
+    "japanese": "事",
+    "reading": "し",
+    "meaning": "thing (intangible)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699837307",
+    "japanese": "字",
+    "reading": "じ",
+    "meaning": "character, letter",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698409902",
+    "japanese": "寺",
+    "reading": "じ",
+    "meaning": "temple",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694858516",
+    "japanese": "持",
+    "reading": "じ",
+    "meaning": "to hold",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690675874",
+    "japanese": "時",
+    "reading": "じ",
+    "meaning": "time",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692775840",
+    "japanese": "次",
+    "reading": "じ",
+    "meaning": "next",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694757549",
+    "japanese": "自",
+    "reading": "じ",
+    "meaning": "self",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464592546725",
+    "japanese": "七",
+    "reading": "しち",
+    "meaning": "seven",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699351564",
+    "japanese": "室",
+    "reading": "しつ",
+    "meaning": "room",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881282723",
+    "japanese": "質",
+    "reading": "しつ、しち",
+    "meaning": "quality, matter",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699933040",
+    "japanese": "写",
+    "reading": "しゃ",
+    "meaning": "to copy, capture image",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692219172",
+    "japanese": "社",
+    "reading": "しゃ、じゃ",
+    "meaning": "company",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698129463",
+    "japanese": "者",
+    "reading": "しゃ",
+    "meaning": "person",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692661861",
+    "japanese": "車",
+    "reading": "しゃ",
+    "meaning": "car",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698542961",
+    "japanese": "借",
+    "reading": "しゃく、しゃっ",
+    "meaning": "to borrow",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4711,9 +2011,1314 @@
   },
   {
     "id": "genki-1-1-1475124127920",
-    "japanese": "young<div>わか</div><div><br /></div>",
-    "reading": "young<div>わか</div><div><br /></div>",
-    "meaning": "若",
+    "japanese": "若",
+    "reading": "わか",
+    "meaning": "young",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699449936",
+    "japanese": "主",
+    "reading": "しゅ",
+    "meaning": "main, lord, master",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735459122",
+    "japanese": "守",
+    "reading": "す、しゅ",
+    "meaning": "to keep, to protect",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694876123",
+    "japanese": "手",
+    "reading": "しゅ",
+    "meaning": "hand",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700296235",
+    "japanese": "授",
+    "reading": "じゅ",
+    "meaning": "to instruct",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470880827013",
+    "japanese": "秋",
+    "reading": "しゅう",
+    "meaning": "autumn",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700584116",
+    "japanese": "終",
+    "reading": "しゅう",
+    "meaning": "end, over, last",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699418813",
+    "japanese": "習",
+    "reading": "しゅう",
+    "meaning": "to learn",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699014162",
+    "japanese": "週",
+    "reading": "しゅう",
+    "meaning": "week",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699662350",
+    "japanese": "集",
+    "reading": "しゅう",
+    "meaning": "to collect, to gather",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694374090",
+    "japanese": "住",
+    "reading": "じゅう",
+    "meaning": "to live (locationwise)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690438068",
+    "japanese": "十",
+    "reading": "とお",
+    "meaning": "ten",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124073469",
+    "japanese": "重",
+    "reading": "じゅう、ちょう",
+    "meaning": "heavy, to pile up",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700617184",
+    "japanese": "宿",
+    "reading": "しゅく",
+    "meaning": "inn, to lodge in",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691738921",
+    "japanese": "出",
+    "reading": "しゅっ、しゅつ",
+    "meaning": "to exit",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470880798889",
+    "japanese": "春",
+    "reading": "しゅん",
+    "meaning": "spring",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124114652",
+    "japanese": "初",
+    "reading": "しょ",
+    "meaning": "first",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695375327",
+    "japanese": "所",
+    "reading": "じょ、しょ",
+    "meaning": "place",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694015112",
+    "japanese": "書",
+    "reading": "しょ",
+    "meaning": "to write",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691340524",
+    "japanese": "女",
+    "reading": "じょ",
+    "meaning": "woman",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692162606",
+    "japanese": "小",
+    "reading": "しょう",
+    "meaning": "small",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694241106",
+    "japanese": "少",
+    "reading": "しょう",
+    "meaning": "few, little bit",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017970474",
+    "japanese": "笑",
+    "reading": "しょう",
+    "meaning": "to laugh",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691003693",
+    "japanese": "上",
+    "reading": "じょう",
+    "meaning": "up",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697990442",
+    "japanese": "乗",
+    "reading": "じょう",
+    "meaning": "to ride",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698655762",
+    "japanese": "場",
+    "reading": "じょう",
+    "meaning": "place",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744120782",
+    "japanese": "情",
+    "reading": "じょう",
+    "meaning": "emotion, condition",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695990984",
+    "japanese": "色",
+    "reading": "しき、しょく",
+    "meaning": "colour",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691485717",
+    "japanese": "食",
+    "reading": "しょく",
+    "meaning": "to eat",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475123917035",
+    "japanese": "信",
+    "reading": "信",
+    "meaning": "",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017910260",
+    "japanese": "心",
+    "reading": "しん",
+    "meaning": "heart, mind",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692485484",
+    "japanese": "新",
+    "reading": "しん",
+    "meaning": "new",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700028880",
+    "japanese": "真",
+    "reading": "しん",
+    "meaning": "true, genuine",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695659515",
+    "japanese": "神",
+    "reading": "じん、しん、こう",
+    "meaning": "God",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697805748",
+    "japanese": "親",
+    "reading": "しん",
+    "meaning": "parent, intimacy",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690783438",
+    "japanese": "人",
+    "reading": "じん、にん",
+    "meaning": "person",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700513464",
+    "japanese": "図",
+    "reading": "と、ず",
+    "meaning": "drawing, to devise",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690861842",
+    "japanese": "水",
+    "reading": "すい",
+    "meaning": "water",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698863208",
+    "japanese": "世",
+    "reading": "せ、せい",
+    "meaning": "generation",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694410459",
+    "japanese": "正",
+    "reading": "しょう",
+    "meaning": "right, correct",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691965618",
+    "japanese": "生",
+    "reading": "せい、しょう",
+    "meaning": "birth, life",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017486097",
+    "japanese": "声",
+    "reading": "せい",
+    "meaning": "voice",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691572059",
+    "japanese": "西",
+    "reading": "せい、さい",
+    "meaning": "west",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695961940",
+    "japanese": "青",
+    "reading": "せい",
+    "meaning": "blue",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695573289",
+    "japanese": "昔",
+    "reading": "むかし",
+    "meaning": "ancient times",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695944424",
+    "japanese": "赤",
+    "reading": "せき",
+    "meaning": "red",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697838923",
+    "japanese": "切",
+    "reading": "せつ",
+    "meaning": "to cut",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735606196",
+    "japanese": "説",
+    "reading": "せつ、せっ",
+    "meaning": "theory, to explain",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694706814",
+    "japanese": "雪",
+    "reading": "せつ",
+    "meaning": "snow",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472018010128",
+    "japanese": "絶",
+    "reading": "ぜっ、ぜつ",
+    "meaning": "to discontinue",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691885330",
+    "japanese": "先",
+    "reading": "せん",
+    "meaning": "ahead, previous",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690590777",
+    "japanese": "千",
+    "reading": "せん、ぜん",
+    "meaning": "thousand",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691136016",
+    "japanese": "川",
+    "reading": "かわ、がわ",
+    "meaning": "river",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464693861665",
+    "japanese": "前",
+    "reading": "ぜん",
+    "meaning": "before",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698940390",
+    "japanese": "全",
+    "reading": "ぜん",
+    "meaning": "all",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695681472",
+    "japanese": "早",
+    "reading": "そう",
+    "meaning": "early",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744192322",
+    "japanese": "相",
+    "reading": "しょう、そう",
+    "meaning": "mutual",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698558960",
+    "japanese": "走",
+    "reading": "そう",
+    "meaning": "to run",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124157875",
+    "japanese": "送",
+    "reading": "そう",
+    "meaning": "to send",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698675425",
+    "japanese": "足",
+    "reading": "そく",
+    "meaning": "foot, leg",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697768235",
+    "japanese": "族",
+    "reading": "ぞく",
+    "meaning": "family",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472018154534",
+    "japanese": "続",
+    "reading": "ぞく",
+    "meaning": "to continue",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881127712",
+    "japanese": "卒",
+    "reading": "そつ",
+    "meaning": "to graduate",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881443219",
+    "japanese": "多",
+    "reading": "た",
+    "meaning": "many, much",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697398092",
+    "japanese": "体",
+    "reading": "たい",
+    "meaning": "body",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472018039545",
+    "japanese": "対",
+    "reading": "たい",
+    "meaning": "opposite",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735514486",
+    "japanese": "待",
+    "reading": "たい",
+    "meaning": "to wait",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700482198",
+    "japanese": "貸",
+    "reading": "たい",
+    "meaning": "to lend, loan",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697668518",
+    "japanese": "代",
+    "reading": "だい",
+    "meaning": "age, replace",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475123986082",
+    "japanese": "台",
+    "reading": "たい、だい",
+    "meaning": "stand, number of machines",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691997029",
+    "japanese": "大",
+    "reading": "だい、たい",
+    "meaning": "big",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700644134",
+    "japanese": "題",
+    "reading": "だい",
+    "meaning": "title, topic",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691359981",
+    "japanese": "男",
+    "reading": "だん",
+    "meaning": "man",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694282454",
+    "japanese": "知",
+    "reading": "ち",
+    "meaning": "to know",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698611766",
+    "japanese": "地",
+    "reading": "ち、じ",
+    "meaning": "ground",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124260167",
+    "japanese": "遅",
+    "reading": "ち",
+    "meaning": "late",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017516062",
+    "japanese": "茶",
+    "reading": "ちゃ、さ",
+    "meaning": "tea",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697532723",
+    "japanese": "着",
+    "reading": "ちゃく",
+    "meaning": "to arrive/reach, to wear",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691064208",
+    "japanese": "中",
+    "reading": "ちゅう、じゅう",
+    "meaning": "middle",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697594147",
+    "japanese": "昼",
+    "reading": "ちゅう",
+    "meaning": "noon, daytime",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698332155",
+    "japanese": "注",
+    "reading": "ちゅう",
+    "meaning": "to pour, to shed tears",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694820922",
+    "japanese": "朝",
+    "reading": "ちょう",
+    "meaning": "morning",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694493985",
+    "japanese": "町",
+    "reading": "ちょう",
+    "meaning": "town",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744470893",
+    "japanese": "調",
+    "reading": "ちょう",
+    "meaning": "to investigate",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694630924",
+    "japanese": "長",
+    "reading": "ちょう",
+    "meaning": "long",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697064471",
+    "japanese": "鳥",
+    "reading": "ちょう",
+    "meaning": "bird",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472018073047",
+    "japanese": "痛",
+    "reading": "つう",
+    "meaning": "pain",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698729848",
+    "japanese": "通",
+    "reading": "つう",
+    "meaning": "to go through, to commute",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4726,9 +3331,939 @@
   },
   {
     "id": "genki-1-1-1475124325181",
-    "japanese": "younger brother<div>だい、で</div><div>おとうと</div>",
-    "reading": "younger brother<div>だい、で</div><div>おとうと</div>",
-    "meaning": "弟",
+    "japanese": "弟",
+    "reading": "だい、で",
+    "meaning": "younger brother",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700138737",
+    "japanese": "的",
+    "reading": "てき",
+    "meaning": "target, -ish",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691214391",
+    "japanese": "天",
+    "reading": "てん",
+    "meaning": "heaven",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697887595",
+    "japanese": "店",
+    "reading": "てん",
+    "meaning": "shop",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698493225",
+    "japanese": "転",
+    "reading": "てん",
+    "meaning": "to roll",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691304817",
+    "japanese": "田",
+    "reading": "た、だ",
+    "meaning": "rice field",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692634006",
+    "japanese": "電",
+    "reading": "でん",
+    "meaning": "electricity",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695925523",
+    "japanese": "度",
+    "reading": "ど",
+    "meaning": "time, degrees",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690932572",
+    "japanese": "土",
+    "reading": "ど、と",
+    "meaning": "soil",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744149705",
+    "japanese": "怒",
+    "reading": "ど",
+    "meaning": "to get angry",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470880851972",
+    "japanese": "冬",
+    "reading": "とう",
+    "meaning": "winter",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691550496",
+    "japanese": "東",
+    "reading": "とう",
+    "meaning": "east",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698024234",
+    "japanese": "当",
+    "reading": "とう",
+    "meaning": "to hit",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744595603",
+    "japanese": "答",
+    "reading": "とう",
+    "meaning": "answer",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695784343",
+    "japanese": "働",
+    "reading": "どう",
+    "meaning": "to work",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699305018",
+    "japanese": "動",
+    "reading": "どう",
+    "meaning": "to move",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697551609",
+    "japanese": "同",
+    "reading": "どう",
+    "meaning": "same",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700264583",
+    "japanese": "堂",
+    "reading": "どう",
+    "meaning": "hall",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694670177",
+    "japanese": "道",
+    "reading": "どう",
+    "meaning": "way, road",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697214966",
+    "japanese": "特",
+    "reading": "とく、とっ",
+    "meaning": "special",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692737896",
+    "japanese": "読",
+    "reading": "どく",
+    "meaning": "to read",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735662903",
+    "japanese": "内",
+    "reading": "ない",
+    "meaning": "inside, inner",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691600881",
+    "japanese": "南",
+    "reading": "なん",
+    "meaning": "south",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464529251086",
+    "japanese": "二",
+    "reading": "に",
+    "meaning": "two",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697348920",
+    "japanese": "肉",
+    "reading": "にく",
+    "meaning": "meat",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690732652",
+    "japanese": "日",
+    "reading": "に、にち",
+    "meaning": "day, sun",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692429942",
+    "japanese": "入",
+    "reading": "にゅう",
+    "meaning": "to enter",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694432317",
+    "japanese": "年",
+    "reading": "ねん",
+    "meaning": "year",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124293274",
+    "japanese": "配",
+    "reading": "ぱい、はい",
+    "meaning": "to deliver",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694477275",
+    "japanese": "買",
+    "reading": "ばい",
+    "meaning": "to buy",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694449430",
+    "japanese": "売",
+    "reading": "ばい",
+    "meaning": "to sell",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464693905232",
+    "japanese": "白",
+    "reading": "はく",
+    "meaning": "white",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464592607139",
+    "japanese": "八",
+    "reading": "はち、はっ",
+    "meaning": "eight",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699725488",
+    "japanese": "発",
+    "reading": "はっ、はつ、ぱつ",
+    "meaning": "to start, to reveal",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691077556",
+    "japanese": "半",
+    "reading": "はん",
+    "meaning": "half",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697322605",
+    "japanese": "飯",
+    "reading": "はん",
+    "meaning": "food, cooked rice",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735563211",
+    "japanese": "番",
+    "reading": "ばん",
+    "meaning": "order, number",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697616428",
+    "japanese": "彼",
+    "reading": "かれ、かの",
+    "meaning": "he",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744397782",
+    "japanese": "悲",
+    "reading": "ひ",
+    "meaning": "sad",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744236163",
+    "japanese": "比",
+    "reading": "ひ",
+    "meaning": "to compare",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690567817",
+    "japanese": "百",
+    "reading": "百",
+    "meaning": "hundred",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699768473",
+    "japanese": "表",
+    "reading": "ぴょう、ひょう",
+    "meaning": "to express, to surface",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695022640",
+    "japanese": "病",
+    "reading": "びょう",
+    "meaning": "ill, sick",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699807906",
+    "japanese": "品",
+    "reading": "ひん",
+    "meaning": "goods, refinement",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881001766",
+    "japanese": "不",
+    "reading": "ふ、ぶ",
+    "meaning": "negative, non-",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692246270",
+    "japanese": "父",
+    "reading": "ふ",
+    "meaning": "father",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698975764",
+    "japanese": "部",
+    "reading": "ぶ、へ",
+    "meaning": "part, section",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475124005224",
+    "japanese": "風",
+    "reading": "ふう、ふ",
+    "meaning": "wind",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700221412",
+    "japanese": "服",
+    "reading": "ふく",
+    "meaning": "clothes",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017835560",
+    "japanese": "払",
+    "reading": "はら、ばら",
+    "meaning": "to pay",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697044579",
+    "japanese": "物",
+    "reading": "ぶつ",
+    "meaning": "thing (tangible)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691826843",
+    "japanese": "分",
+    "reading": "ふん、ぶん、ぷん",
+    "meaning": "minute, to divide",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692378451",
+    "japanese": "文",
+    "reading": "ぶん",
+    "meaning": "sentence, writing",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692505026",
+    "japanese": "聞",
+    "reading": "ぶん",
+    "meaning": "to listen",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695894727",
+    "japanese": "別",
+    "reading": "べつ",
+    "meaning": "to separate",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475744169950",
+    "japanese": "変",
+    "reading": "へん",
+    "meaning": "change, abnormal",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695431381",
+    "japanese": "勉",
+    "reading": "べん",
+    "meaning": "to make efforts",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700056303",
+    "japanese": "歩",
+    "reading": "ほ、ぽ",
+    "meaning": "to walk",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692263588",
+    "japanese": "母",
+    "reading": "ぼ",
+    "meaning": "mother",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464699244576",
+    "japanese": "方",
+    "reading": "ほう",
+    "meaning": "direction, way, person",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735680410",
+    "japanese": "忘",
+    "reading": "ぼう",
+    "meaning": "to forget",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464691638507",
+    "japanese": "北",
+    "reading": "ほく、ほっ",
+    "meaning": "north",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690758372",
+    "japanese": "本",
+    "reading": "ほん",
+    "meaning": "book, basis",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4741,9 +4276,474 @@
   },
   {
     "id": "genki-1-1-1475124357756",
-    "japanese": "younger sister<div>まい</div><div>いもうと</div>",
-    "reading": "younger sister<div>まい</div><div>いもうと</div>",
-    "meaning": "妹",
+    "japanese": "妹",
+    "reading": "まい",
+    "meaning": "younger sister",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017590789",
+    "japanese": "枚",
+    "reading": "まい",
+    "meaning": "sheet of something",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464692336856",
+    "japanese": "毎",
+    "reading": "まい",
+    "meaning": "every",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735485481",
+    "japanese": "末",
+    "reading": "まつ",
+    "meaning": "the end of",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690608891",
+    "japanese": "万",
+    "reading": "まん",
+    "meaning": "ten thousand",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464698224971",
+    "japanese": "味",
+    "reading": "み",
+    "meaning": "flavour, tastes",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017670616",
+    "japanese": "無",
+    "reading": "む、ぶ",
+    "meaning": "none",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464693885499",
+    "japanese": "名",
+    "reading": "めい",
+    "meaning": "name",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694998697",
+    "japanese": "明",
+    "reading": "めい",
+    "meaning": "bright",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690882063",
+    "japanese": "木",
+    "reading": "もく",
+    "meaning": "tree",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700101630",
+    "japanese": "目",
+    "reading": "もく",
+    "meaning": "eye",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470881405439",
+    "japanese": "問",
+    "reading": "もん",
+    "meaning": "question",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694796868",
+    "japanese": "夜",
+    "reading": "や",
+    "meaning": "night",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700086096",
+    "japanese": "野",
+    "reading": "や",
+    "meaning": "field",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694040453",
+    "japanese": "友",
+    "reading": "ゆう",
+    "meaning": "friend",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695525421",
+    "japanese": "有",
+    "reading": "ゆう",
+    "meaning": "to exist",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735386246",
+    "japanese": "夕",
+    "reading": "ゆう",
+    "meaning": "evening",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464690963334",
+    "japanese": "曜",
+    "reading": "よう",
+    "meaning": "weekday",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1470880959403",
+    "japanese": "様",
+    "reading": "よう",
+    "meaning": "Mr, Mrs, condition",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700203382",
+    "japanese": "洋",
+    "reading": "よう",
+    "meaning": "ocean, overseas, Western",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1475735427739",
+    "japanese": "用",
+    "reading": "よう",
+    "meaning": "task, to use",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694313285",
+    "japanese": "来",
+    "reading": "らい",
+    "meaning": "to come",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697181475",
+    "japanese": "理",
+    "reading": "り",
+    "meaning": "reason",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694734761",
+    "japanese": "立",
+    "reading": "りつ",
+    "meaning": "to stand",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697743060",
+    "japanese": "留",
+    "reading": "りゅう、る",
+    "meaning": "to stay, to keep",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695549736",
+    "japanese": "旅",
+    "reading": "りょ",
+    "meaning": "travel",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1472017623410",
+    "japanese": "両",
+    "reading": "りょう",
+    "meaning": "both",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464697150661",
+    "japanese": "料",
+    "reading": "りょう",
+    "meaning": "ingredients, fare",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464700164877",
+    "japanese": "力",
+    "reading": "りょく、りき",
+    "meaning": "power",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464695873208",
+    "japanese": "連",
+    "reading": "れん",
+    "meaning": "to link, to lead",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464592487333",
+    "japanese": "六",
+    "reading": "ろく、ろっ",
+    "meaning": "six",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "n5",
+      "lesson-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1464694211778",
+    "japanese": "話",
+    "reading": "わ",
+    "meaning": "to speak",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],

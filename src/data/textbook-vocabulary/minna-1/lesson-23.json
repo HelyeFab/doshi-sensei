@@ -1,9 +1,9 @@
 [
   {
     "id": "minna-1-23-1609729373754",
-    "japanese": "(お) 正月",
-    "reading": "(お) 正月",
-    "meaning": "(お) 正月[しょうがつ]",
+    "japanese": "(お) 正月[しょうがつ]",
+    "reading": "(お) 正月[しょうがつ]",
+    "meaning": "(お) 正月",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -24,9 +24,9 @@
   },
   {
     "id": "minna-1-23-1609729373755",
-    "japanese": "(お) 正月",
-    "reading": "(お) 正月",
-    "meaning": "(お) 正月[しょうがつ]",
+    "japanese": "(お) 正月[しょうがつ]",
+    "reading": "(お) 正月[しょうがつ]",
+    "meaning": "(お) 正月",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -47,9 +47,9 @@
   },
   {
     "id": "minna-1-23-1609729373754",
-    "japanese": "(お) 正月",
-    "reading": "(お) 正月",
-    "meaning": "(お) 正月[しょうがつ]",
+    "japanese": "(お) 正月[しょうがつ]",
+    "reading": "(お) 正月[しょうがつ]",
+    "meaning": "(お) 正月",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -70,9 +70,9 @@
   },
   {
     "id": "minna-1-23-1609729373755",
-    "japanese": "(お) 正月",
-    "reading": "(お) 正月",
-    "meaning": "(お) 正月[しょうがつ]",
+    "japanese": "(お) 正月[しょうがつ]",
+    "reading": "(お) 正月[しょうがつ]",
+    "meaning": "(お) 正月",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -92,15 +92,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162462681",
-    "japanese": "（障ります）［ドアに～］",
-    "reading": "（障ります）［ドアに～］",
-    "meaning": "to touch [a door]",
+    "id": "minna-1-23-1525162528497",
+    "japanese": "[change] to come out",
+    "reading": "[change] to come out",
+    "meaning": "出ます［お釣りが～］",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "japanese": "出[で]ます［お 釣[つ]りが~］",
         "reading": "",
         "english": "23"
       }
@@ -113,15 +113,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1544776575176",
-    "japanese": "（障ります）［ドアに～］",
-    "reading": "（障ります）［ドアに～］",
-    "meaning": "to touch [a door]",
+    "id": "minna-1-23-1544776575177",
+    "japanese": "[change] to come out",
+    "reading": "[change] to come out",
+    "meaning": "出ます［お釣りが～］",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "japanese": "出[で]ます［お 釣[つ]りが~］",
         "reading": "",
         "english": "23"
       }
@@ -134,15 +134,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162462681",
-    "japanese": "（障ります）［ドアに～］",
-    "reading": "（障ります）［ドアに～］",
-    "meaning": "to touch [a door]",
+    "id": "minna-1-23-1525162528497",
+    "japanese": "[change] to come out",
+    "reading": "[change] to come out",
+    "meaning": "出ます［お釣りが～］",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "japanese": "出[で]ます［お 釣[つ]りが~］",
         "reading": "",
         "english": "23"
       }
@@ -155,15 +155,519 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1544776575176",
-    "japanese": "（障ります）［ドアに～］",
-    "reading": "（障ります）［ドアに～］",
-    "meaning": "to touch [a door]",
+    "id": "minna-1-23-1544776575177",
+    "japanese": "[change] to come out",
+    "reading": "[change] to come out",
+    "meaning": "出ます［お釣りが～］",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
       {
-        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "japanese": "出[で]ます［お 釣[つ]りが~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162856591",
+    "japanese": "breakdown (～します: to break down)",
+    "reading": "breakdown (～します: to break down)",
+    "meaning": "故障",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "故障[こしょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575185",
+    "japanese": "breakdown (～します: to break down)",
+    "reading": "breakdown (～します: to break down)",
+    "meaning": "故障",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "故障[こしょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162856591",
+    "japanese": "breakdown (～します: to break down)",
+    "reading": "breakdown (～します: to break down)",
+    "meaning": "故障",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "故障[こしょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575185",
+    "japanese": "breakdown (～します: to break down)",
+    "reading": "breakdown (～します: to break down)",
+    "meaning": "故障",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "故障[こしょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162980440",
+    "japanese": "bridge",
+    "reading": "bridge",
+    "meaning": "橋",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "橋[はし]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575190",
+    "japanese": "bridge",
+    "reading": "bridge",
+    "meaning": "橋",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "橋[はし]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162980440",
+    "japanese": "bridge",
+    "reading": "bridge",
+    "meaning": "橋",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "橋[はし]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575190",
+    "japanese": "bridge",
+    "reading": "bridge",
+    "meaning": "橋",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "橋[はし]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550635189563",
+    "japanese": "building",
+    "reading": "building",
+    "meaning": "建物",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "建物[たてもの]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550635189564",
+    "japanese": "building",
+    "reading": "building",
+    "meaning": "建物",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "建物[たてもの]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550635189563",
+    "japanese": "building",
+    "reading": "building",
+    "meaning": "建物",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "建物[たてもの]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550635189564",
+    "japanese": "building",
+    "reading": "building",
+    "meaning": "建物",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "建物[たてもの]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525163024386",
+    "japanese": "car park, parking lot",
+    "reading": "car park, parking lot",
+    "meaning": "駐車場",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575191",
+    "japanese": "car park, parking lot",
+    "reading": "car park, parking lot",
+    "meaning": "駐車場",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525163024386",
+    "japanese": "car park, parking lot",
+    "reading": "car park, parking lot",
+    "meaning": "駐車場",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575191",
+    "japanese": "car park, parking lot",
+    "reading": "car park, parking lot",
+    "meaning": "駐車場",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162962028",
+    "japanese": "corner",
+    "reading": "corner",
+    "meaning": "角",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "角[かど]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575189",
+    "japanese": "corner",
+    "reading": "corner",
+    "meaning": "角",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "角[かど]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162962028",
+    "japanese": "corner",
+    "reading": "corner",
+    "meaning": "角",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "角[かど]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575189",
+    "japanese": "corner",
+    "reading": "corner",
+    "meaning": "角",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "角[かど]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162914016",
+    "japanese": "crossroads",
+    "reading": "crossroads",
+    "meaning": "交差点",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "交差点[こうさてん]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575187",
+    "japanese": "crossroads",
+    "reading": "crossroads",
+    "meaning": "交差点",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "交差点[こうさてん]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162914016",
+    "japanese": "crossroads",
+    "reading": "crossroads",
+    "meaning": "交差点",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "交差点[こうさてん]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575187",
+    "japanese": "crossroads",
+    "reading": "crossroads",
+    "meaning": "交差点",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "交差点[こうさてん]",
         "reading": "",
         "english": "23"
       }
@@ -177,9 +681,9 @@
   },
   {
     "id": "minna-1-23-1525162774157",
-    "japanese": "［お］湯",
-    "reading": "［お］湯",
-    "meaning": "hot water",
+    "japanese": "hot water",
+    "reading": "hot water",
+    "meaning": "［お］湯",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -198,9 +702,9 @@
   },
   {
     "id": "minna-1-23-1544776575182",
-    "japanese": "［お］湯",
-    "reading": "［お］湯",
-    "meaning": "hot water",
+    "japanese": "hot water",
+    "reading": "hot water",
+    "meaning": "［お］湯",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -219,9 +723,9 @@
   },
   {
     "id": "minna-1-23-1525162774157",
-    "japanese": "［お］湯",
-    "reading": "［お］湯",
-    "meaning": "hot water",
+    "japanese": "hot water",
+    "reading": "hot water",
+    "meaning": "［お］湯",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -240,9 +744,9 @@
   },
   {
     "id": "minna-1-23-1544776575182",
-    "japanese": "［お］湯",
-    "reading": "［お］湯",
-    "meaning": "hot water",
+    "japanese": "hot water",
+    "reading": "hot water",
+    "meaning": "［お］湯",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -260,10 +764,522 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-23-1525162719135",
+    "japanese": "lonely",
+    "reading": "lonely",
+    "meaning": "寂しい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "寂[さび]しい",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575181",
+    "japanese": "lonely",
+    "reading": "lonely",
+    "meaning": "寂しい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "寂[さび]しい",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162719135",
+    "japanese": "lonely",
+    "reading": "lonely",
+    "meaning": "寂しい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "寂[さび]しい",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575181",
+    "japanese": "lonely",
+    "reading": "lonely",
+    "meaning": "寂しい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "寂[さび]しい",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525163076602",
+    "japanese": "many times",
+    "reading": "many times",
+    "meaning": "なんかいも",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんかいも",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575193",
+    "japanese": "many times",
+    "reading": "many times",
+    "meaning": "なんかいも",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんかいも",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525163076602",
+    "japanese": "many times",
+    "reading": "many times",
+    "meaning": "なんかいも",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんかいも",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575193",
+    "japanese": "many times",
+    "reading": "many times",
+    "meaning": "なんかいも",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "なんかいも",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162882470",
+    "japanese": "road, way",
+    "reading": "road, way",
+    "meaning": "道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "道[みち]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575186",
+    "japanese": "road, way",
+    "reading": "road, way",
+    "meaning": "道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "道[みち]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162882470",
+    "japanese": "road, way",
+    "reading": "road, way",
+    "meaning": "道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "道[みち]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575186",
+    "japanese": "road, way",
+    "reading": "road, way",
+    "meaning": "道",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "道[みち]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162814525",
+    "japanese": "size",
+    "reading": "size",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "サイズ",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575184",
+    "japanese": "size",
+    "reading": "size",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "サイズ",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1609729373732",
+    "japanese": "size",
+    "reading": "サイズ",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "23",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "chapter23",
+      "noun",
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1609729373733",
+    "japanese": "size",
+    "reading": "サイズ",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "23",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "chapter23",
+      "noun",
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162814525",
+    "japanese": "size",
+    "reading": "size",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "サイズ",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575184",
+    "japanese": "size",
+    "reading": "size",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "サイズ",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1609729373732",
+    "japanese": "size",
+    "reading": "サイズ",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "23",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "chapter23",
+      "noun",
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1609729373733",
+    "japanese": "size",
+    "reading": "サイズ",
+    "meaning": "サイズ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "23",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "chapter23",
+      "noun",
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162803004",
+    "japanese": "sound",
+    "reading": "sound",
+    "meaning": "音",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "音[おと]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575183",
+    "japanese": "sound",
+    "reading": "sound",
+    "meaning": "音",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "音[おと]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162803004",
+    "japanese": "sound",
+    "reading": "sound",
+    "meaning": "音",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "音[おと]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575183",
+    "japanese": "sound",
+    "reading": "sound",
+    "meaning": "音",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "音[おと]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-23-1525163102625",
-    "japanese": "～目",
-    "reading": "～目",
-    "meaning": "the -th (indicating order)",
+    "japanese": "the -th (indicating order)",
+    "reading": "the -th (indicating order)",
+    "meaning": "～目",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -282,9 +1298,9 @@
   },
   {
     "id": "minna-1-23-1544776575194",
-    "japanese": "～目",
-    "reading": "～目",
-    "meaning": "the -th (indicating order)",
+    "japanese": "the -th (indicating order)",
+    "reading": "the -th (indicating order)",
+    "meaning": "～目",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -303,9 +1319,9 @@
   },
   {
     "id": "minna-1-23-1525163102625",
-    "japanese": "～目",
-    "reading": "～目",
-    "meaning": "the -th (indicating order)",
+    "japanese": "the -th (indicating order)",
+    "reading": "the -th (indicating order)",
+    "meaning": "～目",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -324,14 +1340,770 @@
   },
   {
     "id": "minna-1-23-1544776575194",
-    "japanese": "～目",
-    "reading": "～目",
-    "meaning": "the -th (indicating order)",
+    "japanese": "the -th (indicating order)",
+    "reading": "the -th (indicating order)",
+    "meaning": "～目",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
         "japanese": "~ 目[め]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162280429",
+    "japanese": "to ask [the teacher]",
+    "reading": "to ask [the teacher]",
+    "meaning": "聞きます［先生に～］",
+    "jlptLevel": "N4",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575172",
+    "japanese": "to ask [the teacher]",
+    "reading": "to ask [the teacher]",
+    "meaning": "聞きます［先生に～］",
+    "jlptLevel": "N4",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162280429",
+    "japanese": "to ask [the teacher]",
+    "reading": "to ask [the teacher]",
+    "meaning": "聞きます［先生に～］",
+    "jlptLevel": "N4",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575172",
+    "japanese": "to ask [the teacher]",
+    "reading": "to ask [the teacher]",
+    "meaning": "聞きます［先生に～］",
+    "jlptLevel": "N4",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632278947",
+    "japanese": "to change",
+    "reading": "to change",
+    "meaning": "変えます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "変[か]えます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632278948",
+    "japanese": "to change",
+    "reading": "to change",
+    "meaning": "変えます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "変[か]えます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632278947",
+    "japanese": "to change",
+    "reading": "to change",
+    "meaning": "変えます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "変[か]えます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632278948",
+    "japanese": "to change",
+    "reading": "to change",
+    "meaning": "変えます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "変[か]えます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162624127",
+    "japanese": "to cross [a bridge]",
+    "reading": "to cross [a bridge]",
+    "meaning": "渡ります［橋を～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "渡[わた]ります［ 橋[はし]を~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575179",
+    "japanese": "to cross [a bridge]",
+    "reading": "to cross [a bridge]",
+    "meaning": "渡ります［橋を～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "渡[わた]ります［ 橋[はし]を~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162624127",
+    "japanese": "to cross [a bridge]",
+    "reading": "to cross [a bridge]",
+    "meaning": "渡ります［橋を～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "渡[わた]ります［ 橋[はし]を~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575179",
+    "japanese": "to cross [a bridge]",
+    "reading": "to cross [a bridge]",
+    "meaning": "渡ります［橋を～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "渡[わた]ります［ 橋[はし]を~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632169510",
+    "japanese": "to pull",
+    "reading": "to pull",
+    "meaning": "引きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "引[ひ]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632169511",
+    "japanese": "to pull",
+    "reading": "to pull",
+    "meaning": "引きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "引[ひ]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632169510",
+    "japanese": "to pull",
+    "reading": "to pull",
+    "meaning": "引きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "引[ひ]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1550632169511",
+    "japanese": "to pull",
+    "reading": "to pull",
+    "meaning": "引きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "引[ひ]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162462681",
+    "japanese": "to touch [a door]",
+    "reading": "to touch [a door]",
+    "meaning": "（障ります）［ドアに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575176",
+    "japanese": "to touch [a door]",
+    "reading": "to touch [a door]",
+    "meaning": "（障ります）［ドアに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162462681",
+    "japanese": "to touch [a door]",
+    "reading": "to touch [a door]",
+    "meaning": "（障ります）［ドアに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575176",
+    "japanese": "to touch [a door]",
+    "reading": "to touch [a door]",
+    "meaning": "（障ります）［ドアに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "（ 障[さわ]ります）［ドアに~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162323242",
+    "japanese": "to turn",
+    "reading": "to turn",
+    "meaning": "回します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "回[まわ]します",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575173",
+    "japanese": "to turn",
+    "reading": "to turn",
+    "meaning": "回します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "回[まわ]します",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162323242",
+    "japanese": "to turn",
+    "reading": "to turn",
+    "meaning": "回します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "回[まわ]します",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575173",
+    "japanese": "to turn",
+    "reading": "to turn",
+    "meaning": "回します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "回[まわ]します",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162678047",
+    "japanese": "to turn [to the right]",
+    "reading": "to turn [to the right]",
+    "meaning": "曲がります［右へ～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575180",
+    "japanese": "to turn [to the right]",
+    "reading": "to turn [to the right]",
+    "meaning": "曲がります［右へ～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162678047",
+    "japanese": "to turn [to the right]",
+    "reading": "to turn [to the right]",
+    "meaning": "曲がります［右へ～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575180",
+    "japanese": "to turn [to the right]",
+    "reading": "to turn [to the right]",
+    "meaning": "曲がります［右へ～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162553941",
+    "japanese": "to walk",
+    "reading": "to walk",
+    "meaning": "歩きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "歩[ある]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575178",
+    "japanese": "to walk",
+    "reading": "to walk",
+    "meaning": "歩きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "歩[ある]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162553941",
+    "japanese": "to walk",
+    "reading": "to walk",
+    "meaning": "歩きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "歩[ある]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575178",
+    "japanese": "to walk",
+    "reading": "to walk",
+    "meaning": "歩きます",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "歩[ある]きます",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162935586",
+    "japanese": "traffic lights",
+    "reading": "traffic lights",
+    "meaning": "信号",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "信号[しんごう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575188",
+    "japanese": "traffic lights",
+    "reading": "traffic lights",
+    "meaning": "信号",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "信号[しんごう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1525162935586",
+    "japanese": "traffic lights",
+    "reading": "traffic lights",
+    "meaning": "信号",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "信号[しんごう]",
+        "reading": "",
+        "english": "23"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-23-1544776575188",
+    "japanese": "traffic lights",
+    "reading": "traffic lights",
+    "meaning": "信号",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "信号[しんごう]",
         "reading": "",
         "english": "23"
       }
@@ -432,312 +2204,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162814525",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "サイズ",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575184",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "サイズ",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1609729373732",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "23",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter23",
-      "noun",
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1609729373733",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "23",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter23",
-      "noun",
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162814525",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "サイズ",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575184",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "サイズ",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1609729373732",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "23",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter23",
-      "noun",
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1609729373733",
-    "japanese": "サイズ",
-    "reading": "サイズ",
-    "meaning": "size",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "23",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter23",
-      "noun",
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525163076602",
-    "japanese": "なんかいも",
-    "reading": "なんかいも",
-    "meaning": "many times",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんかいも",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575193",
-    "japanese": "なんかいも",
-    "reading": "なんかいも",
-    "meaning": "many times",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんかいも",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525163076602",
-    "japanese": "なんかいも",
-    "reading": "なんかいも",
-    "meaning": "many times",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんかいも",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575193",
-    "japanese": "なんかいも",
-    "reading": "なんかいも",
-    "meaning": "many times",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "なんかいも",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550632169510",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "to pull",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "引[ひ]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550632169511",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "to pull",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "引[ひ]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372578",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "引[ひ]きます",
+    "japanese": "引[ひ]きます",
+    "reading": "引[ひ]きます",
+    "meaning": "引きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -752,9 +2222,9 @@
   },
   {
     "id": "minna-1-23-1609729372579",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "引[ひ]きます",
+    "japanese": "引[ひ]きます",
+    "reading": "引[ひ]きます",
+    "meaning": "引きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -768,52 +2238,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1550632169510",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "to pull",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "引[ひ]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550632169511",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "to pull",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "引[ひ]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372578",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "引[ひ]きます",
+    "japanese": "引[ひ]きます",
+    "reading": "引[ひ]きます",
+    "meaning": "引きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -828,9 +2256,9 @@
   },
   {
     "id": "minna-1-23-1609729372579",
-    "japanese": "引きます",
-    "reading": "引きます",
-    "meaning": "引[ひ]きます",
+    "japanese": "引[ひ]きます",
+    "reading": "引[ひ]きます",
+    "meaning": "引きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -845,9 +2273,9 @@
   },
   {
     "id": "minna-1-23-1609729372594",
-    "japanese": "引っ越しします",
-    "reading": "引っ越しします",
-    "meaning": "引っ越[ひっこ]しします",
+    "japanese": "引っ越[ひっこ]しします",
+    "reading": "引っ越[ひっこ]しします",
+    "meaning": "引っ越しします",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -862,9 +2290,9 @@
   },
   {
     "id": "minna-1-23-1609729372595",
-    "japanese": "引っ越しします",
-    "reading": "引っ越しします",
-    "meaning": "引っ越[ひっこ]しします",
+    "japanese": "引っ越[ひっこ]しします",
+    "reading": "引っ越[ひっこ]しします",
+    "meaning": "引っ越しします",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -879,9 +2307,9 @@
   },
   {
     "id": "minna-1-23-1609729372594",
-    "japanese": "引っ越しします",
-    "reading": "引っ越しします",
-    "meaning": "引っ越[ひっこ]しします",
+    "japanese": "引っ越[ひっこ]しします",
+    "reading": "引っ越[ひっこ]しします",
+    "meaning": "引っ越しします",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -896,57 +2324,15 @@
   },
   {
     "id": "minna-1-23-1609729372595",
-    "japanese": "引っ越しします",
-    "reading": "引っ越しします",
-    "meaning": "引っ越[ひっこ]しします",
+    "japanese": "引っ越[ひっこ]しします",
+    "reading": "引っ越[ひっこ]しします",
+    "meaning": "引っ越しします",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
     "tags": [
       "chapter23",
       "verb",
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162803004",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "sound",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "音[おと]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575183",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "sound",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "音[おと]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
       "n5",
       "lesson-23"
     ],
@@ -955,9 +2341,9 @@
   },
   {
     "id": "minna-1-23-1609729373734",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "音[おと]",
+    "japanese": "音[おと]",
+    "reading": "音[おと]",
+    "meaning": "音",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -978,9 +2364,9 @@
   },
   {
     "id": "minna-1-23-1609729373735",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "音[おと]",
+    "japanese": "音[おと]",
+    "reading": "音[おと]",
+    "meaning": "音",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1000,52 +2386,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162803004",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "sound",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "音[おと]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575183",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "sound",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "音[おと]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373734",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "音[おと]",
+    "japanese": "音[おと]",
+    "reading": "音[おと]",
+    "meaning": "音",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1066,9 +2410,9 @@
   },
   {
     "id": "minna-1-23-1609729373735",
-    "japanese": "音",
-    "reading": "音",
-    "meaning": "音[おと]",
+    "japanese": "音[おと]",
+    "reading": "音[おと]",
+    "meaning": "音",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1088,52 +2432,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162323242",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "to turn",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "回[まわ]します",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575173",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "to turn",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "回[まわ]します",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372576",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "回[まわ]します",
+    "japanese": "回[まわ]します",
+    "reading": "回[まわ]します",
+    "meaning": "回します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -1148,9 +2450,9 @@
   },
   {
     "id": "minna-1-23-1609729372577",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "回[まわ]します",
+    "japanese": "回[まわ]します",
+    "reading": "回[まわ]します",
+    "meaning": "回します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -1164,52 +2466,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162323242",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "to turn",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "回[まわ]します",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575173",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "to turn",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "回[まわ]します",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372576",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "回[まわ]します",
+    "japanese": "回[まわ]します",
+    "reading": "回[まわ]します",
+    "meaning": "回します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -1224,9 +2484,9 @@
   },
   {
     "id": "minna-1-23-1609729372577",
-    "japanese": "回します",
-    "reading": "回します",
-    "meaning": "回[まわ]します",
+    "japanese": "回[まわ]します",
+    "reading": "回[まわ]します",
+    "meaning": "回します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -1241,9 +2501,9 @@
   },
   {
     "id": "minna-1-23-1609729373758",
-    "japanese": "外国人登録証",
-    "reading": "外国人登録証",
-    "meaning": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "japanese": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "reading": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "meaning": "外国人登録証",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1264,9 +2524,9 @@
   },
   {
     "id": "minna-1-23-1609729373759",
-    "japanese": "外国人登録証",
-    "reading": "外国人登録証",
-    "meaning": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "japanese": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "reading": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "meaning": "外国人登録証",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1287,9 +2547,9 @@
   },
   {
     "id": "minna-1-23-1609729373758",
-    "japanese": "外国人登録証",
-    "reading": "外国人登録証",
-    "meaning": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "japanese": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "reading": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "meaning": "外国人登録証",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1310,9 +2570,9 @@
   },
   {
     "id": "minna-1-23-1609729373759",
-    "japanese": "外国人登録証",
-    "reading": "外国人登録証",
-    "meaning": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "japanese": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "reading": "外国[がいこく] 人[じん] 登録[とうろく] 証[しょう]",
+    "meaning": "外国人登録証",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1332,52 +2592,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162962028",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "corner",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "角[かど]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575189",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "corner",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "角[かど]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373748",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "角[かく]",
+    "japanese": "角[かく]",
+    "reading": "角[かく]",
+    "meaning": "角",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1398,9 +2616,9 @@
   },
   {
     "id": "minna-1-23-1609729373749",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "角[かく]",
+    "japanese": "角[かく]",
+    "reading": "角[かく]",
+    "meaning": "角",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1420,52 +2638,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162962028",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "corner",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "角[かど]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575189",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "corner",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "角[かど]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373748",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "角[かく]",
+    "japanese": "角[かく]",
+    "reading": "角[かく]",
+    "meaning": "角",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1486,9 +2662,9 @@
   },
   {
     "id": "minna-1-23-1609729373749",
-    "japanese": "角",
-    "reading": "角",
-    "meaning": "角[かく]",
+    "japanese": "角[かく]",
+    "reading": "角[かく]",
+    "meaning": "角",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1509,9 +2685,9 @@
   },
   {
     "id": "minna-1-23-1609729373736",
-    "japanese": "機械",
-    "reading": "機械",
-    "meaning": "機械[きかい]",
+    "japanese": "機械[きかい]",
+    "reading": "機械[きかい]",
+    "meaning": "機械",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1532,9 +2708,9 @@
   },
   {
     "id": "minna-1-23-1609729373737",
-    "japanese": "機械",
-    "reading": "機械",
-    "meaning": "機械[きかい]",
+    "japanese": "機械[きかい]",
+    "reading": "機械[きかい]",
+    "meaning": "機械",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1555,9 +2731,9 @@
   },
   {
     "id": "minna-1-23-1609729373736",
-    "japanese": "機械",
-    "reading": "機械",
-    "meaning": "機械[きかい]",
+    "japanese": "機械[きかい]",
+    "reading": "機械[きかい]",
+    "meaning": "機械",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1578,9 +2754,9 @@
   },
   {
     "id": "minna-1-23-1609729373737",
-    "japanese": "機械",
-    "reading": "機械",
-    "meaning": "機械[きかい]",
+    "japanese": "機械[きかい]",
+    "reading": "機械[きかい]",
+    "meaning": "機械",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1601,9 +2777,9 @@
   },
   {
     "id": "minna-1-23-1609729372592",
-    "japanese": "気を　つけます",
-    "reading": "気を　つけます",
-    "meaning": "気[き]を　つけます",
+    "japanese": "気[き]を　つけます",
+    "reading": "気[き]を　つけます",
+    "meaning": "気を　つけます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1624,9 +2800,9 @@
   },
   {
     "id": "minna-1-23-1609729372593",
-    "japanese": "気を　つけます",
-    "reading": "気を　つけます",
-    "meaning": "気[き]を　つけます",
+    "japanese": "気[き]を　つけます",
+    "reading": "気[き]を　つけます",
+    "meaning": "気を　つけます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1647,9 +2823,9 @@
   },
   {
     "id": "minna-1-23-1609729372592",
-    "japanese": "気を　つけます",
-    "reading": "気を　つけます",
-    "meaning": "気[き]を　つけます",
+    "japanese": "気[き]を　つけます",
+    "reading": "気[き]を　つけます",
+    "meaning": "気を　つけます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1670,9 +2846,9 @@
   },
   {
     "id": "minna-1-23-1609729372593",
-    "japanese": "気を　つけます",
-    "reading": "気を　つけます",
-    "meaning": "気[き]を　つけます",
+    "japanese": "気[き]を　つけます",
+    "reading": "気[き]を　つけます",
+    "meaning": "気を　つけます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1692,52 +2868,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162980440",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "bridge",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "橋[はし]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575190",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "bridge",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "橋[はし]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373750",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "橋[はし]",
+    "japanese": "橋[はし]",
+    "reading": "橋[はし]",
+    "meaning": "橋",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1758,9 +2892,9 @@
   },
   {
     "id": "minna-1-23-1609729373751",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "橋[はし]",
+    "japanese": "橋[はし]",
+    "reading": "橋[はし]",
+    "meaning": "橋",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1780,52 +2914,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162980440",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "bridge",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "橋[はし]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575190",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "bridge",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "橋[はし]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373750",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "橋[はし]",
+    "japanese": "橋[はし]",
+    "reading": "橋[はし]",
+    "meaning": "橋",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1846,9 +2938,9 @@
   },
   {
     "id": "minna-1-23-1609729373751",
-    "japanese": "橋",
-    "reading": "橋",
-    "meaning": "橋[はし]",
+    "japanese": "橋[はし]",
+    "reading": "橋[はし]",
+    "meaning": "橋",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -1868,136 +2960,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162678047",
-    "japanese": "曲がります［右へ～］",
-    "reading": "曲がります［右へ～］",
-    "meaning": "to turn [to the right]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575180",
-    "japanese": "曲がります［右へ～］",
-    "reading": "曲がります［右へ～］",
-    "meaning": "to turn [to the right]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162678047",
-    "japanese": "曲がります［右へ～］",
-    "reading": "曲がります［右へ～］",
-    "meaning": "to turn [to the right]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575180",
-    "japanese": "曲がります［右へ～］",
-    "reading": "曲がります［右へ～］",
-    "meaning": "to turn [to the right]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "曲[ま]がります［ 右[みぎ]へ~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550635189563",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "building",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "建物[たてもの]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550635189564",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "building",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "建物[たてもの]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373756",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "建物[たてもの]",
+    "japanese": "建物[たてもの]",
+    "reading": "建物[たてもの]",
+    "meaning": "建物",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2018,9 +2984,9 @@
   },
   {
     "id": "minna-1-23-1609729373757",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "建物[たてもの]",
+    "japanese": "建物[たてもの]",
+    "reading": "建物[たてもの]",
+    "meaning": "建物",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2040,52 +3006,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1550635189563",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "building",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "建物[たてもの]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550635189564",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "building",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "建物[たてもの]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373756",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "建物[たてもの]",
+    "japanese": "建物[たてもの]",
+    "reading": "建物[たてもの]",
+    "meaning": "建物",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2106,9 +3030,9 @@
   },
   {
     "id": "minna-1-23-1609729373757",
-    "japanese": "建物",
-    "reading": "建物",
-    "meaning": "建物[たてもの]",
+    "japanese": "建物[たてもの]",
+    "reading": "建物[たてもの]",
+    "meaning": "建物",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2128,52 +3052,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162856591",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "breakdown (～します: to break down)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "故障[こしょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575185",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "breakdown (～します: to break down)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "故障[こしょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373740",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "故障[こしょう]",
+    "japanese": "故障[こしょう]",
+    "reading": "故障[こしょう]",
+    "meaning": "故障",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2194,9 +3076,9 @@
   },
   {
     "id": "minna-1-23-1609729373741",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "故障[こしょう]",
+    "japanese": "故障[こしょう]",
+    "reading": "故障[こしょう]",
+    "meaning": "故障",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2216,52 +3098,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162856591",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "breakdown (～します: to break down)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "故障[こしょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575185",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "breakdown (～します: to break down)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "故障[こしょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373740",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "故障[こしょう]",
+    "japanese": "故障[こしょう]",
+    "reading": "故障[こしょう]",
+    "meaning": "故障",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2282,9 +3122,9 @@
   },
   {
     "id": "minna-1-23-1609729373741",
-    "japanese": "故障",
-    "reading": "故障",
-    "meaning": "故障[こしょう]",
+    "japanese": "故障[こしょう]",
+    "reading": "故障[こしょう]",
+    "meaning": "故障",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2304,52 +3144,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162914016",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "crossroads",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "交差点[こうさてん]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575187",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "crossroads",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "交差点[こうさてん]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373744",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "交差点[こうさてん]",
+    "japanese": "交差点[こうさてん]",
+    "reading": "交差点[こうさてん]",
+    "meaning": "交差点",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2370,9 +3168,9 @@
   },
   {
     "id": "minna-1-23-1609729373745",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "交差点[こうさてん]",
+    "japanese": "交差点[こうさてん]",
+    "reading": "交差点[こうさてん]",
+    "meaning": "交差点",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2392,52 +3190,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162914016",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "crossroads",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "交差点[こうさてん]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575187",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "crossroads",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "交差点[こうさてん]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373744",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "交差点[こうさてん]",
+    "japanese": "交差点[こうさてん]",
+    "reading": "交差点[こうさてん]",
+    "meaning": "交差点",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2458,9 +3214,9 @@
   },
   {
     "id": "minna-1-23-1609729373745",
-    "japanese": "交差点",
-    "reading": "交差点",
-    "meaning": "交差点[こうさてん]",
+    "japanese": "交差点[こうさてん]",
+    "reading": "交差点[こうさてん]",
+    "meaning": "交差点",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2480,94 +3236,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162719135",
-    "japanese": "寂しい",
-    "reading": "寂しい",
-    "meaning": "lonely",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "寂[さび]しい",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575181",
-    "japanese": "寂しい",
-    "reading": "寂しい",
-    "meaning": "lonely",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "寂[さび]しい",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162719135",
-    "japanese": "寂しい",
-    "reading": "寂しい",
-    "meaning": "lonely",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "寂[さび]しい",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575181",
-    "japanese": "寂しい",
-    "reading": "寂しい",
-    "meaning": "lonely",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "寂[さび]しい",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372584",
-    "japanese": "出ます",
-    "reading": "出ます",
-    "meaning": "出[で]ます",
+    "japanese": "出[で]ます",
+    "reading": "出[で]ます",
+    "meaning": "出ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2588,9 +3260,9 @@
   },
   {
     "id": "minna-1-23-1609729372585",
-    "japanese": "出ます",
-    "reading": "出ます",
-    "meaning": "出[で]ます",
+    "japanese": "出[で]ます",
+    "reading": "出[で]ます",
+    "meaning": "出ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2611,9 +3283,9 @@
   },
   {
     "id": "minna-1-23-1609729372584",
-    "japanese": "出ます",
-    "reading": "出ます",
-    "meaning": "出[で]ます",
+    "japanese": "出[で]ます",
+    "reading": "出[で]ます",
+    "meaning": "出ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2634,9 +3306,9 @@
   },
   {
     "id": "minna-1-23-1609729372585",
-    "japanese": "出ます",
-    "reading": "出ます",
-    "meaning": "出[で]ます",
+    "japanese": "出[で]ます",
+    "reading": "出[で]ます",
+    "meaning": "出ます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2656,94 +3328,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162528497",
-    "japanese": "出ます［お釣りが～］",
-    "reading": "出ます［お釣りが～］",
-    "meaning": "[change] to come out",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "出[で]ます［お 釣[つ]りが~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575177",
-    "japanese": "出ます［お釣りが～］",
-    "reading": "出ます［お釣りが～］",
-    "meaning": "[change] to come out",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "出[で]ます［お 釣[つ]りが~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162528497",
-    "japanese": "出ます［お釣りが～］",
-    "reading": "出ます［お釣りが～］",
-    "meaning": "[change] to come out",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "出[で]ます［お 釣[つ]りが~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575177",
-    "japanese": "出ます［お釣りが～］",
-    "reading": "出ます［お釣りが～］",
-    "meaning": "[change] to come out",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "出[で]ます［お 釣[つ]りが~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372582",
-    "japanese": "触ります",
-    "reading": "触ります",
-    "meaning": "触[さわ]ります",
+    "japanese": "触[さわ]ります",
+    "reading": "触[さわ]ります",
+    "meaning": "触ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2764,9 +3352,9 @@
   },
   {
     "id": "minna-1-23-1609729372583",
-    "japanese": "触ります",
-    "reading": "触ります",
-    "meaning": "触[さわ]ります",
+    "japanese": "触[さわ]ります",
+    "reading": "触[さわ]ります",
+    "meaning": "触ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2787,9 +3375,9 @@
   },
   {
     "id": "minna-1-23-1609729372582",
-    "japanese": "触ります",
-    "reading": "触ります",
-    "meaning": "触[さわ]ります",
+    "japanese": "触[さわ]ります",
+    "reading": "触[さわ]ります",
+    "meaning": "触ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2810,9 +3398,9 @@
   },
   {
     "id": "minna-1-23-1609729372583",
-    "japanese": "触ります",
-    "reading": "触ります",
-    "meaning": "触[さわ]ります",
+    "japanese": "触[さわ]ります",
+    "reading": "触[さわ]ります",
+    "meaning": "触ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -2832,52 +3420,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162935586",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "traffic lights",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "信号[しんごう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575188",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "traffic lights",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "信号[しんごう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373746",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "信号[しんごう]",
+    "japanese": "信号[しんごう]",
+    "reading": "信号[しんごう]",
+    "meaning": "信号",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2898,9 +3444,9 @@
   },
   {
     "id": "minna-1-23-1609729373747",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "信号[しんごう]",
+    "japanese": "信号[しんごう]",
+    "reading": "信号[しんごう]",
+    "meaning": "信号",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2920,52 +3466,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162935586",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "traffic lights",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "信号[しんごう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575188",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "traffic lights",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "信号[しんごう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373746",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "信号[しんごう]",
+    "japanese": "信号[しんごう]",
+    "reading": "信号[しんごう]",
+    "meaning": "信号",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2986,9 +3490,9 @@
   },
   {
     "id": "minna-1-23-1609729373747",
-    "japanese": "信号",
-    "reading": "信号",
-    "meaning": "信号[しんごう]",
+    "japanese": "信号[しんごう]",
+    "reading": "信号[しんごう]",
+    "meaning": "信号",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3008,52 +3512,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525163024386",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "car park, parking lot",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575191",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "car park, parking lot",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373752",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "駐車[ちゅうしゃ] 場[じょう]",
+    "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+    "reading": "駐車[ちゅうしゃ] 場[じょう]",
+    "meaning": "駐車場",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3074,9 +3536,9 @@
   },
   {
     "id": "minna-1-23-1609729373753",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "駐車[ちゅうしゃ] 場[じょう]",
+    "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+    "reading": "駐車[ちゅうしゃ] 場[じょう]",
+    "meaning": "駐車場",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3096,52 +3558,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525163024386",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "car park, parking lot",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575191",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "car park, parking lot",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "駐車[ちゅうしゃ] 場[じょう]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373752",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "駐車[ちゅうしゃ] 場[じょう]",
+    "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+    "reading": "駐車[ちゅうしゃ] 場[じょう]",
+    "meaning": "駐車場",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3162,9 +3582,9 @@
   },
   {
     "id": "minna-1-23-1609729373753",
-    "japanese": "駐車場",
-    "reading": "駐車場",
-    "meaning": "駐車[ちゅうしゃ] 場[じょう]",
+    "japanese": "駐車[ちゅうしゃ] 場[じょう]",
+    "reading": "駐車[ちゅうしゃ] 場[じょう]",
+    "meaning": "駐車場",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3185,9 +3605,9 @@
   },
   {
     "id": "minna-1-23-1609729373738",
-    "japanese": "摘み",
-    "reading": "摘み",
-    "meaning": "摘[つま]み",
+    "japanese": "摘[つま]み",
+    "reading": "摘[つま]み",
+    "meaning": "摘み",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3208,9 +3628,9 @@
   },
   {
     "id": "minna-1-23-1609729373739",
-    "japanese": "摘み",
-    "reading": "摘み",
-    "meaning": "摘[つま]み",
+    "japanese": "摘[つま]み",
+    "reading": "摘[つま]み",
+    "meaning": "摘み",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3231,9 +3651,9 @@
   },
   {
     "id": "minna-1-23-1609729373738",
-    "japanese": "摘み",
-    "reading": "摘み",
-    "meaning": "摘[つま]み",
+    "japanese": "摘[つま]み",
+    "reading": "摘[つま]み",
+    "meaning": "摘み",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3254,9 +3674,9 @@
   },
   {
     "id": "minna-1-23-1609729373739",
-    "japanese": "摘み",
-    "reading": "摘み",
-    "meaning": "摘[つま]み",
+    "japanese": "摘[つま]み",
+    "reading": "摘[つま]み",
+    "meaning": "摘み",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3277,9 +3697,9 @@
   },
   {
     "id": "minna-1-23-1609729373730",
-    "japanese": "電気屋",
-    "reading": "電気屋",
-    "meaning": "電気[でんき] 屋[や]",
+    "japanese": "電気[でんき] 屋[や]",
+    "reading": "電気[でんき] 屋[や]",
+    "meaning": "電気屋",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -3300,9 +3720,9 @@
   },
   {
     "id": "minna-1-23-1609729373731",
-    "japanese": "電気屋",
-    "reading": "電気屋",
-    "meaning": "電気[でんき] 屋[や]",
+    "japanese": "電気[でんき] 屋[や]",
+    "reading": "電気[でんき] 屋[や]",
+    "meaning": "電気屋",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -3323,9 +3743,9 @@
   },
   {
     "id": "minna-1-23-1609729373730",
-    "japanese": "電気屋",
-    "reading": "電気屋",
-    "meaning": "電気[でんき] 屋[や]",
+    "japanese": "電気[でんき] 屋[や]",
+    "reading": "電気[でんき] 屋[や]",
+    "meaning": "電気屋",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -3346,9 +3766,9 @@
   },
   {
     "id": "minna-1-23-1609729373731",
-    "japanese": "電気屋",
-    "reading": "電気屋",
-    "meaning": "電気[でんき] 屋[や]",
+    "japanese": "電気[でんき] 屋[や]",
+    "reading": "電気[でんき] 屋[や]",
+    "meaning": "電気屋",
     "jlptLevel": "N4",
     "partOfSpeech": "noun",
     "examples": [
@@ -3369,9 +3789,9 @@
   },
   {
     "id": "minna-1-23-1609729372590",
-    "japanese": "渡ります",
-    "reading": "渡ります",
-    "meaning": "渡[わた]ります",
+    "japanese": "渡[わた]ります",
+    "reading": "渡[わた]ります",
+    "meaning": "渡ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3392,9 +3812,9 @@
   },
   {
     "id": "minna-1-23-1609729372591",
-    "japanese": "渡ります",
-    "reading": "渡ります",
-    "meaning": "渡[わた]ります",
+    "japanese": "渡[わた]ります",
+    "reading": "渡[わた]ります",
+    "meaning": "渡ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3415,9 +3835,9 @@
   },
   {
     "id": "minna-1-23-1609729372590",
-    "japanese": "渡ります",
-    "reading": "渡ります",
-    "meaning": "渡[わた]ります",
+    "japanese": "渡[わた]ります",
+    "reading": "渡[わた]ります",
+    "meaning": "渡ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3438,9 +3858,9 @@
   },
   {
     "id": "minna-1-23-1609729372591",
-    "japanese": "渡ります",
-    "reading": "渡ります",
-    "meaning": "渡[わた]ります",
+    "japanese": "渡[わた]ります",
+    "reading": "渡[わた]ります",
+    "meaning": "渡ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3460,94 +3880,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162624127",
-    "japanese": "渡ります［橋を～］",
-    "reading": "渡ります［橋を～］",
-    "meaning": "to cross [a bridge]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "渡[わた]ります［ 橋[はし]を~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575179",
-    "japanese": "渡ります［橋を～］",
-    "reading": "渡ります［橋を～］",
-    "meaning": "to cross [a bridge]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "渡[わた]ります［ 橋[はし]を~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162624127",
-    "japanese": "渡ります［橋を～］",
-    "reading": "渡ります［橋を～］",
-    "meaning": "to cross [a bridge]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "渡[わた]ります［ 橋[はし]を~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575179",
-    "japanese": "渡ります［橋を～］",
-    "reading": "渡ります［橋を～］",
-    "meaning": "to cross [a bridge]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "渡[わた]ります［ 橋[はし]を~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372586",
-    "japanese": "動きます",
-    "reading": "動きます",
-    "meaning": "動[うご]きます",
+    "japanese": "動[うご]きます",
+    "reading": "動[うご]きます",
+    "meaning": "動きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3568,9 +3904,9 @@
   },
   {
     "id": "minna-1-23-1609729372587",
-    "japanese": "動きます",
-    "reading": "動きます",
-    "meaning": "動[うご]きます",
+    "japanese": "動[うご]きます",
+    "reading": "動[うご]きます",
+    "meaning": "動きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3591,9 +3927,9 @@
   },
   {
     "id": "minna-1-23-1609729372586",
-    "japanese": "動きます",
-    "reading": "動きます",
-    "meaning": "動[うご]きます",
+    "japanese": "動[うご]きます",
+    "reading": "動[うご]きます",
+    "meaning": "動きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3614,9 +3950,9 @@
   },
   {
     "id": "minna-1-23-1609729372587",
-    "japanese": "動きます",
-    "reading": "動きます",
-    "meaning": "動[うご]きます",
+    "japanese": "動[うご]きます",
+    "reading": "動[うご]きます",
+    "meaning": "動きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3636,52 +3972,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162882470",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "road, way",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "道[みち]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575186",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "road, way",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "道[みち]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373742",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "道[みち]",
+    "japanese": "道[みち]",
+    "reading": "道[みち]",
+    "meaning": "道",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3702,9 +3996,9 @@
   },
   {
     "id": "minna-1-23-1609729373743",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "道[みち]",
+    "japanese": "道[みち]",
+    "reading": "道[みち]",
+    "meaning": "道",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3724,52 +4018,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162882470",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "road, way",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "道[みち]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575186",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "road, way",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "道[みち]",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729373742",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "道[みち]",
+    "japanese": "道[みち]",
+    "reading": "道[みち]",
+    "meaning": "道",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3790,9 +4042,9 @@
   },
   {
     "id": "minna-1-23-1609729373743",
-    "japanese": "道",
-    "reading": "道",
-    "meaning": "道[みち]",
+    "japanese": "道[みち]",
+    "reading": "道[みち]",
+    "meaning": "道",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3813,9 +4065,9 @@
   },
   {
     "id": "minna-1-23-1609729372574",
-    "japanese": "聞きます",
-    "reading": "聞きます",
-    "meaning": "聞[き]きます",
+    "japanese": "聞[き]きます",
+    "reading": "聞[き]きます",
+    "meaning": "聞きます",
     "jlptLevel": "N4",
     "partOfSpeech": [],
     "examples": [
@@ -3836,9 +4088,9 @@
   },
   {
     "id": "minna-1-23-1609729372575",
-    "japanese": "聞きます",
-    "reading": "聞きます",
-    "meaning": "聞[き]きます",
+    "japanese": "聞[き]きます",
+    "reading": "聞[き]きます",
+    "meaning": "聞きます",
     "jlptLevel": "N4",
     "partOfSpeech": [],
     "examples": [
@@ -3859,9 +4111,9 @@
   },
   {
     "id": "minna-1-23-1609729372574",
-    "japanese": "聞きます",
-    "reading": "聞きます",
-    "meaning": "聞[き]きます",
+    "japanese": "聞[き]きます",
+    "reading": "聞[き]きます",
+    "meaning": "聞きます",
     "jlptLevel": "N4",
     "partOfSpeech": [],
     "examples": [
@@ -3882,9 +4134,9 @@
   },
   {
     "id": "minna-1-23-1609729372575",
-    "japanese": "聞きます",
-    "reading": "聞きます",
-    "meaning": "聞[き]きます",
+    "japanese": "聞[き]きます",
+    "reading": "聞[き]きます",
+    "meaning": "聞きます",
     "jlptLevel": "N4",
     "partOfSpeech": [],
     "examples": [
@@ -3904,136 +4156,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162280429",
-    "japanese": "聞きます［先生に～］",
-    "reading": "聞きます［先生に～］",
-    "meaning": "to ask [the teacher]",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575172",
-    "japanese": "聞きます［先生に～］",
-    "reading": "聞きます［先生に～］",
-    "meaning": "to ask [the teacher]",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162280429",
-    "japanese": "聞きます［先生に～］",
-    "reading": "聞きます［先生に～］",
-    "meaning": "to ask [the teacher]",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575172",
-    "japanese": "聞きます［先生に～］",
-    "reading": "聞きます［先生に～］",
-    "meaning": "to ask [the teacher]",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "聞[き]きます［ 先生[せんせい]に~］",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550632278947",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "to change",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "変[か]えます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550632278948",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "to change",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "変[か]えます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372580",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "変[か]えます",
+    "japanese": "変[か]えます",
+    "reading": "変[か]えます",
+    "meaning": "変えます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4048,9 +4174,9 @@
   },
   {
     "id": "minna-1-23-1609729372581",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "変[か]えます",
+    "japanese": "変[か]えます",
+    "reading": "変[か]えます",
+    "meaning": "変えます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4064,52 +4190,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1550632278947",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "to change",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "変[か]えます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1550632278948",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "to change",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "変[か]えます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372580",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "変[か]えます",
+    "japanese": "変[か]えます",
+    "reading": "変[か]えます",
+    "meaning": "変えます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -4124,57 +4208,15 @@
   },
   {
     "id": "minna-1-23-1609729372581",
-    "japanese": "変えます",
-    "reading": "変えます",
-    "meaning": "変[か]えます",
+    "japanese": "変[か]えます",
+    "reading": "変[か]えます",
+    "meaning": "変えます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
     "tags": [
       "chapter23",
       "verb",
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1525162553941",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "to walk",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "歩[ある]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575178",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "to walk",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "歩[ある]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
       "n5",
       "lesson-23"
     ],
@@ -4183,9 +4225,9 @@
   },
   {
     "id": "minna-1-23-1609729372588",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "歩[ある]きます",
+    "japanese": "歩[ある]きます",
+    "reading": "歩[ある]きます",
+    "meaning": "歩きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4206,9 +4248,9 @@
   },
   {
     "id": "minna-1-23-1609729372589",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "歩[ある]きます",
+    "japanese": "歩[ある]きます",
+    "reading": "歩[ある]きます",
+    "meaning": "歩きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4228,52 +4270,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-23-1525162553941",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "to walk",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "歩[ある]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1544776575178",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "to walk",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "歩[ある]きます",
-        "reading": "",
-        "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-23-1609729372588",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "歩[ある]きます",
+    "japanese": "歩[ある]きます",
+    "reading": "歩[ある]きます",
+    "meaning": "歩きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4294,9 +4294,9 @@
   },
   {
     "id": "minna-1-23-1609729372589",
-    "japanese": "歩きます",
-    "reading": "歩きます",
-    "meaning": "歩[ある]きます",
+    "japanese": "歩[ある]きます",
+    "reading": "歩[ある]きます",
+    "meaning": "歩きます",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [

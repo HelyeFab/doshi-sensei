@@ -54,7 +54,7 @@ export class AccessControl {
     }
     
     // 5. Check permissions
-    const hasPermission = this.checkPermission(userType, featureId);
+    const hasPermission = await this.checkPermission(userType, featureId);
     if (!hasPermission) {
       return {
         allowed: false,
@@ -81,7 +81,7 @@ export class AccessControl {
   /**
    * Check if user has permission for a feature
    */
-  private checkPermission(userType: UserType, featureId: string): boolean {
+  private async checkPermission(userType: UserType, featureId: string): Promise<boolean> {
     const feature = featureManager.getFeature(featureId);
     if (!feature) return false;
     
@@ -115,7 +115,7 @@ export class AccessControl {
     const permission = permissionMap[featureId];
     if (!permission) return false;
     
-    return entitlementManager.hasPermission(userType, permission as any);
+    return await entitlementManager.hasPermission(userType, permission as any);
   }
   
   /**
@@ -131,7 +131,7 @@ export class AccessControl {
     const limitKey = featureManager.getEffectiveLimitKey(featureId);
     
     // Get the limit value
-    const limit = entitlementManager.getLimit(userType, limitKey, limitType);
+    const limit = await entitlementManager.getLimit(userType, limitKey, limitType);
     
     // Unlimited (-1) always passes
     if (limit === -1) {

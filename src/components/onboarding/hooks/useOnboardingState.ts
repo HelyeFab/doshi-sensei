@@ -115,7 +115,7 @@ export function useOnboardingState() {
   // Navigate to next screen
   const nextScreen = useCallback(() => {
     setState(prev => {
-      const newScreenIndex = Math.min(prev.currentScreen + 1, 4);
+      const newScreenIndex = Math.min(prev.currentScreen + 1, 5); // Updated for 6 screens (0-5)
       trackScreenView(newScreenIndex, getScreenName(newScreenIndex));
       return {
         ...prev,
@@ -190,7 +190,7 @@ export function useOnboardingState() {
       (window as any).gtag('event', 'onboarding_completed', {
         event_category: 'engagement',
         event_label: 'tutorial_completion',
-        screen_count: 5,
+        screen_count: 6, // Updated for 6 screens
         total_time: completionTime,
         interaction_count: analytics.completion.interactionCount,
         value: 1
@@ -264,6 +264,6 @@ export function useOnboardingState() {
 
 // Helper function to get screen names
 function getScreenName(index: number): string {
-  const screens = ['welcome', 'conjugation', 'lists', 'practice', 'success'];
+  const screens = ['welcome', 'conjugation', 'practice', 'youtube_shadowing', 'textbook_vocabulary', 'success'];
   return screens[index] || 'unknown';
 }

@@ -122,7 +122,7 @@ export default function TextbookVocabularyPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 text-white shadow-lg"
+              className="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 text-white shadow-lg dark:from-yellow-500 dark:to-orange-600"
             >
               <div className="flex items-center gap-3">
                 <div className="text-3xl">⏰</div>

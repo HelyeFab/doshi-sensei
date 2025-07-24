@@ -1,6 +1,6 @@
 export const en = {
   // App Info
-  appName: "Doshi Sensei",
+  appName: "Dōshi Sensei",
   appDescription: "Master Japanese verb and adjective conjugations",
 
   // Navigation
@@ -24,7 +24,7 @@ export const en = {
 
   // Home Screen
   home: {
-    title: "Welcome to Doshi Sensei",
+    title: "Welcome to Dōshi Sensei",
     subtitle: "Master Japanese verb and adjective conjugations",
     practiceButton: "Practice Conjugations",
     drillButton: "Drill Mode",
@@ -366,9 +366,9 @@ export const en = {
 
     // About
     build: "Build",
-    aboutInfo: "Doshi Sensei is a Japanese verb and adjective conjugation practice app. Built with Next.js and designed to help you master Japanese conjugations.",
+    aboutInfo: "Dōshi Sensei is a Japanese verb and adjective conjugation practice app. Built with Next.js and designed to help you master Japanese conjugations.",
     rateApp: "Rate the App",
-    rateAppDesc: "Help others discover Doshi Sensei",
+    rateAppDesc: "Help others discover Dōshi Sensei",
     shareWithFriends: "Share with Friends",
     shareWithFriendsDesc: "Spread the word about learning Japanese",
     acknowledgments: "Acknowledgments",
@@ -655,7 +655,7 @@ export const en = {
       weakPassword: {
         title: "Let's make that password stronger! 🔒",
         message: "Your password needs to be at least 6 characters long. Consider using a mix of letters, numbers, and symbols for better security.",
-        suggestion: "Pro tip: Use a passphrase like 'DoshiSensei2024!' - it's easier to remember and super secure!"
+        suggestion: "Pro tip: Use a passphrase like 'DōshiSensei2024!' - it's easier to remember and super secure!"
       },
       invalidEmail: {
         title: "Email format looks off! ✉️",
@@ -1533,7 +1533,7 @@ export const en = {
     premiumBenefits: 'Premium Benefits:',
     cancelAnytime: 'Cancel anytime • Secure payment via Stripe',
     // Donation
-    supportDeveloper: 'Support Doshi Sensei',
+    supportDeveloper: 'Support Dōshi Sensei',
     supportDescription: 'Help keep this app free and growing!',
     chooseDonationAmount: 'Choose donation amount:',
     customAmount: 'Custom amount',
@@ -1633,7 +1633,7 @@ export const en = {
     // Admin navigation
     admin: {
       label: 'Admin',
-      description: 'Doshi Sensei',
+      description: 'Dōshi Sensei',
       dashboard: {
         label: 'Dashboard',
         icon: '📊',
@@ -1701,7 +1701,7 @@ export const en = {
     },
     // App branding
     app: {
-      name: 'Doshi Sensei',
+      name: 'Dōshi Sensei',
       tagline: 'Japanese Conjugation Practice',
       version: 'v1.0',
       branch: 'feature/admin-dashboard'
@@ -2336,17 +2336,18 @@ export const en = {
   tutorial: {
     // Welcome Screen
     welcome: {
-      title: "Welcome to Doshi Sensei!",
+      title: "Welcome to Dōshi Sensei!",
       description: "Your complete Japanese learning platform with everything you need to master the language.",
       emphasis: "Let's explore your new learning universe!",
       features: {
         header: "🌟 Your Japanese Journey Includes:",
         conjugations: "🎯 Master 127+ conjugation forms instantly",
         vocabulary: "📚 Build vocabulary with smart study lists",
+        textbookVocab: "📖 Study vocabulary from Genki and Minna textbooks",
         games: "🎮 Learn through games (Kanji Quest lets you catch 1000+ Pokémon!)",
         reading: "📰 Read real Japanese news with furigana support",
-        kanji: "🈯 Study kanji with beautiful mood boards",
-        tracking: "📊 Track your progress across all activities"
+        youtubeShadowing: "🎬 Practice with YouTube shadowing exercises",
+        kanji: "🈯 Study kanji with beautiful mood boards"
       },
       startButton: "Start My Journey! 🚀",
       footer: "(No Japanese learners were overwhelmed in the making of this platform)"
@@ -2355,7 +2356,7 @@ export const en = {
     // Learning Paths Screen (New)
     paths: {
       title: "Choose Your Learning Path 🗺️",
-      description: "Doshi Sensei adapts to your learning style. Pick what excites you most!",
+      description: "Dōshi Sensei adapts to your learning style. Pick what excites you most!",
       scholar: {
         title: "📖 The Scholar",
         description: "Deep dive into grammar and conjugations",
@@ -2476,7 +2477,7 @@ export const en = {
 
     // Success Screen
     success: {
-      title: "おめでとう！ Welcome to the Doshi Sensei Family!",
+      title: "おめでとう！ Welcome to the Dōshi Sensei Family!",
       description: "You're now part of a growing community of Japanese learners.",
       emphasis: "Your adventure begins now!",
       checklistHeader: "🎯 Your Journey Checklist:",

@@ -186,14 +186,44 @@ function transformCard(card: MCPCard): VocabularyItem | null {
     });
   }
   
-  // Clean up reading - use japanese if reading is null
-  const reading = card.reading || card.japanese;
+  // Parse the MCP data format
+  // The MCP server appears to have swapped fields:
+  // - card.japanese contains English meaning with readings in HTML format
+  // - card.meaning contains the actual Japanese kanji
+  
+  // Extract readings from the HTML in card.japanese
+  const readingMatches = card.japanese.match(/<div>([^<]+)<\/div>/g);
+  let extractedReadings: string[] = [];
+  if (readingMatches) {
+    extractedReadings = readingMatches
+      .map(match => match.replace(/<div>|<\/div>/g, '').trim())
+      .filter(text => text && text !== '<br />');
+  }
+  
+  // Extract English meaning from card.japanese (text before first <div>)
+  const englishMeaning = card.japanese.split('<div>')[0].trim()
+    .replace(/<br\s*\/?>/g, '') // Remove <br> tags
+    .replace(/<[^>]*>/g, '') // Remove any other HTML tags
+    .trim();
+  
+  // The actual Japanese kanji is in card.meaning
+  // Clean up any HTML tags from the kanji
+  const japaneseKanji = card.meaning.replace(/<[^>]*>/g, '').trim();
+  
+  // Use the extracted readings, filtering out the English meaning
+  const validReadings = extractedReadings.filter(r => {
+    // Filter out readings that look like English or are too long
+    return r && !r.includes(' ') && r.length < 10 && /[\u3040-\u309f\u30a0-\u30ff]/.test(r);
+  });
+  
+  // Use the first valid reading, or the kanji itself if no reading found
+  const reading = validReadings[0] || card.reading || japaneseKanji;
   
   return {
     id: `${textbook}-${lesson}-${card.id}`,
-    japanese: card.japanese,
-    reading: reading,
-    meaning: card.meaning,
+    japanese: japaneseKanji,  // The actual kanji from card.meaning
+    reading: reading,          // Extracted hiragana reading
+    meaning: englishMeaning,   // The English meaning extracted from card.japanese
     jlptLevel: card.jlpt_level,
     partOfSpeech: card.part_of_speech || [],
     examples,
@@ -311,6 +341,17 @@ async function main() {
   console.log('🚀 Starting vocabulary import from MCP server...\n');
   
   try {
+    // Create backup of existing data if it exists
+    const backupDir = path.join(__dirname, '..', 'src', 'data', 'textbook-vocabulary-backup');
+    try {
+      await fs.access(OUTPUT_DIR);
+      console.log('📦 Creating backup of existing data...');
+      await fs.cp(OUTPUT_DIR, backupDir, { recursive: true });
+      console.log('✅ Backup created at:', backupDir);
+    } catch (error) {
+      console.log('📋 No existing data to backup, proceeding with fresh import...');
+    }
+    
     // Create output directory
     await fs.mkdir(OUTPUT_DIR, { recursive: true });
     

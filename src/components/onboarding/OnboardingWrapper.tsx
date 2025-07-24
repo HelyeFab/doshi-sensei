@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { OnboardingModal } from './OnboardingModal';
+import { OnboardingFlow } from './OnboardingFlow';
 import { TestModal } from './TestModal';
 
 export interface OnboardingWrapperProps {
@@ -66,7 +66,7 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
       {children}
       {showOnboarding && (
         <Suspense fallback={null}>
-          <OnboardingModal onComplete={handleOnboardingComplete} />
+          <OnboardingFlow onComplete={handleOnboardingComplete} />
         </Suspense>
       )}
     </>

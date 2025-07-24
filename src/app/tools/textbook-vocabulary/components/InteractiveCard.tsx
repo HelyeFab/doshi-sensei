@@ -45,7 +45,7 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <div className="bg-card rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-lg overflow-hidden relative">
         <AnimatePresence mode="wait">
           {!revealed ? (
             // Front Side - Question
@@ -54,12 +54,21 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
               initial={{ opacity: 0, rotateY: -90 }}
               animate={{ opacity: 1, rotateY: 0 }}
               exit={{ opacity: 0, rotateY: 90 }}
-              className="p-8"
+              className="p-6 md:p-8"
             >
+              {/* JLPT Level Badge - Top Left */}
+              {word.jlptLevel && (
+                <div className="absolute top-4 left-4">
+                  <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full">
+                    {word.jlptLevel}
+                  </span>
+                </div>
+              )}
+              
               <div className="text-center space-y-6">
                 {/* Japanese Word */}
                 <div className="space-y-2">
-                  <div className="text-5xl font-bold text-foreground">
+                  <div className="text-4xl md:text-5xl font-bold text-foreground">
                     {settings.showFurigana && word.reading !== word.japanese ? (
                       <ruby>
                         {word.japanese}
@@ -90,13 +99,6 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
                   </div>
                 )}
                 
-                {/* JLPT Level Badge */}
-                {word.jlptLevel && (
-                  <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
-                    {word.jlptLevel}
-                  </div>
-                )}
-                
                 {/* Hint Button (in learn mode) */}
                 {mode === 'learn' && !showHint && (
                   <button
@@ -121,7 +123,7 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
                 {/* Reveal Button */}
                 <button
                   onClick={handleReveal}
-                  className="px-8 py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                  className="px-8 py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 md:px-12"
                 >
                   Show Answer
                 </button>
@@ -134,7 +136,7 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
               initial={{ opacity: 0, rotateY: 90 }}
               animate={{ opacity: 1, rotateY: 0 }}
               exit={{ opacity: 0, rotateY: -90 }}
-              className="p-8"
+              className="p-6 md:p-8"
             >
               <div className="space-y-6">
                 {/* Meaning */}
@@ -186,7 +188,7 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
                 
                 {/* Notes */}
                 {word.notes && (
-                  <div className="text-sm text-muted-foreground bg-yellow-50/50 border border-yellow-200/50 rounded-lg p-3">
+                  <div className="text-sm text-muted-foreground bg-yellow-50/50 dark:bg-yellow-900/20 border border-yellow-200/50 dark:border-yellow-700/30 rounded-lg p-3">
                     <strong>Note:</strong> {word.notes}
                   </div>
                 )}

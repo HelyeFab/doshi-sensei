@@ -126,16 +126,62 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
 ];
 
 // Helper functions
+
+// Cache for dynamic rules to avoid repeated async calls
+let cachedRules: EntitlementRule[] | null = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 60000; // 1 minute cache
+
+async function getDynamicRules(): Promise<EntitlementRule[]> {
+  // Use cached rules if fresh
+  if (cachedRules && Date.now() - cacheTimestamp < CACHE_DURATION) {
+    return cachedRules;
+  }
+
+  try {
+    const { dynamicRules } = await import('./dynamic-rules');
+    cachedRules = await dynamicRules.getRules();
+    cacheTimestamp = Date.now();
+    return cachedRules;
+  } catch (error) {
+    console.error('Failed to load dynamic rules, falling back to defaults:', error);
+    return ENTITLEMENT_RULES;
+  }
+}
+
+// Synchronous fallback for backwards compatibility
 export function getEntitlementRulesForUserType(userType: string) {
+  // This function is being phased out - use async version
+  console.warn('getEntitlementRulesForUserType is deprecated. Use getEntitlementRulesForUserTypeAsync');
   return ENTITLEMENT_RULES.find(rule => rule.userTypes.includes(userType as any));
 }
 
+// New async version that uses dynamic rules
+export async function getEntitlementRulesForUserTypeAsync(userType: string) {
+  const rules = await getDynamicRules();
+  return rules.find(rule => rule.userTypes.includes(userType as any));
+}
+
 export function getUserPermissions(userType: string) {
+  // This function is being phased out - use async version
+  console.warn('getUserPermissions is deprecated. Use getUserPermissionsAsync');
   const rule = getEntitlementRulesForUserType(userType);
   return rule?.permissions || [];
 }
 
+export async function getUserPermissionsAsync(userType: string) {
+  const rule = await getEntitlementRulesForUserTypeAsync(userType);
+  return rule?.permissions || [];
+}
+
 export function getUserLimits(userType: string) {
+  // This function is being phased out - use async version
+  console.warn('getUserLimits is deprecated. Use getUserLimitsAsync');
   const rule = getEntitlementRulesForUserType(userType);
+  return rule?.limits || { daily: {}, total: {} };
+}
+
+export async function getUserLimitsAsync(userType: string) {
+  const rule = await getEntitlementRulesForUserTypeAsync(userType);
   return rule?.limits || { daily: {}, total: {} };
 }

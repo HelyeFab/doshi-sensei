@@ -1,98 +1,14 @@
 [
   {
-    "id": "minna-1-19-1525157229017",
-    "japanese": "おかげさまで",
-    "reading": "おかげさまで",
-    "meaning": "Thank you. (used when expressing gratitude for help received)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "おかげさまで",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575076",
-    "japanese": "おかげさまで",
-    "reading": "おかげさまで",
-    "meaning": "Thank you. (used when expressing gratitude for help received)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "おかげさまで",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525157229017",
-    "japanese": "おかげさまで",
-    "reading": "おかげさまで",
-    "meaning": "Thank you. (used when expressing gratitude for help received)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "おかげさまで",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575076",
-    "japanese": "おかげさまで",
-    "reading": "おかげさまで",
-    "meaning": "Thank you. (used when expressing gratitude for help received)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "おかげさまで",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1550630837948",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "tea ceremony",
+    "id": "minna-1-19-1525157632024",
+    "japanese": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "reading": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "meaning": "葛飾北斉　(FIX)",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "お 茶[ちゃ]",
+        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
         "reading": "",
         "english": "19"
       }
@@ -105,15 +21,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1550630837949",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "tea ceremony",
+    "id": "minna-1-19-1544776575082",
+    "japanese": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "reading": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "meaning": "葛飾北斉　(FIX)",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "お 茶[ちゃ]",
+        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
         "reading": "",
         "english": "19"
       }
@@ -126,22 +42,63 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729373658",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "お 茶[ちゃ]",
+    "id": "minna-1-19-1525157632024",
+    "japanese": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "reading": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "meaning": "葛飾北斉　(FIX)",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "tea ceremony",
+        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
         "reading": "",
         "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575082",
+    "japanese": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "reading": "a famous Edo-period woodblock artist and painter (1760-1849)",
+    "meaning": "葛飾北斉　(FIX)",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373882",
+    "japanese": "actually",
+    "reading": "actually",
+    "meaning": "実[じつ]は",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "実は昨日からダイエットをしています。"
       }
     ],
     "tags": [
       "chapter19",
-      "noun",
       "n5",
       "lesson-19"
     ],
@@ -149,22 +106,21 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729373659",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "お 茶[ちゃ]",
+    "id": "minna-1-19-1609729373883",
+    "japanese": "actually",
+    "reading": "actually",
+    "meaning": "実[じつ]は",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "tea ceremony",
+        "japanese": "19",
         "reading": "",
-        "english": "19"
+        "english": "実は昨日からダイエットをしています。"
       }
     ],
     "tags": [
       "chapter19",
-      "noun",
       "n5",
       "lesson-19"
     ],
@@ -172,64 +128,21 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1550630837948",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "tea ceremony",
+    "id": "minna-1-19-1609729373882",
+    "japanese": "actually",
+    "reading": "actually",
+    "meaning": "実[じつ]は",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "お 茶[ちゃ]",
+        "japanese": "19",
         "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1550630837949",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "tea ceremony",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "お 茶[ちゃ]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373658",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "お 茶[ちゃ]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "tea ceremony",
-        "reading": "",
-        "english": "19"
+        "english": "実は昨日からダイエットをしています。"
       }
     ],
     "tags": [
       "chapter19",
-      "noun",
       "n5",
       "lesson-19"
     ],
@@ -237,22 +150,21 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729373659",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "お 茶[ちゃ]",
+    "id": "minna-1-19-1609729373883",
+    "japanese": "actually",
+    "reading": "actually",
+    "meaning": "実[じつ]は",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "tea ceremony",
+        "japanese": "19",
         "reading": "",
-        "english": "19"
+        "english": "実は昨日からダイエットをしています。"
       }
     ],
     "tags": [
       "chapter19",
-      "noun",
       "n5",
       "lesson-19"
     ],
@@ -260,15 +172,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525157287303",
-    "japanese": "かんぱい",
-    "reading": "かんぱい",
-    "meaning": "Cheers!",
+    "id": "minna-1-19-1525157263618",
+    "japanese": "but",
+    "reading": "but",
+    "meaning": "でも",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "かんぱい",
+        "japanese": "でも",
         "reading": "",
         "english": "19"
       }
@@ -281,15 +193,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575078",
-    "japanese": "かんぱい",
-    "reading": "かんぱい",
-    "meaning": "Cheers!",
+    "id": "minna-1-19-1544776575077",
+    "japanese": "but",
+    "reading": "but",
+    "meaning": "でも",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "かんぱい",
+        "japanese": "でも",
         "reading": "",
         "english": "19"
       }
@@ -302,15 +214,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525157287303",
-    "japanese": "かんぱい",
-    "reading": "かんぱい",
-    "meaning": "Cheers!",
+    "id": "minna-1-19-1525157263618",
+    "japanese": "but",
+    "reading": "but",
+    "meaning": "でも",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "かんぱい",
+        "japanese": "でも",
         "reading": "",
         "english": "19"
       }
@@ -323,15 +235,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575078",
-    "japanese": "かんぱい",
-    "reading": "かんぱい",
-    "meaning": "Cheers!",
+    "id": "minna-1-19-1544776575077",
+    "japanese": "but",
+    "reading": "but",
+    "meaning": "でも",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "かんぱい",
+        "japanese": "でも",
         "reading": "",
         "english": "19"
       }
@@ -345,9 +257,9 @@
   },
   {
     "id": "minna-1-19-1609729373664",
-    "japanese": "ケーキ",
+    "japanese": "cake",
     "reading": "ケーキ",
-    "meaning": "cake",
+    "meaning": "ケーキ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -368,9 +280,9 @@
   },
   {
     "id": "minna-1-19-1609729373665",
-    "japanese": "ケーキ",
+    "japanese": "cake",
     "reading": "ケーキ",
-    "meaning": "cake",
+    "meaning": "ケーキ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -391,9 +303,9 @@
   },
   {
     "id": "minna-1-19-1609729373664",
-    "japanese": "ケーキ",
+    "japanese": "cake",
     "reading": "ケーキ",
-    "meaning": "cake",
+    "meaning": "ケーキ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -414,9 +326,9 @@
   },
   {
     "id": "minna-1-19-1609729373665",
-    "japanese": "ケーキ",
+    "japanese": "cake",
     "reading": "ケーキ",
-    "meaning": "cake",
+    "meaning": "ケーキ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -436,15 +348,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156719756",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf (~を　します: to play golf)",
+    "id": "minna-1-19-1525157287303",
+    "japanese": "Cheers!",
+    "reading": "Cheers!",
+    "meaning": "かんぱい",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "i-adjective",
     "examples": [
       {
-        "japanese": "ゴルフ",
+        "japanese": "かんぱい",
         "reading": "",
         "english": "19"
       }
@@ -457,15 +369,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575067",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf (~を　します: to play golf)",
+    "id": "minna-1-19-1544776575078",
+    "japanese": "Cheers!",
+    "reading": "Cheers!",
+    "meaning": "かんぱい",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "i-adjective",
     "examples": [
       {
-        "japanese": "ゴルフ",
+        "japanese": "かんぱい",
         "reading": "",
         "english": "19"
       }
@@ -478,61 +390,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729373652",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf",
+    "id": "minna-1-19-1525157287303",
+    "japanese": "Cheers!",
+    "reading": "Cheers!",
+    "meaning": "かんぱい",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "i-adjective",
     "examples": [
       {
-        "japanese": "19",
-        "reading": "",
-        "english": "(～を します: play golf)"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "noun",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373653",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "(～を します: play golf)"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "noun",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156719756",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf (~を　します: to play golf)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "ゴルフ",
+        "japanese": "かんぱい",
         "reading": "",
         "english": "19"
       }
@@ -545,15 +411,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575067",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf (~を　します: to play golf)",
+    "id": "minna-1-19-1544776575078",
+    "japanese": "Cheers!",
+    "reading": "Cheers!",
+    "meaning": "かんぱい",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "i-adjective",
     "examples": [
       {
-        "japanese": "ゴルフ",
+        "japanese": "かんぱい",
         "reading": "",
         "english": "19"
       }
@@ -566,61 +432,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729373652",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf",
+    "id": "minna-1-19-1525156840886",
+    "japanese": "condition",
+    "reading": "condition",
+    "meaning": "調子",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "19",
-        "reading": "",
-        "english": "(～を します: play golf)"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "noun",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373653",
-    "japanese": "ゴルフ",
-    "reading": "ゴルフ",
-    "meaning": "golf",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "(～を します: play golf)"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "noun",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525157357310",
-    "japanese": "ダイエット",
-    "reading": "ダイエット",
-    "meaning": "diet (～を　します: to go on a diet)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "ダイエット",
+        "japanese": "調子[ちょうし]",
         "reading": "",
         "english": "19"
       }
@@ -633,15 +453,141 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575079",
-    "japanese": "ダイエット",
-    "reading": "ダイエット",
-    "meaning": "diet (～を　します: to go on a diet)",
+    "id": "minna-1-19-1544776575071",
+    "japanese": "condition",
+    "reading": "condition",
+    "meaning": "調子",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "ダイエット",
+        "japanese": "調子[ちょうし]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156840886",
+    "japanese": "condition",
+    "reading": "condition",
+    "meaning": "調子",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "調子[ちょうし]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575071",
+    "japanese": "condition",
+    "reading": "condition",
+    "meaning": "調子",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "調子[ちょうし]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156810180",
+    "japanese": "day, date",
+    "reading": "day, date",
+    "meaning": "日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日[ひ]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575070",
+    "japanese": "day, date",
+    "reading": "day, date",
+    "meaning": "日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日[ひ]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156810180",
+    "japanese": "day, date",
+    "reading": "day, date",
+    "meaning": "日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日[ひ]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575070",
+    "japanese": "day, date",
+    "reading": "day, date",
+    "meaning": "日",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "日[ひ]",
         "reading": "",
         "english": "19"
       }
@@ -655,9 +601,9 @@
   },
   {
     "id": "minna-1-19-1609729373662",
-    "japanese": "ダイエット",
+    "japanese": "diet",
     "reading": "ダイエット",
-    "meaning": "diet",
+    "meaning": "ダイエット",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -678,9 +624,9 @@
   },
   {
     "id": "minna-1-19-1609729373663",
-    "japanese": "ダイエット",
+    "japanese": "diet",
     "reading": "ダイエット",
-    "meaning": "diet",
+    "meaning": "ダイエット",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -700,52 +646,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525157357310",
-    "japanese": "ダイエット",
-    "reading": "ダイエット",
-    "meaning": "diet (～を　します: to go on a diet)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "ダイエット",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575079",
-    "japanese": "ダイエット",
-    "reading": "ダイエット",
-    "meaning": "diet (～を　します: to go on a diet)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "ダイエット",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729373662",
-    "japanese": "ダイエット",
+    "japanese": "diet",
     "reading": "ダイエット",
-    "meaning": "diet",
+    "meaning": "ダイエット",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -766,9 +670,9 @@
   },
   {
     "id": "minna-1-19-1609729373663",
-    "japanese": "ダイエット",
+    "japanese": "diet",
     "reading": "ダイエット",
-    "meaning": "diet",
+    "meaning": "ダイエット",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -788,10 +692,438 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-19-1525157357310",
+    "japanese": "diet (～を　します: to go on a diet)",
+    "reading": "diet (～を　します: to go on a diet)",
+    "meaning": "ダイエット",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ダイエット",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575079",
+    "japanese": "diet (～を　します: to go on a diet)",
+    "reading": "diet (～を　します: to go on a diet)",
+    "meaning": "ダイエット",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ダイエット",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525157357310",
+    "japanese": "diet (～を　します: to go on a diet)",
+    "reading": "diet (～を　します: to go on a diet)",
+    "meaning": "ダイエット",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ダイエット",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575079",
+    "japanese": "diet (～を　します: to go on a diet)",
+    "reading": "diet (～を　します: to go on a diet)",
+    "meaning": "ダイエット",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ダイエット",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525157429846",
+    "japanese": "excessive, impossible",
+    "reading": "excessive, impossible",
+    "meaning": "無理［な］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "無理[むり]［な］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575080",
+    "japanese": "excessive, impossible",
+    "reading": "excessive, impossible",
+    "meaning": "無理［な］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "無理[むり]［な］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525157429846",
+    "japanese": "excessive, impossible",
+    "reading": "excessive, impossible",
+    "meaning": "無理［な］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "無理[むり]［な］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575080",
+    "japanese": "excessive, impossible",
+    "reading": "excessive, impossible",
+    "meaning": "無理［な］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "無理[むり]［な］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373652",
+    "japanese": "golf",
+    "reading": "ゴルフ",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "(～を します: play golf)"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373653",
+    "japanese": "golf",
+    "reading": "ゴルフ",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "(～を します: play golf)"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373652",
+    "japanese": "golf",
+    "reading": "ゴルフ",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "(～を します: play golf)"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373653",
+    "japanese": "golf",
+    "reading": "ゴルフ",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "(～を します: play golf)"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156719756",
+    "japanese": "golf (~を　します: to play golf)",
+    "reading": "golf (~を　します: to play golf)",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ゴルフ",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575067",
+    "japanese": "golf (~を　します: to play golf)",
+    "reading": "golf (~を　します: to play golf)",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ゴルフ",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156719756",
+    "japanese": "golf (~を　します: to play golf)",
+    "reading": "golf (~を　します: to play golf)",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ゴルフ",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575067",
+    "japanese": "golf (~を　します: to play golf)",
+    "reading": "golf (~を　します: to play golf)",
+    "meaning": "ゴルフ",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "ゴルフ",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525157477614",
+    "japanese": "good for one's health",
+    "reading": "good for one's health",
+    "meaning": "体に　いい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "体[からだ]に　いい",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575081",
+    "japanese": "good for one's health",
+    "reading": "good for one's health",
+    "meaning": "体に　いい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "体[からだ]に　いい",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525157477614",
+    "japanese": "good for one's health",
+    "reading": "good for one's health",
+    "meaning": "体に　いい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "体[からだ]に　いい",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575081",
+    "japanese": "good for one's health",
+    "reading": "good for one's health",
+    "meaning": "体に　いい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "体[からだ]に　いい",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-19-1525157039445",
-    "japanese": "だんだん",
-    "reading": "だんだん",
-    "meaning": "gradually",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "だんだん",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -810,9 +1142,9 @@
   },
   {
     "id": "minna-1-19-1544776575074",
-    "japanese": "だんだん",
-    "reading": "だんだん",
-    "meaning": "gradually",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "だんだん",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -830,10 +1162,54 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-19-1609729373858",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "段々[だんだん]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "これから段々暑くなります。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373859",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "段々[だんだん]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "これから段々暑くなります。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-19-1525157039445",
-    "japanese": "だんだん",
-    "reading": "だんだん",
-    "meaning": "gradually",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "だんだん",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -852,9 +1228,9 @@
   },
   {
     "id": "minna-1-19-1544776575074",
-    "japanese": "だんだん",
-    "reading": "だんだん",
-    "meaning": "gradually",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "だんだん",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -872,15 +1248,147 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525157263618",
-    "japanese": "でも",
-    "reading": "でも",
-    "meaning": "but",
+    "id": "minna-1-19-1609729373858",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "段々[だんだん]",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "でも",
+        "japanese": "19",
+        "reading": "",
+        "english": "これから段々暑くなります。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373859",
+    "japanese": "gradually",
+    "reading": "gradually",
+    "meaning": "段々[だんだん]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "これから段々暑くなります。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373868",
+    "japanese": "not even once (negative)",
+    "reading": "not even once (negative)",
+    "meaning": "一度も[いちども]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "いいえ、 一度も馬に乗ったことがありません。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373869",
+    "japanese": "not even once (negative)",
+    "reading": "not even once (negative)",
+    "meaning": "一度も[いちども]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "いいえ、 一度も馬に乗ったことがありません。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373868",
+    "japanese": "not even once (negative)",
+    "reading": "not even once (negative)",
+    "meaning": "一度も[いちども]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "いいえ、 一度も馬に乗ったことがありません。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373869",
+    "japanese": "not even once (negative)",
+    "reading": "not even once (negative)",
+    "meaning": "一度も[いちども]",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": "いいえ、 一度も馬に乗ったことがありません。"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156887922",
+    "japanese": "not once, never (used with negatives)",
+    "reading": "not once, never (used with negatives)",
+    "meaning": "一度も",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "一度[いちで]も",
         "reading": "",
         "english": "19"
       }
@@ -893,15 +1401,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575077",
-    "japanese": "でも",
-    "reading": "でも",
-    "meaning": "but",
+    "id": "minna-1-19-1544776575073",
+    "japanese": "not once, never (used with negatives)",
+    "reading": "not once, never (used with negatives)",
+    "meaning": "一度も",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "でも",
+        "japanese": "一度[いちで]も",
         "reading": "",
         "english": "19"
       }
@@ -914,15 +1422,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525157263618",
-    "japanese": "でも",
-    "reading": "でも",
-    "meaning": "but",
+    "id": "minna-1-19-1525156887922",
+    "japanese": "not once, never (used with negatives)",
+    "reading": "not once, never (used with negatives)",
+    "meaning": "一度も",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "でも",
+        "japanese": "一度[いちで]も",
         "reading": "",
         "english": "19"
       }
@@ -935,15 +1443,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575077",
-    "japanese": "でも",
-    "reading": "でも",
-    "meaning": "but",
+    "id": "minna-1-19-1544776575073",
+    "japanese": "not once, never (used with negatives)",
+    "reading": "not once, never (used with negatives)",
+    "meaning": "一度も",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "でも",
+        "japanese": "一度[いちで]も",
         "reading": "",
         "english": "19"
       }
@@ -956,15 +1464,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156476017",
-    "japanese": "なります",
-    "reading": "なります",
-    "meaning": "to become",
+    "id": "minna-1-19-1525156859339",
+    "japanese": "once",
+    "reading": "once",
+    "meaning": "一度",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "なります",
+        "japanese": "一度[いちど]",
         "reading": "",
         "english": "19"
       }
@@ -977,15 +1485,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575062",
-    "japanese": "なります",
-    "reading": "なります",
-    "meaning": "to become",
+    "id": "minna-1-19-1544776575072",
+    "japanese": "once",
+    "reading": "once",
+    "meaning": "一度",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "なります",
+        "japanese": "一度[いちど]",
         "reading": "",
         "english": "19"
       }
@@ -998,15 +1506,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156476017",
-    "japanese": "なります",
-    "reading": "なります",
-    "meaning": "to become",
+    "id": "minna-1-19-1525156859339",
+    "japanese": "once",
+    "reading": "once",
+    "meaning": "一度",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "なります",
+        "japanese": "一度[いちど]",
         "reading": "",
         "english": "19"
       }
@@ -1019,15 +1527,15 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1544776575062",
-    "japanese": "なります",
-    "reading": "なります",
-    "meaning": "to become",
+    "id": "minna-1-19-1544776575072",
+    "japanese": "once",
+    "reading": "once",
+    "meaning": "一度",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "なります",
+        "japanese": "一度[いちど]",
         "reading": "",
         "english": "19"
       }
@@ -1041,9 +1549,9 @@
   },
   {
     "id": "minna-1-19-1609729373656",
-    "japanese": "パチンコ",
+    "japanese": "pinball game",
     "reading": "パチンコ",
-    "meaning": "pinball game",
+    "meaning": "パチンコ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1064,9 +1572,9 @@
   },
   {
     "id": "minna-1-19-1609729373657",
-    "japanese": "パチンコ",
+    "japanese": "pinball game",
     "reading": "パチンコ",
-    "meaning": "pinball game",
+    "meaning": "パチンコ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1087,9 +1595,9 @@
   },
   {
     "id": "minna-1-19-1609729373656",
-    "japanese": "パチンコ",
+    "japanese": "pinball game",
     "reading": "パチンコ",
-    "meaning": "pinball game",
+    "meaning": "パチンコ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1110,9 +1618,9 @@
   },
   {
     "id": "minna-1-19-1609729373657",
-    "japanese": "パチンコ",
+    "japanese": "pinball game",
     "reading": "パチンコ",
-    "meaning": "pinball game",
+    "meaning": "パチンコ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1132,10 +1640,178 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-19-1525156663170",
+    "japanese": "practice (~[を] します: to practice)",
+    "reading": "practice (~[を] します: to practice)",
+    "meaning": "練習",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "練習[れんしゅう]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575066",
+    "japanese": "practice (~[を] します: to practice)",
+    "reading": "practice (~[を] します: to practice)",
+    "meaning": "練習",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "練習[れんしゅう]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156663170",
+    "japanese": "practice (~[を] します: to practice)",
+    "reading": "practice (~[を] します: to practice)",
+    "meaning": "練習",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "練習[れんしゅう]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575066",
+    "japanese": "practice (~[を] します: to practice)",
+    "reading": "practice (~[を] します: to practice)",
+    "meaning": "練習",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "練習[れんしゅう]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156513534",
+    "japanese": "sleepy",
+    "reading": "sleepy",
+    "meaning": "眠い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "眠[ねむ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575063",
+    "japanese": "sleepy",
+    "reading": "sleepy",
+    "meaning": "眠い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "眠[ねむ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156513534",
+    "japanese": "sleepy",
+    "reading": "sleepy",
+    "meaning": "眠い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "眠[ねむ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575063",
+    "japanese": "sleepy",
+    "reading": "sleepy",
+    "meaning": "眠い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "眠[ねむ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-19-1525157190542",
-    "japanese": "もうすぐ",
-    "reading": "もうすぐ",
-    "meaning": "soon",
+    "japanese": "soon",
+    "reading": "soon",
+    "meaning": "もうすぐ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1154,9 +1830,9 @@
   },
   {
     "id": "minna-1-19-1544776575075",
-    "japanese": "もうすぐ",
-    "reading": "もうすぐ",
-    "meaning": "soon",
+    "japanese": "soon",
+    "reading": "soon",
+    "meaning": "もうすぐ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1175,9 +1851,9 @@
   },
   {
     "id": "minna-1-19-1525157190542",
-    "japanese": "もうすぐ",
-    "reading": "もうすぐ",
-    "meaning": "soon",
+    "japanese": "soon",
+    "reading": "soon",
+    "meaning": "もうすぐ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1196,9 +1872,9 @@
   },
   {
     "id": "minna-1-19-1544776575075",
-    "japanese": "もうすぐ",
-    "reading": "もうすぐ",
-    "meaning": "soon",
+    "japanese": "soon",
+    "reading": "soon",
+    "meaning": "もうすぐ",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1216,438 +1892,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156859339",
-    "japanese": "一度",
-    "reading": "一度",
-    "meaning": "once",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちど]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575072",
-    "japanese": "一度",
-    "reading": "一度",
-    "meaning": "once",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちど]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156859339",
-    "japanese": "一度",
-    "reading": "一度",
-    "meaning": "once",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちど]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575072",
-    "japanese": "一度",
-    "reading": "一度",
-    "meaning": "once",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちど]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156887922",
-    "japanese": "一度も",
-    "reading": "一度も",
-    "meaning": "not once, never (used with negatives)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちで]も",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575073",
-    "japanese": "一度も",
-    "reading": "一度も",
-    "meaning": "not once, never (used with negatives)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちで]も",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156887922",
-    "japanese": "一度も",
-    "reading": "一度も",
-    "meaning": "not once, never (used with negatives)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちで]も",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575073",
-    "japanese": "一度も",
-    "reading": "一度も",
-    "meaning": "not once, never (used with negatives)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "一度[いちで]も",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373868",
-    "japanese": "一度も[いちども]",
-    "reading": "一度も[いちども]",
-    "meaning": "not even once (negative)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "いいえ、 一度も馬に乗ったことがありません。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373869",
-    "japanese": "一度も[いちども]",
-    "reading": "一度も[いちども]",
-    "meaning": "not even once (negative)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "いいえ、 一度も馬に乗ったことがありません。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373868",
-    "japanese": "一度も[いちども]",
-    "reading": "一度も[いちども]",
-    "meaning": "not even once (negative)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "いいえ、 一度も馬に乗ったことがありません。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373869",
-    "japanese": "一度も[いちども]",
-    "reading": "一度も[いちども]",
-    "meaning": "not even once (negative)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "いいえ、 一度も馬に乗ったことがありません。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525157632024",
-    "japanese": "葛飾北斉　<b>(FIX)</b>",
-    "reading": "葛飾北斉　<b>(FIX)</b>",
-    "meaning": "a famous Edo-period woodblock artist and painter (1760-1849)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575082",
-    "japanese": "葛飾北斉　<b>(FIX)</b>",
-    "reading": "葛飾北斉　<b>(FIX)</b>",
-    "meaning": "a famous Edo-period woodblock artist and painter (1760-1849)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525157632024",
-    "japanese": "葛飾北斉　<b>(FIX)</b>",
-    "reading": "葛飾北斉　<b>(FIX)</b>",
-    "meaning": "a famous Edo-period woodblock artist and painter (1760-1849)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575082",
-    "japanese": "葛飾北斉　<b>(FIX)</b>",
-    "reading": "葛飾北斉　<b>(FIX)</b>",
-    "meaning": "a famous Edo-period woodblock artist and painter (1760-1849)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "葛飾[かつしか] 北[きた] 斉[ひとし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372942",
-    "japanese": "乾杯",
-    "reading": "乾杯",
-    "meaning": "乾杯[かんぱい]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Bottoms up./Cheers!",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372943",
-    "japanese": "乾杯",
-    "reading": "乾杯",
-    "meaning": "乾杯[かんぱい]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Bottoms up./Cheers!",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372942",
-    "japanese": "乾杯",
-    "reading": "乾杯",
-    "meaning": "乾杯[かんぱい]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Bottoms up./Cheers!",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372943",
-    "japanese": "乾杯",
-    "reading": "乾杯",
-    "meaning": "乾杯[かんぱい]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Bottoms up./Cheers!",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1525156529580",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "strong",
+    "japanese": "strong",
+    "reading": "strong",
+    "meaning": "強い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [
@@ -1666,9 +1914,9 @@
   },
   {
     "id": "minna-1-19-1544776575064",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "strong",
+    "japanese": "strong",
+    "reading": "strong",
+    "meaning": "強い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [
@@ -1686,44 +1934,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729372786",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "強[つよ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372787",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "強[つよ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1525156529580",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "strong",
+    "japanese": "strong",
+    "reading": "strong",
+    "meaning": "強い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [
@@ -1742,9 +1956,9 @@
   },
   {
     "id": "minna-1-19-1544776575064",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "strong",
+    "japanese": "strong",
+    "reading": "strong",
+    "meaning": "強い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [
@@ -1755,584 +1969,6 @@
       }
     ],
     "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372786",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "強[つよ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372787",
-    "japanese": "強い",
-    "reading": "強い",
-    "meaning": "強[つよ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373882",
-    "japanese": "実[じつ]は",
-    "reading": "実[じつ]は",
-    "meaning": "actually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "実は昨日からダイエットをしています。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373883",
-    "japanese": "実[じつ]は",
-    "reading": "実[じつ]は",
-    "meaning": "actually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "実は昨日からダイエットをしています。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373882",
-    "japanese": "実[じつ]は",
-    "reading": "実[じつ]は",
-    "meaning": "actually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "実は昨日からダイエットをしています。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373883",
-    "japanese": "実[じつ]は",
-    "reading": "実[じつ]は",
-    "meaning": "actually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "実は昨日からダイエットをしています。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156552490",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "weak",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "弱[よわ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575065",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "weak",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "弱[よわ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372788",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "弱[よわ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372789",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "弱[よわ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156552490",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "weak",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "弱[よわ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575065",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "weak",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "弱[よわ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372788",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "弱[よわ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372789",
-    "japanese": "弱い",
-    "reading": "弱い",
-    "meaning": "弱[よわ]い",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156392621",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "to wash (clothes)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "洗濯[せんたく]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575061",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "to wash (clothes)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "洗濯[せんたく]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372534",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "洗濯[せんたく]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372535",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "洗濯[せんたく]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156392621",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "to wash (clothes)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "洗濯[せんたく]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575061",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "to wash (clothes)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "洗濯[せんたく]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372534",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "洗濯[せんたく]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372535",
-    "japanese": "洗濯します",
-    "reading": "洗濯します",
-    "meaning": "洗濯[せんたく]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156312137",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "to clean (a room)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "掃除[そうじ]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575060",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "to clean (a room)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "掃除[そうじ]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372532",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "掃除[そうじ]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372533",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "掃除[そうじ]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156312137",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "to clean (a room)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "掃除[そうじ]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575060",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "to clean (a room)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "掃除[そうじ]します",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372532",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "掃除[そうじ]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372533",
-    "japanese": "掃除します",
-    "reading": "掃除します",
-    "meaning": "掃除[そうじ]します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter19",
-      "verb",
       "n5",
       "lesson-19"
     ],
@@ -2341,9 +1977,9 @@
   },
   {
     "id": "minna-1-19-1525156756646",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "sumo wrestling (～を　します: to wrestle)",
+    "japanese": "sumo wrestling (～を　します: to wrestle)",
+    "reading": "sumo wrestling (～を　します: to wrestle)",
+    "meaning": "相撲",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
@@ -2362,9 +1998,9 @@
   },
   {
     "id": "minna-1-19-1544776575068",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "sumo wrestling (～を　します: to wrestle)",
+    "japanese": "sumo wrestling (～を　します: to wrestle)",
+    "reading": "sumo wrestling (～を　します: to wrestle)",
+    "meaning": "相撲",
     "jlptLevel": "N5",
     "partOfSpeech": "verb",
     "examples": [
@@ -2382,10 +2018,1176 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-19-1525156756646",
+    "japanese": "sumo wrestling (～を　します: to wrestle)",
+    "reading": "sumo wrestling (～を　します: to wrestle)",
+    "meaning": "相撲",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "相撲[すもう]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575068",
+    "japanese": "sumo wrestling (～を　します: to wrestle)",
+    "reading": "sumo wrestling (～を　します: to wrestle)",
+    "meaning": "相撲",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "相撲[すもう]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1550630837948",
+    "japanese": "tea ceremony",
+    "reading": "tea ceremony",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "お 茶[ちゃ]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1550630837949",
+    "japanese": "tea ceremony",
+    "reading": "tea ceremony",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "お 茶[ちゃ]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1550630837948",
+    "japanese": "tea ceremony",
+    "reading": "tea ceremony",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "お 茶[ちゃ]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1550630837949",
+    "japanese": "tea ceremony",
+    "reading": "tea ceremony",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "お 茶[ちゃ]",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525157229017",
+    "japanese": "Thank you. (used when expressing gratitude for help received)",
+    "reading": "Thank you. (used when expressing gratitude for help received)",
+    "meaning": "おかげさまで",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "おかげさまで",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575076",
+    "japanese": "Thank you. (used when expressing gratitude for help received)",
+    "reading": "Thank you. (used when expressing gratitude for help received)",
+    "meaning": "おかげさまで",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "おかげさまで",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525157229017",
+    "japanese": "Thank you. (used when expressing gratitude for help received)",
+    "reading": "Thank you. (used when expressing gratitude for help received)",
+    "meaning": "おかげさまで",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "おかげさまで",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575076",
+    "japanese": "Thank you. (used when expressing gratitude for help received)",
+    "reading": "Thank you. (used when expressing gratitude for help received)",
+    "meaning": "おかげさまで",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "おかげさまで",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156476017",
+    "japanese": "to become",
+    "reading": "to become",
+    "meaning": "なります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "なります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575062",
+    "japanese": "to become",
+    "reading": "to become",
+    "meaning": "なります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "なります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156476017",
+    "japanese": "to become",
+    "reading": "to become",
+    "meaning": "なります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "なります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575062",
+    "japanese": "to become",
+    "reading": "to become",
+    "meaning": "なります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "なります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156312137",
+    "japanese": "to clean (a room)",
+    "reading": "to clean (a room)",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "掃除[そうじ]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575060",
+    "japanese": "to clean (a room)",
+    "reading": "to clean (a room)",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "掃除[そうじ]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156312137",
+    "japanese": "to clean (a room)",
+    "reading": "to clean (a room)",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "掃除[そうじ]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575060",
+    "japanese": "to clean (a room)",
+    "reading": "to clean (a room)",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "掃除[そうじ]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156184823",
+    "japanese": "to climb, go up",
+    "reading": "to climb, go up",
+    "meaning": "登ります、上ります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "登[のぼ]ります、 上[のぼ]ります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575058",
+    "japanese": "to climb, go up",
+    "reading": "to climb, go up",
+    "meaning": "登ります、上ります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "登[のぼ]ります、 上[のぼ]ります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156184823",
+    "japanese": "to climb, go up",
+    "reading": "to climb, go up",
+    "meaning": "登ります、上ります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "登[のぼ]ります、 上[のぼ]ります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575058",
+    "japanese": "to climb, go up",
+    "reading": "to climb, go up",
+    "meaning": "登ります、上ります",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "登[のぼ]ります、 上[のぼ]ります",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156239867",
+    "japanese": "to stay [at a hotel]",
+    "reading": "to stay [at a hotel]",
+    "meaning": "泊まります［ホテルに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "泊[と]まります［ホテルに~］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575059",
+    "japanese": "to stay [at a hotel]",
+    "reading": "to stay [at a hotel]",
+    "meaning": "泊まります［ホテルに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "泊[と]まります［ホテルに~］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156239867",
+    "japanese": "to stay [at a hotel]",
+    "reading": "to stay [at a hotel]",
+    "meaning": "泊まります［ホテルに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "泊[と]まります［ホテルに~］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575059",
+    "japanese": "to stay [at a hotel]",
+    "reading": "to stay [at a hotel]",
+    "meaning": "泊まります［ホテルに～］",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "泊[と]まります［ホテルに~］",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156392621",
+    "japanese": "to wash (clothes)",
+    "reading": "to wash (clothes)",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "洗濯[せんたく]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575061",
+    "japanese": "to wash (clothes)",
+    "reading": "to wash (clothes)",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "洗濯[せんたく]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156392621",
+    "japanese": "to wash (clothes)",
+    "reading": "to wash (clothes)",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "洗濯[せんたく]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575061",
+    "japanese": "to wash (clothes)",
+    "reading": "to wash (clothes)",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": "verb",
+    "examples": [
+      {
+        "japanese": "洗濯[せんたく]します",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156552490",
+    "japanese": "weak",
+    "reading": "weak",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "弱[よわ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575065",
+    "japanese": "weak",
+    "reading": "weak",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "弱[よわ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1525156552490",
+    "japanese": "weak",
+    "reading": "weak",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "弱[よわ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1544776575065",
+    "japanese": "weak",
+    "reading": "weak",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [
+      {
+        "japanese": "弱[よわ]い",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373658",
+    "japanese": "お 茶[ちゃ]",
+    "reading": "お 茶[ちゃ]",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "tea ceremony",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373659",
+    "japanese": "お 茶[ちゃ]",
+    "reading": "お 茶[ちゃ]",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "tea ceremony",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373658",
+    "japanese": "お 茶[ちゃ]",
+    "reading": "お 茶[ちゃ]",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "tea ceremony",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373659",
+    "japanese": "お 茶[ちゃ]",
+    "reading": "お 茶[ちゃ]",
+    "meaning": "お茶",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "tea ceremony",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "noun",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372942",
+    "japanese": "乾杯[かんぱい]",
+    "reading": "乾杯[かんぱい]",
+    "meaning": "乾杯",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Bottoms up./Cheers!",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372943",
+    "japanese": "乾杯[かんぱい]",
+    "reading": "乾杯[かんぱい]",
+    "meaning": "乾杯",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Bottoms up./Cheers!",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372942",
+    "japanese": "乾杯[かんぱい]",
+    "reading": "乾杯[かんぱい]",
+    "meaning": "乾杯",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Bottoms up./Cheers!",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372943",
+    "japanese": "乾杯[かんぱい]",
+    "reading": "乾杯[かんぱい]",
+    "meaning": "乾杯",
+    "jlptLevel": "N5",
+    "partOfSpeech": "noun",
+    "examples": [
+      {
+        "japanese": "Bottoms up./Cheers!",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372786",
+    "japanese": "強[つよ]い",
+    "reading": "強[つよ]い",
+    "meaning": "強い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372787",
+    "japanese": "強[つよ]い",
+    "reading": "強[つよ]い",
+    "meaning": "強い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372786",
+    "japanese": "強[つよ]い",
+    "reading": "強[つよ]い",
+    "meaning": "強い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372787",
+    "japanese": "強[つよ]い",
+    "reading": "強[つよ]い",
+    "meaning": "強い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372788",
+    "japanese": "弱[よわ]い",
+    "reading": "弱[よわ]い",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372789",
+    "japanese": "弱[よわ]い",
+    "reading": "弱[よわ]い",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372788",
+    "japanese": "弱[よわ]い",
+    "reading": "弱[よわ]い",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372789",
+    "japanese": "弱[よわ]い",
+    "reading": "弱[よわ]い",
+    "meaning": "弱い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372534",
+    "japanese": "洗濯[せんたく]します",
+    "reading": "洗濯[せんたく]します",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372535",
+    "japanese": "洗濯[せんたく]します",
+    "reading": "洗濯[せんたく]します",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372534",
+    "japanese": "洗濯[せんたく]します",
+    "reading": "洗濯[せんたく]します",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372535",
+    "japanese": "洗濯[せんたく]します",
+    "reading": "洗濯[せんたく]します",
+    "meaning": "洗濯します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372532",
+    "japanese": "掃除[そうじ]します",
+    "reading": "掃除[そうじ]します",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372533",
+    "japanese": "掃除[そうじ]します",
+    "reading": "掃除[そうじ]します",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372532",
+    "japanese": "掃除[そうじ]します",
+    "reading": "掃除[そうじ]します",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372533",
+    "japanese": "掃除[そうじ]します",
+    "reading": "掃除[そうじ]します",
+    "meaning": "掃除します",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [],
+    "tags": [
+      "chapter19",
+      "verb",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-19-1609729373654",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "相撲[すもう]",
+    "japanese": "相撲[すもう]",
+    "reading": "相撲[すもう]",
+    "meaning": "相撲",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2406,9 +3208,9 @@
   },
   {
     "id": "minna-1-19-1609729373655",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "相撲[すもう]",
+    "japanese": "相撲[すもう]",
+    "reading": "相撲[すもう]",
+    "meaning": "相撲",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2428,52 +3230,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156756646",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "sumo wrestling (～を　します: to wrestle)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "相撲[すもう]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575068",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "sumo wrestling (～を　します: to wrestle)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "相撲[すもう]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729373654",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "相撲[すもう]",
+    "japanese": "相撲[すもう]",
+    "reading": "相撲[すもう]",
+    "meaning": "相撲",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2494,9 +3254,9 @@
   },
   {
     "id": "minna-1-19-1609729373655",
-    "japanese": "相撲",
-    "reading": "相撲",
-    "meaning": "相撲[すもう]",
+    "japanese": "相撲[すもう]",
+    "reading": "相撲[すもう]",
+    "meaning": "相撲",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2516,224 +3276,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525157477614",
-    "japanese": "体に　いい",
-    "reading": "体に　いい",
-    "meaning": "good for one's health",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "体[からだ]に　いい",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575081",
-    "japanese": "体に　いい",
-    "reading": "体に　いい",
-    "meaning": "good for one's health",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "体[からだ]に　いい",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525157477614",
-    "japanese": "体に　いい",
-    "reading": "体に　いい",
-    "meaning": "good for one's health",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "体[からだ]に　いい",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575081",
-    "japanese": "体に　いい",
-    "reading": "体に　いい",
-    "meaning": "good for one's health",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "体[からだ]に　いい",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373858",
-    "japanese": "段々[だんだん]",
-    "reading": "段々[だんだん]",
-    "meaning": "gradually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "これから段々暑くなります。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373859",
-    "japanese": "段々[だんだん]",
-    "reading": "段々[だんだん]",
-    "meaning": "gradually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "これから段々暑くなります。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373858",
-    "japanese": "段々[だんだん]",
-    "reading": "段々[だんだん]",
-    "meaning": "gradually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "これから段々暑くなります。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373859",
-    "japanese": "段々[だんだん]",
-    "reading": "段々[だんだん]",
-    "meaning": "gradually",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": "これから段々暑くなります。"
-      }
-    ],
-    "tags": [
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156840886",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "condition",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "調子[ちょうし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575071",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "condition",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "調子[ちょうし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729373650",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "調子[ちょうし]",
+    "japanese": "調子[ちょうし]",
+    "reading": "調子[ちょうし]",
+    "meaning": "調子",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2754,9 +3300,9 @@
   },
   {
     "id": "minna-1-19-1609729373651",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "調子[ちょうし]",
+    "japanese": "調子[ちょうし]",
+    "reading": "調子[ちょうし]",
+    "meaning": "調子",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2776,52 +3322,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156840886",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "condition",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "調子[ちょうし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575071",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "condition",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "調子[ちょうし]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729373650",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "調子[ちょうし]",
+    "japanese": "調子[ちょうし]",
+    "reading": "調子[ちょうし]",
+    "meaning": "調子",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2842,9 +3346,9 @@
   },
   {
     "id": "minna-1-19-1609729373651",
-    "japanese": "調子",
-    "reading": "調子",
-    "meaning": "調子[ちょうし]",
+    "japanese": "調子[ちょうし]",
+    "reading": "調子[ちょうし]",
+    "meaning": "調子",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -2864,78 +3368,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729372790",
-    "japanese": "調子が　いい",
-    "reading": "調子が　いい",
-    "meaning": "調子[ちょうし]が　いい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372791",
-    "japanese": "調子が　いい",
-    "reading": "調子が　いい",
-    "meaning": "調子[ちょうし]が　いい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372790",
-    "japanese": "調子が　いい",
-    "reading": "調子が　いい",
-    "meaning": "調子[ちょうし]が　いい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729372791",
-    "japanese": "調子が　いい",
-    "reading": "調子が　いい",
-    "meaning": "調子[ちょうし]が　いい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [],
-    "tags": [
-      "adjective",
-      "chapter19",
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729372792",
-    "japanese": "調子が　悪い",
-    "reading": "調子が　悪い",
-    "meaning": "調子[ちょうし]が　 悪[わる]い",
+    "japanese": "調子[ちょうし]が　 悪[わる]い",
+    "reading": "調子[ちょうし]が　 悪[わる]い",
+    "meaning": "調子が　悪い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -2950,9 +3386,9 @@
   },
   {
     "id": "minna-1-19-1609729372793",
-    "japanese": "調子が　悪い",
-    "reading": "調子が　悪い",
-    "meaning": "調子[ちょうし]が　 悪[わる]い",
+    "japanese": "調子[ちょうし]が　 悪[わる]い",
+    "reading": "調子[ちょうし]が　 悪[わる]い",
+    "meaning": "調子が　悪い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -2967,9 +3403,9 @@
   },
   {
     "id": "minna-1-19-1609729372792",
-    "japanese": "調子が　悪い",
-    "reading": "調子が　悪い",
-    "meaning": "調子[ちょうし]が　 悪[わる]い",
+    "japanese": "調子[ちょうし]が　 悪[わる]い",
+    "reading": "調子[ちょうし]が　 悪[わる]い",
+    "meaning": "調子が　悪い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -2984,9 +3420,77 @@
   },
   {
     "id": "minna-1-19-1609729372793",
-    "japanese": "調子が　悪い",
-    "reading": "調子が　悪い",
-    "meaning": "調子[ちょうし]が　 悪[わる]い",
+    "japanese": "調子[ちょうし]が　 悪[わる]い",
+    "reading": "調子[ちょうし]が　 悪[わる]い",
+    "meaning": "調子が　悪い",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372790",
+    "japanese": "調子[ちょうし]が　いい",
+    "reading": "調子[ちょうし]が　いい",
+    "meaning": "調子が　いい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372791",
+    "japanese": "調子[ちょうし]が　いい",
+    "reading": "調子[ちょうし]が　いい",
+    "meaning": "調子が　いい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372790",
+    "japanese": "調子[ちょうし]が　いい",
+    "reading": "調子[ちょうし]が　いい",
+    "meaning": "調子が　いい",
+    "jlptLevel": "N5",
+    "partOfSpeech": "i-adjective",
+    "examples": [],
+    "tags": [
+      "adjective",
+      "chapter19",
+      "n5",
+      "lesson-19"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729372791",
+    "japanese": "調子[ちょうし]が　いい",
+    "reading": "調子[ちょうし]が　いい",
+    "meaning": "調子が　いい",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -3001,9 +3505,9 @@
   },
   {
     "id": "minna-1-19-1609729372528",
-    "japanese": "登ります",
-    "reading": "登ります",
-    "meaning": "登[のぼ]ります",
+    "japanese": "登[のぼ]ります",
+    "reading": "登[のぼ]ります",
+    "meaning": "登ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3024,9 +3528,9 @@
   },
   {
     "id": "minna-1-19-1609729372529",
-    "japanese": "登ります",
-    "reading": "登ります",
-    "meaning": "登[のぼ]ります",
+    "japanese": "登[のぼ]ります",
+    "reading": "登[のぼ]ります",
+    "meaning": "登ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3047,9 +3551,9 @@
   },
   {
     "id": "minna-1-19-1609729372528",
-    "japanese": "登ります",
-    "reading": "登ります",
-    "meaning": "登[のぼ]ります",
+    "japanese": "登[のぼ]ります",
+    "reading": "登[のぼ]ります",
+    "meaning": "登ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3070,9 +3574,9 @@
   },
   {
     "id": "minna-1-19-1609729372529",
-    "japanese": "登ります",
-    "reading": "登ります",
-    "meaning": "登[のぼ]ります",
+    "japanese": "登[のぼ]ります",
+    "reading": "登[のぼ]ります",
+    "meaning": "登ります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3092,136 +3596,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156184823",
-    "japanese": "登ります、上ります",
-    "reading": "登ります、上ります",
-    "meaning": "to climb, go up",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "登[のぼ]ります、 上[のぼ]ります",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575058",
-    "japanese": "登ります、上ります",
-    "reading": "登ります、上ります",
-    "meaning": "to climb, go up",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "登[のぼ]ります、 上[のぼ]ります",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156184823",
-    "japanese": "登ります、上ります",
-    "reading": "登ります、上ります",
-    "meaning": "to climb, go up",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "登[のぼ]ります、 上[のぼ]ります",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575058",
-    "japanese": "登ります、上ります",
-    "reading": "登ります、上ります",
-    "meaning": "to climb, go up",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "登[のぼ]ります、 上[のぼ]ります",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156810180",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "day, date",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日[ひ]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575070",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "day, date",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日[ひ]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729373660",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "日[ひ]",
+    "japanese": "日[ひ]",
+    "reading": "日[ひ]",
+    "meaning": "日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3242,9 +3620,9 @@
   },
   {
     "id": "minna-1-19-1609729373661",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "日[ひ]",
+    "japanese": "日[ひ]",
+    "reading": "日[ひ]",
+    "meaning": "日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3264,52 +3642,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156810180",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "day, date",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日[ひ]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575070",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "day, date",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "日[ひ]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729373660",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "日[ひ]",
+    "japanese": "日[ひ]",
+    "reading": "日[ひ]",
+    "meaning": "日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3330,9 +3666,9 @@
   },
   {
     "id": "minna-1-19-1609729373661",
-    "japanese": "日",
-    "reading": "日",
-    "meaning": "日[ひ]",
+    "japanese": "日[ひ]",
+    "reading": "日[ひ]",
+    "meaning": "日",
     "jlptLevel": "N5",
     "partOfSpeech": "noun",
     "examples": [
@@ -3353,9 +3689,9 @@
   },
   {
     "id": "minna-1-19-1609729372530",
-    "japanese": "泊まります",
-    "reading": "泊まります",
-    "meaning": "泊[と]まります",
+    "japanese": "泊[と]まります",
+    "reading": "泊[と]まります",
+    "meaning": "泊まります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3376,9 +3712,9 @@
   },
   {
     "id": "minna-1-19-1609729372531",
-    "japanese": "泊まります",
-    "reading": "泊まります",
-    "meaning": "泊[と]まります",
+    "japanese": "泊[と]まります",
+    "reading": "泊[と]まります",
+    "meaning": "泊まります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3399,9 +3735,9 @@
   },
   {
     "id": "minna-1-19-1609729372530",
-    "japanese": "泊まります",
-    "reading": "泊まります",
-    "meaning": "泊[と]まります",
+    "japanese": "泊[と]まります",
+    "reading": "泊[と]まります",
+    "meaning": "泊まります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3422,9 +3758,9 @@
   },
   {
     "id": "minna-1-19-1609729372531",
-    "japanese": "泊まります",
-    "reading": "泊まります",
-    "meaning": "泊[と]まります",
+    "japanese": "泊[と]まります",
+    "reading": "泊[と]まります",
+    "meaning": "泊まります",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3444,136 +3780,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156239867",
-    "japanese": "泊まります［ホテルに～］",
-    "reading": "泊まります［ホテルに～］",
-    "meaning": "to stay [at a hotel]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "泊[と]まります［ホテルに~］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575059",
-    "japanese": "泊まります［ホテルに～］",
-    "reading": "泊まります［ホテルに～］",
-    "meaning": "to stay [at a hotel]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "泊[と]まります［ホテルに~］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156239867",
-    "japanese": "泊まります［ホテルに～］",
-    "reading": "泊まります［ホテルに～］",
-    "meaning": "to stay [at a hotel]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "泊[と]まります［ホテルに~］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575059",
-    "japanese": "泊まります［ホテルに～］",
-    "reading": "泊まります［ホテルに～］",
-    "meaning": "to stay [at a hotel]",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "泊[と]まります［ホテルに~］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156513534",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "sleepy",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "眠[ねむ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575063",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "sleepy",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "眠[ねむ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729372784",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "眠[ねむ]い",
+    "japanese": "眠[ねむ]い",
+    "reading": "眠[ねむ]い",
+    "meaning": "眠い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -3588,9 +3798,9 @@
   },
   {
     "id": "minna-1-19-1609729372785",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "眠[ねむ]い",
+    "japanese": "眠[ねむ]い",
+    "reading": "眠[ねむ]い",
+    "meaning": "眠い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -3604,52 +3814,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156513534",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "sleepy",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "眠[ねむ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575063",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "sleepy",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "眠[ねむ]い",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729372784",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "眠[ねむ]い",
+    "japanese": "眠[ねむ]い",
+    "reading": "眠[ねむ]い",
+    "meaning": "眠い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -3664,9 +3832,9 @@
   },
   {
     "id": "minna-1-19-1609729372785",
-    "japanese": "眠い",
-    "reading": "眠い",
-    "meaning": "眠[ねむ]い",
+    "japanese": "眠[ねむ]い",
+    "reading": "眠[ねむ]い",
+    "meaning": "眠い",
     "jlptLevel": "N5",
     "partOfSpeech": "i-adjective",
     "examples": [],
@@ -3680,94 +3848,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525157429846",
-    "japanese": "無理［な］",
-    "reading": "無理［な］",
-    "meaning": "excessive, impossible",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "無理[むり]［な］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575080",
-    "japanese": "無理［な］",
-    "reading": "無理［な］",
-    "meaning": "excessive, impossible",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "無理[むり]［な］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525157429846",
-    "japanese": "無理［な］",
-    "reading": "無理［な］",
-    "meaning": "excessive, impossible",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "無理[むり]［な］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575080",
-    "japanese": "無理［な］",
-    "reading": "無理［な］",
-    "meaning": "excessive, impossible",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "無理[むり]［な］",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729372794",
-    "japanese": "無理な",
-    "reading": "無理な",
-    "meaning": "無理[むり]な",
+    "japanese": "無理[むり]な",
+    "reading": "無理[むり]な",
+    "meaning": "無理な",
     "jlptLevel": "N5",
     "partOfSpeech": "na-adjective",
     "examples": [],
@@ -3782,9 +3866,9 @@
   },
   {
     "id": "minna-1-19-1609729372795",
-    "japanese": "無理な",
-    "reading": "無理な",
-    "meaning": "無理[むり]な",
+    "japanese": "無理[むり]な",
+    "reading": "無理[むり]な",
+    "meaning": "無理な",
     "jlptLevel": "N5",
     "partOfSpeech": "na-adjective",
     "examples": [],
@@ -3799,9 +3883,9 @@
   },
   {
     "id": "minna-1-19-1609729372794",
-    "japanese": "無理な",
-    "reading": "無理な",
-    "meaning": "無理[むり]な",
+    "japanese": "無理[むり]な",
+    "reading": "無理[むり]な",
+    "meaning": "無理な",
     "jlptLevel": "N5",
     "partOfSpeech": "na-adjective",
     "examples": [],
@@ -3816,9 +3900,9 @@
   },
   {
     "id": "minna-1-19-1609729372795",
-    "japanese": "無理な",
-    "reading": "無理な",
-    "meaning": "無理[むり]な",
+    "japanese": "無理[むり]な",
+    "reading": "無理[むり]な",
+    "meaning": "無理な",
     "jlptLevel": "N5",
     "partOfSpeech": "na-adjective",
     "examples": [],
@@ -3832,94 +3916,10 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1525156663170",
-    "japanese": "練習",
-    "reading": "練習",
-    "meaning": "practice (~[を] します: to practice)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "練習[れんしゅう]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575066",
-    "japanese": "練習",
-    "reading": "練習",
-    "meaning": "practice (~[を] します: to practice)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "練習[れんしゅう]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1525156663170",
-    "japanese": "練習",
-    "reading": "練習",
-    "meaning": "practice (~[を] します: to practice)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "練習[れんしゅう]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1544776575066",
-    "japanese": "練習",
-    "reading": "練習",
-    "meaning": "practice (~[を] します: to practice)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "練習[れんしゅう]",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729372536",
-    "japanese": "練習します",
-    "reading": "練習します",
-    "meaning": "練習[れんしゅう]します",
+    "japanese": "練習[れんしゅう]します",
+    "reading": "練習[れんしゅう]します",
+    "meaning": "練習します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3934,9 +3934,9 @@
   },
   {
     "id": "minna-1-19-1609729372537",
-    "japanese": "練習します",
-    "reading": "練習します",
-    "meaning": "練習[れんしゅう]します",
+    "japanese": "練習[れんしゅう]します",
+    "reading": "練習[れんしゅう]します",
+    "meaning": "練習します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3951,9 +3951,9 @@
   },
   {
     "id": "minna-1-19-1609729372536",
-    "japanese": "練習します",
-    "reading": "練習します",
-    "meaning": "練習[れんしゅう]します",
+    "japanese": "練習[れんしゅう]します",
+    "reading": "練習[れんしゅう]します",
+    "meaning": "練習します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],
@@ -3968,9 +3968,9 @@
   },
   {
     "id": "minna-1-19-1609729372537",
-    "japanese": "練習します",
-    "reading": "練習します",
-    "meaning": "練習[れんしゅう]します",
+    "japanese": "練習[れんしゅう]します",
+    "reading": "練習[れんしゅう]します",
+    "meaning": "練習します",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [],

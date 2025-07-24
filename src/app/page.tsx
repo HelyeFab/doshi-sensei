@@ -275,7 +275,7 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -309,7 +309,7 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -341,7 +341,7 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -373,7 +373,7 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                         {card.icon.startsWith('/') ? (
                           <Image
                             src={card.icon}
@@ -414,7 +414,7 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -445,7 +445,7 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">

@@ -349,11 +349,38 @@ CloudStorage: {
 ```
 
 ### Dynamic Limit Management
+
+**🎯 CRITICAL UPDATE (January 2025)**: The system now uses **dynamic rules from Firestore**, not hardcoded values!
+
+#### How It Works
+1. **Initial Deployment**: Uses default limits from `/src/lib/entitlements/rules.ts`
+2. **First Load**: Copies defaults to Firestore at `/config/entitlement_rules_v1`
+3. **Runtime**: Always uses Firestore values (with 1-minute cache)
+4. **Admin Edits**: Changes save to Firestore immediately
+5. **User Access**: Next request uses updated limits
+
+#### Admin Dashboard Features
 Admin dashboard at `/admin/features` allows:
-- Real-time limit editing
-- A/B testing different limits
-- Usage analytics
-- Export feature matrix
+- **Real-time limit editing** - Click any number to change
+- **Instant application** - No deployment needed
+- **A/B testing** - Test different limits on the fly
+- **Usage analytics** - See what limits work best
+- **Export feature matrix** - CSV/JSON for analysis
+
+#### Technical Implementation
+```typescript
+// Dynamic rules are loaded from Firestore
+const rules = await dynamicRules.getRules();
+
+// Falls back to hardcoded defaults only if Firestore fails
+// Changes made in admin dashboard override all hardcoded values
+```
+
+#### Best Practices
+1. **Set reasonable defaults** in code for new features
+2. **Fine-tune via admin dashboard** based on usage
+3. **Monitor analytics** to optimize limits
+4. **Document changes** in admin activity log
 
 ---
 
@@ -517,7 +544,7 @@ npm run analyze         # Bundle analysis
 npm run prepare-deploy  # Deployment prep
 ```
 
-### Adding New Features
+### Adding New Features - Complete Checklist
 
 #### 1. Register in Feature Registry
 ```typescript
@@ -526,38 +553,134 @@ npm run prepare-deploy  # Deployment prep
   id: 'my_new_feature',
   name: 'My New Feature',
   description: 'Does something amazing',
-  category: 'learning',
+  category: 'learning',  // learning, games, storage, system
   icon: '🌟',
-  limitType: 'daily',
+  limitType: 'daily',    // 'daily', 'total', or 'none'
   requiresAuth: true,
   requiresSubscription: false,
-  status: 'active'
+  status: 'active',
+  sharedLimitGroup: undefined  // Optional: share limits with other features
 }
 ```
 
-#### 2. Build Component with Access Control
+#### 2. Add Permission Mapping
+```typescript
+// /src/lib/access/index.ts
+// In the permissionMap object within checkPermission method:
+const permissionMap: Record<string, string> = {
+  // ... existing mappings
+  'my_new_feature': 'do_something',  // Map to appropriate permission
+};
+```
+
+#### 3. Set Default Limits (CRITICAL - Now Dynamic!)
+**Important**: Limits are now stored in Firestore and can be edited via admin dashboard.
+
+**Option A - Quick Start (Use Admin Dashboard):**
+1. Deploy with feature in registry
+2. Go to `/admin/features`
+3. Click "Edit Limits"
+4. Set limits for each user type
+5. Changes apply immediately
+
+**Option B - Set Initial Defaults in Code:**
+```typescript
+// /src/lib/entitlements/rules.ts
+// In ENTITLEMENT_RULES, add to each user type's limits:
+
+// Guest limits
+daily: {
+  my_new_feature: 0,  // or appropriate limit
+}
+
+// Free limits
+daily: {
+  my_new_feature: 3,  // or appropriate limit
+}
+
+// Premium limits
+daily: {
+  my_new_feature: -1,  // -1 for unlimited, or specific number
+}
+```
+
+**Note**: After first deployment, these become just initial defaults. All future changes should be made via admin dashboard at `/admin/features`.
+
+#### 4. Build Component with Access Control
 ```typescript
 export default function MyNewFeature() {
   const { checkAndTrack } = useAccess();
+  const { feature, access, remaining } = useFeature('my_new_feature');
   
   const handleUse = async () => {
+    // This ONE line checks access AND tracks usage
     if (await checkAndTrack('my_new_feature')) {
       // Feature logic here
     }
+    // Modals shown automatically if no access
   };
+
+  return (
+    <div>
+      {/* Show remaining uses for non-guest users */}
+      {remaining !== undefined && (
+        <p>Uses remaining today: {remaining}</p>
+      )}
+      <button onClick={handleUse}>Use Feature</button>
+    </div>
+  );
 }
 ```
 
-#### 3. Add Analytics (Optional)
+#### 5. Add Analytics (Optional but Recommended)
 ```typescript
 const { track } = useAnalytics();
-track('feature_used', { feature: 'my_new_feature' });
+
+// Track when feature is used
+track('feature_used', { 
+  feature: 'my_new_feature',
+  additionalData: 'if needed'
+});
+
+// Track specific events
+track('my_feature_specific_event', {
+  action: 'user_did_something',
+  value: 42
+});
 ```
 
-#### 4. Test & Deploy
-- Limits appear in admin dashboard automatically
-- Test with different user types
-- Verify analytics tracking
+#### 6. Test & Verify
+- [ ] Feature appears in `/admin/features` matrix
+- [ ] Limits can be edited dynamically
+- [ ] Guest users see appropriate access restrictions
+- [ ] Free users hit daily limits correctly
+- [ ] Premium users get configured access
+- [ ] Usage tracking increments properly
+- [ ] Analytics events fire correctly
+- [ ] Modals appear when limits reached
+
+#### 7. Files That May Need Updates
+
+**Required Files:**
+1. `/src/lib/features/registry.ts` - Add feature definition
+2. `/src/lib/access/index.ts` - Add permission mapping
+3. Your component file - Implement with access control
+
+**Optional Files (if setting initial defaults):**
+4. `/src/lib/entitlements/rules.ts` - Initial limit values
+
+**Files That Update Automatically:**
+- Admin dashboard feature matrix - Auto-populated
+- Usage tracking - Handled by checkAndTrack
+- Analytics - If you use the hook
+- Access modals - Shown automatically
+
+**Dynamic Configuration:**
+After deployment, all limit changes should be made via:
+- Admin Dashboard: `/admin/features`
+- Click "Edit Limits" → Click any number → Enter new value
+- Changes save to Firestore and apply immediately
+- No code changes or redeployment needed!
 
 ### Storage Development
 

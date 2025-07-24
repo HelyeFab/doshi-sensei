@@ -4,15 +4,15 @@
  */
 
 import { UserType, Permission, EntitlementCheckResult } from './types';
-import { getEntitlementRulesForUserType } from './rules';
+import { getEntitlementRulesForUserTypeAsync, getUserPermissionsAsync, getUserLimitsAsync } from './rules';
 import { dynamicRules } from './dynamic-rules';
 
 export class EntitlementManager {
   /**
    * Check if a user type has a specific permission
    */
-  hasPermission(userType: UserType, permission: Permission): boolean {
-    const rule = getEntitlementRulesForUserType(userType);
+  async hasPermission(userType: UserType, permission: Permission): Promise<boolean> {
+    const rule = await getEntitlementRulesForUserTypeAsync(userType);
     if (!rule) return false;
     
     // Check for wildcard permission
@@ -24,16 +24,15 @@ export class EntitlementManager {
   /**
    * Get all permissions for a user type
    */
-  getPermissions(userType: UserType): Permission[] {
-    const rule = getEntitlementRulesForUserType(userType);
-    return rule?.permissions || [];
+  async getPermissions(userType: UserType): Promise<Permission[]> {
+    return getUserPermissionsAsync(userType);
   }
   
   /**
    * Get limit for a specific feature
    */
-  getLimit(userType: UserType, featureId: string, limitType: 'daily' | 'total'): number {
-    const rule = getEntitlementRulesForUserType(userType);
+  async getLimit(userType: UserType, featureId: string, limitType: 'daily' | 'total'): Promise<number> {
+    const rule = await getEntitlementRulesForUserTypeAsync(userType);
     if (!rule) return 0;
     
     const limits = rule.limits[limitType];
@@ -47,16 +46,15 @@ export class EntitlementManager {
   /**
    * Get all limits for a user type
    */
-  getAllLimits(userType: UserType) {
-    const rule = getEntitlementRulesForUserType(userType);
-    return rule?.limits || { daily: {}, total: {} };
+  async getAllLimits(userType: UserType) {
+    return getUserLimitsAsync(userType);
   }
   
   /**
    * Perform a complete entitlement check
    */
-  checkEntitlements(userType: UserType): EntitlementCheckResult {
-    const rule = getEntitlementRulesForUserType(userType);
+  async checkEntitlements(userType: UserType): Promise<EntitlementCheckResult> {
+    const rule = await getEntitlementRulesForUserTypeAsync(userType);
     
     if (!rule) {
       return {

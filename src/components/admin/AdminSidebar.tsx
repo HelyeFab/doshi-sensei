@@ -34,6 +34,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     href: '/admin/features',
   },
   {
+    id: 'achievements' as AdminSection,
+    labelKey: 'achievements',
+    iconKey: 'achievements',
+    href: '/admin/achievements',
+  },
+  {
     id: 'analytics' as AdminSection,
     labelKey: 'analytics',
     iconKey: 'analytics',
@@ -105,11 +111,13 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     label: strings.navigation?.admin?.[item.labelKey]?.label || 
            (item.labelKey === 'debug' ? 'Debug Tools' : 
             item.labelKey === 'snakePath' ? 'Snake Path' : 
-            item.labelKey === 'analytics' ? 'Analytics' : item.labelKey),
+            item.labelKey === 'analytics' ? 'Analytics' : 
+            item.labelKey === 'achievements' ? 'Achievements' : item.labelKey),
     icon: strings.navigation?.admin?.[item.labelKey]?.icon || 
           (item.labelKey === 'debug' ? '🐛' : 
            item.labelKey === 'snakePath' ? '🐍' : 
-           item.labelKey === 'analytics' ? '📊' : '📋'),
+           item.labelKey === 'analytics' ? '📊' : 
+           item.labelKey === 'achievements' ? '🏆' : '📋'),
   }));
 
   const handleSectionClick = (section: AdminSection) => {
@@ -161,8 +169,24 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4">
-            <ul className="space-y-2">
+          <nav className="flex-1 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted [&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="p-4">
+              <ul className="space-y-2">
+              {/* Home Link */}
+              <li>
+                <Link
+                  href="/"
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
+                >
+                  <span className="text-lg">🏠</span>
+                  <span className="font-medium">Home</span>
+                </Link>
+              </li>
+              {/* Divider */}
+              <li className="pt-2 pb-1">
+                <div className="h-px bg-border"></div>
+              </li>
               {sidebarItems.map((item) => {
                 const isActive = pathname === item.href ||
                   (item.id !== 'dashboard' && pathname.startsWith(item.href));
@@ -187,6 +211,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 );
               })}
             </ul>
+            </div>
           </nav>
 
           {/* Footer */}

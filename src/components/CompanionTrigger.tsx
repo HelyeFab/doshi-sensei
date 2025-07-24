@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useSettings } from '@/contexts/SettingsContext';
 import VirtualCompanion from './VirtualCompanion';
 import { useStrings } from '@/contexts/LanguageContext';
@@ -9,6 +10,7 @@ export default function CompanionTrigger() {
   const { settings, isLoading } = useSettings();
   const [isCompanionOpen, setIsCompanionOpen] = useState(false);
   const strings = useStrings();
+  const pathname = usePathname();
 
   const handleOpenCompanion = () => {
     setIsCompanionOpen(true);
@@ -18,8 +20,8 @@ export default function CompanionTrigger() {
     setIsCompanionOpen(false);
   };
 
-  // Don't render anything if settings are loading or showCompanion is disabled
-  if (isLoading || !settings.showCompanion) {
+  // Don't render anything if settings are loading, showCompanion is disabled, on admin pages, or on homepage
+  if (isLoading || !settings.showCompanion || pathname?.startsWith('/admin') || pathname === '/') {
     return null;
   }
 

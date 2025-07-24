@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { Story } from '@/types/story';
 import { JLPTLevel, JLPT_LEVELS } from '@/types/kanji';
 import { storyManager } from '@/utils/storyManager';
@@ -14,6 +14,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import Link from 'next/link';
 import { useStrings } from '@/contexts/LanguageContext';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function StoriesPage() {
   const router = useRouter();
@@ -107,16 +108,11 @@ export default function StoriesPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
+    <div className="min-h-screen bg-background">
+      <StandardPageHeader title="Stories" backHref="/" />
+      
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader icon="/flat-icons/root-icons/story.svg" showBackButton={true} helpKey="stories" className="mb-8 sm:mb-8 md:mb-12" />
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <p className="text-muted-foreground text-center mt-2">
           {strings.stories.description}
         </p>
@@ -326,7 +322,7 @@ export default function StoriesPage() {
             </div>
           )}
         </div>
-      </div>
-    </>
+      </MobileAwareContainer>
+    </div>
   );
 }

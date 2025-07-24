@@ -10,15 +10,23 @@ Doshi Sensei now supports importing Anki decks (.apkg files) and uses Anki's pro
 - Import .apkg files up to 200MB
 - Drag-and-drop UI in the Favourites page
 - Progress tracking during import
-- Media files (images/audio) uploaded to Firebase Storage
+- Media files (images/audio) uploaded to Firebase Storage (temporarily disabled)
 - Each deck becomes a study list of type 'flashcard'
+- **Note**: Anki content is currently stored locally only and not synced to Firebase
 
-### 🧠 Unified SRS Algorithm
-- **ALL flashcards now use Anki's SM-2 algorithm**
-- Replaces our previous FSRS implementation
-- Preserves exact intervals, ease factors, and due dates
-- Supports new/learning/review/relearning states
-- Proven effectiveness from millions of Anki users
+### 🧠 Enhanced Anki-Accurate SRS Algorithm
+- **ALL flashcards use an improved Anki-accurate SM-2 algorithm**
+- More faithful to Anki's actual implementation than our previous version
+- Key improvements:
+  - Fuzz factor prevents cards bunching on same day
+  - Overdue card handling with delay adjustment
+  - Configurable learning steps and parameters
+  - Minimum ease of 1.3 (130%) enforcement
+  - Maximum interval of 36,500 days (100 years)
+  - Leech detection after configurable lapses
+  - Preview of next review times on buttons
+- Supports all Anki card states (new/learning/review/relearning)
+- Premium users get cross-device SRS sync
 
 ### 📱 Seamless Integration
 - Imported cards appear in regular study lists
@@ -33,24 +41,45 @@ Doshi Sensei now supports importing Anki decks (.apkg files) and uses Anki's pro
 1. **AnkiImporter** (`/src/utils/ankiImporter.ts`)
    - Parses .apkg files using anki-reader library
    - Extracts cards, media, and SRS data
-   - Uploads media to Firebase Storage
+   - Uploads media to Firebase Storage (currently disabled)
    - Creates study lists with imported cards
+   - Stores data locally in IndexedDB via `largeDataStorage`
 
-2. **AnkiSRS** (`/src/utils/ankiSRS.ts`)
-   - Implements Anki's SM-2 algorithm
+2. **AnkiSRSImproved** (`/src/utils/ankiSRSImproved.ts`)
+   - Implements Anki's SM-2 algorithm with enhanced accuracy
    - Handles all card states and transitions
-   - Calculates next review dates
+   - Calculates next review dates with fuzz factor
    - Manages ease factors and intervals
+   - Configurable parameters matching Anki desktop
+   - Overdue card delay adjustment
+   - Next review time preview calculation
+
+3. **FlashcardSRSManager** (`/src/utils/flashcardSRSManager.ts`)
+   - Manages SRS data storage and sync
+   - Uses IndexedDB for local storage
+   - Premium users get Firebase sync
+   - Undo functionality with 10-item stack
+   - Automatic cleanup of old cards (365+ days)
+   - Statistics generation
+
+4. **SRS Configuration** (`/src/components/flashcards/SRSSettingsModal.tsx`)
+   - Full Anki-style configuration UI
+   - Customizable learning steps
+   - Adjustable ease bonus and interval modifier
+   - Lapse handling configuration
+   - Reset to defaults option
 
 3. **Enhanced Types**
    - Added `anki_card` to `StudyItemType`
    - Extended `SavedStudyItem` with `ankiData` field
    - Updated `StudyList` to support metadata
 
-4. **UI Components**
-   - `AnkiImportModal` - Drag-and-drop import interface
-   - Enhanced `FlashcardCard` - Renders HTML/media content
-   - Updated flashcard page - Displays Anki cards
+5. **UI Components**
+   - `AnkiImportModal` - Drag-and-drop import interface with list limit validation
+   - Enhanced `FlashcardDisplay` - Renders HTML/media content with sanitization
+   - Updated flashcard page - Displays Anki cards with SRS configuration
+   - `SRSSettingsModal` - Configure algorithm parameters
+   - `HTMLSanitizer` - Prevents XSS attacks in Anki content
 
 ## User Flow
 
@@ -81,7 +110,7 @@ Doshi Sensei now supports importing Anki decks (.apkg files) and uses Anki's pro
     front: string,  // HTML content
     back: string,   // HTML content
     tags: string[],
-    media: string[], // Firebase URLs
+    media: string[], // Firebase URLs (when enabled)
     srsData: {
       due: Date,
       interval: number,
@@ -94,6 +123,11 @@ Doshi Sensei now supports importing Anki decks (.apkg files) and uses Anki's pro
   }
 }
 ```
+
+### Storage Location
+- **Primary**: IndexedDB database `DoshiSenseiLargeData`, store `savedStudyItems`
+- **Fallback**: localStorage key `doshi_sensei_saved_study_items`
+- **Cloud Sync**: Currently disabled for Anki content
 
 ## Configuration
 
@@ -125,22 +159,36 @@ The anki-reader library requires sql.js to read SQLite databases in the browser:
 ## Security & Performance
 
 ### Security
-- Premium-only access control
+- Premium-only access control for imports
 - File size validation (200MB max)
-- Firebase Storage for media (secure URLs)
-- HTML content sanitization considerations
+- Firebase Storage for media (secure URLs) - temporarily disabled
+- **HTML content sanitization implemented** - Prevents XSS attacks
+  - Whitelist of allowed HTML tags and attributes
+  - CSS property filtering
+  - Script tag removal
+  - Event handler stripping
+- Local-only storage prevents unauthorized cloud access
+- List count validation (3 lists max for free users)
 
 ### Performance
 - Progress tracking for large imports
-- Chunked processing for many cards
-- Lazy loading of media files
-- Efficient batch operations
+- Improved bulk save operation for large decks
+- Fixed IndexedDB transaction handling for reliable saves
+- Efficient batch operations with proper error handling
+- Pagination support (50 items per page)
+- **SRS Optimizations**:
+  - Batch SRS data updates
+  - Background cleanup for old cards (premium)
+  - Efficient Firebase sync for premium users
+  - Local caching with IndexedDB
 
 ## Future Enhancements
 
-1. **Persistent SRS Storage**
-   - Store SRS data updates after reviews
-   - Track review history per card
+1. **✅ COMPLETED: Persistent SRS Storage**
+   - SRS data stored in IndexedDB
+   - Premium users get Firebase sync
+   - Review history tracked per card
+   - Undo functionality for last review
 
 2. **Advanced Card Types**
    - Cloze deletion support
@@ -151,10 +199,18 @@ The anki-reader library requires sql.js to read SQLite databases in the browser:
    - Export back to .apkg format
    - Maintain compatibility with Anki desktop
 
-4. **Statistics**
-   - Anki-style statistics dashboard
-   - Retention rates and review heatmaps
-   - Progress tracking per deck
+4. **Advanced Statistics** (See [ADVANCED_FEATURES_ROADMAP.md](./ADVANCED_FEATURES_ROADMAP.md))
+   - Comprehensive learning analytics dashboard
+   - Retention curves and forgetting curves
+   - Heat map calendar of study activity
+   - Performance insights and recommendations
+   - JLPT readiness predictions
+
+5. **Collaborative Features** (Premium)
+   - Deck sharing marketplace
+   - Rate and review shared decks
+   - Follow deck creators
+   - Deck update notifications
 
 ## Development Guidelines
 
@@ -174,21 +230,86 @@ The anki-reader library requires sql.js to read SQLite databases in the browser:
 
 ### Common Issues
 1. **Import fails**: Check file size and format
-2. **Media not showing**: Verify Firebase Storage permissions
-3. **Cards not appearing**: Check list type is 'flashcard'
+2. **Media not showing**: Media upload currently disabled
+3. **Cards not appearing**: Check IndexedDB storage and pagination
 4. **SRS not working**: Ensure ankiData.srsData is preserved
+5. **Incomplete imports**: Fixed in latest update - check IndexedDB transaction handling
 
 ### Debug Tools
 - Browser console for import errors
-- Network tab for media uploads
-- IndexedDB inspector for stored data
+- IndexedDB inspector (Application tab > Storage > IndexedDB > DoshiSenseiLargeData)
+- Test page available at `/test-indexeddb.html` for storage verification
+- Check localStorage fallback if IndexedDB fails
+
+## Recent Updates (January 2025)
+
+### Major SRS Algorithm Upgrade
+1. **Anki-Accurate Algorithm**: Complete rewrite to match Anki desktop behavior
+2. **Configurable Parameters**: Full control over learning steps, ease bonus, intervals
+3. **Cross-Device Sync**: Premium users get SRS data sync via Firebase
+4. **Enhanced Security**: HTML sanitization prevents XSS attacks
+5. **Better UX**: Review buttons show actual next review times
+
+### Storage Architecture Changes
+1. **Dual Storage**: Local IndexedDB + optional Firebase sync for premium
+2. **SRS Data Management**: New `FlashcardSRSManager` handles all SRS operations
+3. **Improved Reliability**: Fixed IndexedDB transaction handling for large imports
+4. **Pagination Fix**: Resolved issue where only 41 items displayed from 2000+ card imports
+
+### Technical Changes
+- **NEW**: `ankiSRSImproved.ts` - Enhanced algorithm implementation
+- **NEW**: `flashcardSRSManager.ts` - SRS data storage and sync
+- **NEW**: `htmlSanitizer.ts` - Security for Anki HTML content
+- **NEW**: `SRSSettingsModal.tsx` - Algorithm configuration UI
+- `largeDataStorage.ts`: Fixed race condition in `saveAllItems` method
+- `ankiImporter.ts`: Added list count validation for free users
+- `studyListManager.ts`: Added filters to exclude Anki content from Firebase sync
+- `FlashcardDisplay.tsx`: Shows next review times, sanitizes HTML
+
+## SRS Algorithm Configuration
+
+### Default Settings (Matching Anki Desktop)
+- **New Cards**: 
+  - Learning steps: 1 minute, 10 minutes
+  - Graduating interval: 1 day
+  - Easy interval: 4 days
+  - Max new per day: 20
+
+- **Reviews**:
+  - Easy bonus: 1.3x
+  - Interval modifier: 1.0 (100%)
+  - Maximum interval: 36,500 days
+  - Hard interval: 1.2x
+  - Max reviews per day: 200
+
+- **Lapses**:
+  - Relearning steps: 10 minutes
+  - New interval: 0% (full reset)
+  - Minimum interval: 1 day
+  - Leech threshold: 8 lapses
+
+### Customization
+Users can customize all parameters through the SRS Settings modal, accessible from the flashcard review page. Settings persist across sessions and sync for premium users.
+
+## Three-Pillar Architecture Integration
+
+The flashcard system fully integrates with Doshi Sensei's three-pillar architecture:
+
+1. **Entitlements**: Controls who can import Anki decks (premium only)
+2. **Features**: Flashcard review tracked as `flashcard_review` feature
+3. **Access Control**: Automatic modal prompts for non-premium users
+
+Daily limits:
+- Guest/Free users: 3 flashcard sessions per day (shared with drills)
+- Premium users: Unlimited sessions
 
 ## Conclusion
 
-The Anki integration brings the power of the world's most popular spaced repetition system to Doshi Sensei while maintaining our clean architecture and user experience. By using Anki's algorithm for ALL flashcards, we ensure consistent, proven learning outcomes for our users.
+The Anki integration brings the power of the world's most popular spaced repetition system to Doshi Sensei with enhanced accuracy and modern features. The improved algorithm ensures optimal spacing while the cross-device sync (premium) provides seamless learning across all devices. With configurable parameters and robust security, users get the full Anki experience within our clean, mobile-first interface.
 
 For implementation details, see:
 - [ANKI_IMPORT_PLAN.md](./ANKI_IMPORT_PLAN.md) - Original design document
 - [FLASHCARD_INTEGRATION.md](./FLASHCARD_INTEGRATION.md) - Integration details
+- [ADVANCED_FEATURES_ROADMAP.md](./ADVANCED_FEATURES_ROADMAP.md) - Future enhancements
 
 Last updated: January 2025

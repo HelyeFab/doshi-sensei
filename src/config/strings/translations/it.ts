@@ -33,6 +33,7 @@ export const it = {
     "settingsButton": "Impostazioni",
     "greeting": "Ciao",
     "readyToPractice": "Pronto per praticare un po' di giapponese?",
+    "dayProgressTooltip": "Progresso del giorno - Mostra quanto della giornata è passato",
     "featureCards": {
       "practice": {
         "title": "Pratica",

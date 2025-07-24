@@ -6,7 +6,7 @@ import { SettingsManager } from '@/utils/indexedDB';
 
 // Default settings
 const defaultSettings: AppSettings = {
-  theme: 'system',
+  theme: 'light', // Changed from 'system' to 'light' for default
   colorScheme: 'default',
   showRomaji: true,
   dailyGoal: 10,

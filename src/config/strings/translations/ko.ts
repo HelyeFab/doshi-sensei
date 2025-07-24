@@ -33,6 +33,7 @@ export const ko = {
     "settingsButton": "설정",
     "greeting": "안녕하세요",
     "readyToPractice": "일본어 연습할 준비가 되셨나요?",
+    "dayProgressTooltip": "하루 진행률 - 하루 중 얼마나 지났는지 표시",
     "featureCards": {
       "practice": {
         "title": "연습",

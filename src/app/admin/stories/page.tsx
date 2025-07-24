@@ -11,6 +11,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { TrashIcon } from '@heroicons/react/24/outline'; // If you use heroicons or similar, otherwise use inline SVG
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 export default function AdminStoriesPage() {
   const strings = useStrings();
@@ -101,45 +102,27 @@ export default function AdminStoriesPage() {
   }
 
   return (
-    <>
-      {/* Confirmation Dialog */}
-      <ConfirmationDialog
-        isOpen={confirmDialog.isOpen}
-        title={confirmDialog.title}
-        message={confirmDialog.message}
-        confirmText={confirmDialog.confirmText || 'Confirm'}
-        cancelText={confirmDialog.cancelText || 'Cancel'}
-        isDestructive={confirmDialog.isDestructive}
-        loading={confirmDialog.loading}
-        onConfirm={async () => {
-          setConfirmDialog(prev => ({ ...prev, loading: true }));
-          await confirmDialog.onConfirm();
-          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }));
-        }}
-        onCancel={() => setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))}
-      />
-      {/* Top Gradient Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 mb-4">
-              <button
-                onClick={() => router.push('/admin')}
-                className="mr-2 p-2 rounded-full hover:bg-muted transition-colors"
-                title={strings.admin.backToDashboard}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <h1 className="text-3xl font-bold text-foreground">{strings.admin.aiStories}</h1>
-            </div>
+    <AdminLayout title={strings.admin.aiStories}>
+      <div className="space-y-6">
+        {/* Confirmation Dialog */}
+        <ConfirmationDialog
+          isOpen={confirmDialog.isOpen}
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          confirmText={confirmDialog.confirmText || 'Confirm'}
+          cancelText={confirmDialog.cancelText || 'Cancel'}
+          isDestructive={confirmDialog.isDestructive}
+          loading={confirmDialog.loading}
+          onConfirm={async () => {
+            setConfirmDialog(prev => ({ ...prev, loading: true }));
+            await confirmDialog.onConfirm();
+            setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }));
+          }}
+          onCancel={() => setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))}
+        />
+        
+        {/* Header */}
+        <div className="space-y-2">"
             <div className="flex gap-2 flex-wrap">
               <Link
                 href="/admin/stories/generate"
@@ -320,8 +303,7 @@ export default function AdminStoriesPage() {
               </div>
             </div>
           )}
-        </div>
       </div>
-    </>
+    </AdminLayout>
   );
 }

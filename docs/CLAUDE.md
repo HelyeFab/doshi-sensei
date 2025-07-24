@@ -347,6 +347,52 @@ When working on features related to user limits, subscriptions, or game access, 
 
 **Note**: The system currently uses 'monthly' and 'yearly' as distinct user types rather than a generic 'premium'. See `/docs/PREMIUM_TYPE_REFERENCES.md` for all locations that depend on this distinction.
 
+## Flashcard System Updates - January 2025
+
+### Enhanced Anki-Accurate SRS Algorithm
+We've completely rebuilt the SRS algorithm to match Anki's desktop implementation more accurately:
+
+#### Key Improvements
+1. **Algorithm Accuracy** (`/src/utils/ankiSRSImproved.ts`)
+   - Fuzz factor prevents cards bunching on same day
+   - Overdue card handling with delay adjustment
+   - Configurable parameters (learning steps, ease bonus, etc.)
+   - Minimum ease of 1.3 enforcement
+   - Maximum interval of 36,500 days
+   - Review buttons show actual next review times
+
+2. **Storage & Sync** (`/src/utils/flashcardSRSManager.ts`)
+   - IndexedDB for local storage (all users)
+   - Firebase sync for premium users only
+   - Undo functionality (last 10 reviews)
+   - Automatic cleanup of cards not reviewed in 365+ days
+   - Batch operations for performance
+
+3. **Security** (`/src/utils/htmlSanitizer.ts`)
+   - HTML sanitization for Anki card content
+   - XSS attack prevention
+   - Whitelist of safe HTML tags and attributes
+   - CSS property filtering
+
+4. **Configuration** (`/src/components/flashcards/SRSSettingsModal.tsx`)
+   - Full Anki-style settings UI
+   - Customizable learning steps
+   - Adjustable ease bonus and intervals
+   - Persistent settings
+
+#### Three-Pillar Integration
+- Feature: `flashcard_review` (shares limit with `drill_practice`)
+- Access: 3 sessions/day for free users, unlimited for premium
+- Anki import: Premium-only feature with list count validation
+
+#### Key Files
+- `/src/app/drill/flashcards/page.tsx` - Main flashcard review page
+- `/src/utils/ankiSRSImproved.ts` - Enhanced SRS algorithm
+- `/src/utils/flashcardSRSManager.ts` - Storage and sync manager
+- `/src/components/flashcards/FlashcardDisplay.tsx` - Card display with sanitization
+- `/docs/anki/README.md` - Comprehensive documentation
+- `/docs/anki/ADVANCED_FEATURES_ROADMAP.md` - Future enhancements
+
 ## New Subscription System Architecture - January 2025
 
 ### Overview

@@ -47,51 +47,44 @@ html, body {
   :where(.dark) &;
 }
 
-:root, .dark {
-  /* Dark theme as primary */
-  --background: #0f0f23;
-  --foreground: #e2e8f0;
-  --card: #1e1e2e;
-  --card-foreground: #e2e8f0;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #374151;
-  --secondary-foreground: #e2e8f0;
-  --muted: #374151;
-  --muted-foreground: #9ca3af;
-  --accent: #4f46e5;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --success: #22c55e;
-  --success-foreground: #ffffff;
-  --border: #374151;
-  --input: #374151;
-  --ring: #6366f1;
+/* Theme variables are set by the theme system in themes.ts */
+/* These are placeholder values that will be overridden by the theme system */
+:root {
+  /* Default theme variables - will be overridden by theme system */
+  --background: 210 20% 98%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 239 84% 67%;
   --radius: 0.5rem;
+  
+  /* Additional colors */
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 98%;
+  
+  /* Bottom navbar dimensions */
+  --bottom-nav-height: 4rem; /* 64px */
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-nav-total-height: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
 }
 
-/* Light theme override */
-.light {
-  --background: #fdfcff;
-  --foreground: #2d2438;
-  --card: #f9f7fc;
-  --card-foreground: #2d2438;
-  --primary: #8b7cb6;
-  --primary-foreground: #ffffff;
-  --secondary: #f0ecf7;
-  --secondary-foreground: #2d2438;
-  --muted: #f0ecf7;
-  --muted-foreground: #6b5b73;
-  --accent: #e8dff2;
-  --accent-foreground: #2d2438;
-  --destructive: #d97066;
-  --destructive-foreground: #ffffff;
-  --success: #16a34a;
-  --success-foreground: #ffffff;
-  --border: #e8dff2;
-  --input: #f0ecf7;
-  --ring: #8b7cb6;
+/* Dark mode - variables will be set by theme system */
+.dark {
+  /* Theme system will override these */
 }
 
 @theme inline {
@@ -114,7 +107,7 @@ html, body {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-rubik);
   --font-mono: var(--font-geist-mono);
   --radius: var(--radius);
 }
@@ -126,9 +119,34 @@ html, body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-lato), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-rubik), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Mobile content padding to account for bottom navbar */
+@media (max-width: 768px) {
+  .mobile-nav-padding {
+    padding-bottom: var(--bottom-nav-total-height);
+  }
+}
+
+/* Wave animation for greeting */
+@keyframes wave {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-wave {
+  animation: wave 2.5s ease-in-out infinite;
+  transform-origin: 70% 70%;
+  display: inline-block;
 }
 
 /* App name styling with elegant script font */
@@ -195,6 +213,51 @@ body {
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Anki card content styling */
+.anki-content {
+  line-height: 1.6;
+}
+
+.anki-content p {
+  margin-bottom: 0.5rem;
+}
+
+.anki-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem auto;
+  display: block;
+}
+
+.anki-content b, 
+.anki-content strong {
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+
+.anki-content u {
+  text-decoration-color: hsl(var(--primary) / 0.5);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.anki-content .cloze {
+  font-weight: 600;
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.anki-content audio,
+.anki-audio {
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  display: block;
 }
 
 /* Animation classes */
@@ -868,4 +931,50 @@ input[type="range"].slider::-moz-range-thumb:active {
   body > div > div > div > *:last-child {
     padding-bottom: 6rem;
   }
+}
+
+/* Anki content styles */
+.anki-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto;
+  border-radius: 0.5rem;
+}
+
+.anki-content audio {
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  display: block;
+}
+
+.anki-content video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto;
+  border-radius: 0.5rem;
+}
+
+.anki-audio {
+  width: 100%;
+  max-width: 250px;
+  height: 40px;
+  margin: 0.5rem 0;
+}
+
+/* Preserve Anki formatting */
+.anki-content table {
+  border-collapse: collapse;
+  margin: 1rem auto;
+}
+
+.anki-content td, .anki-content th {
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+}
+
+.anki-content center {
+  text-align: center;
 }

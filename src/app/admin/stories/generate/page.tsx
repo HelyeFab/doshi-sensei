@@ -13,6 +13,7 @@ import { STORY_THEMES } from '@/types/story';
 import { AIStoryDraft, AIGenerationProgress, AICharacterSheet } from '@/types/ai-story';
 import { storyManager } from '@/utils/storyManager';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 export default function GenerateStoryPage() {
   const strings = useStrings();
@@ -594,32 +595,10 @@ export default function GenerateStoryPage() {
   }
 
   return (
-    <>
-      {/* Top Gradient Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex items-center gap-2 mb-6">
-            <button
-              onClick={() => router.push('/admin/stories')}
-              className="mr-2 p-2 rounded-full hover:bg-muted transition-colors"
-              title={strings.admin.backToDashboard}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">{strings.admin.aiStoryGeneration.title}</h1>
-              <p className="text-muted-foreground">{strings.admin.aiStoryGeneration.subtitle}</p>
-            </div>
-          </div>
+    <AdminLayout title={strings.admin.aiStoryGeneration.title}>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Subtitle */}
+        <p className="text-muted-foreground -mt-4">{strings.admin.aiStoryGeneration.subtitle}</p>
 
           <AnimatePresence mode="wait">
             {/* Setup Form */}
@@ -1062,8 +1041,6 @@ export default function GenerateStoryPage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-      </div>
       
       {/* Regenerate Image Modal */}
       {regenerateModal && storyDraft && (
@@ -1126,6 +1103,7 @@ export default function GenerateStoryPage() {
           }}
         />
       )}
-    </>
+      </div>
+    </AdminLayout>
   );
 }

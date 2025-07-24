@@ -463,6 +463,32 @@ export class StatsTracker {
         caughtPokemonSet: []
       };
       
+      // Recalculate totalActivities from individual counts
+      // This fixes the issue where totalActivities in Firebase is 0 but actual activities exist
+      completeStats.totalActivities = 
+        completeStats.drillsCompleted +
+        completeStats.storiesRead +
+        completeStats.articlesRead +
+        completeStats.kanjiStudySessions +
+        completeStats.gamesPlayed +
+        completeStats.vocabStudied +
+        completeStats.flashcardsReviewed +
+        completeStats.practiceSessionsCompleted;
+      
+      console.log('📊 [StatsTracker] Recalculated totalActivities from components:', {
+        totalActivities: completeStats.totalActivities,
+        breakdown: {
+          drills: completeStats.drillsCompleted,
+          stories: completeStats.storiesRead,
+          articles: completeStats.articlesRead,
+          kanji: completeStats.kanjiStudySessions,
+          games: completeStats.gamesPlayed,
+          vocab: completeStats.vocabStudied,
+          flashcards: completeStats.flashcardsReviewed,
+          practice: completeStats.practiceSessionsCompleted
+        }
+      });
+      
       return completeStats;
     } catch (error) {
       console.error('❌ [StatsTracker] Error loading from cloud:', error);
@@ -1089,6 +1115,10 @@ export class StatsTracker {
     // For premium users, also check cloud for any newer activities
     if (this.currentUser && this.isPremium) {
       await this.loadActivitiesFromCloud(thirtyDaysAgo, today);
+      
+      // After loading activities, recalculate totals from daily activities
+      // This ensures our stats reflect the actual activities in the database
+      await this.recalculateTotalsFromDailyActivities();
     }
   }
 
@@ -1423,26 +1453,31 @@ export class StatsTracker {
     if (!this.currentUser || !this.stats) return;
 
     try {
-      // Check if we need to sync Pokemon count
-      if (this.stats.pokemonCaught === 0) {
-        // Try to get Pokemon count from Firebase
-        const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
-        if (userDoc.exists()) {
-          const pokedex = userDoc.data().pokedex;
-          if (pokedex && pokedex.caught && Array.isArray(pokedex.caught)) {
-            const actualCount = pokedex.caught.length;
-            if (actualCount > 0) {
-              console.log(`🔄 [StatsTracker] Syncing Pokemon count: ${actualCount}`);
-              this.stats.pokemonCaught = actualCount;
-              await this.saveToIndexedDB();
-              this.notifyListeners();
-            }
+      // Always sync Pokemon count from Firebase (not just when it's 0)
+      const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
+      if (userDoc.exists()) {
+        const pokedex = userDoc.data().pokedex;
+        if (pokedex && pokedex.caught && Array.isArray(pokedex.caught)) {
+          const actualCount = pokedex.caught.length;
+          // Update if count has changed
+          if (actualCount !== this.stats.pokemonCaught) {
+            console.log(`🔄 [StatsTracker] Syncing Pokemon count: ${this.stats.pokemonCaught} → ${actualCount}`);
+            this.stats.pokemonCaught = actualCount;
+            await this.saveToIndexedDB();
+            this.notifyListeners();
           }
         }
       }
     } catch (error) {
       console.error('❌ [StatsTracker] Error syncing Pokemon count:', error);
     }
+  }
+
+  /**
+   * Force refresh Pokemon count (public method)
+   */
+  async refreshPokemonCount(): Promise<void> {
+    await this.syncPokemonCount();
   }
 
   /**
@@ -1581,6 +1616,134 @@ export class StatsTracker {
     }
     
     this.notifyListeners();
+  }
+
+  /**
+   * Recalculate totals from daily activities
+   * This ensures stats match the actual activities stored
+   */
+  private async recalculateTotalsFromDailyActivities(): Promise<void> {
+    if (!this.stats) return;
+    
+    console.log('🔄 [StatsTracker] Recalculating totals from daily activities...');
+    
+    // Initialize counters
+    let totalActivities = 0;
+    let drillsCompleted = 0;
+    let storiesRead = 0;
+    let articlesRead = 0;
+    let kanjiStudySessions = 0;
+    let gamesPlayed = 0;
+    let vocabStudied = 0;
+    let flashcardsReviewed = 0;
+    let practiceSessionsCompleted = 0;
+    
+    // Sum up all activities from daily records
+    for (const [date, daily] of this.activities) {
+      totalActivities += daily.summary.totalActivities;
+      drillsCompleted += daily.summary.drillsCompleted;
+      storiesRead += daily.summary.storiesRead;
+      articlesRead += daily.summary.articlesRead;
+      kanjiStudySessions += daily.summary.kanjiStudied;
+      gamesPlayed += daily.summary.gamesPlayed;
+      vocabStudied += daily.summary.vocabStudied;
+      flashcardsReviewed += daily.summary.flashcardsReviewed;
+      practiceSessionsCompleted += daily.summary.practiceSessionsCompleted;
+    }
+    
+    // Update stats if different
+    const hasChanges = 
+      this.stats.totalActivities !== totalActivities ||
+      this.stats.drillsCompleted !== drillsCompleted ||
+      this.stats.storiesRead !== storiesRead ||
+      this.stats.articlesRead !== articlesRead ||
+      this.stats.kanjiStudySessions !== kanjiStudySessions ||
+      this.stats.gamesPlayed !== gamesPlayed ||
+      this.stats.vocabStudied !== vocabStudied ||
+      this.stats.flashcardsReviewed !== flashcardsReviewed ||
+      this.stats.practiceSessionsCompleted !== practiceSessionsCompleted;
+    
+    if (hasChanges) {
+      console.log('📊 [StatsTracker] Updating stats from daily activities:', {
+        before: {
+          totalActivities: this.stats.totalActivities,
+          articlesRead: this.stats.articlesRead
+        },
+        after: {
+          totalActivities,
+          articlesRead
+        }
+      });
+      
+      this.stats.totalActivities = totalActivities;
+      this.stats.drillsCompleted = drillsCompleted;
+      this.stats.storiesRead = storiesRead;
+      this.stats.articlesRead = articlesRead;
+      this.stats.kanjiStudySessions = kanjiStudySessions;
+      this.stats.gamesPlayed = gamesPlayed;
+      this.stats.vocabStudied = vocabStudied;
+      this.stats.flashcardsReviewed = flashcardsReviewed;
+      this.stats.practiceSessionsCompleted = practiceSessionsCompleted;
+      
+      // Save updated stats
+      await this.saveToIndexedDB();
+      this.notifyListeners();
+    }
+  }
+
+  /**
+   * Recalculate totalActivities from existing activity counts
+   * Useful for fixing stats that have incorrect totalActivities
+   */
+  async recalculateTotalActivities(): Promise<{ before: number, after: number }> {
+    if (!this.stats) {
+      throw new Error('Stats not initialized');
+    }
+
+    const before = this.stats.totalActivities;
+    
+    // Calculate total from all activity types
+    const calculatedTotal = 
+      this.stats.drillsCompleted +
+      this.stats.storiesRead +
+      this.stats.articlesRead +
+      this.stats.kanjiStudySessions +
+      this.stats.gamesPlayed +
+      this.stats.vocabStudied +
+      this.stats.flashcardsReviewed +
+      this.stats.practiceSessionsCompleted;
+    
+    console.log('📊 [StatsTracker] Recalculating totalActivities:', {
+      before,
+      calculated: calculatedTotal,
+      breakdown: {
+        drills: this.stats.drillsCompleted,
+        stories: this.stats.storiesRead,
+        articles: this.stats.articlesRead,
+        kanji: this.stats.kanjiStudySessions,
+        games: this.stats.gamesPlayed,
+        vocab: this.stats.vocabStudied,
+        flashcards: this.stats.flashcardsReviewed,
+        practice: this.stats.practiceSessionsCompleted
+      }
+    });
+    
+    // Update if different
+    if (this.stats.totalActivities !== calculatedTotal) {
+      this.stats.totalActivities = calculatedTotal;
+      this.stats.lastUpdated = Date.now();
+      
+      // Save to storage
+      await this.saveToIndexedDB();
+      if (this.currentUser && this.isPremium) {
+        await this.saveToCloud();
+      }
+      
+      // Notify listeners
+      this.notifyListeners();
+    }
+    
+    return { before, after: calculatedTotal };
   }
 
 }

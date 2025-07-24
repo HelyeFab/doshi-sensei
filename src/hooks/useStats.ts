@@ -91,6 +91,9 @@ export function useStats(): UseStatsReturn {
     return unsubscribe;
   }, []);
 
+  // Remove periodic refresh - it's overkill for users not playing Kanji Quest
+  // Pokemon count will update immediately when caught via pokemonManager
+
   // Track activity wrapper
   const trackActivity = useCallback(async (
     type: ActivityType, 

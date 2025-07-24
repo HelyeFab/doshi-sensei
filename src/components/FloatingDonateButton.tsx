@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import DonationModal from './DonationModal';
 import { useStrings } from '@/contexts/LanguageContext';
 
 export default function FloatingDonateButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const strings = useStrings();
+  const pathname = usePathname();
 
   const handleClick = () => {
     setIsModalOpen(true);
@@ -15,6 +17,11 @@ export default function FloatingDonateButton() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
+  // Don't render on admin pages or homepage
+  if (pathname?.startsWith('/admin') || pathname === '/') {
+    return null;
+  }
 
   return (
     <>

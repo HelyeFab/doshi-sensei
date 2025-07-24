@@ -277,6 +277,132 @@ export class EnhancedStorageManager {
     }
   }
 
+  // Achievement methods
+  static async getUserStats(): Promise<import('@/lib/achievements/types').UserStats | null> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { UserStatsManager } = await import('./indexedDB');
+      return await UserStatsManager.getUserStats();
+    } else {
+      // Fallback to localStorage
+      try {
+        const saved = localStorage.getItem('doshi_user_stats');
+        return saved ? JSON.parse(saved) : null;
+      } catch (error) {
+        console.error('Error loading user stats from localStorage:', error);
+        return null;
+      }
+    }
+  }
+
+  static async saveUserStats(stats: import('@/lib/achievements/types').UserStats): Promise<void> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { UserStatsManager } = await import('./indexedDB');
+      await UserStatsManager.saveUserStats(stats);
+    } else {
+      // Fallback to localStorage
+      try {
+        localStorage.setItem('doshi_user_stats', JSON.stringify(stats));
+      } catch (error) {
+        console.error('Error saving user stats to localStorage:', error);
+      }
+    }
+  }
+
+  static async getUnlockedAchievements(): Promise<import('@/lib/achievements/types').UnlockedAchievement[]> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { AchievementsManager } = await import('./indexedDB');
+      return await AchievementsManager.getUnlockedAchievements();
+    } else {
+      // Fallback to localStorage
+      try {
+        const saved = localStorage.getItem('doshi_unlocked_achievements');
+        return saved ? JSON.parse(saved) : [];
+      } catch (error) {
+        console.error('Error loading unlocked achievements from localStorage:', error);
+        return [];
+      }
+    }
+  }
+
+  static async saveUnlockedAchievement(unlockedAchievement: import('@/lib/achievements/types').UnlockedAchievement): Promise<void> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { AchievementsManager } = await import('./indexedDB');
+      await AchievementsManager.saveUnlockedAchievement(unlockedAchievement);
+    } else {
+      // Fallback to localStorage
+      try {
+        const existing = await this.getUnlockedAchievements();
+        const updated = [...existing, unlockedAchievement];
+        localStorage.setItem('doshi_unlocked_achievements', JSON.stringify(updated));
+      } catch (error) {
+        console.error('Error saving unlocked achievement to localStorage:', error);
+      }
+    }
+  }
+
+  static async getAchievementProgress(): Promise<import('@/lib/achievements/types').AchievementProgress[]> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { AchievementsManager } = await import('./indexedDB');
+      return await AchievementsManager.getAchievementProgress();
+    } else {
+      // Fallback to localStorage
+      try {
+        const saved = localStorage.getItem('doshi_achievement_progress');
+        return saved ? JSON.parse(saved) : [];
+      } catch (error) {
+        console.error('Error loading achievement progress from localStorage:', error);
+        return [];
+      }
+    }
+  }
+
+  static async saveAchievementProgress(progress: import('@/lib/achievements/types').AchievementProgress): Promise<void> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { AchievementsManager } = await import('./indexedDB');
+      await AchievementsManager.saveAchievementProgress(progress);
+    } else {
+      // Fallback to localStorage
+      try {
+        const existing = await this.getAchievementProgress();
+        const existingIndex = existing.findIndex(p => p.achievementId === progress.achievementId);
+        
+        if (existingIndex >= 0) {
+          existing[existingIndex] = progress;
+        } else {
+          existing.push(progress);
+        }
+        
+        localStorage.setItem('doshi_achievement_progress', JSON.stringify(existing));
+      } catch (error) {
+        console.error('Error saving achievement progress to localStorage:', error);
+      }
+    }
+  }
+
   // Clear all data
   static async clearAllData(): Promise<void> {
     if (this.useIndexedDB === null) {
@@ -291,6 +417,9 @@ export class EnhancedStorageManager {
       localStorage.removeItem(SETTINGS_KEY);
       localStorage.removeItem(PROGRESS_KEY);
       localStorage.removeItem(RECENT_WORDS_KEY);
+      localStorage.removeItem('doshi_user_stats');
+      localStorage.removeItem('doshi_unlocked_achievements');
+      localStorage.removeItem('doshi_achievement_progress');
     }
   }
 }

@@ -198,13 +198,20 @@ export default function KanjiQuest({
   // Exit confirmation modal
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
-  // Initialize battle music
+  // Initialize battle music and refresh Pokemon count
   useEffect(() => {
     if (typeof window !== 'undefined') {
       battleMusicRef.current = new Audio('/sounds/pokemon-battle.mp3');
       battleMusicRef.current.loop = true;
       battleMusicRef.current.volume = 0.3; // Set a moderate volume
     }
+
+    // Refresh Pokemon count when game starts (in case it's out of sync)
+    import('@/lib/stats/statsTracker').then(({ statsTracker }) => {
+      statsTracker.refreshPokemonCount().catch(err => {
+        console.error('Error refreshing Pokemon count:', err);
+      });
+    });
 
     // Cleanup on unmount
     return () => {

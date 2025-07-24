@@ -80,7 +80,7 @@ async function scrapeWatanoc() {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
-      signal: AbortSignal.timeout(15000)
+      signal: AbortSignal.timeout(20000)
     });
 
     if (!response.ok) {
@@ -96,7 +96,7 @@ async function scrapeWatanoc() {
     let count = 0;
     const articleData = [];
 
-    while ((match = articleRegex.exec(html)) && count < 3) {
+    while ((match = articleRegex.exec(html)) && count < 5) {
       const articleHtml = match[1];
       
       const urlMatch = articleHtml.match(/href="(https:\/\/watanoc\.com\/[^"]+)"/);
@@ -123,7 +123,7 @@ async function scrapeWatanoc() {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
-          signal: AbortSignal.timeout(8000)
+          signal: AbortSignal.timeout(10000)
         });
 
         if (!articleResponse.ok) {

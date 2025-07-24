@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard as MoodBoardType, KanjiItem } from '@/types/moodBoard';
 import { useFeature } from '@/hooks/useFeature';
 import ReadingRoutesGame from '@/components/games/ReadingRoutes/ReadingRoutesGame';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function ReadingRoutesGamePage() {
   const router = useRouter();
@@ -87,27 +88,15 @@ export default function ReadingRoutesGamePage() {
   }
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader
+        title={`Reading Routes: ${board.title}`}
+        backHref="/games/reading-routes"
+      />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
-          {/* Page Header */}
-          <PageHeader
-            title={`Reading Routes: ${board.title}`}
-            showBackButton={true}
-            onBack={handleBack}
-          />
 
           <ReadingRoutesGame
             board={board}
@@ -115,7 +104,7 @@ export default function ReadingRoutesGamePage() {
             remainingPlays={remaining}
           />
         </main>
-      </div>
-    </>
+      </MobileAwareContainer>
+    </div>
   );
 }

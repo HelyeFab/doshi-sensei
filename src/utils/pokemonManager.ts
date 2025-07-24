@@ -3,6 +3,7 @@ import { db } from '@/lib/firebase';
 import { pokemonStorage } from './pokemonStorage';
 import { User } from 'firebase/auth';
 import { trackPokemonCaught } from '@/lib/stats/trackingEvents';
+import { statsTracker } from '@/lib/stats/statsTracker';
 
 interface PokemonCatch {
   pokemonId: number;
@@ -101,6 +102,9 @@ class PokemonManager {
           // Verify the update
           const verifyDoc = await getDoc(userDocRef);
           // Verification - Document updated with pokedex data
+          
+          // Refresh Pokemon count in stats tracker
+          await statsTracker.refreshPokemonCount();
         } catch (updateError) {
           // updateDoc failed
           throw updateError;
@@ -121,6 +125,9 @@ class PokemonManager {
         // Creating new document with pokedex data
         await setDoc(userDocRef, newData, { merge: true });
         // Successfully created Firebase document with Pokémon
+        
+        // Refresh Pokemon count in stats tracker
+        await statsTracker.refreshPokemonCount();
       }
     } catch (error) {
       // Failed to save Pokémon to cloud - local storage should still work

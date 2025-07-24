@@ -18,6 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import dynamic from 'next/dynamic';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
+import { translationService } from '@/services/translationService';
 
 // Dynamic import to avoid SSR issues
 const EnhancedArticleAudioPlayer = dynamic(
@@ -28,6 +29,7 @@ const EnhancedArticleAudioPlayer = dynamic(
   }
 );
 import { GrammarHighlightedText, GrammarLegend } from './GrammarHighlightedText';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { PageHeader } from '@/components/PageHeader';
 import { cleanTextForTTS } from '@/utils/japaneseParser';
 import { useStrings } from '@/contexts/LanguageContext';
@@ -253,11 +255,11 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
             </span>
             <button
               onClick={handleToggleFurigana}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
+              className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${settings.showFurigana ? 'bg-primary' : 'bg-muted'
                 }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-1'
+                className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${settings.showFurigana ? 'translate-x-6' : 'translate-x-0'
                   }`}
               />
             </button>
@@ -272,13 +274,13 @@ function SettingsPanel({ settings, onSettingsChange, onClose }: SettingsPanelPro
             </span>
             <button
               onClick={handleToggleVocabularyHighlight}
-              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors px-1 ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'}`}
+              className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${settings.highlightVocabulary ? 'bg-primary' : 'bg-muted'}`}
               style={{ minWidth: 56 }}
               aria-pressed={settings.highlightVocabulary}
               tabIndex={0}
             >
               <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-0'}`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${settings.highlightVocabulary ? 'translate-x-6' : 'translate-x-0'}`}
               />
             </button>
           </label>
@@ -398,6 +400,10 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [processedContent, setProcessedContent] = useState<string[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [translation, setTranslation] = useState<string | null>(null);
+  const [translationLoading, setTranslationLoading] = useState(false);
+  const [translationError, setTranslationError] = useState<string | null>(null);
 
   const articleRef = useRef<HTMLDivElement>(null);
   const timeUpdateInterval = useRef<NodeJS.Timeout | null>(null);
@@ -481,6 +487,37 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       // Show success message (you could add a toast notification here)
     } catch (error) {
       console.error('Failed to save word to list:', error);
+    }
+  };
+
+  // Handle translation toggle
+  const handleTranslationToggle = async () => {
+    if (showTranslation && translation) {
+      // Just hide if already loaded
+      setShowTranslation(false);
+      return;
+    }
+
+    if (!translation && !translationLoading) {
+      // Load translation for the first time
+      setTranslationLoading(true);
+      setTranslationError(null);
+      
+      try {
+        // Clean the content before translation
+        const cleanContent = translationService.cleanTextForTranslation(article.content);
+        const translatedText = await translationService.translateText(cleanContent);
+        setTranslation(translatedText);
+        setShowTranslation(true);
+      } catch (error) {
+        console.error('Translation error:', error);
+        setTranslationError('Failed to load translation. Please try again.');
+      } finally {
+        setTranslationLoading(false);
+      }
+    } else {
+      // Show existing translation
+      setShowTranslation(true);
     }
   };
 
@@ -808,7 +845,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       <div className="container mx-auto px-4">
         <PageHeader title={article.title} showBackButton={true} onBackClick={onBack} />
       </div>
-      <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-6 min-h-screen md:pb-8">
         <div className="max-w-4xl mx-auto">
           {/* Header with navigation and controls */}
           <div className="flex items-center justify-between mb-6">
@@ -888,6 +925,26 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                       <div className="font-medium">{isBookmarked ? 'Remove Bookmark' : 'Bookmark Article'}</div>
                       <div className="text-sm text-muted-foreground">
                         {!user ? 'Login required' : 'Save for later'}
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Translation */}
+                  <button
+                    onClick={() => {
+                      handleTranslationToggle();
+                      setShowOptionsMenu(false);
+                    }}
+                    disabled={translationLoading}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span className="text-xl">🌐</span>
+                    <div>
+                      <div className="font-medium">
+                        {showTranslation ? 'Hide Translation' : 'Show English Translation'}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {translationLoading ? 'Loading...' : 'View article in English'}
                       </div>
                     </div>
                   </button>
@@ -1087,6 +1144,52 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             </footer>
           </article>
 
+          {/* Translation Section */}
+          {showTranslation && (
+            <div className="mt-8 bg-card rounded-lg p-4 md:p-8 border border-border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <span className="text-xl">🌐</span>
+                  English Translation
+                </h3>
+                <button
+                  onClick={() => setShowTranslation(false)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {translationLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Translating article...</p>
+                </div>
+              ) : translationError ? (
+                <div className="text-center py-8">
+                  <p className="text-red-500 mb-4">{translationError}</p>
+                  <button
+                    onClick={handleTranslationToggle}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : translation ? (
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-muted-foreground text-sm mb-4">
+                    Note: This is an automated translation and may not be 100% accurate.
+                  </p>
+                  <div className="text-foreground leading-relaxed whitespace-pre-wrap">
+                    {translation}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
+
           {/* Vocabulary popup */}
           {selectedWord && (
             <VocabularyPopup
@@ -1241,7 +1344,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             />
           )}
         </div>
-      </div>
+      </MobileAwareContainer>
     </>
   );
 }

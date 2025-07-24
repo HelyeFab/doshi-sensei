@@ -135,6 +135,18 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
   },
   
   // Learning Features
+  'textbook_vocabulary': {
+    id: 'textbook_vocabulary',
+    name: 'Textbook Vocabulary',
+    description: 'Learn vocabulary from Genki & Minna no Nihongo textbooks',
+    category: 'learning',
+    icon: '📚',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+  
   'kanji_stroke_order': {
     id: 'kanji_stroke_order',
     name: 'Kanji Stroke Order',
@@ -168,7 +180,31 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     limitType: 'daily',
     requiresAuth: false,
     requiresSubscription: false,
-    status: 'active'
+    status: 'active',
+    sharedLimitGroup: 'drill_practice'
+  },
+  
+  'youtube_shadowing': {
+    id: 'youtube_shadowing',
+    name: 'YouTube Shadowing',
+    description: 'Practice Japanese through YouTube videos or uploaded files with line-by-line audio shadowing',
+    category: 'learning',
+    icon: '🎥',
+    limitType: 'daily',
+    requiresAuth: false, // Guests can view but not use
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      maxUsagePerDay: { guest: 0, free: 1, premium: 10 }, // Combined limit for YouTube URLs + file uploads
+      maxVideoLength: { guest: 0, free: 600, premium: -1 }, // in seconds, -1 means unlimited
+      maxFileSizeMB: { guest: 0, free: 50, premium: 200 },
+      allowedFormats: ['mp3', 'wav', 'm4a', 'mp4', 'mov', 'avi', 'webm'],
+      features: {
+        guest: [], // No features for guests
+        free: ['youtube_url', 'file_upload', 'basic_playback', 'transcript_view', 'recording', 'vocabulary_lookup'],
+        premium: ['youtube_url', 'file_upload', 'basic_playback', 'transcript_view', 'recording', 'vocabulary_lookup', 'offline_caching', 'advanced_analysis']
+      }
+    }
   },
   
   // Storage Features
@@ -316,6 +352,26 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'planned'
   },
   
+  'ai_context_explanation': {
+    id: 'ai_context_explanation',
+    name: 'AI Context Explanation',
+    description: 'Get instant AI-powered explanations for any Japanese text',
+    category: 'learning',
+    icon: '💡',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      maxRequestsPerDay: { guest: 5, free: 10, premium: -1 },
+      features: {
+        guest: ['basic_explanation'],
+        free: ['basic_explanation', 'grammar_analysis'],
+        premium: ['basic_explanation', 'grammar_analysis', 'cultural_notes', 'unlimited_requests']
+      }
+    }
+  },
+  
   'anki_import': {
     id: 'anki_import',
     name: 'Import Anki Decks',
@@ -330,6 +386,18 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       maxFileSize: 200 * 1024 * 1024,
       allowedFormats: ['.apkg', '.anki2']
     }
+  },
+  
+  'anki_set_creation': {
+    id: 'anki_set_creation',
+    name: 'Create Anki Sets',
+    description: 'Create custom Anki-style flashcard sets',
+    category: 'storage',
+    icon: '🎴',
+    limitType: 'daily',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active'
   }
 };
 

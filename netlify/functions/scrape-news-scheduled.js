@@ -1,5 +1,6 @@
 // All requires at module level - CRITICAL for Netlify
 const admin = require('firebase-admin');
+const { saveArticlesWithDeduplication } = require('./article-deduplication');
 
 // Global variables for Firebase
 let firebaseInitialized = false;
@@ -168,7 +169,7 @@ async function scrapeWatanoc() {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
-      signal: AbortSignal.timeout(15000)
+      signal: AbortSignal.timeout(20000)
     });
 
     if (!response.ok) {
@@ -184,7 +185,7 @@ async function scrapeWatanoc() {
     
     const articleUrls = [...new Set(matches.map(m => m[1]))]
       .filter(url => url.match(/watanoc\.com\/[\w-]+-[\w-]+/))
-      .slice(0, 3); // Up to 3 articles like manual function
+      .slice(0, 5); // Up to 5 articles
 
     // Fetch each article
     for (const url of articleUrls) {
@@ -193,7 +194,7 @@ async function scrapeWatanoc() {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
-          signal: AbortSignal.timeout(8000)
+          signal: AbortSignal.timeout(10000)
         });
 
         if (articleResponse.ok) {
@@ -251,7 +252,7 @@ async function scrapeTodaii() {
   console.log('[Scheduled] Starting Todaii scraping...');
   
   try {
-    const response = await fetch('https://todaiinews.com/', {
+    const response = await fetch('https://japanese.todaiinews.com/', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
@@ -271,12 +272,11 @@ async function scrapeTodaii() {
     
     const articlePaths = [...new Set(matches.map(m => m[1]))]
       .filter(path => path.match(/^\/[a-z]+-[a-z]+-[a-z]+/))
-      .slice(0, 5) // Find 5 but only process 3
-      .slice(0, 3); // Up to 3 articles like manual function
+      .slice(0, 5); // Up to 5 articles
 
     // Fetch each article
     for (const path of articlePaths) {
-      const url = `https://todaiinews.com${path}`;
+      const url = `https://japanese.todaiinews.com${path}`;
       
       try {
         const articleResponse = await fetch(url, {
@@ -328,31 +328,26 @@ async function scrapeTodaii() {
   }
 }
 
-// Save articles to Firebase
+// Save articles to Firebase with deduplication
 async function saveArticlesToFirebase(articles) {
   if (!firebaseInitialized || !db) {
     throw new Error('Firebase not initialized');
   }
 
-  console.log(`[Scheduled] Saving ${articles.length} articles to Firebase...`);
+  console.log(`[Scheduled] Checking ${articles.length} articles for duplicates...`);
   
-  const batch = db.batch();
-  const articlesRef = db.collection('articles');
+  // Add metadata to articles before deduplication
+  const articlesWithMetadata = articles.map(article => ({
+    ...article,
+    createdAt: new Date(),
+    lastModified: new Date(),
+    views: 0,
+    scraped: true,
+    scheduledScrape: true
+  }));
   
-  for (const article of articles) {
-    const docRef = articlesRef.doc();
-    batch.set(docRef, {
-      ...article,
-      createdAt: admin.firestore.Timestamp.now(),
-      lastModified: admin.firestore.Timestamp.now(),
-      views: 0,
-      scraped: true,
-      scheduledScrape: true
-    });
-  }
-
-  await batch.commit();
-  console.log('[Scheduled] Articles saved successfully');
+  const savedCount = await saveArticlesWithDeduplication(db, articlesWithMetadata, admin);
+  console.log(`[Scheduled] Saved ${savedCount} new articles (${articles.length - savedCount} duplicates skipped)`);
 }
 
 // Main handler for both scheduled and HTTP triggers

@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useStats } from '@/hooks/useStats';
 import { useSettings } from '@/contexts/SettingsContext';
 import { colorPalettes } from '@/utils/themes';
 import { useComponentName } from '@/components/DevHelper';
+import SlideUpModal from '@/components/SlideUpModal';
+import PokedexContent from '@/components/games/PokedexContent';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface StatItem {
   id: string;
@@ -19,13 +22,20 @@ interface StatDisplayProps {
   index: number;
 }
 
-function StatDisplay({ stat, index }: StatDisplayProps) {
+function StatDisplay({ stat, index, onClick }: StatDisplayProps & { onClick?: () => void }) {
+  const isPokemon = stat.id === 'pokemon';
+  
   return (
     <div 
-      className="relative flex flex-col items-center text-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-lg group"
+      className={`relative flex flex-col items-center text-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-lg group ${
+        isPokemon ? 'cursor-pointer' : ''
+      }`}
+      onClick={isPokemon ? onClick : undefined}
     >
       {/* Icon */}
-      <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full bg-white/60 backdrop-blur-sm shadow-lg flex items-center justify-center transition-transform group-hover:scale-110">
+      <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full bg-white/20 backdrop-blur-sm shadow-lg flex items-center justify-center transition-transform ${
+        isPokemon ? 'group-hover:scale-125 group-hover:bg-white/30' : 'group-hover:scale-110'
+      }`}>
         {typeof stat.icon === 'string' ? (
           <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl">{stat.icon}</span>
         ) : (
@@ -37,10 +47,10 @@ function StatDisplay({ stat, index }: StatDisplayProps) {
       
       {/* Value and Label */}
       <div className="flex flex-col items-center">
-        <div className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900">
+        <div className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white">
           {stat.loading ? '...' : stat.value}
         </div>
-        <div className="text-[10px] sm:text-xs md:text-sm text-gray-700">
+        <div className="text-[10px] sm:text-xs md:text-sm text-white/80">
           {stat.label}
         </div>
       </div>
@@ -52,6 +62,8 @@ export function StatsBar({ className = '' }: { className?: string }) {
   const { stats, loading, activities } = useStats();
   const { settings } = useSettings();
   const componentProps = useComponentName('StatsBar');
+  const { user } = useAuth();
+  const [showPokedexModal, setShowPokedexModal] = useState(false);
 
   // Calculate gradient colors
   const colorScheme = settings.colorScheme || 'default';
@@ -146,24 +158,11 @@ export function StatsBar({ className = '' }: { className?: string }) {
   }, [stats, activities, loading]);
 
   return (
-    <div
-      className={`group relative backdrop-blur-md rounded-2xl p-2 sm:p-4 md:p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden ${className}`}
-      style={{
-        border: '2px solid white',
-        boxShadow: 'inset 0 0 0 1px rgb(129, 140, 248), 0 4px 12px rgba(0,0,0,0.1)',
-      }}
-      {...componentProps}
-    >
-      {/* Gradient background layer */}
-      <div 
-        className="absolute inset-0 opacity-40"
-        style={{
-          background: `linear-gradient(90deg, ${gradientColors.primary} 0%, ${gradientColors.accent} 60%, ${gradientColors.secondary} 100%)`,
-        }}
-      />
-      
-      {/* Frosted glass overlay */}
-      <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-sm" />
+    <>
+      <div
+        className={`group relative bg-primary backdrop-blur-md rounded-2xl p-2 sm:p-4 md:p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden ${className}`}
+        {...componentProps}
+      >
       
       {/* Hover glass effect - similar to feature cards */}
       <div className="absolute inset-0 rounded-2xl bg-white/15 dark:bg-white/8 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -172,11 +171,27 @@ export function StatsBar({ className = '' }: { className?: string }) {
       <div className="relative z-10 h-full flex items-center justify-center">
         <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 lg:gap-8 w-full max-w-md">
           {statsItems.map((stat, index) => (
-            <StatDisplay key={stat.id} stat={stat} index={index} />
+            <StatDisplay 
+              key={stat.id} 
+              stat={stat} 
+              index={index} 
+              onClick={stat.id === 'pokemon' ? () => setShowPokedexModal(true) : undefined}
+            />
           ))}
         </div>
       </div>
-    </div>
+      </div>
+
+      {/* Pokedex Modal */}
+      <SlideUpModal
+        isOpen={showPokedexModal}
+        onClose={() => setShowPokedexModal(false)}
+        height="90%"
+        showHandle={true}
+      >
+        <PokedexContent userId={user?.uid} onClose={() => setShowPokedexModal(false)} />
+      </SlideUpModal>
+    </>
   );
 }
 

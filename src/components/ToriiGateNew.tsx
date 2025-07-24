@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { StatsBar } from '@/components/stats/StatsBar';
+import { ProfileTitle } from '@/components/achievements/ProfileTitle';
 
 interface ToriiGateProps {
   profile?: any;
@@ -62,6 +63,12 @@ export function ToriiGate({
             </span>
           </h1>
         </div>
+        
+        {/* Profile Title */}
+        <div className="mb-2">
+          <ProfileTitle className="justify-center" size="md" />
+        </div>
+        
         <p className="text-base md:text-lg text-white">
           {readyText}
         </p>

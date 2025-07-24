@@ -125,23 +125,8 @@ export default function MoodBoardsPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
-          <AdminLayout title="Mood Boards Management">
-            <div className="space-y-6">
+    <AdminLayout title="Mood Boards Management">
+      <div className="space-y-6">
               {/* Page header */}
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -335,10 +320,7 @@ export default function MoodBoardsPage() {
                 onClose={() => setShowGenerateModal(false)}
                 onGenerated={handleGeneratedMoodboard}
               />
-            </div>
-          </AdminLayout>
-        </main>
       </div>
-    </>
+    </AdminLayout>
   );
 }

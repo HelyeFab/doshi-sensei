@@ -49,7 +49,7 @@ async function scrapeWatanoc() {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       },
-      signal: AbortSignal.timeout(15000)
+      signal: AbortSignal.timeout(20000)
     });
 
     if (!response.ok) {
@@ -102,8 +102,8 @@ async function scrapeWatanoc() {
 
     console.log(`✅ [Enhanced] Found ${articleData.length} articles to process`);
 
-    // Now fetch actual content for each article using enhanced extraction (reduced for Netlify limits)
-    for (let i = 0; i < Math.min(articleData.length, 2); i++) {
+    // Now fetch actual content for each article using enhanced extraction
+    for (let i = 0; i < Math.min(articleData.length, 5); i++) {
       const data = articleData[i];
       
       try {
@@ -113,7 +113,7 @@ async function scrapeWatanoc() {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           },
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(10000)
         });
 
         if (!articleResponse.ok) {

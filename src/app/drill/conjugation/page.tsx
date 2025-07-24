@@ -5,18 +5,20 @@ import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList } from '@/types';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import StudyListManager from '@/utils/studyListManager';
 import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
 import { PracticeCache } from '@/utils/practiceCache';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Structured Data for Conjugation Drill Page
 const conjugationDrillStructuredData = {
@@ -65,6 +67,7 @@ export default function ConjugationDrillPage() {
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
   const { isPremium, userType } = useSubscription2();
+  const { track } = useAnalytics();
   const strings = useStrings();
 
   // Drill state
@@ -220,7 +223,7 @@ export default function ConjugationDrillPage() {
     const canProceed = await checkAndTrack('drill_practice');
     if (!canProceed) return;
 
-    Analytics.track('drill_started', {
+    track('drill_started', {
       mode: drillMode,
       wordTypeFilter,
       selectedLists: selectedLists.length,
@@ -291,7 +294,7 @@ export default function ConjugationDrillPage() {
     } else {
       // Track completion
       trackDrillCompleted(user?.uid || 'anonymous', score, questions.length);
-      Analytics.track('drill_completed', {
+      track('drill_completed', {
         score,
         totalQuestions: questions.length,
         accuracy: (score / questions.length) * 100,
@@ -324,15 +327,11 @@ export default function ConjugationDrillPage() {
 
   if (!gameStarted) {
     return (
-      <>
-        {/* Virtual Companion Section */}
-        <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-          <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-        </div>
-
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Conjugation Drill" backHref="/drill" />
+        
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+        <MobileAwareContainer className="container mx-auto px-4 py-8">
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
@@ -341,12 +340,6 @@ export default function ConjugationDrillPage() {
           />
 
           <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
-            <PageHeader 
-              title="Conjugation Drill" 
-              helpKey="drill" 
-              showBackButton={true} 
-              onBackClick={() => router.push('/practice')} 
-            />
 
             {/* Target Icon */}
             <div className="flex justify-center mb-6">
@@ -488,8 +481,8 @@ export default function ConjugationDrillPage() {
               </button>
             </div>
           </main>
-        </div>
-      </>
+        </MobileAwareContainer>
+      </div>
     );
   }
 
@@ -498,15 +491,11 @@ export default function ConjugationDrillPage() {
   const isGameComplete = currentQuestionIndex >= questions.length - 1 && showResult;
 
   return (
-    <>
-      {/* Virtual Companion Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title="Conjugation Drill" backHref="/drill" />
+      
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <main className="max-w-3xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Progress Bar */}
           <div className="mb-8">
@@ -666,7 +655,7 @@ export default function ConjugationDrillPage() {
             </>
           ) : null}
         </main>
-      </div>
+      </MobileAwareContainer>
 
       {/* Save Word Modal */}
       {showSaveModal && wordToSave && (
@@ -678,6 +667,6 @@ export default function ConjugationDrillPage() {
           }}
         />
       )}
-    </>
+    </div>
   );
 }

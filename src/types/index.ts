@@ -227,6 +227,7 @@ export interface AppSettings {
   theme: ThemeMode;
   colorScheme: ColorScheme;
   showRomaji: boolean;
+  showFurigana?: boolean; // Show furigana above kanji
   dailyGoal: number;
   practiceReminders: boolean;
   showCompanion: boolean; // Toggle to show/hide virtual companion
@@ -334,6 +335,9 @@ export interface SavedStudyItem {
     back: string;
     tags: string[];
     media: string[]; // Firebase Storage URLs
+    fields?: string[]; // ALL original fields from Anki
+    rawFront?: string; // Original front before processing
+    rawBack?: string; // Original back before processing
     
     // SRS data preserved from Anki
     srsData: {
@@ -496,6 +500,10 @@ export interface DatabaseSchema {
   // Sentence system
   sentenceLists: import('@/types/sentences').SentenceList;
   savedSentences: import('@/types/sentences').SavedSentence;
+  // Achievement system
+  userStats: import('@/lib/achievements/types').UserStats & { id: string; lastUpdated: string };
+  unlockedAchievements: import('@/lib/achievements/types').UnlockedAchievement;
+  achievementProgress: import('@/lib/achievements/types').AchievementProgress;
 }
 
 // IndexedDB Configuration

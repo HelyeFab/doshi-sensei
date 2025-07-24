@@ -8,6 +8,7 @@ import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { Analytics } from '@/utils/analytics';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 
 export default function MoodBoardPage() {
   const router = useRouter();
@@ -71,10 +72,13 @@ export default function MoodBoardPage() {
   // Loading state
   if (loading || boardsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin text-4xl mb-4">⏳</div>
-          <p className="text-muted-foreground">Loading mood board...</p>
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Loading..." backHref="/kanji-moods" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin text-4xl mb-4">⏳</div>
+            <p className="text-muted-foreground">Loading mood board...</p>
+          </div>
         </div>
       </div>
     );
@@ -83,26 +87,34 @@ export default function MoodBoardPage() {
   // Not found state
   if (notFound || !board) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-6xl mb-4">❓</div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">
-            Mood Board Not Found
-          </h1>
-          <p className="text-muted-foreground mb-6">
-            The mood board you're looking for doesn't exist or has been moved.
-          </p>
-          <button
-            onClick={handleBack}
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Back to Mood Boards
-          </button>
+      <div className="min-h-screen bg-gray-50">
+        <StandardPageHeader title="Not Found" backHref="/kanji-moods" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center max-w-md mx-auto px-4">
+            <div className="text-6xl mb-4">❓</div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">
+              Mood Board Not Found
+            </h1>
+            <p className="text-muted-foreground mb-6">
+              The mood board you're looking for doesn't exist or has been moved.
+            </p>
+            <button
+              onClick={handleBack}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Back to Mood Boards
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   // Render the mood board
-  return <MoodBoard board={board} onBack={handleBack} />;
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <StandardPageHeader title={board.title} backHref="/kanji-moods" />
+      <MoodBoard board={board} onBack={handleBack} />
+    </div>
+  );
 }

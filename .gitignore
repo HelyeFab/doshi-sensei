@@ -48,6 +48,12 @@ next-env.d.ts
 firebase-service-account.json
 
 # Generated PWA files
+**/public/workbox-*.js
+**/public/sw.js
+**/public/worker-*.js
+
+# Keep SQL.js WASM file for Anki import
+!public/sql-wasm.wasm
 public/sw.js
 public/workbox-*.js
 
@@ -87,4 +93,10 @@ public/audio/kanji/*/onyomi/*.mp3
 public/audio/kanji/*/kunyomi/*.mp3
 # Keep the index file
 !public/audio/kanji/index.json
+
+# Anki files (large files)
+public/anki/*.apkg
+
+# Test files
+test-indexeddb.html
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { PageHeader } from '@/components/PageHeader';
+import { StandardPageHeader } from '@/components/StandardPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -13,6 +13,7 @@ import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
 import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { KanaChar } from '@/components/games/KanaDropGame/types';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Structured Data for Hiragana Page
 const hiraganaStructuredData = {
@@ -172,31 +173,23 @@ export default function HiraganaPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
+    <div className="min-h-screen bg-gray-50">
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(hiraganaStructuredData),
+        }}
+      />
 
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
+      <StandardPageHeader 
+        title="Hiragana Charts" 
+        backHref="/practice" 
+      />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        {/* Structured Data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(hiraganaStructuredData),
-          }}
-        />
-
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
-          {/* Page Header */}
-          <PageHeader title="Hiragana Charts" helpKey="kana" showBackButton={true} onBackClick={() => router.push('/practice')} />
 
           {/* Target Icon */}
           <div className="flex justify-center mb-6">
@@ -295,7 +288,7 @@ export default function HiraganaPage() {
             </div>
           </div>
         </main>
-      </div>
+      </MobileAwareContainer>
 
       {/* Study Modal */}
       {showKanaStudyModal && (
@@ -314,6 +307,6 @@ export default function HiraganaPage() {
           selectedKana={selectedKanaForGame}
         />
       )}
-    </>
+    </div>
   );
 }

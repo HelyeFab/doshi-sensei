@@ -11,6 +11,7 @@ import { storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 interface EditResourcePageProps {
   params: Promise<{
@@ -243,35 +244,33 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
   const readingTime = calculateReadingTime(formData.content);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Edit Resource</h1>
-          <p className="text-muted-foreground mt-1">Editing: {resource.title}</p>
+    <AdminLayout title="Edit Resource">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Description and Action Buttons */}
+        <div className="flex justify-between items-center">
+          <p className="text-muted-foreground">Editing: {resource.title}</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setShowPreview(!showPreview)}
+              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90"
+            >
+              {showPreview ? 'Edit' : 'Preview'}
+            </button>
+            <button
+              onClick={() => window.open(`/resources/${resource.slug}`, '_blank')}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+            >
+              View Live
+            </button>
+            <button
+              onClick={() => router.push('/admin/resources')}
+              className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setShowPreview(!showPreview)}
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90"
-          >
-            {showPreview ? 'Edit' : 'Preview'}
-          </button>
-          <button
-            onClick={() => window.open(`/resources/${resource.slug}`, '_blank')}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-          >
-            View Live
-          </button>
-          <button
-            onClick={() => router.push('/admin/resources')}
-            className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
@@ -637,6 +636,7 @@ export default function EditResourcePage({ params }: EditResourcePageProps) {
           loading={false}
         />
       )}
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

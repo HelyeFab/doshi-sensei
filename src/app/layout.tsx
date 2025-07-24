@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lato, Dancing_Script } from "next/font/google";
+import { Geist, Geist_Mono, Rubik, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -25,6 +25,8 @@ import { ModalProvider } from "@/contexts/ModalContext";
 import { KanjiSelectionProvider } from '@/contexts/KanjiSelectionContext';
 import { CacheSystemInitializer } from '@/components/CacheSystemInitializer';
 import { DevHelper } from '@/components/DevHelper';
+import { AchievementToastManager } from '@/components/achievements/AchievementToast';
+import { AchievementInitializer } from '@/components/achievements/AchievementInitializer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,10 +38,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const lato = Lato({
-  variable: "--font-lato",
+const rubik = Rubik({
+  variable: "--font-rubik",
   subsets: ["latin"],
-  weight: ["300", "400", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const savoyeFont = Dancing_Script({
@@ -169,7 +171,7 @@ export default function RootLayout({
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${lato.variable} ${savoyeFont.variable} antialiased min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${savoyeFont.variable} antialiased min-h-screen`}
         suppressHydrationWarning
       >
         <EnvProvider>
@@ -185,21 +187,26 @@ export default function RootLayout({
                           <ClientThemeWrapper>
                             <PWAWrapper>
                               <OnboardingWrapper>
-                                <div className="min-h-screen bg-background text-foreground">
-                                  <OfflineNotification />
-                                  <JMdictInitializer />
-                                  <CacheSystemInitializer />
-                                  {children}
-                                  <StunningBottomNavbar />
-                                  <MobileMenu />
-                                  <DesktopNavMenu />
-                                  <PWAInstaller />
-                                  <PWAUpdateNotification />
-                                  <FloatingDonateButton />
-                                  <CompanionTrigger />
-                                  <ToastContainer />
-                                  <DevHelper />
-                                </div>
+                                <AchievementToastManager>
+                                  <div className="min-h-screen bg-background text-foreground">
+                                    <OfflineNotification />
+                                    <JMdictInitializer />
+                                    <CacheSystemInitializer />
+                                    <AchievementInitializer />
+                                    <div className="mobile-nav-padding">
+                                      {children}
+                                    </div>
+                                    <StunningBottomNavbar />
+                                    <MobileMenu />
+                                    <DesktopNavMenu />
+                                    <PWAInstaller />
+                                    <PWAUpdateNotification />
+                                    <FloatingDonateButton />
+                                    <CompanionTrigger />
+                                    <ToastContainer />
+                                    <DevHelper />
+                                  </div>
+                                </AchievementToastManager>
                               </OnboardingWrapper>
                             </PWAWrapper>
                           </ClientThemeWrapper>

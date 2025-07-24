@@ -15,6 +15,7 @@ import { CheckCircle2, XCircle, AlertCircle, RefreshCw, Info, HelpCircle } from 
 import { SimpleTooltip } from '@/components/ui/tooltip';
 import { useStrings } from '@/contexts/LanguageContext';
 import StatsMigration from '@/components/admin/StatsMigration';
+import CollectionMigration from '@/components/admin/CollectionMigration';
 
 export default function AdminDebugPage() {
   const { user } = useAuth();
@@ -75,8 +76,8 @@ export default function AdminDebugPage() {
         };
       });
       
-      // Check main database (using version 5 to match the actual DB version)
-      const mainDBRequest = window.indexedDB.open('DoshiSenseiDB', 5);
+      // Check main database (using version 7 to match the actual DB version)
+      const mainDBRequest = window.indexedDB.open('DoshiSenseiDB', 7);
       const mainDBInfo = await new Promise<string>((resolve, reject) => {
         mainDBRequest.onsuccess = () => {
           const db = mainDBRequest.result;
@@ -184,7 +185,15 @@ export default function AdminDebugPage() {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       console.error('Firebase Storage check failed:', errorMsg);
-      setSystemStatus(prev => ({ ...prev, firebaseStorage: { status: 'error', details: errorMsg } }));
+      // Note: Firebase Storage is not used for media in this app (we use local IndexedDB storage)
+      // So this error is not critical
+      setSystemStatus(prev => ({ 
+        ...prev, 
+        firebaseStorage: { 
+          status: 'error', 
+          details: `${errorMsg} (Note: Not used for media storage - using local IndexedDB instead)` 
+        } 
+      }));
     }
   };
 
@@ -350,10 +359,11 @@ export default function AdminDebugPage() {
 
         {/* Debug Tools Tabs */}
         <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="stats">Stats Debug Panel</TabsTrigger>
             <TabsTrigger value="console">Console Monitor</TabsTrigger>
-            <TabsTrigger value="migration">Migration Tools</TabsTrigger>
+            <TabsTrigger value="migration">Stats Migration</TabsTrigger>
+            <TabsTrigger value="collections">Collections Migration</TabsTrigger>
           </TabsList>
           
           <TabsContent value="stats" className="space-y-4">
@@ -396,6 +406,10 @@ export default function AdminDebugPage() {
 
           <TabsContent value="migration" className="space-y-4">
             <StatsMigration />
+          </TabsContent>
+          
+          <TabsContent value="collections" className="space-y-4">
+            <CollectionMigration />
           </TabsContent>
         </Tabs>
 

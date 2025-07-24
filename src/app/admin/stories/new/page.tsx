@@ -11,6 +11,7 @@ import { storyManager } from '@/utils/storyManager';
 import { marked } from 'marked';
 import { validateStoryJson, parseStoryJson, StoryJsonImport } from '@/utils/storyJsonValidator';
 import { useStrings } from '@/contexts/LanguageContext';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 interface StoryFormData {
   title: string;
@@ -494,63 +495,40 @@ export default function NewStoryPage() {
   const currentPage = formData.pages[currentPageIndex];
 
   return (
-    <>
-      {/* Top Gradient Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        <div className="max-w-6xl mx-auto space-y-6 mt-8 mb-8">
-          {/* Header */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => router.push('/admin/stories')}
-                className="mr-2 p-2 rounded-full hover:bg-muted transition-colors"
-                title="Back to Stories List"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <h1 className="text-3xl font-bold text-foreground">Create New Story</h1>
-            </div>
-
-            {/* Action Buttons - Moved to separate row */}
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => setShowJsonImport(!showJsonImport)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              >
-                Import from JSON
-              </button>
-              {(formData.title || formData.titleJa || formData.pages.some(p => p.text)) && (
-                <button
-                  type="button"
-                  onClick={clearDraft}
-                  className="px-4 py-2 bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/30"
-                >
-                  Clear Draft
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setShowPreview(!showPreview)}
-                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90"
-              >
-                {showPreview ? 'Edit' : 'Preview'}
-              </button>
-              <button
-                onClick={() => router.push('/admin/stories')}
-                className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+    <AdminLayout title="Create New Story">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setShowJsonImport(!showJsonImport)}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Import from JSON
+          </button>
+          {(formData.title || formData.titleJa || formData.pages.some(p => p.text)) && (
+            <button
+              type="button"
+              onClick={clearDraft}
+              className="px-4 py-2 bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/30"
+            >
+              Clear Draft
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setShowPreview(!showPreview)}
+            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90"
+          >
+            {showPreview ? 'Edit' : 'Preview'}
+          </button>
+          <button
+            onClick={() => router.push('/admin/stories')}
+            className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90"
+          >
+            Cancel
+          </button>
+        </div>
 
           {/* JSON Import Section */}
           {showJsonImport && (
@@ -1130,8 +1108,7 @@ export default function NewStoryPage() {
               </button>
             </div>
           </form>
-        </div>
       </div>
-    </>
+    </AdminLayout>
   );
 }

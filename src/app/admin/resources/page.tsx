@@ -9,6 +9,7 @@ import { getAllResourcePosts, deleteResourcePost, getResourceStats } from '@/uti
 import { formatDistanceToNow } from 'date-fns';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 export default function AdminResourcesPage() {
   const strings = useStrings();
@@ -163,37 +164,11 @@ export default function AdminResourcesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:px-6 md:py-8 max-w-7xl">
-      {/* Header */}
-      <div className="flex flex-col gap-4 mb-6">
-        {/* Back button */}
-        <button
-          onClick={() => router.push('/admin')}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors w-fit"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          <span className="text-sm md:text-base">{strings.admin.backToDashboard}</span>
-        </button>
-
-        {/* Title and action button */}
+    <AdminLayout title={strings.admin.resources.title}>
+      <div className="space-y-6">
+        {/* Description and action button */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{strings.admin.resources.title}</h1>
-            <p className="text-sm md:text-base text-muted-foreground mt-1">{strings.admin.resources.description}</p>
-          </div>
+          <p className="text-sm md:text-base text-muted-foreground">{strings.admin.resources.description}</p>
           <button
             onClick={() => router.push('/admin/resources/new')}
             className="w-full sm:w-auto px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm md:text-base"
@@ -201,11 +176,10 @@ export default function AdminResourcesPage() {
             + {strings.admin.resources.newResource}
           </button>
         </div>
-      </div>
 
-      {/* Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+        {/* Stats Cards */}
+        {stats && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
             <div className="text-xl md:text-2xl font-bold text-primary">{stats.totalPosts}</div>
             <div className="text-xs md:text-sm text-muted-foreground">{strings.admin.resources.totalPosts}</div>
@@ -225,8 +199,8 @@ export default function AdminResourcesPage() {
         </div>
       )}
 
-      {/* Filters and Search */}
-      <div className="bg-card rounded-lg p-4 md:p-6 border border-border mb-6">
+        {/* Filters and Search */}
+        <div className="bg-card rounded-lg p-4 md:p-6 border border-border">
         <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           <div className="flex-1">
             <input
@@ -271,8 +245,8 @@ export default function AdminResourcesPage() {
         )}
       </div>
 
-      {/* Resources Table/Cards */}
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
+        {/* Resources Table/Cards */}
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-muted-foreground">{strings.admin.resources.loadingResources}</div>
         ) : filteredResources.length === 0 ? (
@@ -431,8 +405,8 @@ export default function AdminResourcesPage() {
         )}
       </div>
 
-      {/* Confirmation Dialog */}
-      <ConfirmationDialog
+        {/* Confirmation Dialog */}
+        <ConfirmationDialog
         isOpen={confirmDialog.isOpen}
         title={confirmDialog.title}
         message={confirmDialog.message}
@@ -444,8 +418,8 @@ export default function AdminResourcesPage() {
         loading={confirmDialog.loading}
       />
 
-      {/* Error Message Modal */}
-      {errorMessage && (
+        {/* Error Message Modal */}
+        {errorMessage && (
         <ConfirmationDialog
           isOpen={!!errorMessage}
           title={strings.admin.resources.error}
@@ -458,6 +432,7 @@ export default function AdminResourcesPage() {
           loading={false}
         />
       )}
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

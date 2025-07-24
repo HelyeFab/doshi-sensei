@@ -128,7 +128,8 @@ exports.handler = async (event, context) => {
       { function: 'scrape-nhk-easy', name: 'NHK Easy' },
       { function: 'scrape-nhk-improved', name: 'NHK News' },
       { function: 'scrape-yahoo-news', name: 'Yahoo News' },
-      { function: 'scrape-mainichi-shogakusei', name: 'Mainichi Elementary' }
+      { function: 'scrape-mainichi-shogakusei', name: 'Mainichi Elementary' },
+      { function: 'scrape-mainichi-news', name: 'Mainichi Shimbun' }
     ];
 
     // Run all scrapers in parallel

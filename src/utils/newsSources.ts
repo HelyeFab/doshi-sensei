@@ -62,6 +62,14 @@ export const NEWS_SOURCES: Record<string, NewsSourceConfig> = {
     netlifyFunction: 'scrape-mainichi-shogakusei',
     emoji: '🎒',
     description: 'Elementary school newspaper with furigana (N5-N4)'
+  },
+  mainichiNews: {
+    id: 'mainichiNews',
+    name: 'Mainichi Shimbun',
+    displayName: '毎日新聞',
+    netlifyFunction: 'scrape-mainichi-news',
+    emoji: '📰',
+    description: 'Major Japanese newspaper (N3 level)'
   }
 };
 
@@ -185,6 +193,13 @@ export async function triggerMainichiShogakuseiScraping(): Promise<ScrapingResul
   return triggerSourceScraping(NEWS_SOURCES.mainichiShogakusei);
 }
 
+/**
+ * Trigger Mainichi News (regular) article scraping
+ */
+export async function triggerMainichiNewsScraping(): Promise<ScrapingResult> {
+  return triggerSourceScraping(NEWS_SOURCES.mainichiNews);
+}
+
 
 /**
  * Trigger all sources sequentially
@@ -196,6 +211,7 @@ export async function triggerAllSourcesScraping(): Promise<{
   nhkNews: ScrapingResult;
   yahooNews: ScrapingResult;
   mainichiShogakusei: ScrapingResult;
+  mainichiNews: ScrapingResult;
   overall: {
     totalArticles: number;
     successfulSources: number;
@@ -208,13 +224,14 @@ export async function triggerAllSourcesScraping(): Promise<{
   const startTime = Date.now();
 
   // Run all enhanced scrapers in parallel for faster execution
-  const [watanoc, todaii, nhkEasy, nhkNews, yahooNews, mainichiShogakusei] = await Promise.allSettled([
+  const [watanoc, todaii, nhkEasy, nhkNews, yahooNews, mainichiShogakusei, mainichiNews] = await Promise.allSettled([
     triggerWatanocScraping(),
     triggerTodaiiScraping(),
     triggerNHKEasyScraping(),
     triggerNHKNewsScraping(),
     triggerYahooNewsScraping(),
-    triggerMainichiShogakuseiScraping()
+    triggerMainichiShogakuseiScraping(),
+    triggerMainichiNewsScraping()
   ]);
 
   // Extract results (handle promise rejections)
@@ -248,13 +265,18 @@ export async function triggerAllSourcesScraping(): Promise<{
     timeElapsed: 0, source: 'mainichiShogakusei', nextScrapingTime: new Date()
   };
 
+  const mainichiNewsResult = mainichiNews.status === 'fulfilled' ? mainichiNews.value : {
+    success: false, articlesScraped: 0, errors: [{ message: 'Promise rejected', type: 'unknown' as const, timestamp: new Date() }],
+    timeElapsed: 0, source: 'mainichiNews', nextScrapingTime: new Date()
+  };
+
   const totalTimeElapsed = Math.round((Date.now() - startTime) / 1000);
-  const allResults = [watanocResult, todaiiResult, nhkEasyResult, nhkNewsResult, yahooNewsResult, mainichiShogakuseiResult];
+  const allResults = [watanocResult, todaiiResult, nhkEasyResult, nhkNewsResult, yahooNewsResult, mainichiShogakuseiResult, mainichiNewsResult];
   const totalArticles = allResults.reduce((sum, r) => sum + r.articlesScraped, 0);
   const successfulSources = allResults.filter(r => r.success).length;
-  const failedSources = 6 - successfulSources;
+  const failedSources = 7 - successfulSources;
 
-  console.log(`✅ All enhanced sources scraping completed. Total: ${totalArticles} articles from ${successfulSources}/6 sources`);
+  console.log(`✅ All enhanced sources scraping completed. Total: ${totalArticles} articles from ${successfulSources}/7 sources`);
 
   return {
     watanoc: watanocResult,
@@ -263,6 +285,7 @@ export async function triggerAllSourcesScraping(): Promise<{
     nhkNews: nhkNewsResult,
     yahooNews: yahooNewsResult,
     mainichiShogakusei: mainichiShogakuseiResult,
+    mainichiNews: mainichiNewsResult,
     overall: {
       totalArticles,
       successfulSources,
@@ -309,6 +332,7 @@ export default {
   triggerNHKNewsScraping,
   triggerYahooNewsScraping,
   triggerMainichiShogakuseiScraping,
+  triggerMainichiNewsScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult,

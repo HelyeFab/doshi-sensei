@@ -14,6 +14,7 @@ import {
   triggerNHKNewsScraping,
   triggerYahooNewsScraping,
   triggerMainichiShogakuseiScraping,
+  triggerMainichiNewsScraping,
   triggerAllSourcesScraping,
   NEWS_SOURCES,
   formatScrapingResult
@@ -136,6 +137,24 @@ export default function ArticlesManagementPage() {
     }
   };
 
+  const handleMainichiNewsScraping = async () => {
+    setLoading(true);
+    setStatus('📰 Scraping Mainichi Shimbun...');
+
+    try {
+      const result = await triggerMainichiNewsScraping();
+      setStatus(formatScrapingResult(result, NEWS_SOURCES.mainichiNews));
+
+      if (result.success) {
+        setTimeout(loadStats, 2000);
+      }
+    } catch (error) {
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleAllSourcesScraping = async () => {
     setLoading(true);
@@ -153,7 +172,8 @@ export default function ArticlesManagementPage() {
         formatScrapingResult(results.nhkNews, NEWS_SOURCES.nhkNews),
         formatScrapingResult(results.yahooNews, NEWS_SOURCES.yahooNews),
         formatScrapingResult(results.mainichiShogakusei, NEWS_SOURCES.mainichiShogakusei),
-        `\n🎉 Overall: ${overall.totalArticles} total articles from ${overall.successfulSources}/6 sources (${overall.totalTimeElapsed}s)`
+        formatScrapingResult(results.mainichiNews, NEWS_SOURCES.mainichiNews),
+        `\n🎉 Overall: ${overall.totalArticles} total articles from ${overall.successfulSources}/7 sources (${overall.totalTimeElapsed}s)`
       ];
 
       setStatus(statusMessages.join('\n'));
@@ -240,28 +260,7 @@ export default function ArticlesManagementPage() {
   }, []);
 
   return (
-    <AdminLayout title={strings.admin.articlesManagement} hideHeader={true}>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
-      {/* Back Button */}
-      <div className="px-4 sm:px-6 pt-4 mb-6">
-        <button
-          onClick={() => router.push('/admin')}
-          className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors inline-flex items-center justify-center"
-          aria-label="Back to admin dashboard"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      </div>
+    <AdminLayout title={strings.admin.articlesManagement}>
 
       <div className="space-y-6">
         {/* Controls */}
@@ -341,6 +340,18 @@ export default function ArticlesManagementPage() {
                 <div className="text-left">
                   <div className="font-medium">{NEWS_SOURCES.mainichiShogakusei.name}</div>
                   <div className="text-xs opacity-90">{NEWS_SOURCES.mainichiShogakusei.description}</div>
+                </div>
+              </button>
+
+              <button
+                onClick={handleMainichiNewsScraping}
+                disabled={loading}
+                className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className="text-lg">{NEWS_SOURCES.mainichiNews.emoji}</span>
+                <div className="text-left">
+                  <div className="font-medium">{NEWS_SOURCES.mainichiNews.name}</div>
+                  <div className="text-xs opacity-90">{NEWS_SOURCES.mainichiNews.description}</div>
                 </div>
               </button>
 

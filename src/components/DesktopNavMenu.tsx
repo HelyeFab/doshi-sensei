@@ -9,7 +9,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import PokedexModal from '@/components/games/PokedexModal';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useStats } from '@/hooks/useStats';
 
@@ -23,7 +22,6 @@ interface NavItem {
 
 export default function DesktopNavMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showPokedex, setShowPokedex] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   const { profile } = useUserProfile();
@@ -33,16 +31,11 @@ export default function DesktopNavMenu() {
   const { canInstall, isInstalled, isInstalling, install } = usePWAInstall();
   const { stats } = useStats();
 
-  const togglePokedex = () => {
-    setIsOpen(false);
-    setShowPokedex(true);
-  };
 
   // Create menu items matching mobile menu
   const menuItems = [
     { label: strings.nav.home || 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: strings.nav.adminDashboard || 'Admin Dashboard', icon: '🛡️', href: '/admin' }] : []),
-    ...(stats.pokemonCaught > 0 ? [{ label: strings.nav.pokedex || 'Pokedex', icon: '/Pokedex.png', href: '#', action: 'pokedex', count: stats.pokemonCaught }] : []),
     { label: strings.nav.practice || 'Practice', icon: '📚', href: '/practice' },
     { label: strings.nav.drill || 'Drill', icon: '⚡', href: '/drill' },
     { label: strings.nav.vocab || 'Vocabulary', icon: '📖', href: '/vocabulary' },
@@ -95,27 +88,6 @@ export default function DesktopNavMenu() {
               {menuItems.map((item, index) => {
                 const isActive = pathname === item.href || (item.href === '/kanji-moods' && pathname.startsWith('/kanji-moods'));
                 
-                if (item.action === 'pokedex') {
-                  return (
-                    <button
-                      key={index}
-                      onClick={togglePokedex}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
-                    >
-                      {item.icon.startsWith('/') ? (
-                        <img src={item.icon} alt={item.label} className="w-5 h-5 object-contain" />
-                      ) : (
-                        <span className="text-lg">{item.icon}</span>
-                      )}
-                      <span className="font-medium">{item.label}</span>
-                      {item.count && (
-                        <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                          {item.count}
-                        </span>
-                      )}
-                    </button>
-                  );
-                }
                 
                 return (
                   <Link
@@ -172,13 +144,6 @@ export default function DesktopNavMenu() {
         </>
       )}
 
-      {/* Pokedex Modal */}
-      {showPokedex && (
-        <PokedexModal
-          isOpen={showPokedex}
-          onClose={() => setShowPokedex(false)}
-        />
-      )}
     </div>
   );
 }

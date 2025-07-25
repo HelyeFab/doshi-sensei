@@ -106,11 +106,10 @@ export function useSubscription2(): UseSubscription2Return {
         }),
       });
       
-      const { sessionId } = await response.json();
+      const { sessionUrl } = await response.json();
       
-      if (sessionId) {
-        const stripe = await loadStripe(STRIPE_CONFIG.publishableKey);
-        await stripe?.redirectToCheckout({ sessionId });
+      if (sessionUrl) {
+        window.location.href = sessionUrl;
       }
     } catch (error) {
       console.error('Error creating checkout session:', error);
@@ -125,6 +124,7 @@ export function useSubscription2(): UseSubscription2Return {
     }
     
     try {
+      const idToken = await user.getIdToken();
       const response = await fetch('/api/cancel-subscription', {
         method: 'POST',
         headers: {
@@ -132,6 +132,7 @@ export function useSubscription2(): UseSubscription2Return {
         },
         body: JSON.stringify({
           subscriptionId: subscription.stripeSubscriptionId,
+          idToken,
         }),
       });
       

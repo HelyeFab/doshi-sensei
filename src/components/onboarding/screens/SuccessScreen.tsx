@@ -70,37 +70,37 @@ export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
           </div>
 
           <div className="space-y-4">
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-3xl font-bold text-white">
               {tutorial.success.title}
             </h1>
-            <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            <p className="text-lg text-white/90 max-w-md mx-auto">
               {tutorial.success.description}
-              <span className="font-semibold text-primary"> {tutorial.success.emphasis} </span>
+              <span className="font-semibold text-white"> {tutorial.success.emphasis} </span>
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-6 space-y-3 max-w-2xl md:max-w-md mx-auto">
-            <h3 className="font-semibold text-foreground">{tutorial.success.checklistHeader}</h3>
+          <div className="bg-white/10 border border-white/20 rounded-lg p-6 space-y-3 max-w-2xl md:max-w-md mx-auto">
+            <h3 className="font-semibold text-white">{tutorial.success.checklistHeader}</h3>
             <div className="grid grid-cols-1 gap-2 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>{tutorial.success.checklistItems.vocabulary}</span>
+                <span className="text-white/90">{tutorial.success.checklistItems.vocabulary}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>{tutorial.success.checklistItems.conjugations}</span>
+                <span className="text-white/90">{tutorial.success.checklistItems.conjugations}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>{tutorial.success.checklistItems.games}</span>
+                <span className="text-white/90">{tutorial.success.checklistItems.games}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>{tutorial.success.checklistItems.reading}</span>
+                <span className="text-white/90">{tutorial.success.checklistItems.reading}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-green-400">✓</span>
-                <span>{tutorial.success.checklistItems.tracking}</span>
+                <span className="text-white/90">{tutorial.success.checklistItems.tracking}</span>
               </div>
             </div>
           </div>

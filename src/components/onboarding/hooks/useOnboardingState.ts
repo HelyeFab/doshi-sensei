@@ -136,6 +136,17 @@ export function useOnboardingState() {
     });
   }, [trackScreenView]);
 
+  // Skip to a specific screen
+  const skipToScreen = useCallback((screenIndex: number) => {
+    setState(prev => {
+      trackScreenView(screenIndex, getScreenName(screenIndex));
+      return {
+        ...prev,
+        currentScreen: screenIndex
+      };
+    });
+  }, [trackScreenView]);
+
   // Update interaction state
   const updateInteraction = useCallback((interaction: keyof OnboardingState['userInteractions'], value: boolean) => {
     setState(prev => ({
@@ -252,6 +263,7 @@ export function useOnboardingState() {
     analytics,
     nextScreen,
     previousScreen,
+    skipToScreen,
     updateInteraction,
     updateAnimationState,
     completeOnboarding,

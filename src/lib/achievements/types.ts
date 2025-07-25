@@ -64,8 +64,9 @@ export interface Achievement {
   isHidden?: boolean;
   unlockHint?: string;
   
-  // For complex conditions (future use)
+  // For complex conditions
   conditionFunction?: string; // Serialized function
+  minActivityRequirement?: boolean; // For achievements that require actual activity
 }
 
 export interface UnlockedAchievement {

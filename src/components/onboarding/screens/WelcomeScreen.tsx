@@ -34,34 +34,37 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
           <span className="font-semibold text-white"> {tutorial.welcome.emphasis} </span>
         </p>
         <div className="bg-white/10 border border-white/20 rounded-lg p-4 max-w-xl md:max-w-md mx-auto">
-          <p className="text-sm text-white font-medium mb-2">
+          <p className="text-sm text-white font-medium mb-2 text-center">
             {tutorial.welcome.features.header}
           </p>
           <div className="text-sm text-white/90 font-medium space-y-1">
-            <div>{tutorial.welcome.features.conjugations}</div>
-            <div>{tutorial.welcome.features.vocabulary}</div>
-            <div>{tutorial.welcome.features.textbookVocab}</div>
-            <div>{tutorial.welcome.features.kanji}</div>
-            <div className="flex items-start gap-1">
+            <div className="text-center">{tutorial.welcome.features.conjugations}</div>
+            <div className="text-center">{tutorial.welcome.features.vocabulary}</div>
+            <div className="text-center">{tutorial.welcome.features.textbookVocab}</div>
+            <div className="text-center">{tutorial.welcome.features.kanji}</div>
+            <div className="flex items-center justify-center gap-1">
               <Image 
                 src="/flat-icons/188915-pokemon-go/png/pokeball.png" 
                 alt="Pokéball" 
                 width={16} 
                 height={16}
-                className="mt-0.5 flex-shrink-0"
+                className="flex-shrink-0"
               />
-              <span>{tutorial.welcome.features.games.replace('🎮 ', '')}</span>
+              <span className="text-center max-w-[300px]">
+                Learn through games<br />
+                (Kanji Quest lets you catch 1000+ Pokémon!)
+              </span>
             </div>
-            <div>{tutorial.welcome.features.reading}</div>
-            <div className="flex items-start gap-1">
+            <div className="text-center">{tutorial.welcome.features.reading}</div>
+            <div className="flex items-center justify-center gap-1">
               <Image 
                 src="/flat-icons/ui/youtube.svg" 
                 alt="YouTube" 
                 width={16} 
                 height={16}
-                className="mt-0.5 flex-shrink-0"
+                className="flex-shrink-0"
               />
-              <span>{tutorial.welcome.features.youtubeShadowing.replace('🎬 ', '')}</span>
+              <span className="text-center">{tutorial.welcome.features.youtubeShadowing.replace('🎬 ', '')}</span>
             </div>
           </div>
         </div>

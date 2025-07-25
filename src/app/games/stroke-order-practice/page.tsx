@@ -391,7 +391,7 @@ export default function StrokeOrderPracticePage() {
         onClose={() => setShowInstructions(false)}
         title="How to Play Stroke Order Practice"
         height="auto"
-        showHandle={true}
+        showHandle={false}
       >
         <div className="space-y-8">
           {/* Main Instructions */}

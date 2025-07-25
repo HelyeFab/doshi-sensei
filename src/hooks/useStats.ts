@@ -40,6 +40,9 @@ export function useStats(): UseStatsReturn {
 
         // Guest users should not have persistent stats
         if (!profile) {
+          // Initialize stats tracker for guest user (null user)
+          await statsTracker.initialize(null, false);
+          
           // For guest users, stats are in-memory only
           setStats(statsTracker.getStats());
           setActivities({

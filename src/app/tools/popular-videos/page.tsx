@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
-import { Play, TrendingUp, Clock, Users, Calendar, ExternalLink, Sparkles, Fire, Award } from 'lucide-react';
+import { Play, TrendingUp, Clock, Users, Calendar, ExternalLink, Sparkles, Flame, Award } from 'lucide-react';
 import { useAccess } from '@/hooks/useAccess';
 import { useRouter } from 'next/navigation';
 

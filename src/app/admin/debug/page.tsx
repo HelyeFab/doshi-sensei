@@ -16,6 +16,7 @@ import { SimpleTooltip } from '@/components/ui/tooltip';
 import { useStrings } from '@/contexts/LanguageContext';
 import StatsMigration from '@/components/admin/StatsMigration';
 import CollectionMigration from '@/components/admin/CollectionMigration';
+import { AchievementDebugPanel } from '@/components/achievements/AchievementDebugPanel';
 
 export default function AdminDebugPage() {
   const { user } = useAuth();
@@ -76,8 +77,8 @@ export default function AdminDebugPage() {
         };
       });
       
-      // Check main database (using version 7 to match the actual DB version)
-      const mainDBRequest = window.indexedDB.open('DoshiSenseiDB', 7);
+      // Check main database (using version 8 to match the actual DB version)
+      const mainDBRequest = window.indexedDB.open('DoshiSenseiDB', 8);
       const mainDBInfo = await new Promise<string>((resolve, reject) => {
         mainDBRequest.onsuccess = () => {
           const db = mainDBRequest.result;
@@ -359,11 +360,12 @@ export default function AdminDebugPage() {
 
         {/* Debug Tools Tabs */}
         <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="stats">Stats Debug Panel</TabsTrigger>
             <TabsTrigger value="console">Console Monitor</TabsTrigger>
             <TabsTrigger value="migration">Stats Migration</TabsTrigger>
             <TabsTrigger value="collections">Collections Migration</TabsTrigger>
+            <TabsTrigger value="achievements">Achievements</TabsTrigger>
           </TabsList>
           
           <TabsContent value="stats" className="space-y-4">
@@ -410,6 +412,25 @@ export default function AdminDebugPage() {
           
           <TabsContent value="collections" className="space-y-4">
             <CollectionMigration />
+          </TabsContent>
+          
+          <TabsContent value="achievements" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  Achievement System Debug
+                  <SimpleTooltip content="Debug and manage achievement data">
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </SimpleTooltip>
+                </CardTitle>
+                <CardDescription>
+                  Clear achievement data and debug the achievement system
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AchievementDebugPanel />
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
 

@@ -3,10 +3,12 @@
  * Allows runtime configuration of user limits through admin dashboard
  */
 
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { EntitlementRule } from './types';
 import { ENTITLEMENT_RULES as DEFAULT_RULES } from './rules';
+
+// Dynamic import for server/client compatibility
+let firestoreModule: any = null;
+let dbInstance: any = null;
 
 const RULES_DOC_ID = 'entitlement_rules_v1';
 
@@ -23,6 +25,48 @@ export class DynamicEntitlementRules {
   }
 
   /**
+   * Initialize Firestore based on environment
+   */
+  private async initFirestore() {
+    if (dbInstance) return dbInstance;
+
+    try {
+      if (typeof window !== 'undefined') {
+        // Client-side: use regular Firebase
+        const { getFirestore, doc, getDoc, setDoc } = await import('firebase/firestore');
+        const { db } = await import('@/lib/firebase');
+        firestoreModule = { doc, getDoc, setDoc };
+        dbInstance = db;
+      } else {
+        // Server-side: use Firebase Admin
+        const { getFirebaseAdmin } = await import('@/lib/firebase-admin-safe');
+        const admin = await getFirebaseAdmin();
+        dbInstance = admin.firestore();
+        
+        // Create wrapper functions for admin SDK
+        firestoreModule = {
+          doc: (db: any, ...pathSegments: string[]) => db.doc(pathSegments.join('/')),
+          getDoc: async (docRef: any) => {
+            const snapshot = await docRef.get();
+            return {
+              exists: () => snapshot.exists,
+              data: () => snapshot.data()
+            };
+          },
+          setDoc: async (docRef: any, data: any) => {
+            await docRef.set(data);
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Failed to initialize Firestore:', error);
+      throw error;
+    }
+    
+    return dbInstance;
+  }
+
+  /**
    * Get current rules (from Firestore or fallback to defaults)
    */
   async getRules(): Promise<EntitlementRule[]> {
@@ -32,7 +76,8 @@ export class DynamicEntitlementRules {
     }
 
     try {
-      const rulesDoc = await getDoc(doc(db, 'config', RULES_DOC_ID));
+      await this.initFirestore();
+      const rulesDoc = await firestoreModule.getDoc(firestoreModule.doc(dbInstance, 'config', RULES_DOC_ID));
       
       if (rulesDoc.exists()) {
         const data = rulesDoc.data();
@@ -56,7 +101,8 @@ export class DynamicEntitlementRules {
    */
   async saveRules(rules: EntitlementRule[]): Promise<void> {
     try {
-      await setDoc(doc(db, 'config', RULES_DOC_ID), {
+      await this.initFirestore();
+      await firestoreModule.setDoc(firestoreModule.doc(dbInstance, 'config', RULES_DOC_ID), {
         rules,
         lastUpdated: new Date().toISOString(),
         version: 1

@@ -8,6 +8,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useNotification } from '@/contexts/NotificationContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
 import AuthErrorModal from '@/components/AuthErrorModal';
+import DeleteAccountModal from '@/components/DeleteAccountModal';
 import { ADMIN_EMAIL } from '@/types/admin';
 import Link from 'next/link';
 import { db } from '@/lib/firebase';
@@ -17,6 +18,9 @@ import UserAvatar from '@/components/UserAvatar';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
 import { DetailedStats } from '@/components/stats/DetailedStats';
+import { validatePassword, passwordRequirements, getPasswordStrength } from '@/utils/passwordValidation';
+import { checkEmailAvailability, debounce } from '@/utils/emailValidation';
+import { useCallback } from 'react';
 
 // List of available SVGs for user thumbnails
 const THUMBNAIL_OPTIONS = [
@@ -67,7 +71,7 @@ const THUMBNAIL_OPTIONS = [
 ];
 
 export default function AccountPage() {
-  const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword } = useAuth();
+  const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword, deleteAccount } = useAuth();
   const { subscription, isPremium, userType, isLoading: subLoading } = useSubscription2();
   const { showNotification } = useNotification();
   const strings = useStrings();
@@ -79,9 +83,36 @@ export default function AccountPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [modalType, setModalType] = useState<'error' | 'success'>('error');
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [updatingAvatar, setUpdatingAvatar] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [expandRequirements, setExpandRequirements] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Show password requirements section when in signup mode
+  useEffect(() => {
+    setShowPasswordRequirements(!isLogin);
+    setExpandRequirements(false); // Reset expansion when switching modes
+    setEmailAvailable(null); // Reset email availability when switching modes
+  }, [isLogin]);
+
+  // Debounced email availability check
+  const checkEmail = useCallback(
+    debounce(async (emailToCheck: string) => {
+      if (!emailToCheck || isLogin) return;
+      
+      setCheckingEmail(true);
+      const { isAvailable } = await checkEmailAvailability(emailToCheck);
+      setEmailAvailable(isAvailable);
+      setCheckingEmail(false);
+    }, 500),
+    [isLogin]
+  );
 
   // Use the new profile hook
   const { profile } = useUserProfile();
@@ -102,6 +133,23 @@ export default function AccountPage() {
       setError(strings.forms.validation.passwordMismatch);
       setIsLoading(false);
       return;
+    }
+
+    // Validate password strength for signup
+    if (!isLogin) {
+      const { isValid, failedRequirements } = validatePassword(password);
+      if (!isValid) {
+        setError(`Password must meet all requirements: ${failedRequirements.join(', ')}`);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Check if email is available
+      if (emailAvailable === false) {
+        setError('This email is already registered. Please sign in instead.');
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
@@ -153,19 +201,37 @@ export default function AccountPage() {
   const handleForgotPassword = async () => {
     if (!email) {
       setError(strings.forms.validation.invalidEmail);
+      setModalType('error');
+      setShowErrorModal(true);
       return;
     }
 
     try {
       await resetPassword(email);
-      setError(''); // Clear any existing errors
-      showNotification({
-        title: 'Email Sent',
-        message: 'Password reset email sent! Check your inbox.',
-        type: 'success'
-      });
+      // Show success modal instead of notification
+      setError('Password reset email sent! Please check your inbox and spam folder.');
+      setModalType('success');
+      setShowErrorModal(true);
     } catch (err: any) {
       setError(err.message || 'Failed to send reset email');
+      setModalType('error');
+      setShowErrorModal(true);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteAccount();
+      // The user will be automatically signed out and redirected
+    } catch (err: any) {
+      console.error('Delete account error:', err);
+      setError(err.message || 'Failed to delete account. Please try again.');
+      setModalType('error');
+      setShowErrorModal(true);
+      setShowDeleteModal(false);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -337,13 +403,31 @@ export default function AccountPage() {
                 <SubscriptionPlans />
               )}
 
-              {/* Logout */}
-              <div className="bg-card border border-border rounded-lg p-4">
+              {/* Account Actions */}
+              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+                {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="w-full px-4 py-3 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors font-medium"
+                  className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                 >
                   Sign Out
+                </button>
+                
+                {/* Delete Account Button */}
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="w-full px-4 py-3 text-white rounded-lg transition-colors font-medium"
+                  style={{
+                    backgroundColor: 'hsl(25, 95%, 53%)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'hsl(25, 95%, 48%)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'hsl(25, 95%, 53%)';
+                  }}
+                >
+                  Delete Account
                 </button>
               </div>
             </div>
@@ -354,7 +438,16 @@ export default function AccountPage() {
         <AuthErrorModal
           isOpen={showErrorModal}
           error={error}
+          type={modalType}
           onClose={() => setShowErrorModal(false)}
+        />
+        
+        {/* Delete Account Modal */}
+        <DeleteAccountModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDeleteAccount}
+          isDeleting={isDeleting}
         />
 
         {/* Avatar selection modal */}
@@ -481,16 +574,58 @@ export default function AccountPage() {
                 <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                   Email Address
                 </label>
-                <input
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={strings.forms.placeholders.email}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (!isLogin) {
+                        checkEmail(e.target.value);
+                      }
+                    }}
+                    placeholder={strings.forms.placeholders.email}
+                    className={`w-full px-3 py-2 pr-10 border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
+                      !isLogin && email && !checkingEmail && emailAvailable !== null
+                        ? emailAvailable
+                          ? 'border-green-500'
+                          : 'border-red-500'
+                        : 'border-border'
+                    }`}
+                    required
+                  />
+                  
+                  {/* Email Status Indicator */}
+                  {!isLogin && email && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {checkingEmail ? (
+                        <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
+                      ) : emailAvailable !== null ? (
+                        <svg
+                          className={`w-5 h-5 ${emailAvailable ? 'text-green-500' : 'text-red-500'}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          {emailAvailable ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          ) : (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          )}
+                        </svg>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Email Availability Message */}
+                {!isLogin && email && !checkingEmail && emailAvailable === false && (
+                  <p className="mt-1 text-sm text-red-600">
+                    This email is already registered. Please sign in instead.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -502,11 +637,90 @@ export default function AccountPage() {
                   type="password"
                   name="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
                   placeholder={strings.forms.placeholders.password}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   required
                 />
+                
+                {/* Password Requirements for Signup */}
+                {!isLogin && showPasswordRequirements && (
+                  <div className="mt-3 space-y-2">
+                    {/* Password Strength Indicator - Always visible */}
+                    {password && (
+                      <div className="p-3 bg-muted rounded-lg">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-medium text-foreground">Password Strength</span>
+                          <span className={`text-sm font-medium ${getPasswordStrength(password).color}`}>
+                            {getPasswordStrength(password).strength.charAt(0).toUpperCase() + getPasswordStrength(password).strength.slice(1)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-background rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              getPasswordStrength(password).strength === 'weak' ? 'bg-red-500' :
+                              getPasswordStrength(password).strength === 'medium' ? 'bg-yellow-500' :
+                              'bg-green-500'
+                            }`}
+                            style={{ width: `${getPasswordStrength(password).percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Collapsible Requirements */}
+                    <div className="bg-muted rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => setExpandRequirements(!expandRequirements)}
+                        className="w-full p-3 flex items-center justify-between text-sm hover:bg-muted/80 transition-colors rounded-lg"
+                      >
+                        <span className="font-medium text-foreground">
+                          {expandRequirements ? 'Hide' : 'Show'} password requirements
+                        </span>
+                        <svg
+                          className={`w-4 h-4 text-muted-foreground transition-transform ${expandRequirements ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      
+                      {expandRequirements && (
+                        <div className="px-3 pb-3">
+                          <ul className="space-y-1">
+                            {passwordRequirements.map((req, index) => {
+                              const isMet = req.test(password);
+                              return (
+                                <li key={index} className="flex items-center gap-2">
+                                  <svg
+                                    className={`w-4 h-4 ${isMet ? 'text-green-500' : 'text-muted-foreground'}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    {isMet ? (
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    ) : (
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    )}
+                                  </svg>
+                                  <span className={`text-sm ${isMet ? 'text-green-600' : 'text-muted-foreground'}`}>
+                                    {req.label}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {!isLogin && (
@@ -524,12 +738,33 @@ export default function AccountPage() {
                     className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     required
                   />
+                  
+                  {/* Password Match Indicator */}
+                  {confirmPassword && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <svg
+                        className={`w-4 h-4 ${password === confirmPassword ? 'text-green-500' : 'text-red-500'}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        {password === confirmPassword ? (
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        ) : (
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        )}
+                      </svg>
+                      <span className={`text-sm ${password === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
+                        {password === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || (!isLogin && emailAvailable === false)}
                 className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 {isLoading ? (
@@ -578,6 +813,7 @@ export default function AccountPage() {
       <AuthErrorModal
         isOpen={showErrorModal}
         error={error}
+        type={modalType}
         onClose={() => setShowErrorModal(false)}
       />
     </div>

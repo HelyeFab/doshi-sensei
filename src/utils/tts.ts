@@ -1,7 +1,7 @@
 // Text-to-Speech utility with Google Cloud TTS as primary and ElevenLabs as fallback
 import TTSCache from './ttsCache';
-import { getKanaAudioPath, playKanaAudio } from './kanaAudioLoader';
-import { getKanjiAudioPath, playKanjiAudio } from './kanjiAudioLoader';
+import { getKanaAudioPath, playKanaAudio, playKanaAudioWithRetry } from './kanaAudioLoader';
+import { getKanjiAudioPath, playKanjiAudio, playKanjiAudioWithRetry } from './kanjiAudioLoader';
 
 interface ElevenLabsVoice {
   voice_id: string;
@@ -199,11 +199,12 @@ export class TTSManager {
         try {
           console.log(`🎵 [TTS] Using LOCAL kana audio instead of API for: "${text}"`);
           console.log(`📁 [TTS] Audio file path: ${kanaAudioPath}`);
-          await playKanaAudio(kanaAudioPath);
+          await playKanaAudioWithRetry(kanaAudioPath, 2); // Use retry mechanism
           console.log(`✅ [TTS] Successfully played local kana audio: "${text}"`);
           return;
         } catch (error) {
           console.warn(`⚠️ [TTS] Failed to play local kana audio for "${text}", falling back to TTS API:`, error);
+          // Continue to TTS API fallback
         }
       } else if (text.length <= 2) {
         console.log(`📡 [TTS] No local kana audio for "${text}", checking kanji...`);
@@ -216,11 +217,12 @@ export class TTSManager {
           try {
             console.log(`🎌 [TTS] Using LOCAL kanji audio instead of API for: "${text}"`);
             console.log(`📁 [TTS] Audio file path: ${kanjiAudioPath}`);
-            await playKanjiAudio(kanjiAudioPath);
+            await playKanjiAudioWithRetry(kanjiAudioPath, 2); // Use retry mechanism
             console.log(`✅ [TTS] Successfully played local kanji audio: "${text}"`);
             return;
           } catch (error) {
             console.warn(`⚠️ [TTS] Failed to play local kanji audio for "${text}", falling back to TTS API:`, error);
+            // Continue to TTS API fallback
           }
         } else {
           console.log(`📡 [TTS] No local kanji audio for "${text}", will use API`);

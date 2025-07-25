@@ -17,11 +17,21 @@ export function useAchievements() {
       setIsLoading(true);
       setError(null);
 
+      // Initialize stats if needed
+      await AchievementManager.initializeUserStats();
+
       const [allAchievements, unlocked, stats] = await Promise.all([
         AchievementManager.loadAllAchievements(),
         AchievementManager.getUnlockedAchievements(),
         AchievementManager.getUserStats()
       ]);
+
+      console.log('[useAchievements] Loaded data:', {
+        achievementCount: allAchievements.length,
+        unlockedCount: unlocked.length,
+        stats,
+        unlockedIds: unlocked.map(u => u.achievementId)
+      });
 
       setAchievements(allAchievements);
       setUnlockedAchievements(unlocked);
@@ -103,7 +113,8 @@ export function useAchievements() {
 
   // Check if achievement is unlocked
   const isAchievementUnlocked = useCallback((achievementId: string): boolean => {
-    return unlockedAchievements.some(unlocked => unlocked.achievementId === achievementId);
+    const isUnlocked = unlockedAchievements.some(unlocked => unlocked.achievementId === achievementId);
+    return isUnlocked;
   }, [unlockedAchievements]);
 
   // Get achievements by category
@@ -149,6 +160,7 @@ export function useAchievements() {
 
   // Load data on mount
   useEffect(() => {
+    console.log('[useAchievements] Component mounted, loading achievement data...');
     loadData();
   }, [loadData]);
 

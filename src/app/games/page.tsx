@@ -1430,7 +1430,7 @@ export default function GamesPage() {
           }}
           title="Matching Game Instructions"
           height="auto"
-          showHandle={true}
+          showHandle={false}
         >
           <div className="space-y-6">
             {/* Game Icon and Title */}
@@ -1585,7 +1585,7 @@ export default function GamesPage() {
           }}
           title="Listening Quiz Instructions"
           height="auto"
-          showHandle={true}
+          showHandle={false}
         >
           <div className="space-y-6">
             {/* Game Icon and Title */}

@@ -16,6 +16,7 @@ import { StatsBar } from '@/components/stats/StatsBar';
 import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
 import UserAchievements from '@/components/achievements/UserAchievements';
+import { useRouter } from 'next/navigation';
 
 // Import debug utility in development
 if (process.env.NODE_ENV === 'development') {
@@ -87,6 +88,8 @@ export default function Home() {
   const { subscription } = useSubscription2();
   const { settings } = useSettings();
   const strings = useStrings();
+  const { user } = useAuth();
+  const router = useRouter();
   const [dayProgress, setDayProgress] = useState(0);
   const [todayDate, setTodayDate] = useState<string>('');
 
@@ -133,6 +136,9 @@ export default function Home() {
     secondary: 'hsl(230, 60%, 85%)'
   });
 
+  // Pastel color for icon backgrounds
+  const [iconBgColor, setIconBgColor] = useState('hsl(210, 60%, 90%)');
+
   useEffect(() => {
     // Only run on client side to prevent hydration mismatch
     if (typeof window === 'undefined') return;
@@ -145,6 +151,14 @@ export default function Home() {
       accent: pastelizeHSL(palette.accent),
       secondary: pastelizeHSL(palette.secondary)
     });
+
+    // Create a lighter pastel version for icon backgrounds (higher lightness)
+    const match = palette.primary.match(/hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)/);
+    if (match) {
+      const [_, h] = match;
+      // Use 40% saturation, 90% lightness for very light pastel
+      setIconBgColor(`hsl(${h}, 40%, 90%)`);
+    }
   }, [settings.colorScheme]);
 
 
@@ -221,7 +235,25 @@ export default function Home() {
             <h1 className="text-xl font-semibold text-foreground">
               {strings.home.greeting} {displayName}-san! <span className="inline-block animate-wave">👋</span>
             </h1>
-            <p className="text-sm text-muted-foreground">{strings.home.readyToPractice}</p>
+            {user ? (
+              <p className="text-sm text-muted-foreground">{strings.home.readyToPractice}</p>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => router.push('/login')}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Login
+                </button>
+                <span className="text-sm text-muted-foreground">/</span>
+                <button
+                  onClick={() => router.push('/login')}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Sign up
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -275,7 +307,10 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <div 
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: iconBgColor }}
+                      >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -309,7 +344,10 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <div 
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: iconBgColor }}
+                      >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -341,7 +379,10 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <div 
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: iconBgColor }}
+                      >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -373,7 +414,10 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <div 
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: iconBgColor }}
+                      >
                         {card.icon.startsWith('/') ? (
                           <Image
                             src={card.icon}
@@ -414,7 +458,10 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <div 
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: iconBgColor }}
+                      >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -445,7 +492,10 @@ export default function Home() {
                 <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <div 
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: iconBgColor }}
+                      >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">

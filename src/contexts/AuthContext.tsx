@@ -10,7 +10,8 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendEmailVerification
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -18,15 +19,17 @@ import { Analytics } from '@/utils/analytics';
 import { getDefaultSubscription } from '@/types/subscription';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { pokemonStorage } from '@/utils/pokemonStorage';
+import { sendCustomEmailVerification } from '@/lib/email/customEmailVerification';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<any>;
+  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<User | null>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,8 +84,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let previousUser: User | null = null;
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      // Check if user changed (not just initial load)
+      const userChanged = previousUser && (!currentUser || currentUser.uid !== previousUser.uid);
+      
       setUser(currentUser);
       setLoading(false);
+
+      // If user changed, reinitialize the stats tracker to load correct user data
+      if (userChanged) {
+        console.log('🔄 [AuthContext] User changed, reinitializing stats tracker');
+        // Import and reinitialize stats tracker
+        const { statsTracker } = await import('@/lib/stats/statsTracker');
+        await statsTracker.initialize(currentUser);
+      }
 
       // Create/update user document in Firestore
       if (currentUser) {
@@ -111,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    return await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
@@ -122,10 +136,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await updateProfile(result.user, { displayName });
     }
 
-    // Create user document in Firestore
+    // Send email verification and create user document
     if (result.user) {
+      await sendCustomEmailVerification(result.user);
       await createOrUpdateUserDocument(result.user);
     }
+    
+    return result.user;
   };
 
   const signInWithGoogle = async () => {
@@ -161,6 +178,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await sendPasswordResetEmail(auth, email);
   };
 
+  const deleteAccount = async () => {
+    if (!user) throw new Error('No user logged in');
+    
+    // Get the user's ID token
+    const idToken = await user.getIdToken();
+    
+    // Call the delete account API
+    const response = await fetch('/api/auth/delete-account', {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete account');
+    }
+    
+    // Sign out locally (the account is already deleted on the server)
+    await signOut(auth);
+  };
+
   const value: AuthContextType = {
     user,
     loading,
@@ -169,6 +210,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGoogle,
     logout,
     resetPassword,
+    deleteAccount,
   };
 
   return (

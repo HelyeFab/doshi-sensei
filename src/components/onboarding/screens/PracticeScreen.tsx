@@ -61,13 +61,13 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
   return (
     <div className="space-y-6 p-6">
       <div className="text-center space-y-4">
-        <h2 className="text-2xl font-bold text-foreground">
+        <h2 className="text-2xl font-bold text-white">
           {tutorial.practice.title}
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-white/90">
           {tutorial.practice.description}
           <span className="font-semibold text-blue-400">{tutorial.practice.studyMode.tagline}</span>
-          {' '}<span className="text-muted-foreground">or</span>{' '}
+          {' '}<span className="text-white/90">or</span>{' '}
           <span className="font-semibold text-red-400">{tutorial.practice.drillMode.tagline}</span>
         </p>
       </div>
@@ -77,11 +77,11 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
         <div className={`p-4 border rounded-lg text-center transition-all ${
           currentMode === 'practice'
             ? 'border-blue-500 bg-blue-500/10'
-            : 'border-border hover:border-blue-500/50'
+            : 'border-white/20 hover:border-blue-500/50'
         }`}>
           <div className="text-3xl mb-2">📚</div>
           <div className="font-medium text-blue-400">{tutorial.practice.studyMode.name}</div>
-          <div className="text-xs text-muted-foreground mt-1">
+          <div className="text-xs text-white/70 mt-1">
             {tutorial.practice.studyMode.subtitle}
           </div>
         </div>
@@ -89,22 +89,22 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
         <div className={`p-4 border rounded-lg text-center transition-all ${
           currentMode === 'drill'
             ? 'border-red-500 bg-red-500/10'
-            : 'border-border hover:border-red-500/50'
+            : 'border-white/20 hover:border-red-500/50'
         }`}>
           <div className="text-3xl mb-2">⚡</div>
           <div className="font-medium text-red-400">{tutorial.practice.drillMode.name}</div>
-          <div className="text-xs text-muted-foreground mt-1">
+          <div className="text-xs text-white/70 mt-1">
             {tutorial.practice.drillMode.subtitle}
           </div>
         </div>
       </div>
 
       {/* Demo Area */}
-      <div className="bg-card border border-border rounded-lg p-6 min-h-[300px] relative">
+      <div className="bg-purple-100/20 border border-purple-300/30 rounded-lg p-6 min-h-[300px] relative">
         {currentMode === 'intro' && (
           <div className="text-center space-y-4 py-8">
             <div className="text-4xl">🤔</div>
-            <p className="text-muted-foreground">
+            <p className="text-gray-700">
               {tutorial.practice.demoIntro}
             </p>
             <TutorialButton
@@ -119,10 +119,10 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
         {currentMode === 'practice' && (
           <div className="space-y-4 animate-slideIn">
             <div className="text-center">
-              <div className="text-2xl japanese-text font-bold text-foreground mb-2">
+              <div className="text-2xl japanese-text font-bold text-gray-800 mb-2">
                 {demoWord.kanji}
               </div>
-              <div className="text-muted-foreground">
+              <div className="text-gray-700">
                 {demoWord.kana} - "{demoWord.meaning}"
               </div>
             </div>
@@ -149,20 +149,18 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
               ))}
             </div>
 
-            <div className="text-center text-sm text-muted-foreground">
-              {tutorial.practice.studyNote}
-            </div>
+            {/* Study note removed */}
           </div>
         )}
 
         {currentMode === 'drill' && drillQuestion && (
           <div className="space-y-4 animate-slideIn">
             <div className="text-center">
-              <div className="text-sm text-muted-foreground mb-2">{tutorial.practice.quizHeader}</div>
+              <div className="text-sm text-gray-700 mb-2">{tutorial.practice.quizHeader}</div>
               <div className="text-lg mb-4">
-                <span className="japanese-text font-bold">{drillQuestion.word.kanji}</span>
-                <span className="text-muted-foreground mx-2">→</span>
-                <span className="text-red-400 font-bold">{tutorial.practice.quizQuestion}</span>
+                <span className="japanese-text font-bold text-gray-800">{drillQuestion.word.kanji}</span>
+                <span className="text-gray-600 mx-2">→</span>
+                <span className="text-red-500 font-bold">{tutorial.practice.quizQuestion}</span>
               </div>
             </div>
 
@@ -214,10 +212,10 @@ export function PracticeScreen({ onNext }: PracticeScreenProps) {
       {currentMode === 'complete' && (
         <div className="text-center space-y-4">
           <div className="text-4xl">🏆</div>
-          <p className="text-primary font-medium">
+          <p className="text-white font-medium">
             {tutorial.practice.completionTitle}
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-white/80">
             {tutorial.practice.modeSummary}
           </p>
           <TutorialButton onClick={onNext} variant="primary">

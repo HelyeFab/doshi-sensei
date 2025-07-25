@@ -70,14 +70,14 @@ export function EditableFeatureMatrix({
     try {
       await dynamicRules.updateLimit(userType, featureId, limitType, newValue);
       showNotification({
-        title: strings.forms.notifications.success,
-        message: strings.admin.features.limitUpdated.replace('{feature}', featureId).replace('{userType}', userType),
+        title: strings.admin.features.success,
+        message: strings.admin.features.featureUpdated,
         type: 'success'
       });
       onUpdate();
     } catch (error) {
       showNotification({
-        title: strings.forms.notifications.error,
+        title: 'Error',
         message: strings.admin.features.failedToUpdate,
         type: 'error'
       });

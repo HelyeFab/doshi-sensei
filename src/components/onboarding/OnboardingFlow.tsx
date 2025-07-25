@@ -23,6 +23,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     state,
     nextScreen,
     previousScreen,
+    skipToScreen,
     completeOnboarding,
     markAsSeen,
     trackDropOff,
@@ -45,7 +46,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   const handleSkip = () => {
     // Skip to the last screen (success screen)
-    setState(prev => ({ ...prev, currentScreen: screens.length - 1 }));
+    setDirection(1);
+    skipToScreen(5); // Index of the last screen (SuccessScreen)
   };
 
   const handleNext = () => {
@@ -171,24 +173,26 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             onDragEnd={handleDragEnd}
             className="absolute inset-0 flex items-center justify-center"
           >
-            {/* Content Area - Full width on mobile, wider on desktop */}
-            <div className="w-full h-full flex flex-col justify-center px-3 md:px-12 overflow-y-auto">
-              <div className="w-full max-w-6xl py-8 pb-0 mb-0 md:pb-8 md:mb-0 flex-1 flex flex-col justify-start">
+            {/* Content Area - Centered on desktop */}
+            <div className="w-full h-full flex flex-col justify-center items-center px-4 md:px-12 overflow-y-auto">
+              <div className="w-full max-w-3xl mx-auto py-8 flex-1 flex flex-col justify-center">
                 {screens[state.currentScreen]}
               </div>
               
               {/* Navigation Bar */}
-              <NavigationBar
-                currentScreen={state.currentScreen}
-                totalScreens={screens.length}
-                onSkip={handleSkip}
-                onNext={handleNext}
-                onBack={state.currentScreen > 0 ? handlePrevious : undefined}
-                isLastScreen={state.currentScreen === screens.length - 1}
-                showSkip={state.currentScreen < screens.length - 1}
-                showNext={state.currentScreen < screens.length - 1} // Show Next button on all screens except the last one
-                showBack={state.currentScreen > 0}
-              />
+              <div className="w-full max-w-3xl mx-auto">
+                <NavigationBar
+                  currentScreen={state.currentScreen}
+                  totalScreens={screens.length}
+                  onSkip={handleSkip}
+                  onNext={handleNext}
+                  onBack={state.currentScreen > 0 ? handlePrevious : undefined}
+                  isLastScreen={state.currentScreen === screens.length - 1}
+                  showSkip={state.currentScreen < screens.length - 1}
+                  showNext={state.currentScreen < screens.length - 1} // Show Next button on all screens except the last one
+                  showBack={state.currentScreen > 0}
+                />
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>

@@ -12,6 +12,7 @@ import { useGameTTS } from '@/hooks/useTTS';
 import { useStrings } from '@/contexts/LanguageContext';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { createGameAudio, playGameAudio, fadeInGameAudio, fadeOutGameAudio, stopGameAudio } from '@/utils/gameAudioUtils';
 
 interface MatchingGameModalProps {
   isOpen: boolean;
@@ -56,7 +57,6 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [musicEnabled, setMusicEnabled] = useState(true); // Music ON by default
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isMusicFirstRender = useRef(true);
 
   // Initialize game

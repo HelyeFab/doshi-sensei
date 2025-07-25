@@ -54,9 +54,7 @@ async function initializeAdmin(): Promise<void> {
   // Start initialization
   initializationPromise = (async () => {
     try {
-      const projectId = process.env.FIREBASE_PROJECT_ID ||
-        process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
-        "doshi-sensei";
+      const projectId = process.env.FIREBASE_PROJECT_ID || "doshi-sensei";
 
       let initialized = false;
 
@@ -69,7 +67,7 @@ async function initializeAdmin(): Promise<void> {
             adminApp = admin.initializeApp({
               credential: admin.credential.cert(serviceAccount),
               projectId: serviceAccount.project_id || projectId,
-              storageBucket: 'doshi-sensei.appspot.com',
+              storageBucket: 'doshi-sensei',
             });
             initialized = true;
           } else {
@@ -80,12 +78,12 @@ async function initializeAdmin(): Promise<void> {
         }
       }
 
-      // Method 2: Individual environment variables (check non-prefixed first for Netlify)
+      // Method 2: Individual environment variables (server-side only)
       if (!initialized) {
-        const privateKey = process.env.FIREBASE_PRIVATE_KEY || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY;
-        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL;
-        const clientId = process.env.FIREBASE_CLIENT_ID || process.env.NEXT_PUBLIC_FIREBASE_CLIENT_ID || "";
-        const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY_ID || "";
+        const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+        const clientId = process.env.FIREBASE_CLIENT_ID || "";
+        const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || "";
         
         if (privateKey && clientEmail) {
           console.log('Attempting Firebase Admin initialization with individual env vars');
@@ -143,7 +141,7 @@ async function initializeAdmin(): Promise<void> {
 
       // Log success without exposing sensitive data
       console.log(`✅ Firebase Admin SDK initialized for Storage`);
-      console.log(`📦 Using storage bucket: doshi-sensei.appspot.com`);
+      console.log(`📦 Using storage bucket: doshi-sensei`);
 
     } catch (error) {
       initializationError = error instanceof Error ? error : new Error('Unknown initialization error');

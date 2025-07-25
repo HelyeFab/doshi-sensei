@@ -2346,8 +2346,9 @@ export const en = {
         textbookVocab: "📖 Study vocabulary from Genki and Minna textbooks",
         games: "🎮 Learn through games (Kanji Quest lets you catch 1000+ Pokémon!)",
         reading: "📰 Read real Japanese news with furigana support",
-        youtubeShadowing: "🎬 Practice with YouTube shadowing exercises",
-        kanji: "🈯 Study kanji with beautiful mood boards"
+        kanji: "🈯 Study kanji with beautiful mood boards",
+        tracking: "📊 Track your progress across all activities",
+        youtubeShadowing: "🎬 Practice with YouTube videos"
       },
       startButton: "Start My Journey! 🚀",
       footer: "(No Japanese learners were overwhelmed in the making of this platform)"

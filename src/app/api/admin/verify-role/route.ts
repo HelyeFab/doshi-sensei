@@ -16,7 +16,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
   const decodedToken = await admin.auth().verifyIdToken(token);
   
   // Check if user has admin custom claim
-  const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
+  const isAdmin = decodedToken.admin === true;
 
   return NextResponse.json({
     isAdmin,
@@ -38,7 +38,7 @@ export const PUT = withFirebaseAdmin(async (request: NextRequest) => {
   
   // Verify the requesting user is admin
   const decodedToken = await admin.auth().verifyIdToken(token);
-  const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
+  const isAdmin = decodedToken.admin === true;
 
   if (!isAdmin) {
     throw new Error('Forbidden - Insufficient permissions');

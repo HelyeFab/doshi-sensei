@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Rubik, Dancing_Script } from "next/font/google";
+import { Geist, Geist_Mono, Rubik, Dancing_Script, Manrope } from "next/font/google";
 import "./globals.css";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -15,6 +15,7 @@ import DesktopNavMenu from "@/components/DesktopNavMenu";
 import StunningBottomNavbar from "@/components/StunningBottomNavbar";
 import PWAInstaller from "@/components/PWAInstaller";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
+import InitialLoader from "@/components/InitialLoader";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
@@ -50,12 +51,25 @@ const savoyeFont = Dancing_Script({
   weight: ["400", "500", "600", "700"],
 });
 
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: {
     default: 'Doshi Sensei - Master Japanese Verb Conjugations',
     template: '%s | Doshi Sensei'
   },
   description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs with professional guidance.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.svg', type: 'image/svg+xml' }
+    ],
+    apple: '/apple-icon.svg'
+  },
   keywords: [
     'Japanese learning',
     'Japanese verbs',
@@ -171,7 +185,7 @@ export default function RootLayout({
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${savoyeFont.variable} antialiased min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${savoyeFont.variable} ${manrope.variable} antialiased min-h-screen`}
         suppressHydrationWarning
       >
         <EnvProvider>

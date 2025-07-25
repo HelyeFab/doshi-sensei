@@ -21,7 +21,8 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     }
 
     // Test 1: Check if storage bucket is accessible
-    const bucket = firebaseAdmin.storage().bucket();
+    // Explicitly specify the bucket name
+    const bucket = firebaseAdmin.storage().bucket('doshi-sensei');
     const bucketName = bucket.name;
     console.log('Storage bucket:', bucketName);
 

@@ -20,7 +20,7 @@ export default function SlideUpModal({
   children,
   title,
   height = '90%',
-  showHandle = true,
+  showHandle = false,
   closeOnOutsideClick = true,
   className = '',
 }: SlideUpModalProps) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
 interface UserAvatarProps {
@@ -19,6 +20,7 @@ const sizeClasses = {
 
 export default function UserAvatar({ size = 'md', className = '', showBorder = true, clickable = true }: UserAvatarProps) {
   const { profile, profilePicture, loading } = useUserProfile();
+  const { user } = useAuth();
 
   // While loading, show a placeholder that matches the final size
   if (loading) {
@@ -50,9 +52,9 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
   if (clickable) {
     return (
       <Link 
-        href="/account" 
+        href={user ? "/account" : "/login"} 
         className="inline-block cursor-pointer"
-        aria-label="Go to account page"
+        aria-label={user ? "Go to account page" : "Login or sign up"}
       >
         {avatarElement}
       </Link>

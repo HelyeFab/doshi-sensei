@@ -71,33 +71,57 @@ export async function getKanaAudioPath(text: string): Promise<string | null> {
 export async function playKanaAudio(audioPath: string): Promise<void> {
   console.log(`[Kana Audio] Playing local audio file: ${audioPath}`);
   
-  // First try to fetch the audio to check if it's accessible
-  try {
-    const response = await fetch(audioPath, { 
-      method: 'HEAD',
-      cache: 'no-cache' // Bypass service worker cache
-    });
-    
-    if (!response.ok) {
-      console.error(`[Kana Audio] File not accessible: ${audioPath}, status: ${response.status}`);
-      throw new Error(`Audio file returned ${response.status}`);
-    }
-    
-    console.log(`[Kana Audio] File is accessible, creating audio element`);
-  } catch (fetchError) {
-    console.error(`[Kana Audio] Failed to fetch audio file:`, fetchError);
-    throw fetchError;
+  // Try to bypass service worker for local audio files
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    // Add a cache-buster to force bypassing service worker cache
+    const bypassPath = `${audioPath}?bypass-sw=${Date.now()}`;
+    return playKanaAudioDirect(bypassPath);
   }
   
+  return playKanaAudioDirect(audioPath);
+}
+
+/**
+ * Internal function to play audio
+ */
+function playKanaAudioDirect(audioPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const audio = new Audio();
+    let hasPlayed = false;
+    let loadTimeout: NodeJS.Timeout;
     
-    // Use a timestamp to bypass any caching issues
-    const timestampedPath = `${audioPath}?t=${Date.now()}`;
+    // Set a timeout for loading
+    const startLoadTimeout = () => {
+      loadTimeout = setTimeout(() => {
+        if (!hasPlayed) {
+          console.error(`[Kana Audio] Timeout loading audio: ${audioPath}`);
+          audio.removeEventListener('canplaythrough', handleCanPlayThrough);
+          reject(new Error('Audio loading timeout'));
+        }
+      }, 5000); // 5 second timeout
+    };
     
-    // Add loadeddata event to ensure audio is ready
+    const handleCanPlayThrough = () => {
+      clearTimeout(loadTimeout);
+      audio.play()
+        .then(() => {
+          hasPlayed = true;
+          console.log(`[Kana Audio] Started playing: ${audioPath}`);
+        })
+        .catch((err) => {
+          console.error(`[Kana Audio] Play failed:`, err);
+          reject(err);
+        });
+    };
+    
+    // Add event listeners
+    audio.addEventListener('loadstart', () => {
+      console.log(`[Kana Audio] Started loading: ${audioPath}`);
+      startLoadTimeout();
+    });
+    
     audio.addEventListener('loadeddata', () => {
-      console.log(`[Kana Audio] Audio loaded and ready: ${audioPath}`);
+      console.log(`[Kana Audio] Audio data loaded: ${audioPath}`);
     });
     
     audio.addEventListener('canplay', () => {
@@ -106,42 +130,53 @@ export async function playKanaAudio(audioPath: string): Promise<void> {
     
     audio.addEventListener('ended', () => {
       console.log(`[Kana Audio] Finished playing: ${audioPath}`);
+      clearTimeout(loadTimeout);
       resolve();
     });
     
     audio.addEventListener('error', (error) => {
-      console.error(`[Kana Audio] Error playing ${audioPath}:`, error);
-      // Log more detailed error info
+      clearTimeout(loadTimeout);
       const audioError = audio.error;
+      
+      // More graceful error handling
       if (audioError) {
-        console.error(`[Kana Audio] Error code: ${audioError.code}, message: ${audioError.message}`);
-        console.error(`[Kana Audio] Error details:`, {
-          code: audioError.code,
-          message: audioError.message,
-          MEDIA_ERR_ABORTED: audioError.code === 1,
-          MEDIA_ERR_NETWORK: audioError.code === 2,
-          MEDIA_ERR_DECODE: audioError.code === 3,
-          MEDIA_ERR_SRC_NOT_SUPPORTED: audioError.code === 4
-        });
+        const errorTypes = {
+          1: 'MEDIA_ERR_ABORTED - The fetching of the audio was aborted',
+          2: 'MEDIA_ERR_NETWORK - A network error occurred',
+          3: 'MEDIA_ERR_DECODE - An error occurred while decoding the audio',
+          4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - The audio format is not supported'
+        };
+        
+        // Only log as error if it's not a network error (which we expect with service worker)
+        const logLevel = audioError.code === 2 ? 'warn' : 'error';
+        console[logLevel](`[Kana Audio] Error playing ${audioPath}:`);
+        console[logLevel](`[Kana Audio] ${errorTypes[audioError.code] || `Unknown error code: ${audioError.code}`}`);
+        console[logLevel](`[Kana Audio] Error message: ${audioError.message}`);
+        
+        // For network errors, this is expected due to service worker
+        if (audioError.code === 2) {
+          console.info(`[Kana Audio] This is expected - will retry with different method`);
+        }
       }
-      reject(error);
+      
+      reject(new Error(`Failed to play audio: ${audioError?.message || 'Unknown error'}`));
     });
     
-    // Set source after event listeners with timestamp
-    audio.src = timestampedPath;
+    // Set up canplaythrough handler
+    audio.addEventListener('canplaythrough', handleCanPlayThrough, { once: true });
+    
+    // Try without cache-busting first
+    audio.src = audioPath;
+    
+    // Explicitly set audio properties for better compatibility
+    audio.preload = 'auto';
+    audio.volume = 1.0;
+    
+    // Set crossOrigin to bypass service worker issues
+    audio.crossOrigin = 'anonymous';
     
     // Load the audio
     audio.load();
-    
-    // Wait for audio to be ready before playing
-    audio.addEventListener('canplaythrough', () => {
-      audio.play()
-        .then(() => console.log(`[Kana Audio] Started playing: ${audioPath}`))
-        .catch((err) => {
-          console.error(`[Kana Audio] Play failed:`, err);
-          reject(err);
-        });
-    }, { once: true });
   });
 }
 
@@ -151,4 +186,83 @@ export async function playKanaAudio(audioPath: string): Promise<void> {
 export async function hasLocalKanaAudio(text: string): Promise<boolean> {
   const path = await getKanaAudioPath(text);
   return path !== null;
+}
+
+/**
+ * Alternative play method using fetch API to bypass service worker
+ */
+export async function playKanaAudioViaFetch(audioPath: string): Promise<void> {
+  console.info(`[Kana Audio] Using fetch method (bypassing service worker): ${audioPath}`);
+  
+  try {
+    // Fetch the audio file directly, bypassing service worker
+    const response = await fetch(audioPath, {
+      method: 'GET',
+      cache: 'no-store', // Bypass all caches
+      mode: 'cors',
+      credentials: 'omit'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const blob = await response.blob();
+    const audioUrl = URL.createObjectURL(blob);
+    
+    return new Promise((resolve, reject) => {
+      const audio = new Audio(audioUrl);
+      
+      audio.addEventListener('ended', () => {
+        URL.revokeObjectURL(audioUrl);
+        resolve();
+      });
+      
+      audio.addEventListener('error', (error) => {
+        URL.revokeObjectURL(audioUrl);
+        reject(error);
+      });
+      
+      audio.play().catch(reject);
+    });
+  } catch (error) {
+    console.error(`[Kana Audio] Fetch method failed:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Play kana audio with retry mechanism
+ */
+export async function playKanaAudioWithRetry(audioPath: string, maxRetries: number = 2): Promise<void> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (attempt > 0) {
+        console.log(`[Kana Audio] Retry attempt ${attempt} for: ${audioPath}`);
+        // Wait a bit before retrying
+        await new Promise(resolve => setTimeout(resolve, 500 * attempt));
+      }
+      
+      // First attempt with direct method
+      if (attempt === 0) {
+        await playKanaAudioDirect(audioPath);
+      } else {
+        // Subsequent attempts use fetch method to bypass service worker
+        await playKanaAudioViaFetch(audioPath);
+      }
+      return; // Success!
+    } catch (error) {
+      lastError = error as Error;
+      if (attempt === 0) {
+        console.info(`[Kana Audio] First attempt failed (expected with service worker):`, (error as Error).message);
+      } else {
+        console.warn(`[Kana Audio] Attempt ${attempt + 1} failed:`, error);
+      }
+    }
+  }
+  
+  // All attempts failed
+  throw lastError || new Error('Failed to play audio after retries');
 }

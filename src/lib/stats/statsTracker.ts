@@ -1,4 +1,5 @@
 import { EnhancedStorageManager2 } from '@/utils/enhancedStorageManager2';
+import { UserScopedStorage } from '@/utils/userScopedStorage';
 import { User } from 'firebase/auth';
 import { collection, doc, setDoc, getDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -317,9 +318,10 @@ export class StatsTracker {
     }
     
     try {
-      const stored = await EnhancedStorageManager2.getFromStore(
+      const stored = await UserScopedStorage.getFromStore(
         StatsTracker.STATS_STORE,
-        'userStats'
+        'userStats',
+        this.currentUser?.uid || null
       );
       
       if (stored && stored.version === StatsTracker.VERSION) {
@@ -348,10 +350,11 @@ export class StatsTracker {
     }
 
     try {
-      await EnhancedStorageManager2.saveToStore(
+      await UserScopedStorage.setToStore(
         StatsTracker.STATS_STORE,
         'userStats',
-        this.stats
+        this.stats,
+        this.currentUser?.uid || null
       );
       console.log('💾 [StatsTracker] Saved stats to IndexedDB');
     } catch (error) {
@@ -1053,10 +1056,11 @@ export class StatsTracker {
         date // Ensure date is included in the object
       };
       
-      await EnhancedStorageManager2.saveToStore(
+      await UserScopedStorage.setToStore(
         StatsTracker.ACTIVITIES_STORE,
         date,
-        activityToSave
+        activityToSave,
+        this.currentUser?.uid || null
       );
     } catch (error) {
       console.error(`❌ [StatsTracker] Error saving daily activity for ${date}:`, error);
@@ -1081,9 +1085,10 @@ export class StatsTracker {
       
       while (current <= end) {
         const dateStr = this.getDateString(current.getTime());
-        const activity = await EnhancedStorageManager2.getFromStore(
+        const activity = await UserScopedStorage.getFromStore(
           StatsTracker.ACTIVITIES_STORE,
-          dateStr
+          dateStr,
+          this.currentUser?.uid || null
         );
         
         if (activity) {
@@ -1151,6 +1156,12 @@ export class StatsTracker {
         });
 
       for (const [date, activity] of recentActivities) {
+        // Double-check we have a user before trying to save
+        if (!this.currentUser) {
+          console.warn('⚠️ [StatsTracker] No current user during sync, skipping activity save');
+          continue;
+        }
+        
         // New collection structure: /userStats/{userId}/dailyActivities/{date}/
         const activityRef = doc(db, 'userStats', this.currentUser.uid, 'dailyActivities', date);
         

@@ -11,6 +11,13 @@ export class AchievementManager {
   private static CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private static currentUser: User | null = null;
   private static subscriptionStatus: string | null = null;
+  
+  // Rate limiting for achievement checks
+  private static lastAchievementCheck: number = 0;
+  private static ACHIEVEMENT_CHECK_COOLDOWN = 5000; // 5 seconds between checks
+  
+  // Weekend warrior tracking
+  private static weekendDaysStudied: Set<string> = new Set();
 
   /**
    * Initialize the manager and set up auth listener
@@ -164,6 +171,7 @@ export class AchievementManager {
 
   /**
    * Update user stats and check for newly unlocked achievements
+   * Includes rate limiting to prevent achievement spam
    */
   static async updateStats(statType: keyof UserStats, increment: number = 1): Promise<UnlockedAchievement[]> {
     try {
@@ -183,6 +191,14 @@ export class AchievementManager {
 
       // Save updated stats
       await this.saveUserStats(updatedStats);
+
+      // Rate limiting - don't check achievements too frequently
+      const now = Date.now();
+      if (now - this.lastAchievementCheck < this.ACHIEVEMENT_CHECK_COOLDOWN) {
+        console.log('[AchievementManager] Rate limit: Skipping achievement check (cooldown active)');
+        return [];
+      }
+      this.lastAchievementCheck = now;
 
       // Check for newly unlocked achievements
       const newlyUnlocked = await this.checkAchievements(updatedStats);
@@ -227,8 +243,8 @@ export class AchievementManager {
         }
       }
 
-      // Check hidden achievements
-      const hiddenUnlocked = await this.checkHiddenAchievements(stats, unlockedIds);
+      // Check hidden achievements (pass true since this is called from updateStats which means activity completion)
+      const hiddenUnlocked = await this.checkHiddenAchievements(stats, unlockedIds, true);
       newlyUnlocked.push(...hiddenUnlocked);
 
       return newlyUnlocked;
@@ -267,8 +283,20 @@ export class AchievementManager {
       }
     }
 
-    // Complex conditions would be handled here in the future
-    // For now, return false for complex conditions
+    // Handle complex conditions
+    if (achievement.conditionType === 'complex') {
+      // First Steps - requires actual activity
+      if (achievement.id === 'first_day') {
+        // Check if user has done at least one activity
+        const hasActivity = stats.drillsCompleted > 0 || 
+                           stats.gamesPlayed > 0 || 
+                           stats.wordsSaved > 0 ||
+                           stats.sentencesRead > 0 ||
+                           stats.flashcardSessions > 0;
+        return hasActivity && stats.currentStreak >= 1;
+      }
+    }
+
     return false;
   }
 
@@ -549,34 +577,81 @@ export class AchievementManager {
 
   /**
    * Check hidden achievements
+   * Note: This should only be called when a user completes an activity,
+   * not on page load or achievement viewing
    */
   private static async checkHiddenAchievements(
     stats: UserStats, 
-    unlockedIds: Set<string>
+    unlockedIds: Set<string>,
+    isActivityCompletion: boolean = false
   ): Promise<UnlockedAchievement[]> {
     const newlyUnlocked: UnlockedAchievement[] = [];
     const now = new Date();
 
-    // Early Bird - Study before 6 AM
-    if (!unlockedIds.has('early_bird') && now.getHours() < 6) {
-      const unlocked = await this.unlockAchievement('early_bird');
-      if (unlocked) newlyUnlocked.push(unlocked);
-    }
-
-    // Night Owl - Study after 11 PM
-    if (!unlockedIds.has('night_owl') && now.getHours() >= 23) {
-      const unlocked = await this.unlockAchievement('night_owl');
-      if (unlocked) newlyUnlocked.push(unlocked);
-    }
-
-    // Weekend Warrior - Study on both Saturday and Sunday
-    if (!unlockedIds.has('weekend_warrior')) {
-      const isWeekend = now.getDay() === 0 || now.getDay() === 6; // Sunday or Saturday
-      if (isWeekend) {
-        // This would need more complex tracking to verify both days
-        // For now, just unlock if studying on weekend
-        const unlocked = await this.unlockAchievement('weekend_warrior');
+    // Only check time-based achievements when user actually completes an activity
+    if (isActivityCompletion) {
+      // Early Bird - Study before 6 AM
+      if (!unlockedIds.has('early_bird') && now.getHours() < 6) {
+        console.log('[AchievementManager] User completed activity before 6 AM - awarding Early Bird');
+        const unlocked = await this.unlockAchievement('early_bird');
         if (unlocked) newlyUnlocked.push(unlocked);
+      }
+
+      // Night Owl - Study after 11 PM
+      if (!unlockedIds.has('night_owl') && now.getHours() >= 23) {
+        console.log('[AchievementManager] User completed activity after 11 PM - awarding Night Owl');
+        const unlocked = await this.unlockAchievement('night_owl');
+        if (unlocked) newlyUnlocked.push(unlocked);
+      }
+
+      // Weekend Warrior - Study on both Saturday and Sunday
+      if (isActivityCompletion && !unlockedIds.has('weekend_warrior')) {
+        const dayOfWeek = now.getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+        
+        if (isWeekend) {
+          // Track which weekend days have been studied
+          const dateStr = now.toDateString();
+          this.weekendDaysStudied.add(dateStr);
+          this.saveWeekendTracking();
+          
+          // Check if both Saturday and Sunday have been studied in the current week
+          const weekStart = new Date(now);
+          weekStart.setDate(now.getDate() - dayOfWeek); // Go to Sunday
+          
+          let saturdayStudied = false;
+          let sundayStudied = false;
+          
+          // Check the current week's weekend days
+          for (let i = 0; i < 7; i++) {
+            const checkDate = new Date(weekStart);
+            checkDate.setDate(weekStart.getDate() + i);
+            const checkDateStr = checkDate.toDateString();
+            
+            if (checkDate.getDay() === 6 && this.weekendDaysStudied.has(checkDateStr)) {
+              saturdayStudied = true;
+            }
+            if (checkDate.getDay() === 0 && this.weekendDaysStudied.has(checkDateStr)) {
+              sundayStudied = true;
+            }
+          }
+          
+          if (saturdayStudied && sundayStudied) {
+            console.log('[AchievementManager] User studied both Saturday and Sunday - awarding Weekend Warrior');
+            const unlocked = await this.unlockAchievement('weekend_warrior');
+            if (unlocked) newlyUnlocked.push(unlocked);
+            
+            // Clear old weekend days from tracking (keep only last 2 weeks)
+            const twoWeeksAgo = new Date(now);
+            twoWeeksAgo.setDate(now.getDate() - 14);
+            this.weekendDaysStudied = new Set(
+              Array.from(this.weekendDaysStudied).filter(dateStr => 
+                new Date(dateStr) > twoWeeksAgo
+              )
+            );
+            this.saveWeekendTracking();
+          }
+        }
       }
     }
 
@@ -670,5 +745,53 @@ export class AchievementManager {
     }
     
     return cosmetics;
+  }
+
+  /**
+   * Initialize user stats if they don't exist
+   * This should be called when a new user is created
+   */
+  static async initializeUserStats(): Promise<void> {
+    const existingStats = await EnhancedStorageManager.getUserStats();
+    if (!existingStats) {
+      console.log('[AchievementManager] Initializing new user stats');
+      await this.saveUserStats(this.getDefaultStats());
+    }
+    
+    // Load weekend tracking data from localStorage
+    try {
+      const savedWeekendDays = localStorage.getItem('doshi_weekend_days_studied');
+      if (savedWeekendDays) {
+        this.weekendDaysStudied = new Set(JSON.parse(savedWeekendDays));
+      }
+    } catch (error) {
+      console.error('Error loading weekend tracking data:', error);
+    }
+  }
+  
+  /**
+   * Save weekend tracking data
+   */
+  private static saveWeekendTracking(): void {
+    try {
+      localStorage.setItem('doshi_weekend_days_studied', 
+        JSON.stringify(Array.from(this.weekendDaysStudied))
+      );
+    } catch (error) {
+      console.error('Error saving weekend tracking data:', error);
+    }
+  }
+
+  /**
+   * Debug method to log current achievement state
+   */
+  static async debugAchievementState(): Promise<void> {
+    const stats = await this.getUserStats();
+    const unlocked = await this.getUnlockedAchievements();
+    console.log('[AchievementManager] Current state:', {
+      stats,
+      unlockedCount: unlocked.length,
+      unlockedIds: unlocked.map(u => u.achievementId)
+    });
   }
 }

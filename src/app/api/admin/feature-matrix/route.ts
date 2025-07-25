@@ -4,6 +4,10 @@ import { ENTITLEMENT_RULES } from '@/lib/entitlements/rules';
 import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
 import { UserType } from '@/lib/entitlements/types';
 
+// Add cache control headers
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // For now, we'll skip admin authentication since the data is static
@@ -12,9 +16,11 @@ export async function GET() {
     // Get dynamic rules from database (falls back to static if not found)
     let rules = ENTITLEMENT_RULES;
     try {
+      // Clear cache to ensure we get the latest rules
+      dynamicRules.clearCache();
       rules = await dynamicRules.getRules();
     } catch (error) {
-      console.log('Using static rules as fallback');
+      console.log('Using static rules as fallback:', error);
     }
     
     // Build feature matrix data
@@ -33,7 +39,19 @@ export async function GET() {
       // Check each user type
       userTypes.forEach(userType => {
         const rule = rules.find(r => r.userTypes.includes(userType));
-        if (!rule) return;
+        if (!rule) {
+          console.warn(`No rule found for user type: ${userType}`);
+          return;
+        }
+        
+        // Debug which rule is being used
+        if (feature.id === 'youtube_shadowing') {
+          console.log(`Rule for ${userType}:`, {
+            ruleId: rule.id,
+            userTypes: rule.userTypes,
+            youtubeShadowingLimit: rule.limits.daily?.youtube_shadowing
+          });
+        }
         
         // Check if feature is allowed for this user type
         let allowed = false;
@@ -45,13 +63,30 @@ export async function GET() {
           'story_reading': 'read_stories',
           'kanji_quest': 'play_games',
           'kana_drop': 'play_games',
+          'sentence_scramble': 'play_games',
+          'matching_game': 'play_games',
+          'reading_routes': 'play_games',
+          'kanji_simon': 'play_games',
           'word_lists': 'create_lists',
           'bookmarks': 'create_lists',
+          'sentences-bookmark': 'create_lists',
           'cloud_sync': 'cloud_sync',
           'progress_saving': 'save_progress',
           'kanji_moods': 'kanji_moods',
           'speaking_practice': 'do_drills',
-          'ai_tutor': 'premium_features'
+          'ai_tutor': 'premium_features',
+          'youtube_shadowing': 'youtube_shadowing',
+          'textbook_vocabulary': 'textbook_vocabulary',
+          'kanji_stroke_order': 'view_stroke_order',
+          'stroke_order_practice': 'view_stroke_order',
+          'flashcard_review': 'do_drills',
+          'offline_articles': 'premium_features',
+          'offline_stories': 'premium_features',
+          'resource_caching': 'premium_features',
+          'background_sync': 'premium_features',
+          'ai_context_explanation': 'ai_explanations',
+          'anki_import': 'anki_import',
+          'anki_set_creation': 'anki_set_creation'
         };
         
         const requiredPermission = permissionMap[feature.id];
@@ -98,12 +133,30 @@ export async function GET() {
       ).length
     };
     
-    return NextResponse.json({
+    // Debug specific feature
+    const youtubeShadowingData = matrix.find(m => m.feature.id === 'youtube_shadowing');
+    if (youtubeShadowingData) {
+      console.log('YouTube Shadowing Access Data:', {
+        guest: youtubeShadowingData.access.guest,
+        free: youtubeShadowingData.access.free,
+        monthly: youtubeShadowingData.access.monthly,
+        yearly: youtubeShadowingData.access.yearly
+      });
+    }
+    
+    const response = NextResponse.json({
       matrix,
       stats,
       userTypes,
       lastUpdated: new Date().toISOString()
     });
+    
+    // Set cache control headers to prevent caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    
+    return response;
     
   } catch (error) {
     console.error('Feature matrix API error:', error);

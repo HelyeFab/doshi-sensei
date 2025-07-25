@@ -107,7 +107,8 @@ html, body {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: var(--font-rubik);
+  --font-sans: var(--font-manrope);
+  --font-heading: var(--font-rubik);
   --font-mono: var(--font-geist-mono);
   --radius: var(--radius);
 }
@@ -119,9 +120,19 @@ html, body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-rubik), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-manrope), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Headings and titles use Rubik */
+h1, h2, h3, h4, h5, h6,
+.heading, .title,
+[class*="text-2xl"], [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"], [class*="text-6xl"],
+[class*="text-xl"]:is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-rubik), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 /* Mobile content padding to account for bottom navbar */
@@ -159,6 +170,28 @@ body {
 .japanese-text {
   font-family: 'Noto Sans JP', sans-serif;
   font-weight: 400;
+}
+
+/* Font utility classes */
+.font-manrope {
+  font-family: var(--font-manrope), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-rubik {
+  font-family: var(--font-rubik), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-heading {
+  font-family: var(--font-rubik), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Ensure all font-semibold and font-bold headings use Rubik */
+h1.font-semibold, h2.font-semibold, h3.font-semibold, 
+h4.font-semibold, h5.font-semibold, h6.font-semibold,
+h1.font-bold, h2.font-bold, h3.font-bold, 
+h4.font-bold, h5.font-bold, h6.font-bold,
+.title, .heading {
+  font-family: var(--font-rubik), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .japanese-large {

@@ -17,10 +17,9 @@ export const DEFAULT_ACHIEVEMENTS: Achievement[] = [
     isCustom: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    conditionType: 'simple',
-    conditionField: 'currentStreak',
-    conditionOperator: '>=',
-    conditionValue: 1
+    conditionType: 'complex',
+    // Will be checked with custom logic - requires at least 1 drill/game/study session
+    minActivityRequirement: true
   },
   {
     id: 'streak_3',

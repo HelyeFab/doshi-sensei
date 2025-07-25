@@ -59,7 +59,7 @@ export function AnimatedWord({ word, onAnimationComplete, className }: AnimatedW
           <div className="text-2xl font-bold text-blue-400 japanese-text">
             {word.kanji}
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-white/90">
             {word.kana} - "{word.meaning}"
           </div>
         </div>

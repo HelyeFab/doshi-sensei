@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withFirebaseAdmin } from '@/utils/api-wrapper';
-import admin from 'firebase-admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;

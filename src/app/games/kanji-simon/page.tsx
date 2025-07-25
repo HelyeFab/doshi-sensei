@@ -45,7 +45,7 @@ export default function KanjiSimonPage() {
             isOpen={showInstructions}
             onClose={() => setShowInstructions(false)}
             height="90%"
-            showHandle={true}
+            showHandle={false}
             title="How to Play Kanji Simon"
           >
             <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 -m-6 p-6 pb-8">

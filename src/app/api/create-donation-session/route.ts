@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { publicApiRateLimiter } from '@/lib/rate-limiter';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -11,6 +12,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Minimum donation amount is $1.00' },
         { status: 400 }
+      );
+    }
+
+    // Rate limiting - use email or IP as identifier
+    const identifier = userEmail || request.headers.get('x-forwarded-for') || 'anonymous';
+    if (!publicApiRateLimiter.isAllowed(identifier)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
       );
     }
 

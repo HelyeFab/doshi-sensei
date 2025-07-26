@@ -114,7 +114,7 @@ export class ArticleCache {
   async setProcessedContent(articleId: string, processedContent: string): Promise<void> {
     try {
       // Get existing cached article
-      let article = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
+      const article = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
                    await this.cacheManager.getDB<CachedArticle>('articles', articleId);
 
       if (article) {
@@ -137,7 +137,7 @@ export class ArticleCache {
    */
   async getProcessedContent(articleId: string): Promise<string | null> {
     try {
-      let article = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
+      const article = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
                    await this.cacheManager.getDB<CachedArticle>('articles', articleId);
 
       return article?.processedContent || null;

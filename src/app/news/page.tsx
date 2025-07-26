@@ -50,26 +50,20 @@ function ArticleCard({ article, onClick }: ArticleCardProps) {
   };
 
   const getDifficultyColor = (difficulty: string) => {
+    // Use theme-aware colors that adapt to the current color scheme
     const colors = {
-      N5: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      N4: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      N3: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      N2: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-      N1: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      N5: 'bg-primary/10 text-primary border border-primary/20',
+      N4: 'bg-secondary/50 text-secondary-foreground border border-secondary',
+      N3: 'bg-accent/20 text-accent-foreground border border-accent/30',
+      N2: 'bg-muted text-muted-foreground border border-border',
+      N1: 'bg-destructive/10 text-destructive border border-destructive/20'
     };
     return colors[difficulty as keyof typeof colors] || colors.N4;
   };
 
   const getCategoryColor = (category: string) => {
-    const colors = {
-      culture: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      business: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
-      technology: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
-      society: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
-      transportation: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      general: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
-    };
-    return colors[category as keyof typeof colors] || colors.general;
+    // All categories use consistent theme-aware styling
+    return 'bg-muted text-muted-foreground border border-border';
   };
 
   return (
@@ -402,12 +396,17 @@ export default function NewsPage() {
               <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                 <span>📚 {stats.totalArticles} articles available</span>
                 <span>📅 Updated: {new Date(stats.lastUpdated).toLocaleDateString()}</span>
-                {!isPremium && articleLimit > 0 && !featureLoading && (
+                {userType !== 'guest' && !featureLoading && (
                   <span className="text-primary">
-                    📖 {articlesRemaining > 0
-                      ? `${articlesRemaining} ${articlesRemaining === 1 ? 'article' : 'articles'} remaining today`
-                      : 'Daily limit reached'
-                    }
+                    📖 {isPremium ? (
+                      <span className="text-primary font-medium">Unlimited articles</span>
+                    ) : articlesRemaining !== undefined && articlesRemaining !== null ? (
+                      articlesRemaining > 0
+                        ? `${articlesRemaining} ${articlesRemaining === 1 ? 'article' : 'articles'} remaining today`
+                        : 'Daily limit reached'
+                    ) : (
+                      'Loading...'
+                    )}
                   </span>
                 )}
               </div>

@@ -54,7 +54,7 @@ export function SaveMultipleKanjiModal({ items, onClose, onSaveComplete }: SaveM
       setSaveProgress({ current: 0, total: items.length });
 
       // Create new list if needed
-      let listsToSaveTo = [...selectedLists];
+      const listsToSaveTo = [...selectedLists];
       if (newListName.trim() && showCreateNew) {
         try {
           const newList = await StudyListManager.createStudyList({
@@ -72,7 +72,7 @@ export function SaveMultipleKanjiModal({ items, onClose, onSaveComplete }: SaveM
 
       // Save all kanji to selected lists
       let successCount = 0;
-      let failedItems: string[] = [];
+      const failedItems: string[] = [];
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i];

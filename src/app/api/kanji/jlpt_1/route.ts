@@ -11,7 +11,7 @@ export async function GET() {
       'jlpt_1_6', 'jlpt_1_7', 'jlpt_1_8', 'jlpt_1_9', 'jlpt_1_10'
     ];
 
-    let allKanjiData: any[] = [];
+    const allKanjiData: any[] = [];
 
     for (const folder of folders) {
       try {

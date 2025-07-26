@@ -168,14 +168,25 @@ export class AccessControl {
     // Get the limit value
     const limit = await entitlementManager.getLimit(userType, limitKey, limitType);
     
-    // Unlimited (-1) always passes
+    // Unlimited (-1) always passes, expose remaining = -1 for UI
     if (limit === -1) {
-      return { allowed: true, userType };
+      return {
+        allowed: true,
+        limit: -1,
+        usage: 0,
+        remaining: -1,
+        userType
+      };
     }
     
     // Simple access (0) always passes (no numeric limit)
+    // But we should still return remaining = null to indicate no limit tracking
     if (limit === 0) {
-      return { allowed: true, userType };
+      return { 
+        allowed: true, 
+        userType,
+        remaining: null
+      };
     }
     
     // Get current usage

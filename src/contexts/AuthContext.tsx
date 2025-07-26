@@ -19,7 +19,6 @@ import { Analytics } from '@/utils/analytics';
 import { getDefaultSubscription } from '@/types/subscription';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { pokemonStorage } from '@/utils/pokemonStorage';
-import { sendCustomEmailVerification } from '@/lib/email/customEmailVerification';
 
 interface AuthContextType {
   user: User | null;
@@ -136,9 +135,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await updateProfile(result.user, { displayName });
     }
 
-    // Send email verification and create user document
+    // Create user document (Netlify handles email verification)
     if (result.user) {
-      await sendCustomEmailVerification(result.user);
       await createOrUpdateUserDocument(result.user);
     }
     

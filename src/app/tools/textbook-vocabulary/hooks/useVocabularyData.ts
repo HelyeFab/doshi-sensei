@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { TEXTBOOK_CONFIG } from '@/config/textbooks';
 import type { VocabularyItem, TextbookMetadata } from '../types';
 
 export function useVocabularyData(textbook: string, lesson?: number) {
@@ -6,6 +8,7 @@ export function useVocabularyData(textbook: string, lesson?: number) {
   const [metadata, setMetadata] = useState<TextbookMetadata | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const { isPremium } = useSubscription2();
   
   useEffect(() => {
     const loadData = async () => {
@@ -21,22 +24,41 @@ export function useVocabularyData(textbook: string, lesson?: number) {
         
         // Load vocabulary data
         if (lesson) {
-          // For Genki 2, adjust lesson number (UI shows 1-11, but data has 13-23)
-          let actualLesson = lesson;
-          if (textbook === 'genki-2' && lesson <= 11) {
-            actualLesson = lesson + 12;
-          }
+          // Check if this is a premium lesson and should use API
+          const requiresAPI = lesson > TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson && !isPremium;
           
-          // Load specific lesson
-          try {
-            const lessonModule = await import(
-              `@/data/textbook-vocabulary/${textbook}/lesson-${actualLesson}.json`
-            );
-            setData(lessonModule.default);
-          } catch (err) {
-            // If specific lesson doesn't exist, try loading all
-            console.warn(`Lesson ${actualLesson} not found, loading all vocabulary`);
-            await loadAllVocabulary(textbook);
+          if (requiresAPI) {
+            // Use API route for premium validation
+            try {
+              const response = await fetch(`/api/textbook-vocabulary/${textbook}/${lesson}`);
+              if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to load lesson');
+              }
+              const lessonData = await response.json();
+              setData(lessonData);
+            } catch (err) {
+              console.error('Failed to load premium lesson:', err);
+              setError(err as Error);
+            }
+          } else {
+            // For Genki 2, adjust lesson number (UI shows 1-11, but data has 13-23)
+            let actualLesson = lesson;
+            if (textbook === 'genki-2' && lesson <= 11) {
+              actualLesson = lesson + 12;
+            }
+            
+            // Load specific lesson directly
+            try {
+              const lessonModule = await import(
+                `@/data/textbook-vocabulary/${textbook}/lesson-${actualLesson}.json`
+              );
+              setData(lessonModule.default);
+            } catch (err) {
+              // If specific lesson doesn't exist, try loading all
+              console.warn(`Lesson ${actualLesson} not found, loading all vocabulary`);
+              await loadAllVocabulary(textbook);
+            }
           }
         } else {
           // Load all vocabulary for the textbook
@@ -51,7 +73,7 @@ export function useVocabularyData(textbook: string, lesson?: number) {
     };
     
     loadData();
-  }, [textbook, lesson]);
+  }, [textbook, lesson, isPremium]);
   
   const loadAllVocabulary = async (textbook: string) => {
     try {

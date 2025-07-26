@@ -308,7 +308,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
     // Simple tokenization - split by common particles and punctuation
     // This could be enhanced with a proper Japanese tokenizer
     const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'から', 'まで', 'より'];
-    let result: string[] = [];
+    const result: string[] = [];
     let currentWord = '';
 
     for (let i = 0; i < text.length; i++) {

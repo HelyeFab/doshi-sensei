@@ -169,7 +169,7 @@ export default function SlideUpModal({
           <div className="p-4 pb-safe">
             {children || (
               <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400">
+                <p className="text-muted-foreground">
                   Modal content goes here
                 </p>
               </div>

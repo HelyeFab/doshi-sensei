@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FilterPanel } from './FilterPanel';
 import { VocabularyGrid } from './VocabularyGrid';
@@ -10,11 +10,14 @@ import { ProgressTracker } from './ProgressTracker';
 import { StudyProgress } from './StudyProgress';
 import { useVocabularyData } from '../hooks/useVocabularyData';
 import { useFilteredVocab } from '../hooks/useFilteredVocab';
-import { spacedRepetition, vocabStorage } from '@/services/textbook-vocabulary';
+import { useStudySession } from '../hooks/useStudySession';
+import { vocabStorage } from '@/services/textbook-vocabulary';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import type { VocabularyItem } from '../types';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
+import { TEXTBOOK_CONFIG } from '@/config/textbooks';
+import { useErrorNotification, ERROR_MESSAGES } from '@/hooks/useErrorNotification';
 
 interface VocabularyLearningViewProps {
   textbook: string;
@@ -24,22 +27,41 @@ interface VocabularyLearningViewProps {
 export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningViewProps) {
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'study' | 'golden-time'>('grid');
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [studyQueue, setStudyQueue] = useState<VocabularyItem[]>([]);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sessionStats, setSessionStats] = useState({ studied: 0, correct: 0 });
+  const [progressRefreshKey, setProgressRefreshKey] = useState(0);
+  const isMountedRef = useRef(true);
 
   // Subscription
   const { isPremium } = useSubscription2();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
+  // Error notification
+  const { showError, ErrorNotificationDialog } = useErrorNotification();
+  
+  // Study session management
+  const {
+    studyQueue,
+    currentCardIndex,
+    sessionStats,
+    isStudying,
+    startStudySession,
+    completeCard,
+    endSession
+  } = useStudySession();
+  
   const { data: vocabulary, loading, error } =
     useVocabularyData(textbook, selectedLesson || undefined);
   const { filteredVocab, filters, updateFilter } = useFilteredVocab(vocabulary);
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Handle lesson selection with premium gating
   const handleLessonSelect = (lesson: number | null) => {
-    if (lesson && !isPremium && lesson > 2) {
+    if (lesson && !isPremium && lesson > TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson) {
       setShowUpgradeModal(true);
       return;
     }
@@ -48,94 +70,41 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
 
   // Initialize storage on mount
   useEffect(() => {
-    vocabStorage.init().catch(console.error);
-  }, []);
+    vocabStorage.init().catch(error => {
+      console.error('Failed to initialize storage:', error);
+      showError(ERROR_MESSAGES.LOAD_FAILED.title, ERROR_MESSAGES.LOAD_FAILED.message);
+    });
+  }, [showError]);
 
-  const textbookMetadata = {
-    'genki-1': {
-      title: 'Genki 1',
-      color: 'from-pink-400 to-purple-500',
-      lessons: 12,
-      lessonOffset: 0
-    },
-    'genki-2': {
-      title: 'Genki 2',
-      color: 'from-purple-400 to-indigo-500',
-      lessons: 11,
-      lessonOffset: 12  // Genki 2 starts at lesson 13
-    },
-    'minna-1': {
-      title: 'Minna no Nihongo 1',
-      color: 'from-green-400 to-teal-500',
-      lessons: 25,
-      lessonOffset: 0
-    },
-    'minna-2': {
-      title: 'Minna no Nihongo 2',
-      color: 'from-teal-400 to-blue-500',
-      lessons: 25,
-      lessonOffset: 0
-    }
-  };
-
-  const currentTextbook = textbookMetadata[textbook as keyof typeof textbookMetadata];
+  const currentTextbook = TEXTBOOK_CONFIG.textbooks[textbook as keyof typeof TEXTBOOK_CONFIG.textbooks];
 
   const handleStartStudy = async (cards: VocabularyItem[]) => {
-    setStudyQueue(cards);
-    setCurrentCardIndex(0);
-    setViewMode('study');
-    
-    // Start a new study session
     try {
-      const newSessionId = await vocabStorage.startStudySession(textbook);
-      setSessionId(newSessionId);
-      setSessionStats({ studied: 0, correct: 0 });
+      await startStudySession(cards, textbook);
+      setViewMode('study');
     } catch (error) {
       console.error('Failed to start study session:', error);
+      showError(ERROR_MESSAGES.SESSION_START_FAILED.title, ERROR_MESSAGES.SESSION_START_FAILED.message);
     }
   };
 
   const handleCardComplete = async (quality: number) => {
-    const currentCard = studyQueue[currentCardIndex];
-    
-    // Process the review with spaced repetition
     try {
-      await spacedRepetition.processReview(currentCard.id, quality, currentCard);
-      
-      // Update session stats
-      const newStats = {
-        studied: sessionStats.studied + 1,
-        correct: sessionStats.correct + (quality >= 3 ? 1 : 0)
-      };
-      setSessionStats(newStats);
-      
-      // Update session in storage
-      if (sessionId) {
-        await vocabStorage.updateStudySession(sessionId, {
-          cardsStudied: newStats.studied,
-          cardsCorrect: newStats.correct,
-          avgQuality: quality
-        });
-      }
+      await completeCard(quality);
     } catch (error) {
       console.error('Failed to save progress:', error);
-    }
-    
-    if (currentCardIndex < studyQueue.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1);
-    } else {
-      // Study session complete
-      if (sessionId) {
-        await vocabStorage.updateStudySession(sessionId, {
-          endTime: new Date()
-        });
-      }
-      
-      setViewMode('grid');
-      setStudyQueue([]);
-      setSessionId(null);
+      showError(ERROR_MESSAGES.SAVE_FAILED.title, ERROR_MESSAGES.SAVE_FAILED.message);
     }
   };
+  
+  // Watch for study session ending
+  useEffect(() => {
+    if (!isStudying && viewMode === 'study') {
+      setViewMode('grid');
+      // Refresh progress tracker
+      setProgressRefreshKey(prev => prev + 1);
+    }
+  }, [isStudying, viewMode]);
 
   if (loading) {
     return (
@@ -280,7 +249,10 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
             <div className="max-w-md mx-auto mb-6">
               <div className="flex justify-end mb-2">
                 <button
-                  onClick={() => setViewMode('grid')}
+                  onClick={async () => {
+                    await endSession();
+                    setViewMode('grid');
+                  }}
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Exit Study
@@ -323,13 +295,20 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         message="Unlock lessons 3+ and more with Premium"
-        feature="textbook_vocabulary_lessons"
+        feature="textbook_vocabulary"
       />
 
       {/* Bottom Stats Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
-        <ProgressTracker vocabulary={vocabulary} textbook={textbook} />
+        <ProgressTracker 
+          vocabulary={vocabulary} 
+          textbook={textbook} 
+          refreshKey={progressRefreshKey}
+        />
       </div>
+      
+      {/* Error Notification Dialog */}
+      <ErrorNotificationDialog />
     </div>
   );
 }

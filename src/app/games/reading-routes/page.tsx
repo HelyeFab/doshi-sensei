@@ -8,6 +8,7 @@ import { getAllProgress } from '@/utils/moodBoardProgress';
 import { MoodBoardsProgress } from '@/types/moodBoard';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import SlideUpModal from '@/components/SlideUpModal';
 
@@ -17,6 +18,7 @@ export default function ReadingRoutesPage() {
   const [progress, setProgress] = useState<MoodBoardsProgress>({});
   const { checkAndTrack, AccessModals } = useAccessWithModals();
   const { feature, access, remaining } = useFeature('reading_routes');
+  const { isPremium } = useSubscription2();
   const [showInstructions, setShowInstructions] = useState(true);
 
   useEffect(() => {
@@ -163,10 +165,12 @@ export default function ReadingRoutesPage() {
                   <p className="text-lg text-muted-foreground leading-relaxed mb-6 max-w-2xl mx-auto">
                     Navigate through interactive reading challenges to master when to use <span className="font-semibold text-pink-600">on'yomi</span> vs <span className="font-semibold text-blue-600">kun'yomi</span> readings in different contexts.
                   </p>
-                  {remaining !== null && remaining !== undefined && (
+                  {(remaining !== null && remaining !== undefined) || isPremium ? (
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                       <span className="text-sm font-medium text-foreground">
-                        {remaining > 0 ? (
+                        {isPremium ? (
+                          <span className="text-green-600 font-bold">Unlimited plays</span>
+                        ) : remaining > 0 ? (
                           <>
                             <span className="text-primary font-bold">{remaining}</span> plays remaining today
                           </>

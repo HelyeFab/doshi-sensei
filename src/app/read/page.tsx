@@ -20,7 +20,7 @@ export default function ReadPage() {
   const [selectedTab, setSelectedTab] = useState<'news' | 'stories'>('news');
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -33,7 +33,7 @@ export default function ReadPage() {
       <div className="mobile-nav-padding">
         {/* Toggle Switch Container */}
         <div className="px-4 pt-4 pb-6">
-          <div className="relative bg-white rounded-full p-1 shadow-sm">
+          <div className="relative bg-card border border-border rounded-full p-1 shadow-sm">
             {/* Sliding Background */}
             <div
               className={`absolute inset-y-1 w-1/2 bg-primary rounded-full transition-transform duration-200 ease-out ${
@@ -48,7 +48,7 @@ export default function ReadPage() {
                 className={`py-3 px-6 rounded-full text-sm font-medium transition-colors duration-200 ${
                   selectedTab === 'news'
                     ? 'text-primary-foreground'
-                    : 'text-gray-600 hover:text-gray-900'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 News 📰
@@ -58,7 +58,7 @@ export default function ReadPage() {
                 className={`py-3 px-6 rounded-full text-sm font-medium transition-colors duration-200 ${
                   selectedTab === 'stories'
                     ? 'text-primary-foreground'
-                    : 'text-gray-600 hover:text-gray-900'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 AI Stories 📚
@@ -72,16 +72,16 @@ export default function ReadPage() {
           {selectedTab === 'news' ? (
             <div className="space-y-4">
               {/* News Description Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-card border border-border rounded-lg shadow-sm p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">📰</span>
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h2 className="text-lg font-semibold text-card-foreground mb-2">
                       Japanese News Articles
                     </h2>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm text-muted-foreground mb-4">
                       Read real Japanese news articles with furigana support, translations, and difficulty levels tailored to your learning journey.
                     </p>
                     <SmartNavigationLink href="/news"
@@ -118,16 +118,16 @@ export default function ReadPage() {
           ) : (
             <div className="space-y-4">
               {/* AI Stories Description Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-card border border-border rounded-lg shadow-sm p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">📚</span>
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h2 className="text-lg font-semibold text-card-foreground mb-2">
                       AI-Generated Stories
                     </h2>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm text-muted-foreground mb-4">
                       Immerse yourself in interactive stories created by AI, tailored to your level with built-in comprehension support.
                     </p>
                     <SmartNavigationLink href="/stories"
@@ -170,13 +170,13 @@ export default function ReadPage() {
 
 function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 flex items-center gap-3">
-      <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
+    <div className="bg-card border border-border rounded-lg shadow-sm p-4 flex items-center gap-3">
+      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
         <span className="text-xl">{icon}</span>
       </div>
       <div className="flex-1">
-        <h3 className="font-medium text-gray-900 text-sm">{title}</h3>
-        <p className="text-xs text-gray-500">{description}</p>
+        <h3 className="font-medium text-card-foreground text-sm">{title}</h3>
+        <p className="text-xs text-muted-foreground">{description}</p>
       </div>
     </div>
   );

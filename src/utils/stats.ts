@@ -850,7 +850,7 @@ export class StatsManager {
       // Check if streak matches actual consecutive days with activity
       const sortedDates = Array.from(sessionsByDate.keys()).sort();
       let actualStreak = 0;
-      let currentDate = new Date();
+      const currentDate = new Date();
 
       // Count backwards from today to find actual consecutive days
       for (let i = 0; i < 30; i++) {

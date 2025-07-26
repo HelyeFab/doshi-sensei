@@ -85,7 +85,7 @@ export async function extractUrlMetadata(url: string) {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.toLowerCase();
     
-    let extractedData = {
+    const extractedData = {
       title: '',
       description: '',
       image: '',

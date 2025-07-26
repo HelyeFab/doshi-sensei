@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { FilterButtonGroup } from './FilterButtonGroup';
 import type { FilterOptions } from '../types';
 import { TEXTBOOK_CONFIG } from '@/config/textbooks';
 
@@ -16,14 +17,6 @@ interface FilterPanelProps {
   onRequestUpgrade: () => void;
 }
 
-// Reusable component for filter button groups
-interface FilterButtonGroupProps {
-  label: string;
-  value: string | null;
-  options: readonly string[] | string[];
-  onSelect: (value: string | null) => void;
-  capitalize?: boolean;
-}
 
 export function FilterPanel({
   filters,
@@ -36,10 +29,6 @@ export function FilterPanel({
   onRequestUpgrade
 }: FilterPanelProps) {
   const [showFilters, setShowFilters] = useState(false);
-
-  // Use configuration from centralized config
-  const jlptLevels = [...TEXTBOOK_CONFIG.jlptLevels];
-  const themes = TEXTBOOK_CONFIG.themes.filter(t => t !== 'all');
 
   return (
     <div className="mb-4 space-y-4">
@@ -80,10 +69,9 @@ export function FilterPanel({
             <button
               key={lesson}
               onClick={() => (locked ? onRequestUpgrade() : onLessonSelect(lesson))}
-              disabled={locked}
               className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
                 locked
-                  ? 'bg-muted text-muted-foreground cursor-not-allowed relative'
+                  ? 'bg-gray-100 text-gray-400 cursor-pointer relative opacity-60 hover:bg-gray-200'
                   : selectedLesson === lesson
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -121,64 +109,21 @@ export function FilterPanel({
           className="space-y-4"
         >
           {/* JLPT Level */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">JLPT Level</label>
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => onFilterChange('jlptLevel', null)}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                  filters.jlptLevel === null
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                All
-              </button>
-              {jlptLevels.map((level) => (
-                <button
-                  key={level}
-                  onClick={() => onFilterChange('jlptLevel', level)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                    filters.jlptLevel === level
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {level}
-                </button>
-              ))}
-            </div>
-          </div>
+          <FilterButtonGroup
+            label="JLPT Level"
+            value={filters.jlptLevel}
+            options={TEXTBOOK_CONFIG.jlptLevels}
+            onSelect={(value) => onFilterChange('jlptLevel', value)}
+          />
 
           {/* Theme */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Theme</label>
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => onFilterChange('theme', null)}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                  filters.theme === null
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                All
-              </button>
-              {themes.map((theme) => (
-                <button
-                  key={theme}
-                  onClick={() => onFilterChange('theme', theme)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium capitalize transition-colors ${
-                    filters.theme === theme
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {theme}
-                </button>
-              ))}
-            </div>
-          </div>
+          <FilterButtonGroup
+            label="Theme"
+            value={filters.theme}
+            options={TEXTBOOK_CONFIG.themes.filter(t => t !== 'all')}
+            onSelect={(value) => onFilterChange('theme', value)}
+            capitalize
+          />
         </motion.div>
       )}
     </div>

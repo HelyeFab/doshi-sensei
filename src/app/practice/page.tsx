@@ -91,9 +91,9 @@ export default function PracticePage() {
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   Welcome to the foundation of your Japanese learning adventure. Master the essentials with our{' '}
-                  <span className="font-semibold text-pink-500">Kana Charts</span>
+                  <span className="font-semibold text-primary">Kana Charts</span>
                   {' '}and{' '}
-                  <span className="font-semibold text-orange-500">Conjugation Practice</span>
+                  <span className="font-semibold text-accent">Conjugation Practice</span>
                   {' '}— the building blocks every learner needs.
                 </p>
                 
@@ -436,9 +436,9 @@ export default function PracticePage() {
               {/* Anki Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Import your <span className="font-semibold text-purple-500">Anki decks</span> seamlessly. 
+                  Import your <span className="font-semibold text-primary">Anki decks</span> seamlessly. 
                   Continue your studies with all your existing cards and progress.
-                  <span className="ml-1 text-xs text-orange-500 font-semibold">Premium</span>
+                  <span className="ml-1 text-xs text-accent font-semibold">Premium</span>
                 </p>
                 
                 <div className="space-y-3">
@@ -494,7 +494,7 @@ export default function PracticePage() {
               {/* Games Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Learning is fun with our <span className="font-semibold text-pink-500">interactive games</span>! 
+                  Learning is fun with our <span className="font-semibold text-primary">interactive games</span>! 
                   From Kanji Quest to listening challenges, make progress while playing.
                 </p>
                 
@@ -565,8 +565,8 @@ export default function PracticePage() {
               {/* Reading Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Read real Japanese with our <span className="font-semibold text-blue-500">news articles</span> and{' '}
-                  <span className="font-semibold text-orange-500">stories</span>. 
+                  Read real Japanese with our <span className="font-semibold text-primary">news articles</span> and{' '}
+                  <span className="font-semibold text-accent">stories</span>. 
                   Furigana support helps you read confidently.
                 </p>
                 

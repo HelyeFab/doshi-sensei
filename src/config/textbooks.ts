@@ -1,19 +1,45 @@
 // Centralized configuration for textbook vocabulary feature
 export const TEXTBOOK_CONFIG = {
-  // Available textbooks
+  // Available textbooks with metadata
   textbooks: {
-    genki: {
-      id: 'genki',
+    'genki-1': {
+      id: 'genki-1',
       name: 'Genki',
+      title: 'Genki 1',
       edition: '3rd',
-      lessons: 23,
+      lessons: 12,
+      lessonOffset: 0,
+      color: 'from-pink-400 to-purple-500',
       description: 'Popular beginner Japanese textbook series',
     },
-    'minna-no-nihongo': {
-      id: 'minna-no-nihongo',
+    'genki-2': {
+      id: 'genki-2',
+      name: 'Genki',
+      title: 'Genki 2',
+      edition: '3rd',
+      lessons: 11,
+      lessonOffset: 12,
+      color: 'from-purple-400 to-indigo-500',
+      description: 'Popular beginner Japanese textbook series',
+    },
+    'minna-1': {
+      id: 'minna-1',
       name: 'Minna no Nihongo',
+      title: 'Minna no Nihongo 1',
       edition: '2nd',
-      lessons: 50,
+      lessons: 25,
+      lessonOffset: 0,
+      color: 'from-green-400 to-teal-500',
+      description: 'Comprehensive Japanese learning textbook',
+    },
+    'minna-2': {
+      id: 'minna-2',
+      name: 'Minna no Nihongo',
+      title: 'Minna no Nihongo 2',
+      edition: '2nd',
+      lessons: 25,
+      lessonOffset: 0,
+      color: 'from-teal-400 to-blue-500',
       description: 'Comprehensive Japanese learning textbook',
     },
   },

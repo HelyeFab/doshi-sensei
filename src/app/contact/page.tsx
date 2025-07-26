@@ -41,26 +41,26 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage(null);
 
     try {
-      // Create form data for Netlify
-      const netlifyFormData = new FormData();
-      netlifyFormData.append('form-name', 'contact');
-      netlifyFormData.append('name', formData.name);
-      netlifyFormData.append('email', formData.email);
-      netlifyFormData.append('subject', formData.subject);
-      netlifyFormData.append('category', formData.category);
-      netlifyFormData.append('message', formData.message);
-
+      // Validate email before sending
       if (!validator.isEmail(formData.email)) {
-        setErrorMessage(strings.forms.validation.invalidEmail);
+        setErrorMessage(strings.forms?.validation?.invalidEmail || 'Please enter a valid email address');
+        setIsSubmitting(false);
         return;
       }
+
+      // Submit to Netlify Forms
+      const formBody = new URLSearchParams({
+        'form-name': 'contact',
+        ...formData
+      }).toString();
 
       const response = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(netlifyFormData as any).toString()
+        body: formBody
       });
 
       if (response.ok) {
@@ -76,6 +76,7 @@ export default function ContactPage() {
         throw new Error('Form submission failed');
       }
     } catch (error) {
+      console.error('Contact form error:', error);
       setErrorMessage('Sorry, there was an error sending your message. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -152,22 +153,24 @@ export default function ContactPage() {
                 {strings.contact.intro}
               </p>
             </div>
-            {/* Hidden Netlify form for form detection */}
+            {/* Hidden form for Netlify detection */}
             <form name="contact" data-netlify="true" hidden>
               <input type="text" name="name" />
               <input type="email" name="email" />
               <input type="text" name="subject" />
               <select name="category">
-                <option value="general">{strings.contact.form.categories.general}</option>
-                <option value="bug">{strings.contact.form.categories.bug}</option>
-                <option value="feedback">{strings.contact.form.categories.feedback}</option>
-                <option value="feature">{strings.contact.form.categories.feature}</option>
-                <option value="support">{strings.contact.form.categories.support}</option>
+                <option value="general">General</option>
+                <option value="bug">Bug Report</option>
+                <option value="feedback">Feedback</option>
+                <option value="feature">Feature Request</option>
+                <option value="support">Technical Support</option>
               </select>
               <textarea name="message"></textarea>
             </form>
+            
             {/* Actual form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" data-netlify="true" name="contact">
+              <input type="hidden" name="form-name" value="contact" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">

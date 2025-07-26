@@ -136,6 +136,11 @@ class TextbookVocabularyStorage {
     });
   }
 
+  async getProgressIds(textbook: string): Promise<Set<string>> {
+    const progress = await this.getProgressByTextbook(textbook);
+    return new Set(progress.map(p => p.id));
+  }
+
   async getDueCards(textbook?: string): Promise<VocabularyProgress[]> {
     const db = await this.ensureDb();
     const userId = auth.currentUser?.uid || 'anonymous';

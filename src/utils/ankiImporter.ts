@@ -351,7 +351,7 @@ export class AnkiImporter {
       }
       
       // Step 2: Process media files locally (no cloud upload)
-      let mediaUrls = new Map<string, string>();
+      const mediaUrls = new Map<string, string>();
       
       if (media.size > 0) {
         // Store media in IndexedDB for persistent local storage

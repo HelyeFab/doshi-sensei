@@ -40,7 +40,7 @@ const pageStructuredData = {
   "@type": "WebPage",
   "name": "Popular YouTube Videos - Doshi Sensei",
   "description": "Discover the most popular Japanese YouTube videos transcribed by the community. Learn from what others are watching!",
-  "url": "https://doshisensei.com/tools/popular-videos"
+  "url": "https://doshisensei.com/popular-videos"
 };
 
 export default function PopularVideos() {
@@ -135,7 +135,7 @@ export default function PopularVideos() {
       
       if (canAccess) {
         // User has access, navigate to the shadowing page
-        router.push(`/tools/youtube-shadowing?url=${encodeURIComponent(video.videoUrl || '')}`);
+        router.push(`/tools/youtube-shadowing?url=${encodeURIComponent(video.videoUrl || '')}&fromPopular=true`);
       }
       // If no access, the checkAndTrack function will automatically show the upgrade modal
     };
@@ -239,7 +239,7 @@ export default function PopularVideos() {
 
       <SmartPageHeader 
         title="Popular Videos"
-        backHref="/tools/youtube-shadowing" 
+        backHref="/" 
       />
 
       <div className="px-4 pb-20">

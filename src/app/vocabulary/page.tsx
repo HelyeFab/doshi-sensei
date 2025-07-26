@@ -200,7 +200,7 @@ export default function VocabularyPage() {
 
   const handleSaveWordToLists = async (word: JapaneseWord, listIds: string[], newListName?: string) => {
     try {
-      let listsToSaveTo = [...listIds];
+      const listsToSaveTo = [...listIds];
 
       // Check if we're saving an example sentence
       if (exampleToSave) {

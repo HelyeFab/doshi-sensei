@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ytdl from 'ytdl-core';
 import axios from 'axios';
+import { TranscriptCacheManager } from '@/utils/transcriptCache';
+
+// YouTube Data API v3 endpoint
+const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,14 +17,85 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Extracting info for:', url);
+    console.log('=== Starting YouTube extraction ===');
+    console.log('URL:', url);
     
-    // First, try SupaData AI - the most reliable solution!
+    // Check cache FIRST before making any API calls
+    const contentId = TranscriptCacheManager.generateContentId({
+      type: 'youtube',
+      videoUrl: url
+    });
+    
+    console.log('Checking transcript cache for:', contentId);
+    const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
+    
+    if (cachedTranscript && cachedTranscript.transcript.length > 0) {
+      console.log('Using cached transcript! Access count:', cachedTranscript.accessCount);
+      return NextResponse.json({
+        success: true,
+        transcript: cachedTranscript.transcript,
+        language: cachedTranscript.language,
+        videoTitle: cachedTranscript.videoTitle,
+        videoMetadata: cachedTranscript.metadata,
+        method: 'cache',
+        fromCache: true
+      });
+    }
+    
+    console.log('No cache hit, fetching from YouTube...');
+    console.log('Environment check - GOOGLE_API_KEY exists:', !!process.env.GOOGLE_API_KEY);
+    console.log('Environment check - YOUTUBE_API_KEY exists:', !!process.env.YOUTUBE_API_KEY);
+    console.log('Environment check - SUPA_YOUTUBE_API_KEY exists:', !!process.env.SUPA_YOUTUBE_API_KEY);
+    
+    // Extract video ID for YouTube API calls
+    const videoId = ytdl.getVideoID(url);
+    let videoMetadata = null;
+    
+    // First, try YouTube Data API v3 for video metadata using server-side API key
+    const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.YOUTUBE_API_KEY;
+    
+    if (GOOGLE_API_KEY) {
+      try {
+        console.log('Fetching video metadata from YouTube Data API v3...');
+        
+        const videoResponse = await axios.get(`${YOUTUBE_API_BASE}/videos`, {
+          params: {
+            part: 'snippet,contentDetails',
+            id: videoId,
+            key: GOOGLE_API_KEY
+          }
+        });
+
+        if (videoResponse.data.items && videoResponse.data.items.length > 0) {
+          const video = videoResponse.data.items[0];
+          videoMetadata = {
+            title: video.snippet.title,
+            channelTitle: video.snippet.channelTitle,
+            description: video.snippet.description,
+            thumbnails: video.snippet.thumbnails,
+            duration: video.contentDetails.duration,
+            publishedAt: video.snippet.publishedAt
+          };
+          console.log('Successfully fetched video metadata:', videoMetadata.title);
+        }
+      } catch (youtubeApiError) {
+        console.error('YouTube Data API error:', youtubeApiError.message);
+        if (youtubeApiError.response) {
+          console.error('API Response:', youtubeApiError.response.status, youtubeApiError.response.data);
+        }
+        // Continue with other methods - don't let this block SupaData
+      }
+    } else {
+      console.warn('GOOGLE_API_KEY not configured in environment variables');
+    }
+    
+    // Then try SupaData AI for transcripts
     const SUPA_API_KEY = process.env.SUPA_YOUTUBE_API_KEY;
     
     if (SUPA_API_KEY) {
       try {
-        console.log('Trying SupaData AI for transcripts...');
+        console.log('=== Trying SupaData AI ===');
+        console.log('SupaData API Key first 10 chars:', SUPA_API_KEY.substring(0, 10) + '...');
         
         const supaResponse = await axios.get(
           `https://api.supadata.ai/v1/transcript`,
@@ -36,8 +111,15 @@ export async function POST(request: NextRequest) {
           }
         );
         
+        console.log('SupaData response status:', supaResponse.status);
+        console.log('SupaData response data keys:', Object.keys(supaResponse.data || {}));
+        
         if (supaResponse.data) {
           console.log('Successfully got transcript from SupaData AI');
+          console.log('Response lang:', supaResponse.data.lang);
+          console.log('Available langs:', supaResponse.data.availableLangs);
+          console.log('Content exists:', !!supaResponse.data.content);
+          console.log('Content length:', supaResponse.data.content?.length || 0);
           
           // Check if Japanese subtitles are available
           if (supaResponse.data.lang !== 'ja' && !supaResponse.data.availableLangs?.includes('ja')) {
@@ -47,20 +129,41 @@ export async function POST(request: NextRequest) {
           
           // Parse SupaData response to our format
           const transcript = parseSupaDataTranscript(supaResponse.data);
+          console.log('Parsed transcript length:', transcript.length);
+          console.log('First transcript item:', transcript[0]);
           
           if (transcript && transcript.length > 0) {
+            // Save to cache before returning
+            await TranscriptCacheManager.saveTranscriptToCache({
+              contentId,
+              contentType: 'youtube',
+              videoUrl: url,
+              videoTitle: videoMetadata?.title || supaResponse.data.title || 'Unknown',
+              transcript,
+              language: 'ja',
+              metadata: {
+                youtubeVideoId: videoId,
+                channelName: videoMetadata?.channelTitle,
+                uploadDate: videoMetadata?.publishedAt
+              }
+            });
+            
             return NextResponse.json({
               success: true,
               transcript,
               language: 'ja',
               isAutoGenerated: false, // SupaData provides quality transcripts
-              videoTitle: supaResponse.data.title || 'Unknown',
+              videoTitle: videoMetadata?.title || supaResponse.data.title || 'Unknown',
+              videoMetadata: videoMetadata,
               method: 'supadata-ai'
             });
           }
         }
-      } catch (supaError) {
-        console.error('SupaData AI error:', supaError.message);
+      } catch (supaError: any) {
+        console.error('=== SupaData AI error ===');
+        console.error('Error message:', supaError.message);
+        console.error('Error response status:', supaError.response?.status);
+        console.error('Error response data:', supaError.response?.data);
         if (supaError.response?.status === 404) {
           console.log('No transcript available from SupaData');
         }
@@ -110,7 +213,8 @@ export async function POST(request: NextRequest) {
               transcript,
               language: jaTrack.languageCode,
               isAutoGenerated: jaTrack.kind === 'asr',
-              videoTitle: videoDetails.title,
+              videoTitle: videoMetadata?.title || videoDetails.title,
+              videoMetadata: videoMetadata,
               method: 'ytdl-core'
             });
           } catch (captionError) {
@@ -124,7 +228,6 @@ export async function POST(request: NextRequest) {
     
     // Method 2: Try get_video_info approach (more reliable)
     try {
-      const videoId = ytdl.getVideoID(url);
       console.log('Trying get_video_info method for video:', videoId);
       
       // First, get video info to extract caption URLs
@@ -171,7 +274,8 @@ export async function POST(request: NextRequest) {
                 transcript,
                 language: jaTrack.languageCode,
                 isAutoGenerated: jaTrack.kind === 'asr',
-                videoTitle: playerData?.videoDetails?.title,
+                videoTitle: videoMetadata?.title || playerData?.videoDetails?.title,
+                videoMetadata: videoMetadata,
                 method: 'get_video_info'
               });
             }
@@ -183,7 +287,6 @@ export async function POST(request: NextRequest) {
     }
     
     // Method 3: Try alternative endpoints
-    const videoId = ytdl.getVideoID(url);
     const alternativeUrls = [
       `https://video.google.com/timedtext?lang=ja&v=${videoId}`,
       `https://video.google.com/timedtext?lang=ja&v=${videoId}&kind=asr`,
@@ -210,6 +313,8 @@ export async function POST(request: NextRequest) {
               transcript,
               language: 'ja',
               isAutoGenerated: altUrl.includes('kind=asr'),
+              videoTitle: videoMetadata?.title,
+              videoMetadata: videoMetadata,
               method: 'alternative-endpoint'
             });
           }
@@ -224,10 +329,15 @@ export async function POST(request: NextRequest) {
     }
     
     // No captions found
+    console.log('=== All methods failed ===');
+    console.log('Returning error response with metadata:', !!videoMetadata);
+    
     return NextResponse.json({
       success: false,
       error: 'No Japanese captions found',
-      message: 'This video does not have Japanese captions available. Try uploading the audio for AI transcription.'
+      message: 'This video does not have Japanese captions available. Try uploading the audio for AI transcription.',
+      videoTitle: videoMetadata?.title,
+      videoMetadata: videoMetadata
     });
     
   } catch (error) {

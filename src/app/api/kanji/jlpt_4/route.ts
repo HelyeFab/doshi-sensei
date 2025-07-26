@@ -10,7 +10,7 @@ export async function GET() {
       'jlpt_4_1'
     ];
 
-    let allKanjiData: any[] = [];
+    const allKanjiData: any[] = [];
 
     for (const folder of folders) {
       try {

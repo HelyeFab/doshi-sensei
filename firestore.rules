@@ -570,8 +570,8 @@ service cloud.firestore {
       // Anyone can read cached transcripts (including guests)
       allow read: if true;
       
-      // Only authenticated users can create new transcript cache entries
-      allow create: if request.auth != null &&
+      // Anyone can create new transcript cache entries (community feature)
+      allow create: if
         request.resource.data.keys().hasAll(['videoUrl', 'transcript', 'createdAt', 'lastAccessed', 'accessCount', 'contentType']) &&
         request.resource.data.videoUrl is string &&
         request.resource.data.transcript is list &&
@@ -580,8 +580,8 @@ service cloud.firestore {
         request.resource.data.accessCount is number &&
         request.resource.data.contentType in ['youtube', 'audio', 'video'];
       
-      // Allow updating access count and last accessed time
-      allow update: if request.auth != null &&
+      // Allow anyone to update access count and last accessed time
+      allow update: if
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accessCount', 'lastAccessed', 'videoTitle', 'metadata']) &&
         request.resource.data.accessCount == resource.data.accessCount + 1 &&
         request.resource.data.lastAccessed is timestamp;

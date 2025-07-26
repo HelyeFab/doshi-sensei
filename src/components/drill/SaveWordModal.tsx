@@ -85,7 +85,7 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
       setErrors([]);
 
       // Create new list if needed
-      let listsToSaveTo = [...selectedLists];
+      const listsToSaveTo = [...selectedLists];
       if (newListName.trim() && showCreateNew) {
         try {
           const newList = await StudyListManager.createStudyList({

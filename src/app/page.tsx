@@ -137,8 +137,7 @@ export default function Home() {
     secondary: 'hsl(230, 60%, 85%)'
   });
 
-  // Pastel color for icon backgrounds
-  const [iconBgColor, setIconBgColor] = useState('hsl(210, 60%, 90%)');
+  // Removed pastel color for icon backgrounds - now using theme system directly
 
   useEffect(() => {
     // Only run on client side to prevent hydration mismatch
@@ -152,14 +151,6 @@ export default function Home() {
       accent: pastelizeHSL(palette.accent),
       secondary: pastelizeHSL(palette.secondary)
     });
-
-    // Create a lighter pastel version for icon backgrounds (higher lightness)
-    const match = palette.primary.match(/hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)/);
-    if (match) {
-      const [_, h] = match;
-      // Use 40% saturation, 90% lightness for very light pastel
-      setIconBgColor(`hsl(${h}, 40%, 90%)`);
-    }
   }, [settings.colorScheme]);
 
 
@@ -310,7 +301,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <div 
                         className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: iconBgColor }}
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
                       >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
@@ -347,7 +338,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <div 
                         className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: iconBgColor }}
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
                       >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
@@ -382,7 +373,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <div 
                         className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: iconBgColor }}
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
                       >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
@@ -417,7 +408,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <div 
                         className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: iconBgColor }}
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
                       >
                         {card.icon.startsWith('/') ? (
                           <Image
@@ -461,7 +452,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <div 
                         className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: iconBgColor }}
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
                       >
                         <span className="text-2xl">{card.icon}</span>
                       </div>
@@ -495,7 +486,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <div 
                         className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: iconBgColor }}
+                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
                       >
                         <span className="text-2xl">{card.icon}</span>
                       </div>

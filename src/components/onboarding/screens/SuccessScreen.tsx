@@ -50,11 +50,8 @@ export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
       }
     }
 
-    // Redirect to home page
-    if (typeof window !== 'undefined') {
-      window.location.href = '/';
-    }
-
+    // Just call onComplete instead of redirecting
+    // The navigation system will handle the routing properly
     onComplete();
   };
 

@@ -7,6 +7,17 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Form handling configuration
+[[forms]]
+  name = "contact"
+  
+# Email notifications for contact form
+[[forms.notifications]]
+  to = "queries@doshisensei.com"
+  subject = "[Doshi Sensei] New Contact Form Submission"
+  # You can also add a from address if needed
+  # from = "noreply@doshisensei.com"
+
 # PWA Headers
 [[headers]]
   for = "/sw.js"

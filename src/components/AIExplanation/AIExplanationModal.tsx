@@ -99,42 +99,42 @@ export default function AIExplanationModal({
 
   const modalContent = (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">AI Explanation</h2>
+      <div className="bg-background rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-border">
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">AI Explanation</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-gray-100 transition-colors"
+            className="p-1 rounded hover:bg-muted transition-colors"
             aria-label="Close"
           >
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         <div className="p-4 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Original {contextType}:</p>
-            <p className="text-lg font-medium text-gray-900 font-ja">{text}</p>
+          <div className="mb-4 p-3 bg-muted rounded-lg">
+            <p className="text-sm text-muted-foreground mb-1">Original {contextType}:</p>
+            <p className="text-lg font-medium text-foreground font-ja">{text}</p>
             {surroundingContext && (
-              <p className="text-sm text-gray-500 mt-2 italic">Context: {surroundingContext}</p>
+              <p className="text-sm text-muted-foreground mt-2 italic">Context: {surroundingContext}</p>
             )}
           </div>
 
           {loading && (
             <div className="flex flex-col items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-              <p className="text-sm text-gray-600">Getting AI explanation...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+              <p className="text-sm text-muted-foreground">Getting AI explanation...</p>
             </div>
           )}
 
           {!loading && explanation?.error && (
-            <div className="p-4 bg-red-50 rounded-lg">
-              <p className="text-red-600">{explanation.error}</p>
+            <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+              <p className="text-destructive">{explanation.error}</p>
             </div>
           )}
 
@@ -142,32 +142,32 @@ export default function AIExplanationModal({
             <div className="space-y-4">
               {explanation.explanation.meaning && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Meaning</h3>
-                  <p className="text-gray-700">{explanation.explanation.meaning}</p>
+                  <h3 className="font-semibold text-foreground mb-1">Meaning</h3>
+                  <p className="text-muted-foreground">{explanation.explanation.meaning}</p>
                 </div>
               )}
 
               {explanation.explanation.grammar && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Grammar</h3>
-                  <p className="text-gray-700">{explanation.explanation.grammar}</p>
+                  <h3 className="font-semibold text-foreground mb-1">Grammar</h3>
+                  <p className="text-muted-foreground">{explanation.explanation.grammar}</p>
                 </div>
               )}
 
               {explanation.explanation.usage && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Usage</h3>
-                  <p className="text-gray-700">{explanation.explanation.usage}</p>
+                  <h3 className="font-semibold text-foreground mb-1">Usage</h3>
+                  <p className="text-muted-foreground">{explanation.explanation.usage}</p>
                 </div>
               )}
 
               {explanation.explanation.examples && explanation.explanation.examples.length > 0 && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Examples</h3>
+                  <h3 className="font-semibold text-foreground mb-2">Examples</h3>
                   <div className="space-y-2">
                     {explanation.explanation.examples.map((example, index) => (
-                      <div key={index} className="p-3 bg-blue-50 rounded-lg">
-                        <p className="text-gray-900 font-ja">{example}</p>
+                      <div key={index} className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+                        <p className="text-foreground font-ja">{example}</p>
                       </div>
                     ))}
                   </div>
@@ -176,16 +176,16 @@ export default function AIExplanationModal({
 
               {explanation.explanation.culturalNotes && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Cultural Notes</h3>
-                  <p className="text-gray-700">{explanation.explanation.culturalNotes}</p>
+                  <h3 className="font-semibold text-foreground mb-1">Cultural Notes</h3>
+                  <p className="text-muted-foreground">{explanation.explanation.culturalNotes}</p>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <p className="text-xs text-gray-500 text-center">
+        <div className="p-4 border-t border-border bg-muted/50">
+          <p className="text-xs text-muted-foreground text-center">
             Powered by AI • Explanations may vary
           </p>
         </div>

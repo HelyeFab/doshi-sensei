@@ -8,6 +8,7 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import StrokeOrderGame from './components/StrokeOrderGame';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
@@ -54,6 +55,7 @@ export default function StrokeOrderPracticePage() {
   const [progress, setProgress] = useState<StrokeOrderProgress | null>(null);
   const { checkAndTrack, AccessModals } = useAccessWithModals();
   const { remaining } = useFeature('stroke_order_practice');
+  const { isPremium } = useSubscription2();
   const { moodBoards, loading: boardsLoading } = useMoodBoards();
   const [filteredBoards, setFilteredBoards] = useState<MoodBoardType[]>([]);
   const [showInstructions, setShowInstructions] = useState(true);
@@ -182,10 +184,12 @@ export default function StrokeOrderPracticePage() {
                 Learn to write kanji correctly by practicing stroke order.
                 Click strokes in the right sequence to build muscle memory.
               </p>
-              {remaining !== null && remaining !== undefined && (
+              {(remaining !== null && remaining !== undefined) || isPremium ? (
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
                   <span className="text-sm font-medium text-foreground">
-                    {remaining > 0 ? (
+                    {isPremium ? (
+                      <span className="text-green-600 font-bold">Unlimited practices</span>
+                    ) : remaining > 0 ? (
                       <>
                         <span className="text-primary font-bold">{remaining}</span> practices remaining today
                       </>

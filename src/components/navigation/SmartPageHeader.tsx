@@ -37,7 +37,7 @@ export function SmartPageHeader({
   const canGoBack = showBack && (customBackUrl || navigation.canGoBack);
   
   return (
-    <header className={`px-4 pt-24 pb-4 md:pt-6 ${className}`}>
+    <header className={`px-4 pt-24 pb-4 md:pt-24 ${className}`}>
       <div className="flex items-center gap-3">
         {/* Back Button */}
         {canGoBack && (
@@ -46,17 +46,17 @@ export function SmartPageHeader({
               navigation.pop();
               router.push(backUrl);
             }}
-            className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
             aria-label={`Go back to ${backTitle}`}
           >
-            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         )}
         
         {/* Page Title */}
-        <h1 className="text-xl font-bold text-gray-900 flex-1">
+        <h1 className="text-xl font-bold text-foreground flex-1">
           {title}
         </h1>
         

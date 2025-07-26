@@ -136,7 +136,7 @@ export default function DrillPage() {
       const kanjiStem = word.kanji.slice(0, -1);
       const endings = ['る', 'た', 'ない', 'ます', 'て', 'ぬ', 'ば', 'れる', 'せる'];
 
-      for (let ending of endings) {
+      for (const ending of endings) {
         if (distractors.length >= 4) break;
 
         const distractor = kanjiStem + ending;
@@ -151,7 +151,7 @@ export default function DrillPage() {
       // Emergency fallback
       if (distractors.length < 4) {
         const emergency = [`${kanjiStem}XX`, `${kanjiStem}YY`, `${kanjiStem}ZZ`];
-        for (let emerg of emergency) {
+        for (const emerg of emergency) {
           if (distractors.length >= 4) break;
           if (!distractors.includes(emerg)) {
             distractors.push(emerg);
@@ -638,7 +638,7 @@ export default function DrillPage() {
   // Check drill limits
   if (!featureLoading && access && !access.allowed && remaining === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SmartPageHeader title={strings.drill.title} />
         <div className="container mx-auto px-4 py-8 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto">
@@ -663,7 +663,7 @@ export default function DrillPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SmartPageHeader title={strings.drill.title} />
         <div className="container mx-auto px-4 py-8 flex items-center justify-center">
           <div className="text-center">
@@ -679,7 +679,7 @@ export default function DrillPage() {
   const isFinished = currentQuestionIndex >= questions.length - 1 && showResult;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <SmartPageHeader title={strings.drill.title} />
       
       {/* Main Content */}

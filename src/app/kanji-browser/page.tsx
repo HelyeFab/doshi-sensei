@@ -262,7 +262,7 @@ export default function KanjiBrowserPage() {
 
   const handleSaveKanjiToLists = async (kanji: Kanji, listIds: string[], newListName?: string) => {
     try {
-      let listsToSaveTo = [...listIds];
+      const listsToSaveTo = [...listIds];
 
       // Create new list if specified
       if (newListName?.trim()) {
@@ -364,7 +364,7 @@ export default function KanjiBrowserPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SmartPageHeader title="Loading..." backHref="/" />
         <div className="container mx-auto px-4 py-8 flex items-center justify-center">
           <div className="text-center">
@@ -377,7 +377,7 @@ export default function KanjiBrowserPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <SmartPageHeader title="Kanji Browser" backHref="/" />
       
       {/* Main Content */}
@@ -732,7 +732,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
       setSaving(true);
       setErrors([]);
 
-      let listsToSaveTo = [...selectedLists];
+      const listsToSaveTo = [...selectedLists];
 
       // Create new list if specified
       if (newListName.trim()) {

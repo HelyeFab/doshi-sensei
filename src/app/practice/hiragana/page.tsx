@@ -181,7 +181,7 @@ export default function HiraganaPage() {
           {/* Target Icon */}
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
-              <span className="text-2xl font-bold japanese-text">あ</span>
+              <span className="text-2xl font-bold japanese-text text-primary">あ</span>
             </div>
           </div>
 

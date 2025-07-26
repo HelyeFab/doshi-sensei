@@ -90,7 +90,7 @@ export function NavigationProvider({
       };
       
       // If we're not at the end of the stack, remove forward entries
-      let newStack = prev.currentIndex < prev.stack.length - 1
+      const newStack = prev.currentIndex < prev.stack.length - 1
         ? prev.stack.slice(0, prev.currentIndex + 1)
         : [...prev.stack];
       

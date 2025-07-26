@@ -165,8 +165,8 @@ export default function EditStoryPage() {
                 setSaving(false); return;
             }
             // If publishing, require publishedAt
-            let status = publish ? "published" : formData.status;
-            let publishedAt = publish ? (formData.publishedAt ? new Date(formData.publishedAt) : new Date()) : (formData.publishedAt ? new Date(formData.publishedAt) : undefined);
+            const status = publish ? "published" : formData.status;
+            const publishedAt = publish ? (formData.publishedAt ? new Date(formData.publishedAt) : new Date()) : (formData.publishedAt ? new Date(formData.publishedAt) : undefined);
             if (publish && !publishedAt) {
                 showNotification({ title: strings.admin.articles.missingPublishDate, message: strings.admin.articles.selectPublishDate, type: "warning" });
                 setSaving(false); return;

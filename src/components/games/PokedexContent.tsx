@@ -149,7 +149,7 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
             alt="Empty Pokéball" 
             className="w-24 h-24 opacity-30 mb-4"
           />
-          <p className="text-gray-500 text-center">
+          <p className="text-muted-foreground text-center">
             No Pokémon caught yet!<br />
             Keep playing to catch them all!
           </p>
@@ -169,8 +169,8 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
             onClick={() => pokemon.caught && setSelectedPokemon(pokemon.id)}
             className={`relative aspect-square rounded-xl p-2 transition-all min-h-[120px] ${
               pokemon.caught 
-                ? 'bg-gradient-to-b from-white to-gray-50 border-2 border-gray-300 hover:border-red-400 hover:shadow-lg hover:shadow-red-200/50 cursor-pointer' 
-                : 'bg-gray-100/50 border-2 border-gray-200 cursor-not-allowed opacity-75'
+                ? 'bg-gradient-to-b from-background to-muted border-2 border-border hover:border-red-400 hover:shadow-lg hover:shadow-red-200/50 cursor-pointer' 
+                : 'bg-muted/50 border-2 border-border cursor-not-allowed opacity-75'
             }`}
             disabled={!pokemon.caught}
           >
@@ -340,7 +340,7 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto bg-gray-50">
+      <div className="flex-1 overflow-y-auto bg-background">
         {renderPokemonGrid()}
       </div>
 

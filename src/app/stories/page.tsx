@@ -120,13 +120,18 @@ export default function StoriesPage() {
         <div className="max-w-6xl mx-auto">
           {/* Description */}
           <div className="mb-8">
-            {!isPremium && access && access.limit && access.limit > 0 && !featureLoading && (
+            {userType !== 'guest' && !featureLoading && (
               <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="text-primary">
-                  📖 {remaining && remaining > 0
-                    ? `${remaining} ${remaining === 1 ? 'story' : 'stories'} remaining today`
-                    : 'Daily limit reached'
-                  }
+                  📖 {isPremium ? (
+                    <span className="text-green-600">Unlimited stories</span>
+                  ) : remaining !== undefined && remaining !== null ? (
+                    remaining > 0
+                      ? `${remaining} ${remaining === 1 ? 'story' : 'stories'} remaining today`
+                      : 'Daily limit reached'
+                  ) : (
+                    'Loading...'
+                  )}
                 </span>
               </div>
             )}

@@ -146,7 +146,7 @@ export default function ConjugationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         {/* Structured Data for SEO */}

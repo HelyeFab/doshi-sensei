@@ -14,10 +14,11 @@ interface PageHeaderProps {
   helpKey?: string;
   onBackClick?: () => void;
   backHref?: string;
+  backLabel?: string;
   rightAction?: JSX.Element;
 }
 
-export function PageHeader({ title, emoji, icon, subtitle, showBackButton = true, helpKey, onBackClick, backHref = "/", rightAction }: PageHeaderProps) {
+export function PageHeader({ title, emoji, icon, subtitle, showBackButton = true, helpKey, onBackClick, backHref = "/", backLabel, rightAction }: PageHeaderProps) {
   const helpContent = helpKey ? pageHelpContent[helpKey] : null;
 
   const handleBackClick = (e: React.MouseEvent) => {

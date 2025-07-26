@@ -17,6 +17,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import StatsMigration from '@/components/admin/StatsMigration';
 import CollectionMigration from '@/components/admin/CollectionMigration';
 import { AchievementDebugPanel } from '@/components/achievements/AchievementDebugPanel';
+import { clearAllIndexedDB } from '@/utils/clearIndexedDB';
 
 export default function AdminDebugPage() {
   const { user } = useAuth();
@@ -77,8 +78,8 @@ export default function AdminDebugPage() {
         };
       });
       
-      // Check main database (using version 8 to match the actual DB version)
-      const mainDBRequest = window.indexedDB.open('DoshiSenseiDB', 8);
+      // Check main database (don't specify version to avoid conflicts)
+      const mainDBRequest = window.indexedDB.open('DoshiSenseiDB');
       const mainDBInfo = await new Promise<string>((resolve, reject) => {
         mainDBRequest.onsuccess = () => {
           const db = mainDBRequest.result;
@@ -89,7 +90,16 @@ export default function AdminDebugPage() {
         };
         
         mainDBRequest.onerror = () => {
-          reject(new Error(mainDBRequest.error?.message || 'Failed to open main database'));
+          const error = mainDBRequest.error;
+          if (error?.name === 'VersionError') {
+            reject(new Error(`Version conflict: ${error.message}. Please clear all caches.`));
+          } else {
+            reject(new Error(error?.message || 'Failed to open main database'));
+          }
+        };
+        
+        mainDBRequest.onblocked = () => {
+          reject(new Error('Database access blocked. Close all tabs and try again.'));
         };
       });
       
@@ -239,28 +249,30 @@ export default function AdminDebugPage() {
   };
 
   const clearAllCaches = async () => {
-    if (!confirm('This will clear all cached data. Are you sure?')) return;
+    if (!confirm('This will clear all cached data including IndexedDB, localStorage, and sessionStorage. Are you sure?')) return;
 
     try {
-      // Clear IndexedDB
-      const databases = await window.indexedDB.databases();
-      for (const db of databases) {
-        if (db.name) {
-          await window.indexedDB.deleteDatabase(db.name);
-        }
-      }
+      console.log('Starting cache cleanup...');
+      
+      // Clear IndexedDB using our utility
+      await clearAllIndexedDB();
+      console.log('IndexedDB cleared');
 
       // Clear localStorage
+      const localStorageCount = localStorage.length;
       localStorage.clear();
+      console.log(`LocalStorage cleared (${localStorageCount} items removed)`);
 
       // Clear sessionStorage
+      const sessionStorageCount = sessionStorage.length;
       sessionStorage.clear();
+      console.log(`SessionStorage cleared (${sessionStorageCount} items removed)`);
 
-      alert('All caches cleared successfully. Please refresh the page.');
+      alert('All caches cleared successfully. The page will now refresh.');
       window.location.reload();
     } catch (error) {
       console.error('Error clearing caches:', error);
-      alert('Error clearing some caches. Check console for details.');
+      alert('Error clearing some caches. Check console for details. You may need to manually clear browser data.');
     }
   };
 

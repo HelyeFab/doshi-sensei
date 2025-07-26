@@ -40,7 +40,19 @@ export class EntitlementManager {
     
     // Check for shared limit groups (e.g., all games share a limit)
     // This will be handled by the access control layer
-    return limits[featureId] ?? 0;
+    const limit = limits[featureId];
+    
+    // If limit is undefined, check static rules as fallback
+    if (limit === undefined) {
+      // Import static rules for fallback
+      const { ENTITLEMENT_RULES } = await import('./rules');
+      const staticRule = ENTITLEMENT_RULES.find(r => r.userTypes.includes(userType));
+      const staticLimit = staticRule?.limits[limitType]?.[featureId];
+      
+      return staticLimit ?? 0;
+    }
+    
+    return limit;
   }
   
   /**

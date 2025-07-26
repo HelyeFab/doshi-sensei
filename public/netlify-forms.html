@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Netlify Forms</title>
+</head>
+<body>
+  <!-- This file helps Netlify detect forms in SPA applications -->
+  <!-- It's not meant to be accessed directly -->
+  
+  <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="text" name="subject" />
+    <select name="category">
+      <option value="general">General</option>
+      <option value="bug">Bug Report</option>
+      <option value="feedback">Feedback</option>
+      <option value="feature">Feature Request</option>
+      <option value="support">Technical Support</option>
+    </select>
+    <textarea name="message"></textarea>
+  </form>
+  
+  <script>
+    // Redirect to home if someone accesses this directly
+    if (window.location.pathname === '/netlify-forms.html') {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>

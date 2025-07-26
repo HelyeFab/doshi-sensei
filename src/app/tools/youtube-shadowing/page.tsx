@@ -47,6 +47,14 @@ export interface ShadowingSession {
     size: number;
     type: string;
   };
+  videoMetadata?: {
+    title: string;
+    channelTitle: string;
+    description: string;
+    thumbnails: any;
+    duration: string;
+    publishedAt: string;
+  };
 }
 
 export default function YouTubeShadowing() {
@@ -59,7 +67,7 @@ export default function YouTubeShadowing() {
   const [error, setError] = useState<string | null>(null);
   const [showFurigana, setShowFurigana] = useState(true);
   const [showGrammar, setShowGrammar] = useState(false);
-  const [showShadowingMode, setShowShadowingMode] = useState(false);
+  const [showShadowingMode, setShowShadowingMode] = useState(true);
   const previousUrlsRef = useRef<{ videoUrl?: string; audioUrl?: string }>({});
 
   // Extract video ID from YouTube URL
@@ -77,6 +85,12 @@ export default function YouTubeShadowing() {
   };
 
   const videoId = session?.videoUrl ? extractVideoId(session.videoUrl) : null;
+
+  // Create short YouTube URL
+  const getShortYouTubeUrl = (url: string): string => {
+    const id = extractVideoId(url);
+    return id ? `youtu.be/${id}` : url;
+  };
 
   // Cleanup blob URLs when component unmounts or session changes
   useEffect(() => {
@@ -149,11 +163,13 @@ export default function YouTubeShadowing() {
     }
   };
 
-  const handleTranscriptLoaded = (transcript: TranscriptLine[]) => {
+  const handleTranscriptLoaded = (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => {
     if (session) {
       updateSession({
         ...session,
-        transcript
+        transcript,
+        ...(videoTitle && { videoTitle }),
+        ...(videoMetadata && { videoMetadata })
       });
     }
   };
@@ -173,7 +189,7 @@ export default function YouTubeShadowing() {
       />
       
       {/* Usage Display */}
-      {remaining !== undefined && userType !== 'guest' && (
+      {userType !== 'guest' && (
         <div className="px-4 mb-4">
           <div className="bg-card rounded-lg p-3 border border-border">
             <div className="flex items-center justify-between">
@@ -181,8 +197,10 @@ export default function YouTubeShadowing() {
                 {userType === 'free' ? 'Daily usage' : 'Today\'s usage'}
               </span>
               <span className="text-sm font-medium">
-                {remaining === -1 ? (
+                {isPremium ? (
                   <span className="text-green-600">Unlimited</span>
+                ) : remaining === undefined || remaining === null ? (
+                  <span className="text-muted-foreground">Loading...</span>
                 ) : remaining > 0 ? (
                   <span className="text-primary">{remaining} {remaining === 1 ? 'use' : 'uses'} remaining</span>
                 ) : (
@@ -238,6 +256,35 @@ export default function YouTubeShadowing() {
                     {strings.youtubeShadowing?.description || "Turn any YouTube video into an interactive shadowing practice session. Get instant transcripts and improve your pronunciation!"}
                   </p>
                 </div>
+              </motion.div>
+
+              {/* Popular Videos Button */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15 }}
+                className="mb-6"
+              >
+                <SmartNavigationLink
+                  href="/popular-videos"
+                  className="block w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+                  title="Browse Popular Videos"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-4xl">🔥</div>
+                      <div>
+                        <h3 className="text-xl font-bold mb-1">Most Popular Videos</h3>
+                        <p className="text-white/80 text-sm">
+                          Skip the wait! Practice with videos already transcribed by the community
+                        </p>
+                      </div>
+                    </div>
+                    <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </SmartNavigationLink>
               </motion.div>
 
               {/* Input Section */}
@@ -367,7 +414,7 @@ export default function YouTubeShadowing() {
                       Skip the wait! Browse YouTube videos already transcribed by the community for instant practice.
                     </p>
                   </div>
-                  <SmartNavigationLink href="/tools/popular-videos"
+                  <SmartNavigationLink href="/popular-videos"
                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium whitespace-nowrap"
                    title="Browse Videos">
                     Browse Videos
@@ -416,17 +463,38 @@ export default function YouTubeShadowing() {
               className="max-w-5xl mx-auto"
             >
               {/* Video Info Card */}
-              {session.videoTitle && (
+              {(session.videoTitle || session.videoMetadata) && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-6 mb-6 text-white"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="text-4xl">🎬</div>
-                    <div className="flex-1">
-                      <h2 className="text-xl font-bold mb-1">{session.videoTitle}</h2>
-                      <p className="text-sm opacity-80 truncate">{session.videoUrl}</p>
+                    {/* Video Thumbnail or Icon */}
+                    {session.videoMetadata?.thumbnails?.medium ? (
+                      <img 
+                        src={session.videoMetadata.thumbnails.medium.url}
+                        alt={session.videoTitle || 'Video thumbnail'}
+                        className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="text-4xl flex-shrink-0">🎬</div>
+                    )}
+                    
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-xl font-bold mb-1 truncate">
+                        {session.videoTitle || session.videoMetadata?.title || 'Loading video title...'}
+                      </h2>
+                      {session.videoMetadata?.channelTitle && (
+                        <p className="text-sm opacity-90 mb-1">
+                          by {session.videoMetadata.channelTitle}
+                        </p>
+                      )}
+                      <p className="text-sm opacity-80 truncate">
+                        {session.videoUrl.includes('youtube.com') || session.videoUrl.includes('youtu.be') 
+                          ? getShortYouTubeUrl(session.videoUrl)
+                          : session.videoUrl}
+                      </p>
                     </div>
                   </div>
                 </motion.div>
@@ -470,43 +538,6 @@ export default function YouTubeShadowing() {
                   transition={{ delay: 0.2 }}
                   className="space-y-6"
                 >
-                  {/* Controls Bar */}
-                  <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
-                    <div className="flex flex-wrap items-center gap-4">
-                      {/* View Options */}
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => setShowFurigana(!showFurigana)}
-                          className={`px-4 py-2 rounded-xl font-medium transition-all transform hover:scale-105 ${
-                            showFurigana
-                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
-                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                          }`}
-                        >
-                          ふりがな
-                        </button>
-                        <button
-                          onClick={() => setShowGrammar(!showGrammar)}
-                          className={`px-4 py-2 rounded-xl font-medium transition-all transform hover:scale-105 ${
-                            showGrammar
-                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
-                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                          }`}
-                        >
-                          Grammar
-                        </button>
-                      </div>
-
-                      {/* Shadowing Mode Toggle */}
-                      <button
-                        onClick={() => setShowShadowingMode(!showShadowingMode)}
-                        className="ml-auto px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium flex items-center gap-2"
-                      >
-                        <span className="text-xl">{showShadowingMode ? '🛑' : '🎯'}</span>
-                        {showShadowingMode ? 'Exit Shadowing' : 'Start Shadowing'}
-                      </button>
-                    </div>
-                  </div>
 
                   {/* Transcript Reader */}
                   {!showShadowingMode && (
@@ -534,6 +565,8 @@ export default function YouTubeShadowing() {
                         session={session}
                         onLineChange={(index) => updateSession({ ...session, currentLineIndex: index })}
                         showVideo={true}
+                        showFurigana={showFurigana}
+                        onToggleFurigana={() => setShowFurigana(!showFurigana)}
                       />
                     </motion.div>
                   )}

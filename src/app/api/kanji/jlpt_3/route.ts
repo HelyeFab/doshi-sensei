@@ -12,7 +12,7 @@ export async function GET() {
       { folder: 'jlpt_3_3', file: 'jlpt_3_3.json' }
     ];
 
-    let allKanjiData: any[] = [];
+    const allKanjiData: any[] = [];
 
     for (const config of folderConfigs) {
       try {

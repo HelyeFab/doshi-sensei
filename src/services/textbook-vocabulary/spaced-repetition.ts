@@ -53,7 +53,7 @@ class SpacedRepetitionService {
     vocabularyItem: VocabularyItem
   ): Promise<ReviewResult> {
     // Get existing progress or create new
-    let progress = await vocabStorage.getProgress(vocabularyId);
+    const progress = await vocabStorage.getProgress(vocabularyId);
     let card: Card;
 
     if (progress) {

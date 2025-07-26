@@ -102,7 +102,7 @@ export class TranslationCache {
       }
 
       // Try memory cache first
-      let translation = this.cacheManager.getMemory<string>(cacheKey);
+      const translation = this.cacheManager.getMemory<string>(cacheKey);
       
       if (translation) {
         this.recordHit(cacheKey, Date.now() - startTime);

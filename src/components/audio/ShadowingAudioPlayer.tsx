@@ -452,7 +452,7 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
         }
       };
 
-      let listsToSaveTo = [...selectedLists];
+      const listsToSaveTo = [...selectedLists];
 
       // Create new list if specified
       if (newListName.trim()) {

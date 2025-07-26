@@ -74,7 +74,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         kanji_moods: 3,
         kanji_stroke_order: -1,
         stroke_order_practice: 3,
-        youtube_shadowing: 1, // 1 YouTube URL or upload per day for free users
+        youtube_shadowing: 3, // 3 YouTube shadowing sessions per day for free users
         ai_context_explanation: 3,
         textbook_vocabulary: 50
       },

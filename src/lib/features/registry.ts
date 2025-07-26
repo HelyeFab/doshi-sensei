@@ -66,7 +66,19 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active',
-    sharedLimitGroup: 'games'
+  },
+  
+  'kana_study': {
+    id: 'kana_study',
+    name: 'Kana Study',
+    description: 'Study hiragana and katakana characters',
+    category: 'learning',
+    icon: '📖',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+    // Removed sharedLimitGroup - was causing tracking issues
   },
   
   'kana_drop': {
@@ -79,7 +91,6 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active',
-    sharedLimitGroup: 'games'
   },
   
   'sentence_scramble': {
@@ -92,7 +103,6 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active',
-    sharedLimitGroup: 'games'
   },
   
   'matching_game': {
@@ -105,7 +115,6 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active',
-    sharedLimitGroup: 'games'
   },
   
   'reading_routes': {
@@ -118,7 +127,6 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active',
-    sharedLimitGroup: 'games'
   },
   
   'kanji_simon': {
@@ -131,7 +139,30 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active',
-    sharedLimitGroup: 'games'
+  },
+
+  'listening_quiz': {
+    id: 'listening_quiz',
+    name: 'Listening Quiz',
+    description: 'Test your listening comprehension with audio questions',
+    category: 'games',
+    icon: '🎧',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+  },
+
+  'word_assembly': {
+    id: 'word_assembly',
+    name: 'Word Assembly',
+    description: 'Build Japanese words from kana segments',
+    category: 'games',
+    icon: '🔤',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
   },
   
   // Learning Features
@@ -181,7 +212,6 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active',
-    sharedLimitGroup: 'drill_practice'
   },
   
   'youtube_shadowing': {
@@ -216,6 +246,18 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     icon: '📋',
     limitType: 'total',
     requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active'
+  },
+
+  'search_history': {
+    id: 'search_history',
+    name: 'Search History',
+    description: 'Save and sync vocabulary search history across devices',
+    category: 'storage',
+    icon: '🔍',
+    limitType: 'none',
+    requiresAuth: false,
     requiresSubscription: false,
     status: 'active'
   },

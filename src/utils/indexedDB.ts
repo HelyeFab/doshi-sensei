@@ -16,7 +16,7 @@ import { safeNavigator, runInBrowser } from './browserCheck';
 // Database configuration
 const DB_CONFIG: DatabaseConfig = {
   name: 'DoshiSenseiDB',
-  version: 8, // Updated for Achievement system
+  version: 9, // Updated for Search History
   stores: {
     settings: {
       keyPath: 'id',
@@ -201,6 +201,13 @@ const DB_CONFIG: DatabaseConfig = {
       indexes: [
         { name: 'achievementId', keyPath: 'achievementId' },
         { name: 'lastUpdated', keyPath: 'lastUpdated' }
+      ]
+    },
+    searchHistory: {
+      keyPath: 'id',
+      indexes: [
+        { name: 'timestamp', keyPath: 'timestamp' },
+        { name: 'searchTerm', keyPath: 'searchTerm' }
       ]
     }
   }

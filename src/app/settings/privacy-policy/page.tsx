@@ -1,11 +1,11 @@
 'use client';
 
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title="Privacy Policy" backHref="/settings" />
+      <SmartPageHeader title="Privacy Policy" backHref="/settings" />
 
       <div className="container mx-auto px-4">
         <main className="max-w-2xl mx-auto mb-32 md:mb-8 pb-safe">

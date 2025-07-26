@@ -4,7 +4,8 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { MoodBoardManager } from '@/components/admin/MoodBoardManager';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { useStrings } from '@/contexts/LanguageContext';
 import GenerateKanjiMoodboardModal from '@/components/admin/GenerateKanjiMoodboardModal';
 import { useRouter } from 'next/navigation';
@@ -146,15 +147,14 @@ export default function MoodBoardsPage() {
                       <Sparkles className="w-4 h-4" />
                       <span className="whitespace-nowrap">Generate with AI</span>
                     </button>
-                    <Link
-                      href="/admin/mood-boards/new"
+                    <SmartNavigationLink href="/admin/mood-boards/new"
                       className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
-                    >
+                     title={strings.admin.newMoodBoard || "New Mood Board"}>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                       <span className="whitespace-nowrap">Create New Board</span>
-                    </Link>
+                    </SmartNavigationLink>
                   </div>
                 </div>
               </div>

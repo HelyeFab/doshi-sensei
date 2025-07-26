@@ -2146,6 +2146,64 @@ export const strings = {
       "kanji_KanjiModal_add_to_study_session": "Add to Study Session"
     },
     "games": {
+      "chooseYourGame": "Choose Your Game",
+      "selectGameMode": "Select a game mode to start practicing",
+      "comingSoon": "Coming Soon",
+      "correct": "Correct",
+      "total": "Total",
+      "accuracy": "Accuracy",
+      "dailyLimit": "Daily Limit",
+      "upgradeForUnlimited": "Upgrade for unlimited access",
+      "selectStudyLists": "Select Study Lists",
+      "selected": "selected",
+      "totalWordsAvailable": "words available",
+      "needAtLeast4Words": "Need at least 4 words",
+      "needAtLeast1Word": "Need at least 1 word",
+      "needMoreWords4": "Need at least 4 words",
+      "selectListsFirst": "Select lists first",
+      "start": "Start",
+      "quiz": "Quiz",
+      "readyToStart": "Ready to Start?",
+      "listenAndSelect": "Listen carefully and select the correct word",
+      "startQuiz": "Start Quiz",
+      "dailyLimitReached": "Daily limit reached",
+      "changeLists": "Change Lists",
+      "usingWordsFromLists": "Using {words} words from {lists} lists",
+      "noStudyLists": "No Study Lists Found",
+      "noStudyListsDescription": "You need to create vocabulary study lists before you can play listening games. Study lists help you practice with words you're learning.",
+      "goToVocabulary": "Create Study Lists",
+      "emptyState": {
+        "title": "Ready to Test Your Listening Skills?",
+        "subtitle": "Create study lists to get started",
+        "description": "The Listening Quiz uses words from your personal study lists to create customized audio challenges.",
+        "steps": {
+          "step1": {
+            "title": "Create Study Lists",
+            "description": "Save vocabulary words to organized lists"
+          },
+          "step2": {
+            "title": "Choose Your Lists", 
+            "description": "Select which lists to include in your quiz"
+          },
+          "step3": {
+            "title": "Listen & Learn",
+            "description": "Test your listening skills with audio pronunciation"
+          }
+        },
+        "benefits": {
+          "personalized": "Personalized to your vocabulary",
+          "adaptive": "Adapts to your learning progress", 
+          "engaging": "Fun and interactive gameplay"
+        },
+        "createListsButton": "Create Your First Study List",
+        "browseVocabulary": "Browse Vocabulary"
+      },
+      "states": {
+        "correct": "Correct!",
+        "incorrect": "Incorrect",
+        "nextQuestion": "Next Question",
+        "playAgain": "Play Again"
+      },
       "games_page_loading_games": "Loading games...",
       "games_page_build_the_kana": "Build the Kana:",
       "games_page_click_kana_segments_below_to_b": "Click kana segments below to build the word",
@@ -2606,4 +2664,4 @@ export const strings = {
   }
 };
 
-export type EnKeys = keyof typeof en;
+export type StringKeys = keyof typeof strings;

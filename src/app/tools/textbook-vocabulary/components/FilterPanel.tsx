@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { FilterOptions } from '../types';
+import { TEXTBOOK_CONFIG } from '@/config/textbooks';
 
 interface FilterPanelProps {
   filters: FilterOptions;
@@ -11,6 +12,17 @@ interface FilterPanelProps {
   totalLessons: number;
   onLessonSelect: (lesson: number | null) => void;
   selectedLesson: number | null;
+  isPremium: boolean;
+  onRequestUpgrade: () => void;
+}
+
+// Reusable component for filter button groups
+interface FilterButtonGroupProps {
+  label: string;
+  value: string | null;
+  options: readonly string[] | string[];
+  onSelect: (value: string | null) => void;
+  capitalize?: boolean;
 }
 
 export function FilterPanel({
@@ -19,12 +31,15 @@ export function FilterPanel({
   textbook,
   totalLessons,
   onLessonSelect,
-  selectedLesson
+  selectedLesson,
+  isPremium,
+  onRequestUpgrade
 }: FilterPanelProps) {
   const [showFilters, setShowFilters] = useState(false);
 
-  const jlptLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
-  const themes = ['school', 'time', 'food', 'travel', 'family', 'work'];
+  // Use configuration from centralized config
+  const jlptLevels = [...TEXTBOOK_CONFIG.jlptLevels];
+  const themes = TEXTBOOK_CONFIG.themes.filter(t => t !== 'all');
 
   return (
     <div className="mb-4 space-y-4">
@@ -59,19 +74,26 @@ export function FilterPanel({
         >
           All Lessons
         </button>
-        {Array.from({ length: totalLessons }, (_, i) => i + 1).map((lesson) => (
-          <button
-            key={lesson}
-            onClick={() => onLessonSelect(lesson)}
-            className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-              selectedLesson === lesson
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Lesson {lesson}
-          </button>
-        ))}
+        {Array.from({ length: totalLessons }, (_, i) => i + 1).map((lesson) => {
+          const locked = !isPremium && lesson > TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson;
+          return (
+            <button
+              key={lesson}
+              onClick={() => (locked ? onRequestUpgrade() : onLessonSelect(lesson))}
+              disabled={locked}
+              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                locked
+                  ? 'bg-muted text-muted-foreground cursor-not-allowed relative'
+                  : selectedLesson === lesson
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {locked && <span className="mr-1">🔒</span>}
+              Lesson {lesson}
+            </button>
+          );
+        })}
       </div>
 
       {/* Advanced Filters Toggle */}

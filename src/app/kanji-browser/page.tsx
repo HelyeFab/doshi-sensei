@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Kanji, JLPTLevel, KanjiByLevel, KanjiList, StudyList, StudyListType } from '@/types';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAccess } from '@/hooks/useAccess';
@@ -365,7 +365,7 @@ export default function KanjiBrowserPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Loading..." backHref="/" />
+        <SmartPageHeader title="Loading..." backHref="/" />
         <div className="container mx-auto px-4 py-8 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -378,7 +378,7 @@ export default function KanjiBrowserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title="Kanji Browser" backHref="/" />
+      <SmartPageHeader title="Kanji Browser" backHref="/" />
       
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">

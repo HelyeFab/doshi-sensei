@@ -13,15 +13,34 @@ interface KanaChartProps {
 
 export default function KanaChart({ chartType, selectedKana, onToggleKana, showRomaji = true }: KanaChartProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['basic']));
   const basicKana = getBasicKana();
   const digraphs = getDigraphs();
+  
+  // Get dakuten (voiced) and handakuten (semi-voiced) characters
+  const dakutenRows = ['g', 'z', 'd', 'b'];
+  const handakutenRows = ['p'];
+  const dakutenKana = basicKana.filter(k => dakutenRows.includes(k.row));
+  const handakutenKana = basicKana.filter(k => handakutenRows.includes(k.row));
+
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(section)) {
+        newSet.delete(section);
+      } else {
+        newSet.add(section);
+      }
+      return newSet;
+    });
+  };
 
   const handleSpeak = async (kana: KanaCharacter) => {
     try {
       setPlayingId(kana.id);
       const character = chartType === 'hiragana' ? kana.hiragana : kana.katakana;
 
-      // Use Google TTS for single kana characters
+      // Use local audio files first, then fall back to Google TTS
       await TTSManager.speak(character, {
         voice: 'female',
         provider: 'google'
@@ -77,11 +96,11 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               )}
             </div>
 
-            {/* Selection indicator with clickable area */}
+            {/* Selection indicator - clickable */}
             <div
-              className={`absolute top-0 left-0 w-3.5 h-3.5 rounded-tl-md rounded-br-lg transition-all ${
+              className={`absolute top-0 left-0 w-3.5 h-3.5 rounded-tl-md rounded-br-lg transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-purple-500 hover:bg-purple-600'
+                  ? 'bg-purple-500'
                   : 'bg-purple-200 hover:bg-purple-300'
               }`}
               onClick={(e) => {
@@ -90,7 +109,7 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               }}
             >
               {isSelected && (
-                <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full h-full flex items-center justify-center pointer-events-none">
                   <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
@@ -107,14 +126,32 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
 
   const renderBasicChart = () => {
     const columns = ['a', 'i', 'u', 'e', 'o'];
+    const isExpanded = expandedSections.has('basic');
+    // Filter out dakuten and handakuten characters
+    const pureBasicKana = basicKana.filter(k => !dakutenRows.includes(k.row) && !handakutenRows.includes(k.row));
 
     return (
-      <div className="mb-8 w-full">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">
-          Basic {chartType === 'hiragana' ? 'Hiragana' : 'Katakana'}
-        </h3>
-        <div className="w-full max-w-xl mx-auto">
-          <div className="grid grid-cols-5 gap-1.5 sm:gap-2 md:gap-3">
+      <div className="mb-6 w-full">
+        <div 
+          className="flex items-center justify-between p-4 bg-card rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => toggleSection('basic')}
+        >
+          <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">
+            Basic {chartType === 'hiragana' ? 'Hiragana' : 'Katakana'}
+          </h3>
+          <svg 
+            className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        
+        {isExpanded && (
+          <div className="mt-4 w-full max-w-xl mx-auto">
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2 md:gap-3">
             {/* Header row */}
             {columns.map(col => (
               <div key={`header-${col}`} className="flex items-center justify-center h-8 text-xs sm:text-sm font-semibold text-muted-foreground bg-muted/30 rounded">
@@ -123,8 +160,8 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
             ))}
 
           {/* Kana rows */}
-          {kanaRowOrder.map(row => {
-            const rowKana = basicKana.filter(k => k.row === row);
+          {kanaRowOrder.filter(row => !dakutenRows.includes(row) && !handakutenRows.includes(row)).map(row => {
+            const rowKana = pureBasicKana.filter(k => k.row === row);
 
             // Special handling for rows with fewer than 5 characters
             if (row === 'y') {
@@ -169,22 +206,143 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               </React.Fragment>
             );
           })}
+            </div>
           </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderDakutenChart = () => {
+    const columns = ['a', 'i', 'u', 'e', 'o'];
+    const isExpanded = expandedSections.has('dakuten');
+
+    return (
+      <div className="w-full">
+        <div 
+          className="flex items-center justify-between p-4 bg-card rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => toggleSection('dakuten')}
+        >
+          <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">
+            Dakuten (Voiced)
+          </h3>
+          <svg 
+            className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
+        
+        {isExpanded && (
+          <div className="mt-4 w-full max-w-xl mx-auto">
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2 md:gap-3">
+              {/* Header row */}
+              {columns.map(col => (
+                <div key={`dakuten-header-${col}`} className="flex items-center justify-center h-8 text-xs sm:text-sm font-semibold text-muted-foreground bg-muted/30 rounded">
+                  {col.toUpperCase()}
+                </div>
+              ))}
+
+              {/* Dakuten rows */}
+              {dakutenRows.map(row => {
+                const rowKana = dakutenKana.filter(k => k.row === row);
+                return (
+                  <React.Fragment key={`dakuten-${row}`}>
+                    {columns.map(col => {
+                      const kana = rowKana.find(k => k.column === col);
+                      return <div key={`${row}-${col}`}>{renderKanaCell(kana || null)}</div>;
+                    })}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderHandakutenChart = () => {
+    const columns = ['a', 'i', 'u', 'e', 'o'];
+    const isExpanded = expandedSections.has('handakuten');
+
+    return (
+      <div className="w-full">
+        <div 
+          className="flex items-center justify-between p-4 bg-card rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => toggleSection('handakuten')}
+        >
+          <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">
+            Handakuten (Semi-voiced)
+          </h3>
+          <svg 
+            className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        
+        {isExpanded && (
+          <div className="mt-4 w-full max-w-xl mx-auto">
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2 md:gap-3">
+              {/* Header row */}
+              {columns.map(col => (
+                <div key={`handakuten-header-${col}`} className="flex items-center justify-center h-8 text-xs sm:text-sm font-semibold text-muted-foreground bg-muted/30 rounded">
+                  {col.toUpperCase()}
+                </div>
+              ))}
+
+              {/* Handakuten row (only pa, pi, pu, pe, po) */}
+              {handakutenRows.map(row => {
+                const rowKana = handakutenKana.filter(k => k.row === row);
+                return (
+                  <React.Fragment key={`handakuten-${row}`}>
+                    {columns.map(col => {
+                      const kana = rowKana.find(k => k.column === col);
+                      return <div key={`${row}-${col}`}>{renderKanaCell(kana || null)}</div>;
+                    })}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
 
   const renderDigraphChart = () => {
     const columns = ['a', 'u', 'o'];
+    const isExpanded = expandedSections.has('digraphs');
 
     return (
       <div className="w-full">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">
-          Digraphs (Yōon)
-        </h3>
-        <div className="w-full max-w-sm mx-auto">
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3">
+        <div 
+          className="flex items-center justify-between p-4 bg-card rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => toggleSection('digraphs')}
+        >
+          <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">
+            Digraphs (Yōon)
+          </h3>
+          <svg 
+            className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        
+        {isExpanded && (
+          <div className="mt-4 w-full max-w-sm mx-auto">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3">
             {/* Header row */}
             {columns.map(col => (
               <div key={`digraph-header-${col}`} className="flex items-center justify-center h-8 text-xs sm:text-sm font-semibold text-muted-foreground bg-muted/30 rounded">
@@ -205,17 +363,20 @@ export default function KanaChart({ chartType, selectedKana, onToggleKana, showR
               </React.Fragment>
             );
           })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start justify-center">
-        <div className="w-full lg:w-auto">{renderBasicChart()}</div>
-        <div className="w-full lg:w-auto">{renderDigraphChart()}</div>
+    <div className="w-full max-w-3xl mx-auto">
+      <div className="space-y-4">
+        {renderBasicChart()}
+        {renderDakutenChart()}
+        {renderHandakutenChart()}
+        {renderDigraphChart()}
       </div>
     </div>
   );

@@ -1119,11 +1119,16 @@ export class StatsTracker {
     
     // For premium users, also check cloud for any newer activities
     if (this.currentUser && this.isPremium) {
-      await this.loadActivitiesFromCloud(thirtyDaysAgo, today);
-      
-      // After loading activities, recalculate totals from daily activities
-      // This ensures our stats reflect the actual activities in the database
-      await this.recalculateTotalsFromDailyActivities();
+      try {
+        await this.loadActivitiesFromCloud(thirtyDaysAgo, today);
+        
+        // After loading activities, recalculate totals from daily activities
+        // This ensures our stats reflect the actual activities in the database
+        await this.recalculateTotalsFromDailyActivities();
+      } catch (error) {
+        console.error('❌ [StatsTracker] Error loading activities from cloud:', error);
+        // Continue with local data if cloud load fails
+      }
     }
   }
 
@@ -1222,9 +1227,18 @@ export class StatsTracker {
    * Load activities from cloud for a date range
    */
   private async loadActivitiesFromCloud(startDate: string, endDate: string): Promise<void> {
-    if (!this.currentUser || !this.isPremium) return;
+    if (!this.currentUser || !this.isPremium) {
+      console.log('⏭️ [StatsTracker] Skipping cloud load - not a premium user');
+      return;
+    }
     
     try {
+      // Double-check we have a valid user ID
+      if (!this.currentUser.uid) {
+        console.error('❌ [StatsTracker] No user ID available for cloud load');
+        return;
+      }
+      
       const activitiesRef = collection(db, 'userStats', this.currentUser.uid, 'dailyActivities');
       
       // Query activities within date range
@@ -1237,7 +1251,8 @@ export class StatsTracker {
       
       const snapshot = await getDocs(q);
       
-      snapshot.forEach(doc => {
+      // Use for...of to properly handle await
+      for (const doc of snapshot.docs) {
         const activity = doc.data() as DailyActivity;
         const date = doc.id; // Document ID is the date
         
@@ -1252,9 +1267,9 @@ export class StatsTracker {
           this.activities.set(date, sanitized);
           
           // Also save to IndexedDB for offline access
-          this.saveDailyActivity(date, sanitized);
+          await this.saveDailyActivity(date, sanitized);
         }
-      });
+      }
       
       console.log(`☁️ [StatsTracker] Loaded ${snapshot.size} activities from cloud`);
     } catch (error) {
@@ -1437,7 +1452,21 @@ export class StatsTracker {
       return sanitizedEvent;
     });
 
-    return {
+    // Handle lastUpdated field - convert Firestore timestamp if needed
+    let lastUpdated: number | undefined;
+    if (activityWithoutId.lastUpdated) {
+      if (typeof activityWithoutId.lastUpdated === 'number') {
+        lastUpdated = activityWithoutId.lastUpdated;
+      } else if (activityWithoutId.lastUpdated.toMillis) {
+        // Firestore timestamp
+        lastUpdated = activityWithoutId.lastUpdated.toMillis();
+      } else if (activityWithoutId.lastUpdated.seconds) {
+        // Firestore timestamp plain object
+        lastUpdated = activityWithoutId.lastUpdated.seconds * 1000;
+      }
+    }
+
+    const result: DailyActivity = {
       date: activityWithoutId.date || '',
       activities: sanitizedActivities,
       summary: {
@@ -1455,6 +1484,13 @@ export class StatsTracker {
         totalQuestions: activityWithoutId.summary?.totalQuestions || 0
       }
     };
+
+    // Only add lastUpdated if it's defined
+    if (lastUpdated !== undefined) {
+      result.lastUpdated = lastUpdated;
+    }
+
+    return result;
   }
 
   /**

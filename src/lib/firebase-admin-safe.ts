@@ -108,7 +108,7 @@ async function initializeAdmin(): Promise<void> {
           adminApp = admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
             projectId,
-            storageBucket: 'doshi-sensei.appspot.com',
+            storageBucket: 'doshi-sensei',
           });
           initialized = true;
         } catch (credError) {
@@ -122,7 +122,7 @@ async function initializeAdmin(): Promise<void> {
         try {
           adminApp = admin.initializeApp({
             projectId,
-            storageBucket: 'doshi-sensei.appspot.com',
+            storageBucket: 'doshi-sensei',
           });
           initialized = true;
         } catch (adcError) {
@@ -135,7 +135,7 @@ async function initializeAdmin(): Promise<void> {
         console.warn('Initializing Firebase Admin with project ID only - limited functionality');
         adminApp = admin.initializeApp({ 
           projectId,
-          storageBucket: `${projectId}.appspot.com`,
+          storageBucket: projectId, // New Firebase format: just project ID
         });
       }
 

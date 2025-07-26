@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { KanaCharacter, kanaData } from '@/data/kanaData';
 import TTSManager from '@/utils/tts';
 import { trackKanaPractice } from '@/lib/stats/trackingEvents';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 
 interface KanaStudyModalProps {
   isOpen: boolean;
@@ -25,6 +26,9 @@ export default function KanaStudyModal({ isOpen, onClose, selectedKanaIds, study
   const [correctCount, setCorrectCount] = useState(0);
   const [playingAudio, setPlayingAudio] = useState(false);
   const [sessionStartTime] = useState(Date.now());
+  
+  // Confirmation dialog state
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
   // Initialize study items based on selected kana and study type
   useEffect(() => {
@@ -101,8 +105,18 @@ export default function KanaStudyModal({ isOpen, onClose, selectedKanaIds, study
     }
   };
 
-  const handleClose = () => {
+  const handleCloseClick = () => {
+    // Show confirmation dialog before closing
+    setShowExitConfirmation(true);
+  };
+
+  const handleConfirmExit = () => {
+    setShowExitConfirmation(false);
     onClose(false);
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
   };
 
   return (
@@ -115,7 +129,7 @@ export default function KanaStudyModal({ isOpen, onClose, selectedKanaIds, study
               Kana Study Session
             </h2>
             <button
-              onClick={handleClose}
+              onClick={handleCloseClick}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -229,6 +243,19 @@ export default function KanaStudyModal({ isOpen, onClose, selectedKanaIds, study
           </div>
         </div>
       </div>
+
+      {/* Exit Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={showExitConfirmation}
+        title="Exit Study Session"
+        message="Are you sure you want to exit your study session? Your progress will not be saved."
+        confirmText="Exit Session"
+        cancelText="Continue Studying"
+        isDestructive={true}
+        onConfirm={handleConfirmExit}
+        onCancel={handleCancelExit}
+        loading={false}
+      />
     </div>
   );
 }

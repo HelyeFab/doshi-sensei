@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
+import type { ExampleSentence } from '@/types/sentences';
 import { searchWords } from '@/utils/api';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
 import { useAnalytics } from '@/hooks/useAnalytics';
-import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
+import { SearchHistoryManager2, SearchHistoryEntry } from '@/utils/searchHistoryManager2';
 import { StudyListManager } from '@/utils/studyListManager';
 import { ExampleSentencesBlock } from '@/components/vocabulary/ExampleSentencesBlock';
 import StrokeOrderModal from '@/components/kanji/StrokeOrderModal';
@@ -22,9 +24,10 @@ import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResul
 
 export default function VocabularyPage() {
   const { user } = useAuth();
-  const { subscription } = useSubscription2();
+  const { subscription, userType } = useSubscription2();
   const strings = useStrings();
   const { track } = useAnalytics();
+  const navigation = useNavigation();
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -53,6 +56,27 @@ export default function VocabularyPage() {
     }
   }, [searchSource]);
 
+  // Restore navigation state
+  useEffect(() => {
+    const restoredState = navigation.restoreState();
+    if (restoredState) {
+      if (restoredState.searchTerm) setSearchTerm(restoredState.searchTerm);
+      if (restoredState.searchSource) setSearchSource(restoredState.searchSource);
+      if (restoredState.currentSearchTerm) setCurrentSearchTerm(restoredState.currentSearchTerm);
+      if (restoredState.currentSearchResults) setCurrentSearchResults(restoredState.currentSearchResults);
+    }
+  }, [navigation]);
+
+  // Save navigation state on changes
+  useEffect(() => {
+    navigation.preserveState({
+      searchTerm,
+      searchSource,
+      currentSearchTerm,
+      currentSearchResults: currentSearchResults.slice(0, 10) // Limit to prevent large state
+    });
+  }, [searchTerm, searchSource, currentSearchTerm, currentSearchResults, navigation]);
+
   // Persist search source
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -62,11 +86,18 @@ export default function VocabularyPage() {
 
   useEffect(() => {
     loadSearchHistory();
-  }, []);
+    // Migrate old history on first load
+    SearchHistoryManager2.migrateFromOldHistory(user, userType);
+  }, [user, userType]);
+
+  // Reload search history when user changes
+  useEffect(() => {
+    loadSearchHistory();
+  }, [user?.uid]);
 
   const loadSearchHistory = async () => {
     try {
-      const history = await SearchHistoryManager.getSearchHistory();
+      const history = await SearchHistoryManager2.getSearchHistory(user, userType);
       setSearchHistory(history);
     } catch (err) {
       console.error('Error loading search history:', err);
@@ -109,7 +140,7 @@ export default function VocabularyPage() {
       setShowSearchResults(true);
 
       // Save to search history
-      await SearchHistoryManager.addSearchEntry(term, searchResults);
+      await SearchHistoryManager2.addSearchEntry(term, searchResults, user, userType, searchSource);
       await loadSearchHistory(); // Reload history to show the new entry
 
       // Track vocabulary search analytics
@@ -250,7 +281,7 @@ export default function VocabularyPage() {
 
   const handleDeleteSearchEntry = async (entryId: string) => {
     try {
-      await SearchHistoryManager.deleteSearchEntry(entryId);
+      await SearchHistoryManager2.deleteSearchEntry(entryId, user, userType);
       await loadSearchHistory();
     } catch (error) {
       console.error('Error deleting search entry:', error);
@@ -260,7 +291,7 @@ export default function VocabularyPage() {
   const handleClearSearchHistory = async () => {
     if (confirm('Are you sure you want to clear all search history?')) {
       try {
-        await SearchHistoryManager.clearSearchHistory();
+        await SearchHistoryManager2.clearSearchHistory(user, userType);
         setSearchHistory([]);
       } catch (error) {
         console.error('Error clearing search history:', error);
@@ -285,7 +316,7 @@ export default function VocabularyPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title="Vocabulary" backHref="/" />
+      <SmartPageHeader title="Vocabulary" />
       
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8">

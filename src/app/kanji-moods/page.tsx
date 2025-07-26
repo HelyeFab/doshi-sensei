@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { getAllProgress } from '@/utils/moodBoardProgress';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import MoodBoardCard from '@/components/kanji-moods/MoodBoardCard';
 import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
 import { Search, Filter, X } from 'lucide-react';
@@ -112,7 +112,7 @@ export default function KanjiMoodsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <StandardPageHeader title="Kanji Moods" backHref="/" />
+        <SmartPageHeader title="Kanji Moods" backHref="/" />
         <div className="container mx-auto px-4 pb-20">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -127,7 +127,7 @@ export default function KanjiMoodsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title="Kanji Moods" backHref="/" />
+      <SmartPageHeader title="Kanji Moods" backHref="/" />
       
       <MobileAwareContainer className="container mx-auto px-4">
         {/* Search and Filter Section */}

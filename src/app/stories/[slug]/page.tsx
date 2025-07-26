@@ -9,7 +9,8 @@ import StoryReader from '@/components/story/StoryReader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function StoryPage() {
   const router = useRouter();
@@ -94,7 +95,7 @@ export default function StoryPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Loading..." backHref="/stories" />
+        <SmartPageHeader title="Loading..." />
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
@@ -111,7 +112,10 @@ export default function StoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title={story.title} backHref="/stories" />
+      <SmartPageHeader title={story.title} />
+      <div className="max-w-4xl mx-auto px-4">
+        <Breadcrumbs className="mt-4 mb-6" />
+      </div>
       <div className="py-8">
         <StoryReader
           story={story}

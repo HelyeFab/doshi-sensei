@@ -53,7 +53,29 @@ export class AccessControl {
       };
     }
     
-    // 5. Check permissions
+    // 5. Check if feature has limits configured
+    if (feature.limitType !== 'none') {
+      // Get the limit value
+      const limitKey = featureManager.getEffectiveLimitKey(featureId);
+      const limit = await entitlementManager.getLimit(userType, limitKey, feature.limitType);
+      
+      // If a limit is explicitly set (0 or higher), this grants access
+      // -999 means explicitly no access, anything else means check permissions
+      if (limit >= 0) {
+        // Access is granted via limit configuration, now check usage
+        const limitCheck = await this.checkLimit(userId, featureId, feature.limitType, userType);
+        return limitCheck;
+      } else if (limit === -999) {
+        // Explicitly denied access
+        return {
+          allowed: false,
+          reason: 'no_permission',
+          userType
+        };
+      }
+    }
+    
+    // 6. Check permissions (only if no explicit limit is set)
     const hasPermission = await this.checkPermission(userType, featureId);
     if (!hasPermission) {
       return {
@@ -63,7 +85,7 @@ export class AccessControl {
       };
     }
     
-    // 6. Check limits if applicable
+    // 7. If feature has limits and we got here via permissions, check usage
     if (feature.limitType !== 'none') {
       const limitCheck = await this.checkLimit(userId, featureId, feature.limitType, userType);
       if (!limitCheck.allowed) {
@@ -83,7 +105,10 @@ export class AccessControl {
    */
   private async checkPermission(userType: UserType, featureId: string): Promise<boolean> {
     const feature = featureManager.getFeature(featureId);
-    if (!feature) return false;
+    if (!feature) {
+      console.error(`[Access] Feature not found: ${featureId}`);
+      return false;
+    }
     
     // Map feature categories to permissions
     const permissionMap: Record<string, string> = {
@@ -94,8 +119,11 @@ export class AccessControl {
       'kana_drop': 'play_games',
       'sentence_scramble': 'play_games',
       'matching_game': 'play_games',
+      'memory_match': 'play_games',
       'reading_routes': 'play_games',
       'kanji_simon': 'play_games',
+      'listening_quiz': 'play_games',
+      'word_assembly': 'play_games',
       'word_lists': 'create_lists',
       'bookmarks': 'create_lists',
       'sentences-bookmark': 'create_lists',
@@ -109,13 +137,20 @@ export class AccessControl {
       'anki_set_creation': 'create_lists',
       'flashcard_review': 'do_drills',
       'ai_context_explanation': 'ai_explanations',
-      'textbook_vocabulary': 'textbook_vocabulary'
+      'textbook_vocabulary': 'textbook_vocabulary',
+      'kana_study': 'do_drills'
     };
     
     const permission = permissionMap[featureId];
-    if (!permission) return false;
+    if (!permission) {
+      console.error(`[Access] No permission mapping for feature: ${featureId}`);
+      return false;
+    }
     
-    return await entitlementManager.hasPermission(userType, permission as any);
+    console.log(`[Access] Checking permission '${permission}' for userType '${userType}' and feature '${featureId}'`);
+    const hasPermission = await entitlementManager.hasPermission(userType, permission as any);
+    console.log(`[Access] Permission check result: ${hasPermission}`);
+    return hasPermission;
   }
   
   /**
@@ -135,6 +170,11 @@ export class AccessControl {
     
     // Unlimited (-1) always passes
     if (limit === -1) {
+      return { allowed: true, userType };
+    }
+    
+    // Simple access (0) always passes (no numeric limit)
+    if (limit === 0) {
       return { allowed: true, userType };
     }
     

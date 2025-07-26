@@ -2,6 +2,8 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useNavigation } from '@/contexts/NavigationContext';
+import { navigationRules } from '@/lib/navigation/rules';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -12,19 +14,25 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const strings = useStrings();
+  const navigation = useNavigation();
 
   // Determine if we should show the back button (not on main admin dashboard)
   const normalizedPath = pathname?.replace(/\/+$/, '');
   const shouldShowBackButton = normalizedPath && normalizedPath !== '/admin';
 
-  // Context-aware back navigation
-  const getBackDestination = () => {
-    if (pathname.startsWith('/admin/stories/')) return '/admin/stories';
-    if (pathname === '/admin/stories') return '/admin';
-    if (pathname.startsWith('/admin/mood-boards/')) return '/admin/mood-boards';
-    if (pathname === '/admin/mood-boards') return '/admin';
-    // Add more admin sections as needed
-    return '/admin';
+  // Use smart navigation for back button
+  const handleBack = () => {
+    // Check if we have navigation history
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      // Fallback to hardcoded destinations if no history
+      if (pathname.startsWith('/admin/stories/')) router.push('/admin/stories');
+      else if (pathname === '/admin/stories') router.push('/admin');
+      else if (pathname.startsWith('/admin/mood-boards/')) router.push('/admin/mood-boards');
+      else if (pathname === '/admin/mood-boards') router.push('/admin');
+      else router.push('/admin');
+    }
   };
 
   return (
@@ -55,7 +63,7 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
           {/* Back button - now on the left, before the title */}
           {shouldShowBackButton && (
             <button
-              onClick={() => router.push(getBackDestination())}
+              onClick={handleBack}
               className="p-1 hover:bg-muted rounded transition-colors inline-flex items-center justify-center"
               aria-label={strings.navigation.menu?.backToAdmin || 'Back to admin'}
               title={strings.navigation.menu?.backToDashboard || 'Back to dashboard'}

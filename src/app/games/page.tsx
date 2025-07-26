@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord, StudyList } from '@/types';
 import TTSManager from '@/utils/tts';
@@ -21,6 +22,7 @@ import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import SlideUpModal from '@/components/SlideUpModal';
+import ListeningQuizEmptyState from '@/components/games/ListeningQuizEmptyState';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -857,29 +859,36 @@ export default function GamesPage() {
     );
   }
 
-  if ((currentGameMode === 'listening' || currentGameMode === 'assembly') && studyLists.length === 0) {
+  // Show empty state for listening quiz when no study lists are available
+  if (currentGameMode === 'listening' && studyLists.length === 0) {
+    return <ListeningQuizEmptyState onBack={handleBackToGameSelection} />;
+  }
+
+  // Show simple empty state for assembly game (keep existing behavior)
+  if (currentGameMode === 'assembly' && studyLists.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <StandardPageHeader
-          title={currentGameMode === 'assembly' ? strings.games.modes.assembly.title : strings.games.modes.listening.title}
+          title={strings.games.modes.assembly.title}
           backHref="/games"
         />
         <MobileAwareContainer className="container mx-auto px-4 py-6">
-
           <div className="max-w-2xl mx-auto text-center py-16">
-            <div className="text-8xl mb-6">🎧</div>
+            <div className="text-8xl mb-6">🔤</div>
             <h3 className="text-2xl font-semibold text-foreground mb-4">
               {strings.games.noStudyLists}
             </h3>
             <p className="text-muted-foreground mb-6">
               {strings.games.noStudyListsDescription}
             </p>
-            <button
-              onClick={() => router.push('/vocabulary')}
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            <SmartNavigationLink
+              href="/vocabulary"
+              title="Vocabulary"
+              type="page"
+              className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               {strings.games.goToVocabulary}
-            </button>
+            </SmartNavigationLink>
           </div>
         </MobileAwareContainer>
       </div>
@@ -889,7 +898,7 @@ export default function GamesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title="Games" backHref="/" />
+      <SmartPageHeader title="Games" />
       
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8">

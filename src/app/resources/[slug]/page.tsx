@@ -6,8 +6,9 @@ import { ResourcePost } from '@/types/resources';
 import { getResourcePostBySlug, incrementResourceViews } from '@/utils/resources';
 import { marked } from 'marked';
 import { formatDistanceToNow, format } from 'date-fns';
-import Link from 'next/link';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
@@ -81,7 +82,7 @@ export default function ResourcePostPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Loading..." backHref="/resources" />
+        <SmartPageHeader title="Loading..." backHref="/resources" />
         <MobileAwareContainer className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="text-6xl mb-4">📖</div>
@@ -95,7 +96,7 @@ export default function ResourcePostPage() {
   if (error || !resource) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Resource Not Found" backHref="/resources" />
+        <SmartPageHeader title="Resource Not Found" backHref="/resources" />
         <MobileAwareContainer className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="text-6xl mb-4">📄</div>
@@ -103,12 +104,11 @@ export default function ResourcePostPage() {
             <p className="text-muted-foreground mb-6">
               The resource you're looking for doesn't exist or has been moved.
             </p>
-            <Link
-              href="/resources"
+            <SmartNavigationLink href="/resources"
               className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-            >
+             title="Browse All Resources">
               Browse All Resources
-            </Link>
+            </SmartNavigationLink>
           </div>
         </MobileAwareContainer>
       </div>
@@ -117,7 +117,7 @@ export default function ResourcePostPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title={resource.title} backHref="/resources" />
+      <SmartPageHeader title={resource.title} backHref="/resources" />
       
       {/* Hero Section */}
       {resource.imageUrl && (
@@ -135,15 +135,14 @@ export default function ResourcePostPage() {
         <div className="max-w-4xl mx-auto">
           {/* Back Navigation */}
           <div className="mb-6">
-            <Link
-              href="/resources"
+            <SmartNavigationLink href="/resources"
               className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
-            >
+             title={strings.resources.backToResources || "Back to Resources"}>
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back to Resources
-            </Link>
+            </SmartNavigationLink>
           </div>
 
           {/* Article Header */}
@@ -246,13 +245,12 @@ export default function ResourcePostPage() {
                 <h3 className="text-lg font-semibold mb-3">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {resource.tags.map((tag) => (
-                    <Link
-                      key={tag}
+                    <SmartNavigationLink key={tag}
                       href={`/resources?q=${encodeURIComponent(tag)}`}
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
-                    >
+                     title={strings.resources.backToResources || "Back to Resources"}>
                       {tag}
-                    </Link>
+                    </SmartNavigationLink>
                   ))}
                 </div>
               </div>
@@ -279,15 +277,14 @@ export default function ResourcePostPage() {
 
             {/* Navigation */}
             <div className="mt-8 text-center">
-              <Link
-                href="/resources"
+              <SmartNavigationLink href="/resources"
                 className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
+               title={strings.resources.backToResources || "Back to Resources"}>
                 <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 Back to All Resources
-              </Link>
+              </SmartNavigationLink>
             </div>
           </footer>
         </div>

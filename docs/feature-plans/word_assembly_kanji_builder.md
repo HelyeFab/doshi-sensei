@@ -99,13 +99,13 @@ Distractor types:
 
 ## 馃攼 Phase 7: Freemium Support
 
-| Feature          | Free Users | Premium Users |
-|------------------|------------|----------------|
-| Daily games      | 3          | Unlimited      |
-| Hints            | 鉂�         | 鉁�              |
-| Score tracking   | Local only | Cloud sync     |
+| Feature          | Guest Users | Free Users | Premium Users |
+|------------------|-------------|------------|----------------|
+| Daily games      | 3           | 3          | Unlimited      |
+| Hints            | 鉂�          | 鉂�         | 鉁�              |
+| Score tracking   | Local only  | Local only | Cloud sync     |
 
-Use Firebase counters or local IndexedDB logic to enforce limits.
+Uses the Three-Pillar Architecture with `checkAndTrack('word_assembly')` for automatic limit enforcement.
 
 ---
 

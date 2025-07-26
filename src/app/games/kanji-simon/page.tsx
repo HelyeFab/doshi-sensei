@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import KanjiSimonBoardSelection from '@/components/games/KanjiSimon/KanjiSimonBoardSelection';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
@@ -30,7 +30,7 @@ export default function KanjiSimonPage() {
     <div className="min-h-screen bg-gray-50">
       <AccessModals />
       
-      <StandardPageHeader
+      <SmartPageHeader
         title="Kanji Simon"
         backHref="/games"
       />

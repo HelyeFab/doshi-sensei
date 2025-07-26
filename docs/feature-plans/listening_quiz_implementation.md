@@ -105,10 +105,11 @@ Store a mini scorecard for each word:
 
 | User Type | Limits |
 |-----------|--------|
+| Guest     | 3 listening quizzes/day |
 | Free      | 3 listening quizzes/day |
 | Premium   | Unlimited access + stats cloud sync |
 
-Use Firebase to enforce drill counters for free users.
+Uses the Three-Pillar Architecture with `checkAndTrack('listening_quiz')` for automatic limit enforcement.
 
 ---
 

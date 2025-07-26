@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { Story } from '@/types/story';
 import { JLPTLevel, JLPT_LEVELS } from '@/types/kanji';
 import { storyManager } from '@/utils/storyManager';
@@ -109,7 +109,7 @@ export default function StoriesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title="Stories" backHref="/" />
+      <SmartPageHeader title="Stories" backHref="/" />
       
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8">

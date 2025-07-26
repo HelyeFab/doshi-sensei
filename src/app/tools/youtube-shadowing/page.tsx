@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
-import Link from 'next/link';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
@@ -166,7 +167,7 @@ export default function YouTubeShadowing() {
         }}
       />
 
-      <StandardPageHeader 
+      <SmartPageHeader 
         title={strings.youtubeShadowing?.title || "YouTube Shadowing"}
         backHref="/" 
       />
@@ -366,12 +367,11 @@ export default function YouTubeShadowing() {
                       Skip the wait! Browse YouTube videos already transcribed by the community for instant practice.
                     </p>
                   </div>
-                  <Link 
-                    href="/tools/popular-videos"
+                  <SmartNavigationLink href="/tools/popular-videos"
                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium whitespace-nowrap"
-                  >
+                   title="Browse Videos">
                     Browse Videos
-                  </Link>
+                  </SmartNavigationLink>
                 </div>
               </motion.div>
 

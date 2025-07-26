@@ -5,8 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import { ResourcePost, ResourceSearchFilters } from '@/types/resources';
 import { getPublishedResourcePosts, getResourceCategoriesAndTags } from '@/utils/resources';
 import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { getResourceColorTheme, getResourceIcon, getCategoryEmoji } from '@/utils/resourceVisuals';
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
@@ -105,7 +106,7 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title="Resources" backHref="/" />
+      <SmartPageHeader title="Resources" backHref="/" />
       
       <MobileAwareContainer className="container mx-auto px-4 py-6">
 
@@ -204,10 +205,9 @@ export default function ResourcesPage() {
                   if (resource.isPillStyle) {
                     return (
                       <div key={resource.id} className="break-inside-avoid">
-                        <Link
-                          href={`/resources/${resource.slug}`}
+                        <SmartNavigationLink href={`/resources/${resource.slug}`}
                           className={`block ${colorTheme.bg} ${colorTheme.border} ${colorTheme.shadow} rounded-full border-2 p-4 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] group`}
-                        >
+                         title={resource.title}>
                           <div className="flex items-center gap-3">
                             {/* Icon or Emoji */}
                             <div className="flex-shrink-0">
@@ -247,7 +247,7 @@ export default function ResourcesPage() {
                               </span>
                             )}
                           </div>
-                        </Link>
+                        </SmartNavigationLink>
                       </div>
                     );
                   }
@@ -376,15 +376,14 @@ export default function ResourcesPage() {
                           </div>
                         )}
 
-                        <Link
-                          href={`/resources/${resource.slug}`}
+                        <SmartNavigationLink href={`/resources/${resource.slug}`}
                           className="group inline-flex items-center justify-center w-full px-4 py-3 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-900 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                        >
+                         title={resource.title}>
                           <span>Read More</span>
                           <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
-                        </Link>
+                        </SmartNavigationLink>
                       </div>
                     </article>
                   );

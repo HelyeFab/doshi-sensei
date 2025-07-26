@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useStrings } from '@/contexts/LanguageContext';
-import Link from 'next/link';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import Image from 'next/image';
 
 const pageStructuredData = {
@@ -27,7 +28,7 @@ export default function ReadPage() {
         }}
       />
 
-      <StandardPageHeader title="Read" />
+      <SmartPageHeader title="Read" />
 
       <div className="mobile-nav-padding">
         {/* Toggle Switch Container */}
@@ -83,15 +84,14 @@ export default function ReadPage() {
                     <p className="text-sm text-gray-600 mb-4">
                       Read real Japanese news articles with furigana support, translations, and difficulty levels tailored to your learning journey.
                     </p>
-                    <Link
-                      href="/news"
+                    <SmartNavigationLink href="/news"
                       className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
-                    >
+                     title="Japanese News Articles">
                       Browse News Articles
                       <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </Link>
+                    </SmartNavigationLink>
                   </div>
                 </div>
               </div>
@@ -130,15 +130,14 @@ export default function ReadPage() {
                     <p className="text-sm text-gray-600 mb-4">
                       Immerse yourself in interactive stories created by AI, tailored to your level with built-in comprehension support.
                     </p>
-                    <Link
-                      href="/stories"
+                    <SmartNavigationLink href="/stories"
                       className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
-                    >
+                     title="AI-Generated Stories">
                       Explore Stories
                       <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </Link>
+                    </SmartNavigationLink>
                   </div>
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAccess } from '@/hooks/useAccess';
 import { motion, AnimatePresence } from 'framer-motion';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { VocabularyLearningView } from './components/VocabularyLearningView';
 
 const pageStructuredData = {
@@ -42,8 +42,8 @@ export default function TextbookVocabularyPage() {
       color: 'from-pink-400 to-purple-500',
       shadowColor: 'shadow-purple-200',
       hoverShadow: 'hover:shadow-purple-300',
-      lessons: 1,
-      words: 317,
+      lessons: 12,
+      words: 1496,
       level: 'N5',
       icon: '🌸'
     },
@@ -55,7 +55,7 @@ export default function TextbookVocabularyPage() {
       shadowColor: 'shadow-indigo-200',
       hoverShadow: 'hover:shadow-indigo-300',
       lessons: 11,
-      words: 0,
+      words: 491,
       level: 'N4-N5',
       icon: '🌺'
     },
@@ -66,8 +66,8 @@ export default function TextbookVocabularyPage() {
       color: 'from-green-400 to-teal-500',
       shadowColor: 'shadow-teal-200',
       hoverShadow: 'hover:shadow-teal-300',
-      lessons: 27,
-      words: 7096,
+      lessons: 25,
+      words: 2029,
       level: 'N5',
       icon: '🌿'
     },
@@ -79,7 +79,7 @@ export default function TextbookVocabularyPage() {
       shadowColor: 'shadow-blue-200',
       hoverShadow: 'hover:shadow-blue-300',
       lessons: 25,
-      words: 2222,
+      words: 1058,
       level: 'N4',
       icon: '🌊'
     }
@@ -102,7 +102,7 @@ export default function TextbookVocabularyPage() {
       />
 
       {!selectedTextbook && (
-        <StandardPageHeader 
+        <SmartPageHeader 
           title="Textbook Vocabulary"
           backHref="/"
         />
@@ -147,6 +147,13 @@ export default function TextbookVocabularyPage() {
                   {/* Background Gradient */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${textbook.color} opacity-5 rounded-2xl`} />
                   
+                  {/* Coming Soon Badge for empty textbooks */}
+                  {textbook.words === 0 && (
+                    <div className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">
+                      Coming Soon
+                    </div>
+                  )}
+                  
                   {/* Content */}
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4 pt-2">
@@ -167,7 +174,9 @@ export default function TextbookVocabularyPage() {
                       </div>
                       <div className="text-center bg-muted rounded-lg p-2">
                         <div className="text-xs text-muted-foreground">Words</div>
-                        <div className="font-bold text-foreground">{textbook.words.toLocaleString()}</div>
+                        <div className="font-bold text-foreground">
+                          {textbook.words === 0 ? '-' : textbook.words.toLocaleString()}
+                        </div>
                       </div>
                       <div className="text-center bg-muted rounded-lg p-2">
                         <div className="text-xs text-muted-foreground">Level</div>

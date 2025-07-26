@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Brain, Trophy, Star, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import StrokeOrderGame from './components/StrokeOrderGame';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
@@ -160,9 +160,8 @@ export default function StrokeOrderPracticePage() {
     <div className="min-h-screen bg-gray-50">
       <AccessModals />
       
-      <StandardPageHeader
+      <SmartPageHeader
         title="Stroke Order Practice"
-        backHref="/games"
       />
 
       {/* Main Content */}

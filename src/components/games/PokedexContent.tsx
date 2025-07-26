@@ -158,7 +158,7 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
     }
     
     return (
-      <div className="-mx-6 px-2 md:px-6 py-2 md:py-6">
+      <div className="px-1 md:px-4 py-2 md:py-6">
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2 md:gap-4">
         {pokemonList.map((pokemon) => (
           <motion.button
@@ -245,9 +245,9 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
   };
 
   return (
-    <div className="flex flex-col h-full -m-6">
+    <div className="flex flex-col h-full">
       {/* Header with Pokémon theme */}
-      <div className="relative bg-gradient-to-r from-red-500 to-red-600 p-6 rounded-t-3xl">
+      <div className="relative bg-gradient-to-r from-red-500 to-red-600 p-6 -mt-6 -mx-6 rounded-t-3xl">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute inset-0" style={{

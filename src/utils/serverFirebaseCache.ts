@@ -20,7 +20,7 @@ if (!admin.apps.length) {
       client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
     };
 
-    const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'doshi-sensei.appspot.com';
+    const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'doshi-sensei';
     
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
@@ -181,7 +181,7 @@ export class ServerFirebaseCache {
       // If it's a bucket error, provide more context
       if (error.code === 404 || error.message?.includes('bucket')) {
         console.error('[Server Firebase Cache] Bucket configuration issue. Please check:');
-        console.error('1. The bucket name in Firebase console matches:', process.env.FIREBASE_STORAGE_BUCKET || 'doshi-sensei.appspot.com');
+        console.error('1. The bucket name in Firebase console matches:', process.env.FIREBASE_STORAGE_BUCKET || 'doshi-sensei');
         console.error('2. The service account has Storage Admin permissions');
         console.error('3. Firebase Storage is enabled in your project');
       }

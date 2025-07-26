@@ -13,6 +13,9 @@ export async function GET() {
     // For now, we'll skip admin authentication since the data is static
     // In production, you'd want to verify the user is an admin
     
+    // Mark this as an admin request for dynamic rules loading
+    (global as any).__adminRequest = true;
+    
     // Get dynamic rules from database (falls back to static if not found)
     let rules = ENTITLEMENT_RULES;
     try {
@@ -59,14 +62,18 @@ export async function GET() {
         // Map feature to permission
         const permissionMap: Record<string, string> = {
           'drill_practice': 'do_drills',
+          'kana_study': 'do_drills', // Add kana_study mapping
           'article_reading': 'read_articles',
           'story_reading': 'read_stories',
           'kanji_quest': 'play_games',
           'kana_drop': 'play_games',
           'sentence_scramble': 'play_games',
           'matching_game': 'play_games',
+          'memory_match': 'play_games',
           'reading_routes': 'play_games',
           'kanji_simon': 'play_games',
+          'listening_quiz': 'play_games',
+          'word_assembly': 'play_games',
           'word_lists': 'create_lists',
           'bookmarks': 'create_lists',
           'sentences-bookmark': 'create_lists',

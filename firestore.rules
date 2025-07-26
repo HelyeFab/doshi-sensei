@@ -590,6 +590,15 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Config collection - for dynamic entitlement rules
+    match /config/{document} {
+      // EVERYONE can READ config (needed for dynamic rules to work)
+      allow read: if true;
+      
+      // Only admin can write config
+      allow write: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

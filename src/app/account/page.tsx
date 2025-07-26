@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useFeature } from '@/hooks/useFeature';
@@ -10,7 +10,8 @@ import SubscriptionPlans from '@/components/SubscriptionPlans';
 import AuthErrorModal from '@/components/AuthErrorModal';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
 import { ADMIN_EMAIL } from '@/types/admin';
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -262,7 +263,7 @@ export default function AccountPage() {
   if (user) {
     return (
       <div className="min-h-screen bg-background">
-        <StandardPageHeader title="Account" />
+        <SmartPageHeader title="Account" />
 
         {/* Main Content */}
         <div className="container mx-auto px-4">
@@ -340,35 +341,32 @@ export default function AccountPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-3">
-                    <Link
-                      href="/admin"
+                    <SmartNavigationLink href="/admin"
                       className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium text-sm shadow-sm"
-                    >
+                     title={strings.admin.dashboard || "Admin Dashboard"}>
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                       Admin Dashboard
-                    </Link>
+                    </SmartNavigationLink>
 
-                    <Link
-                      href="/admin/users"
+                    <SmartNavigationLink href="/admin/users"
                       className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm shadow-sm"
-                    >
+                     title={strings.admin.dashboard || "Admin Dashboard"}>
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                       </svg>
                       User Management
-                    </Link>
+                    </SmartNavigationLink>
 
-                    <Link
-                      href="/admin/mood-boards"
+                    <SmartNavigationLink href="/admin/mood-boards"
                       className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium text-sm shadow-sm"
-                    >
+                     title={strings.admin.dashboard || "Admin Dashboard"}>
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                       </svg>
                       Mood Boards
-                    </Link>
+                    </SmartNavigationLink>
                   </div>
 
                   <div className="mt-4 p-4 bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700 rounded-lg">
@@ -391,7 +389,9 @@ export default function AccountPage() {
 
               {/* Detailed Statistics - Only for registered users */}
               {user && userType !== 'guest' && (
-                <DetailedStats />
+                <div className="bg-card border border-border rounded-lg overflow-hidden">
+                  <DetailedStats />
+                </div>
               )}
 
               {/* Subscription Management */}
@@ -502,7 +502,7 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title="Account" />
+      <SmartPageHeader title="Account" />
 
       {/* Main Content */}
       <div className="container mx-auto px-4">

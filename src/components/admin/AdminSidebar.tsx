@@ -3,7 +3,8 @@
 import { useAdmin } from '@/contexts/AdminContext';
 import { AdminSection } from '@/types/admin';
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { useStrings } from '@/contexts/LanguageContext';
 
 interface SidebarItem {
@@ -28,6 +29,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     href: '/admin/users',
   },
   {
+    id: 'user-entitlements' as AdminSection,
+    labelKey: 'userEntitlements',
+    iconKey: 'userEntitlements',
+    href: '/admin/user-entitlements',
+  },
+  {
     id: 'features' as AdminSection,
     labelKey: 'features',
     iconKey: 'features',
@@ -44,6 +51,12 @@ const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
     labelKey: 'analytics',
     iconKey: 'analytics',
     href: '/admin/analytics',
+  },
+  {
+    id: 'kpi-dashboard' as AdminSection,
+    labelKey: 'kpiDashboard',
+    iconKey: 'kpiDashboard',
+    href: '/admin/kpi-dashboard',
   },
   {
     id: 'mood-boards' as AdminSection,
@@ -112,12 +125,16 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
            (item.labelKey === 'debug' ? 'Debug Tools' : 
             item.labelKey === 'snakePath' ? 'Snake Path' : 
             item.labelKey === 'analytics' ? 'Analytics' : 
-            item.labelKey === 'achievements' ? 'Achievements' : item.labelKey),
+            item.labelKey === 'kpiDashboard' ? 'KPI Dashboard' : 
+            item.labelKey === 'achievements' ? 'Achievements' : 
+            item.labelKey === 'userEntitlements' ? 'User Entitlements' : item.labelKey),
     icon: strings.navigation?.admin?.[item.labelKey]?.icon || 
           (item.labelKey === 'debug' ? '🐛' : 
            item.labelKey === 'snakePath' ? '🐍' : 
            item.labelKey === 'analytics' ? '📊' : 
-           item.labelKey === 'achievements' ? '🏆' : '📋'),
+           item.labelKey === 'kpiDashboard' ? '📈' : 
+           item.labelKey === 'achievements' ? '🏆' : 
+           item.labelKey === 'userEntitlements' ? '🔐' : '📋'),
   }));
 
   const handleSectionClick = (section: AdminSection) => {
@@ -174,14 +191,13 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               <ul className="space-y-2">
               {/* Home Link */}
               <li>
-                <Link
-                  href="/"
+                <SmartNavigationLink href="/"
                   onClick={onClose}
                   className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-                >
+                 title="Navigation">
                   <span className="text-lg">🏠</span>
                   <span className="font-medium">Home</span>
-                </Link>
+                </SmartNavigationLink>
               </li>
               {/* Divider */}
               <li className="pt-2 pb-1">
@@ -193,8 +209,9 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
                 return (
                   <li key={item.id}>
-                    <Link
+                    <SmartNavigationLink 
                       href={item.href}
+                      title={item.label}
                       onClick={() => handleSectionClick(item.id)}
                       className={`
                         flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
@@ -206,7 +223,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                     >
                       <span className="text-lg">{item.icon}</span>
                       <span className="font-medium">{item.label}</span>
-                    </Link>
+                    </SmartNavigationLink>
                   </li>
                 );
               })}

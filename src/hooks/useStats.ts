@@ -58,10 +58,13 @@ export function useStats(): UseStatsReturn {
           userId: profile.uid,
           email: profile.email,
           subscription: subscription,
-          isPremiumFromHook: isPremiumUser
+          isPremiumFromHook: isPremiumUser,
+          userType: subscription?.type || 'free'
         });
 
-        await statsTracker.initialize(profile, isPremiumUser);
+        // Only pass isPremium as true if user has an active premium subscription
+        const actuallyPremium = isPremiumUser && subscription?.status === 'active';
+        await statsTracker.initialize(profile, actuallyPremium);
         
         // Get initial stats and activities
         setStats(statsTracker.getStats());
@@ -132,7 +135,9 @@ export function useStats(): UseStatsReturn {
         return;
       }
 
-      await statsTracker.initialize(profile, isPremiumUser);
+      // Only pass isPremium as true if user has an active premium subscription
+      const actuallyPremium = isPremiumUser && subscription?.status === 'active';
+      await statsTracker.initialize(profile, actuallyPremium);
       setStats(statsTracker.getStats());
       const activitiesData = await statsTracker.getActivitiesData();
       setActivities(activitiesData);

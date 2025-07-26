@@ -6,7 +6,7 @@ import { JapaneseWord, ConjugationForms, WordList } from '@/types';
 import { searchWords } from '@/utils/api';
 import { ConjugationEngine } from '@/utils/conjugation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -157,7 +157,7 @@ export default function ConjugationPage() {
           }}
         />
 
-        <StandardPageHeader title="Conjugation Practice" backHref="/practice" />
+        <SmartPageHeader title="Conjugation Practice" backHref="/practice" />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
 

@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { useSearchParams } from 'next/navigation';
 import { ComponentProps } from 'react';
 
@@ -31,8 +32,8 @@ export function NavigationLink({
   }
   
   return (
-    <Link href={finalHref} {...props}>
+    <SmartNavigationLink href={finalHref} {...props} title={preservedTitle || "Previous Page"}>
       {children}
-    </Link>
+    </SmartNavigationLink>
   );
 }

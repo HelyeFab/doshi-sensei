@@ -562,6 +562,31 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
       localStorage.setItem(`${storeName}_${key}`, JSON.stringify(value));
     }
   }
+
+  static async deleteFromStore(storeName: string, key: string): Promise<void> {
+    if (!isIndexedDBAvailable()) {
+      // Fallback to localStorage
+      localStorage.removeItem(`${storeName}_${key}`);
+      return;
+    }
+
+    try {
+      const db = await initializeDB();
+      
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(key);
+        
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error(`Error deleting from store ${storeName}:`, error);
+      // Fallback to localStorage
+      localStorage.removeItem(`${storeName}_${key}`);
+    }
+  }
 }
 
 // Export as default

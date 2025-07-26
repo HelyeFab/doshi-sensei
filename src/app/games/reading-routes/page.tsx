@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { getAllProgress } from '@/utils/moodBoardProgress';
 import { MoodBoardsProgress } from '@/types/moodBoard';
@@ -45,7 +45,7 @@ export default function ReadingRoutesPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Reading Routes" backHref="/games" />
+        <SmartPageHeader title="Reading Routes" backHref="/games" />
         <div className="container mx-auto px-4 pb-20">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -64,7 +64,7 @@ export default function ReadingRoutesPage() {
     <div className="min-h-screen bg-gray-50">
       <AccessModals />
       
-      <StandardPageHeader title="Reading Routes" backHref="/games" />
+      <SmartPageHeader title="Reading Routes" backHref="/games" />
 
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8">

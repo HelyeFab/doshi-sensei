@@ -7,6 +7,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { Story } from '@/types/story';
 import { storyManager } from '@/utils/storyManager';
 import Link from 'next/link';
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
@@ -124,19 +125,19 @@ export default function AdminStoriesPage() {
         {/* Header */}
         <div className="space-y-2">"
             <div className="flex gap-2 flex-wrap">
-              <Link
+              <SmartNavigationLink 
                 href="/admin/stories/generate"
-                className="text-sm px-3 py-1.5 md:text-base md:px-4 md:py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 flex items-center gap-2"
-              >
+                title={strings.admin.aiStoryGeneration.generateWithAI}
+                className="text-sm px-3 py-1.5 md:text-base md:px-4 md:py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 flex items-center gap-2">
                 <span>✨</span>
                 {strings.admin.aiStoryGeneration.generateWithAI}
-              </Link>
-              <Link
+              </SmartNavigationLink>
+              <SmartNavigationLink 
                 href="/admin/stories/new"
-                className="text-sm px-3 py-1.5 md:text-base md:px-4 md:py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-              >
+                title={strings.admin.createNewStory}
+                className="text-sm px-3 py-1.5 md:text-base md:px-4 md:py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">
                 {strings.admin.createNewStory}
-              </Link>
+              </SmartNavigationLink>
               <button
                 className="text-sm px-3 py-1.5 md:text-base md:px-4 md:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                 onClick={() => openConfirmDialog({
@@ -190,12 +191,12 @@ export default function AdminStoriesPage() {
           ) : stories.length === 0 ? (
             <div className="bg-card rounded-lg p-8 text-center">
               <p className="text-muted-foreground mb-4">{strings.admin.noStoriesCreatedYet}</p>
-              <Link
+              <SmartNavigationLink 
                 href="/admin/stories/new"
-                className="text-primary hover:text-primary/90 underline"
-              >
+                title={strings.admin.createYourFirstStory}
+                className="text-primary hover:text-primary/90 underline">
                 {strings.admin.createYourFirstStory}
-              </Link>
+              </SmartNavigationLink>
             </div>
           ) : (
             <div className="bg-card rounded-lg border border-border">
@@ -257,19 +258,19 @@ export default function AdminStoriesPage() {
                         <td className="p-4">{story.completionCount || 0}</td>
                         <td className="p-4">
                           <div className="flex gap-2 items-center">
-                            <Link
+                            <SmartNavigationLink 
                               href={`/admin/stories/edit/${story.id}`}
-                              className="text-primary hover:text-primary/90"
-                            >
+                              title={`${strings.admin.edit} ${story.title}`}
+                              className="text-primary hover:text-primary/90">
                               {strings.admin.edit}
-                            </Link>
-                            <Link
+                            </SmartNavigationLink>
+                            <SmartNavigationLink 
                               href={`/stories/${story.slug}`}
+                              title={`${strings.admin.view} ${story.title}`}
                               className="text-primary hover:text-primary/90"
-                              target="_blank"
-                            >
+                              target="_blank">
                               {strings.admin.view}
-                            </Link>
+                            </SmartNavigationLink>
                             <button
                               className="hover:bg-red-50 text-red-600 rounded-full p-2 transition-colors ml-2"
                               title={strings.admin.delete || 'Delete'}

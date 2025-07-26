@@ -165,8 +165,8 @@ export default function SlideUpModal({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto overscroll-contain min-h-0" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <div className="p-6 pb-safe">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain min-h-0" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="p-4 pb-safe">
             {children || (
               <div className="text-center py-12">
                 <p className="text-gray-500 dark:text-gray-400">

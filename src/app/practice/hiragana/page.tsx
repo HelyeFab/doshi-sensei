@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -106,10 +106,7 @@ export default function HiraganaPage() {
   };
 
   const handleSelectAll = () => {
-    const allHiraganaIds = Object.keys(kanaData.hiragana.basic)
-      .concat(Object.keys(kanaData.hiragana.dakuten))
-      .concat(Object.keys(kanaData.hiragana.handakuten))
-      .concat(Object.keys(kanaData.hiragana.combo));
+    const allHiraganaIds = kanaData.map(k => k.id);
     setSelectedHiragana(new Set(allHiraganaIds));
   };
 
@@ -132,35 +129,25 @@ export default function HiraganaPage() {
     }
   };
 
-  const getSelectedKanaForStudy = () => {
-    const selectedHiraganaChars = Array.from(selectedHiragana).map(id => {
-      const allKana = {
-        ...kanaData.hiragana.basic,
-        ...kanaData.hiragana.dakuten,
-        ...kanaData.hiragana.handakuten,
-        ...kanaData.hiragana.combo
-      };
-      const kana = allKana[id];
-      return kana ? { id, char: kana.char, romaji: kana.romaji, type: 'hiragana' as const } : null;
-    }).filter(Boolean) as { id: string; char: string; romaji: string; type: 'hiragana' }[];
-
-    return selectedHiraganaChars;
-  };
+  // Function removed - no longer needed with updated KanaStudyModal props
 
   // Prepare kana for game
   const selectedKanaForGame = useMemo(() => {
     const hiraganaChars = selectedHiragana.size > 0 
-      ? Object.entries(kanaData.hiragana.basic)
-          .concat(Object.entries(kanaData.hiragana.dakuten))
-          .concat(Object.entries(kanaData.hiragana.handakuten))
-          .concat(Object.entries(kanaData.hiragana.combo))
-          .filter(([id]) => selectedHiragana.has(id))
-          .map(([id, kana]) => ({
-            char: kana.char,
-            romaji: kana.romaji.split('(')[0].trim(),
+      ? kanaData
+          .filter(k => selectedHiragana.has(k.id))
+          .map(k => ({
+            id: k.id + '-hiragana',
+            kana: k.hiragana,
+            romaji: k.romaji,
             type: 'hiragana' as const
           }))
-      : getBasicKana('hiragana');
+      : getBasicKana().filter(k => k.type !== 'digraph').slice(0, 10).map(k => ({
+          id: k.id + '-hiragana',
+          kana: k.hiragana,
+          romaji: k.romaji,
+          type: 'hiragana' as const
+        }));
 
     return hiraganaChars as KanaChar[];
   }, [selectedHiragana]);
@@ -182,7 +169,7 @@ export default function HiraganaPage() {
         }}
       />
 
-      <StandardPageHeader 
+      <SmartPageHeader 
         title="Hiragana Charts" 
         backHref="/practice" 
       />
@@ -215,8 +202,35 @@ export default function HiraganaPage() {
             </button>
           </div>
 
+          {/* Selection Controls */}
+          <div className="mb-6 bg-card rounded-lg border border-border p-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleSelectAll}
+                  className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium text-sm"
+                >
+                  Select All
+                </button>
+                <button
+                  onClick={handleClearSelection}
+                  className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90 transition-colors font-medium text-sm"
+                >
+                  Clear Selection
+                </button>
+              </div>
+              <button
+                onClick={handleStudyClick}
+                disabled={selectedHiragana.size === 0}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Study Selected ({selectedHiragana.size})
+              </button>
+            </div>
+          </div>
+
           {/* Show Romaji Toggle */}
-          <div className="mb-8 flex justify-center">
+          <div className="mb-6 flex justify-center">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -230,42 +244,11 @@ export default function HiraganaPage() {
 
           {/* Hiragana Chart */}
           <KanaChart
-            type="hiragana"
+            chartType="hiragana"
             selectedKana={selectedHiragana}
             onToggleKana={handleToggleKana}
-            onSelectRow={handleSelectRow}
             showRomaji={showRomaji}
           />
-
-          {/* Selection Controls */}
-          <div className="mt-8 flex flex-col md:flex-row gap-4 items-center justify-center">
-            <button
-              onClick={handleSelectAll}
-              className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
-            >
-              Select All
-            </button>
-            <button
-              onClick={handleClearSelection}
-              className="px-6 py-3 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90 transition-colors font-medium"
-            >
-              Clear Selection
-            </button>
-            <span className="text-sm text-muted-foreground">
-              {selectedHiragana.size} selected
-            </span>
-          </div>
-
-          {/* Study Button */}
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={handleStudyClick}
-              disabled={selectedHiragana.size === 0}
-              className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Study Selected ({selectedHiragana.size})
-            </button>
-          </div>
 
           {/* Game Section */}
           <div className="mt-12 border-t border-border pt-12">
@@ -293,8 +276,10 @@ export default function HiraganaPage() {
       {/* Study Modal */}
       {showKanaStudyModal && (
         <KanaStudyModal
-          kanaList={getSelectedKanaForStudy()}
-          onClose={() => setShowKanaStudyModal(false)}
+          isOpen={showKanaStudyModal}
+          selectedKanaIds={Array.from(selectedHiragana)}
+          studyType="hiragana"
+          onClose={(completed) => setShowKanaStudyModal(false)}
         />
       )}
 

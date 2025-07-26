@@ -209,6 +209,35 @@ export default function AdminDebugPage() {
     }
   };
 
+  const reloadEntitlementRules = async () => {
+    if (!confirm('This will reload all entitlement rules from code defaults. This will overwrite any manual changes made in the admin dashboard. Are you sure?')) return;
+    
+    try {
+      const token = await user?.getIdToken();
+      const response = await fetch('/api/admin/reload-entitlement-rules', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to reload rules: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      alert(`Entitlement rules reloaded successfully! ${result.rulesUpdated} rules updated.`);
+      
+      // Clear client-side cache
+      localStorage.removeItem('entitlement_rules_cache');
+      sessionStorage.removeItem('entitlement_rules_cache');
+      
+    } catch (error) {
+      console.error('Failed to reload entitlement rules:', error);
+      alert('Failed to reload entitlement rules. Check console for details.');
+    }
+  };
+
   const clearAllCaches = async () => {
     if (!confirm('This will clear all cached data. Are you sure?')) return;
 
@@ -352,6 +381,17 @@ export default function AdminDebugPage() {
                 >
                   <AlertCircle className="h-4 w-4 mr-2" />
                   {t.admin.debug.quickActions.clearAllCaches.title}
+                </Button>
+              </SimpleTooltip>
+              
+              <SimpleTooltip content="Reload entitlement rules from code defaults. This will fix missing features like kana_study.">
+                <Button 
+                  onClick={reloadEntitlementRules} 
+                  variant="secondary" 
+                  size="sm"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Reload Entitlement Rules
                 </Button>
               </SimpleTooltip>
             </div>

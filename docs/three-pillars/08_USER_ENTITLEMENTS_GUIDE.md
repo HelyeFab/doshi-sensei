@@ -20,20 +20,44 @@ flowchart TD
 
 | Feature                | Guest      | Free         | Premium      |
 |------------------------|------------|--------------|--------------|
-| Word Lists             | 0 (view)   | 3            | Unlimited    |
+| **Practice & Study**   |            |              |              |
 | Drills per Day         | 3          | 3            | Unlimited    |
-| Kanji Quest/Day        | 3          | 3            | Unlimited    |
-| Stories/Day            | 3          | 3            | Unlimited    |
-| Articles/Day           | 3          | 3            | Unlimited    |
-| Bookmarks (Articles)   | 0          | 5            | Unlimited    |
+| Kana Study/Day         | 3          | 3            | Unlimited    |
+| Flashcard Review/Day   | 3          | 3            | Unlimited    |
+| Textbook Vocabulary/Day| 20         | 50           | Unlimited    |
 | **Games:**             |            |              |              |
-| - Kana Drop Game/Day   | 3          | 3            | Unlimited    |
-| - Pokemon Kanji Quest/Day | 3      | 3            | Unlimited    |
-| - Other Games/Day      | 3          | 3            | Unlimited    |
-| Save Progress          | ❌         | ✅ (local)    | ✅ (cloud)   |
-| Cloud Sync             | ❌         | ❌           | ✅           |
-| Advanced Analytics     | ❌         | ❌           | ✅           |
-| Priority Support       | ❌         | ❌           | ✅           |
+| - Kanji Quest/Day      | 3          | 3            | Unlimited    |
+| - Kana Drop/Day        | 3          | 3            | Unlimited    |
+| - Sentence Scramble/Day| 3          | 3            | Unlimited    |
+| - Memory Match/Day     | 3          | 3            | Unlimited    |
+| - Reading Routes/Day   | 3          | 3            | Unlimited    |
+| - Kanji Simon/Day      | 3          | 3            | Unlimited    |
+| - Listening Quiz/Day   | 3          | 3            | Unlimited    |
+| - Word Assembly/Day    | 3          | 3            | Unlimited    |
+| **Reading Content**    |            |              |              |
+| Articles/Day           | 3          | 3            | Unlimited    |
+| Stories/Day            | 3          | 3            | Unlimited    |
+| **Kanji Features**     |            |              |              |
+| Kanji Moods/Day        | 3          | 3            | Unlimited    |
+| Kanji Stroke Order     | Unlimited  | Unlimited    | Unlimited    |
+| Stroke Order Practice/Day | 3       | 3            | Unlimited    |
+| **AI Features**        |            |              |              |
+| AI Context Explanation/Day | 3      | 3            | Unlimited    |
+| AI Tutor/Day           | ❌         | ❌           | Unlimited    |
+| **Media Features**     |            |              |              |
+| YouTube Shadowing/Day  | 1          | 1            | Unlimited    |
+| **Storage Features**   |            |              |              |
+| Word Lists             | 0          | 3            | Unlimited    |
+| Bookmarks              | 0          | 5            | Unlimited    |
+| Search History         | ✅ (local) | ✅ (local)   | ✅ (synced)  |
+| **Premium Features**   |            |              |              |
+| Speaking Practice      | ❌         | ❌           | Unlimited    |
+| Anki Import           | ❌         | ❌           | Unlimited    |
+| Anki Set Creation     | ❌         | ❌           | Unlimited    |
+| Save Progress         | ❌         | ✅ (local)   | ✅ (cloud)   |
+| Cloud Sync            | ❌         | ❌           | ✅           |
+| Advanced Analytics    | ❌         | ❌           | ✅           |
+| Priority Support      | ❌         | ❌           | ✅           |
 
 ---
 
@@ -79,19 +103,25 @@ Guest --> GDrills["Drills/day: 3"]
 Guest --> GSave["Save: ❌"]
 Guest --> GSync["Sync: ❌"]
 Guest --> GBookmarks["Bookmarks: 0"]
-Guest --> GGames["Games/day: 3"]
+Guest --> GGames["Games/day: 3 each"]
+Guest --> GYouTube["YouTube: 1/day"]
+Guest --> GStroke["Stroke Order: ∞"]
 Free --> FLists["Lists: 3"]
 Free --> FDrills["Drills/day: 3"]
 Free --> FSave["Save: ✅ (local)"]
 Free --> FSync["Sync: ❌"]
 Free --> FBookmarks["Bookmarks: 5"]
-Free --> FGames["Games/day: 3"]
+Free --> FGames["Games/day: 3 each"]
+Free --> FYouTube["YouTube: 1/day"]
+Free --> FStroke["Stroke Order: ∞"]
 Premium --> PLists["Lists: ∞"]
 Premium --> PDrills["Drills/day: ∞"]
 Premium --> PSave["Save: ✅ (cloud)"]
 Premium --> PSync["Sync: ✅"]
 Premium --> PBookmarks["Bookmarks: ∞"]
 Premium --> PGames["Games/day: ∞"]
+Premium --> PYouTube["YouTube: ∞"]
+Premium --> PAI["AI Tutor: ∞"]
     style Guest fill:#f9f,stroke:#333,stroke-width:2px
     style Free fill:#bbf,stroke:#333,stroke-width:2px
     style Premium fill:#bfb,stroke:#333,stroke-width:2px

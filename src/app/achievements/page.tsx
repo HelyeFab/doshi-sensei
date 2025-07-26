@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAchievements } from '@/hooks/useAchievements';
 import { Achievement } from '@/lib/achievements/types';
 import { ProfileTitle, TitleSelector } from '@/components/achievements/ProfileTitle';
@@ -9,7 +9,7 @@ import { MultiLevelAchievementGrid } from '@/components/achievements/MultiLevelA
 import { HiddenAchievementsSection } from '@/components/achievements/HiddenAchievements';
 import { CosmeticRewards } from '@/components/achievements/CosmeticRewards';
 import { AchievementManager } from '@/lib/achievements/manager';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 
 interface DisplayAchievement extends Achievement {
   progress: number;
@@ -36,6 +36,22 @@ export default function AchievementsPage() {
   const [selectedTab, setSelectedTab] = useState<'regular' | 'multilevel' | 'hidden' | 'cosmetics'>('regular');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showTitleSelector, setShowTitleSelector] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowCategoryDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Process achievements for display
   useEffect(() => {
@@ -139,7 +155,7 @@ export default function AchievementsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title="Achievements" />
+      <SmartPageHeader title="Achievements" />
       
       <div className="container mx-auto px-4 pb-8">
         {/* Header */}
@@ -212,21 +228,48 @@ export default function AchievementsPage() {
 
           {/* Category Filter (only for regular achievements) */}
           {selectedTab === 'regular' && (
-            <div className="flex flex-wrap gap-2">
-              {categories.filter(c => c !== 'hidden').map(category => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedCategory === category
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
+            <div className="relative" ref={dropdownRef}>
+              {/* Dropdown Toggle Button */}
+              <button
+                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors flex items-center gap-2"
+              >
+                <span className="mr-1">{categoryIcons[selectedCategory]}</span>
+                {categoryLabels[selectedCategory]}
+                <svg 
+                  className={`w-4 h-4 transition-transform ${showCategoryDropdown ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
                 >
-                  <span className="mr-1">{categoryIcons[category]}</span>
-                  {categoryLabels[category]}
-                </button>
-              ))}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {/* Collapsible Category List */}
+              {showCategoryDropdown && (
+                <div className="absolute z-10 mt-2 bg-card border border-border rounded-lg shadow-lg overflow-hidden min-w-[200px]">
+                  <div className="py-1">
+                    {categories.filter(c => c !== 'hidden').map(category => (
+                      <button
+                        key={category}
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          setShowCategoryDropdown(false);
+                        }}
+                        className={`w-full px-4 py-2 text-sm font-medium transition-colors text-left flex items-center ${
+                          selectedCategory === category
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:bg-muted/80'
+                        }`}
+                      >
+                        <span className="mr-2">{categoryIcons[category]}</span>
+                        {categoryLabels[category]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

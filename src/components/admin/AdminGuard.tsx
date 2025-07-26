@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_EMAIL } from '@/types/admin';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 
 interface AdminGuardProps {
   children: React.ReactNode;
@@ -98,12 +99,11 @@ export function AdminNotFound() {
           You don't have permission to access this admin area.
           Only authorized administrators can view this content.
         </p>
-        <Link
-          href="/"
+        <SmartNavigationLink href="/"
           className="inline-flex items-center px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
+         title="← Back to Home">
           ← Back to Home
-        </Link>
+        </SmartNavigationLink>
       </div>
     </div>
   );

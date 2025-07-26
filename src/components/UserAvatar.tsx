@@ -2,7 +2,9 @@
 
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuth } from '@/contexts/AuthContext';
-import Link from 'next/link';
+import { useStrings } from '@/contexts/LanguageContext';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -21,6 +23,7 @@ const sizeClasses = {
 export default function UserAvatar({ size = 'md', className = '', showBorder = true, clickable = true }: UserAvatarProps) {
   const { profile, profilePicture, loading } = useUserProfile();
   const { user } = useAuth();
+  const strings = useStrings();
 
   // While loading, show a placeholder that matches the final size
   if (loading) {
@@ -51,13 +54,12 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
   // Wrap in Link if clickable
   if (clickable) {
     return (
-      <Link 
-        href={user ? "/account" : "/login"} 
+      <SmartNavigationLink href={user ? "/account" : "/login"} 
         className="inline-block cursor-pointer"
         aria-label={user ? "Go to account page" : "Login or sign up"}
-      >
+       title={strings?.account?.viewProfile || "View Profile"}>
         {avatarElement}
-      </Link>
+      </SmartNavigationLink>
     );
   }
 

@@ -1,1738 +1,9 @@
 [
   {
-    "id": "minna-1-3-1508237387579",
-    "japanese": "- yen",
-    "reading": "- yen",
-    "meaning": "ーえん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーえん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574342",
-    "japanese": "- yen",
-    "reading": "- yen",
-    "meaning": "ーえん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーえん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237387579",
-    "japanese": "- yen",
-    "reading": "- yen",
-    "meaning": "ーえん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーえん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574342",
-    "japanese": "- yen",
-    "reading": "- yen",
-    "meaning": "ーえん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーえん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237337292",
-    "japanese": "-th floor",
-    "reading": "-th floor",
-    "meaning": "ーかい　（がい）",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーかい　（がい）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574340",
-    "japanese": "-th floor",
-    "reading": "-th floor",
-    "meaning": "ーかい　（がい）",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーかい　（がい）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237337292",
-    "japanese": "-th floor",
-    "reading": "-th floor",
-    "meaning": "ーかい　（がい）",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーかい　（がい）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574340",
-    "japanese": "-th floor",
-    "reading": "-th floor",
-    "meaning": "ーかい　（がい）",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ーかい　（がい）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372834",
-    "japanese": "（～を） 見[み]せてください。",
-    "reading": "（～を） 見[み]せてください。",
-    "meaning": "（～を）見せてください。",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Please show me (～).",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372835",
-    "japanese": "（～を） 見[み]せてください。",
-    "reading": "（～を） 見[み]せてください。",
-    "meaning": "（～を）見せてください。",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Please show me (～).",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372834",
-    "japanese": "（～を） 見[み]せてください。",
-    "reading": "（～を） 見[み]せてください。",
-    "meaning": "（～を）見せてください。",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Please show me (～).",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372835",
-    "japanese": "（～を） 見[み]せてください。",
-    "reading": "（～を） 見[み]せてください。",
-    "meaning": "（～を）見せてください。",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Please show me (～).",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372838",
-    "japanese": "（～を）ください。",
-    "reading": "（～を）ください。",
-    "meaning": "（～を）ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "Give me (～), please.",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372839",
-    "japanese": "（～を）ください。",
-    "reading": "（～を）ください。",
-    "meaning": "（～を）ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "Give me (～), please.",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372838",
-    "japanese": "（～を）ください。",
-    "reading": "（～を）ください。",
-    "meaning": "（～を）ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "Give me (～), please.",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372839",
-    "japanese": "（～を）ください。",
-    "reading": "（～を）ください。",
-    "meaning": "（～を）ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "Give me (～), please.",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237754747",
-    "japanese": "Bangkok",
-    "reading": "Bangkok",
-    "meaning": "バンコク",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "バンコク",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574357",
-    "japanese": "Bangkok",
-    "reading": "Bangkok",
-    "meaning": "バンコク",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "バンコク",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237754747",
-    "japanese": "Bangkok",
-    "reading": "Bangkok",
-    "meaning": "バンコク",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "バンコク",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574357",
-    "japanese": "Bangkok",
-    "reading": "Bangkok",
-    "meaning": "バンコク",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "バンコク",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237281787",
-    "japanese": "basement",
-    "reading": "basement",
-    "meaning": "地下",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "地下[ちか]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574339",
-    "japanese": "basement",
-    "reading": "basement",
-    "meaning": "地下",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "地下[ちか]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237281787",
-    "japanese": "basement",
-    "reading": "basement",
-    "meaning": "地下",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "地下[ちか]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574339",
-    "japanese": "basement",
-    "reading": "basement",
-    "meaning": "地下",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "地下[ちか]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237773059",
-    "japanese": "Berlin",
-    "reading": "Berlin",
-    "meaning": "ベルリン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ベルリン",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574358",
-    "japanese": "Berlin",
-    "reading": "Berlin",
-    "meaning": "ベルリン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ベルリン",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237773059",
-    "japanese": "Berlin",
-    "reading": "Berlin",
-    "meaning": "ベルリン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ベルリン",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574358",
-    "japanese": "Berlin",
-    "reading": "Berlin",
-    "meaning": "ベルリン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ベルリン",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235583084",
-    "japanese": "classroom",
-    "reading": "classroom",
-    "meaning": "教室",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "教室[きょうしつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574319",
-    "japanese": "classroom",
-    "reading": "classroom",
-    "meaning": "教室",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "教室[きょうしつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235583084",
-    "japanese": "classroom",
-    "reading": "classroom",
-    "meaning": "教室",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "教室[きょうしつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574319",
-    "japanese": "classroom",
-    "reading": "classroom",
-    "meaning": "教室",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "教室[きょうしつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237109307",
-    "japanese": "company",
-    "reading": "company",
-    "meaning": "会社",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会社[かいしゃ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574333",
-    "japanese": "company",
-    "reading": "company",
-    "meaning": "会社",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会社[かいしゃ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237109307",
-    "japanese": "company",
-    "reading": "company",
-    "meaning": "会社",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会社[かいしゃ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574333",
-    "japanese": "company",
-    "reading": "company",
-    "meaning": "会社",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会社[かいしゃ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235659491",
-    "japanese": "conference room, meeting room",
-    "reading": "conference room, meeting room",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ] 室[しつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574322",
-    "japanese": "conference room, meeting room",
-    "reading": "conference room, meeting room",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ] 室[しつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235659491",
-    "japanese": "conference room, meeting room",
-    "reading": "conference room, meeting room",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ] 室[しつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574322",
-    "japanese": "conference room, meeting room",
-    "reading": "conference room, meeting room",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "会議[かいぎ] 室[しつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237084363",
-    "japanese": "country",
-    "reading": "country",
-    "meaning": "［お］国",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "［お］ 国[こく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574332",
-    "japanese": "country",
-    "reading": "country",
-    "meaning": "［お］国",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "［お］ 国[こく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237084363",
-    "japanese": "country",
-    "reading": "country",
-    "meaning": "［お］国",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "［お］ 国[こく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574332",
-    "japanese": "country",
-    "reading": "country",
-    "meaning": "［お］国",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "［お］ 国[こく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237259947",
-    "japanese": "department, counter (in a department store, etc.)",
-    "reading": "department, counter (in a department store, etc.)",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "counter",
-    "examples": [
-      {
-        "japanese": "売り場[うりば]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574338",
-    "japanese": "department, counter (in a department store, etc.)",
-    "reading": "department, counter (in a department store, etc.)",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "counter",
-    "examples": [
-      {
-        "japanese": "売り場[うりば]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237259947",
-    "japanese": "department, counter (in a department store, etc.)",
-    "reading": "department, counter (in a department store, etc.)",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "counter",
-    "examples": [
-      {
-        "japanese": "売り場[うりば]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574338",
-    "japanese": "department, counter (in a department store, etc.)",
-    "reading": "department, counter (in a department store, etc.)",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "counter",
-    "examples": [
-      {
-        "japanese": "売り場[うりば]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235609916",
-    "japanese": "dining hall, canteen",
-    "reading": "dining hall, canteen",
-    "meaning": "食堂",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "食堂[しょくどう]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574320",
-    "japanese": "dining hall, canteen",
-    "reading": "dining hall, canteen",
-    "meaning": "食堂",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "食堂[しょくどう]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235609916",
-    "japanese": "dining hall, canteen",
-    "reading": "dining hall, canteen",
-    "meaning": "食堂",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "食堂[しょくどう]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574320",
-    "japanese": "dining hall, canteen",
-    "reading": "dining hall, canteen",
-    "meaning": "食堂",
-    "jlptLevel": "N4",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "食堂[しょくどう]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373074",
-    "japanese": "elevator, lift",
-    "reading": "エレベーター",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373075",
-    "japanese": "elevator, lift",
-    "reading": "エレベーター",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373074",
-    "japanese": "elevator, lift",
-    "reading": "エレベーター",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373075",
-    "japanese": "elevator, lift",
-    "reading": "エレベーター",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235859619",
-    "japanese": "escalator",
-    "reading": "escalator",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エスカレーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574329",
-    "japanese": "escalator",
-    "reading": "escalator",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エスカレーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373076",
-    "japanese": "escalator",
-    "reading": "エスカレーター",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373077",
-    "japanese": "escalator",
-    "reading": "エスカレーター",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235859619",
-    "japanese": "escalator",
-    "reading": "escalator",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エスカレーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574329",
-    "japanese": "escalator",
-    "reading": "escalator",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エスカレーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373076",
-    "japanese": "escalator",
-    "reading": "エスカレーター",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373077",
-    "japanese": "escalator",
-    "reading": "エスカレーター",
-    "meaning": "エスカレーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237490316",
-    "japanese": "Excuse me.",
-    "reading": "Excuse me.",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "すみません。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574347",
-    "japanese": "Excuse me.",
-    "reading": "Excuse me.",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "すみません。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372832",
-    "japanese": "Excuse me.",
-    "reading": "すみません。",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372833",
-    "japanese": "Excuse me.",
-    "reading": "すみません。",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237490316",
-    "japanese": "Excuse me.",
-    "reading": "Excuse me.",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "すみません。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574347",
-    "japanese": "Excuse me.",
-    "reading": "Excuse me.",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "すみません。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372832",
-    "japanese": "Excuse me.",
-    "reading": "すみません。",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372833",
-    "japanese": "Excuse me.",
-    "reading": "すみません。",
-    "meaning": "すみません。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237719515",
-    "japanese": "France",
-    "reading": "France",
-    "meaning": "フランス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "フランス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574355",
-    "japanese": "France",
-    "reading": "France",
-    "meaning": "フランス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "フランス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237719515",
-    "japanese": "France",
-    "reading": "France",
-    "meaning": "フランス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "フランス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574355",
-    "japanese": "France",
-    "reading": "France",
-    "meaning": "フランス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "フランス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237675451",
-    "japanese": "Give me [~], please.",
-    "reading": "Give me [~], please.",
-    "meaning": "［～を］ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574352",
-    "japanese": "Give me [~], please.",
-    "reading": "Give me [~], please.",
-    "meaning": "［～を］ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237675451",
-    "japanese": "Give me [~], please.",
-    "reading": "Give me [~], please.",
-    "meaning": "［～を］ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574352",
-    "japanese": "Give me [~], please.",
-    "reading": "Give me [~], please.",
-    "meaning": "［～を］ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235391524",
-    "japanese": "here, this place",
-    "reading": "here, this place",
-    "meaning": "ここ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ここ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-3-1544776574311",
-    "japanese": "here, this place",
-    "reading": "here, this place",
-    "meaning": "ここ",
+    "japanese": "ここ",
+    "reading": "ここ",
+    "meaning": "here, this place",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -1744,1859 +15,17 @@
     ],
     "tags": [
       "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235391524",
-    "japanese": "here, this place",
-    "reading": "here, this place",
-    "meaning": "ここ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ここ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574311",
-    "japanese": "here, this place",
-    "reading": "here, this place",
-    "meaning": "ここ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ここ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237124435",
-    "japanese": "house, home",
-    "reading": "house, home",
-    "meaning": "うち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うち",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574334",
-    "japanese": "house, home",
-    "reading": "house, home",
-    "meaning": "うち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うち",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237124435",
-    "japanese": "house, home",
-    "reading": "house, home",
-    "meaning": "うち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うち",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574334",
-    "japanese": "house, home",
-    "reading": "house, home",
-    "meaning": "うち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うち",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237403779",
-    "japanese": "how much",
-    "reading": "how much",
-    "meaning": "いくら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "いくら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574343",
-    "japanese": "how much",
-    "reading": "how much",
-    "meaning": "いくら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "いくら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237403779",
-    "japanese": "how much",
-    "reading": "how much",
-    "meaning": "いくら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "いくら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574343",
-    "japanese": "how much",
-    "reading": "how much",
-    "meaning": "いくら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "いくら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237424252",
-    "japanese": "hundred",
-    "reading": "hundred",
-    "meaning": "百",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "百[ひゃく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574344",
-    "japanese": "hundred",
-    "reading": "hundred",
-    "meaning": "百",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "百[ひゃく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237424252",
-    "japanese": "hundred",
-    "reading": "hundred",
-    "meaning": "百",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "百[ひゃく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574344",
-    "japanese": "hundred",
-    "reading": "hundred",
-    "meaning": "百",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "百[ひゃく]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237692227",
-    "japanese": "Italy",
-    "reading": "Italy",
-    "meaning": "イタリア",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "イタリア",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574353",
-    "japanese": "Italy",
-    "reading": "Italy",
-    "meaning": "イタリア",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "イタリア",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237692227",
-    "japanese": "Italy",
-    "reading": "Italy",
-    "meaning": "イタリア",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "イタリア",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574353",
-    "japanese": "Italy",
-    "reading": "Italy",
-    "meaning": "イタリア",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "イタリア",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237740547",
-    "japanese": "Jakarta",
-    "reading": "Jakarta",
-    "meaning": "ジャカルタ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ジャカルタ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574356",
-    "japanese": "Jakarta",
-    "reading": "Jakarta",
-    "meaning": "ジャカルタ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ジャカルタ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237740547",
-    "japanese": "Jakarta",
-    "reading": "Jakarta",
-    "meaning": "ジャカルタ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ジャカルタ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574356",
-    "japanese": "Jakarta",
-    "reading": "Jakarta",
-    "meaning": "ジャカルタ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ジャカルタ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235844427",
-    "japanese": "lift, elevator",
-    "reading": "lift, elevator",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エレベーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574328",
-    "japanese": "lift, elevator",
-    "reading": "lift, elevator",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エレベーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235844427",
-    "japanese": "lift, elevator",
-    "reading": "lift, elevator",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エレベーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574328",
-    "japanese": "lift, elevator",
-    "reading": "lift, elevator",
-    "meaning": "エレベーター",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "エレベーター",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235717668",
-    "japanese": "lobby",
-    "reading": "lobby",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ロビー",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574324",
-    "japanese": "lobby",
-    "reading": "lobby",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ロビー",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373066",
-    "japanese": "lobby",
-    "reading": "ロビー",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373067",
-    "japanese": "lobby",
-    "reading": "ロビー",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235717668",
-    "japanese": "lobby",
-    "reading": "lobby",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ロビー",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574324",
-    "japanese": "lobby",
-    "reading": "lobby",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ロビー",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373066",
-    "japanese": "lobby",
-    "reading": "ロビー",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373067",
-    "japanese": "lobby",
-    "reading": "ロビー",
-    "meaning": "ロビー",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373084",
-    "japanese": "necktie",
-    "reading": "ネクタイ",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373085",
-    "japanese": "necktie",
-    "reading": "ネクタイ",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373084",
-    "japanese": "necktie",
-    "reading": "ネクタイ",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373085",
-    "japanese": "necktie",
-    "reading": "ネクタイ",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235632580",
-    "japanese": "office",
-    "reading": "office",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "事務所[じむしょ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574321",
-    "japanese": "office",
-    "reading": "office",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "事務所[じむしょ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235632580",
-    "japanese": "office",
-    "reading": "office",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "事務所[じむしょ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574321",
-    "japanese": "office",
-    "reading": "office",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "事務所[じむしょ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237632411",
-    "japanese": "Please show me [~].",
-    "reading": "Please show me [~].",
-    "meaning": "［～を］みせて　ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］みせて　ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574350",
-    "japanese": "Please show me [~].",
-    "reading": "Please show me [~].",
-    "meaning": "［～を］みせて　ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］みせて　ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237632411",
-    "japanese": "Please show me [~].",
-    "reading": "Please show me [~].",
-    "meaning": "［～を］みせて　ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］みせて　ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574350",
-    "japanese": "Please show me [~].",
-    "reading": "Please show me [~].",
-    "meaning": "［～を］みせて　ください。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "［~を］みせて　ください。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235706740",
-    "japanese": "reception desk",
-    "reading": "reception desk",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "受付[うけつけ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574323",
-    "japanese": "reception desk",
-    "reading": "reception desk",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "受付[うけつけ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235706740",
-    "japanese": "reception desk",
-    "reading": "reception desk",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "受付[うけつけ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574323",
-    "japanese": "reception desk",
-    "reading": "reception desk",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "受付[うけつけ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237189019",
-    "japanese": "shoes",
-    "reading": "shoes",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "靴[くつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574335",
-    "japanese": "shoes",
-    "reading": "shoes",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "靴[くつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237189019",
-    "japanese": "shoes",
-    "reading": "shoes",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "靴[くつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574335",
-    "japanese": "shoes",
-    "reading": "shoes",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "靴[くつ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235830331",
-    "japanese": "staircase",
-    "reading": "staircase",
-    "meaning": "かいだん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "かいだん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574327",
-    "japanese": "staircase",
-    "reading": "staircase",
-    "meaning": "かいだん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "かいだん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235830331",
-    "japanese": "staircase",
-    "reading": "staircase",
-    "meaning": "かいだん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "かいだん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574327",
-    "japanese": "staircase",
-    "reading": "staircase",
-    "meaning": "かいだん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "かいだん",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237707380",
-    "japanese": "Switzerland",
-    "reading": "Switzerland",
-    "meaning": "スイス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "スイス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574354",
-    "japanese": "Switzerland",
-    "reading": "Switzerland",
-    "meaning": "スイス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "スイス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237707380",
-    "japanese": "Switzerland",
-    "reading": "Switzerland",
-    "meaning": "スイス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "スイス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574354",
-    "japanese": "Switzerland",
-    "reading": "Switzerland",
-    "meaning": "スイス",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "スイス",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235932835",
-    "japanese": "telephone handset, telephone call",
-    "reading": "telephone handset, telephone call",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "電話[でんわ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574331",
-    "japanese": "telephone handset, telephone call",
-    "reading": "telephone handset, telephone call",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "電話[でんわ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235932835",
-    "japanese": "telephone handset, telephone call",
-    "reading": "telephone handset, telephone call",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "電話[でんわ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574331",
-    "japanese": "telephone handset, telephone call",
-    "reading": "telephone handset, telephone call",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "電話[でんわ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237469987",
-    "japanese": "ten thousand",
-    "reading": "ten thousand",
-    "meaning": "万",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "万[まん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574346",
-    "japanese": "ten thousand",
-    "reading": "ten thousand",
-    "meaning": "万",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "万[まん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237469987",
-    "japanese": "ten thousand",
-    "reading": "ten thousand",
-    "meaning": "万",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "万[まん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574346",
-    "japanese": "ten thousand",
-    "reading": "ten thousand",
-    "meaning": "万",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "万[まん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237502883",
-    "japanese": "Thanks.",
-    "reading": "Thanks.",
-    "meaning": "どうも。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どうも。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574348",
-    "japanese": "Thanks.",
-    "reading": "Thanks.",
-    "meaning": "どうも。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どうも。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237502883",
-    "japanese": "Thanks.",
-    "reading": "Thanks.",
-    "meaning": "どうも。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どうも。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574348",
-    "japanese": "Thanks.",
-    "reading": "Thanks.",
-    "meaning": "どうも。",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どうも。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235422172",
-    "japanese": "that place over there",
-    "reading": "that place over there",
-    "meaning": "あそこ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あそこ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574313",
-    "japanese": "that place over there",
-    "reading": "that place over there",
-    "meaning": "あそこ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あそこ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235422172",
-    "japanese": "that place over there",
-    "reading": "that place over there",
-    "meaning": "あそこ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あそこ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574313",
-    "japanese": "that place over there",
-    "reading": "that place over there",
-    "meaning": "あそこ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あそこ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235507309",
-    "japanese": "That way, that place near the listener (polite equivalent of そこ）",
-    "reading": "That way, that place near the listener (polite equivalent of そこ）",
-    "meaning": "そちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574316",
-    "japanese": "That way, that place near the listener (polite equivalent of そこ）",
-    "reading": "That way, that place near the listener (polite equivalent of そこ）",
-    "meaning": "そちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235507309",
-    "japanese": "That way, that place near the listener (polite equivalent of そこ）",
-    "reading": "That way, that place near the listener (polite equivalent of そこ）",
-    "meaning": "そちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574316",
-    "japanese": "That way, that place near the listener (polite equivalent of そこ）",
-    "reading": "That way, that place near the listener (polite equivalent of そこ）",
-    "meaning": "そちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235539452",
-    "japanese": "that way, that place over there (polite equivalent of あそこ）",
-    "reading": "that way, that place over there (polite equivalent of あそこ）",
-    "meaning": "あちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574317",
-    "japanese": "that way, that place over there (polite equivalent of あそこ）",
-    "reading": "that way, that place over there (polite equivalent of あそこ）",
-    "meaning": "あちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235539452",
-    "japanese": "that way, that place over there (polite equivalent of あそこ）",
-    "reading": "that way, that place over there (polite equivalent of あそこ）",
-    "meaning": "あちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574317",
-    "japanese": "that way, that place over there (polite equivalent of あそこ）",
-    "reading": "that way, that place over there (polite equivalent of あそこ）",
-    "meaning": "あちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235410163",
-    "japanese": "there, that place near the listener",
-    "reading": "there, that place near the listener",
-    "meaning": "そこ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そこ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-3-1544776574312",
-    "japanese": "there, that place near the listener",
-    "reading": "there, that place near the listener",
-    "meaning": "そこ",
+    "japanese": "そこ",
+    "reading": "そこ",
+    "meaning": "there, that place near the listener",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -3608,839 +37,39 @@
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1508235410163",
-    "japanese": "there, that place near the listener",
-    "reading": "there, that place near the listener",
-    "meaning": "そこ",
+    "id": "minna-1-3-1544776574313",
+    "japanese": "あそこ",
+    "reading": "あそこ",
+    "meaning": "that place over there",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "そこ",
+        "japanese": "あそこ",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574312",
-    "japanese": "there, that place near the listener",
-    "reading": "there, that place near the listener",
-    "meaning": "そこ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そこ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235468749",
-    "japanese": "this way, this place (polite equivalent of ここ）",
-    "reading": "this way, this place (polite equivalent of ここ）",
-    "meaning": "こちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574315",
-    "japanese": "this way, this place (polite equivalent of ここ）",
-    "reading": "this way, this place (polite equivalent of ここ）",
-    "meaning": "こちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235468749",
-    "japanese": "this way, this place (polite equivalent of ここ）",
-    "reading": "this way, this place (polite equivalent of ここ）",
-    "meaning": "こちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574315",
-    "japanese": "this way, this place (polite equivalent of ここ）",
-    "reading": "this way, this place (polite equivalent of ここ）",
-    "meaning": "こちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こちら",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237449499",
-    "japanese": "thousand",
-    "reading": "thousand",
-    "meaning": "千",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "千[せん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574345",
-    "japanese": "thousand",
-    "reading": "thousand",
-    "meaning": "千",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "千[せん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237449499",
-    "japanese": "thousand",
-    "reading": "thousand",
-    "meaning": "千",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "千[せん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574345",
-    "japanese": "thousand",
-    "reading": "thousand",
-    "meaning": "千",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "千[せん]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237208740",
-    "japanese": "tie, necktie",
-    "reading": "tie, necktie",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ネクタイ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574336",
-    "japanese": "tie, necktie",
-    "reading": "tie, necktie",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ネクタイ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237208740",
-    "japanese": "tie, necktie",
-    "reading": "tie, necktie",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ネクタイ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574336",
-    "japanese": "tie, necktie",
-    "reading": "tie, necktie",
-    "meaning": "ネクタイ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ネクタイ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235777811",
-    "japanese": "toilet, rest room",
-    "reading": "toilet, rest room",
-    "meaning": "トイレ（お手洗い）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "トイレ（お 手洗[てあら]い）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574326",
-    "japanese": "toilet, rest room",
-    "reading": "toilet, rest room",
-    "meaning": "トイレ（お手洗い）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "トイレ（お 手洗[てあら]い）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235777811",
-    "japanese": "toilet, rest room",
-    "reading": "toilet, rest room",
-    "meaning": "トイレ（お手洗い）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "トイレ（お 手洗[てあら]い）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574326",
-    "japanese": "toilet, rest room",
-    "reading": "toilet, rest room",
-    "meaning": "トイレ（お手洗い）",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "トイレ（お 手洗[てあら]い）",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235899227",
-    "japanese": "vending machine",
-    "reading": "vending machine",
-    "meaning": "自動販売機",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "自動[じどう] 販売[はんばい] 機[き]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574330",
-    "japanese": "vending machine",
-    "reading": "vending machine",
-    "meaning": "自動販売機",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "自動[じどう] 販売[はんばい] 機[き]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235899227",
-    "japanese": "vending machine",
-    "reading": "vending machine",
-    "meaning": "自動販売機",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "自動[じどう] 販売[はんばい] 機[き]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574330",
-    "japanese": "vending machine",
-    "reading": "vending machine",
-    "meaning": "自動販売機",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "自動[じどう] 販売[はんばい] 機[き]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237554603",
-    "japanese": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "reading": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "meaning": "いらっしゃいませ。",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "いらっしゃいませ。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574349",
-    "japanese": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "reading": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "meaning": "いらっしゃいませ。",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "いらっしゃいませ。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237554603",
-    "japanese": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "reading": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "meaning": "いらっしゃいませ。",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "いらっしゃいませ。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574349",
-    "japanese": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "reading": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
-    "meaning": "いらっしゃいませ。",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "いらっしゃいませ。",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372836",
-    "japanese": "well, then, in that case",
-    "reading": "じゃ",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372837",
-    "japanese": "well, then, in that case",
-    "reading": "じゃ",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372836",
-    "japanese": "well, then, in that case",
-    "reading": "じゃ",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729372837",
-    "japanese": "well, then, in that case",
-    "reading": "じゃ",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "3",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237648020",
-    "japanese": "well, then, in that case.",
-    "reading": "well, then, in that case.",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "じゃ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574351",
-    "japanese": "well, then, in that case.",
-    "reading": "well, then, in that case.",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "じゃ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237648020",
-    "japanese": "well, then, in that case.",
-    "reading": "well, then, in that case.",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "じゃ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574351",
-    "japanese": "well, then, in that case.",
-    "reading": "well, then, in that case.",
-    "meaning": "じゃ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "じゃ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237372339",
-    "japanese": "what floor",
-    "reading": "what floor",
-    "meaning": "なんがい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "なんがい",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574341",
-    "japanese": "what floor",
-    "reading": "what floor",
-    "meaning": "なんがい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "なんがい",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508237372339",
-    "japanese": "what floor",
-    "reading": "what floor",
-    "meaning": "なんがい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "なんがい",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1544776574341",
-    "japanese": "what floor",
-    "reading": "what floor",
-    "meaning": "なんがい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "なんがい",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1508235438092",
-    "japanese": "where, what place",
-    "reading": "where, what place",
-    "meaning": "どこ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どこ",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-3-1544776574314",
-    "japanese": "where, what place",
-    "reading": "where, what place",
-    "meaning": "どこ",
+    "japanese": "どこ",
+    "reading": "どこ",
+    "meaning": "where, what place",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4452,79 +81,83 @@
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1508235438092",
-    "japanese": "where, what place",
-    "reading": "where, what place",
-    "meaning": "どこ",
+    "id": "minna-1-3-1544776574315",
+    "japanese": "こちら",
+    "reading": "こちら",
+    "meaning": "this way, this place (polite equivalent of ここ）",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "どこ",
+        "japanese": "こちら",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1544776574314",
-    "japanese": "where, what place",
-    "reading": "where, what place",
-    "meaning": "どこ",
+    "id": "minna-1-3-1544776574316",
+    "japanese": "そちら",
+    "reading": "そちら",
+    "meaning": "That way, that place near the listener (polite equivalent of そこ）",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "どこ",
+        "japanese": "そちら",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1508235562099",
-    "japanese": "which way, where (polite equivalent of どこ）",
-    "reading": "which way, where (polite equivalent of どこ）",
-    "meaning": "どちら",
+    "id": "minna-1-3-1544776574317",
+    "japanese": "あちら",
+    "reading": "あちら",
+    "meaning": "that way, that place over there (polite equivalent of あそこ）",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "どちら",
+        "japanese": "あちら",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-3-1544776574318",
-    "japanese": "which way, where (polite equivalent of どこ）",
-    "reading": "which way, where (polite equivalent of どこ）",
-    "meaning": "どちら",
+    "japanese": "どちら",
+    "reading": "どちら",
+    "meaning": "which way, where (polite equivalent of どこ）",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4536,100 +169,137 @@
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1508235562099",
-    "japanese": "which way, where (polite equivalent of どこ）",
-    "reading": "which way, where (polite equivalent of どこ）",
-    "meaning": "どちら",
+    "id": "minna-1-3-1544776574319",
+    "japanese": "教室",
+    "reading": "教室",
+    "meaning": "classroom",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "どちら",
+        "japanese": "教室[きょうしつ]",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1544776574318",
-    "japanese": "which way, where (polite equivalent of どこ）",
-    "reading": "which way, where (polite equivalent of どこ）",
-    "meaning": "どちら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "id": "minna-1-3-1544776574320",
+    "japanese": "食堂",
+    "reading": "食堂",
+    "meaning": "dining hall, canteen",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "どちら",
+        "japanese": "食堂[しょくどう]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574321",
+    "japanese": "事務所",
+    "reading": "事務所",
+    "meaning": "office",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "事務所[じむしょ]",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1508237222083",
-    "japanese": "wine",
-    "reading": "wine",
-    "meaning": "ワイン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "id": "minna-1-3-1544776574322",
+    "japanese": "会議室",
+    "reading": "会議室",
+    "meaning": "conference room, meeting room",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "ワイン",
+        "japanese": "会議[かいぎ] 室[しつ]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574323",
+    "japanese": "受付",
+    "reading": "受付",
+    "meaning": "reception desk",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "受付[うけつけ]",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1544776574337",
-    "japanese": "wine",
-    "reading": "wine",
-    "meaning": "ワイン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ワイン",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373086",
-    "japanese": "wine",
-    "reading": "ワイン",
-    "meaning": "ワイン",
+    "id": "minna-1-3-1609729373067",
+    "japanese": "ロビー",
+    "reading": "ロビー",
+    "meaning": "lobby",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4640,19 +310,272 @@
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574326",
+    "japanese": "トイレお手洗い",
+    "reading": "トイレお手洗い",
+    "meaning": "toilet, rest room",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "トイレ（お 手洗[てあら]い）",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574327",
+    "japanese": "かいだん",
+    "reading": "かいだん",
+    "meaning": "staircase",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "かいだん",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574328",
+    "japanese": "エレベーター",
+    "reading": "エレベーター",
+    "meaning": "lift, elevator",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "エレベーター",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373077",
+    "japanese": "エスカレーター",
+    "reading": "エスカレーター",
+    "meaning": "escalator",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "3",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574330",
+    "japanese": "自動販売機",
+    "reading": "自動販売機",
+    "meaning": "vending machine",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "自動[じどう] 販売[はんばい] 機[き]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574331",
+    "japanese": "電話",
+    "reading": "電話",
+    "meaning": "telephone handset, telephone call",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "電話[でんわ]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574332",
+    "japanese": "［お］国",
+    "reading": "［お］国",
+    "meaning": "country",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "［お］ 国[こく]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574333",
+    "japanese": "会社",
+    "reading": "会社",
+    "meaning": "company",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "会社[かいしゃ]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574334",
+    "japanese": "うち",
+    "reading": "うち",
+    "meaning": "house, home",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "うち",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574335",
+    "japanese": "靴",
+    "reading": "靴",
+    "meaning": "shoes",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "靴[くつ]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574336",
+    "japanese": "ネクタイ",
+    "reading": "ネクタイ",
+    "meaning": "tie, necktie",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ネクタイ",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-3-1609729373087",
-    "japanese": "wine",
+    "japanese": "ワイン",
     "reading": "ワイン",
-    "meaning": "ワイン",
+    "meaning": "wine",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4663,61 +586,228 @@
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1508237222083",
-    "japanese": "wine",
-    "reading": "wine",
-    "meaning": "ワイン",
+    "id": "minna-1-3-1544776574338",
+    "japanese": "売り場",
+    "reading": "売り場",
+    "meaning": "department, counter (in a department store, etc.)",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": [
+      "counter"
+    ],
     "examples": [
       {
-        "japanese": "ワイン",
+        "japanese": "売り場[うりば]",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1544776574337",
-    "japanese": "wine",
-    "reading": "wine",
-    "meaning": "ワイン",
+    "id": "minna-1-3-1544776574339",
+    "japanese": "地下",
+    "reading": "地下",
+    "meaning": "basement",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "ワイン",
+        "japanese": "地下[ちか]",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1609729373086",
-    "japanese": "wine",
-    "reading": "ワイン",
-    "meaning": "ワイン",
+    "id": "minna-1-3-1544776574340",
+    "japanese": "ーかい がい",
+    "reading": "ーかい がい",
+    "meaning": "-th floor",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ーかい　（がい）",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574341",
+    "japanese": "なんがい",
+    "reading": "なんがい",
+    "meaning": "what floor",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
+    "examples": [
+      {
+        "japanese": "なんがい",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574342",
+    "japanese": "ーえん",
+    "reading": "ーえん",
+    "meaning": "- yen",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ーえん",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574343",
+    "japanese": "いくら",
+    "reading": "いくら",
+    "meaning": "how much",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "いくら",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574344",
+    "japanese": "百",
+    "reading": "百",
+    "meaning": "hundred",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "百[ひゃく]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574345",
+    "japanese": "千",
+    "reading": "千",
+    "meaning": "thousand",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "千[せん]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574346",
+    "japanese": "万",
+    "reading": "万",
+    "meaning": "ten thousand",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "万[まん]",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729372833",
+    "japanese": "すみません。",
+    "reading": "すみません。",
+    "meaning": "Excuse me.",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4728,19 +818,286 @@
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1609729373087",
-    "japanese": "wine",
-    "reading": "ワイン",
-    "meaning": "ワイン",
+    "id": "minna-1-3-1544776574348",
+    "japanese": "どうも。",
+    "reading": "どうも。",
+    "meaning": "Thanks.",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "どうも。",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574349",
+    "japanese": "いらっしゃいませ。",
+    "reading": "いらっしゃいませ。",
+    "meaning": "Welcome./May I help you? (a greeting to a customer or a guest entering a shop, etc.)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "いらっしゃいませ。",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574350",
+    "japanese": "［～を］みせて ください。",
+    "reading": "［～を］みせて ください。",
+    "meaning": "Please show me [~].",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "［~を］みせて　ください。",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574351",
+    "japanese": "じゃ",
+    "reading": "じゃ",
+    "meaning": "well, then, in that case.",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "じゃ",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574352",
+    "japanese": "［～を］ください。",
+    "reading": "［～を］ください。",
+    "meaning": "Give me [~], please.",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "［~を］ください。",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574353",
+    "japanese": "イタリア",
+    "reading": "イタリア",
+    "meaning": "Italy",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "イタリア",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574354",
+    "japanese": "スイス",
+    "reading": "スイス",
+    "meaning": "Switzerland",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "スイス",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574355",
+    "japanese": "フランス",
+    "reading": "フランス",
+    "meaning": "France",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "フランス",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574356",
+    "japanese": "ジャカルタ",
+    "reading": "ジャカルタ",
+    "meaning": "Jakarta",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ジャカルタ",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574357",
+    "japanese": "バンコク",
+    "reading": "バンコク",
+    "meaning": "Bangkok",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "バンコク",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1544776574358",
+    "japanese": "ベルリン",
+    "reading": "ベルリン",
+    "meaning": "Berlin",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ベルリン",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729372835",
+    "japanese": "～を見せてください。",
+    "reading": "～を見せてください。",
+    "meaning": "（～を） 見[み]せてください。",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "Please show me (～).",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729372837",
+    "japanese": "じゃ",
+    "reading": "じゃ",
+    "meaning": "well, then, in that case",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
@@ -4751,596 +1108,44 @@
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1609729373070",
-    "japanese": "トイレ(お 手洗[てあら]い)",
-    "reading": "トイレ(お 手洗[てあら]い)",
-    "meaning": "トイレ(お手洗い)",
+    "id": "minna-1-3-1609729372839",
+    "japanese": "～をください。",
+    "reading": "～をください。",
+    "meaning": "（～を）ください。",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "toilet, rest room",
+        "japanese": "Give me (～), please.",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373071",
-    "japanese": "トイレ(お 手洗[てあら]い)",
-    "reading": "トイレ(お 手洗[てあら]い)",
-    "meaning": "トイレ(お手洗い)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "toilet, rest room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373070",
-    "japanese": "トイレ(お 手洗[てあら]い)",
-    "reading": "トイレ(お 手洗[てあら]い)",
-    "meaning": "トイレ(お手洗い)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "toilet, rest room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373071",
-    "japanese": "トイレ(お 手洗[てあら]い)",
-    "reading": "トイレ(お 手洗[てあら]い)",
-    "meaning": "トイレ(お手洗い)",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "toilet, rest room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373094",
-    "japanese": "円[えん]",
-    "reading": "円[えん]",
-    "meaning": "円",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "yen",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373095",
-    "japanese": "円[えん]",
-    "reading": "円[えん]",
-    "meaning": "円",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "yen",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373094",
-    "japanese": "円[えん]",
-    "reading": "円[えん]",
-    "meaning": "円",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "yen",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373095",
-    "japanese": "円[えん]",
-    "reading": "円[えん]",
-    "meaning": "円",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "yen",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373088",
-    "japanese": "煙草[たばこ]",
-    "reading": "煙草[たばこ]",
-    "meaning": "煙草",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "tobacco, cigarette",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373089",
-    "japanese": "煙草[たばこ]",
-    "reading": "煙草[たばこ]",
-    "meaning": "煙草",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "tobacco, cigarette",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373088",
-    "japanese": "煙草[たばこ]",
-    "reading": "煙草[たばこ]",
-    "meaning": "煙草",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "tobacco, cigarette",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373089",
-    "japanese": "煙草[たばこ]",
-    "reading": "煙草[たばこ]",
-    "meaning": "煙草",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "tobacco, cigarette",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373078",
-    "japanese": "家[うち]",
-    "reading": "家[うち]",
-    "meaning": "家",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "house, home",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373079",
-    "japanese": "家[うち]",
-    "reading": "家[うち]",
-    "meaning": "家",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "house, home",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373078",
-    "japanese": "家[うち]",
-    "reading": "家[うち]",
-    "meaning": "家",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "house, home",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373079",
-    "japanese": "家[うち]",
-    "reading": "家[うち]",
-    "meaning": "家",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "house, home",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373062",
-    "japanese": "会議[かいぎ] 室[しつ]",
-    "reading": "会議[かいぎ] 室[しつ]",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "conference room, assembly room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373063",
-    "japanese": "会議[かいぎ] 室[しつ]",
-    "reading": "会議[かいぎ] 室[しつ]",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "conference room, assembly room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373062",
-    "japanese": "会議[かいぎ] 室[しつ]",
-    "reading": "会議[かいぎ] 室[しつ]",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "conference room, assembly room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373063",
-    "japanese": "会議[かいぎ] 室[しつ]",
-    "reading": "会議[かいぎ] 室[しつ]",
-    "meaning": "会議室",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "conference room, assembly room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373072",
-    "japanese": "階段[かいだん]",
-    "reading": "階段[かいだん]",
-    "meaning": "階段",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "staircase",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373073",
-    "japanese": "階段[かいだん]",
-    "reading": "階段[かいだん]",
-    "meaning": "階段",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "staircase",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373072",
-    "japanese": "階段[かいだん]",
-    "reading": "階段[かいだん]",
-    "meaning": "階段",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "staircase",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373073",
-    "japanese": "階段[かいだん]",
-    "reading": "階段[かいだん]",
-    "meaning": "階段",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "staircase",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373056",
-    "japanese": "教室[きょうしつ]",
-    "reading": "教室[きょうしつ]",
-    "meaning": "教室",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "classroom",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-3-1609729373057",
-    "japanese": "教室[きょうしつ]",
-    "reading": "教室[きょうしつ]",
-    "meaning": "教室",
+    "japanese": "教室",
+    "reading": "教室",
+    "meaning": "教室[きょうしつ]",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
         "japanese": "classroom",
@@ -5349,366 +1154,22 @@
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373056",
-    "japanese": "教室[きょうしつ]",
-    "reading": "教室[きょうしつ]",
-    "meaning": "教室",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "classroom",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373057",
-    "japanese": "教室[きょうしつ]",
-    "reading": "教室[きょうしつ]",
-    "meaning": "教室",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "classroom",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373082",
-    "japanese": "靴[くつ]",
-    "reading": "靴[くつ]",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "shoes",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373083",
-    "japanese": "靴[くつ]",
-    "reading": "靴[くつ]",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "shoes",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373082",
-    "japanese": "靴[くつ]",
-    "reading": "靴[くつ]",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "shoes",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373083",
-    "japanese": "靴[くつ]",
-    "reading": "靴[くつ]",
-    "meaning": "靴",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "shoes",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373060",
-    "japanese": "事務所[じむしょ]",
-    "reading": "事務所[じむしょ]",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "office",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373061",
-    "japanese": "事務所[じむしょ]",
-    "reading": "事務所[じむしょ]",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "office",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373060",
-    "japanese": "事務所[じむしょ]",
-    "reading": "事務所[じむしょ]",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "office",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373061",
-    "japanese": "事務所[じむしょ]",
-    "reading": "事務所[じむしょ]",
-    "meaning": "事務所",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "office",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373064",
-    "japanese": "受付[うけつけ]",
-    "reading": "受付[うけつけ]",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "reception desk",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373065",
-    "japanese": "受付[うけつけ]",
-    "reading": "受付[うけつけ]",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "reception desk",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373064",
-    "japanese": "受付[うけつけ]",
-    "reading": "受付[うけつけ]",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "reception desk",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373065",
-    "japanese": "受付[うけつけ]",
-    "reading": "受付[うけつけ]",
-    "meaning": "受付",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "reception desk",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373058",
-    "japanese": "食堂[しょくどう]",
-    "reading": "食堂[しょくどう]",
-    "meaning": "食堂",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "dining hall, canteen",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-3-1609729373059",
-    "japanese": "食堂[しょくどう]",
-    "reading": "食堂[しょくどう]",
-    "meaning": "食堂",
+    "japanese": "食堂",
+    "reading": "食堂",
+    "meaning": "食堂[しょくどう]",
     "jlptLevel": "N4",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
         "japanese": "dining hall, canteen",
@@ -5717,366 +1178,94 @@
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n4",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1609729373058",
-    "japanese": "食堂[しょくどう]",
-    "reading": "食堂[しょくどう]",
-    "meaning": "食堂",
+    "id": "minna-1-3-1609729373061",
+    "japanese": "事務所",
+    "reading": "事務所",
+    "meaning": "事務所[じむしょ]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "office",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373063",
+    "japanese": "会議室",
+    "reading": "会議室",
+    "meaning": "会議[かいぎ] 室[しつ]",
     "jlptLevel": "N4",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "dining hall, canteen",
+        "japanese": "conference room, assembly room",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n4",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1609729373059",
-    "japanese": "食堂[しょくどう]",
-    "reading": "食堂[しょくどう]",
-    "meaning": "食堂",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "dining hall, canteen",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373092",
-    "japanese": "地下[ちか]",
-    "reading": "地下[ちか]",
-    "meaning": "地下",
+    "id": "minna-1-3-1609729373065",
+    "japanese": "受付",
+    "reading": "受付",
+    "meaning": "受付[うけつけ]",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "basement",
+        "japanese": "reception desk",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373093",
-    "japanese": "地下[ちか]",
-    "reading": "地下[ちか]",
-    "meaning": "地下",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "basement",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373092",
-    "japanese": "地下[ちか]",
-    "reading": "地下[ちか]",
-    "meaning": "地下",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "basement",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373093",
-    "japanese": "地下[ちか]",
-    "reading": "地下[ちか]",
-    "meaning": "地下",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "basement",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373080",
-    "japanese": "電話[でんわ]",
-    "reading": "電話[でんわ]",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "telephone, telephone call",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373081",
-    "japanese": "電話[でんわ]",
-    "reading": "電話[でんわ]",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "telephone, telephone call",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373080",
-    "japanese": "電話[でんわ]",
-    "reading": "電話[でんわ]",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "telephone, telephone call",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373081",
-    "japanese": "電話[でんわ]",
-    "reading": "電話[でんわ]",
-    "meaning": "電話",
-    "jlptLevel": "N4",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "telephone, telephone call",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n4",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373090",
-    "japanese": "売り場[うりば]",
-    "reading": "売り場[うりば]",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "department, counter (in a department store)",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373091",
-    "japanese": "売り場[うりば]",
-    "reading": "売り場[うりば]",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "department, counter (in a department store)",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373090",
-    "japanese": "売り場[うりば]",
-    "reading": "売り場[うりば]",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "department, counter (in a department store)",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373091",
-    "japanese": "売り場[うりば]",
-    "reading": "売り場[うりば]",
-    "meaning": "売り場",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "department, counter (in a department store)",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-3-1609729373068",
-    "japanese": "部屋[へや]",
-    "reading": "部屋[へや]",
-    "meaning": "部屋",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "room",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "chapter3",
-      "noun",
-      "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-3-1609729373069",
-    "japanese": "部屋[へや]",
-    "reading": "部屋[へや]",
-    "meaning": "部屋",
+    "japanese": "部屋",
+    "reading": "部屋",
+    "meaning": "部屋[へや]",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
         "japanese": "room",
@@ -6085,56 +1274,269 @@
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1609729373068",
-    "japanese": "部屋[へや]",
-    "reading": "部屋[へや]",
-    "meaning": "部屋",
+    "id": "minna-1-3-1609729373071",
+    "japanese": "トイレお手洗い",
+    "reading": "トイレお手洗い",
+    "meaning": "トイレ(お 手洗[てあら]い)",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "room",
+        "japanese": "toilet, rest room",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1609729373069",
-    "japanese": "部屋[へや]",
-    "reading": "部屋[へや]",
-    "meaning": "部屋",
+    "id": "minna-1-3-1609729373073",
+    "japanese": "階段",
+    "reading": "階段",
+    "meaning": "階段[かいだん]",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "room",
+        "japanese": "staircase",
         "reading": "",
         "english": "3"
       }
     ],
     "tags": [
-      "chapter3",
-      "noun",
       "n5",
-      "lesson-3"
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373075",
+    "japanese": "エレベーター",
+    "reading": "エレベーター",
+    "meaning": "elevator, lift",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "3",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373079",
+    "japanese": "家",
+    "reading": "家",
+    "meaning": "家[うち]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "house, home",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373081",
+    "japanese": "電話",
+    "reading": "電話",
+    "meaning": "電話[でんわ]",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "telephone, telephone call",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373083",
+    "japanese": "靴",
+    "reading": "靴",
+    "meaning": "靴[くつ]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "shoes",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373085",
+    "japanese": "ネクタイ",
+    "reading": "ネクタイ",
+    "meaning": "necktie",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "3",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373089",
+    "japanese": "煙草",
+    "reading": "煙草",
+    "meaning": "煙草[たばこ]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "tobacco, cigarette",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373091",
+    "japanese": "売り場",
+    "reading": "売り場",
+    "meaning": "売り場[うりば]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "department, counter (in a department store)",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373093",
+    "japanese": "地下",
+    "reading": "地下",
+    "meaning": "地下[ちか]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "basement",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
+    ],
+    "lesson": 3,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-3-1609729373095",
+    "japanese": "円",
+    "reading": "円",
+    "meaning": "円[えん]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "yen",
+        "reading": "",
+        "english": "3"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-1"
     ],
     "lesson": 3,
     "textbook": "minna-1"

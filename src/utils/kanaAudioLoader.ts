@@ -71,14 +71,16 @@ export async function getKanaAudioPath(text: string): Promise<string | null> {
 export async function playKanaAudio(audioPath: string): Promise<void> {
   console.log(`[Kana Audio] Playing local audio file: ${audioPath}`);
   
-  // Try to bypass service worker for local audio files
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    // Add a cache-buster to force bypassing service worker cache
-    const bypassPath = `${audioPath}?bypass-sw=${Date.now()}`;
-    return playKanaAudioDirect(bypassPath);
+  // Try direct method first for local files
+  try {
+    await playKanaAudioDirect(audioPath);
+    return;
+  } catch (directError) {
+    console.warn(`[Kana Audio] Direct method failed, trying fetch method:`, directError);
   }
   
-  return playKanaAudioDirect(audioPath);
+  // Fallback to fetch method if direct fails
+  return playKanaAudioViaFetch(audioPath);
 }
 
 /**
@@ -172,8 +174,8 @@ function playKanaAudioDirect(audioPath: string): Promise<void> {
     audio.preload = 'auto';
     audio.volume = 1.0;
     
-    // Set crossOrigin to bypass service worker issues
-    audio.crossOrigin = 'anonymous';
+    // Don't set crossOrigin for local files - it can cause CORS issues
+    // audio.crossOrigin = 'anonymous';
     
     // Load the audio
     audio.load();
@@ -192,15 +194,15 @@ export async function hasLocalKanaAudio(text: string): Promise<boolean> {
  * Alternative play method using fetch API to bypass service worker
  */
 export async function playKanaAudioViaFetch(audioPath: string): Promise<void> {
-  console.info(`[Kana Audio] Using fetch method (bypassing service worker): ${audioPath}`);
+  console.info(`[Kana Audio] Using fetch method: ${audioPath}`);
   
   try {
-    // Fetch the audio file directly, bypassing service worker
+    // Fetch the audio file
     const response = await fetch(audioPath, {
       method: 'GET',
-      cache: 'no-store', // Bypass all caches
-      mode: 'cors',
-      credentials: 'omit'
+      cache: 'default', // Use default caching
+      mode: 'same-origin',
+      credentials: 'same-origin'
     });
     
     if (!response.ok) {
@@ -208,22 +210,41 @@ export async function playKanaAudioViaFetch(audioPath: string): Promise<void> {
     }
     
     const blob = await response.blob();
+    
+    // Check if blob is valid and has content
+    if (!blob || blob.size === 0) {
+      throw new Error('Audio file is empty or invalid');
+    }
+    
     const audioUrl = URL.createObjectURL(blob);
     
     return new Promise((resolve, reject) => {
-      const audio = new Audio(audioUrl);
+      const audio = new Audio();
+      
+      audio.addEventListener('canplaythrough', () => {
+        audio.play()
+          .then(() => {
+            console.log(`[Kana Audio] Started playing via fetch method`);
+          })
+          .catch(reject);
+      }, { once: true });
       
       audio.addEventListener('ended', () => {
         URL.revokeObjectURL(audioUrl);
+        console.log(`[Kana Audio] Finished playing via fetch method`);
         resolve();
       });
       
       audio.addEventListener('error', (error) => {
         URL.revokeObjectURL(audioUrl);
-        reject(error);
+        const audioError = audio.error;
+        console.error(`[Kana Audio] Playback error:`, audioError);
+        reject(new Error(audioError?.message || 'Unknown audio error'));
       });
       
-      audio.play().catch(reject);
+      // Set source after event listeners
+      audio.src = audioUrl;
+      audio.load();
     });
   } catch (error) {
     console.error(`[Kana Audio] Fetch method failed:`, error);
@@ -237,32 +258,49 @@ export async function playKanaAudioViaFetch(audioPath: string): Promise<void> {
 export async function playKanaAudioWithRetry(audioPath: string, maxRetries: number = 2): Promise<void> {
   let lastError: Error | null = null;
   
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  // Try direct play without blob conversion
+  try {
+    console.log(`[Kana Audio] Attempting direct play: ${audioPath}`);
+    const audio = new Audio(audioPath);
+    audio.preload = 'auto';
+    
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Audio playback timeout'));
+      }, 3000);
+      
+      audio.addEventListener('canplaythrough', () => {
+        clearTimeout(timeout);
+        audio.play()
+          .then(() => resolve())
+          .catch(reject);
+      }, { once: true });
+      
+      audio.addEventListener('error', () => {
+        clearTimeout(timeout);
+        reject(audio.error || new Error('Audio load failed'));
+      }, { once: true });
+      
+      audio.load();
+    });
+  } catch (error) {
+    lastError = error as Error;
+    console.warn(`[Kana Audio] Direct play failed:`, error);
+  }
+  
+  // If direct play fails, try with fetch method
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       if (attempt > 0) {
-        console.log(`[Kana Audio] Retry attempt ${attempt} for: ${audioPath}`);
-        // Wait a bit before retrying
-        await new Promise(resolve => setTimeout(resolve, 500 * attempt));
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
-      
-      // First attempt with direct method
-      if (attempt === 0) {
-        await playKanaAudioDirect(audioPath);
-      } else {
-        // Subsequent attempts use fetch method to bypass service worker
-        await playKanaAudioViaFetch(audioPath);
-      }
-      return; // Success!
+      await playKanaAudioViaFetch(audioPath);
+      return;
     } catch (error) {
       lastError = error as Error;
-      if (attempt === 0) {
-        console.info(`[Kana Audio] First attempt failed (expected with service worker):`, (error as Error).message);
-      } else {
-        console.warn(`[Kana Audio] Attempt ${attempt + 1} failed:`, error);
-      }
+      console.warn(`[Kana Audio] Fetch attempt ${attempt + 1} failed:`, error);
     }
   }
   
-  // All attempts failed
   throw lastError || new Error('Failed to play audio after retries');
 }

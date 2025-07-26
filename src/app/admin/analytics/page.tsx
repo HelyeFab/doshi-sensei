@@ -15,7 +15,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 
 interface AnalyticsData {
   summary: {
@@ -320,7 +321,7 @@ export default function AnalyticsOverview() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <Link href="/admin/analytics/content" className="block p-3 rounded-lg hover:bg-muted transition-colors">
+                        <SmartNavigationLink href="/admin/analytics/content" className="block p-3 rounded-lg hover:bg-muted transition-colors" title={strings.admin.viewDetails || "View Details"}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-2xl">📖</span>
@@ -328,8 +329,8 @@ export default function AnalyticsOverview() {
                             </div>
                             <span className="text-muted-foreground">→</span>
                           </div>
-                        </Link>
-                        <Link href="/admin/analytics/features" className="block p-3 rounded-lg hover:bg-muted transition-colors">
+                        </SmartNavigationLink>
+                        <SmartNavigationLink href="/admin/analytics/features" className="block p-3 rounded-lg hover:bg-muted transition-colors" title={strings.admin.viewDetails || "View Details"}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-2xl">🎮</span>
@@ -337,8 +338,8 @@ export default function AnalyticsOverview() {
                             </div>
                             <span className="text-muted-foreground">→</span>
                           </div>
-                        </Link>
-                        <Link href="/admin/analytics/behavior" className="block p-3 rounded-lg hover:bg-muted transition-colors">
+                        </SmartNavigationLink>
+                        <SmartNavigationLink href="/admin/analytics/behavior" className="block p-3 rounded-lg hover:bg-muted transition-colors" title={strings.admin.viewDetails || "View Details"}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-2xl">👤</span>
@@ -346,8 +347,8 @@ export default function AnalyticsOverview() {
                             </div>
                             <span className="text-muted-foreground">→</span>
                           </div>
-                        </Link>
-                        <Link href="/admin/analytics/conversions" className="block p-3 rounded-lg hover:bg-muted transition-colors">
+                        </SmartNavigationLink>
+                        <SmartNavigationLink href="/admin/analytics/conversions" className="block p-3 rounded-lg hover:bg-muted transition-colors" title={strings.admin.viewDetails || "View Details"}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-2xl">💎</span>
@@ -355,7 +356,7 @@ export default function AnalyticsOverview() {
                             </div>
                             <span className="text-muted-foreground">→</span>
                           </div>
-                        </Link>
+                        </SmartNavigationLink>
                       </div>
                     </CardContent>
                   </Card>
@@ -416,11 +417,11 @@ export default function AnalyticsOverview() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground text-center py-4">View detailed behavior analytics</p>
-                      <Link href="/admin/analytics/behavior" className="block mt-4">
+                      <SmartNavigationLink href="/admin/analytics/behavior" className="block mt-4" title={strings.admin.viewDetails || "View Details"}>
                         <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">
                           View Details
                         </button>
-                      </Link>
+                      </SmartNavigationLink>
                     </CardContent>
                   </Card>
 
@@ -430,11 +431,11 @@ export default function AnalyticsOverview() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground text-center py-4">See device and browser stats</p>
-                      <Link href="/admin/analytics/behavior" className="block mt-4">
+                      <SmartNavigationLink href="/admin/analytics/behavior" className="block mt-4" title={strings.admin.viewDetails || "View Details"}>
                         <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">
                           View Details
                         </button>
-                      </Link>
+                      </SmartNavigationLink>
                     </CardContent>
                   </Card>
                 </div>
@@ -448,11 +449,11 @@ export default function AnalyticsOverview() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground text-center py-4">View detailed conversion analytics</p>
-                    <Link href="/admin/analytics/conversions" className="block mt-4">
+                    <SmartNavigationLink href="/admin/analytics/conversions" className="block mt-4" title={strings.admin.viewDetails || "View Details"}>
                       <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">
                         View Conversion Details
                       </button>
-                    </Link>
+                    </SmartNavigationLink>
                   </CardContent>
                 </Card>
               </TabsContent>

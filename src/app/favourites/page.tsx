@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { JapaneseWord, WordList, StudyList, StudyListType, Kanji, Sentence } from '@/types';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useFeature } from '@/hooks/useFeature';
@@ -561,7 +561,7 @@ export default function FavouritesPage() {
         }}
       />
 
-      <StandardPageHeader title={strings.favourites.title} />
+      <SmartPageHeader title={strings.favourites.title} />
 
       <MobileAwareContainer className="container mx-auto px-4">
         {/* Description */}

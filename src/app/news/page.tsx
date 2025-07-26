@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { NewsArticle } from '@/types/news';
 import { getWatanocArticles, triggerArticleScraping, getArticleStats } from '@/utils/watanocArticles';
 import { useAuth } from '@/contexts/AuthContext';
@@ -386,7 +386,7 @@ export default function NewsPage() {
   // Main article list view
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title="News" backHref="/" />
+      <SmartPageHeader title="News" backHref="/" />
       
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8">

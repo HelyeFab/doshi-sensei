@@ -105,6 +105,12 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       } else {
         // Check if adding this would exceed the limit
         const totalSelected = newSelection.size + selectedKatakana.size;
+        console.log('KanaDrop selection debug:', {
+          hiraganaSize: newSelection.size,
+          katakanaSize: selectedKatakana.size,
+          totalSelected,
+          adding: kanaId
+        });
         if (totalSelected >= 10) {
           showNotification({
             title: 'Maximum Reached',
@@ -661,17 +667,25 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                 <li>• Each distractor: <span className="text-orange-600 font-bold">-5</span> points</li>
                 <li>• Each wrong kana: <span className="text-red-600 font-bold">-10</span> points</li>
               </ul>
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3">Your Selected Kana:</h3>
-                <div className="flex justify-center gap-3 flex-wrap">
-                  {effectiveSelectedKana.map((kana) => (
-                    <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
-                      <div className="text-2xl japanese-text">{kana.kana}</div>
-                      <div className="text-sm text-muted-foreground">{kana.romaji}</div>
-                    </div>
-                  ))}
+              {effectiveSelectedKana.length > 0 ? (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3">Your Selected Kana:</h3>
+                  <div className="flex justify-center gap-3 flex-wrap">
+                    {effectiveSelectedKana.map((kana) => (
+                      <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
+                        <div className="text-2xl japanese-text">{kana.kana}</div>
+                        <div className="text-sm text-muted-foreground">{kana.romaji}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mb-6 p-4 bg-orange-100 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg">
+                  <p className="text-orange-700 dark:text-orange-300 text-center">
+                    No kana selected! The game will use a default set of basic hiragana characters.
+                  </p>
+                </div>
+              )}
               <button
                 onClick={handleStartGame}
                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors mt-4"
@@ -826,17 +840,19 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
                     : 'Click the romaji buttons below to catch falling kana characters. Avoid clicking distractors and wrong kana!'}
                 </p>
 
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-3">Selected Kana:</h3>
-                  <div className="flex justify-center gap-3 flex-wrap">
-                    {effectiveSelectedKana.map((kana) => (
-                      <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
-                        <div className="text-2xl japanese-text">{kana.kana}</div>
-                        <div className="text-sm text-muted-foreground">{kana.romaji}</div>
-                      </div>
-                    ))}
+                {effectiveSelectedKana.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-3">Selected Kana:</h3>
+                    <div className="flex justify-center gap-3 flex-wrap">
+                      {effectiveSelectedKana.map((kana) => (
+                        <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
+                          <div className="text-2xl japanese-text">{kana.kana}</div>
+                          <div className="text-sm text-muted-foreground">{kana.romaji}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="space-y-4 text-sm text-muted-foreground mb-6">
                   <div className="flex items-center justify-center gap-2">

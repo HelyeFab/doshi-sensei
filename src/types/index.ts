@@ -234,6 +234,7 @@ export interface AppSettings {
   companionHistory: CompanionHistory;
   navigationPreferences?: NavigationPreferences; // Optional for backward compatibility
   ttsSettings?: TTSSettings; // TTS configuration
+  navigationGestures?: boolean; // Enable/disable swipe navigation gestures
 }
 
 // Filter Options
@@ -504,6 +505,15 @@ export interface DatabaseSchema {
   userStats: import('@/lib/achievements/types').UserStats & { id: string; lastUpdated: string };
   unlockedAchievements: import('@/lib/achievements/types').UnlockedAchievement;
   achievementProgress: import('@/lib/achievements/types').AchievementProgress;
+  // Search history
+  searchHistory: { 
+    id: string; 
+    searchTerm: string; 
+    results: JapaneseWord[]; 
+    timestamp: number; 
+    source?: 'wanikani' | 'jmdict';
+    resultsCount?: number;
+  };
 }
 
 // IndexedDB Configuration

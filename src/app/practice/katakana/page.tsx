@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -106,10 +106,7 @@ export default function KatakanaPage() {
   };
 
   const handleSelectAll = () => {
-    const allKatakanaIds = Object.keys(kanaData.katakana.basic)
-      .concat(Object.keys(kanaData.katakana.dakuten))
-      .concat(Object.keys(kanaData.katakana.handakuten))
-      .concat(Object.keys(kanaData.katakana.combo));
+    const allKatakanaIds = kanaData.map(k => k.id);
     setSelectedKatakana(new Set(allKatakanaIds));
   };
 
@@ -134,14 +131,8 @@ export default function KatakanaPage() {
 
   const getSelectedKanaForStudy = () => {
     const selectedKatakanaChars = Array.from(selectedKatakana).map(id => {
-      const allKana = {
-        ...kanaData.katakana.basic,
-        ...kanaData.katakana.dakuten,
-        ...kanaData.katakana.handakuten,
-        ...kanaData.katakana.combo
-      };
-      const kana = allKana[id];
-      return kana ? { id, char: kana.char, romaji: kana.romaji, type: 'katakana' as const } : null;
+      const kana = kanaData.find(k => k.id === id);
+      return kana ? { id, char: kana.katakana, romaji: kana.romaji, type: 'katakana' as const } : null;
     }).filter(Boolean) as { id: string; char: string; romaji: string; type: 'katakana' }[];
 
     return selectedKatakanaChars;
@@ -150,17 +141,20 @@ export default function KatakanaPage() {
   // Prepare kana for game
   const selectedKanaForGame = useMemo(() => {
     const katakanaChars = selectedKatakana.size > 0 
-      ? Object.entries(kanaData.katakana.basic)
-          .concat(Object.entries(kanaData.katakana.dakuten))
-          .concat(Object.entries(kanaData.katakana.handakuten))
-          .concat(Object.entries(kanaData.katakana.combo))
-          .filter(([id]) => selectedKatakana.has(id))
-          .map(([id, kana]) => ({
-            char: kana.char,
-            romaji: kana.romaji.split('(')[0].trim(),
+      ? kanaData
+          .filter(k => selectedKatakana.has(k.id))
+          .map(k => ({
+            id: k.id + '-katakana',
+            kana: k.katakana,
+            romaji: k.romaji,
             type: 'katakana' as const
           }))
-      : getBasicKana('katakana');
+      : getBasicKana().filter(k => k.type !== 'digraph').slice(0, 10).map(k => ({
+          id: k.id + '-katakana',
+          kana: k.katakana,
+          romaji: k.romaji,
+          type: 'katakana' as const
+        }));
 
     return katakanaChars as KanaChar[];
   }, [selectedKatakana]);
@@ -182,7 +176,7 @@ export default function KatakanaPage() {
         }}
       />
 
-      <StandardPageHeader 
+      <SmartPageHeader 
         title="Katakana Charts" 
         backHref="/practice" 
       />
@@ -215,8 +209,35 @@ export default function KatakanaPage() {
             </button>
           </div>
 
+          {/* Selection Controls */}
+          <div className="mb-6 bg-card rounded-lg border border-border p-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleSelectAll}
+                  className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium text-sm"
+                >
+                  Select All
+                </button>
+                <button
+                  onClick={handleClearSelection}
+                  className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90 transition-colors font-medium text-sm"
+                >
+                  Clear Selection
+                </button>
+              </div>
+              <button
+                onClick={handleStudyClick}
+                disabled={selectedKatakana.size === 0}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Study Selected ({selectedKatakana.size})
+              </button>
+            </div>
+          </div>
+
           {/* Show Romaji Toggle */}
-          <div className="mb-8 flex justify-center">
+          <div className="mb-6 flex justify-center">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -230,42 +251,11 @@ export default function KatakanaPage() {
 
           {/* Katakana Chart */}
           <KanaChart
-            type="katakana"
+            chartType="katakana"
             selectedKana={selectedKatakana}
             onToggleKana={handleToggleKana}
-            onSelectRow={handleSelectRow}
             showRomaji={showRomaji}
           />
-
-          {/* Selection Controls */}
-          <div className="mt-8 flex flex-col md:flex-row gap-4 items-center justify-center">
-            <button
-              onClick={handleSelectAll}
-              className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
-            >
-              Select All
-            </button>
-            <button
-              onClick={handleClearSelection}
-              className="px-6 py-3 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90 transition-colors font-medium"
-            >
-              Clear Selection
-            </button>
-            <span className="text-sm text-muted-foreground">
-              {selectedKatakana.size} selected
-            </span>
-          </div>
-
-          {/* Study Button */}
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={handleStudyClick}
-              disabled={selectedKatakana.size === 0}
-              className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Study Selected ({selectedKatakana.size})
-            </button>
-          </div>
 
           {/* Game Section */}
           <div className="mt-12 border-t border-border pt-12">

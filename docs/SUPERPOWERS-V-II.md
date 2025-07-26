@@ -307,11 +307,19 @@ CloudStorage: {
   limits: {
     lists: 0,
     drillsPerDay: 3,
-    gamesPerDay: 3,      // Each game separate
+    kanaStudyPerDay: 3,
+    gamesPerDay: 3,      // Each game separate (includes listening_quiz, word_assembly)
     storiesPerDay: 3,
     articlesPerDay: 3,
+    kanjiMoodsPerDay: 3,
+    kanjiStrokeOrder: unlimited,
+    strokeOrderPracticePerDay: 3,
     bookmarks: 0,
-    flashcardSessions: 3  // Shares with drills
+    flashcardSessions: 3,
+    textbookVocabularyPerDay: 20,
+    youTubeShadowingPerDay: 1,
+    aiContextExplanationPerDay: 3,
+    searchHistory: 'local_only'
   }
 }
 ```
@@ -324,11 +332,19 @@ CloudStorage: {
   limits: {
     lists: 3,
     drillsPerDay: 3,
-    gamesPerDay: 3,      // Each game separate
+    kanaStudyPerDay: 3,
+    gamesPerDay: 3,      // Each game separate (includes listening_quiz, word_assembly)
     storiesPerDay: 3,
     articlesPerDay: 3,
+    kanjiMoodsPerDay: 3,
+    kanjiStrokeOrder: unlimited,
+    strokeOrderPracticePerDay: 3,
     bookmarks: 5,
-    flashcardSessions: 3  // Shares with drills
+    flashcardSessions: 3,
+    textbookVocabularyPerDay: 50,
+    youTubeShadowingPerDay: 3,
+    aiContextExplanationPerDay: 3,
+    searchHistory: 'local_only'
   }
 }
 ```
@@ -339,7 +355,22 @@ CloudStorage: {
   storage: 'indexedDB_and_firebase',
   sync: true,
   limits: {
-    all: 'unlimited',
+    lists: unlimited,
+    drillsPerDay: unlimited,
+    kanaStudyPerDay: unlimited,
+    gamesPerDay: unlimited,  // All games including listening_quiz, word_assembly
+    storiesPerDay: unlimited,
+    articlesPerDay: unlimited,
+    kanjiMoodsPerDay: unlimited,
+    kanjiStrokeOrder: unlimited,
+    strokeOrderPracticePerDay: unlimited,
+    bookmarks: unlimited,
+    flashcardSessions: unlimited,
+    textbookVocabularyPerDay: unlimited,
+    youTubeShadowingPerDay: unlimited,
+    aiContextExplanationPerDay: unlimited,
+    aiTutorPerDay: unlimited,
+    searchHistory: 'synced',
     cloudBackup: true,
     ankiImport: true,
     advancedAnalytics: true,
@@ -525,6 +556,150 @@ function GameComponent() {
 - Code splitting
 - Image optimization
 - Mobile-first design
+
+---
+
+## 🐛 Case Study: The Kana Study Feature Bug (January 2025)
+
+### The Problem
+After implementing the `kana_study` feature, users couldn't access it despite having available daily limits. The admin dashboard showed red X marks (❌) instead of the expected "3/day" limits for guest and free users.
+
+### Root Cause Analysis
+
+#### Issue 1: Missing Permission Mapping
+The feature matrix API (`/src/app/api/admin/feature-matrix/route.ts`) didn't know what permission to check for `kana_study`:
+```typescript
+// This mapping was missing:
+'kana_study': 'do_drills'
+```
+Without this mapping, the system defaulted to `allowed: false`, showing red X marks.
+
+#### Issue 2: Component Props Mismatch
+The `KanaStudyModal` component expected different props than what was being passed:
+```typescript
+// Component expected:
+interface KanaStudyModalProps {
+  isOpen: boolean;
+  selectedKanaIds: string[];
+  studyType: 'hiragana' | 'katakana' | 'both';
+  onClose: (completed: boolean) => void;
+}
+
+// But was receiving:
+{
+  kanaList: Array<...>;
+  onClose: () => void;
+}
+```
+
+#### Issue 3: Shared Limit Groups
+`kana_study` was sharing the `drill_practice` limit group with conjugation drills and flashcard reviews, causing unexpected limit exhaustion.
+
+### The Solution Process
+
+1. **Fixed the permission mapping** in `/src/app/api/admin/feature-matrix/route.ts`
+2. **Updated component usage** in `/src/app/practice/hiragana/page.tsx`
+3. **Added kana_study to default rules** in `/src/lib/entitlements/rules.ts`
+4. **Discovered the real issue**: When features aren't explicitly defined in limits, they default to 0
+
+### Key Lessons Learned
+
+1. **The Three-Pillar Architecture requires updates in multiple places** - missing any one causes failures
+2. **Dynamic rules can get out of sync** with code defaults
+3. **The admin dashboard reflects Firestore data**, not code defaults
+4. **Features without explicit limits default to 0**, not undefined
+
+---
+
+## 📋 Complete Entitlement Implementation Checklist
+
+When adding a new feature with entitlements, you MUST update ALL of these locations:
+
+### Required Code Changes
+
+| Location | File | What to Add | Example |
+|----------|------|-------------|----------|
+| **1. Feature Registry** | `/src/lib/features/registry.ts` | Feature definition with metadata | ```typescript
+'kana_study': {
+  id: 'kana_study',
+  name: 'Kana Study',
+  description: 'Study hiragana and katakana',
+  category: 'learning',
+  icon: '📖',
+  limitType: 'daily',
+  requiresAuth: false,
+  requiresSubscription: false,
+  status: 'active',
+  sharedLimitGroup: 'drill_practice' // optional
+}``` |
+| **2. Permission Mapping (Access)** | `/src/lib/access/index.ts` | Map feature to permission in `checkPermission` method | ```typescript
+const permissionMap: Record<string, string> = {
+  // ... existing
+  'kana_study': 'do_drills',
+};``` |
+| **3. Permission Mapping (Feature Matrix)** | `/src/app/api/admin/feature-matrix/route.ts` | Map feature to permission for admin display | ```typescript
+const permissionMap: Record<string, string> = {
+  // ... existing
+  'kana_study': 'do_drills',
+};``` |
+| **4. Default Limits** | `/src/lib/entitlements/rules.ts` | Set initial limits for each user type | ```typescript
+// Guest
+daily: {
+  kana_study: 3,
+}
+// Free
+daily: {
+  kana_study: 3,
+}
+// Premium
+daily: {
+  kana_study: -1, // unlimited
+}``` |
+
+### Optional Updates
+
+| Location | File | When Needed | Example |
+|----------|------|-------------|----------|
+| **Analytics Tracking** | Component using the feature | Track feature usage | ```typescript
+track('feature_used', {
+  feature: 'kana_study'
+});``` |
+| **Strings/i18n** | `/src/config/strings/` | If feature needs UI text | Add to strings files |
+| **Admin Activity Log** | Auto-tracked | When limits are used | Happens automatically |
+
+### Files That Update Automatically
+
+| What | Where | How |
+|------|-------|-----|
+| Admin Dashboard | `/admin/features` | Auto-populates from registry |
+| Usage Tracking | Firestore `/users/{uid}/usageTracking` | Via `checkAndTrack()` |
+| Analytics | Firestore `/site-analytics/` | Via analytics hooks |
+| Access Modals | UI Components | Shown automatically on limit |
+
+### Post-Deployment Steps
+
+1. **First Access**: System copies defaults to Firestore `/config/entitlement_rules_v1`
+2. **Admin Adjustments**: Use `/admin/features` to fine-tune limits
+3. **Monitor Usage**: Check analytics to optimize limits
+
+### Common Pitfalls to Avoid
+
+1. **Missing Permission Mapping**: Feature shows as ❌ in admin dashboard
+2. **Wrong Limit Type**: Using 'total' instead of 'daily' or vice versa
+3. **Shared Limit Groups**: Unexpected limit sharing with other features
+4. **No Default Limits**: Feature defaults to 0 for all users
+5. **Component Prop Mismatch**: Modal/component won't open despite correct permissions
+
+### Debugging Checklist
+
+If a feature isn't working:
+- [ ] Check browser console for permission errors
+- [ ] Verify feature appears in `/admin/features`
+- [ ] Check if limits show correctly (not ❌)
+- [ ] Ensure `checkAndTrack()` is called
+- [ ] Verify component props match expected interface
+- [ ] Check Firestore for dynamic rule overrides
+- [ ] Clear caches and reload if needed
 
 ---
 
@@ -833,7 +1008,8 @@ Doshi Sensei is a sophisticated, well-architected platform that balances powerfu
 
 ---
 
-*Last Updated: July 2025*  
-*Version: 2.0*  
+*Last Updated: January 2025*  
+*Version: 2.1*  
+*Added: Kana Study Bug Case Study & Complete Entitlement Checklist*  
 *Status: Production Ready*  
 *Built with ❤️ for Japanese language learners worldwide*

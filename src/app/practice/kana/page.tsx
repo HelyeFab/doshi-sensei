@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -213,7 +213,7 @@ export default function KanaPage() {
           }}
         />
 
-        <StandardPageHeader title="Kana Charts" backHref="/practice" />
+        <SmartPageHeader title="Kana Charts" backHref="/practice" />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
 

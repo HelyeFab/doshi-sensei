@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { useFeature } from '@/hooks/useFeature';
@@ -89,7 +89,7 @@ export default function KanjiSimonGamePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader
+      <SmartPageHeader
         title={`Kanji Simon: ${board.title}`}
         backHref="/games/kanji-simon"
       />

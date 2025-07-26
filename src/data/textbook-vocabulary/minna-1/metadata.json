@@ -1,17 +1,6 @@
 {
   "title": "Minna no Nihongo 1",
-  "subtitle": "Japanese for Everyone",
-  "jlptLevels": [
-    "N5",
-    "N4"
-  ],
-  "description": "The first volume of the comprehensive Minna no Nihongo series",
-  "color": {
-    "primary": "#10B981",
-    "secondary": "#14B8A6",
-    "gradient": "from-green-400 to-teal-500"
-  },
-  "totalCards": 7096,
+  "totalCards": 2029,
   "lessons": [
     1,
     2,
@@ -37,8 +26,14 @@
     22,
     23,
     24,
-    25,
-    28,
-    41
-  ]
+    25
+  ],
+  "jlptDistribution": {
+    "N5": 1914,
+    "N4": 114,
+    "N3": 1
+  },
+  "partOfSpeechDistribution": {},
+  "source": "MCP anki-word-generator",
+  "importDate": "2025-07-26T08:34:16.266Z"
 }

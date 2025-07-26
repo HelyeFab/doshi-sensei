@@ -6,6 +6,10 @@ const pwaConfig = withPWA({
   disable: process.env.NODE_ENV === 'development',
   register: true,
   skipWaiting: true,
+  exclude: [
+    // Exclude audio files from service worker precaching
+    ({ asset }) => asset.name.endsWith('.mp3'),
+  ],
   runtimeCaching: [
     {
       urlPattern: /^\/admin\/.*/i,
@@ -22,6 +26,34 @@ const pwaConfig = withPWA({
     {
       urlPattern: /^\/api\/admin\/.*/i,
       handler: 'NetworkOnly' // Never cache admin API calls
+    },
+    {
+      urlPattern: /^\/audio\/kana\/.*\.mp3$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'kana-audio-cache',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    {
+      urlPattern: /^\/audio\/.*\.mp3$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'audio-cache',
+        expiration: {
+          maxEntries: 500,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
     }
   ],
   buildExcludes: [/middleware-manifest\.json$/]
@@ -54,7 +86,7 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://firestore.googleapis.com wss://*.firebaseio.com https://*.firebaseio.com; frame-src https://js.stripe.com https://hooks.stripe.com https://*.firebaseapp.com https://doshi-sensei.firebaseapp.com;"
+    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://firestore.googleapis.com wss://*.firebaseio.com https://*.firebaseio.com; frame-src https://js.stripe.com https://hooks.stripe.com https://*.firebaseapp.com https://doshi-sensei.firebaseapp.com;"
   }
 ];
 

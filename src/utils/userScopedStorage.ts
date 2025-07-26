@@ -29,7 +29,7 @@ export class UserScopedStorage {
   static async setToStore(storeName: string, key: string, value: any, userId: string | null): Promise<void> {
     // Create user-scoped key
     const scopedKey = this.createScopedKey(key, userId);
-    return await EnhancedStorageManager2.setToStore(storeName, scopedKey, value);
+    return await EnhancedStorageManager2.saveToStore(storeName, scopedKey, value);
   }
 
   /**

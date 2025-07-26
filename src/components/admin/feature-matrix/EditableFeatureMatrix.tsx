@@ -68,12 +68,27 @@ export function EditableFeatureMatrix({
     limitType: 'daily' | 'total'
   ) => {
     try {
+      // Handle permission changes through limit updates
       await dynamicRules.updateLimit(userType, featureId, limitType, newValue);
+      
+      let message = '';
+      if (newValue === -999) {
+        // Special value to remove access
+        message = `Access removed for ${featureId}`;
+      } else if (newValue === 0) {
+        message = `Access granted for ${featureId} (no numeric limit)`;
+      } else if (newValue === -1) {
+        message = `Unlimited access granted for ${featureId}`;
+      } else if (newValue > 0) {
+        message = `Access granted for ${featureId} with limit ${newValue}`;
+      }
+      
       showNotification({
         title: strings.admin.features.success,
-        message: strings.admin.features.featureUpdated,
+        message,
         type: 'success'
       });
+      
       onUpdate();
     } catch (error) {
       showNotification({
@@ -86,11 +101,17 @@ export function EditableFeatureMatrix({
   };
 
   const getAccessDisplay = (access: FeatureAccess) => {
+    // If not allowed, show no access
     if (!access.allowed) return { text: '❌', className: 'text-red-500' };
+    
+    // If allowed with limit -1, show unlimited
     if (access.limit === -1) return { text: '∞', className: 'text-green-500 font-bold text-lg' };
+    
+    // If allowed with limit 0, show checkmark (allowed but no numeric limit)
     if (access.limit === 0) return { text: '✅', className: 'text-green-500' };
 
-    const limitText = access.limit > 0 ? `${access.limit}` : '✅';
+    // Otherwise show the numeric limit
+    const limitText = `${access.limit}`;
     return { text: limitText, className: 'text-blue-600 font-medium' };
   };
 
@@ -140,7 +161,7 @@ export function EditableFeatureMatrix({
             >
               {isEditing ? (
                 <EditableLimitCell
-                  value={access.limit}
+                  value={access.allowed ? access.limit : -999}
                   isEditing={true}
                   onChange={(newValue) => {
                     handleLimitChange(
@@ -270,12 +291,23 @@ export function EditableFeatureMatrix({
       </div>
 
       {/* Legend */}
-      <div className="flex gap-6 text-sm text-muted-foreground">
-        <span>{strings.admin.features.notAvailable}</span>
-        <span>{strings.admin.features.available}</span>
-        <span>{strings.admin.features.unlimited} (-1)</span>
-        <span>{strings.admin.features.numbers} = {strings.admin.features.dailyOrTotalLimits}</span>
-        {isEditMode && <span>{strings.admin.features.clickToEdit}</span>}
+      <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+        <span>❌ = No Access</span>
+        <span>✅ = Access Granted (no numeric limit)</span>
+        <span>∞ = Unlimited (-1)</span>
+        <span>Numbers = Daily/Total Limits</span>
+        {isEditMode && (
+          <div className="w-full mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+            <p className="font-semibold text-amber-800 dark:text-amber-200 mb-2">✏️ How to edit access:</p>
+            <ul className="text-xs space-y-1 text-amber-700 dark:text-amber-300">
+              <li>• Click any cell to edit (including ❌ cells)</li>
+              <li>• Enter <strong>0</strong> to grant simple access (shows as ✅)</li>
+              <li>• Enter any <strong>positive number</strong> for daily/total limits</li>
+              <li>• Enter <strong>-1</strong> for unlimited access (shows as ∞)</li>
+              <li>• Enter <strong>-999</strong> to remove access (shows as ❌)</li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

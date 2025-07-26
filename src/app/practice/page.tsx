@@ -8,6 +8,8 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 
 // Structured Data for Practice Page (keeping for SEO)
 const practiceStructuredData = {
@@ -68,25 +70,10 @@ export default function PracticePage() {
       <div className="h-20" />
 
       {/* Page Header */}
-      <header className="px-4 pt-6 pb-4">
-        <div className="flex items-center gap-3">
-          {/* Back Button */}
-          <Link 
-            href="/"
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-            aria-label="Go back to home"
-          >
-            <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          
-          {/* Page Title */}
-          <h1 className="text-xl font-bold text-foreground">
-            {strings.practice?.title || "Practice Mode"}
-          </h1>
-        </div>
-      </header>
+      <SmartPageHeader 
+        title={strings.practice?.title || "Practice Mode"}
+        className="text-foreground"
+      />
 
       {/* Begin Journey Section */}
       <section className="px-4 pb-6">
@@ -99,7 +86,7 @@ export default function PracticePage() {
           <div className="flex gap-6 w-max lg:grid lg:grid-cols-3 lg:gap-6 lg:max-w-7xl lg:mx-auto lg:w-auto">
             
             {/* Block 1: Kana Charts */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Intro Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -189,15 +176,17 @@ export default function PracticePage() {
                       ))}
                     </div>
 
-                    <Link 
-                      href="/practice/hiragana?from=practice"
+                    <SmartNavigationLink 
+                      href="/practice/hiragana"
+                      title="Hiragana Chart"
+                      type="page"
                       className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                     >
                       Practice Hiragana Chart
                       <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </Link>
+                    </SmartNavigationLink>
                   </div>
                 ) : (
                   <div>
@@ -221,22 +210,24 @@ export default function PracticePage() {
                       ))}
                     </div>
 
-                    <Link 
-                      href="/practice/katakana?from=practice"
+                    <SmartNavigationLink 
+                      href="/practice/katakana"
+                      title="Katakana Chart"
+                      type="page"
                       className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                     >
                       Practice Katakana Chart
                       <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </Link>
+                    </SmartNavigationLink>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Block 2: Vocabulary Search */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Vocabulary Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -299,7 +290,7 @@ export default function PracticePage() {
                 </div>
 
                 <Link 
-                  href="/vocabulary?from=practice"
+                  href="/vocabulary"
                   className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors mt-6"
                 >
                   Open Full Vocabulary Browser
@@ -311,7 +302,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 3: Drills */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Drills Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -351,19 +342,19 @@ export default function PracticePage() {
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <p className="text-sm text-gray-600 mb-2">Choose a drill type:</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <Link href="/drill?from=practice" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <Link href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">🔤</span>
                         <p className="text-sm">Conjugation</p>
                       </Link>
-                      <Link href="/drill?from=practice" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <Link href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">📝</span>
                         <p className="text-sm">Vocabulary</p>
                       </Link>
-                      <Link href="/drill?from=practice" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <Link href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">🈯</span>
                         <p className="text-sm">Kanji</p>
                       </Link>
-                      <Link href="/drill?from=practice" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <Link href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">📃</span>
                         <p className="text-sm">Sentences</p>
                       </Link>
@@ -371,7 +362,7 @@ export default function PracticePage() {
                   </div>
 
                   <Link 
-                    href="/drill?from=practice"
+                    href="/drill"
                     className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   >
                     Start Full Drill Session
@@ -384,7 +375,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 4: Flashcards */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Flashcards Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -428,7 +419,7 @@ export default function PracticePage() {
                   </div>
 
                   <Link 
-                    href="/drill/flashcards?from=practice"
+                    href="/drill/flashcards"
                     className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   >
                     Manage Flashcards
@@ -441,7 +432,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 5: Anki Integration */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Anki Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -499,7 +490,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 6: Games */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Games Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -557,7 +548,7 @@ export default function PracticePage() {
                   </button>
 
                   <Link 
-                    href="/games?from=practice"
+                    href="/games"
                     className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors mt-4"
                   >
                     View All Games
@@ -570,7 +561,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 7: Reading Content */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Reading Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -628,13 +619,13 @@ export default function PracticePage() {
 
                   <div className="flex gap-2">
                     <Link 
-                      href="/news?from=practice"
+                      href="/news"
                       className="flex-1 inline-flex items-center justify-center py-3 px-4 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors"
                     >
                       News Articles
                     </Link>
                     <Link 
-                      href="/stories?from=practice"
+                      href="/stories"
                       className="flex-1 inline-flex items-center justify-center py-3 px-4 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors"
                     >
                       Stories
@@ -645,7 +636,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 8: Kanji by JLPT */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Kanji JLPT Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -706,7 +697,7 @@ export default function PracticePage() {
                   </div>
 
                   <Link 
-                    href="/kanji-browser?from=practice"
+                    href="/kanji-browser"
                     className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   >
                     Open Kanji Browser
@@ -719,7 +710,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 9: Kanji Mood Boards */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Mood Boards Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -771,7 +762,7 @@ export default function PracticePage() {
                   </div>
 
                   <Link 
-                    href="/kanji-moods?from=practice"
+                    href="/kanji-moods"
                     className="inline-flex items-center justify-center w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors mt-4"
                   >
                     Explore All Mood Boards
@@ -784,7 +775,7 @@ export default function PracticePage() {
             </div>
 
             {/* Block 10: Shadowing */}
-            <div className="w-96 flex-shrink-0 lg:w-auto">
+            <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Shadowing Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
                 <p className="text-muted-foreground leading-relaxed mb-4">
@@ -840,13 +831,13 @@ export default function PracticePage() {
 
                   <div className="flex gap-2">
                     <Link 
-                      href="/news?from=practice"
+                      href="/news"
                       className="flex-1 inline-flex items-center justify-center py-3 px-4 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors"
                     >
                       News Audio
                     </Link>
                     <Link 
-                      href="/stories?from=practice"
+                      href="/stories"
                       className="flex-1 inline-flex items-center justify-center py-3 px-4 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors"
                     >
                       Story Audio

@@ -7,13 +7,13 @@ The AI Context Explanation feature is integrated with Doshi Sensei's Three-Pilla
 ## Daily Limits by User Type
 
 ### Guest Users (Not Logged In)
-- **Daily Limit**: 5 explanations
+- **Daily Limit**: 3 explanations
 - **Features**: Basic explanations only
 - **Reset**: Daily at midnight (user's timezone)
 - **Storage**: Local browser storage
 
 ### Free Users (Registered)
-- **Daily Limit**: 10 explanations
+- **Daily Limit**: 3 explanations
 - **Features**: Basic explanations + grammar analysis
 - **Reset**: Daily at midnight (user's timezone)
 - **Storage**: IndexedDB with account sync
@@ -70,7 +70,7 @@ const canUse = await checkAndTrack('ai_context_explanation');
   permissions: ['ai_explanations'],
   limits: {
     daily: {
-      ai_context_explanation: 5
+      ai_context_explanation: 3
     }
   }
 }
@@ -80,7 +80,7 @@ const canUse = await checkAndTrack('ai_context_explanation');
   permissions: ['ai_explanations'],
   limits: {
     daily: {
-      ai_context_explanation: 10
+      ai_context_explanation: 3
     }
   }
 }
@@ -101,7 +101,7 @@ const canUse = await checkAndTrack('ai_context_explanation');
 ### When Limit is Reached
 
 1. **Modal Appears**: Upgrade prompt modal automatically shows
-2. **Clear Messaging**: "You've used all 5 daily AI explanations"
+2. **Clear Messaging**: "You've used all 3 daily AI explanations"
 3. **Options Provided**:
    - Sign up for free account (for guests)
    - Upgrade to premium

@@ -1,1216 +1,37 @@
 [
   {
-    "id": "minna-1-20-1525158936507",
-    "japanese": "(I'm) full",
-    "reading": "(I'm) full",
-    "meaning": "おなかが　いっぱいです",
+    "id": "minna-1-20-1544776575083",
+    "japanese": "要ります［ビザが～］",
+    "reading": "要ります［ビザが～］",
+    "meaning": "to need, require [a visa]",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "おなかが　いっぱいです",
+        "japanese": "要[い]ります［ビザが~］",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
       "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575102",
-    "japanese": "(I'm) full",
-    "reading": "(I'm) full",
-    "meaning": "おなかが　いっぱいです",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "おなかが　いっぱいです",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158936507",
-    "japanese": "(I'm) full",
-    "reading": "(I'm) full",
-    "meaning": "おなかが　いっぱいです",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "おなかが　いっぱいです",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575102",
-    "japanese": "(I'm) full",
-    "reading": "(I'm) full",
-    "meaning": "おなかが　いっぱいです",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "おなかが　いっぱいです",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158908246",
-    "japanese": "~, but (an informal equivalent of が)",
-    "reading": "~, but (an informal equivalent of が)",
-    "meaning": "～けど",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "~けど",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575101",
-    "japanese": "~, but (an informal equivalent of が)",
-    "reading": "~, but (an informal equivalent of が)",
-    "meaning": "～けど",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "~けど",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158908246",
-    "japanese": "~, but (an informal equivalent of が)",
-    "reading": "~, but (an informal equivalent of が)",
-    "meaning": "～けど",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "~けど",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575101",
-    "japanese": "~, but (an informal equivalent of が)",
-    "reading": "~, but (an informal equivalent of が)",
-    "meaning": "～けど",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "~けど",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158871280",
-    "japanese": "all together",
-    "reading": "all together",
-    "meaning": "みんあで",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "みんあで",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575100",
-    "japanese": "all together",
-    "reading": "all together",
-    "meaning": "みんあで",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "みんあで",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158871280",
-    "japanese": "all together",
-    "reading": "all together",
-    "meaning": "みんあで",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "みんあで",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575100",
-    "japanese": "all together",
-    "reading": "all together",
-    "meaning": "みんあで",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "みんあで",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158348802",
-    "japanese": "I (an informal equivalent of わたし used by men)",
-    "reading": "I (an informal equivalent of わたし used by men)",
-    "meaning": "僕",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "僕[ぼく]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575086",
-    "japanese": "I (an informal equivalent of わたし used by men)",
-    "reading": "I (an informal equivalent of わたし used by men)",
-    "meaning": "僕",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "僕[ぼく]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158348802",
-    "japanese": "I (an informal equivalent of わたし used by men)",
-    "reading": "I (an informal equivalent of わたし used by men)",
-    "meaning": "僕",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "僕[ぼく]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575086",
-    "japanese": "I (an informal equivalent of わたし used by men)",
-    "reading": "I (an informal equivalent of わたし used by men)",
-    "meaning": "僕",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "僕[ぼく]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158951968",
-    "japanese": "if you like",
-    "reading": "if you like",
-    "meaning": "よかったら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "よかったら",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575103",
-    "japanese": "if you like",
-    "reading": "if you like",
-    "meaning": "よかったら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "よかったら",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158951968",
-    "japanese": "if you like",
-    "reading": "if you like",
-    "meaning": "よかったら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "よかったら",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575103",
-    "japanese": "if you like",
-    "reading": "if you like",
-    "meaning": "よかったら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "よかったら",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158573661",
-    "japanese": "kimono (traditional Japanese attire)",
-    "reading": "kimono (traditional Japanese attire)",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "着物[きもの]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575092",
-    "japanese": "kimono (traditional Japanese attire)",
-    "reading": "kimono (traditional Japanese attire)",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "着物[きもの]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158573661",
-    "japanese": "kimono (traditional Japanese attire)",
-    "reading": "kimono (traditional Japanese attire)",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "着物[きもの]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575092",
-    "japanese": "kimono (traditional Japanese attire)",
-    "reading": "kimono (traditional Japanese attire)",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "着物[きもの]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158477136",
-    "japanese": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "reading": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "meaning": "～君",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~ 君[くん]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575088",
-    "japanese": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "reading": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "meaning": "～君",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~ 君[くん]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158477136",
-    "japanese": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "reading": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "meaning": "～君",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~ 君[くん]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575088",
-    "japanese": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "reading": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
-    "meaning": "～君",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "~ 君[くん]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158532175",
-    "japanese": "no (an informal equivalent of いいえ)",
-    "reading": "no (an informal equivalent of いいえ)",
-    "meaning": "ううん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ううん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575090",
-    "japanese": "no (an informal equivalent of いいえ)",
-    "reading": "no (an informal equivalent of いいえ)",
-    "meaning": "ううん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ううん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158532175",
-    "japanese": "no (an informal equivalent of いいえ)",
-    "reading": "no (an informal equivalent of いいえ)",
-    "meaning": "ううん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ううん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575090",
-    "japanese": "no (an informal equivalent of いいえ)",
-    "reading": "no (an informal equivalent of いいえ)",
-    "meaning": "ううん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ううん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373666",
-    "japanese": "salaried worker, office worker",
-    "reading": "サラリーマン",
-    "meaning": "サラリーマン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373667",
-    "japanese": "salaried worker, office worker",
-    "reading": "サラリーマン",
-    "meaning": "サラリーマン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373666",
-    "japanese": "salaried worker, office worker",
-    "reading": "サラリーマン",
-    "meaning": "サラリーマン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373667",
-    "japanese": "salaried worker, office worker",
-    "reading": "サラリーマン",
-    "meaning": "サラリーマン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158781156",
-    "japanese": "that way, that place near the listener (an informal equivalent of そちら)",
-    "reading": "that way, that place near the listener (an informal equivalent of そちら)",
-    "meaning": "そっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575097",
-    "japanese": "that way, that place near the listener (an informal equivalent of そちら)",
-    "reading": "that way, that place near the listener (an informal equivalent of そちら)",
-    "meaning": "そっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158781156",
-    "japanese": "that way, that place near the listener (an informal equivalent of そちら)",
-    "reading": "that way, that place near the listener (an informal equivalent of そちら)",
-    "meaning": "そっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575097",
-    "japanese": "that way, that place near the listener (an informal equivalent of そちら)",
-    "reading": "that way, that place near the listener (an informal equivalent of そちら)",
-    "meaning": "そっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158811614",
-    "japanese": "that way, that place over there (an informal equivalent of あちら)",
-    "reading": "that way, that place over there (an informal equivalent of あちら)",
-    "meaning": "あっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575098",
-    "japanese": "that way, that place over there (an informal equivalent of あちら)",
-    "reading": "that way, that place over there (an informal equivalent of あちら)",
-    "meaning": "あっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158811614",
-    "japanese": "that way, that place over there (an informal equivalent of あちら)",
-    "reading": "that way, that place over there (an informal equivalent of あちら)",
-    "meaning": "あっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575098",
-    "japanese": "that way, that place over there (an informal equivalent of あちら)",
-    "reading": "that way, that place over there (an informal equivalent of あちら)",
-    "meaning": "あっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "あっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158626765",
-    "japanese": "the beginning",
-    "reading": "the beginning",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "初[はじ]め",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575094",
-    "japanese": "the beginning",
-    "reading": "the beginning",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "初[はじ]め",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158626765",
-    "japanese": "the beginning",
-    "reading": "the beginning",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "初[はじ]め",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575094",
-    "japanese": "the beginning",
-    "reading": "the beginning",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "初[はじ]め",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158658683",
-    "japanese": "the end of ~, The End",
-    "reading": "the end of ~, The End",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "終[お]わり",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575095",
-    "japanese": "the end of ~, The End",
-    "reading": "the end of ~, The End",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "終[お]わり",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158658683",
-    "japanese": "the end of ~, The End",
-    "reading": "the end of ~, The End",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "終[お]わり",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575095",
-    "japanese": "the end of ~, The End",
-    "reading": "the end of ~, The End",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "終[お]わり",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158753934",
-    "japanese": "this way, this place (an informal equivalent of こちら)",
-    "reading": "this way, this place (an informal equivalent of こちら)",
-    "meaning": "こっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575096",
-    "japanese": "this way, this place (an informal equivalent of こちら)",
-    "reading": "this way, this place (an informal equivalent of こちら)",
-    "meaning": "こっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158753934",
-    "japanese": "this way, this place (an informal equivalent of こちら)",
-    "reading": "this way, this place (an informal equivalent of こちら)",
-    "meaning": "こっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575096",
-    "japanese": "this way, this place (an informal equivalent of こちら)",
-    "reading": "this way, this place (an informal equivalent of こちら)",
-    "meaning": "こっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "こっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158244259",
-    "japanese": "to check, investigate",
-    "reading": "to check, investigate",
-    "meaning": "調べます",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "調[しら]べます",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-20-1544776575084",
-    "japanese": "to check, investigate",
-    "reading": "to check, investigate",
-    "meaning": "調べます",
+    "japanese": "調べます",
+    "reading": "調べます",
+    "meaning": "to check, investigate",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
         "japanese": "調[しら]べます",
@@ -1220,165 +41,21 @@
     ],
     "tags": [
       "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158244259",
-    "japanese": "to check, investigate",
-    "reading": "to check, investigate",
-    "meaning": "調べます",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "調[しら]べます",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575084",
-    "japanese": "to check, investigate",
-    "reading": "to check, investigate",
-    "meaning": "調べます",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "調[しら]べます",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158027365",
-    "japanese": "to need, require [a visa]",
-    "reading": "to need, require [a visa]",
-    "meaning": "要ります［ビザが～］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "要[い]ります［ビザが~］",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575083",
-    "japanese": "to need, require [a visa]",
-    "reading": "to need, require [a visa]",
-    "meaning": "要ります［ビザが～］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "要[い]ります［ビザが~］",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158027365",
-    "japanese": "to need, require [a visa]",
-    "reading": "to need, require [a visa]",
-    "meaning": "要ります［ビザが～］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "要[い]ります［ビザが~］",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575083",
-    "japanese": "to need, require [a visa]",
-    "reading": "to need, require [a visa]",
-    "meaning": "要ります［ビザが～］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "要[い]ります［ビザが~］",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158293077",
-    "japanese": "to repair",
-    "reading": "to repair",
-    "meaning": "修理します",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "修理[しゅうり]します",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-20-1544776575085",
-    "japanese": "to repair",
-    "reading": "to repair",
-    "meaning": "修理します",
+    "japanese": "修理します",
+    "reading": "修理します",
+    "meaning": "to repair",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
         "japanese": "修理[しゅうり]します",
@@ -1388,685 +65,45 @@
     ],
     "tags": [
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1525158293077",
-    "japanese": "to repair",
-    "reading": "to repair",
-    "meaning": "修理します",
+    "id": "minna-1-20-1544776575086",
+    "japanese": "僕",
+    "reading": "僕",
+    "meaning": "I (an informal equivalent of わたし used by men)",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "修理[しゅうり]します",
+        "japanese": "僕[ぼく]",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
       "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575085",
-    "japanese": "to repair",
-    "reading": "to repair",
-    "meaning": "修理します",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "修理[しゅうり]します",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373846",
-    "japanese": "together",
-    "reading": "together",
-    "meaning": "一緒[いっしょ]に",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "一緒に行かない。"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373847",
-    "japanese": "together",
-    "reading": "together",
-    "meaning": "一緒[いっしょ]に",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "一緒に行かない。"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373846",
-    "japanese": "together",
-    "reading": "together",
-    "meaning": "一緒[いっしょ]に",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "一緒に行かない。"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373847",
-    "japanese": "together",
-    "reading": "together",
-    "meaning": "一緒[いっしょ]に",
-    "jlptLevel": "N5",
-    "partOfSpeech": "adverb",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "一緒に行かない。"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158589759",
-    "japanese": "visa",
-    "reading": "visa",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ビザ",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575093",
-    "japanese": "visa",
-    "reading": "visa",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ビザ",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373674",
-    "japanese": "visa",
-    "reading": "ビザ",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373675",
-    "japanese": "visa",
-    "reading": "ビザ",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158589759",
-    "japanese": "visa",
-    "reading": "visa",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ビザ",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575093",
-    "japanese": "visa",
-    "reading": "visa",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ビザ",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373674",
-    "japanese": "visa",
-    "reading": "ビザ",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373675",
-    "japanese": "visa",
-    "reading": "ビザ",
-    "meaning": "ビザ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158839756",
-    "japanese": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "reading": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "meaning": "どっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575099",
-    "japanese": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "reading": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "meaning": "どっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158839756",
-    "japanese": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "reading": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "meaning": "どっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575099",
-    "japanese": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "reading": "which one (of two things), which way, where (an informal equivalent of どちら)",
-    "meaning": "どっち",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どっち",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373844",
-    "japanese": "with everybody, together",
-    "reading": "with everybody, together",
-    "meaning": "皆[みんな]で",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "明日皆で京都へ行かない？"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373845",
-    "japanese": "with everybody, together",
-    "reading": "with everybody, together",
-    "meaning": "皆[みんな]で",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "明日皆で京都へ行かない？"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373844",
-    "japanese": "with everybody, together",
-    "reading": "with everybody, together",
-    "meaning": "皆[みんな]で",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "明日皆で京都へ行かない？"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373845",
-    "japanese": "with everybody, together",
-    "reading": "with everybody, together",
-    "meaning": "皆[みんな]で",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "20",
-        "reading": "",
-        "english": "明日皆で京都へ行かない？"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158549759",
-    "japanese": "word, language",
-    "reading": "word, language",
-    "meaning": "ことば",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ことば",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575091",
-    "japanese": "word, language",
-    "reading": "word, language",
-    "meaning": "ことば",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ことば",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158549759",
-    "japanese": "word, language",
-    "reading": "word, language",
-    "meaning": "ことば",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ことば",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575091",
-    "japanese": "word, language",
-    "reading": "word, language",
-    "meaning": "ことば",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ことば",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158509817",
-    "japanese": "yes (an informal equivalent of はい)",
-    "reading": "yes (an informal equivalent of はい)",
-    "meaning": "うん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575089",
-    "japanese": "yes (an informal equivalent of はい)",
-    "reading": "yes (an informal equivalent of はい)",
-    "meaning": "うん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158509817",
-    "japanese": "yes (an informal equivalent of はい)",
-    "reading": "yes (an informal equivalent of はい)",
-    "meaning": "うん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1544776575089",
-    "japanese": "yes (an informal equivalent of はい)",
-    "reading": "yes (an informal equivalent of はい)",
-    "meaning": "うん",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "うん",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1525158392645",
-    "japanese": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "reading": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "meaning": "君",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "君[きみ]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-20-1544776575087",
-    "japanese": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "reading": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "meaning": "君",
+    "japanese": "君",
+    "reading": "君",
+    "meaning": "you (an informal equivalent of あなた used to address people of equal or lower status)",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
         "japanese": "君[きみ]",
@@ -2076,350 +113,381 @@
     ],
     "tags": [
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1525158392645",
-    "japanese": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "reading": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "meaning": "君",
+    "id": "minna-1-20-1544776575088",
+    "japanese": "～君",
+    "reading": "～君",
+    "meaning": "Mr. (an informal equivalent of ～さん used to address people of equal or lower status; also often appended to boys' names)",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "君[きみ]",
+        "japanese": "~ 君[くん]",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1544776575087",
-    "japanese": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "reading": "you (an informal equivalent of あなた used to address people of equal or lower status)",
-    "meaning": "君",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "君[きみ]",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372948",
-    "japanese": "どう　しようかな。",
-    "reading": "どう　しようかな。",
-    "meaning": "どう　しようかな。",
+    "id": "minna-1-20-1544776575089",
+    "japanese": "うん",
+    "reading": "うん",
+    "meaning": "yes (an informal equivalent of はい)",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What shall I do?",
+        "japanese": "うん",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372949",
-    "japanese": "どう　しようかな。",
-    "reading": "どう　しようかな。",
-    "meaning": "どう　しようかな。",
+    "id": "minna-1-20-1544776575090",
+    "japanese": "ううん",
+    "reading": "ううん",
+    "meaning": "no (an informal equivalent of いいえ)",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What shall I do?",
+        "japanese": "ううん",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372948",
-    "japanese": "どう　しようかな。",
-    "reading": "どう　しようかな。",
-    "meaning": "どう　しようかな。",
+    "id": "minna-1-20-1544776575091",
+    "japanese": "ことば",
+    "reading": "ことば",
+    "meaning": "word, language",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What shall I do?",
+        "japanese": "ことば",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372949",
-    "japanese": "どう　しようかな。",
-    "reading": "どう　しようかな。",
-    "meaning": "どう　しようかな。",
+    "id": "minna-1-20-1544776575092",
+    "japanese": "着物",
+    "reading": "着物",
+    "meaning": "kimono (traditional Japanese attire)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "着物[きもの]",
+        "reading": "",
+        "english": "20"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-20",
+      "minna-1"
+    ],
+    "lesson": 20,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-20-1609729373675",
+    "japanese": "ビザ",
+    "reading": "ビザ",
+    "meaning": "visa",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What shall I do?",
+        "japanese": "20",
         "reading": "",
-        "english": "20"
+        "english": ""
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372946",
-    "japanese": "どう　するの？",
-    "reading": "どう　するの？",
-    "meaning": "どう　するの？",
+    "id": "minna-1-20-1544776575094",
+    "japanese": "初め",
+    "reading": "初め",
+    "meaning": "the beginning",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "初[はじ]め",
+        "reading": "",
+        "english": "20"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-20",
+      "minna-1"
+    ],
+    "lesson": 20,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-20-1544776575095",
+    "japanese": "終わり",
+    "reading": "終わり",
+    "meaning": "the end of ~, The End",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "終[お]わり",
+        "reading": "",
+        "english": "20"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-20",
+      "minna-1"
+    ],
+    "lesson": 20,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-20-1544776575096",
+    "japanese": "こっち",
+    "reading": "こっち",
+    "meaning": "this way, this place (an informal equivalent of こちら)",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What will you do?",
+        "japanese": "こっち",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372947",
-    "japanese": "どう　するの？",
-    "reading": "どう　するの？",
-    "meaning": "どう　するの？",
+    "id": "minna-1-20-1544776575097",
+    "japanese": "そっち",
+    "reading": "そっち",
+    "meaning": "that way, that place near the listener (an informal equivalent of そちら)",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What will you do?",
+        "japanese": "そっち",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372946",
-    "japanese": "どう　するの？",
-    "reading": "どう　するの？",
-    "meaning": "どう　するの？",
+    "id": "minna-1-20-1544776575098",
+    "japanese": "あっち",
+    "reading": "あっち",
+    "meaning": "that way, that place over there (an informal equivalent of あちら)",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What will you do?",
+        "japanese": "あっち",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372947",
-    "japanese": "どう　するの？",
-    "reading": "どう　するの？",
-    "meaning": "どう　するの？",
+    "id": "minna-1-20-1544776575099",
+    "japanese": "どっち",
+    "reading": "どっち",
+    "meaning": "which one (of two things), which way, where (an informal equivalent of どちら)",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "What will you do?",
+        "japanese": "どっち",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729373668",
-    "japanese": "言葉[ことば]",
-    "reading": "言葉[ことば]",
-    "meaning": "言葉",
+    "id": "minna-1-20-1544776575100",
+    "japanese": "みんあで",
+    "reading": "みんあで",
+    "meaning": "all together",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "word, language",
+        "japanese": "みんあで",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729373669",
-    "japanese": "言葉[ことば]",
-    "reading": "言葉[ことば]",
-    "meaning": "言葉",
+    "id": "minna-1-20-1544776575101",
+    "japanese": "～けど",
+    "reading": "～けど",
+    "meaning": "~, but (an informal equivalent of が)",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "word, language",
+        "japanese": "~けど",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729373668",
-    "japanese": "言葉[ことば]",
-    "reading": "言葉[ことば]",
-    "meaning": "言葉",
+    "id": "minna-1-20-1544776575102",
+    "japanese": "おなかが いっぱいです",
+    "reading": "おなかが いっぱいです",
+    "meaning": "(I'm) full",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "word, language",
+        "japanese": "おなかが　いっぱいです",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729373669",
-    "japanese": "言葉[ことば]",
-    "reading": "言葉[ことば]",
-    "meaning": "言葉",
+    "id": "minna-1-20-1544776575103",
+    "japanese": "よかったら",
+    "reading": "よかったら",
+    "meaning": "if you like",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "word, language",
+        "japanese": "よかったら",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372944",
-    "japanese": "国[くに]へ　 帰[かえ]るの?",
-    "reading": "国[くに]へ　 帰[かえ]るの?",
-    "meaning": "国へ　帰るの?",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "Are you going back to your country?",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-20-1609729372945",
-    "japanese": "国[くに]へ　 帰[かえ]るの?",
-    "reading": "国[くに]へ　 帰[かえ]るの?",
-    "meaning": "国へ　帰るの?",
+    "japanese": "国へ 帰るの?",
+    "reading": "国へ 帰るの?",
+    "meaning": "国[くに]へ　 帰[かえ]るの?",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
         "japanese": "Are you going back to your country?",
@@ -2428,635 +496,112 @@
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372944",
-    "japanese": "国[くに]へ　 帰[かえ]るの?",
-    "reading": "国[くに]へ　 帰[かえ]るの?",
-    "meaning": "国へ　帰るの?",
+    "id": "minna-1-20-1609729372947",
+    "japanese": "どう するの？",
+    "reading": "どう するの？",
+    "meaning": "どう　するの？",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "Are you going back to your country?",
+        "japanese": "What will you do?",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372945",
-    "japanese": "国[くに]へ　 帰[かえ]るの?",
-    "reading": "国[くに]へ　 帰[かえ]るの?",
-    "meaning": "国へ　帰るの?",
+    "id": "minna-1-20-1609729372949",
+    "japanese": "どう しようかな。",
+    "reading": "どう しようかな。",
+    "meaning": "どう　しようかな。",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "Are you going back to your country?",
+        "japanese": "What shall I do?",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372546",
-    "japanese": "修理[しゅうり]します",
-    "reading": "修理[しゅうり]します",
-    "meaning": "修理します",
+    "id": "minna-1-20-1609729373667",
+    "japanese": "サラリーマン",
+    "reading": "サラリーマン",
+    "meaning": "salaried worker, office worker",
     "jlptLevel": "N5",
     "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372547",
-    "japanese": "修理[しゅうり]します",
-    "reading": "修理[しゅうり]します",
-    "meaning": "修理します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372546",
-    "japanese": "修理[しゅうり]します",
-    "reading": "修理[しゅうり]します",
-    "meaning": "修理します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372547",
-    "japanese": "修理[しゅうり]します",
-    "reading": "修理[しゅうり]します",
-    "meaning": "修理します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373678",
-    "japanese": "終[お]わり",
-    "reading": "終[お]わり",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
     "examples": [
       {
-        "japanese": "the end",
+        "japanese": "20",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-20",
+      "minna-1"
+    ],
+    "lesson": 20,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-20-1609729373669",
+    "japanese": "言葉",
+    "reading": "言葉",
+    "meaning": "言葉[ことば]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "word, language",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373679",
-    "japanese": "終[お]わり",
-    "reading": "終[お]わり",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "the end",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373678",
-    "japanese": "終[お]わり",
-    "reading": "終[お]わり",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "the end",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373679",
-    "japanese": "終[お]わり",
-    "reading": "終[お]わり",
-    "meaning": "終わり",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "the end",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373676",
-    "japanese": "初[はじ]め",
-    "reading": "初[はじ]め",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "the beginning",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373677",
-    "japanese": "初[はじ]め",
-    "reading": "初[はじ]め",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "the beginning",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373676",
-    "japanese": "初[はじ]め",
-    "reading": "初[はじ]め",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "the beginning",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373677",
-    "japanese": "初[はじ]め",
-    "reading": "初[はじ]め",
-    "meaning": "初め",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "the beginning",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373672",
-    "japanese": "着物[きもの]",
-    "reading": "着物[きもの]",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "kimono (traditional Japanese attire)",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373673",
-    "japanese": "着物[きもの]",
-    "reading": "着物[きもの]",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "kimono (traditional Japanese attire)",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373672",
-    "japanese": "着物[きもの]",
-    "reading": "着物[きもの]",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "kimono (traditional Japanese attire)",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373673",
-    "japanese": "着物[きもの]",
-    "reading": "着物[きもの]",
-    "meaning": "着物",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "kimono (traditional Japanese attire)",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372542",
-    "japanese": "調[しら]べます",
-    "reading": "調[しら]べます",
-    "meaning": "調べます",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372543",
-    "japanese": "調[しら]べます",
-    "reading": "調[しら]べます",
-    "meaning": "調べます",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372542",
-    "japanese": "調[しら]べます",
-    "reading": "調[しら]べます",
-    "meaning": "調べます",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372543",
-    "japanese": "調[しら]べます",
-    "reading": "調[しら]べます",
-    "meaning": "調べます",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372544",
-    "japanese": "直[なお]します",
-    "reading": "直[なお]します",
-    "meaning": "直します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372545",
-    "japanese": "直[なお]します",
-    "reading": "直[なお]します",
-    "meaning": "直します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372544",
-    "japanese": "直[なお]します",
-    "reading": "直[なお]します",
-    "meaning": "直します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372545",
-    "japanese": "直[なお]します",
-    "reading": "直[なお]します",
-    "meaning": "直します",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372548",
-    "japanese": "電話[でんわ]します",
-    "reading": "電話[でんわ]します",
-    "meaning": "電話します",
-    "jlptLevel": "N4",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n4",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372549",
-    "japanese": "電話[でんわ]します",
-    "reading": "電話[でんわ]します",
-    "meaning": "電話します",
-    "jlptLevel": "N4",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n4",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372548",
-    "japanese": "電話[でんわ]します",
-    "reading": "電話[でんわ]します",
-    "meaning": "電話します",
-    "jlptLevel": "N4",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n4",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372549",
-    "japanese": "電話[でんわ]します",
-    "reading": "電話[でんわ]します",
-    "meaning": "電話します",
-    "jlptLevel": "N4",
-    "partOfSpeech": [],
-    "examples": [],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n4",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729373670",
-    "japanese": "物価[ぶっか]",
-    "reading": "物価[ぶっか]",
-    "meaning": "物価",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "commodity prices",
-        "reading": "",
-        "english": "20"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "noun",
-      "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
     "id": "minna-1-20-1609729373671",
-    "japanese": "物価[ぶっか]",
-    "reading": "物価[ぶっか]",
-    "meaning": "物価",
+    "japanese": "物価",
+    "reading": "物価",
+    "meaning": "物価[ぶっか]",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
         "japanese": "commodity prices",
@@ -3065,148 +610,81 @@
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729373670",
-    "japanese": "物価[ぶっか]",
-    "reading": "物価[ぶっか]",
-    "meaning": "物価",
+    "id": "minna-1-20-1609729373673",
+    "japanese": "着物",
+    "reading": "着物",
+    "meaning": "着物[きもの]",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "commodity prices",
+        "japanese": "kimono (traditional Japanese attire)",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729373671",
-    "japanese": "物価[ぶっか]",
-    "reading": "物価[ぶっか]",
-    "meaning": "物価",
+    "id": "minna-1-20-1609729373677",
+    "japanese": "初め",
+    "reading": "初め",
+    "meaning": "初[はじ]め",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "commodity prices",
+        "japanese": "the beginning",
         "reading": "",
         "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "noun",
       "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-20-1609729372540",
-    "japanese": "要[い]ります",
-    "reading": "要[い]ります",
-    "meaning": "要ります",
+    "id": "minna-1-20-1609729373679",
+    "japanese": "終わり",
+    "reading": "終わり",
+    "meaning": "終[お]わり",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "[ビザが～]",
+        "japanese": "the end",
         "reading": "",
-        "english": "need, require [a visa]"
+        "english": "20"
       }
     ],
     "tags": [
-      "chapter20",
-      "verb",
       "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372541",
-    "japanese": "要[い]ります",
-    "reading": "要[い]ります",
-    "meaning": "要ります",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "[ビザが～]",
-        "reading": "",
-        "english": "need, require [a visa]"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372540",
-    "japanese": "要[い]ります",
-    "reading": "要[い]ります",
-    "meaning": "要ります",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "[ビザが～]",
-        "reading": "",
-        "english": "need, require [a visa]"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
-    ],
-    "lesson": 20,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-20-1609729372541",
-    "japanese": "要[い]ります",
-    "reading": "要[い]ります",
-    "meaning": "要ります",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "[ビザが～]",
-        "reading": "",
-        "english": "need, require [a visa]"
-      }
-    ],
-    "tags": [
-      "chapter20",
-      "verb",
-      "n5",
-      "lesson-20"
+      "lesson-20",
+      "minna-1"
     ],
     "lesson": 20,
     "textbook": "minna-1"

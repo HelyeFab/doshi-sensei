@@ -21,15 +21,21 @@ export function useVocabularyData(textbook: string, lesson?: number) {
         
         // Load vocabulary data
         if (lesson) {
+          // For Genki 2, adjust lesson number (UI shows 1-11, but data has 13-23)
+          let actualLesson = lesson;
+          if (textbook === 'genki-2' && lesson <= 11) {
+            actualLesson = lesson + 12;
+          }
+          
           // Load specific lesson
           try {
             const lessonModule = await import(
-              `@/data/textbook-vocabulary/${textbook}/lesson-${lesson}.json`
+              `@/data/textbook-vocabulary/${textbook}/lesson-${actualLesson}.json`
             );
             setData(lessonModule.default);
           } catch (err) {
             // If specific lesson doesn't exist, try loading all
-            console.warn(`Lesson ${lesson} not found, loading all vocabulary`);
+            console.warn(`Lesson ${actualLesson} not found, loading all vocabulary`);
             await loadAllVocabulary(textbook);
           }
         } else {
@@ -48,16 +54,37 @@ export function useVocabularyData(textbook: string, lesson?: number) {
   }, [textbook, lesson]);
   
   const loadAllVocabulary = async (textbook: string) => {
-    // For now, just load lesson 1 as sample
-    // In production, this would load all lessons or a combined file
     try {
-      const lesson1Module = await import(
-        `@/data/textbook-vocabulary/${textbook}/lesson-1.json`
+      // First try to load an 'all.json' file if it exists
+      const allModule = await import(
+        `@/data/textbook-vocabulary/${textbook}/all.json`
       );
-      setData(lesson1Module.default);
+      setData(allModule.default);
     } catch (err) {
-      console.error('Error loading vocabulary:', err);
-      setData([]);
+      // If no 'all.json', check metadata for available lessons
+      try {
+        const metadataModule = await import(
+          `@/data/textbook-vocabulary/${textbook}/metadata.json`
+        );
+        const meta = metadataModule.default;
+        
+        // If no lessons available, set empty data
+        if (!meta.lessons || meta.lessons.length === 0) {
+          console.log(`No vocabulary data available for ${textbook}`);
+          setData([]);
+          return;
+        }
+        
+        // Otherwise try to load first lesson
+        const firstLesson = meta.lessons[0];
+        const lessonModule = await import(
+          `@/data/textbook-vocabulary/${textbook}/lesson-${firstLesson}.json`
+        );
+        setData(lessonModule.default);
+      } catch (innerErr) {
+        console.error('Error loading vocabulary:', innerErr);
+        setData([]);
+      }
     }
   };
   

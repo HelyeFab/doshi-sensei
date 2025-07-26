@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdjustableSnakePath } from '@/components/AdjustableSnakePath';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useRouter } from 'next/navigation';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
@@ -122,7 +122,7 @@ export default function SnakeAdjustPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
-        <StandardPageHeader title="Adjustable Snake Path" backHref="/practice" />
+        <SmartPageHeader title="Adjustable Snake Path" backHref="/practice" />
         
         <main className="max-w-4xl mx-auto">
 

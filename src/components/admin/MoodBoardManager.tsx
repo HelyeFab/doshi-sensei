@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { MoodBoard } from '@/types/moodBoard';
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import DeleteConfirmationModal from '@/components/admin/DeleteConfirmationModal';
 import { clearCacheAndReload } from '@/utils/clearAdminCache';
 
@@ -248,15 +249,14 @@ export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerPr
                 : 'No mood boards have been created yet'
               }
             </p>
-            <Link
-              href="/admin/mood-boards/new"
+            <SmartNavigationLink href="/admin/mood-boards/new"
               className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-            >
+             title={strings.admin.createMoodBoard || "Create Mood Board"}>
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
               Create First Mood Board
-            </Link>
+            </SmartNavigationLink>
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -298,12 +298,11 @@ export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerPr
 
                       {/* Actions */}
                       <div className="flex items-center gap-2">
-                        <Link
-                          href={`/admin/mood-boards/${board.id}/edit`}
+                        <SmartNavigationLink href={`/admin/mood-boards/${board.id}/edit`}
                           className="px-3 py-1 bg-primary text-primary-foreground text-xs rounded-lg hover:bg-primary/90 transition-colors"
-                        >
+                         title="Edit">
                           Edit
-                        </Link>
+                        </SmartNavigationLink>
 
                         <button
                           onClick={() => handleToggleStatus(board.id, board.isActive)}

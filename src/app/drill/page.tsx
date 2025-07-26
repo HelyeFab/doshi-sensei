@@ -6,7 +6,7 @@ import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, Wor
 import { getCommonWordsForPractice, searchWords } from '@/utils/api';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { DailyGoalSlider } from '@/components/DailyGoalSlider';
 import { useAuth } from '@/contexts/AuthContext';
@@ -639,7 +639,7 @@ export default function DrillPage() {
   if (!featureLoading && access && !access.allowed && remaining === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title={strings.drill.title} backHref="/practice" />
+        <SmartPageHeader title={strings.drill.title} />
         <div className="container mx-auto px-4 py-8 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto">
             <div className="text-6xl mb-4">⚡</div>
@@ -664,7 +664,7 @@ export default function DrillPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title={strings.drill.title} backHref="/practice" />
+        <SmartPageHeader title={strings.drill.title} />
         <div className="container mx-auto px-4 py-8 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -680,7 +680,7 @@ export default function DrillPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title={strings.drill.title} backHref="/practice" />
+      <SmartPageHeader title={strings.drill.title} />
       
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">

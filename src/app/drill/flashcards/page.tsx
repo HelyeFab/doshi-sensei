@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { JapaneseWord, WordList } from '@/types';
 import { Upload, Settings, ChevronDown, Volume2, Keyboard, BarChart3, BookOpen, Zap, Clock, Hash } from 'lucide-react';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
@@ -730,7 +730,7 @@ export default function FlashcardReviewPage() {
   if (!sessionStarted) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Flashcard Review" backHref="/drill" />
+        <SmartPageHeader title="Flashcard Review" backHref="/drill" />
         
         {/* Main Content */}
         <MobileAwareContainer className="container mx-auto px-4 py-8 md:pb-8">
@@ -1021,7 +1021,7 @@ export default function FlashcardReviewPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title="Flashcard Review" backHref="/drill" />
+      <SmartPageHeader title="Flashcard Review" backHref="/drill" />
       
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8 md:pb-8">

@@ -7,7 +7,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { clearProgress } from '@/utils/storage';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import EnhancedStorageManager from '@/utils/storage';
 import StudyListManager from '@/utils/studyListManager';
 import { usePremiumSync } from '@/hooks/usePremiumSync';
@@ -384,7 +384,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StandardPageHeader title={strings.settings.title} />
+      <SmartPageHeader title={strings.settings.title} />
 
       {/* Main Content */}
       <div className="container mx-auto px-4">
@@ -431,6 +431,23 @@ export default function SettingsPage() {
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">
                     {strings.settings.tutorialInfo}
+                  </p>
+                </div>
+              </div>
+            </SettingsSection>
+
+            {/* Navigation Settings */}
+            <SettingsSection title="Navigation">
+              <div className="space-y-4">
+                <ToggleSetting
+                  label="Swipe Gestures"
+                  description="Enable swipe left/right to navigate back/forward on mobile devices"
+                  checked={settings.navigationGestures !== false}
+                  onChange={(checked) => updateSetting('navigationGestures', checked)}
+                />
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
+                    Swipe from the edge of the screen to go back or forward in your navigation history
                   </p>
                 </div>
               </div>

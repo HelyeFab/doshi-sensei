@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -114,9 +115,10 @@ export default function StunningBottomNavbar() {
           }
           
           return (
-            <Link
+            <SmartNavigationLink 
               key={item.id}
               href={item.href}
+              title={item.label}
               className="flex flex-col items-center justify-center flex-1 h-full py-2 transition-colors"
               onClick={() => setActiveItem(item.id)}
             >
@@ -145,7 +147,7 @@ export default function StunningBottomNavbar() {
               }`}>
                 {item.label}
               </span>
-            </Link>
+            </SmartNavigationLink>
           );
         })}
       </div>

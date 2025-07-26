@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Rubik, Dancing_Script, Manrope } from "next/font/google";
+import { Geist, Geist_Mono, Rubik, Dancing_Script } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -28,6 +29,8 @@ import { CacheSystemInitializer } from '@/components/CacheSystemInitializer';
 import { DevHelper } from '@/components/DevHelper';
 import { AchievementToastManager } from '@/components/achievements/AchievementToast';
 import { AchievementInitializer } from '@/components/achievements/AchievementInitializer';
+import { NavigationGestures } from '@/components/navigation/NavigationGestures';
+import { NavigationProvider } from '@/contexts/NavigationContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,10 +54,38 @@ const savoyeFont = Dancing_Script({
   weight: ["400", "500", "600", "700"],
 });
 
-const manrope = Manrope({
+const manrope = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Manrope/static/Manrope-ExtraLight.ttf",
+      weight: "200",
+    },
+    {
+      path: "../../public/fonts/Manrope/static/Manrope-Light.ttf",
+      weight: "300",
+    },
+    {
+      path: "../../public/fonts/Manrope/static/Manrope-Regular.ttf",
+      weight: "400",
+    },
+    {
+      path: "../../public/fonts/Manrope/static/Manrope-Medium.ttf",
+      weight: "500",
+    },
+    {
+      path: "../../public/fonts/Manrope/static/Manrope-SemiBold.ttf",
+      weight: "600",
+    },
+    {
+      path: "../../public/fonts/Manrope/static/Manrope-Bold.ttf",
+      weight: "700",
+    },
+    {
+      path: "../../public/fonts/Manrope/static/Manrope-ExtraBold.ttf",
+      weight: "800",
+    },
+  ],
   variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -197,33 +228,36 @@ export default function RootLayout({
                     <NotificationProvider>
                       <AdminProvider>
                         <ModalProvider>
-                          {/* Use a client component to connect settings to theme */}
-                          <ClientThemeWrapper>
-                            <PWAWrapper>
-                              <OnboardingWrapper>
-                                <AchievementToastManager>
-                                  <div className="min-h-screen bg-background text-foreground">
-                                    <OfflineNotification />
-                                    <JMdictInitializer />
-                                    <CacheSystemInitializer />
-                                    <AchievementInitializer />
-                                    <div className="mobile-nav-padding">
-                                      {children}
+                          <NavigationProvider>
+                            {/* Use a client component to connect settings to theme */}
+                            <ClientThemeWrapper>
+                              <PWAWrapper>
+                                <OnboardingWrapper>
+                                  <AchievementToastManager>
+                                    <div className="min-h-screen bg-background text-foreground">
+                                      <OfflineNotification />
+                                      <JMdictInitializer />
+                                      <CacheSystemInitializer />
+                                      <AchievementInitializer />
+                                      <div className="mobile-nav-padding">
+                                        {children}
+                                      </div>
+                                      <StunningBottomNavbar />
+                                      <MobileMenu />
+                                      <DesktopNavMenu />
+                                      <PWAInstaller />
+                                      <PWAUpdateNotification />
+                                      <FloatingDonateButton />
+                                      <CompanionTrigger />
+                                      <ToastContainer />
+                                      <NavigationGestures />
+                                      <DevHelper />
                                     </div>
-                                    <StunningBottomNavbar />
-                                    <MobileMenu />
-                                    <DesktopNavMenu />
-                                    <PWAInstaller />
-                                    <PWAUpdateNotification />
-                                    <FloatingDonateButton />
-                                    <CompanionTrigger />
-                                    <ToastContainer />
-                                    <DevHelper />
-                                  </div>
-                                </AchievementToastManager>
-                              </OnboardingWrapper>
-                            </PWAWrapper>
-                          </ClientThemeWrapper>
+                                  </AchievementToastManager>
+                                </OnboardingWrapper>
+                              </PWAWrapper>
+                            </ClientThemeWrapper>
+                          </NavigationProvider>
                         </ModalProvider>
                       </AdminProvider>
                     </NotificationProvider>

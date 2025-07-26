@@ -11,8 +11,10 @@ import { StudyProgress } from './StudyProgress';
 import { useVocabularyData } from '../hooks/useVocabularyData';
 import { useFilteredVocab } from '../hooks/useFilteredVocab';
 import { spacedRepetition, vocabStorage } from '@/services/textbook-vocabulary';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import type { VocabularyItem } from '../types';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
 
 interface VocabularyLearningViewProps {
   textbook: string;
@@ -26,9 +28,23 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
   const [studyQueue, setStudyQueue] = useState<VocabularyItem[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionStats, setSessionStats] = useState({ studied: 0, correct: 0 });
+
+  // Subscription
+  const { isPremium } = useSubscription2();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
-  const { data: vocabulary, loading, error } = useVocabularyData(textbook, selectedLesson || undefined);
+  const { data: vocabulary, loading, error } =
+    useVocabularyData(textbook, selectedLesson || undefined);
   const { filteredVocab, filters, updateFilter } = useFilteredVocab(vocabulary);
+
+  // Handle lesson selection with premium gating
+  const handleLessonSelect = (lesson: number | null) => {
+    if (lesson && !isPremium && lesson > 2) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    setSelectedLesson(lesson);
+  };
 
   // Initialize storage on mount
   useEffect(() => {
@@ -39,22 +55,26 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
     'genki-1': {
       title: 'Genki 1',
       color: 'from-pink-400 to-purple-500',
-      lessons: 12
+      lessons: 12,
+      lessonOffset: 0
     },
     'genki-2': {
       title: 'Genki 2',
       color: 'from-purple-400 to-indigo-500',
-      lessons: 11
+      lessons: 11,
+      lessonOffset: 12  // Genki 2 starts at lesson 13
     },
     'minna-1': {
       title: 'Minna no Nihongo 1',
       color: 'from-green-400 to-teal-500',
-      lessons: 25
+      lessons: 25,
+      lessonOffset: 0
     },
     'minna-2': {
       title: 'Minna no Nihongo 2',
       color: 'from-teal-400 to-blue-500',
-      lessons: 25
+      lessons: 25,
+      lessonOffset: 0
     }
   };
 
@@ -136,6 +156,28 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
     );
   }
 
+  // Handle empty textbooks gracefully
+  if (!loading && vocabulary.length === 0 && !selectedLesson) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SmartPageHeader title={currentTextbook.title} />
+        <div className="text-center p-8 mt-8">
+          <div className="text-6xl mb-4">📚</div>
+          <h2 className="text-xl font-semibold mb-2">No Vocabulary Available</h2>
+          <p className="text-gray-600 mb-6">
+            {currentTextbook.title} doesn't have any vocabulary data yet.
+          </p>
+          <button 
+            onClick={onBack} 
+            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+          >
+            Choose Another Textbook
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Spacer for Virtual Companion */}
@@ -213,8 +255,10 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
               onFilterChange={updateFilter}
               textbook={textbook}
               totalLessons={currentTextbook.lessons}
-              onLessonSelect={setSelectedLesson}
+              onLessonSelect={handleLessonSelect}
               selectedLesson={selectedLesson}
+              isPremium={isPremium}
+              onRequestUpgrade={() => setShowUpgradeModal(true)}
             />
             
             <VocabularyGrid
@@ -273,6 +317,14 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Upgrade Modal */}
+      <UpgradeSlideUpModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        message="Unlock lessons 3+ and more with Premium"
+        feature="textbook_vocabulary_lessons"
+      />
 
       {/* Bottom Stats Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">

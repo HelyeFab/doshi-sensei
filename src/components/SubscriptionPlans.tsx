@@ -10,11 +10,9 @@ import { useStrings } from '@/contexts/LanguageContext';
 
 export default function SubscriptionPlans() {
   const strings = useStrings();
-  const { subscription, isPremium, userType, isLoading, createCheckoutSession, cancelSubscription } = useSubscription2();
-  const { feature: drillFeature, access: drillAccess } = useFeature('drill_practice');
-  const { feature: listFeature, access: listAccess } = useFeature('word_lists');
-  const { feature: articleFeature, access: articleAccess } = useFeature('article_reading');
-  const { feature: gameFeature, access: gameAccess } = useFeature('kanji_quest');
+  const { subscription, isLoading, createCheckoutSession, cancelSubscription } = useSubscription2();
+  const { feature: drillFeature } = useFeature('drill_practice');
+  const { feature: listFeature } = useFeature('word_lists');
   const { showNotification } = useNotification();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -96,41 +94,6 @@ export default function SubscriptionPlans() {
             <span className="text-sm text-muted-foreground">{strings.subscriptions.plan}</span>
             <span className="text-sm font-medium text-foreground">
               {currentPlanData?.name || 'Free'} {currentPlan !== 'free' && currentPlanData && `($${currentPlanData.price}/${currentPlan === 'monthly' ? 'month' : 'year'})`}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{strings.subscriptions.wordLists}</span>
-            <span className="text-sm font-medium text-foreground">
-              {isPremium ? strings.subscriptions.unlimited : listAccess?.limit === -1 ? strings.subscriptions.unlimited : `${listAccess?.limit || 3} max`}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{strings.subscriptions.dailyDrills}</span>
-            <span className="text-sm font-medium text-foreground">
-              {isPremium ? strings.subscriptions.unlimited : drillAccess?.limit === -1 ? strings.subscriptions.unlimited : `${drillAccess?.limit || 3}/day`}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{strings.subscriptions.dailyArticles}</span>
-            <span className="text-sm font-medium text-foreground">
-              {isPremium ? strings.subscriptions.unlimited : articleAccess?.limit === -1 ? strings.subscriptions.unlimited : `${articleAccess?.limit || 3}/day`}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{strings.subscriptions.dailyGames}</span>
-            <span className="text-sm font-medium text-foreground">
-              {isPremium ? strings.subscriptions.unlimited : gameAccess?.limit === -1 ? strings.subscriptions.unlimited : `${gameAccess?.limit || 3}/day`}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{strings.subscriptions.cloudSync}</span>
-            <span className="text-sm font-medium text-foreground">
-              {isPremium || userType !== 'guest' ? strings.subscriptions.available : strings.subscriptions.notAvailable}
             </span>
           </div>
         </div>

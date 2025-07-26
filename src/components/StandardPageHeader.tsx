@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import Link from 'next/link'
+import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { useSearchParams } from 'next/navigation';
 
 interface StandardPageHeaderProps {
@@ -34,15 +35,14 @@ export function StandardPageHeader({
         <div className="flex items-center gap-3">
           {/* Back Button */}
           {showBackButton && (
-            <Link 
-              href={finalBackHref}
+            <SmartNavigationLink href={finalBackHref}
               className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label={`Go back to ${finalBackHref === '/practice' ? 'practice' : 'home'}`}
-            >
+             title={preservedTitle || "Previous Page"}>
               <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </Link>
+            </SmartNavigationLink>
           )}
           
           {/* Page Title */}

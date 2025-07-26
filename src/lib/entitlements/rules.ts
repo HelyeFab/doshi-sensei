@@ -14,13 +14,23 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
     limits: {
       daily: {
         drill_practice: 3,
-        games: 3, // Shared limit for all games
+        kana_study: 3, // Kana study sessions
+        // Individual game limits (no more shared limits)
+        kanji_quest: 3,
+        kana_drop: 3,
+        sentence_scramble: 3,
+        memory_match: 3,
+        reading_routes: 3,
+        kanji_simon: 3,
+        listening_quiz: 3,
+        word_assembly: 3,
+        flashcard_review: 3, // Separate from drill_practice now
         article_reading: 3,
-        story_reading: 1,
-        kanji_moods: 1,
-        kanji_stroke_order: 10,
+        story_reading: 3,
+        kanji_moods: 3,
+        kanji_stroke_order: -1,
         stroke_order_practice: 3,
-        youtube_shadowing: 0, // No YouTube URLs or uploads for guests
+        youtube_shadowing: 1, // 1 YouTube URL or upload per day for guests
         ai_context_explanation: 3,
         textbook_vocabulary: 20
       }
@@ -48,11 +58,21 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
     limits: {
       daily: {
         drill_practice: 3,
-        games: 3, // Shared limit for all games
+        kana_study: 3, // Kana study sessions
+        // Individual game limits (no more shared limits)
+        kanji_quest: 3,
+        kana_drop: 3,
+        sentence_scramble: 3,
+        memory_match: 3,
+        reading_routes: 3,
+        kanji_simon: 3,
+        listening_quiz: 3,
+        word_assembly: 3,
+        flashcard_review: 3, // Separate from drill_practice now
         article_reading: 3,
-        story_reading: 1,
-        kanji_moods: 1,
-        kanji_stroke_order: 10,
+        story_reading: 3,
+        kanji_moods: 3,
+        kanji_stroke_order: -1,
         stroke_order_practice: 3,
         youtube_shadowing: 1, // 1 YouTube URL or upload per day for free users
         ai_context_explanation: 3,
@@ -74,15 +94,25 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
     limits: {
       daily: {
         drill_practice: -1, // Unlimited
-        games: -1,
+        kana_study: -1, // Unlimited kana study
+        // Individual game limits
+        kanji_quest: -1,
+        kana_drop: -1,
+        sentence_scramble: -1,
+        memory_match: -1,
+        reading_routes: -1,
+        kanji_simon: -1,
+        listening_quiz: -1,
+        word_assembly: -1,
+        flashcard_review: -1,
         article_reading: -1,
         story_reading: -1,
         speaking_practice: -1,
-        ai_tutor: 10, // Even premium has some limits on expensive features
+        ai_tutor: -1, // Unlimited AI tutor for premium monthly
         ai_context_explanation: -1, // Unlimited AI explanations
         kanji_stroke_order: -1,
         stroke_order_practice: -1,
-        youtube_shadowing: 10, // 10 YouTube URLs or uploads per day for premium
+        youtube_shadowing: -1, // Unlimited YouTube URLs or uploads for premium
         anki_import: -1, // Unlimited Anki imports
         anki_set_creation: -1, // Unlimited Anki set creation
         textbook_vocabulary: -1 // Unlimited textbook vocabulary
@@ -103,7 +133,17 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
     limits: {
       daily: {
         drill_practice: -1, // Unlimited
-        games: -1,
+        kana_study: -1, // Unlimited kana study
+        // Individual game limits
+        kanji_quest: -1,
+        kana_drop: -1,
+        sentence_scramble: -1,
+        memory_match: -1,
+        reading_routes: -1,
+        kanji_simon: -1,
+        listening_quiz: -1,
+        word_assembly: -1,
+        flashcard_review: -1,
         article_reading: -1,
         story_reading: -1,
         speaking_practice: -1,
@@ -111,7 +151,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         ai_context_explanation: -1, // Unlimited AI explanations
         kanji_stroke_order: -1,
         stroke_order_practice: -1,
-        youtube_shadowing: 10, // 10 YouTube URLs or uploads per day for premium
+        youtube_shadowing: -1, // Unlimited YouTube URLs or uploads for premium
         anki_import: -1, // Unlimited Anki imports
         anki_set_creation: -1, // Unlimited Anki set creation
         textbook_vocabulary: -1 // Unlimited textbook vocabulary
@@ -139,12 +179,14 @@ async function getDynamicRules(): Promise<EntitlementRule[]> {
   }
 
   try {
+    // The dynamic-rules module now handles admin checking internally
     const { dynamicRules } = await import('./dynamic-rules');
     cachedRules = await dynamicRules.getRules();
     cacheTimestamp = Date.now();
     return cachedRules;
   } catch (error) {
-    console.error('Failed to load dynamic rules, falling back to defaults:', error);
+    // Don't log expected permission errors for non-admin users
+    // The dynamic-rules module will return static rules for non-admins
     return ENTITLEMENT_RULES;
   }
 }

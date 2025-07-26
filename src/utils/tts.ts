@@ -197,17 +197,14 @@ export class TTSManager {
       const kanaAudioPath = await getKanaAudioPath(text);
       if (kanaAudioPath) {
         try {
-          console.log(`🎵 [TTS] Using LOCAL kana audio instead of API for: "${text}"`);
-          console.log(`📁 [TTS] Audio file path: ${kanaAudioPath}`);
-          await playKanaAudioWithRetry(kanaAudioPath, 2); // Use retry mechanism
+          console.log(`🎵 [TTS] Found local kana audio for: "${text}"`);
+          await playKanaAudioWithRetry(kanaAudioPath, 2); // Allow 2 retries
           console.log(`✅ [TTS] Successfully played local kana audio: "${text}"`);
           return;
         } catch (error) {
-          console.warn(`⚠️ [TTS] Failed to play local kana audio for "${text}", falling back to TTS API:`, error);
+          console.warn(`⚠️ [TTS] Local kana audio failed for "${text}", using TTS API:`, error);
           // Continue to TTS API fallback
         }
-      } else if (text.length <= 2) {
-        console.log(`📡 [TTS] No local kana audio for "${text}", checking kanji...`);
       }
       
       // Check if we have local kanji audio for single character

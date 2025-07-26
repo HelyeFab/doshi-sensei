@@ -36,6 +36,10 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
       // Check session storage to see if we've already shown splash
       const hasShownSplash = sessionStorage.getItem('doshi_splash_shown');
 
+      // TEMPORARY: Always show splash screen for testing
+      // Remove this line once you're satisfied with the splash screen
+      if (process.env.NODE_ENV === 'development') return !hasShownSplash;
+
       return (isPWASource || isStandalone) && !hasShownSplash;
     };
 

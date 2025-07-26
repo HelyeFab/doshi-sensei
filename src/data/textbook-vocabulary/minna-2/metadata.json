@@ -1,17 +1,6 @@
 {
   "title": "Minna no Nihongo 2",
-  "subtitle": "Japanese for Everyone II",
-  "jlptLevels": [
-    "N4",
-    "N3"
-  ],
-  "description": "The second volume of the comprehensive Minna no Nihongo series",
-  "color": {
-    "primary": "#14B8A6",
-    "secondary": "#3B82F6",
-    "gradient": "from-teal-400 to-blue-500"
-  },
-  "totalCards": 2222,
+  "totalCards": 1058,
   "lessons": [
     1,
     2,
@@ -38,5 +27,12 @@
     23,
     24,
     25
-  ]
+  ],
+  "jlptDistribution": {
+    "N4": 46,
+    "N5": 1012
+  },
+  "partOfSpeechDistribution": {},
+  "source": "MCP anki-word-generator",
+  "importDate": "2025-07-26T08:34:16.487Z"
 }

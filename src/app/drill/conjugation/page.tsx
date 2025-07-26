@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList } from '@/types';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
@@ -328,7 +328,7 @@ export default function ConjugationDrillPage() {
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Conjugation Drill" backHref="/drill" />
+        <SmartPageHeader title="Conjugation Drill" backHref="/drill" />
         
         {/* Main Content */}
         <MobileAwareContainer className="container mx-auto px-4 py-8">
@@ -492,7 +492,7 @@ export default function ConjugationDrillPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title="Conjugation Drill" backHref="/drill" />
+      <SmartPageHeader title="Conjugation Drill" backHref="/drill" />
       
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8">

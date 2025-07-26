@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useStrings } from '@/contexts/LanguageContext';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   collection, 
@@ -237,7 +237,7 @@ export default function PopularVideos() {
         }}
       />
 
-      <StandardPageHeader 
+      <SmartPageHeader 
         title="Popular Videos"
         backHref="/tools/youtube-shadowing" 
       />

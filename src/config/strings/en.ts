@@ -695,6 +695,34 @@ export const en = {
     goToVocabulary: "Go to Vocabulary",
     chooseYourGame: "Choose Your Game",
     selectGameMode: "Select a game mode to test your Japanese skills.",
+    
+    // Empty State for Listening Quiz
+    emptyState: {
+      title: "Ready to Test Your Listening Skills?",
+      subtitle: "Create study lists to get started",
+      description: "The Listening Quiz uses words from your personal study lists to create customized audio challenges.",
+      steps: {
+        step1: {
+          title: "Create Study Lists",
+          description: "Save vocabulary words to organized lists"
+        },
+        step2: {
+          title: "Choose Your Lists", 
+          description: "Select which lists to include in your quiz"
+        },
+        step3: {
+          title: "Listen & Learn",
+          description: "Test your listening skills with audio pronunciation"
+        }
+      },
+      benefits: {
+        personalized: "Personalized to your vocabulary",
+        adaptive: "Adapts to your learning progress", 
+        engaging: "Fun and interactive gameplay"
+      },
+      createListsButton: "Create Your First Study List",
+      browseVocabulary: "Browse Vocabulary"
+    },
     comingSoon: "Coming Soon",
     correct: "Correct",
     total: "Total",
@@ -2263,6 +2291,32 @@ export const en = {
         title: "Sentence Scramble",
         description: "Rearrange words to form correct Japanese sentences."
       }
+    },
+    emptyState: {
+      title: "Ready to Test Your Listening Skills?",
+      subtitle: "Create study lists to get started",
+      description: "The Listening Quiz uses words from your personal study lists to create customized audio challenges.",
+      steps: {
+        step1: {
+          title: "Create Study Lists",
+          description: "Save vocabulary words to organized lists"
+        },
+        step2: {
+          title: "Choose Your Lists", 
+          description: "Select which lists to include in your quiz"
+        },
+        step3: {
+          title: "Listen & Learn",
+          description: "Test your listening skills with audio pronunciation"
+        }
+      },
+      benefits: {
+        personalized: "Personalized to your vocabulary",
+        adaptive: "Adapts to your learning progress", 
+        engaging: "Fun and interactive gameplay"
+      },
+      createListsButton: "Create Your First Study List",
+      browseVocabulary: "Browse Vocabulary"
     }
   },
 

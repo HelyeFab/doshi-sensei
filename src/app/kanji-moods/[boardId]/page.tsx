@@ -8,7 +8,7 @@ import { MoodBoard as MoodBoardType } from '@/types/moodBoard';
 import { Analytics } from '@/utils/analytics';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
-import { StandardPageHeader } from '@/components/StandardPageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 
 export default function MoodBoardPage() {
   const router = useRouter();
@@ -73,7 +73,7 @@ export default function MoodBoardPage() {
   if (loading || boardsLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Loading..." backHref="/kanji-moods" />
+        <SmartPageHeader title="Loading..." backHref="/kanji-moods" />
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin text-4xl mb-4">⏳</div>
@@ -88,7 +88,7 @@ export default function MoodBoardPage() {
   if (notFound || !board) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StandardPageHeader title="Not Found" backHref="/kanji-moods" />
+        <SmartPageHeader title="Not Found" backHref="/kanji-moods" />
         <div className="flex items-center justify-center h-64">
           <div className="text-center max-w-md mx-auto px-4">
             <div className="text-6xl mb-4">❓</div>
@@ -113,7 +113,7 @@ export default function MoodBoardPage() {
   // Render the mood board
   return (
     <div className="min-h-screen bg-gray-50">
-      <StandardPageHeader title={board.title} backHref="/kanji-moods" />
+      <SmartPageHeader title={board.title} backHref="/kanji-moods" />
       <MoodBoard board={board} onBack={handleBack} />
     </div>
   );

@@ -1,158 +1,37 @@
 [
   {
-    "id": "minna-2-18-1550468379286",
-    "japanese": "[a button] to come off",
-    "reading": "[a button] to come off",
-    "meaning": "とれます［ボタンが〜］",
+    "id": "minna-2-18-1550467702652",
+    "japanese": "増えます［輸出が〜］",
+    "reading": "増えます［輸出が〜］",
+    "meaning": "[exports] to increase",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "とれます［ボタンが〜］",
+        "japanese": "増[ふ]えます［ 輸出[ゆしゅつ]が〜］",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468379287",
-    "japanese": "[a button] to come off",
-    "reading": "[a button] to come off",
-    "meaning": "とれます［ボタンが〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "とれます［ボタンが〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468353832",
-    "japanese": "[a string] to break, snap",
-    "reading": "[a string] to break, snap",
-    "meaning": "切れます［ひもが〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "切[き]れます［ひもが〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468353833",
-    "japanese": "[a string] to break, snap",
-    "reading": "[a string] to break, snap",
-    "meaning": "切れます［ひもが〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "切[き]れます［ひもが〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468409560",
-    "japanese": "[baggage] to fall down",
-    "reading": "[baggage] to fall down",
-    "meaning": "落ちます［荷物が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "落[お]ちます［ 荷物[にもつ]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468409561",
-    "japanese": "[baggage] to fall down",
-    "reading": "[baggage] to fall down",
-    "meaning": "落ちます［荷物が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "落[お]ちます［ 荷物[にもつ]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550467735792",
-    "japanese": "[exports] to decrease",
-    "reading": "[exports] to decrease",
-    "meaning": "減ります［輸出が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "減[へ]ります［ 輸出[ゆしゅつ]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
     "id": "minna-2-18-1550467735793",
-    "japanese": "[exports] to decrease",
-    "reading": "[exports] to decrease",
-    "meaning": "減ります［輸出が〜］",
+    "japanese": "減ります［輸出が〜］",
+    "reading": "減ります［輸出が〜］",
+    "meaning": "[exports] to decrease",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
         "japanese": "減[へ]ります［ 輸出[ゆしゅつ]が〜］",
@@ -162,165 +41,21 @@
     ],
     "tags": [
       "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550467702651",
-    "japanese": "[exports] to increase",
-    "reading": "[exports] to increase",
-    "meaning": "増えます［輸出が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "増[ふ]えます［ 輸出[ゆしゅつ]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550467702652",
-    "japanese": "[exports] to increase",
-    "reading": "[exports] to increase",
-    "meaning": "増えます［輸出が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "増[ふ]えます［ 輸出[ゆしゅつ]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468442253",
-    "japanese": "[petrol, gasoline] to run out, be lost",
-    "reading": "[petrol, gasoline] to run out, be lost",
-    "meaning": "なくなります［ガソリンが〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "なくなります［ガソリンが〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468442254",
-    "japanese": "[petrol, gasoline] to run out, be lost",
-    "reading": "[petrol, gasoline] to run out, be lost",
-    "meaning": "なくなります［ガソリンが〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "なくなります［ガソリンが〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468323543",
-    "japanese": "[the price] to fall, drop",
-    "reading": "[the price] to fall, drop",
-    "meaning": "下がります［値段が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "下[さ]がります［ 値段[ねだん]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468323544",
-    "japanese": "[the price] to fall, drop",
-    "reading": "[the price] to fall, drop",
-    "meaning": "下がります［値段が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "下[さ]がります［ 値段[ねだん]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468278999",
-    "japanese": "[the price] to rise",
-    "reading": "[the price] to rise",
-    "meaning": "上がります［値段が〜］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "上[あ]がります［ 値段[ねだん]が〜］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
     "id": "minna-2-18-1550468279000",
-    "japanese": "[the price] to rise",
-    "reading": "[the price] to rise",
-    "meaning": "上がります［値段が〜］",
+    "japanese": "上がります［値段が〜］",
+    "reading": "上がります［値段が〜］",
+    "meaning": "[the price] to rise",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
         "japanese": "上[あ]がります［ 値段[ねだん]が〜］",
@@ -330,585 +65,141 @@
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468588004",
-    "japanese": "at any moment (used to describe a situation just before it changes)",
-    "reading": "at any moment (used to describe a situation just before it changes)",
-    "meaning": "今にも",
+    "id": "minna-2-18-1550468323544",
+    "japanese": "下がります［値段が〜］",
+    "reading": "下がります［値段が〜］",
+    "meaning": "[the price] to fall, drop",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "今[いま]にも",
+        "japanese": "下[さ]がります［ 値段[ねだん]が〜］",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468588005",
-    "japanese": "at any moment (used to describe a situation just before it changes)",
-    "reading": "at any moment (used to describe a situation just before it changes)",
-    "meaning": "今にも",
+    "id": "minna-2-18-1550468353833",
+    "japanese": "切れます［ひもが〜］",
+    "reading": "切れます［ひもが〜］",
+    "meaning": "[a string] to break, snap",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "今[いま]にも",
+        "japanese": "切[き]れます［ひもが〜］",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468525676",
-    "japanese": "boring, uninteresting, trivial",
-    "reading": "boring, uninteresting, trivial",
-    "meaning": "つまらない",
+    "id": "minna-2-18-1550468379287",
+    "japanese": "とれます［ボタンが〜］",
+    "reading": "とれます［ボタンが〜］",
+    "meaning": "[a button] to come off",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "つまらない",
+        "japanese": "とれます［ボタンが〜］",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468525677",
-    "japanese": "boring, uninteresting, trivial",
-    "reading": "boring, uninteresting, trivial",
-    "meaning": "つまらない",
+    "id": "minna-2-18-1550468409561",
+    "japanese": "落ちます［荷物が〜］",
+    "reading": "落ちます［荷物が〜］",
+    "meaning": "[baggage] to fall down",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "つまらない",
+        "japanese": "落[お]ちます［ 荷物[にもつ]が〜］",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468611921",
-    "japanese": "driving",
-    "reading": "driving",
-    "meaning": "ドライブ",
+    "id": "minna-2-18-1550468442254",
+    "japanese": "なくなります［ガソリンが〜］",
+    "reading": "なくなります［ガソリンが〜］",
+    "meaning": "[petrol, gasoline] to run out, be lost",
     "jlptLevel": "N5",
-    "partOfSpeech": [],
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
-        "japanese": "ドライブ",
+        "japanese": "なくなります［ガソリンが〜］",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468611922",
-    "japanese": "driving",
-    "reading": "driving",
-    "meaning": "ドライブ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ドライブ",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468498474",
-    "japanese": "easy",
-    "reading": "easy",
-    "meaning": "楽［な］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "楽[らく]［な］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468498475",
-    "japanese": "easy",
-    "reading": "easy",
-    "meaning": "楽［な］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "楽[らく]［な］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468554961",
-    "japanese": "fire",
-    "reading": "fire",
-    "meaning": "火",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "火[ひ]",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468554962",
-    "japanese": "fire",
-    "reading": "fire",
-    "meaning": "火",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "火[ひ]",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468478791",
-    "japanese": "happy",
-    "reading": "happy",
-    "meaning": "幸せ［な］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "幸[しあわ]せ［な］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468478792",
-    "japanese": "happy",
-    "reading": "happy",
-    "meaning": "幸せ［な］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "幸[しあわ]せ［な］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468536114",
-    "japanese": "kind, gentle, tender-hearted",
-    "reading": "kind, gentle, tender-hearted",
-    "meaning": "優しい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "優[やさ]しい",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468536115",
-    "japanese": "kind, gentle, tender-hearted",
-    "reading": "kind, gentle, tender-hearted",
-    "meaning": "優しい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "優[やさ]しい",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468513632",
-    "japanese": "not tasty",
-    "reading": "not tasty",
-    "meaning": "まずい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "まずい",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468513633",
-    "japanese": "not tasty",
-    "reading": "not tasty",
-    "meaning": "まずい",
-    "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
-    "examples": [
-      {
-        "japanese": "まずい",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468597562",
-    "japanese": "Oh! / Wow!",
-    "reading": "Oh! / Wow!",
-    "meaning": "わあ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "わあ",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468597563",
-    "japanese": "Oh! / Wow!",
-    "reading": "Oh! / Wow!",
-    "meaning": "わあ",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "わあ",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468566016",
-    "japanese": "pamphlet",
-    "reading": "pamphlet",
-    "meaning": "パンフレット",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "パンフレット",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468566017",
-    "japanese": "pamphlet",
-    "reading": "pamphlet",
-    "meaning": "パンフレット",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "パンフレット",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468545105",
-    "japanese": "petrol, gasoline",
-    "reading": "petrol, gasoline",
-    "meaning": "ガソリン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ガソリン",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468545106",
-    "japanese": "petrol, gasoline",
-    "reading": "petrol, gasoline",
-    "meaning": "ガソリン",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ガソリン",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468619295",
-    "japanese": "reason",
-    "reading": "reason",
-    "meaning": "理由",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "理由[りゆう]",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468619296",
-    "japanese": "reason",
-    "reading": "reason",
-    "meaning": "理由",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "理由[りゆう]",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468605184",
-    "japanese": "rose",
-    "reading": "rose",
-    "meaning": "ばら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばら",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468605185",
-    "japanese": "rose",
-    "reading": "rose",
-    "meaning": "ばら",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ばら",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468461764",
-    "japanese": "strange, peculiar",
-    "reading": "strange, peculiar",
-    "meaning": "変［な］",
-    "jlptLevel": "N5",
-    "partOfSpeech": "noun",
-    "examples": [
-      {
-        "japanese": "変[へん]［な］",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
     "id": "minna-2-18-1550468461765",
-    "japanese": "strange, peculiar",
-    "reading": "strange, peculiar",
-    "meaning": "変［な］",
+    "japanese": "変［な］",
+    "reading": "変［な］",
+    "meaning": "strange, peculiar",
     "jlptLevel": "N5",
-    "partOfSpeech": "noun",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
         "japanese": "変[へん]［な］",
@@ -918,39 +209,69 @@
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468506643",
-    "japanese": "tasty",
-    "reading": "tasty",
-    "meaning": "うまい",
+    "id": "minna-2-18-1550468478792",
+    "japanese": "幸せ［な］",
+    "reading": "幸せ［な］",
+    "meaning": "happy",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [
+      "noun"
+    ],
     "examples": [
       {
-        "japanese": "うまい",
+        "japanese": "幸[しあわ]せ［な］",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468498475",
+    "japanese": "楽［な］",
+    "reading": "楽［な］",
+    "meaning": "easy",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "楽[らく]［な］",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
     "id": "minna-2-18-1550468506644",
-    "japanese": "tasty",
-    "reading": "tasty",
-    "meaning": "うまい",
+    "japanese": "うまい",
+    "reading": "うまい",
+    "meaning": "tasty",
     "jlptLevel": "N5",
-    "partOfSpeech": "i-adjective",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
     "examples": [
       {
         "japanese": "うまい",
@@ -960,39 +281,275 @@
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468630872",
-    "japanese": "to apologize",
-    "reading": "to apologize",
-    "meaning": "謝ります",
+    "id": "minna-2-18-1550468513633",
+    "japanese": "まずい",
+    "reading": "まずい",
+    "meaning": "not tasty",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
     "examples": [
       {
-        "japanese": "謝[あやま]ります",
+        "japanese": "まずい",
         "reading": "",
         "english": "43"
       }
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468525677",
+    "japanese": "つまらない",
+    "reading": "つまらない",
+    "meaning": "boring, uninteresting, trivial",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
+    "examples": [
+      {
+        "japanese": "つまらない",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468536115",
+    "japanese": "優しい",
+    "reading": "優しい",
+    "meaning": "kind, gentle, tender-hearted",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
+    "examples": [
+      {
+        "japanese": "優[やさ]しい",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468545106",
+    "japanese": "ガソリン",
+    "reading": "ガソリン",
+    "meaning": "petrol, gasoline",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ガソリン",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468554962",
+    "japanese": "火",
+    "reading": "火",
+    "meaning": "fire",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "火[ひ]",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468566017",
+    "japanese": "パンフレット",
+    "reading": "パンフレット",
+    "meaning": "pamphlet",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "パンフレット",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468588005",
+    "japanese": "今にも",
+    "reading": "今にも",
+    "meaning": "at any moment (used to describe a situation just before it changes)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "今[いま]にも",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468597563",
+    "japanese": "わあ",
+    "reading": "わあ",
+    "meaning": "Oh! / Wow!",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "わあ",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468605185",
+    "japanese": "ばら",
+    "reading": "ばら",
+    "meaning": "rose",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ばら",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468611922",
+    "japanese": "ドライブ",
+    "reading": "ドライブ",
+    "meaning": "driving",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ドライブ",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-18-1550468619296",
+    "japanese": "理由",
+    "reading": "理由",
+    "meaning": "reason",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "理由[りゆう]",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
     "id": "minna-2-18-1550468630873",
-    "japanese": "to apologize",
-    "reading": "to apologize",
-    "meaning": "謝ります",
+    "japanese": "謝ります",
+    "reading": "謝ります",
+    "meaning": "to apologize",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
         "japanese": "謝[あやま]ります",
@@ -1002,39 +559,21 @@
     ],
     "tags": [
       "n5",
-      "lesson-18"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468646316",
-    "japanese": "to get acquainted",
-    "reading": "to get acquainted",
-    "meaning": "知り合います",
-    "jlptLevel": "N5",
-    "partOfSpeech": "verb",
-    "examples": [
-      {
-        "japanese": "知り合[しりあ]います",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"
   },
   {
     "id": "minna-2-18-1550468646317",
-    "japanese": "to get acquainted",
-    "reading": "to get acquainted",
-    "meaning": "知り合います",
+    "japanese": "知り合います",
+    "reading": "知り合います",
+    "meaning": "to get acquainted",
     "jlptLevel": "N5",
-    "partOfSpeech": "verb",
+    "partOfSpeech": [
+      "verb"
+    ],
     "examples": [
       {
         "japanese": "知り合[しりあ]います",
@@ -1044,7 +583,8 @@
     ],
     "tags": [
       "n5",
-      "lesson-18"
+      "lesson-18",
+      "minna-2"
     ],
     "lesson": 18,
     "textbook": "minna-2"

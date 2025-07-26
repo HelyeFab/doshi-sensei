@@ -95,11 +95,45 @@ export class DynamicEntitlementRules {
       return DEFAULT_RULES;
     }
   }
+  
+  /**
+   * Check if current user is admin
+   */
+  private async checkAdminAccess(): Promise<boolean> {
+    // Server-side always returns false unless specifically marked as admin request
+    if (typeof window === 'undefined') {
+      return (global as any).__adminRequest === true;
+    }
+    
+    try {
+      // Import auth dynamically to avoid circular dependencies
+      const { auth } = await import('@/lib/firebase');
+      const user = auth.currentUser;
+      
+      if (!user || !user.email) {
+        return false;
+      }
+      
+      // Import ADMIN_EMAIL dynamically
+      const { ADMIN_EMAIL } = await import('@/types/admin');
+      return user.email === ADMIN_EMAIL;
+    } catch (error) {
+      // If we can't check auth, assume not admin
+      return false;
+    }
+  }
 
   /**
    * Save updated rules to Firestore
    */
   async saveRules(rules: EntitlementRule[]): Promise<void> {
+    // Only admins can save rules
+    const isAdmin = await this.checkAdminAccess();
+    if (!isAdmin) {
+      console.warn('Non-admin attempted to save rules');
+      throw new Error('Unauthorized: Only admins can modify rules');
+    }
+    
     try {
       await this.initFirestore();
       await firestoreModule.setDoc(firestoreModule.doc(dbInstance, 'config', RULES_DOC_ID), {
@@ -125,6 +159,13 @@ export class DynamicEntitlementRules {
     limitType: 'daily' | 'total',
     newValue: number
   ): Promise<void> {
+    // Only admins can update limits
+    const isAdmin = await this.checkAdminAccess();
+    if (!isAdmin) {
+      console.warn('Non-admin attempted to update limits');
+      throw new Error('Unauthorized: Only admins can modify limits');
+    }
+    
     const rules = await this.getRules();
     
     const ruleIndex = rules.findIndex(r => r.userTypes.includes(userType as any));

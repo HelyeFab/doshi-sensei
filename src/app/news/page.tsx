@@ -66,29 +66,37 @@ function ArticleCard({ article, onClick }: ArticleCardProps) {
     return 'bg-muted text-muted-foreground border border-border';
   };
 
+  // Generate a consistent random gradient based on article ID
+  const getRandomGradient = (id: string) => {
+    // Use article ID to generate consistent colors
+    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    const gradients = [
+      'from-purple-400 via-pink-500 to-red-500',
+      'from-green-400 via-blue-500 to-purple-500',
+      'from-yellow-400 via-red-500 to-pink-500',
+      'from-blue-400 via-purple-500 to-pink-500',
+      'from-indigo-400 via-purple-500 to-pink-500',
+      'from-green-400 via-teal-500 to-blue-500',
+      'from-orange-400 via-red-500 to-pink-500',
+      'from-cyan-400 via-blue-500 to-purple-500',
+      'from-rose-400 via-pink-500 to-purple-500',
+      'from-amber-400 via-orange-500 to-red-500'
+    ];
+    
+    return gradients[hash % gradients.length];
+  };
+
   return (
     <article
       className="bg-card rounded-lg p-6 border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer hover:shadow-lg group"
       onClick={() => onClick(article)}
     >
       <div className="flex items-start gap-4">
-        {/* Article Image */}
-        {article.imageUrl ? (
-          <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-muted group-hover:scale-105 transition-transform">
-            <img
-              src={article.imageUrl}
-              alt=""
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          </div>
-        ) : (
-          <div className="w-24 h-24 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-            <span className="text-3xl">📰</span>
-          </div>
-        )}
+        {/* Article Thumbnail with Gradient */}
+        <div className={`w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br ${getRandomGradient(article.id)} group-hover:scale-105 transition-transform relative flex items-center justify-center`}>
+          <span className="text-4xl drop-shadow-lg">📰</span>
+        </div>
 
         {/* Article Content */}
         <div className="flex-1 min-w-0">

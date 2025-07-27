@@ -75,7 +75,7 @@ export default function StrokeOrderModal({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", duration: 0.3 }}
-            className="fixed inset-x-4 top-[50%] translate-y-[-50%] mx-auto max-w-lg w-full bg-background rounded-2xl shadow-2xl z-50 overflow-hidden"
+            className="fixed inset-x-4 top-[50%] translate-y-[-50%] mx-auto max-w-full md:max-w-lg w-full bg-background rounded-2xl shadow-2xl z-50 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

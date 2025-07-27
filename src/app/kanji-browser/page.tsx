@@ -65,6 +65,7 @@ export default function KanjiBrowserPage() {
   const searchParams = useSearchParams();
   const strings = useStrings();
   const { track } = useAnalytics();
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
@@ -406,12 +407,55 @@ export default function KanjiBrowserPage() {
           }}
         />
 
-        {/* Header */}
-        <div className="mb-12 md:mb-24">
+        {/* Header with Introduction */}
+        <div className="mb-8">
+          {/* Kanji Icon */}
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+              <span className="text-2xl font-bold japanese-text text-primary">漢</span>
+            </div>
+          </div>
+
+          {/* Introduction Text */}
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Master Japanese Kanji Step by Step</h2>
+            <p className="text-muted-foreground mb-4">
+              Kanji are the building blocks of written Japanese. With over 2,000 characters in common use, learning kanji is a journey that requires patience and systematic study. Our browser organizes kanji by JLPT levels, from beginner (N5) to advanced (N1).
+            </p>
+            
+            {/* How to Use Dropdown */}
+            <div className="mt-4">
+              <button
+                onClick={() => setShowInstructions(!showInstructions)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span>How to use this tool</span>
+                <svg 
+                  className={`w-4 h-4 transition-transform ${showInstructions ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {showInstructions && (
+                <div className="mt-3 p-4 bg-muted/30 rounded-lg text-left max-w-2xl mx-auto">
+                  <p className="text-muted-foreground mb-3">
+                    <strong>How to use this tool:</strong> Click any kanji to see its meanings, readings, and stroke order. Use the purple corner checkbox to select up to 10 kanji for focused study sessions. Start with N5 level and gradually work your way up as you build confidence.
+                  </p>
+                  <p className="text-sm text-muted-foreground italic">
+                    💡 Pro tip: Focus on learning 5-10 new kanji per day. Quality over quantity leads to better retention!
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Study Buttons */}
           {studySelection.size > 0 && (
-            <div className="flex flex-row gap-2 flex-wrap justify-center mt-4">
+            <div className="flex flex-row gap-2 flex-wrap justify-center mb-4">
               <button
                 onClick={() => setShowStudyModal(true)}
                 className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
@@ -438,10 +482,6 @@ export default function KanjiBrowserPage() {
               )}
             </div>
           )}
-
-          <p className="text-muted-foreground text-center mt-2">
-            {strings.kanjiBrowser.browseKanjiByLevel}
-          </p>
         </div>
 
         {/* Search Bar */}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { navigationRules } from '@/lib/navigation/rules';
@@ -39,6 +39,11 @@ export function SmartNavigationLink({
   const router = useRouter();
   const navigation = useNavigation();
   
+  // Prefetch the route on mount and hover
+  useEffect(() => {
+    router.prefetch(href);
+  }, [href, router]);
+  
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     
@@ -76,6 +81,7 @@ export function SmartNavigationLink({
       href={href}
       onClick={handleClick}
       className={className}
+      onMouseEnter={() => router.prefetch(href)}
       {...props}
     >
       {children}

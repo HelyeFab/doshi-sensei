@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Kanji } from '@/types';
 import { KanjiTTSButton } from '@/components/ui/TTSButton';
+import StrokeOrderModal from './StrokeOrderModal';
 
 interface KanjiModalProps {
   kanji: Kanji;
@@ -23,6 +24,8 @@ export default function KanjiModal({
   isSelectedForStudy = false,
   onToggleStudy
 }: KanjiModalProps) {
+  const [showStudyDropdown, setShowStudyDropdown] = useState(false);
+  const [showStrokeOrder, setShowStrokeOrder] = useState(false);
   // Close modal on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -78,8 +81,22 @@ export default function KanjiModal({
         <div className="p-6">
           {/* Large Kanji Display */}
           <div className="text-center mb-6">
-            <div className="text-8xl font-medium text-card-foreground mb-2">
-              {kanji.kanji}
+            <div className="relative inline-block">
+              <div className="text-8xl font-medium text-card-foreground mb-2">
+                {kanji.kanji}
+              </div>
+              {/* Stroke Order Button */}
+              <button
+                onClick={() => setShowStrokeOrder(true)}
+                className="absolute -right-12 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors group"
+                title="View stroke order"
+              >
+                <svg className="w-6 h-6 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" 
+                  />
+                </svg>
+              </button>
             </div>
             <div className="flex items-center justify-center gap-2">
               <span className={`px-2 py-1 text-xs rounded border ${
@@ -159,62 +176,87 @@ export default function KanjiModal({
             </div>
           </div>
 
-          {/* Study Selection */}
-          {onToggleStudy && (
-            <div className="mb-6">
-              <button
-                onClick={onToggleStudy}
-                className={`w-full flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
-                  isSelectedForStudy
-                    ? 'bg-accent/10 border-accent text-accent-foreground'
-                    : 'bg-muted/50 border-border hover:bg-muted'
-                }`}
+          {/* Study & Save Options Dropdown */}
+          <div className="mb-6">
+            <button
+              onClick={() => setShowStudyDropdown(!showStudyDropdown)}
+              className="w-full flex items-center justify-between p-3 rounded-lg border border-border bg-muted/50 hover:bg-muted transition-all"
+            >
+              <span className="text-sm font-medium text-muted-foreground">Options</span>
+              <svg 
+                className={`w-4 h-4 text-muted-foreground transition-transform ${showStudyDropdown ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
-                    isSelectedForStudy
-                      ? 'bg-accent border-accent'
-                      : 'border-muted-foreground'
-                  }`}>
-                    {isSelectedForStudy && (
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {/* Dropdown Content */}
+            {showStudyDropdown && (
+              <div className="mt-2 p-3 bg-muted/30 rounded-lg border border-border space-y-2">
+                {/* Study Session Option */}
+                {onToggleStudy && (
+                  <button
+                    onClick={onToggleStudy}
+                    className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
+                      isSelectedForStudy
+                        ? 'bg-accent/10 text-accent-foreground'
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                        isSelectedForStudy
+                          ? 'bg-accent border-accent'
+                          : 'border-muted-foreground'
+                      }`}>
+                        {isSelectedForStudy && (
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-medium">Add to Study Session</div>
+                        <div className="text-xs text-muted-foreground">
+                          {isSelectedForStudy ? 'Selected for study' : 'Click to add to study session'}
+                        </div>
+                      </div>
+                    </div>
+                    <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
+                      />
+                    </svg>
+                  </button>
+                )}
+                
+                {/* Save to Lists Option */}
+                <button
+                  onClick={onSave}
+                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded border-2 border-muted-foreground flex items-center justify-center">
+                      <svg className="w-3 h-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
-                    )}
-                  </div>
-                  <div className="text-left">
-                    <div className="font-medium">Add to Study Session</div>
-                    <div className="text-sm text-muted-foreground">
-                      {isSelectedForStudy ? 'Selected for study' : 'Click to add to study session'}
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium">Save to Lists</div>
+                      <div className="text-xs text-muted-foreground">
+                        Save this kanji to your custom lists
+                      </div>
                     </div>
                   </div>
-                </div>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
-                  />
-                </svg>
-              </button>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <button
-              onClick={onSave}
-              className="flex-1 px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-            >
-              <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              Save to Lists
-            </button>
-            <button
-              onClick={onClose}
-              className="px-4 py-3 bg-muted text-muted-foreground hover:bg-muted/80 rounded-lg font-medium transition-colors"
-            >
-              Close
-            </button>
+                  <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -225,6 +267,14 @@ export default function KanjiModal({
           </div>
         </div>
       </div>
+
+      {/* Stroke Order Modal */}
+      <StrokeOrderModal
+        isOpen={showStrokeOrder}
+        onClose={() => setShowStrokeOrder(false)}
+        kanji={kanji.kanji}
+        meaning={kanji.meaning}
+      />
     </div>
   );
 }

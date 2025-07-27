@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { usePathname } from 'next/navigation';
@@ -29,7 +30,7 @@ interface NavItem {
  * 
  * NEVER modify the admin check logic without security review
  */
-export default function StunningBottomNavbar() {
+const StunningBottomNavbar = React.memo(() => {
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState<string>('');
   const [showIndicator, setShowIndicator] = useState(false);
@@ -38,7 +39,8 @@ export default function StunningBottomNavbar() {
   // STRICT SECURITY CHECK - Only show admin icon if email matches exactly
   const isAdmin = user?.email === ADMIN_EMAIL;
 
-  const baseNavItems: NavItem[] = [
+  // Memoize base navigation items
+  const baseNavItems = useMemo<NavItem[]>(() => [
     {
       id: 'home',
       label: 'Home',
@@ -67,20 +69,25 @@ export default function StunningBottomNavbar() {
       icon: '/flat-icons/ui/navbar/books.svg',
       activeIcon: '/flat-icons/ui/navbar/books.svg'
     }
-  ];
+  ], []);
 
-  // ONLY add admin item if user is verified admin
-  const navItems = isAdmin ? [
-    ...baseNavItems.slice(0, 3), // home, practice, games
-    {
-      id: 'admin',
-      label: 'Admin',
-      href: '/admin',
-      icon: '/flat-icons/ui/navbar/dashboard.svg',
-      activeIcon: '/flat-icons/ui/navbar/dashboard.svg'
-    },
-    baseNavItems[3] // read
-  ] : baseNavItems;
+  // Memoize nav items array to prevent recreation on every render
+  const navItems = useMemo(() => {
+    if (isAdmin) {
+      return [
+        ...baseNavItems.slice(0, 3), // home, practice, games
+        {
+          id: 'admin',
+          label: 'Admin',
+          href: '/admin',
+          icon: '/flat-icons/ui/navbar/dashboard.svg',
+          activeIcon: '/flat-icons/ui/navbar/dashboard.svg'
+        },
+        baseNavItems[3] // read
+      ];
+    }
+    return baseNavItems;
+  }, [isAdmin, baseNavItems]);
 
   useEffect(() => {
     const active = navItems.find(item => {
@@ -153,4 +160,8 @@ export default function StunningBottomNavbar() {
       </div>
     </nav>
   );
-}
+});
+
+StunningBottomNavbar.displayName = 'StunningBottomNavbar';
+
+export default StunningBottomNavbar;

@@ -219,7 +219,7 @@ export default function Home() {
       {/* Desktop margin wrapper */}
       <div className="md:mx-16 lg:mx-32 xl:mx-48 2xl:mx-64">
         {/* Welcome Section */}
-        <header className="px-4 pt-6 pb-4" role="banner">
+        <header className="px-4 pt-8 pb-6" role="banner">
         <div className="flex items-center gap-3">
           {/* User Avatar */}
           <UserAvatar size="md" />
@@ -253,7 +253,7 @@ export default function Home() {
       </header>
 
       {/* Today's Date Section */}
-      <section className="px-4 pb-4">
+      <section className="px-4 pb-6">
         <h2 className="text-lg font-medium text-foreground mb-2">
           {todayDate ? `Today, ${todayDate}` : 'Today'}
         </h2>
@@ -301,10 +301,7 @@ export default function Home() {
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
-                      >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -329,19 +326,16 @@ export default function Home() {
             <h3 className="text-lg font-bold text-foreground mb-3">Core Learning</h3>
             <div className="space-y-3">
               {[
+                { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
+                { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
                 { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
                 { title: strings.home.featureCards.textbookVocabulary.title, icon: strings.home.featureCards.textbookVocabulary.icon, href: '/tools/textbook-vocabulary', description: strings.home.featureCards.textbookVocabulary.description },
-                { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description },
-                { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
-                { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description }
+                { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description }
               ].map((card) => (
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
-                      >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -373,10 +367,7 @@ export default function Home() {
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
-                      >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -408,10 +399,7 @@ export default function Home() {
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
-                      >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                         {card.icon.startsWith('/') ? (
                           <Image
                             src={card.icon}
@@ -452,10 +440,7 @@ export default function Home() {
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
-                      >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
@@ -486,10 +471,7 @@ export default function Home() {
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"
-                        className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10"
-                      >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                         <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">

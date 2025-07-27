@@ -26,10 +26,10 @@ export function NavigationBar({
   showBack = false,
 }: NavigationBarProps) {
   return (
-    <div className="px-4 pb-4 pt-0 md:pt-2">
+    <div className="px-4 pt-4 pb-4" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
       <div className="max-w-6xl mx-auto">
         {/* Progression Dots */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-6">
           <div className="flex space-x-2">
             {Array.from({ length: totalScreens }, (_, index) => (
               <div
@@ -53,7 +53,7 @@ export function NavigationBar({
             {showBack && onBack && (
               <button
                 onClick={onBack}
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-white/70 hover:text-white transition-colors text-base font-medium px-4 py-2"
               >
                 Back
               </button>
@@ -65,7 +65,7 @@ export function NavigationBar({
             {showSkip && !isLastScreen && (
               <button
                 onClick={onSkip}
-                className="text-white/50 hover:text-white/70 transition-colors"
+                className="text-white/50 hover:text-white/70 transition-colors text-base"
               >
                 Skip
               </button>
@@ -77,7 +77,7 @@ export function NavigationBar({
             {showNext && !isLastScreen && (
               <button
                 onClick={onNext}
-                className="text-white hover:text-white/80 transition-colors"
+                className="text-white hover:text-white/80 transition-colors text-base font-medium px-4 py-2"
               >
                 Next
               </button>

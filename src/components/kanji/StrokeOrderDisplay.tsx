@@ -237,7 +237,7 @@ export default function StrokeOrderDisplay({
         
         {/* Stroke number indicator */}
         <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
-          {currentStroke} / {strokes.length}
+          {Math.min(currentStroke + 1, strokes.length)} / {strokes.length}
         </div>
       </div>
       

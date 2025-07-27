@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -20,7 +20,7 @@ interface NavItem {
   count?: number;
 }
 
-export default function DesktopNavMenu() {
+const DesktopNavMenu = React.memo(() => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
@@ -31,9 +31,8 @@ export default function DesktopNavMenu() {
   const { canInstall, isInstalled, isInstalling, install } = usePWAInstall();
   const { stats } = useStats();
 
-
-  // Create menu items matching mobile menu
-  const menuItems = [
+  // Memoize menu items to prevent recreation on every render
+  const menuItems = useMemo(() => [
     { label: strings.nav.home || 'Home', icon: '🏠', href: '/' },
     ...(isAdmin ? [{ label: strings.nav.adminDashboard || 'Admin Dashboard', icon: '🛡️', href: '/admin' }] : []),
     { label: strings.nav.practice || 'Practice', icon: '📚', href: '/practice' },
@@ -48,7 +47,7 @@ export default function DesktopNavMenu() {
     { label: strings.nav.games || 'Games', icon: '🎮', href: '/games' },
     { label: strings.nav.resources || 'Resources', icon: '🎌', href: '/resources' },
     { label: strings.nav.stories || 'Stories', icon: '/flat-icons/root-icons/story.svg', href: '/stories' },
-  ];
+  ], [strings.nav, isAdmin]);
 
   return (
     <div className="hidden md:block fixed top-6 right-6 z-50">
@@ -146,4 +145,8 @@ export default function DesktopNavMenu() {
 
     </div>
   );
-}
+});
+
+DesktopNavMenu.displayName = 'DesktopNavMenu';
+
+export default DesktopNavMenu;

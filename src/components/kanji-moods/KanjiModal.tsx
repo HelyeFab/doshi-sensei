@@ -8,6 +8,7 @@ import { Volume2, Bookmark } from 'lucide-react';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
 import { JapaneseWord } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
+import SlideUpModal from '@/components/SlideUpModal';
 
 interface KanjiModalProps {
   kanji: KanjiItem | null;
@@ -34,25 +35,6 @@ export default function KanjiModal({
   const { speak: speakSentence, isLoading: isSentenceTTSLoading, isPlaying: isSentencePlaying } = useTTS();
   const { user } = useAuth();
 
-  // Handle escape key
-  const handleEscape = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
-  }, [onClose]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, handleEscape]);
-
   // Process examples with furigana when needed
   useEffect(() => {
     if (!kanji || !showFurigana) {
@@ -70,7 +52,7 @@ export default function KanjiModal({
     processExamples();
   }, [kanji, showFurigana]);
 
-  if (!isOpen || !kanji) return null;
+  if (!kanji) return null;
 
   // Strip ruby tags from examples
   const stripRubyTags = (text: string): string => {
@@ -82,46 +64,20 @@ export default function KanjiModal({
       .replace(/<\/rb>/g, '');
   };
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   const handleToggleLearned = () => {
     onToggleLearned(kanji.char);
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn"
-      onClick={handleBackdropClick}
-    >
-      {/* Backdrop with gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-600/30 via-gray-700/40 to-gray-800/50 dark:from-black/50 dark:via-black/60 dark:to-black/70 backdrop-blur-sm" />
-
-      {/* Modal */}
-      <div className="relative w-full max-w-lg bg-card rounded-2xl shadow-2xl animate-slideUp">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 transition-colors"
-          aria-label="Close modal"
-        >
-          <svg
-            className="w-5 h-5 text-muted-foreground"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-
-        <div className="p-8">
+    <>
+      <SlideUpModal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Kanji Details"
+        height="full"
+        showHandle={true}
+      >
+        <div className="p-6">
           {/* Kanji Character with TTS */}
           <div className="text-center mb-8">
             <div className="relative inline-block">
@@ -338,7 +294,7 @@ export default function KanjiModal({
             {isLearned ? '✓ Learned' : 'Mark as Learned'}
           </button>
         </div>
-      </div>
+      </SlideUpModal>
 
       {/* Save Sentence Modal */}
       {showSaveModal && sentenceToSave && (
@@ -372,6 +328,6 @@ export default function KanjiModal({
           itemType="sentence"
         />
       )}
-    </div>
+    </>
   );
 }

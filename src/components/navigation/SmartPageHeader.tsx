@@ -47,8 +47,13 @@ export function SmartPageHeader({
         {canGoBack && (
           <button
             onClick={() => {
-              navigation.pop();
-              router.push(backUrl);
+              if (fallbackUrl) {
+                // If a custom back URL is provided, just navigate to it
+                router.push(backUrl);
+              } else {
+                // Use browser's native back functionality
+                router.back();
+              }
             }}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
             aria-label={`Go back to ${backTitle}`}

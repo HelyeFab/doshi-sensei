@@ -12,6 +12,7 @@ interface SlideUpModalProps {
   showHandle?: boolean;
   closeOnOutsideClick?: boolean;
   className?: string;
+  useNewWrapper?: boolean;
 }
 
 export default function SlideUpModal({
@@ -33,10 +34,8 @@ export default function SlideUpModal({
 
   useEffect(() => {
     if (isOpen) {
-      // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
     } else {
-      // Restore body scroll when modal is closed
       document.body.style.overflow = '';
     }
 
@@ -45,66 +44,11 @@ export default function SlideUpModal({
     };
   }, [isOpen]);
 
-  // Handle clicks outside the modal
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (closeOnOutsideClick && e.target === e.currentTarget) {
       onClose();
     }
   };
-
-  // Handle swipe down to close on mobile
-  useEffect(() => {
-    if (!isOpen || !modalRef.current) return;
-
-    let startY = 0;
-    let currentY = 0;
-    let isDragging = false;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      const target = e.target as HTMLElement;
-      // Only allow dragging from the handle or header area
-      if (target.closest('.modal-handle') || target.closest('.modal-header')) {
-        startY = e.touches[0].clientY;
-        isDragging = true;
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isDragging) return;
-      currentY = e.touches[0].clientY;
-      const deltaY = currentY - startY;
-      
-      if (deltaY > 0 && modalRef.current) {
-        modalRef.current.style.transform = `translateY(${deltaY}px)`;
-      }
-    };
-
-    const handleTouchEnd = () => {
-      if (!isDragging || !modalRef.current) return;
-      
-      const deltaY = currentY - startY;
-      if (deltaY > 100) {
-        onClose();
-      } else {
-        modalRef.current.style.transform = 'translateY(0)';
-      }
-      
-      isDragging = false;
-      startY = 0;
-      currentY = 0;
-    };
-
-    const modal = modalRef.current;
-    modal.addEventListener('touchstart', handleTouchStart);
-    modal.addEventListener('touchmove', handleTouchMove);
-    modal.addEventListener('touchend', handleTouchEnd);
-
-    return () => {
-      modal.removeEventListener('touchstart', handleTouchStart);
-      modal.removeEventListener('touchmove', handleTouchMove);
-      modal.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [isOpen, onClose]);
 
   if (!mounted) return null;
 
@@ -112,6 +56,10 @@ export default function SlideUpModal({
     <div
       className={`fixed inset-0 z-[9999] ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
       onClick={handleBackdropClick}
+      style={{
+        padding: '0 !important',
+        margin: '0 !important',
+      }}
     >
       {/* Backdrop */}
       <div
@@ -165,16 +113,8 @@ export default function SlideUpModal({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain min-h-0" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <div className="p-4 pb-safe">
-            {children || (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">
-                  Modal content goes here
-                </p>
-              </div>
-            )}
-          </div>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
+          {children}
         </div>
       </div>
     </div>

@@ -242,9 +242,15 @@ class AnalyticsTracker {
 
     try {
       await this.syncToFirebase(events);
-      console.log(`📊 [Analytics] Flushed ${events.length} events to Firebase`);
+      // Only log Firebase sync for authenticated users
+      if (this.userId && this.userType !== 'guest') {
+        console.log(`📊 [Analytics] Flushed ${events.length} events to Firebase`);
+      }
     } catch (error) {
-      console.error('📊 [Analytics] Failed to sync events:', error);
+      // Only log errors for authenticated users
+      if (this.userId && this.userType !== 'guest') {
+        console.error('📊 [Analytics] Failed to sync events:', error);
+      }
       // Re-queue events on failure (with limit)
       if (this.eventQueue.length < this.MAX_QUEUE_SIZE) {
         this.eventQueue = [...events, ...this.eventQueue].slice(0, this.MAX_QUEUE_SIZE);
@@ -256,6 +262,12 @@ class AnalyticsTracker {
    * Sync aggregated data to Firebase
    */
   private async syncToFirebase(events: AnalyticsEvent[]): Promise<void> {
+    // Skip Firebase sync for guest users
+    if (!this.userId || this.userType === 'guest') {
+      console.log('📊 [Analytics] Skipping Firebase sync for guest user');
+      return;
+    }
+    
     if (!db) {
       console.warn('📊 [Analytics] Firebase not initialized');
       return;

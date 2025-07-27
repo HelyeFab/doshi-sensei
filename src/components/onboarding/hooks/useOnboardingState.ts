@@ -276,6 +276,6 @@ export function useOnboardingState() {
 
 // Helper function to get screen names
 function getScreenName(index: number): string {
-  const screens = ['welcome', 'conjugation', 'practice', 'youtube_shadowing', 'textbook_vocabulary', 'success'];
+  const screens = ['welcome', 'overview', 'conjugation', 'youtube_shadowing', 'textbook_vocabulary', 'success'];
   return screens[index] || 'unknown';
 }

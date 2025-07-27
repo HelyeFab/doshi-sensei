@@ -76,31 +76,6 @@ export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
             </p>
           </div>
 
-          <div className="bg-white/10 border border-white/20 rounded-lg p-6 space-y-3 max-w-2xl md:max-w-md mx-auto">
-            <h3 className="font-semibold text-white">{tutorial.success.checklistHeader}</h3>
-            <div className="grid grid-cols-1 gap-2 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span className="text-white/90">{tutorial.success.checklistItems.vocabulary}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span className="text-white/90">{tutorial.success.checklistItems.conjugations}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span className="text-white/90">{tutorial.success.checklistItems.games}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span className="text-white/90">{tutorial.success.checklistItems.reading}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span className="text-white/90">{tutorial.success.checklistItems.tracking}</span>
-              </div>
-            </div>
-          </div>
 
           {/* Settings button removed to avoid duplication with navigation bar */}
         </div>
@@ -215,6 +190,18 @@ export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
           <p className="text-xs text-white/70">
             {tutorial.success.settingsSubtext}
           </p>
+        </div>
+      )}
+
+      {/* Finish Button - Only shown in settings demo */}
+      {settingsShown && (
+        <div className="text-center pt-4">
+          <button
+            onClick={handleFinish}
+            className="px-8 py-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all transform hover:scale-105 text-lg"
+          >
+            🏠 Go to Homepage
+          </button>
         </div>
       )}
     </div>

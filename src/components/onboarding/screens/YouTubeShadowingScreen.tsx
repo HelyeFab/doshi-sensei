@@ -55,19 +55,7 @@ export function YouTubeShadowingScreen({ onNext }: YouTubeShadowingScreenProps) 
             </div>
           </div>
         </div>
-        
-        <p className="text-sm text-white/70 italic">
-          Premium users get 10 videos per day!
-        </p>
       </div>
-
-      {/* CTA */}
-      <button
-        onClick={onNext}
-        className="px-8 py-4 bg-white text-violet-600 rounded-lg font-semibold hover:bg-white/90 transition-all transform hover:scale-105"
-      >
-        Continue
-      </button>
     </div>
   );
 }

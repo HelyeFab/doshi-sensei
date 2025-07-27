@@ -8,8 +8,8 @@ import { NavigationBar } from './components/NavigationBar';
 
 // Import all screens
 import { WelcomeScreen } from './screens/WelcomeScreen';
+import { OverviewScreen } from './screens/OverviewScreen';
 import { ConjugationScreen } from './screens/ConjugationScreen';
-import { PracticeScreen } from './screens/PracticeScreen';
 import { YouTubeShadowingScreen } from './screens/YouTubeShadowingScreen';
 import { TextbookVocabularyScreen } from './screens/TextbookVocabularyScreen';
 import { SuccessScreen } from './screens/SuccessScreen';
@@ -111,8 +111,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   const screens = [
     <WelcomeScreen key="welcome" onNext={handleNext} />,
+    <OverviewScreen key="overview" onNext={handleNext} />,
     <ConjugationScreen key="conjugation" onNext={handleNext} />,
-    <PracticeScreen key="practice" onNext={handleNext} />,
     <YouTubeShadowingScreen key="youtube" onNext={handleNext} />,
     <TextbookVocabularyScreen key="textbook" onNext={handleNext} />,
     <SuccessScreen key="success" onComplete={handleComplete} onBack={handlePrevious} />,
@@ -175,12 +175,14 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           >
             {/* Content Area - Centered on desktop */}
             <div className="w-full h-full flex flex-col justify-center items-center px-4 md:px-12 overflow-y-auto">
-              <div className="w-full max-w-3xl mx-auto py-8 flex-1 flex flex-col justify-center">
-                {screens[state.currentScreen]}
+              <div className="w-full max-w-3xl mx-auto flex-1 flex flex-col justify-center">
+                <div className="py-4">
+                  {screens[state.currentScreen]}
+                </div>
               </div>
               
               {/* Navigation Bar */}
-              <div className="w-full max-w-3xl mx-auto">
+              <div className="w-full max-w-3xl mx-auto pb-4">
                 <NavigationBar
                   currentScreen={state.currentScreen}
                   totalScreens={screens.length}

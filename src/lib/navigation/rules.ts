@@ -7,7 +7,7 @@ export const defaultNavigationRules: NavigationRule[] = [
     pattern: /^\/games\/.*/,
     preserveState: true,
     returnBehavior: 'restore-state',
-    allowedDestinations: ['/', '/vocabulary', '/practice/lists', '/tools/*', '/practice/*', '/read', '/admin', '/games', '/account', '/settings'],
+    allowedDestinations: ['/', '/vocabulary', '/practice/lists', '/tools/*', '/practice/*', '/read', '/admin', '/games', '/account', '/settings', '/kanji-browser'],
     stateSerializer: (state) => {
       // Only serialize essential game state
       if (!state) return null;

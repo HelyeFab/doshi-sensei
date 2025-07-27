@@ -184,7 +184,7 @@ export default function StrokeOrderPracticePage() {
                 Learn to write kanji correctly by practicing stroke order.
                 Click strokes in the right sequence to build muscle memory.
               </p>
-              {(remaining !== null && remaining !== undefined) || isPremium ? (
+              {((remaining !== null && remaining !== undefined) || isPremium) && (
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
                   <span className="text-sm font-medium text-foreground">
                     {isPremium ? (

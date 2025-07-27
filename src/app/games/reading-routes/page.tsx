@@ -165,7 +165,7 @@ export default function ReadingRoutesPage() {
                   <p className="text-lg text-muted-foreground leading-relaxed mb-6 max-w-2xl mx-auto">
                     Navigate through interactive reading challenges to master when to use <span className="font-semibold text-pink-600">on'yomi</span> vs <span className="font-semibold text-blue-600">kun'yomi</span> readings in different contexts.
                   </p>
-                  {(remaining !== null && remaining !== undefined) || isPremium ? (
+                  {((remaining !== null && remaining !== undefined) || isPremium) && (
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                       <span className="text-sm font-medium text-foreground">
                         {isPremium ? (

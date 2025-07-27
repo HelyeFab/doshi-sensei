@@ -1025,6 +1025,15 @@ class AchievementsManager {
     }
   }
 
+  static async clearUnlockedAchievements(): Promise<void> {
+    await performDBOperation('unlockedAchievements', 'readwrite', (store) =>
+      store.clear()
+    );
+    await performDBOperation('achievementProgress', 'readwrite', (store) =>
+      store.clear()
+    );
+  }
+
   static async clearAllAchievements(): Promise<void> {
     await performDBOperation('unlockedAchievements', 'readwrite', (store) =>
       store.clear()

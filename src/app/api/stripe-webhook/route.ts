@@ -144,6 +144,19 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     return;
   }
 
+  // Log subscription event for user history
+  await logUserSubscriptionEvent(firebaseUID, {
+    type: subscription.status === 'active' ? 'subscription_started' : 'subscription_updated',
+    status: subscription.status,
+    plan: subscription.items.data[0]?.price.id === process.env.NEXT_PUBLIC_STRIPE_YEARLY_PRICE_ID ? 'yearly' : 'monthly',
+    timestamp: new Date(),
+    details: {
+      subscriptionId: subscription.id,
+      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      cancelAtPeriodEnd: subscription.cancel_at_period_end
+    }
+  });
+
   // Determine plan from price ID
   const priceId = subscription.items.data[0]?.price.id;
   let plan: 'monthly' | 'yearly' = 'monthly';
@@ -245,6 +258,18 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     return;
   }
 
+  // Log cancellation event
+  await logUserSubscriptionEvent(firebaseUID, {
+    type: 'subscription_canceled',
+    status: 'canceled',
+    plan: 'free',
+    timestamp: new Date(),
+    details: {
+      subscriptionId: subscription.id,
+      canceledAt: new Date()
+    }
+  });
+
   // Get free user entitlements
   const rules = await dynamicRules.getRules();
   const freeRule = rules.find(r => r.userTypes.includes('free'));
@@ -314,10 +339,35 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  if ((invoice as any).subscription) {
+  if ((invoice as any).subscription && invoice.customer_email) {
     // Subscription status will be updated via subscription.updated event
     console.log('Payment failed for subscription:', (invoice as any).subscription);
-    // You could send an email notification here
+    
+    // Try to find the user by their stripe customer ID
+    const customerId = invoice.customer as string;
+    if (customerId) {
+      try {
+        const customer = await stripe.customers.retrieve(customerId);
+        if (customer && !customer.deleted && 'metadata' in customer) {
+          const firebaseUID = customer.metadata?.firebaseUID;
+          if (firebaseUID) {
+            await logUserSubscriptionEvent(firebaseUID, {
+              type: 'payment_failed',
+              status: 'payment_failed',
+              plan: 'current',
+              timestamp: new Date(),
+              details: {
+                invoiceId: invoice.id,
+                amountDue: invoice.amount_due / 100, // Convert from cents
+                currency: invoice.currency
+              }
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error retrieving customer for payment failure:', error);
+      }
+    }
   }
 }
 
@@ -337,5 +387,24 @@ async function logWebhookEvent(event: Stripe.Event, status: 'success' | 'error',
     });
   } catch (error) {
     console.error('Error logging webhook event:', error);
+  }
+}
+
+async function logUserSubscriptionEvent(userId: string, event: {
+  type: 'subscription_started' | 'subscription_updated' | 'subscription_canceled' | 'payment_failed';
+  status: string;
+  plan: string;
+  timestamp: Date;
+  details?: any;
+}) {
+  try {
+    // Create a user-friendly subscription event log
+    const userSubscriptionRef = collection(db, 'users', userId, 'subscription_history');
+    await addDoc(userSubscriptionRef, event);
+    
+    console.log(`Logged subscription event for user ${userId}:`, event.type);
+  } catch (error) {
+    console.error('Error logging user subscription event:', error);
+    // Don't throw - this is not critical to the webhook processing
   }
 }

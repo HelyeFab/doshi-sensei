@@ -403,6 +403,37 @@ export class EnhancedStorageManager {
     }
   }
 
+  // Clear user stats
+  static async clearUserStats(): Promise<void> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { UserStatsManager } = await import('./indexedDB');
+      await UserStatsManager.clearUserStats();
+    } else {
+      // Clear from localStorage
+      localStorage.removeItem('doshi_user_stats');
+    }
+  }
+
+  // Clear unlocked achievements
+  static async clearUnlockedAchievements(): Promise<void> {
+    if (this.useIndexedDB === null) {
+      await this.initialize();
+    }
+
+    if (this.useIndexedDB) {
+      const { AchievementsManager } = await import('./indexedDB');
+      await AchievementsManager.clearUnlockedAchievements();
+    } else {
+      // Clear from localStorage
+      localStorage.removeItem('doshi_unlocked_achievements');
+      localStorage.removeItem('doshi_achievement_progress');
+    }
+  }
+
   // Clear all data
   static async clearAllData(): Promise<void> {
     if (this.useIndexedDB === null) {

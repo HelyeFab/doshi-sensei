@@ -7,6 +7,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useFeature } from '@/hooks/useFeature';
 import { useNotification } from '@/contexts/NotificationContext';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
+import SubscriptionHistory from '@/components/SubscriptionHistory';
 import AuthErrorModal from '@/components/AuthErrorModal';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
 import { ADMIN_EMAIL } from '@/types/admin';
@@ -402,6 +403,9 @@ export default function AccountPage() {
               ) : (
                 <SubscriptionPlans />
               )}
+
+              {/* Subscription History */}
+              {isPremium && <SubscriptionHistory />}
 
               {/* Account Actions */}
               <div className="bg-card border border-border rounded-lg p-4 space-y-3">

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverview } from '@/components/admin/StatsOverview';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
+import SubscriptionAnalytics from '@/components/admin/SubscriptionAnalytics';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
@@ -118,6 +119,9 @@ export default function AdminDashboard() {
 
         {/* Article Monitoring Dashboard */}
         <ArticleMonitoringDashboard />
+
+        {/* Subscription Analytics */}
+        <SubscriptionAnalytics />
 
         {/* Quick actions */}
         <div>

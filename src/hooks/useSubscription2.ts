@@ -106,6 +106,11 @@ export function useSubscription2(): UseSubscription2Return {
         }),
       });
       
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+      
       const { sessionUrl } = await response.json();
       
       if (sessionUrl) {

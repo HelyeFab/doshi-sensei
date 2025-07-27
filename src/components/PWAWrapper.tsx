@@ -136,11 +136,25 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
         clearTimeout(initTimeout);
         // Always set ready
         setIsReady(true);
+        
+        // Fix focus issues after PWA initialization
+        setTimeout(() => {
+          // Force document to be interactive
+          if (document.body) {
+            document.body.focus();
+            // Dispatch a click event to ensure the app is interactive
+            document.body.dispatchEvent(new MouseEvent('click', {
+              view: window,
+              bubbles: true,
+              cancelable: true
+            }));
+          }
+        }, 100);
       }
     };
 
     if (isPWALaunch()) {
-      setShowSplashScreen(true);
+      setShowSplashScreen(false); // Disable custom splash screen
       // Mark that we've shown the splash screen
       sessionStorage.setItem('doshi_splash_shown', 'true');
 

@@ -71,9 +71,45 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ sessionUrl: session.url });
   } catch (error) {
     console.error('Error creating checkout session:', error);
+    
+    // Provide more specific error messages based on Stripe error types
+    let errorMessage = 'Failed to create checkout session';
+    let statusCode = 500;
+    
+    if (error instanceof Stripe.errors.StripeError) {
+      switch (error.type) {
+        case 'StripeCardError':
+          errorMessage = 'Card error: ' + error.message;
+          statusCode = 400;
+          break;
+        case 'StripeRateLimitError':
+          errorMessage = 'Too many requests. Please try again in a few minutes.';
+          statusCode = 429;
+          break;
+        case 'StripeInvalidRequestError':
+          errorMessage = 'Invalid request. Please check your information and try again.';
+          statusCode = 400;
+          break;
+        case 'StripeAPIError':
+          errorMessage = 'Payment service temporarily unavailable. Please try again later.';
+          statusCode = 503;
+          break;
+        case 'StripeConnectionError':
+          errorMessage = 'Network error. Please check your connection and try again.';
+          statusCode = 503;
+          break;
+        case 'StripeAuthenticationError':
+          errorMessage = 'Authentication error. Please contact support.';
+          statusCode = 401;
+          break;
+        default:
+          errorMessage = error.message || 'An unexpected error occurred';
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
+      { error: errorMessage },
+      { status: statusCode }
     );
   }
 }

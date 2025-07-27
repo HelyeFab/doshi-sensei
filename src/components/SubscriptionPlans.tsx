@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useFeature } from '@/hooks/useFeature';
 import { useNotification } from '@/contexts/NotificationContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
 import { useStrings } from '@/contexts/LanguageContext';
 
 export default function SubscriptionPlans() {
   const strings = useStrings();
+  const { user } = useAuth();
   const { subscription, isLoading, createCheckoutSession, cancelSubscription } = useSubscription2();
   const { feature: drillFeature } = useFeature('drill_practice');
   const { feature: listFeature } = useFeature('word_lists');
@@ -27,11 +29,55 @@ export default function SubscriptionPlans() {
       await createCheckoutSession(priceId);
     } catch (error) {
       console.error('Error upgrading:', error);
+      
+      // Use specific error message if available
+      let errorMessage = strings.subscriptions.upgradeFailedMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       showNotification({
         title: strings.subscriptions.upgradeFailed,
-        message: strings.subscriptions.upgradeFailedMessage,
+        message: errorMessage,
         type: 'error'
       });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleManageBilling = async () => {
+    if (!user) {
+      showNotification(strings.errors.notLoggedIn, 'error');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create billing portal session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error creating billing portal session:', error);
+      showNotification(
+        error instanceof Error ? error.message : 'Failed to open billing portal',
+        'error'
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -100,13 +146,22 @@ export default function SubscriptionPlans() {
 
         {currentPlan !== 'free' && subscription?.stripeSubscriptionId && (
           <div className="mt-4 pt-4 border-t border-border">
-            <button
-              onClick={handleCancel}
-              disabled={isProcessing}
-              className="px-4 py-2 text-destructive border border-destructive rounded-lg hover:bg-destructive/10 transition-colors disabled:opacity-50"
-            >
-              {isProcessing ? strings.subscriptions.processing : strings.subscriptions.cancelSubscription}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleManageBilling}
+                disabled={isProcessing}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+              >
+                Manage Billing
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={isProcessing}
+                className="px-4 py-2 text-destructive border border-destructive rounded-lg hover:bg-destructive/10 transition-colors disabled:opacity-50"
+              >
+                {isProcessing ? strings.subscriptions.processing : strings.subscriptions.cancelSubscription}
+              </button>
+            </div>
           </div>
         )}
       </div>

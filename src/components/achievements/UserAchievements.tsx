@@ -7,6 +7,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { useAchievements } from '@/hooks/useAchievements';
 import { Achievement } from '@/lib/achievements/types';
 import { AchievementCircles } from './AchievementCircles';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DisplayAchievement {
   id: string;
@@ -22,6 +23,7 @@ interface DisplayAchievement {
 
 export default function UserAchievements() {
   const strings = useStrings();
+  const { user, loading: authLoading } = useAuth();
   const {
     achievements,
     userStats,
@@ -33,14 +35,20 @@ export default function UserAchievements() {
 
   const [displayAchievements, setDisplayAchievements] = useState<DisplayAchievement[]>([]);
 
-  // Update daily streak on component mount
+  // Update daily streak on component mount only if authenticated
   useEffect(() => {
-    updateDailyStreak();
-  }, [updateDailyStreak]);
+    if (user) {
+      updateDailyStreak();
+    }
+  }, [user, updateDailyStreak]);
 
   // Process achievements for display
   useEffect(() => {
-    if (!achievements.length || !userStats) return;
+    // Only show achievements for authenticated users
+    if (!user || !achievements.length || !userStats) {
+      setDisplayAchievements([]);
+      return;
+    }
 
     // Get a selection of achievements to display (prioritize current progress)
     const achievementsToShow = achievements
@@ -78,7 +86,12 @@ export default function UserAchievements() {
       });
 
     setDisplayAchievements(achievementsToShow);
-  }, [achievements, userStats, getAchievementProgress, isAchievementUnlocked]);
+  }, [user, achievements, userStats, getAchievementProgress, isAchievementUnlocked]);
+
+  // Don't show anything if not authenticated
+  if (!user || authLoading) {
+    return null;
+  }
 
   // Show loading state
   if (isLoading) {

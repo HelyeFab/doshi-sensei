@@ -51,7 +51,14 @@ export class AchievementManager {
           this.subscriptionStatus = 'inactive';
         }
       } else {
+        // User logged out - clear cached data
         this.subscriptionStatus = null;
+        this.cache = null;
+        this.lastLoaded = 0;
+        this.weekendDaysStudied.clear();
+        
+        // Clear achievement data from storage
+        await this.clearLocalAchievementData();
       }
     });
   }
@@ -793,5 +800,29 @@ export class AchievementManager {
       unlockedCount: unlocked.length,
       unlockedIds: unlocked.map(u => u.achievementId)
     });
+  }
+
+  /**
+   * Clear all local achievement data (called on logout)
+   */
+  private static async clearLocalAchievementData(): Promise<void> {
+    try {
+      console.log('[AchievementManager] Clearing local achievement data due to logout');
+      
+      // Clear from IndexedDB
+      await EnhancedStorageManager.clearUserStats();
+      await EnhancedStorageManager.clearUnlockedAchievements();
+      
+      // Clear weekend tracking from localStorage
+      localStorage.removeItem('doshi_weekend_days_studied');
+      
+      // Clear any other achievement-related localStorage items
+      const keysToRemove = ['achievement_last_checked', 'achievement_streak_date'];
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      console.log('[AchievementManager] Local achievement data cleared');
+    } catch (error) {
+      console.error('[AchievementManager] Error clearing local achievement data:', error);
+    }
   }
 }

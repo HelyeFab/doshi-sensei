@@ -1,0 +1,5 @@
+# Redirect any Pages Router API calls to App Router
+/api/subscribe  /api/not-found  404
+
+# Catch-all for other API routes that might be missing
+/pages/api/*  /api/not-found  404

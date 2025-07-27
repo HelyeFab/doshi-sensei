@@ -376,7 +376,7 @@ export const DEFAULT_ACHIEVEMENTS: Achievement[] = [
     conditionType: 'simple',
     conditionField: 'currentStreak',
     conditionOperator: '>=',
-    conditionValue: 1,
+    conditionValue: 1, // Base condition for multi-level achievements
     isMultiLevel: true,
     levels: [
       {

@@ -105,7 +105,23 @@ export function useAchievements() {
     }
 
     const current = userStats[achievement.conditionField];
-    const target = achievement.conditionValue;
+    let target = achievement.conditionValue;
+    
+    // Handle multi-level achievements
+    if (achievement.isMultiLevel && achievement.levels) {
+      // Find the current level the user is working towards
+      const currentLevel = achievement.levels.find(level => current < level.targetValue);
+      
+      if (currentLevel) {
+        // User is working towards this level
+        target = currentLevel.targetValue;
+      } else {
+        // User has completed all levels, use the highest level target
+        const maxLevel = achievement.levels[achievement.levels.length - 1];
+        target = maxLevel.targetValue;
+      }
+    }
+    
     const percentage = Math.min((current / target) * 100, 100);
 
     return { current, target, percentage };

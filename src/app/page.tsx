@@ -216,8 +216,10 @@ export default function Home() {
         }}
       />
 
-      {/* Welcome Section */}
-      <header className="px-4 pt-6 pb-4" role="banner">
+      {/* Desktop margin wrapper */}
+      <div className="md:mx-8 lg:mx-12 xl:mx-16">
+        {/* Welcome Section */}
+        <header className="px-4 pt-6 pb-4" role="banner">
         <div className="flex items-center gap-3">
           {/* User Avatar */}
           <UserAvatar size="md" />
@@ -505,6 +507,7 @@ export default function Home() {
           </section>
         </div>
       </div>
+      </div>{/* End of desktop margin wrapper */}
 
     </div>
   );

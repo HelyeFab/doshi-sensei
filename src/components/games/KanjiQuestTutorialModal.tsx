@@ -17,7 +17,7 @@ export default function KanjiQuestTutorialModal({ isOpen, onClose, onStart }: Ka
       height="90%"
       showHandle={false}
     >
-      <div className="bg-gradient-to-br from-yellow-100 via-orange-50 to-red-50 dark:from-purple-900 dark:via-purple-800 dark:to-pink-900 -m-6 p-6 relative">
+      <div className="bg-gradient-to-br from-yellow-100 via-orange-50 to-red-50 dark:from-purple-900 dark:via-purple-800 dark:to-pink-900 p-6 relative rounded-t-3xl">
           {/* Close button */}
           <button
             onClick={onClose}

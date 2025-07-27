@@ -9,6 +9,8 @@ interface SmartPageHeaderProps {
   title: string;
   // Optional custom back URL (overrides smart navigation)
   customBackUrl?: string;
+  // Legacy prop name for backward compatibility
+  backHref?: string;
   // Optional custom back title
   customBackTitle?: string;
   // Additional actions to show on the right
@@ -22,6 +24,7 @@ interface SmartPageHeaderProps {
 export function SmartPageHeader({
   title,
   customBackUrl,
+  backHref,
   customBackTitle,
   actions,
   showBack = true,
@@ -31,10 +34,11 @@ export function SmartPageHeader({
   const navigation = useNavigation();
   const strings = useStrings();
   
-  // Determine back URL and title
-  const backUrl = customBackUrl || navigation.getBackUrl() || '/';
+  // Determine back URL and title (support both customBackUrl and backHref for backward compatibility)
+  const fallbackUrl = customBackUrl || backHref;
+  const backUrl = fallbackUrl || navigation.getBackUrl() || '/';
   const backTitle = customBackTitle || navigation.getBackTitle() || strings.navigation?.home || 'Home';
-  const canGoBack = showBack && (customBackUrl || navigation.canGoBack);
+  const canGoBack = showBack && (fallbackUrl || navigation.canGoBack);
   
   return (
     <header className={`px-4 pt-24 pb-4 md:pt-24 ${className}`}>

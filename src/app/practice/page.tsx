@@ -66,13 +66,11 @@ export default function PracticePage() {
         }}
       />
 
-      {/* Spacer for Virtual Companion */}
-      <div className="h-20" />
-
       {/* Page Header */}
       <SmartPageHeader 
         title={strings.practice?.title || "Practice Mode"}
         className="text-foreground"
+        backHref="/"
       />
 
       {/* Begin Journey Section */}
@@ -89,7 +87,7 @@ export default function PracticePage() {
             <div className="w-[380px] flex-shrink-0 lg:w-auto">
               {/* Intro Card */}
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
-                <p className="text-muted-foreground leading-relaxed mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4 text-center">
                   Welcome to the foundation of your Japanese learning adventure. Master the essentials with our{' '}
                   <span className="font-semibold text-primary">Kana Charts</span>
                   {' '}and{' '}
@@ -159,7 +157,7 @@ export default function PracticePage() {
                     <h3 className="text-lg font-semibold text-foreground mb-4">
                       Master Hiragana - The Foundation
                     </h3>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-foreground/70 mb-6">
                       Learn the 46 basic hiragana characters that form the foundation of Japanese writing. 
                       Perfect for beginners starting their journey.
                     </p>
@@ -193,7 +191,7 @@ export default function PracticePage() {
                     <h3 className="text-lg font-semibold text-foreground mb-4">
                       Master Katakana - Foreign Words
                     </h3>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-foreground/70 mb-6">
                       Learn the 46 katakana characters used for foreign words and emphasis. 
                       Essential for reading modern Japanese.
                     </p>
@@ -282,7 +280,7 @@ export default function PracticePage() {
                   <p className="text-sm text-gray-500">Popular searches:</p>
                   <div className="flex flex-wrap gap-2">
                     {['食べる', '飲む', '行く', '見る', '話す'].map((word) => (
-                      <span key={word} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                      <span key={word} className="px-3 py-1 bg-muted text-muted-foreground rounded-full text-sm">
                         {word}
                       </span>
                     ))}
@@ -339,8 +337,8 @@ export default function PracticePage() {
                 </h3>
                 
                 <div className="space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600 mb-2">Choose a drill type:</p>
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-2">Choose a drill type:</p>
                     <div className="grid grid-cols-2 gap-2">
                       <Link href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">🔤</span>
@@ -412,9 +410,9 @@ export default function PracticePage() {
                 </h3>
                 
                 <div className="space-y-4">
-                  <div className="text-center p-8 bg-gray-50 rounded-lg">
+                  <div className="text-center p-8 bg-muted/50 rounded-lg">
                     <img src="/flat-icons/ui/flash-card.svg" alt="Flashcard" className="w-16 h-16 mx-auto" />
-                    <p className="mt-4 text-gray-600">No reviews due today!</p>
+                    <p className="mt-4 text-muted-foreground">No reviews due today!</p>
                     <p className="text-sm text-gray-500 mt-2">Create some flashcards to get started</p>
                   </div>
 

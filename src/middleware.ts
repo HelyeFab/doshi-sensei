@@ -23,6 +23,12 @@ export function middleware(request: NextRequest) {
   // Add security headers
   const response = NextResponse.next();
   
+  // Skip CSP in development to avoid Stripe/API loading issues
+  if (process.env.NODE_ENV === 'development') {
+    // Remove any CSP headers that might be set
+    response.headers.delete('Content-Security-Policy');
+  }
+  
   // Prevent clickjacking
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');

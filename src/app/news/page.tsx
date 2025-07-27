@@ -171,6 +171,8 @@ function FilterBar({
   isLoading,
   stats
 }: FilterBarProps) {
+  const [showFilters, setShowFilters] = useState(false);
+  
   const levels = [
     { id: 'all', name: 'All Levels', count: stats?.totalArticles || 0 },
     { id: 'N5', name: 'N5 (Beginner)', count: stats?.articlesByLevel?.N5 || 0 },
@@ -190,75 +192,130 @@ function FilterBar({
     { id: 'general', name: 'General', icon: '📋' }
   ];
 
+  const selectedLevelName = levels.find(l => l.id === selectedLevel)?.name || 'All Levels';
+  const selectedCategoryName = categories.find(c => c.id === selectedCategory)?.name || 'All Categories';
+
   return (
-    <div className="bg-card rounded-lg p-6 border border-border mb-8">
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* JLPT Levels */}
-        <div className="flex-1">
-          <label className="block text-sm font-semibold text-foreground mb-3">
-            📚 JLPT Level
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {levels.map((level) => (
-              <button
-                key={level.id}
-                onClick={() => onLevelChange(level.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === level.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-              >
-                {level.name}
-                {level.count > 0 && (
-                  <span className="ml-1 text-xs opacity-75">({level.count})</span>
-                )}
-              </button>
-            ))}
-          </div>
+    <div className="bg-card rounded-lg p-4 border border-border mb-8">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        {/* Filter Toggle Button */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 px-4 py-2 bg-muted rounded-lg hover:bg-muted/80 transition-all text-sm font-medium"
+        >
+          <span>🔽</span>
+          <span>Filters</span>
+          {(selectedLevel !== 'all' || selectedCategory !== 'all') && (
+            <span className="ml-1 px-2 py-0.5 bg-primary/20 text-primary rounded-full text-xs">
+              Active
+            </span>
+          )}
+        </button>
+
+        {/* Active Filters Display */}
+        <div className="flex flex-wrap items-center gap-2 flex-1">
+          <span className="text-sm text-muted-foreground">Showing:</span>
+          <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+            {selectedLevelName}
+          </span>
+          {selectedCategory !== 'all' && (
+            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+              {selectedCategoryName}
+            </span>
+          )}
         </div>
 
-        {/* Categories */}
-        <div className="flex-1">
-          <label className="block text-sm font-semibold text-foreground mb-3">
-            🏷️ Category
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => onCategoryChange(category.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${selectedCategory === category.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-              >
-                {category.icon && <span>{category.icon}</span>}
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-end gap-3">
-          <button
-            onClick={onRefresh}
-            disabled={isLoading}
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-          >
-            {isLoading ? (
-              <>
-                <span className="animate-spin">🔄</span>
-                Loading
-              </>
-            ) : (
-              <>
-                🔄 Refresh
-              </>
-            )}
-          </button>
-        </div>
+        {/* Refresh Button */}
+        <button
+          onClick={onRefresh}
+          disabled={isLoading}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-sm"
+        >
+          {isLoading ? (
+            <>
+              <span className="animate-spin">🔄</span>
+              Loading
+            </>
+          ) : (
+            <>
+              🔄 Refresh
+            </>
+          )}
+        </button>
       </div>
+
+      {/* Expandable Filter Panel */}
+      {showFilters && (
+        <div className="mt-4 pt-4 border-t border-border space-y-4 animate-in slide-in-from-top duration-200">
+          {/* JLPT Levels */}
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-3">
+              📚 JLPT Level
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {levels.map((level) => (
+                <button
+                  key={level.id}
+                  onClick={() => {
+                    onLevelChange(level.id);
+                    setShowFilters(false);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === level.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                >
+                  {level.name}
+                  {level.count > 0 && (
+                    <span className="ml-1 text-xs opacity-75">({level.count})</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Categories */}
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-3">
+              🏷️ Category
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    onCategoryChange(category.id);
+                    setShowFilters(false);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${selectedCategory === category.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                >
+                  {category.icon && <span>{category.icon}</span>}
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Clear Filters */}
+          {(selectedLevel !== 'all' || selectedCategory !== 'all') && (
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  onLevelChange('all');
+                  onCategoryChange('all');
+                  setShowFilters(false);
+                }}
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

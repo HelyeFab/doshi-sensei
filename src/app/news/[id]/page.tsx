@@ -90,8 +90,8 @@ export default function ArticlePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50">
-                <SmartPageHeader title="Loading..." backHref="/news" />
+            <div className="min-h-screen bg-background">
+                <SmartPageHeader title="Loading..." />
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
@@ -107,8 +107,8 @@ export default function ArticlePage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <SmartPageHeader title={article.title} backHref="/news" />
+        <div className="min-h-screen bg-background">
+            <SmartPageHeader title={article.title} />
             <ArticleReader
                 article={article}
                 onBack={handleExit}

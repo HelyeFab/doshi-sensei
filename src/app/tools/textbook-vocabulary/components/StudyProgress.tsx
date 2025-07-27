@@ -13,7 +13,7 @@ export function StudyProgress({ current, total, correct }: StudyProgressProps) {
   const accuracy = current > 1 ? Math.round((correct / (current - 1)) * 100) : 0;
 
   return (
-    <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
+    <div className="bg-card rounded-lg shadow-sm p-4 mb-6 border border-border/50 dark:border-border">
       <div className="flex justify-between items-center mb-2">
         <span className="text-sm font-medium text-foreground">
           Card {current} of {total}

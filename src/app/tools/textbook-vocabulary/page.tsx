@@ -40,8 +40,8 @@ export default function TextbookVocabularyPage() {
       title: 'Genki 1',
       subtitle: 'Elementary Japanese',
       color: 'from-pink-400 to-purple-500',
-      shadowColor: 'shadow-purple-200',
-      hoverShadow: 'hover:shadow-purple-300',
+      shadowColor: 'shadow-purple-200 dark:shadow-purple-500/50',
+      hoverShadow: 'hover:shadow-purple-300 dark:hover:shadow-purple-400/60',
       lessons: 12,
       words: 1496,
       level: 'N5',
@@ -52,8 +52,8 @@ export default function TextbookVocabularyPage() {
       title: 'Genki 2',
       subtitle: 'Elementary Japanese II',
       color: 'from-purple-400 to-indigo-500',
-      shadowColor: 'shadow-indigo-200',
-      hoverShadow: 'hover:shadow-indigo-300',
+      shadowColor: 'shadow-indigo-200 dark:shadow-indigo-500/50',
+      hoverShadow: 'hover:shadow-indigo-300 dark:hover:shadow-indigo-400/60',
       lessons: 11,
       words: 491,
       level: 'N4-N5',
@@ -64,8 +64,8 @@ export default function TextbookVocabularyPage() {
       title: 'Minna no Nihongo 1',
       subtitle: 'Japanese for Everyone',
       color: 'from-green-400 to-teal-500',
-      shadowColor: 'shadow-teal-200',
-      hoverShadow: 'hover:shadow-teal-300',
+      shadowColor: 'shadow-teal-200 dark:shadow-teal-500/50',
+      hoverShadow: 'hover:shadow-teal-300 dark:hover:shadow-teal-400/60',
       lessons: 25,
       words: 2029,
       level: 'N5',
@@ -76,8 +76,8 @@ export default function TextbookVocabularyPage() {
       title: 'Minna no Nihongo 2',
       subtitle: 'Japanese for Everyone II',
       color: 'from-teal-400 to-blue-500',
-      shadowColor: 'shadow-blue-200',
-      hoverShadow: 'hover:shadow-blue-300',
+      shadowColor: 'shadow-blue-200 dark:shadow-blue-500/50',
+      hoverShadow: 'hover:shadow-blue-300 dark:hover:shadow-blue-400/60',
       lessons: 25,
       words: 1058,
       level: 'N4',
@@ -142,10 +142,10 @@ export default function TextbookVocabularyPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 + 0.2 }}
                   onClick={() => handleTextbookSelect(textbook.id)}
-                  className={`group relative bg-card rounded-2xl p-10 shadow-md ${textbook.shadowColor} ${textbook.hoverShadow} hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300`}
+                  className={`group relative bg-card dark:bg-card/80 backdrop-blur-sm rounded-2xl p-10 shadow-md ${textbook.shadowColor} ${textbook.hoverShadow} hover:shadow-xl dark:hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 border border-transparent dark:border-border/50 dark:hover:border-primary/30`}
                 >
                   {/* Background Gradient */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${textbook.color} opacity-5 rounded-2xl`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${textbook.color} opacity-5 dark:opacity-20 rounded-2xl`} />
                   
                   {/* Coming Soon Badge for empty textbooks */}
                   {textbook.words === 0 && (
@@ -187,7 +187,7 @@ export default function TextbookVocabularyPage() {
                     {/* Progress Bar (if user has progress) */}
                     <div className="relative h-2 bg-muted rounded-full overflow-hidden mx-3 mb-2">
                       <div 
-                        className={`absolute inset-y-0 left-0 bg-gradient-to-r ${textbook.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full`}
+                        className={`absolute inset-y-0 left-0 bg-gradient-to-r ${textbook.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full dark:opacity-80`}
                         style={{ width: '30%' }}
                       />
                     </div>
@@ -207,7 +207,7 @@ export default function TextbookVocabularyPage() {
               className="mt-6 bg-card rounded-xl p-4 shadow-sm"
             >
               <h3 className="font-semibold text-foreground mb-2">📊 Total Collection</h3>
-              <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+              <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400">
                 9,635 words
               </div>
               <p className="text-sm text-muted-foreground mt-1">From 4 popular textbooks</p>

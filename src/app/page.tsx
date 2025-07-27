@@ -217,7 +217,7 @@ export default function Home() {
       />
 
       {/* Desktop margin wrapper */}
-      <div className="md:mx-8 lg:mx-12 xl:mx-16">
+      <div className="md:mx-16 lg:mx-32 xl:mx-48 2xl:mx-64">
         {/* Welcome Section */}
         <header className="px-4 pt-6 pb-4" role="banner">
         <div className="flex items-center gap-3">

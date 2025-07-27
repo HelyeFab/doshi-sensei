@@ -102,9 +102,9 @@ export default function AuthErrorModal({ isOpen, error, type = 'error', onClose 
         <div className="p-6 text-center">
           {/* Icon - Giraffe for errors, Checkmark for success */}
           <div className="flex justify-center mb-4">
-            <div className={`w-16 h-16 p-2 rounded-full ${isSuccess ? 'bg-green-100' : 'bg-primary/10'}`}>
+            <div className={`w-16 h-16 p-2 rounded-full ${isSuccess ? 'bg-green-500/10' : 'bg-primary/10'}`}>
               {isSuccess ? (
-                <svg className="w-full h-full text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-full h-full text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               ) : (
@@ -139,7 +139,7 @@ export default function AuthErrorModal({ isOpen, error, type = 'error', onClose 
           </p>
 
           {/* Suggestion */}
-          <div className={`${isSuccess ? 'bg-green-50' : 'bg-muted/50'} rounded-lg p-3 mb-6`}>
+          <div className={`${isSuccess ? 'bg-green-500/5' : 'bg-muted/50'} rounded-lg p-3 mb-6`}>
             <p className="text-sm text-muted-foreground">
               {isSuccess ? '✨' : '💡'} {friendlyMessage.suggestion}
             </p>

@@ -39,10 +39,10 @@ export function FilterPanel({
           placeholder="Search vocabulary..."
           value={filters.searchQuery}
           onChange={(e) => onFilterChange('searchQuery', e.target.value)}
-          className="w-full px-4 py-2 pl-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="w-full px-4 py-2 pl-10 bg-background text-foreground border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
         />
         <svg
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -57,8 +57,8 @@ export function FilterPanel({
           onClick={() => onLessonSelect(null)}
           className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
             selectedLesson === null
-              ? 'bg-primary text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80'
           }`}
         >
           All Lessons
@@ -71,10 +71,10 @@ export function FilterPanel({
               onClick={() => (locked ? onRequestUpgrade() : onLessonSelect(lesson))}
               className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
                 locked
-                  ? 'bg-gray-100 text-gray-400 cursor-pointer relative opacity-60 hover:bg-gray-200'
+                  ? 'bg-muted text-muted-foreground/60 cursor-pointer relative opacity-60 hover:bg-muted/80'
                   : selectedLesson === lesson
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
               {locked && <span className="mr-1">🔒</span>}
@@ -87,7 +87,7 @@ export function FilterPanel({
       {/* Advanced Filters Toggle */}
       <button
         onClick={() => setShowFilters(!showFilters)}
-        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <svg
           className={`w-4 h-4 transform transition-transform ${showFilters ? 'rotate-180' : ''}`}

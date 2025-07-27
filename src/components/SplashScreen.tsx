@@ -48,12 +48,43 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           DōshiSensei
         </h1>
         <p className="text-lg text-white/90 mb-8 font-medium">動詞先生</p>
-        <div className="flex items-center justify-center gap-2">
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        <div className="flex items-center justify-center gap-3" style={{ height: '20px' }}>
+          <span 
+            className="inline-block w-2.5 h-2.5 bg-white rounded-full"
+            style={{ 
+              animation: 'pulse-dot 1.4s ease-in-out infinite',
+              animationDelay: '0s'
+            }}
+          />
+          <span 
+            className="inline-block w-2.5 h-2.5 bg-white rounded-full"
+            style={{ 
+              animation: 'pulse-dot 1.4s ease-in-out infinite',
+              animationDelay: '0.2s'
+            }}
+          />
+          <span 
+            className="inline-block w-2.5 h-2.5 bg-white rounded-full"
+            style={{ 
+              animation: 'pulse-dot 1.4s ease-in-out infinite',
+              animationDelay: '0.4s'
+            }}
+          />
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes pulse-dot {
+          0%, 60%, 100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          30% {
+            transform: scale(1.5);
+            opacity: 0.7;
+          }
+        }
+      `}</style>
     </div>
   );
 }

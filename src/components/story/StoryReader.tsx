@@ -599,33 +599,6 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
 
   return (
     <>
-      {/* Gradient Header - full page width */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
-      {/* Page Header */}
-      <div className="container mx-auto px-4">
-        <PageHeader title={story.title} showBackButton={true} onBackClick={onExit} />
-        
-        {/* Mood Board Indicator */}
-        {story.moodBoardTitle && (
-          <div className="max-w-6xl mx-auto mt-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-900 dark:text-purple-100">
-              <span className="text-lg">🎨</span>
-              <span className="text-sm font-medium">
-                Created from "{story.moodBoardTitle}" mood board
-              </span>
-              {story.moodBoardKanji && story.moodBoardKanji.length > 0 && (
-                <span className="text-xs text-purple-700 dark:text-purple-300">
-                  ({story.moodBoardKanji.length} kanji)
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
 
       <div className="container mx-auto px-4 py-6 min-h-screen pb-24 md:pb-8">
         <div className="max-w-6xl mx-auto">
@@ -638,19 +611,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
               className="space-y-6"
             >
               {/* Header with navigation and controls */}
-              <div className="flex items-center justify-between mb-6">
-                <button
-                  onClick={onExit}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-all transform hover:scale-105 active:scale-95"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                  <span>Back to Stories</span>
-                </button>
-
+              <div className="flex items-center justify-end mb-6">
                 <div className="relative">
                   {/* Options Menu Button */}
                   <button
@@ -759,14 +720,6 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
               <div className="bg-card rounded-lg p-4 md:p-8 border border-border">
                 {/* Story header */}
                 <header className="mb-6">
-                  <div className="inline-block">
-                    <h1 className={`font-bold text-foreground mb-4 px-6 py-4 rounded-2xl inline-block pastel-bubble-bg ${settings.fontSize === 'xlarge' ? 'text-3xl' :
-                      settings.fontSize === 'large' ? 'text-2xl' :
-                        settings.fontSize === 'medium' ? 'text-xl' : 'text-lg'
-                      }`}>
-                      {story.title}
-                    </h1>
-                  </div>
 
                   {/* Story metadata */}
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">

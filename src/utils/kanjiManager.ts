@@ -2,6 +2,7 @@ import { Kanji, SavedKanji, JLPTLevel, KanjiByLevel } from '@/types';
 import { DatabaseManager } from './indexedDB';
 import CloudSync, { SyncResult } from './cloudSync';
 import { User } from 'firebase/auth';
+import kanjiPreloader from '@/services/kanjiPreloader';
 
 const SAVED_KANJI_KEY = 'doshi_sensei_saved_kanji';
 
@@ -22,30 +23,22 @@ export class KanjiManager {
    * Load kanji data for a specific JLPT level
    */
   static async loadKanjiByLevel(level: JLPTLevel): Promise<Kanji[]> {
-    // Check cache first
+    // Check local cache first
     if (this.kanjiCache[level]) {
       return this.kanjiCache[level];
     }
 
+    // Check preloader cache
+    const preloaded = kanjiPreloader.getCached(level);
+    if (preloaded) {
+      this.kanjiCache[level] = preloaded;
+      return preloaded;
+    }
+
+    // Load from preloader (which handles deduplication and caching)
     try {
-      const filePath = JLPT_FILES[level];
-      const response = await fetch(filePath);
-
-      if (!response.ok) {
-        throw new Error(`Failed to load ${level} kanji data`);
-      }
-
-      const rawKanji = await response.json();
-
-      // Transform raw data to include JLPT level
-      const kanji: Kanji[] = rawKanji.map((item: any) => ({
-        ...item,
-        jlpt: level
-      }));
-
-      // Cache the result
+      const kanji = await kanjiPreloader.loadLevel(level);
       this.kanjiCache[level] = kanji;
-
       return kanji;
     } catch (error) {
       console.error(`Error loading ${level} kanji:`, error);

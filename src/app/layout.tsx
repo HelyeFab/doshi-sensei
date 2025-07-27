@@ -16,7 +16,6 @@ import DesktopNavMenu from "@/components/DesktopNavMenu";
 import StunningBottomNavbar from "@/components/StunningBottomNavbar";
 import PWAInstaller from "@/components/PWAInstaller";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
-import InitialLoader from "@/components/InitialLoader";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
@@ -31,6 +30,8 @@ import { AchievementToastManager } from '@/components/achievements/AchievementTo
 import { AchievementInitializer } from '@/components/achievements/AchievementInitializer';
 import { NavigationGestures } from '@/components/navigation/NavigationGestures';
 import { NavigationProvider } from '@/contexts/NavigationContext';
+import { KanjiPreloadInitializer } from '@/components/KanjiPreloadInitializer';
+import PWARecovery from '@/components/PWARecovery';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -211,7 +212,6 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/doshi.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/doshi.png" />
         <link rel="mask-icon" href="/doshi.png" color="#6366f1" />
-        <link rel="shortcut icon" href="/favicon.ico" />
 
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>
@@ -239,6 +239,7 @@ export default function RootLayout({
                                       <JMdictInitializer />
                                       <CacheSystemInitializer />
                                       <AchievementInitializer />
+                                      <KanjiPreloadInitializer />
                                       <div className="mobile-nav-padding">
                                         {children}
                                       </div>
@@ -252,6 +253,7 @@ export default function RootLayout({
                                       <ToastContainer />
                                       <NavigationGestures />
                                       <DevHelper />
+                                      <PWARecovery />
                                     </div>
                                   </AchievementToastManager>
                                 </OnboardingWrapper>

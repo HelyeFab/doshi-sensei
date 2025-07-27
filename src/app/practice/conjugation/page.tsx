@@ -157,7 +157,7 @@ export default function ConjugationPage() {
           }}
         />
 
-        <SmartPageHeader title="Conjugation Practice" backHref="/practice" />
+        <SmartPageHeader title="Conjugation Practice" />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
 
@@ -387,7 +387,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
       case 'na-adjective':
         return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
       default:
-        return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+        return 'bg-muted/50 text-muted-foreground border-muted';
     }
   };
 

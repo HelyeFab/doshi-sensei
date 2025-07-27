@@ -68,6 +68,7 @@ export default function KanjiBrowserPage() {
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
+  const [loadingLevels, setLoadingLevels] = useState<Set<JLPTLevel>>(new Set());
   const [modalKanji, setModalKanji] = useState<Kanji | null>(null);
   const [savedKanjiSet, setSavedKanjiSet] = useState<Set<string>>(new Set());
   const [expandedLevels, setExpandedLevels] = useState<Set<JLPTLevel>>(new Set(['N5']));
@@ -149,11 +150,26 @@ export default function KanjiBrowserPage() {
   const loadKanjiData = async () => {
     try {
       setLoading(true);
-      const data = await KanjiManager.loadAllKanji();
-      setKanjiData(data);
+      
+      // Load only N5 initially for fast initial render
+      const n5Data = await KanjiManager.loadKanjiByLevel('N5');
+      setKanjiData({ N5: n5Data });
+      setLoading(false);
+      
+      // Load other levels progressively
+      const otherLevels: JLPTLevel[] = ['N4', 'N3', 'N2', 'N1'];
+      for (const level of otherLevels) {
+        setLoadingLevels(prev => new Set([...prev, level]));
+        const levelData = await KanjiManager.loadKanjiByLevel(level);
+        setKanjiData(prev => ({ ...prev, [level]: levelData }));
+        setLoadingLevels(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(level);
+          return newSet;
+        });
+      }
     } catch (error) {
       console.error('Error loading kanji data:', error);
-    } finally {
       setLoading(false);
     }
   };
@@ -509,7 +525,9 @@ export default function KanjiBrowserPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-card-foreground">{info.name}</h3>
-                        <p className="text-sm text-muted-foreground">{info.description} • {kanji.length} {strings.kanjiBrowser.kanji}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {info.description} • {loadingLevels.has(level) ? 'Loading...' : `${kanji.length} ${strings.kanjiBrowser.kanji}`}
+                        </p>
                       </div>
                     </div>
                     <svg
@@ -525,7 +543,12 @@ export default function KanjiBrowserPage() {
 
                 {isExpanded && (
                   <div className="px-6 pb-6">
-                    {kanji.length > 0 ? (
+                    {loadingLevels.has(level) ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <span className="ml-3 text-muted-foreground">Loading {level} kanji...</span>
+                      </div>
+                    ) : kanji.length > 0 ? (
                       renderKanjiGrid(kanji)
                     ) : (
                       <p className="text-muted-foreground text-center py-8">

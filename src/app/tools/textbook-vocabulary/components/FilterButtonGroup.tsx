@@ -21,7 +21,7 @@ export function FilterButtonGroup({
 }: FilterButtonGroupProps) {
   return (
     <div className={className}>
-      <label className="text-sm font-medium text-gray-700 mb-1 block">{label}</label>
+      <label className="text-sm font-medium text-foreground mb-1 block">{label}</label>
       <div className="flex gap-2 flex-wrap">
         {/* All button */}
         <motion.button
@@ -30,8 +30,8 @@ export function FilterButtonGroup({
           onClick={() => onSelect(null)}
           className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
             value === null
-              ? 'bg-primary text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80'
           }`}
         >
           All
@@ -46,8 +46,8 @@ export function FilterButtonGroup({
             onClick={() => onSelect(option)}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
               value === option
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
             } ${capitalize ? 'capitalize' : ''}`}
           >
             {option}

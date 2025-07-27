@@ -160,7 +160,7 @@ export default function HiraganaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -171,7 +171,6 @@ export default function HiraganaPage() {
 
       <SmartPageHeader 
         title="Hiragana Charts" 
-        backHref="/practice" 
       />
 
       {/* Main Content */}

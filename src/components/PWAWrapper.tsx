@@ -33,46 +33,86 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
                           (safeNavigator as any)?.standalone ||
                           document.referrer.includes('android-app://');
 
-      // Check session storage to see if we've already shown splash
+      // Check session storage to see if we've already shown splash in this session
       const hasShownSplash = sessionStorage.getItem('doshi_splash_shown');
-
-      // TEMPORARY: Always show splash screen for testing
-      // Remove this line once you're satisfied with the splash screen
-      if (process.env.NODE_ENV === 'development') return !hasShownSplash;
-
-      return (isPWASource || isStandalone) && !hasShownSplash;
+      
+      // Check if this is the initial app launch (not a navigation)
+      const isInitialLaunch = !document.referrer || document.referrer === '';
+      
+      // Only show splash on initial PWA launch, not during navigation
+      return (isPWASource || isStandalone) && !hasShownSplash && isInitialLaunch;
     };
 
-    // Initialize app
+    // Initialize app with better error handling and timeouts
     const initializeApp = async () => {
+      // Set a hard timeout to prevent infinite splash screen
+      const initTimeout = setTimeout(() => {
+        console.warn('App initialization timeout - forcing ready state');
+        setIsReady(true);
+      }, 5000); // 5 second maximum wait
+
       try {
-        // Clear any stale caches that might cause hanging
-        if (safeNavigator && 'serviceWorker' in safeNavigator) {
-          const registrations = await safeNavigator.serviceWorker.getRegistrations();
-          
-          // Wait for service worker to be ready
-          if (registrations.length > 0) {
-            await safeNavigator.serviceWorker.ready;
-          }
-          
-          // Check for stale cache issues
-          if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            console.log('Active caches:', cacheNames);
+        // Check if we're stuck from a previous session
+        const lastStuckTime = localStorage.getItem('pwa_stuck_time');
+        if (lastStuckTime) {
+          const timeSinceStuck = Date.now() - parseInt(lastStuckTime);
+          if (timeSinceStuck < 30000) { // Within 30 seconds
+            console.log('Detected recent stuck state, clearing caches...');
             
-            // If we have too many caches, it might indicate a problem
-            if (cacheNames.length > 10) {
-              console.warn('Too many caches detected, cleaning up...');
-              // The service worker registration will handle cleanup
+            // Clear all caches to recover
+            if ('caches' in window) {
+              const cacheNames = await caches.keys();
+              await Promise.all(cacheNames.map(name => caches.delete(name)));
+              console.log('Cleared all caches due to stuck state');
             }
+            
+            // Clear the stuck flag
+            localStorage.removeItem('pwa_stuck_time');
           }
         }
 
-        // Force reload of critical resources with timeout
-        const criticalResources = ['/doshi.png', '/manifest.json'];
-        const fetchWithTimeout = (url: string, timeout = 5000) => {
+        // Mark that we're attempting to initialize
+        localStorage.setItem('pwa_stuck_time', Date.now().toString());
+
+        // Service worker handling with timeout
+        if (safeNavigator && 'serviceWorker' in safeNavigator) {
+          try {
+            // Wait for service worker with timeout
+            const swReadyPromise = safeNavigator.serviceWorker.ready;
+            const swTimeout = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('SW timeout')), 3000)
+            );
+            
+            await Promise.race([swReadyPromise, swTimeout]).catch(err => {
+              console.warn('Service worker timeout:', err);
+            });
+
+            // Check cache health
+            if ('caches' in window) {
+              const cacheNames = await caches.keys();
+              console.log('Active caches:', cacheNames.length);
+              
+              // Clean up excessive caches
+              if (cacheNames.length > 15) {
+                console.warn('Too many caches, cleaning oldest...');
+                // Keep only caches that start with our prefix
+                const toDelete = cacheNames.filter(name => 
+                  !name.includes('doshi-sensei-') || cacheNames.indexOf(name) > 10
+                );
+                await Promise.all(toDelete.map(name => caches.delete(name)));
+              }
+            }
+          } catch (swError) {
+            console.error('Service worker error:', swError);
+            // Continue initialization even if SW fails
+          }
+        }
+
+        // Try to load critical resources but don't block on failure
+        const criticalResources = ['/manifest.json'];
+        const fetchWithTimeout = (url: string, timeout = 2000) => {
           return Promise.race([
-            fetch(url, { cache: 'no-cache' }),
+            fetch(url, { cache: 'reload' }), // Force fresh fetch
             new Promise((_, reject) => 
               setTimeout(() => reject(new Error('Timeout')), timeout)
             )
@@ -82,15 +122,19 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
         await Promise.allSettled(
           criticalResources.map(resource => 
             fetchWithTimeout(resource).catch(err => {
-              console.warn(`Failed to fetch ${resource}:`, err);
+              console.warn(`Non-critical: Failed to fetch ${resource}`);
               return null;
             })
           )
         );
+
+        // Clear the stuck flag on successful init
+        localStorage.removeItem('pwa_stuck_time');
       } catch (error) {
         console.error('Error during app initialization:', error);
       } finally {
-        // Always set ready after a maximum wait time
+        clearTimeout(initTimeout);
+        // Always set ready
         setIsReady(true);
       }
     };
@@ -107,21 +151,40 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
       initializeApp();
     }
 
-    // Clear splash screen flag when leaving the page
-    const handleBeforeUnload = () => {
+    // Don't clear splash flag on navigation, only on actual page unload
+    // This prevents splash from showing again during client-side navigation
+    const handleUnload = () => {
       sessionStorage.removeItem('doshi_splash_shown');
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    // Use 'unload' instead of 'beforeunload' to only clear on actual page leave
+    window.addEventListener('unload', handleUnload);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handleUnload);
     };
   }, [isMounted]);
 
   const handleSplashComplete = () => {
     setShowSplashScreen(false);
+    // Clear any stuck state when splash completes
+    localStorage.removeItem('pwa_stuck_time');
   };
+
+  // Add timeout for splash screen
+  useEffect(() => {
+    if (showSplashScreen) {
+      // Force close splash after 8 seconds no matter what
+      const splashTimeout = setTimeout(() => {
+        console.warn('Splash screen timeout - forcing close');
+        setShowSplashScreen(false);
+        setIsReady(true);
+        localStorage.removeItem('pwa_stuck_time');
+      }, 8000);
+
+      return () => clearTimeout(splashTimeout);
+    }
+  }, [showSplashScreen]);
 
   // Show splash screen if needed
   if (showSplashScreen) {

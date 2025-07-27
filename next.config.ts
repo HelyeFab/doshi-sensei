@@ -6,9 +6,17 @@ const pwaConfig = withPWA({
   disable: process.env.NODE_ENV === 'development',
   register: true,
   skipWaiting: true,
+  reloadOnOnline: false,
+  importScripts: ['/sw-config.js'],
   exclude: [
     // Exclude audio files from service worker precaching
     ({ asset }) => asset.name.endsWith('.mp3'),
+    // Exclude external resources from precaching
+    ({ asset }) => asset.name.includes('githubusercontent'),
+    ({ asset }) => asset.name.includes('watanoc'),
+    // Exclude large data files
+    ({ asset }) => asset.name.includes('jmdict'),
+    ({ asset }) => asset.name.includes('.dat.gz'),
   ],
   runtimeCaching: [
     {
@@ -54,6 +62,51 @@ const pwaConfig = withPWA({
           statuses: [0, 200]
         }
       }
+    },
+    // Handle GitHub raw content (Pokemon sprites, etc.)
+    {
+      urlPattern: /^https:\/\/raw\.githubusercontent\.com\/.*/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'github-assets',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    // Handle Watanoc media content
+    {
+      urlPattern: /^https:\/\/watanoc\.com\/.*/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'watanoc-media',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 24 * 60 * 60 // 1 day
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    // Handle all external images and media
+    {
+      urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif|webp|mp3|mp4)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'external-media',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
     }
   ],
   buildExcludes: [/middleware-manifest\.json$/]
@@ -84,10 +137,15 @@ const securityHeaders = [
     key: 'Strict-Transport-Security',
     value: 'max-age=31536000; includeSubDomains'
   },
-  {
-    key: 'Content-Security-Policy',
-    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://js.stripe.com https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' blob: https:; connect-src 'self' https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://firestore.googleapis.com wss://*.firebaseio.com https://*.firebaseio.com https://www.youtube.com https://youtube.com; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.firebaseapp.com https://doshi-sensei.firebaseapp.com https://www.youtube.com https://youtube.com; frame-ancestors 'none';"
-  }
+  process.env.NODE_ENV === 'development' 
+    ? {
+        key: 'Content-Security-Policy',
+        value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+      }
+    : {
+        key: 'Content-Security-Policy',
+        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://js.stripe.com https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http: https://raw.githubusercontent.com https://watanoc.com; media-src 'self' blob: https: https://watanoc.com; connect-src 'self' https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://firestore.googleapis.com wss://*.firebaseio.com https://*.firebaseio.com https://www.youtube.com https://youtube.com https://raw.githubusercontent.com https://watanoc.com; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.firebaseapp.com https://doshi-sensei.firebaseapp.com https://www.youtube.com https://youtube.com; frame-ancestors 'none';"
+      }
 ];
 
 const nextConfig: NextConfig = {

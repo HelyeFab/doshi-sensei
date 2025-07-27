@@ -62,6 +62,36 @@ export function useStudySession(): UseStudySessionReturn {
     }
   }, []);
   
+  // Define endSession before completeCard to avoid circular dependency
+  const endSession = useCallback(async () => {
+    try {
+      // Save session end time
+      if (sessionId) {
+        await vocabStorage.updateStudySession(sessionId, {
+          endTime: new Date()
+        });
+      }
+      
+      // Reset state only if still mounted
+      if (isMountedRef.current) {
+        setStudyQueue([]);
+        setCurrentCardIndex(0);
+        setSessionId(null);
+        setIsStudying(false);
+        // Keep sessionStats for display until next session starts
+      }
+    } catch (error) {
+      console.error('Failed to end session:', error);
+      // Still reset UI state even if save fails, but only if mounted
+      if (isMountedRef.current) {
+        setStudyQueue([]);
+        setCurrentCardIndex(0);
+        setSessionId(null);
+        setIsStudying(false);
+      }
+    }
+  }, [sessionId]);
+  
   const completeCard = useCallback(async (quality: number) => {
     if (currentCardIndex >= studyQueue.length) return;
     
@@ -101,35 +131,6 @@ export function useStudySession(): UseStudySessionReturn {
       throw error; // Re-throw for error handling in component
     }
   }, [currentCardIndex, studyQueue, sessionStats, sessionId, endSession]);
-  
-  const endSession = useCallback(async () => {
-    try {
-      // Save session end time
-      if (sessionId) {
-        await vocabStorage.updateStudySession(sessionId, {
-          endTime: new Date()
-        });
-      }
-      
-      // Reset state only if still mounted
-      if (isMountedRef.current) {
-        setStudyQueue([]);
-        setCurrentCardIndex(0);
-        setSessionId(null);
-        setIsStudying(false);
-        // Keep sessionStats for display until next session starts
-      }
-    } catch (error) {
-      console.error('Failed to end session:', error);
-      // Still reset UI state even if save fails, but only if mounted
-      if (isMountedRef.current) {
-        setStudyQueue([]);
-        setCurrentCardIndex(0);
-        setSessionId(null);
-        setIsStudying(false);
-      }
-    }
-  }, [sessionId]);
   
   return {
     // State

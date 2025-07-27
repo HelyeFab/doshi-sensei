@@ -69,8 +69,8 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isDelet
         <div className="p-6 text-center">
           {/* Warning Icon */}
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 p-2 rounded-full bg-red-100">
-              <svg className="w-full h-full text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 p-2 rounded-full bg-destructive/10">
+              <svg className="w-full h-full text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
@@ -88,19 +88,19 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isDelet
             </p>
             <ul className="text-sm text-muted-foreground space-y-2 ml-4">
               <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-0.5">•</span>
+                <span className="text-destructive mt-0.5">•</span>
                 <span>Permanently delete all your progress and stats</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-0.5">•</span>
+                <span className="text-destructive mt-0.5">•</span>
                 <span>Remove all your caught Pokémon</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-0.5">•</span>
+                <span className="text-destructive mt-0.5">•</span>
                 <span>Cancel any active subscriptions</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-0.5">•</span>
+                <span className="text-destructive mt-0.5">•</span>
                 <span>Delete your account permanently</span>
               </li>
             </ul>
@@ -116,7 +116,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isDelet
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder="Type DELETE to confirm"
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-destructive focus:border-transparent"
               disabled={isDeleting}
             />
           </div>
@@ -133,21 +133,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isDelet
             <button
               onClick={onConfirm}
               disabled={!canDelete || isDeleting}
-              className="flex-1 px-4 py-3 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: !canDelete || isDeleting ? '#f97316' : 'hsl(25, 95%, 53%)',
-                opacity: !canDelete || isDeleting ? 0.5 : 1
-              }}
-              onMouseEnter={(e) => {
-                if (canDelete && !isDeleting) {
-                  e.currentTarget.style.backgroundColor = 'hsl(25, 95%, 48%)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (canDelete && !isDeleting) {
-                  e.currentTarget.style.backgroundColor = 'hsl(25, 95%, 53%)';
-                }
-              }}
+              className="flex-1 px-4 py-3 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isDeleting ? (
                 <span className="flex items-center justify-center gap-2">

@@ -202,7 +202,7 @@ export default function KanaPage() {
   const allKanaSelected = selectedHiragana.size + selectedKatakana.size === getBasicKana().length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Main Content */}
       <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         {/* Structured Data for SEO */}
@@ -213,7 +213,7 @@ export default function KanaPage() {
           }}
         />
 
-        <SmartPageHeader title="Kana Charts" backHref="/practice" />
+        <SmartPageHeader title="Kana Charts" />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
 

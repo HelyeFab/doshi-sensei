@@ -75,7 +75,7 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <div className="bg-card rounded-2xl shadow-lg overflow-hidden relative">
+      <div className="bg-card rounded-2xl shadow-lg overflow-hidden relative border border-border/50 dark:border-border dark:bg-card/95">
         <AnimatePresence mode="wait">
           {!revealed ? (
             // Front Side - Question
@@ -153,7 +153,7 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
                 {/* Reveal Button */}
                 <button
                   onClick={handleReveal}
-                  className="px-8 py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 md:px-12"
+                  className="px-8 py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 md:px-12 dark:from-primary/90 dark:to-primary-dark/90 dark:ring-1 dark:ring-primary/50"
                 >
                   Show Answer
                 </button>
@@ -241,7 +241,7 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
       </div>
       
       {/* Card decoration */}
-      <div className="absolute -z-10 inset-0 bg-gradient-to-r from-primary/20 to-primary-dark/20 blur-2xl" />
+      <div className="absolute -z-10 inset-0 bg-gradient-to-r from-primary/20 to-primary-dark/20 dark:from-primary/30 dark:to-primary-dark/30 blur-2xl" />
       
       {/* Error Notification Dialog */}
       <ErrorNotificationDialog />

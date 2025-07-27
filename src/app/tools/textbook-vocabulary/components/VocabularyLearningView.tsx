@@ -79,8 +79,10 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
   const currentTextbook = TEXTBOOK_CONFIG.textbooks[textbook as keyof typeof TEXTBOOK_CONFIG.textbooks];
 
   const handleStartStudy = async (cards: VocabularyItem[]) => {
+    console.log('Starting study session with cards:', cards);
     try {
       await startStudySession(cards, textbook);
+      console.log('Study session started, changing view mode to study');
       setViewMode('study');
     } catch (error) {
       console.error('Failed to start study session:', error);
@@ -105,6 +107,16 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
       setProgressRefreshKey(prev => prev + 1);
     }
   }, [isStudying, viewMode]);
+
+  // Debug log for view mode and study queue
+  useEffect(() => {
+    console.log('Current state:', { 
+      viewMode, 
+      studyQueueLength: studyQueue.length, 
+      isStudying,
+      currentCardIndex 
+    });
+  }, [viewMode, studyQueue.length, isStudying, currentCardIndex]);
 
   if (loading) {
     return (
@@ -244,6 +256,7 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="px-4 py-8"
+            onAnimationStart={() => console.log('Study view rendering with queue:', studyQueue)}
           >
             {/* Study Progress */}
             <div className="max-w-md mx-auto mb-6">

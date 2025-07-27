@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, WordType } from '@/types';
-import { getCommonWordsForPractice, searchWords } from '@/utils/api';
+import { searchWords } from '@/utils/api';
+import { getCachedCommonWordsForPractice } from '@/utils/practiceCache';
 import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
@@ -304,7 +305,7 @@ export default function DrillPage() {
           return;
         }
       } else {
-        words = await getCommonWordsForPractice();
+        words = await getCachedCommonWordsForPractice();
       }
 
       const filteredWords = words.filter(word => {

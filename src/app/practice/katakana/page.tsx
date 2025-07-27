@@ -178,7 +178,6 @@ export default function KatakanaPage() {
 
       <SmartPageHeader 
         title="Katakana Charts" 
-        backHref="/practice" 
       />
 
       {/* Main Content */}

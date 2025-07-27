@@ -94,7 +94,7 @@ export default function StoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SmartPageHeader title="Loading..." />
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
@@ -111,7 +111,7 @@ export default function StoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <SmartPageHeader title={story.title} />
       <div className="max-w-4xl mx-auto px-4">
         <Breadcrumbs className="mt-4 mb-6" />

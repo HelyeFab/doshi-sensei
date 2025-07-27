@@ -56,7 +56,7 @@ export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="flex flex-col items-center justify-center h-full space-y-6">
       {!settingsShown ? (
         // Success Screen
         <div className="text-center space-y-6">

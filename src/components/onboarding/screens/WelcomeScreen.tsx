@@ -17,7 +17,7 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center text-center space-y-6 p-8 h-full">
+    <div className="flex flex-col items-center justify-center text-center space-y-6 h-full">
       {/* Hero Section */}
       <div className="relative">
         <div className="text-6xl md:text-7xl mb-4 animate-bounce">🗾</div>

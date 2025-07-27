@@ -31,7 +31,7 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full space-y-6 p-6">
+    <div className="flex flex-col items-center justify-center h-full space-y-6">
       {/* Conjugation Section */}
       <div className="space-y-6 max-w-2xl mx-auto">
         <div className="text-center space-y-4">

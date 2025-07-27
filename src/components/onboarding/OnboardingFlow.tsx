@@ -174,8 +174,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             className="absolute inset-0 flex flex-col"
           >
             {/* Content Area - Takes up available space */}
-            <div className="flex-1 flex items-center justify-center overflow-y-auto px-4 md:px-12">
-              <div className="w-full max-w-3xl mx-auto py-8">
+            <div className="flex-1 flex items-center justify-center overflow-y-auto px-4 md:px-12 min-h-0">
+              <div className="w-full max-w-3xl mx-auto py-4 md:py-8">
                 {screens[state.currentScreen]}
               </div>
             </div>

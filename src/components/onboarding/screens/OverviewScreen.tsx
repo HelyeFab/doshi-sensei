@@ -17,7 +17,7 @@ export function OverviewScreen({ onNext }: OverviewScreenProps) {
   }
 
   return (
-    <div className="flex flex-col items-center text-center space-y-6 p-8">
+    <div className="flex flex-col items-center justify-center text-center space-y-6 h-full">
       {/* Hero Section */}
       <div className="relative mt-4">
         <div className="text-4xl md:text-5xl mb-4">🌟</div>

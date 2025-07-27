@@ -17,8 +17,23 @@ const pwaConfig = withPWA({
     // Exclude large data files
     ({ asset }) => asset.name.includes('jmdict'),
     ({ asset }) => asset.name.includes('.dat.gz'),
+    // Exclude pages that need server-side rendering
+    ({ asset }) => asset.name === 'index.html',
+    ({ asset }) => asset.name === '/',
   ],
   runtimeCaching: [
+    {
+      urlPattern: /^\/$/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'homepage',
+        networkTimeoutSeconds: 3,
+        expiration: {
+          maxEntries: 1,
+          maxAgeSeconds: 60 * 60 // 1 hour
+        }
+      }
+    },
     {
       urlPattern: /^\/admin\/.*/i,
       handler: 'NetworkFirst',

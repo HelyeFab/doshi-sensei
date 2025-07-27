@@ -366,7 +366,17 @@ export class StatsTracker {
    * Load stats from cloud
    */
   private async loadFromCloud(): Promise<UserStatsV2 | null> {
-    if (!this.currentUser) return null;
+    // First check if user exists and has a valid uid
+    if (!this.currentUser || !this.currentUser.uid) {
+      console.log('☁️ [StatsTracker] Skipping cloud load - no authenticated user');
+      return null;
+    }
+    
+    // Check for guest user (uid might be 'guest' or similar)
+    if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
+      console.log('☁️ [StatsTracker] Skipping cloud load - guest user');
+      return null;
+    }
 
     try {
       const userStatsRef = collection(db, 'userStats', this.currentUser.uid, 'current');
@@ -509,7 +519,19 @@ export class StatsTracker {
       isPremium: this.isPremium
     });
     
-    if (!this.currentUser || !this.stats) return;
+    // First check if user exists and has a valid uid
+    if (!this.currentUser || !this.currentUser.uid) {
+      console.log('📊 [StatsTracker] Skipping cloud save - no authenticated user');
+      return;
+    }
+    
+    // Check for guest user (uid might be 'guest' or similar)
+    if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
+      console.log('📊 [StatsTracker] Skipping cloud save - guest user');
+      return;
+    }
+    
+    if (!this.stats) return;
 
     // Additional check for premium status
     if (!this.isPremium) {
@@ -1136,7 +1158,22 @@ export class StatsTracker {
    * Sync stats to cloud
    */
   private async syncToCloud(): Promise<void> {
-    if (!this.currentUser || !this.isPremium) return;
+    // First check if user exists and has a valid uid
+    if (!this.currentUser || !this.currentUser.uid) {
+      console.log('🔄 [StatsTracker] Sync skipped - no authenticated user');
+      return;
+    }
+    
+    // Check for guest user (uid might be 'guest' or similar)
+    if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
+      console.log('🔄 [StatsTracker] Sync skipped - guest user');
+      return;
+    }
+    
+    if (!this.isPremium) {
+      console.log('🔄 [StatsTracker] Sync skipped - not premium user');
+      return;
+    }
 
     const now = Date.now();
     
@@ -1227,18 +1264,24 @@ export class StatsTracker {
    * Load activities from cloud for a date range
    */
   private async loadActivitiesFromCloud(startDate: string, endDate: string): Promise<void> {
-    if (!this.currentUser || !this.isPremium) {
-      console.log('⏭️ [StatsTracker] Skipping cloud load - not a premium user');
+    // First check if user exists and has a valid uid
+    if (!this.currentUser || !this.currentUser.uid) {
+      console.log('⏭️ [StatsTracker] Skipping cloud activities load - no authenticated user');
+      return;
+    }
+    
+    // Check for guest user (uid might be 'guest' or similar)
+    if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
+      console.log('⏭️ [StatsTracker] Skipping cloud activities load - guest user');
+      return;
+    }
+    
+    if (!this.isPremium) {
+      console.log('⏭️ [StatsTracker] Skipping cloud activities load - not a premium user');
       return;
     }
     
     try {
-      // Double-check we have a valid user ID
-      if (!this.currentUser.uid) {
-        console.error('❌ [StatsTracker] No user ID available for cloud load');
-        return;
-      }
-      
       const activitiesRef = collection(db, 'userStats', this.currentUser.uid, 'dailyActivities');
       
       // Query activities within date range

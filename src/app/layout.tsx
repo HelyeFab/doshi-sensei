@@ -178,7 +178,7 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#6366f1',
+  themeColor: '#8a5cf6', // Match splash screen background color hsl(271, 81%, 56%)
 };
 
 // Force clean rebuild: Sun Jun 29 2025 22:43:00
@@ -197,7 +197,41 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Doshi Sensei" />
         <meta name="format-detection" content="telephone=no" />
+        
+        {/* Prevent browser-generated splash screens by providing our own */}
         <meta name="mobile-web-app-capable" content="yes" />
+        
+        {/* Apple devices splash screens - these prevent the default splash */}
+        {/* iPhone SE */}
+        <link 
+          rel="apple-touch-startup-image" 
+          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" 
+          href="/splash/splash-750x1334.png" 
+        />
+        {/* iPhone 12 Pro */}
+        <link 
+          rel="apple-touch-startup-image" 
+          media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" 
+          href="/splash/splash-1170x2532.png" 
+        />
+        {/* iPhone 14 Pro Max */}
+        <link 
+          rel="apple-touch-startup-image" 
+          media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" 
+          href="/splash/splash-1290x2796.png" 
+        />
+        {/* iPad */}
+        <link 
+          rel="apple-touch-startup-image" 
+          media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" 
+          href="/splash/splash-1536x2048.png" 
+        />
+        {/* iPad Pro 12.9" */}
+        <link 
+          rel="apple-touch-startup-image" 
+          media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" 
+          href="/splash/splash-2048x2732.png" 
+        />
         <meta name="msapplication-config" content="/browserconfig.xml" />
         <meta name="msapplication-TileColor" content="#6366f1" />
         <meta name="msapplication-tap-highlight" content="no" />

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Kanji } from '@/types';
 import { KanjiTTSButton } from '@/components/ui/TTSButton';
 import StrokeOrderModal from './StrokeOrderModal';
+import SlideUpModal from '@/components/SlideUpModal';
 
 interface KanjiModalProps {
   kanji: Kanji;
@@ -26,59 +27,37 @@ export default function KanjiModal({
 }: KanjiModalProps) {
   const [showStudyDropdown, setShowStudyDropdown] = useState(false);
   const [showStrokeOrder, setShowStrokeOrder] = useState(false);
-  // Close modal on escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-
   // TTS functionality now handled by KanjiTTSButton component
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-      onClick={handleBackdropClick}
-    >
-      <div className="bg-card border border-border rounded-lg max-w-md w-full max-h-[90vh] overflow-auto">
+    <>
+      <SlideUpModal
+        isOpen={isOpen}
+        onClose={onClose}
+        height="90%"
+        showHandle={false}
+      >
+        <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900 dark:via-indigo-800 dark:to-purple-900 p-6 relative rounded-t-3xl">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-md"
+          aria-label="Close modal"
+        >
+          <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-xl font-semibold text-card-foreground">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
             Kanji Details
           </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-          >
-            <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="space-y-6">
           {/* Large Kanji Display */}
           <div className="text-center mb-6">
             <div className="relative inline-block">
@@ -88,10 +67,10 @@ export default function KanjiModal({
               {/* Stroke Order Button */}
               <button
                 onClick={() => setShowStrokeOrder(true)}
-                className="absolute -right-12 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors group"
+                className="absolute -right-12 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-colors group shadow-sm"
                 title="View stroke order"
               >
-                <svg className="w-6 h-6 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" 
                   />
@@ -180,7 +159,7 @@ export default function KanjiModal({
           <div className="mb-6">
             <button
               onClick={() => setShowStudyDropdown(!showStudyDropdown)}
-              className="w-full flex items-center justify-between p-3 rounded-lg border border-border bg-muted/50 hover:bg-muted transition-all"
+              className="w-full flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all shadow-sm"
             >
               <span className="text-sm font-medium text-muted-foreground">Options</span>
               <svg 
@@ -195,7 +174,7 @@ export default function KanjiModal({
             
             {/* Dropdown Content */}
             {showStudyDropdown && (
-              <div className="mt-2 p-3 bg-muted/30 rounded-lg border border-border space-y-2">
+              <div className="mt-2 p-3 bg-white/30 dark:bg-gray-800/30 rounded-lg backdrop-blur-sm space-y-2">
                 {/* Study Session Option */}
                 {onToggleStudy && (
                   <button
@@ -259,22 +238,16 @@ export default function KanjiModal({
             )}
           </div>
         </div>
-
-        {/* Footer Info */}
-        <div className="px-6 py-4 bg-muted/50 border-t border-border">
-          <div className="text-xs text-muted-foreground text-center">
-            💡 Tip: Use the search bar to find kanji by character, meaning, or reading
-          </div>
-        </div>
       </div>
+    </SlideUpModal>
 
-      {/* Stroke Order Modal */}
-      <StrokeOrderModal
-        isOpen={showStrokeOrder}
-        onClose={() => setShowStrokeOrder(false)}
-        kanji={kanji.kanji}
-        meaning={kanji.meaning}
-      />
-    </div>
+    {/* Stroke Order Modal */}
+    <StrokeOrderModal
+      isOpen={showStrokeOrder}
+      onClose={() => setShowStrokeOrder(false)}
+      kanji={kanji.kanji}
+      meaning={kanji.meaning}
+    />
+    </>
   );
 }

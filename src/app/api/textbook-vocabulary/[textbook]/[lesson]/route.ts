@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { adminDb } from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
+import { headers } from 'next/headers';
 import { TEXTBOOK_CONFIG } from '@/config/textbooks';
 
 export async function GET(
@@ -22,30 +21,48 @@ export async function GET(
     
     // Check if lesson requires premium
     if (lessonNumber > TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson) {
-      // Get session to check user's premium status
-      const session = await getServerSession(authOptions);
+      // Get Firebase Admin instance
+      const admin = await getFirebaseAdmin();
+      const auth = admin.auth();
+      const db = admin.firestore();
       
-      if (!session?.user?.id) {
+      // Check authorization header
+      const headersList = headers();
+      const authorization = headersList.get('authorization');
+      
+      if (!authorization || !authorization.startsWith('Bearer ')) {
         return NextResponse.json(
           { error: 'Authentication required for premium lessons' },
           { status: 401 }
         );
       }
       
-      // Check user's subscription status in Firebase
-      const userDoc = await adminDb.collection('users').doc(session.user.id).get();
-      const userData = userDoc.data();
-      
-      const isPremium = userData?.subscription?.plan === 'monthly' || 
-                       userData?.subscription?.plan === 'yearly';
-      
-      if (!isPremium) {
+      // Verify the token
+      const token = authorization.split('Bearer ')[1];
+      try {
+        const decodedToken = await auth.verifyIdToken(token);
+        const uid = decodedToken.uid;
+        
+        // Check user's subscription status in Firebase
+        const userDoc = await db.collection('users').doc(uid).get();
+        const userData = userDoc.data();
+        
+        const isPremium = userData?.subscription?.plan === 'monthly' || 
+                         userData?.subscription?.plan === 'yearly';
+        
+        if (!isPremium) {
+          return NextResponse.json(
+            { 
+              error: 'Premium subscription required',
+              message: `Lessons ${TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson + 1}+ require a premium subscription`
+            },
+            { status: 403 }
+          );
+        }
+      } catch (error) {
         return NextResponse.json(
-          { 
-            error: 'Premium subscription required',
-            message: `Lessons ${TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson + 1}+ require a premium subscription`
-          },
-          { status: 403 }
+          { error: 'Invalid authentication token' },
+          { status: 401 }
         );
       }
     }

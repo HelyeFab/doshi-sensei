@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/lib/firebase';
 import { useNotification } from '@/contexts/NotificationContext';
-import { sendCustomEmailVerification } from '@/lib/email/customEmailVerification';
+import { sendEmailVerification } from 'firebase/auth';
 
 export default function VerifyEmailPage() {
   const { user } = useAuth();
@@ -37,18 +37,14 @@ export default function VerifyEmailPage() {
 
     setIsResending(true);
     try {
-      const result = await sendCustomEmailVerification(user);
+      await sendEmailVerification(user);
       
-      if (result.success) {
-        showNotification({
-          title: 'Verification Email Sent',
-          message: 'Please check your inbox and spam folder.',
-          type: 'success'
-        });
-        setResendCooldown(60); // 60 second cooldown
-      } else {
-        throw new Error(result.error);
-      }
+      showNotification({
+        title: 'Verification Email Sent',
+        message: 'Please check your inbox and spam folder.',
+        type: 'success'
+      });
+      setResendCooldown(60); // 60 second cooldown
     } catch (error: any) {
       console.error('Error resending verification email:', error);
       showNotification({

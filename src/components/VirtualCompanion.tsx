@@ -9,6 +9,9 @@ import {
   CompanionCharacter
 } from '@/utils/virtualCompanion';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import CreatorStoryModal from './CreatorStoryModal';
 
 interface VirtualCompanionProps {
   isOpen: boolean;
@@ -18,9 +21,12 @@ interface VirtualCompanionProps {
 export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionProps) {
   const { settings, updateSetting } = useSettings();
   const strings = useStrings();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const [character, setCharacter] = useState<CompanionCharacter | null>(null);
   const [quote, setQuote] = useState<string>('');
   const [isAnimated, setIsAnimated] = useState(false);
+  const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
   // Generate character and quote when modal opens
   useEffect(() => {
@@ -152,9 +158,79 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             >
               Thank you! ✨
             </button>
+
+            {/* Quick Actions Divider */}
+            <div
+              className={`w-full mt-6 pt-4 border-t border-border transform transition-all duration-700 ${
+                isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              }`}
+              style={{ transitionDelay: '800ms' }}
+            >
+              <p className="text-xs text-muted-foreground text-center mb-3">Quick Actions</p>
+              
+              {/* Quick Action Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href="/account"
+                  className="flex items-center justify-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm text-foreground"
+                  onClick={onClose}
+                >
+                  <span>👤</span>
+                  <span>My Account</span>
+                </a>
+                
+                <a
+                  href="/settings"
+                  className="flex items-center justify-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm text-foreground"
+                  onClick={onClose}
+                >
+                  <span>⚙️</span>
+                  <span>Settings</span>
+                </a>
+                
+                <button
+                  onClick={() => {
+                    setIsCreatorModalOpen(true);
+                  }}
+                  className="flex items-center justify-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm text-foreground"
+                >
+                  <span>🌸</span>
+                  <span>Dōshi Sensei</span>
+                </button>
+                
+                {user ? (
+                  <button
+                    onClick={async () => {
+                      onClose();
+                      await logout();
+                      router.push('/');
+                    }}
+                    className="flex items-center justify-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm text-foreground"
+                  >
+                    <span>🚪</span>
+                    <span>Sign Out</span>
+                  </button>
+                ) : (
+                  <a
+                    href="/login"
+                    className="flex items-center justify-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm text-foreground"
+                    onClick={onClose}
+                  >
+                    <span>🔑</span>
+                    <span>Sign In</span>
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
+      
+      {/* Creator Story Modal */}
+      <CreatorStoryModal
+        isOpen={isCreatorModalOpen}
+        onClose={() => setIsCreatorModalOpen(false)}
+      />
     </div>
   );
 }

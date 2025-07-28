@@ -179,7 +179,7 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
               <div className="absolute inset-0 opacity-5">
                 <img 
                   src="/flat-icons/188915-pokemon-go/png/pokeball.png" 
-                  alt="" 
+                  alt="Pokéball background" 
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -309,7 +309,7 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
           >
             <img 
               src="/flat-icons/188915-pokemon-go/png/pokeball.png" 
-              alt="" 
+              alt="Pokéball icon" 
               className="w-4 h-4"
             />
             Caught ({caughtPokemonIds.length})
@@ -331,7 +331,7 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
           >
             <img 
               src="/flat-icons/188915-pokemon-go/png/map.png" 
-              alt="" 
+              alt="Map icon" 
               className="w-4 h-4"
             />
             All Pokémon

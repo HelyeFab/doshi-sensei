@@ -1044,7 +1044,7 @@ export default function FavouritesClient() {
                       <div className="w-full h-32 mb-4 rounded-lg overflow-hidden">
                         <img
                           src={article.articleImageUrl}
-                          alt=""
+                          alt={`Thumbnail for ${article.articleTitle || 'article'}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';

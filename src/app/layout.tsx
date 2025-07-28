@@ -231,7 +231,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
         {/* PWA Manifest and Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
@@ -290,7 +290,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/doshi.png" />
         <link rel="mask-icon" href="/doshi.png" color="#6366f1" />
 
-        {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
+        {/* Theme is handled by ClientThemeWrapper to prevent hydration issues */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${savoyeFont.variable} ${manrope.variable} antialiased min-h-screen`}

@@ -24,6 +24,11 @@ export const metadata: Metadata = {
     description: 'Read real Japanese news articles adapted for language learners. Practice reading comprehension with current events.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Japanese News Reading Practice | Doshi Sensei',
+    description: 'Read real Japanese news articles adapted for language learners. Practice reading comprehension with current events.',
+  },
   alternates: {
     canonical: '/news',
   },

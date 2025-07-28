@@ -23,6 +23,11 @@ export const metadata: Metadata = {
     description: 'Read engaging Japanese stories tailored to your JLPT level. Practice reading comprehension with AI-generated stories.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Japanese Stories - Graded Reading Practice | Doshi Sensei',
+    description: 'Read engaging Japanese stories tailored to your JLPT level. Practice reading comprehension with AI-generated stories.',
+  },
   alternates: {
     canonical: '/stories',
   },

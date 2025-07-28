@@ -1,59 +1,44 @@
-'use client';
+import { Metadata } from 'next';
+import UsersClient from './UsersClient';
+import StructuredData from '@/components/StructuredData';
 
-import { AdminLayout } from '@/components/admin/AdminLayout';
-import { UserSearch } from '@/components/admin/UserSearch';
-import { UserTable } from '@/components/admin/UserTable';
-import { useState } from 'react';
-import { AdminUserDetails } from '@/types/admin';
-import { useStrings } from '@/contexts/LanguageContext';
-import { useRouter } from 'next/navigation';
+export const metadata: Metadata = {
+  title: 'Users | Doshi Sensei',
+  description: 'Users - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  openGraph: {
+    title: 'Users | Doshi Sensei',
+    description: 'Users - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    type: 'website',
+    url: 'https://doshisensei.com/admin/users',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Users | Doshi Sensei',
+    description: 'Users - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  },
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Users - Doshi Sensei",
+  "description": "Users - Part of Doshi Sensei's comprehensive Japanese learning platform.",
+  "url": "https://doshisensei.com/admin/users",
+  "isPartOf": {
+    "@type": "WebApplication",
+    "@id": "https://doshisensei.com/#application"
+  }
+};
 
 export default function UsersPage() {
-  const strings = useStrings();
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUser, setSelectedUser] = useState<AdminUserDetails | null>(null);
-  const [filterType, setFilterType] = useState<'all' | 'free' | 'premium' | 'active'>('all');
-
-  const handleUserSelect = (user: AdminUserDetails) => {
-    setSelectedUser(user);
-  };
-
-  const handleUserUpdate = (updatedUser: AdminUserDetails) => {
-    // Handle user updates after premium upgrade, etc.
-  };
-
   return (
-    <AdminLayout title={strings.admin.userManagement}>
-
-      <div className="space-y-6">
-        {/* Page header */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 sm:p-6 border border-blue-200 dark:border-blue-800">
-          <h2 className="text-xl font-bold text-foreground mb-2">
-            {strings.admin.userManagement}
-          </h2>
-          <p className="text-muted-foreground">
-            {strings.admin.userManagementDescription}
-          </p>
-        </div>
-
-        {/* Search and filters */}
-        <UserSearch
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          filterType={filterType}
-          onFilterChange={setFilterType}
-        />
-
-        {/* User table */}
-        <UserTable
-          searchQuery={searchQuery}
-          filterType={filterType}
-          onUserSelect={handleUserSelect}
-          onUserUpdate={handleUserUpdate}
-          selectedUser={selectedUser}
-        />
-      </div>
-    </AdminLayout>
+    <>
+      <StructuredData data={structuredData} />
+      <UsersClient />
+    </>
   );
 }

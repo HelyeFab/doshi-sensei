@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     description: 'Customize your Japanese learning experience with personalized settings and preferences.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Settings | Doshi Sensei',
+    description: 'Customize your Japanese learning experience with personalized settings and preferences.',
+  },
   robots: {
     index: false, // Settings pages shouldn't be indexed
     follow: false,

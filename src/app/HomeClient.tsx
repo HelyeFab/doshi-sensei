@@ -131,7 +131,7 @@ export default function HomeClient() {
       {isClient && (
         <section className="px-4 pb-6">
           <h2 className="text-lg font-medium text-foreground mb-2">
-            {todayDate ? `Today, ${todayDate}` : 'Today'}
+            {isClient && todayDate ? `Today, ${todayDate}` : 'Today'}
           </h2>
           
           {/* Day Progress Bar */}
@@ -272,14 +272,14 @@ export default function HomeClient() {
                 { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
                 { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
                 { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
-                ...(user ? [{ title: 'My Videos', icon: '📚', href: '/tools/my-videos', description: 'Quick access to your practice history' }] : [])
+                ...(user ? [{ title: 'My Videos', icon: '/flat-icons/ui/facebook.svg', href: '/tools/my-videos', description: 'Quick access to your practice history' }] : [])
               ].map((card) => (
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                         {card.icon.startsWith('/') ? (
-                          <Image src={card.icon} alt="" width={32} height={32} />
+                          <Image src={card.icon} alt={`${card.title} icon`} width={32} height={32} />
                         ) : (
                           <span className="text-2xl">{card.icon}</span>
                         )}
@@ -329,36 +329,6 @@ export default function HomeClient() {
             </div>
           </section>
 
-          {/* Divider */}
-          <div className="border-t border-border"></div>
-
-          {/* App Settings Section */}
-          <section>
-            <h3 className="text-lg font-bold text-foreground mb-3">App Settings</h3>
-            <div className="space-y-3">
-              {[
-                { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
-                { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description }
-              ].map((card) => (
-                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
-                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
-                        <span className="text-2xl">{card.icon}</span>
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium text-foreground">{card.title}</h3>
-                        <p className="text-sm text-muted-foreground">{card.description}</p>
-                      </div>
-                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </SmartNavigationLink>
-              ))}
-            </div>
-          </section>
 
         </div>
       </div>

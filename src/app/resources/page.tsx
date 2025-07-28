@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     description: 'Explore curated resources to enhance your Japanese learning journey.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Japanese Learning Resources | Doshi Sensei',
+    description: 'Explore curated resources to enhance your Japanese learning journey.',
+  },
   alternates: {
     canonical: '/resources',
   },

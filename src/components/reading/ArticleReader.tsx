@@ -987,7 +987,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
                 <div className="w-full max-w-2xl mx-auto mb-6">
                   <img
                     src={article.imageUrl}
-                    alt=""
+                    alt={`Article image for ${article.title || 'article'}`}
                     className="w-full rounded-lg"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';

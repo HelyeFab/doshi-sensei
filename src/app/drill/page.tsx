@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     description: 'Master Japanese verb and adjective conjugations with interactive drills and instant feedback.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Japanese Conjugation Practice | Doshi Sensei',
+    description: 'Master Japanese verb and adjective conjugations with interactive drills and instant feedback.',
+  },
   alternates: {
     canonical: '/drill',
   },

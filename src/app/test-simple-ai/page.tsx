@@ -1,32 +1,44 @@
-'use client';
+import { Metadata } from 'next';
+import TestSimpleAI from './TestSimpleAI';
+import StructuredData from '@/components/StructuredData';
 
-import { useState } from 'react';
+export const metadata: Metadata = {
+  title: 'Simple AI Test | Doshi Sensei',
+  description: 'Simple AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  openGraph: {
+    title: 'Simple AI Test | Doshi Sensei',
+    description: 'Simple AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    type: 'website',
+    url: 'https://doshisensei.com/test-simple-ai',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Simple AI Test | Doshi Sensei',
+    description: 'Simple AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  },
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Simple AI Test - Doshi Sensei",
+  "description": "Simple AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
+  "url": "https://doshisensei.com/test-simple-ai",
+  "isPartOf": {
+    "@type": "WebApplication",
+    "@id": "https://doshisensei.com/#application"
+  }
+};
 
 export default function TestSimpleAI() {
-  const [showComponent, setShowComponent] = useState(false);
-
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-2xl font-bold mb-8">Simple AI Test</h1>
-      
-      <div className="space-y-4">
-        <div className="bg-white p-4 rounded shadow">
-          <p className="mb-4">Click the button below to show the AI component:</p>
-          <button
-            onClick={() => setShowComponent(!showComponent)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {showComponent ? 'Hide' : 'Show'} AI Component
-          </button>
-        </div>
-
-        {showComponent && (
-          <div className="bg-white p-4 rounded shadow">
-            <p className="mb-2">AI component would go here</p>
-            <p className="text-sm text-gray-600">If you see this without errors, the issue is in the AI components</p>
-          </div>
-        )}
-      </div>
-    </div>
+    <>
+      <StructuredData data={structuredData} />
+      <TestSimpleAI />
+    </>
   );
 }

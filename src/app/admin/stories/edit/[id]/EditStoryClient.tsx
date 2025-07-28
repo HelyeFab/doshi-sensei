@@ -1,18 +1,18 @@
-import { Metadata } from 'next';
-import EditStoryClient from './EditStoryClient';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Edit Story',
-  description: 'Edit Story - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  openGraph: {
-    title: 'Edit Story | Doshi Sensei',
-    description: 'Edit Story - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  },
-};
+import { useEffect, useState, useRef } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAdmin } from "@/contexts/AdminContext";
+import { useNotification } from "@/contexts/NotificationContext";
+import { Story, StoryPage, StoryQuizQuestion, STORY_THEMES, STORY_TAGS } from "@/types/story";
+import { JLPTLevel, JLPT_LEVELS } from "@/types/kanji";
+import { storyManager } from "@/utils/storyManager";
+import { marked } from "marked";
+import { useStrings } from '@/contexts/LanguageContext';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
-export default function EditStoryPage(props: any) {
-  return <EditStoryClient {...props} />;
-}
+export default function EditStoryClient() {
     const strings = useStrings();
     const router = useRouter();
     const params = useParams();

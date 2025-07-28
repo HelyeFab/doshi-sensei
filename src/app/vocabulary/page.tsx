@@ -23,6 +23,11 @@ export const metadata: Metadata = {
     description: 'Search Japanese vocabulary with WaniKani/Jisho or offline JMdict. Save words and example sentences to custom study lists.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Vocabulary Search & Study Lists | Doshi Sensei',
+    description: 'Search Japanese vocabulary with WaniKani/Jisho or offline JMdict. Save words and example sentences to custom study lists.',
+  },
   alternates: {
     canonical: '/vocabulary',
   },

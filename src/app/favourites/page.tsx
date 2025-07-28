@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     description: 'Organize your Japanese learning with personalized vocabulary lists and saved content.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'My Study Collections | Doshi Sensei',
+    description: 'Organize your Japanese learning with personalized vocabulary lists and saved content.',
+  },
   robots: {
     index: false, // Personal collections shouldn't be indexed
     follow: false,

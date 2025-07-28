@@ -105,6 +105,15 @@ html, body {
   /* Theme system will override these */
 }
 
+/* Apply dark mode styles immediately based on data attribute to prevent flash */
+[data-theme="dark"] {
+  --background: hsl(214, 25%, 22%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(216, 19%, 28%);
+  --muted: hsl(216, 19%, 18%);
+  --border: hsl(216, 16%, 18%);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

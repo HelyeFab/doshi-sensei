@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     description: 'Learn kanji through visual mood boards organized by themes. Master Japanese characters with context.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Kanji Mood Boards | Doshi Sensei',
+    description: 'Learn kanji through visual mood boards organized by themes. Master Japanese characters with context.',
+  },
   alternates: {
     canonical: '/kanji-moods',
   },

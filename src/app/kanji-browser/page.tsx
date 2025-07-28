@@ -25,6 +25,11 @@ export const metadata: Metadata = {
     description: 'Browse and study kanji organized by JLPT levels. View stroke order animations, meanings, and readings.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Kanji Browser - Study by JLPT Level | Doshi Sensei',
+    description: 'Browse and study kanji organized by JLPT levels. View stroke order animations, meanings, and readings.',
+  },
   alternates: {
     canonical: '/kanji-browser',
   },

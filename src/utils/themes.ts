@@ -187,6 +187,13 @@ export function applyTheme(scheme: ColorScheme, mode: ThemeMode) {
   root.classList.remove('dark', 'light');
   root.classList.add(effectiveMode);
   
+  // Save to localStorage for the blocking script
+  try {
+    localStorage.setItem('theme', effectiveMode);
+  } catch (e) {
+    // Fail silently if localStorage is not available
+  }
+  
   // Apply all CSS variables
   const variables = generateThemeVariables(scheme, effectiveMode);
   Object.entries(variables).forEach(([property, value]) => {

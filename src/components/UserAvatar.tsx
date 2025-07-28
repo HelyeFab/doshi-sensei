@@ -3,8 +3,8 @@
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStrings } from '@/contexts/LanguageContext';
-import Link from 'next/link'
-import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import { useState } from 'react';
+import VirtualCompanion from '@/components/VirtualCompanion';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -24,6 +24,7 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
   const { profile, profilePicture, loading } = useUserProfile();
   const { user } = useAuth();
   const strings = useStrings();
+  const [isCompanionOpen, setIsCompanionOpen] = useState(false);
 
   // While loading, show a placeholder that matches the final size
   if (loading) {
@@ -51,15 +52,24 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
     </div>
   );
 
-  // Wrap in Link if clickable
+  // Wrap in button if clickable
   if (clickable) {
     return (
-      <SmartNavigationLink href={user ? "/account" : "/login"} 
-        className="inline-block cursor-pointer"
-        aria-label={user ? "Go to account page" : "Login or sign up"}
-       title={strings?.account?.viewProfile || "View Profile"}>
-        {avatarElement}
-      </SmartNavigationLink>
+      <>
+        <button
+          onClick={() => setIsCompanionOpen(true)}
+          className="inline-block cursor-pointer"
+          aria-label="Open menu"
+          title={strings?.tooltips?.openVirtualCompanion || "Open menu"}
+        >
+          {avatarElement}
+        </button>
+        
+        <VirtualCompanion
+          isOpen={isCompanionOpen}
+          onClose={() => setIsCompanionOpen(false)}
+        />
+      </>
     );
   }
 

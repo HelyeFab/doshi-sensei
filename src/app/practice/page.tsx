@@ -24,6 +24,11 @@ export const metadata: Metadata = {
     description: 'Practice Japanese with various exercises: hiragana, katakana, verb conjugations, and flashcards.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Japanese Practice Hub | Doshi Sensei',
+    description: 'Practice Japanese with various exercises: hiragana, katakana, verb conjugations, and flashcards.',
+  },
   alternates: {
     canonical: '/practice',
   },

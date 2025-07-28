@@ -20,10 +20,8 @@ export default function CompanionTrigger() {
     setIsCompanionOpen(false);
   };
 
-  // Don't render anything if settings are loading, showCompanion is disabled, on admin pages, or on homepage
-  if (isLoading || !settings.showCompanion || pathname?.startsWith('/admin') || pathname === '/') {
-    return null;
-  }
+  // Always hide the companion trigger since we're using the avatar now
+  return null;
 
   return (
     <>

@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     description: 'Manage your Japanese learning profile, track progress, and customize your study experience.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'My Account | Doshi Sensei',
+    description: 'Manage your Japanese learning profile and track your progress.',
+  },
   robots: {
     index: false, // Account pages shouldn't be indexed
     follow: false,

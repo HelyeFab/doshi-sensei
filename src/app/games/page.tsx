@@ -23,6 +23,11 @@ export const metadata: Metadata = {
     description: 'Play fun and interactive games to practice Japanese. Master kanji, vocabulary, and reading through engaging gameplay.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary',
+    title: 'Japanese Learning Games | Doshi Sensei',
+    description: 'Play fun and interactive games to practice Japanese. Master kanji, vocabulary, and reading through engaging gameplay.',
+  },
   alternates: {
     canonical: '/games',
   },

@@ -1,16 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link'
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useSubscription2 } from '@/hooks/useSubscription2';
-import { useSettings } from '@/contexts/SettingsContext';
 import { useStrings } from '@/contexts/LanguageContext';
-import { pokemonManager } from '@/utils/pokemonManager';
-import { colorPalettes } from '@/utils/themes';
-import { ToriiGate } from '@/components/ToriiGate';
 import { StatsBar } from '@/components/stats/StatsBar';
 import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
@@ -18,26 +12,13 @@ import UserAchievements from '@/components/achievements/UserAchievements';
 import { useRouter } from 'next/navigation';
 
 export default function HomeClient() {
-  const { profile, profilePicture } = useUserProfile();
-  const { subscription } = useSubscription2();
-  const { settings } = useSettings();
+  const { profile } = useUserProfile();
   const strings = useStrings();
   const { user } = useAuth();
   const router = useRouter();
   const [dayProgress, setDayProgress] = useState(0);
   const [todayDate, setTodayDate] = useState<string>('');
   const [isClient, setIsClient] = useState(false);
-
-  // Ensure strings are loaded
-  if (!strings || !strings.home || !strings.home.featureCards) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse">Loading...</div>
-      </div>
-    );
-  }
-
-  const displayName = profile?.displayName || profile?.email || user?.email || strings.home.welcomeUser;
 
   // Mark when we're on the client and load debug stats
   useEffect(() => {
@@ -47,8 +28,8 @@ export default function HomeClient() {
     if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
       // Delay import to ensure all dependencies are loaded
       setTimeout(() => {
-        import('@/utils/debugStats').catch(err => {
-          console.warn('Failed to load debug stats:', err);
+        import('@/utils/debugStats').catch(() => {
+          // Silently ignore debug stats loading errors
         });
       }, 1000);
     }
@@ -80,6 +61,16 @@ export default function HomeClient() {
     return () => clearInterval(interval);
   }, [isClient]);
 
+  // Ensure strings are loaded
+  if (!strings || !strings.home || !strings.home.featureCards) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  const displayName = profile?.displayName || profile?.email || user?.email || strings.home.welcomeUser;
 
   return (
     <div className="min-h-screen bg-background">

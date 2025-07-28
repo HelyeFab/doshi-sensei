@@ -8,31 +8,37 @@ import { motion } from 'framer-motion';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
-import { Article } from '@/types/article';
-import { articleService } from '@/services/articleService';
+import { NewsArticle } from '@/types/news';
+import { getWatanocArticles, triggerArticleScraping, getArticleStats } from '@/utils/watanocArticles';
+import { LoginPromptModal } from '@/components/LoginPromptModal';
+import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
 
 export default function NewsClient() {
   const router = useRouter();
   const strings = useStrings();
   const { user } = useAuth();
   const { checkAndTrack } = useAccess();
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     loadArticles();
-  }, [selectedCategory, selectedDifficulty]);
+  }, [selectedLevel]);
 
   const loadArticles = async () => {
     try {
       setLoading(true);
-      const loadedArticles = await articleService.getArticles({
-        category: selectedCategory === 'all' ? undefined : selectedCategory,
-        difficulty: selectedDifficulty === 'all' ? undefined : selectedDifficulty
-      });
-      setArticles(loadedArticles);
+      const loadedArticles = await getWatanocArticles();
+      
+      // Filter by level if selected
+      const filtered = selectedLevel === 'all' 
+        ? loadedArticles 
+        : loadedArticles.filter(article => article.level === selectedLevel);
+      
+      setArticles(filtered);
     } catch (error) {
       console.error('Failed to load articles:', error);
     } finally {
@@ -40,31 +46,44 @@ export default function NewsClient() {
     }
   };
 
-  const handleReadArticle = async (article: Article) => {
+  const handleReadArticle = async (article: NewsArticle) => {
     // Check access
     const result = await checkAndTrack('news_reading');
     if (!result.hasAccess) {
-      alert(strings.news?.upgradePrompt || 'Please upgrade to read more articles');
+      if (!user) {
+        setShowLoginPrompt(true);
+      } else {
+        setShowUpgradeModal(true);
+      }
       return;
     }
 
     router.push(`/news/${article.id}`);
   };
 
-  const categories = ['all', 'technology', 'culture', 'business', 'entertainment', 'sports'];
-  const difficulties = ['all', 'beginner', 'intermediate', 'advanced'];
+  const levels = ['all', 'N5', 'N4', 'N3', 'N2', 'N1'];
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner':
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case 'N5':
+      case 'N4':
         return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-      case 'intermediate':
+      case 'N3':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'advanced':
+      case 'N2':
+      case 'N1':
         return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
     }
+  };
+
+  const formatDate = (dateString: string | Date) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ja-JP', {
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   return (
@@ -77,46 +96,24 @@ export default function NewsClient() {
 
       <MobileAwareContainer className="pb-20">
         {/* Filters */}
-        <div className="mb-6 space-y-4">
-          {/* Category Filter */}
+        <div className="mb-6">
+          {/* Level Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {strings.news?.category || "Category"}
+              {strings.news?.level || "JLPT Level"}
             </label>
             <div className="flex flex-wrap gap-2">
-              {categories.map(category => (
+              {levels.map(level => (
                 <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-lg transition-colors capitalize ${
-                    selectedCategory === category
+                  key={level}
+                  onClick={() => setSelectedLevel(level)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    selectedLevel === level
                       ? 'bg-blue-600 text-white'
                       : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
-                  {strings.news?.[category] || category}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Difficulty Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {strings.news?.difficulty || "Difficulty"}
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {difficulties.map(difficulty => (
-                <button
-                  key={difficulty}
-                  onClick={() => setSelectedDifficulty(difficulty)}
-                  className={`px-4 py-2 rounded-lg transition-colors capitalize ${
-                    selectedDifficulty === difficulty
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {strings.news?.[difficulty] || difficulty}
+                  {level === 'all' ? strings.news?.allLevels || 'All Levels' : level}
                 </button>
               ))}
             </div>
@@ -139,25 +136,40 @@ export default function NewsClient() {
                 onClick={() => handleReadArticle(article)}
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
               >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex-1">
-                    {article.title}
-                  </h3>
-                  <span className={`ml-2 text-xs px-2 py-1 rounded-full ${getDifficultyColor(article.difficulty)}`}>
-                    {article.difficulty}
-                  </span>
-                </div>
-                
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                  {article.summary}
-                </p>
-                
-                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="capitalize">{article.category}</span>
-                  <span>•</span>
-                  <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
-                  <span>•</span>
-                  <span>{article.readingTime} {strings.news?.minRead || "min read"}</span>
+                <div className="flex items-start gap-4">
+                  {article.thumbnail && (
+                    <img 
+                      src={article.thumbnail} 
+                      alt={article.title}
+                      className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex-1">
+                        <span dangerouslySetInnerHTML={{ __html: article.titleWithRuby || article.title }} />
+                      </h3>
+                      <span className={`ml-2 text-xs px-2 py-1 rounded-full ${getLevelColor(article.level)}`}>
+                        {article.level}
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
+                      <span dangerouslySetInnerHTML={{ __html: article.summaryWithRuby || article.summary }} />
+                    </p>
+                    
+                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                      <span>{article.source}</span>
+                      <span>•</span>
+                      <span>{formatDate(article.publishedDate)}</span>
+                      {article.readingTime && (
+                        <>
+                          <span>•</span>
+                          <span>{article.readingTime} {strings.news?.minRead || "min read"}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -172,6 +184,16 @@ export default function NewsClient() {
           </div>
         )}
       </MobileAwareContainer>
+
+      {/* Login Prompt Modal */}
+      {showLoginPrompt && (
+        <LoginPromptModal onClose={() => setShowLoginPrompt(false)} />
+      )}
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <UpgradeSlideUpModal onClose={() => setShowUpgradeModal(false)} />
+      )}
     </div>
   );
 }

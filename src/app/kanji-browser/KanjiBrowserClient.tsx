@@ -3,23 +3,25 @@
 import { useState, useEffect } from 'react';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
-import KanjiCard from '@/components/kanji/KanjiCard';
+import KanjiCard from '@/components/kanji-moods/KanjiCard';
 import KanjiModal from '@/components/kanji/KanjiModal';
-import { kanjiService } from '@/services/kanjiService';
-import { JLPT_LEVELS, JLPTLevel, KANJI_BY_LEVEL } from '@/types/kanji';
+import { JLPT_LEVELS, JLPTLevel, Kanji } from '@/types/kanji';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useFeature } from '@/hooks/useFeature';
+import KanjiManager from '@/utils/kanjiManager';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function KanjiBrowserClient() {
   const strings = useStrings();
-  const { isPremium } = useSubscription2();
+  const { user } = useAuth();
+  const { isPremium, subscription } = useSubscription2();
   const { feature: strokeOrderFeature } = useFeature('view_stroke_order');
   const [selectedLevel, setSelectedLevel] = useState<JLPTLevel>('N5');
   const [searchTerm, setSearchTerm] = useState('');
-  const [kanjiList, setKanjiList] = useState<string[]>([]);
-  const [filteredKanji, setFilteredKanji] = useState<string[]>([]);
-  const [selectedKanji, setSelectedKanji] = useState<string | null>(null);
+  const [kanjiData, setKanjiData] = useState<Kanji[]>([]);
+  const [filteredKanji, setFilteredKanji] = useState<Kanji[]>([]);
+  const [selectedKanji, setSelectedKanji] = useState<Kanji | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,13 +30,13 @@ export default function KanjiBrowserClient() {
 
   useEffect(() => {
     filterKanji();
-  }, [kanjiList, searchTerm]);
+  }, [kanjiData, searchTerm]);
 
   const loadKanjiForLevel = async () => {
     setLoading(true);
     try {
-      const levelKanji = KANJI_BY_LEVEL[selectedLevel] || [];
-      setKanjiList(levelKanji);
+      const levelData = await KanjiManager.loadKanjiByLevel(selectedLevel);
+      setKanjiData(levelData);
     } catch (error) {
       console.error('Failed to load kanji:', error);
     } finally {
@@ -42,18 +44,30 @@ export default function KanjiBrowserClient() {
     }
   };
 
-  const filterKanji = () => {
+  const filterKanji = async () => {
     if (!searchTerm) {
-      setFilteredKanji(kanjiList);
+      setFilteredKanji(kanjiData);
       return;
     }
 
-    const filtered = kanjiList.filter(kanji => {
-      // For now, just check if the kanji matches
-      // In a full implementation, we'd search meanings and readings too
-      return kanji.includes(searchTerm);
-    });
-    setFilteredKanji(filtered);
+    try {
+      const searchResults = await KanjiManager.searchKanji(searchTerm);
+      // Filter to only show results from the selected level
+      const filtered = searchResults.filter(kanji => 
+        kanjiData.some(k => k.character === kanji.character)
+      );
+      setFilteredKanji(filtered);
+    } catch (error) {
+      console.error('Search error:', error);
+      // Fallback to simple filtering
+      const filtered = kanjiData.filter(kanji => 
+        kanji.character.includes(searchTerm) ||
+        kanji.meanings.some(m => m.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        kanji.readings.kun.some(r => r.includes(searchTerm)) ||
+        kanji.readings.on.some(r => r.includes(searchTerm))
+      );
+      setFilteredKanji(filtered);
+    }
   };
 
   const canViewStrokeOrder = isPremium || (strokeOrderFeature?.access?.hasAccess ?? false);
@@ -114,8 +128,8 @@ export default function KanjiBrowserClient() {
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
             {filteredKanji.map((kanji) => (
               <KanjiCard
-                key={kanji}
-                kanji={kanji}
+                key={kanji.character}
+                kanji={kanji.character}
                 onClick={() => setSelectedKanji(kanji)}
                 showMeaning={false}
                 size="medium"

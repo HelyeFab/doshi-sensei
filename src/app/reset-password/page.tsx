@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Reset Password | Doshi Sensei',
-  description: 'Reset Password - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Reset Password - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Reset Password | Doshi Sensei',
-    description: 'Reset Password - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Reset Password - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/reset-password',
   },
   twitter: {
     card: 'summary',
     title: 'Reset Password | Doshi Sensei',
-    description: 'Reset Password - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Reset Password - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

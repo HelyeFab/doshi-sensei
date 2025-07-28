@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Mood Boards | Doshi Sensei',
-  description: 'Mood Boards - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Mood Boards - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Mood Boards | Doshi Sensei',
-    description: 'Mood Boards - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Mood Boards - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/admin/mood-boards',
   },
   twitter: {
     card: 'summary',
     title: 'Mood Boards | Doshi Sensei',
-    description: 'Mood Boards - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Mood Boards - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

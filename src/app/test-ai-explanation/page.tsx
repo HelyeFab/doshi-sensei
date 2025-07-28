@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'AI Explanation Test | Doshi Sensei',
-  description: 'AI Explanation Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'AI Explanation Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'AI Explanation Test | Doshi Sensei',
-    description: 'AI Explanation Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'AI Explanation Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/test-ai-explanation',
   },
   twitter: {
     card: 'summary',
     title: 'AI Explanation Test | Doshi Sensei',
-    description: 'AI Explanation Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'AI Explanation Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

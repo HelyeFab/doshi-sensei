@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'User Entitlements | Doshi Sensei',
-  description: 'User Entitlements - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'User Entitlements - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'User Entitlements | Doshi Sensei',
-    description: 'User Entitlements - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'User Entitlements - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/admin/user-entitlements',
   },
   twitter: {
     card: 'summary',
     title: 'User Entitlements | Doshi Sensei',
-    description: 'User Entitlements - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'User Entitlements - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

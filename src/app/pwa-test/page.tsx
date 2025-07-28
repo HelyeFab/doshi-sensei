@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'PWA Test | Doshi Sensei',
-  description: 'PWA Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'PWA Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'PWA Test | Doshi Sensei',
-    description: 'PWA Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'PWA Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/pwa-test',
   },
   twitter: {
     card: 'summary',
     title: 'PWA Test | Doshi Sensei',
-    description: 'PWA Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'PWA Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

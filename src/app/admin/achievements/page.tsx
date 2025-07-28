@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Achievements | Doshi Sensei',
-  description: 'Achievements - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Achievements - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Achievements | Doshi Sensei',
-    description: 'Achievements - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Achievements - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/admin/achievements',
   },
   twitter: {
     card: 'summary',
     title: 'Achievements | Doshi Sensei',
-    description: 'Achievements - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Achievements - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

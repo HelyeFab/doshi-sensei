@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Snake Adjust | Doshi Sensei',
-  description: 'Snake Adjust - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Snake Adjust - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Snake Adjust | Doshi Sensei',
-    description: 'Snake Adjust - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Snake Adjust - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/practice/snake-adjust',
   },
   twitter: {
     card: 'summary',
     title: 'Snake Adjust | Doshi Sensei',
-    description: 'Snake Adjust - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Snake Adjust - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
 };
 

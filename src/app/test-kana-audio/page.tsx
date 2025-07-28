@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Kana Audio Test | Doshi Sensei',
-  description: 'Kana Audio Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Kana Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Kana Audio Test | Doshi Sensei',
-    description: 'Kana Audio Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Kana Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/test-kana-audio',
   },
   twitter: {
     card: 'summary',
     title: 'Kana Audio Test | Doshi Sensei',
-    description: 'Kana Audio Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Kana Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

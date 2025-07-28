@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Shadowing Test | Doshi Sensei',
-  description: 'Shadowing Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Shadowing Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Shadowing Test | Doshi Sensei',
-    description: 'Shadowing Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Shadowing Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/test-shadowing',
   },
   twitter: {
     card: 'summary',
     title: 'Shadowing Test | Doshi Sensei',
-    description: 'Shadowing Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Shadowing Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

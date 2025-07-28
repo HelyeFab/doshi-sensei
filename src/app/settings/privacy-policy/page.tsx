@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Doshi Sensei',
-  description: 'Privacy Policy - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Privacy Policy - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Privacy Policy | Doshi Sensei',
-    description: 'Privacy Policy - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Privacy Policy - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/settings/privacy-policy',
   },
   twitter: {
     card: 'summary',
     title: 'Privacy Policy | Doshi Sensei',
-    description: 'Privacy Policy - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Privacy Policy - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
 };
 

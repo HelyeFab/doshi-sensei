@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Minimal AI Test | Doshi Sensei',
-  description: 'Minimal AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Minimal AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Minimal AI Test | Doshi Sensei',
-    description: 'Minimal AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Minimal AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/test-minimal-ai',
   },
   twitter: {
     card: 'summary',
     title: 'Minimal AI Test | Doshi Sensei',
-    description: 'Minimal AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Minimal AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

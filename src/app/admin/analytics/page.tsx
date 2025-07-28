@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Analytics | Doshi Sensei',
-  description: 'Analytics - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Analytics - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Analytics | Doshi Sensei',
-    description: 'Analytics - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Analytics - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/admin/analytics',
   },
   twitter: {
     card: 'summary',
     title: 'Analytics | Doshi Sensei',
-    description: 'Analytics - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Analytics - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

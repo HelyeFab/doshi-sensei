@@ -4,17 +4,17 @@ import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: 'Eviction Test | Doshi Sensei',
-  description: 'Eviction Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+  description: 'Eviction Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   openGraph: {
     title: 'Eviction Test | Doshi Sensei',
-    description: 'Eviction Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Eviction Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
     type: 'website',
     url: 'https://doshisensei.com/test-eviction',
   },
   twitter: {
     card: 'summary',
     title: 'Eviction Test | Doshi Sensei',
-    description: 'Eviction Test - Part of Doshi Sensei's comprehensive Japanese learning platform.',
+    description: 'Eviction Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
   },
   robots: {
     index: false,

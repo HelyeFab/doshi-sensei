@@ -560,15 +560,6 @@ export default function NewStoryClient() {
                   />
                   <label
                     htmlFor="json-import"
-
-export const metadata = {
-  title: 'New',
-  description: 'New - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  openGraph: {
-    title: 'New | Doshi Sensei',
-    description: 'New - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  },
-};
                     className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer"
                   >
                     Select JSON File

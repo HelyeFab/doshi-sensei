@@ -56,15 +56,6 @@ export default function PrivacyPolicyClient() {
                     <p className="font-medium text-foreground">You Control Your Data</p>
                     <p className="text-sm text-muted-foreground">
                       You can export, import, or delete all your data at any time.
-
-export const metadata = {
-  title: 'Privacy-policy',
-  description: 'Privacy-policy - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  openGraph: {
-    title: 'Privacy-policy | Doshi Sensei',
-    description: 'Privacy-policy - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  },
-};
                     </p>
                   </div>
                 </div>

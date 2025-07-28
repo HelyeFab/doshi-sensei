@@ -8,15 +8,6 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
 import { getArticleStats, clearCache } from '@/utils/watanocArticles';
 import {
-
-export const metadata = {
-  title: 'Articles',
-  description: 'Articles - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  openGraph: {
-    title: 'Articles | Doshi Sensei',
-    description: 'Articles - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  },
-};
   triggerWatanocScraping,
   triggerTodaiiScraping,
   triggerNHKEasyScraping,

@@ -34,7 +34,7 @@ const structuredData = {
   }
 };
 
-export default function AdminDashboard() {
+export default function AdminPage() {
   return (
     <>
       <StructuredData data={structuredData} />

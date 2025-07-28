@@ -10,6 +10,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSearchParams } from 'next/navigation';
 import YouTubeInput from './components/YouTubeInput';
 import AudioExtractor from './components/AudioExtractor';
 import TranscriptDisplay from './components/TranscriptDisplay';
@@ -66,6 +67,7 @@ export default function YouTubeShadowing() {
   const { feature, access, remaining } = useFeature('youtube_shadowing');
   const { isPremium, userType } = useSubscription2();
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<ShadowingSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +76,7 @@ export default function YouTubeShadowing() {
   const [showShadowingMode, setShowShadowingMode] = useState(true);
   const previousUrlsRef = useRef<{ videoUrl?: string; audioUrl?: string }>({});
   const [practiceStartTime, setPracticeStartTime] = useState<Date | null>(null);
+  const [urlFromParams, setUrlFromParams] = useState<string | null>(null);
 
   // Extract video ID from YouTube URL
   const extractVideoId = (url: string): string | null => {
@@ -103,6 +106,22 @@ export default function YouTubeShadowing() {
       practiceHistoryService.initialize(user.uid, isPremium);
     }
   }, [user, isPremium]);
+
+  // Handle URL from query parameters (when coming from My Videos or Popular Videos)
+  useEffect(() => {
+    const url = searchParams.get('url');
+    const fromHistory = searchParams.get('fromHistory');
+    
+    if (url && !session && !urlFromParams) {
+      // Set the URL so we don't process it again
+      setUrlFromParams(url);
+      
+      // If coming from history or popular videos, automatically start loading
+      if (fromHistory === 'true') {
+        handleUrlSubmit(url);
+      }
+    }
+  }, [searchParams, session, urlFromParams]);
 
   // Cleanup blob URLs when component unmounts or session changes
   useEffect(() => {
@@ -635,6 +654,11 @@ export default function YouTubeShadowing() {
                     audioUrl={session.audioUrl}
                     fileInfo={session.fileInfo}
                     onTranscriptLoaded={handleTranscriptLoaded}
+                    onGoBack={() => {
+                      // Reset session to go back to URL input
+                      updateSession(null);
+                      setError(null);
+                    }}
                   />
                 </motion.div>
               )}

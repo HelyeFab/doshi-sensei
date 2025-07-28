@@ -32,7 +32,15 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   const [firestoreLoading, setFirestoreLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !user.uid) {
+      setFirestoreData(null);
+      setFirestoreLoading(false);
+      return;
+    }
+
+    // Ensure we have a valid user ID before setting up the listener
+    if (typeof user.uid !== 'string' || user.uid.length === 0) {
+      console.warn('Invalid user ID detected, skipping Firestore listener setup');
       setFirestoreData(null);
       setFirestoreLoading(false);
       return;
@@ -50,7 +58,10 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
         setFirestoreLoading(false);
       },
       (error) => {
-        console.error('Error fetching user profile:', error);
+        // Only log errors that aren't permission-related (which are expected when logging out)
+        if (error.code !== 'permission-denied') {
+          console.error('Error fetching user profile:', error);
+        }
         setFirestoreData(null);
         setFirestoreLoading(false);
       }

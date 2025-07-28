@@ -505,7 +505,7 @@ export default function AccountClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <SmartPageHeader title="Account" />
 
       {/* Main Content */}
@@ -551,9 +551,16 @@ export default function AccountClient() {
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+                <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
               </div>
             </div>
+
+            {/* Error Display */}
+            {error && !showErrorModal && (
+              <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
+            )}
 
             {/* Email/Password Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -594,8 +601,8 @@ export default function AccountClient() {
                     className={`w-full px-3 py-2 pr-10 border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
                       !isLogin && email && !checkingEmail && emailAvailable !== null
                         ? emailAvailable
-                          ? 'border-green-500'
-                          : 'border-red-500'
+                          ? 'border-success'
+                          : 'border-destructive'
                         : 'border-border'
                     }`}
                     required
@@ -608,7 +615,7 @@ export default function AccountClient() {
                         <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
                       ) : emailAvailable !== null ? (
                         <svg
-                          className={`w-5 h-5 ${emailAvailable ? 'text-green-500' : 'text-red-500'}`}
+                          className={`w-5 h-5 ${emailAvailable ? 'text-success' : 'text-destructive'}`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -626,7 +633,7 @@ export default function AccountClient() {
                 
                 {/* Email Availability Message */}
                 {!isLogin && email && !checkingEmail && emailAvailable === false && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-destructive">
                     This email is already registered. Please sign in instead.
                   </p>
                 )}
@@ -664,9 +671,9 @@ export default function AccountClient() {
                         <div className="w-full bg-background rounded-full h-2">
                           <div
                             className={`h-2 rounded-full transition-all duration-300 ${
-                              getPasswordStrength(password).strength === 'weak' ? 'bg-red-500' :
-                              getPasswordStrength(password).strength === 'medium' ? 'bg-yellow-500' :
-                              'bg-green-500'
+                              getPasswordStrength(password).strength === 'weak' ? 'bg-destructive' :
+                              getPasswordStrength(password).strength === 'medium' ? 'bg-warning' :
+                              'bg-success'
                             }`}
                             style={{ width: `${getPasswordStrength(password).percentage}%` }}
                           />
@@ -702,7 +709,7 @@ export default function AccountClient() {
                               return (
                                 <li key={index} className="flex items-center gap-2">
                                   <svg
-                                    className={`w-4 h-4 ${isMet ? 'text-green-500' : 'text-muted-foreground'}`}
+                                    className={`w-4 h-4 ${isMet ? 'text-success' : 'text-muted-foreground'}`}
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -713,7 +720,7 @@ export default function AccountClient() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     )}
                                   </svg>
-                                  <span className={`text-sm ${isMet ? 'text-green-600' : 'text-muted-foreground'}`}>
+                                  <span className={`text-sm ${isMet ? 'text-success' : 'text-muted-foreground'}`}>
                                     {req.label}
                                   </span>
                                 </li>
@@ -747,7 +754,7 @@ export default function AccountClient() {
                   {confirmPassword && (
                     <div className="mt-2 flex items-center gap-2">
                       <svg
-                        className={`w-4 h-4 ${password === confirmPassword ? 'text-green-500' : 'text-red-500'}`}
+                        className={`w-4 h-4 ${password === confirmPassword ? 'text-success' : 'text-destructive'}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -758,7 +765,7 @@ export default function AccountClient() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         )}
                       </svg>
-                      <span className={`text-sm ${password === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
+                      <span className={`text-sm ${password === confirmPassword ? 'text-success' : 'text-destructive'}`}>
                         {password === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
                       </span>
                     </div>

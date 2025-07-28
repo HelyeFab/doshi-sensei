@@ -48,6 +48,13 @@ export class SubscriptionManager {
     userId: string, 
     callback: (subscription: Subscription | null) => void
   ): Unsubscribe {
+    // Validate userId before setting up listener
+    if (!userId || typeof userId !== 'string' || userId.length === 0) {
+      console.warn('Invalid userId provided to subscription listener');
+      callback(null);
+      return () => {}; // Return empty unsubscribe function
+    }
+
     // Clean up existing listener
     this.stopListening(userId);
     
@@ -63,7 +70,10 @@ export class SubscriptionManager {
         }
       },
       (error) => {
-        console.error('Subscription listener error:', error);
+        // Only log non-permission errors
+        if (error.code !== 'permission-denied') {
+          console.error('Subscription listener error:', error);
+        }
         callback(null);
       }
     );

@@ -26,7 +26,7 @@ export function NavigationBar({
   showBack = false,
 }: NavigationBarProps) {
   return (
-    <div className="px-4 pt-8 pb-8 md:pb-12" style={{ paddingBottom: 'calc(2rem + env(safe-area-inset-bottom, 0px))' }}>
+    <div className="px-4 pt-6 pb-6 md:pb-8">
       <div className="max-w-6xl mx-auto">
         {/* Progression Dots */}
         <div className="flex justify-center mb-6">

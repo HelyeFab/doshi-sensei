@@ -143,7 +143,7 @@ export class TranscriptCacheManager {
     try {
       console.log('Saving transcript to cache:', params.contentId);
 
-      const cacheData: CachedTranscript = {
+      const cacheData = {
         id: params.contentId,
         contentId: params.contentId,
         contentType: params.contentType,
@@ -152,8 +152,8 @@ export class TranscriptCacheManager {
         transcript: params.transcript,
         language: params.language,
         duration: params.duration,
-        createdAt: serverTimestamp() as Timestamp,
-        lastAccessed: serverTimestamp() as Timestamp,
+        createdAt: serverTimestamp(),
+        lastAccessed: serverTimestamp(),
         accessCount: 1,
         createdBy: params.userId,
         metadata: params.metadata
@@ -163,6 +163,9 @@ export class TranscriptCacheManager {
       await setDoc(docRef, cacheData);
 
       console.log('Transcript saved to cache successfully');
+      console.log('Saved document ID:', params.contentId);
+      console.log('Content type:', params.contentType);
+      console.log('Video title:', params.videoTitle);
     } catch (error) {
       console.error('Error saving transcript to cache:', error);
       // Don't throw - caching failure shouldn't break the transcription flow

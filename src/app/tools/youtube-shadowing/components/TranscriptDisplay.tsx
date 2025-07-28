@@ -16,13 +16,15 @@ interface TranscriptDisplayProps {
     type: string;
   };
   onTranscriptLoaded: (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => void;
+  onGoBack?: () => void;
 }
 
 export default function TranscriptDisplay({ 
   videoUrl, 
   audioUrl, 
   fileInfo,
-  onTranscriptLoaded 
+  onTranscriptLoaded,
+  onGoBack 
 }: TranscriptDisplayProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'completed' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -348,7 +350,35 @@ export default function TranscriptDisplay({
         <div className="space-y-3">
           {/* Show SubtitleUploader for YouTube videos */}
           {audioUrl === 'youtube-player' ? (
-            <SubtitleUploader onSubtitlesLoaded={onTranscriptLoaded} />
+            <>
+              <div className="flex items-start gap-3 mb-4">
+                <svg className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="flex-1">
+                  <p className="text-sm text-destructive">{error}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {strings.youtubeShadowing?.transcriptErrorNote || 'The video might not have captions available'}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 mb-4">
+                {onGoBack && (
+                  <button
+                    onClick={onGoBack}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
+                  >
+                    ← Go Back
+                  </button>
+                )}
+                <span className="text-sm text-muted-foreground">
+                  {onGoBack ? 'or upload subtitles manually:' : 'Upload subtitles manually:'}
+                </span>
+              </div>
+              
+              <SubtitleUploader onSubtitlesLoaded={onTranscriptLoaded} />
+            </>
           ) : (
             <>
               <div className="flex items-start gap-3">

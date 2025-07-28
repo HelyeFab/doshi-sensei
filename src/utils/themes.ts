@@ -129,24 +129,24 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
   if (mode === 'dark') {
     // Dark theme - use darker variants
     return {
-      '--background': 'hsl(234, 14%, 31%)',
+      '--background': 'hsl(214, 25%, 22%)', // #2E3440
       '--foreground': 'hsl(210, 40%, 98%)',
-      '--card': 'hsl(234, 14%, 31%)',
+      '--card': 'hsl(216, 19%, 28%)', // Slightly lighter than background for cards
       '--card-foreground': 'hsl(210, 40%, 98%)',
-      '--popover': 'hsl(234, 14%, 31%)',
+      '--popover': 'hsl(216, 19%, 28%)', // Same as card
       '--popover-foreground': 'hsl(210, 40%, 98%)',
       '--primary': palette.colors.primary,
       '--primary-foreground': palette.colors.primaryForeground,
-      '--secondary': 'hsl(217.2, 32.6%, 17.5%)',
+      '--secondary': 'hsl(216, 19%, 16%)', // Darker variant for secondary
       '--secondary-foreground': 'hsl(210, 40%, 98%)',
-      '--muted': 'hsl(217.2, 32.6%, 17.5%)',
+      '--muted': 'hsl(216, 19%, 18%)', // Slightly darker for muted elements
       '--muted-foreground': 'hsl(215, 20.2%, 65.1%)',
-      '--accent': 'hsl(217.2, 32.6%, 17.5%)',
+      '--accent': 'hsl(216, 19%, 25%)', // Subtle accent
       '--accent-foreground': 'hsl(210, 40%, 98%)',
       '--destructive': 'hsl(0, 62.8%, 30.6%)',
       '--destructive-foreground': 'hsl(210, 40%, 98%)',
-      '--border': 'hsl(217.2, 32.6%, 17.5%)',
-      '--input': 'hsl(217.2, 32.6%, 17.5%)',
+      '--border': 'hsl(216, 16%, 18%)', // Subtle borders
+      '--input': 'hsl(216, 19%, 25%)', // Input fields slightly visible
       '--ring': palette.colors.primary,
     };
   }

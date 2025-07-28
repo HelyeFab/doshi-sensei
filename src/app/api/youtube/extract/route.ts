@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
 
     console.log('=== Starting YouTube extraction ===');
     console.log('URL:', url);
+    console.log('Request headers:', request.headers);
     
     // Check cache FIRST before making any API calls
     const contentId = TranscriptCacheManager.generateContentId({
@@ -132,6 +133,8 @@ export async function POST(request: NextRequest) {
       try {
         console.log('=== Trying SupaData AI ===');
         console.log('SupaData API Key first 10 chars:', SUPA_API_KEY.substring(0, 10) + '...');
+        console.log('Request URL:', url);
+        console.log('Request params:', { url, lang: 'ja' });
         
         const supaResponse = await axios.get(
           `https://api.supadata.ai/v1/transcript`,
@@ -170,19 +173,29 @@ export async function POST(request: NextRequest) {
           
           if (transcript && transcript.length > 0) {
             // Save to cache before returning
-            await TranscriptCacheManager.saveTranscriptToCache({
-              contentId,
-              contentType: 'youtube',
-              videoUrl: url,
-              videoTitle: videoMetadata?.title || supaResponse.data.title || 'Unknown',
-              transcript,
-              language: 'ja',
-              metadata: {
-                youtubeVideoId: videoId,
-                channelName: videoMetadata?.channelTitle,
-                uploadDate: videoMetadata?.publishedAt
-              }
-            });
+            console.log('=== Saving to transcript cache ===');
+            console.log('Content ID:', contentId);
+            console.log('Video URL:', url);
+            console.log('Video title:', videoMetadata?.title || supaResponse.data.title || 'Unknown');
+            
+            try {
+              await TranscriptCacheManager.saveTranscriptToCache({
+                contentId,
+                contentType: 'youtube',
+                videoUrl: url,
+                videoTitle: videoMetadata?.title || supaResponse.data.title || 'Unknown',
+                transcript,
+                language: 'ja',
+                metadata: {
+                  youtubeVideoId: videoId,
+                  channelName: videoMetadata?.channelTitle,
+                  uploadDate: videoMetadata?.publishedAt
+                }
+              });
+              console.log('=== Cache save completed ===');
+            } catch (cacheError) {
+              console.error('=== Cache save failed ===', cacheError);
+            }
             
             return NextResponse.json({
               success: true,
@@ -200,8 +213,14 @@ export async function POST(request: NextRequest) {
         console.error('Error message:', supaError.message);
         console.error('Error response status:', supaError.response?.status);
         console.error('Error response data:', supaError.response?.data);
+        console.error('Error response headers:', supaError.response?.headers);
+        console.error('Full error object:', JSON.stringify(supaError, null, 2));
         if (supaError.response?.status === 404) {
           console.log('No transcript available from SupaData');
+        } else if (supaError.response?.status === 401) {
+          console.error('SupaData API key authentication failed');
+        } else if (supaError.response?.status === 403) {
+          console.error('SupaData API key forbidden - check permissions');
         }
         // Continue to fallback methods
       }
@@ -377,9 +396,16 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('API route error:', error);
+    console.error('=== API route critical error ===');
+    console.error('Error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
     return NextResponse.json(
-      { error: 'Failed to process request', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Failed to process request', 
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
+      },
       { status: 500 }
     );
   }

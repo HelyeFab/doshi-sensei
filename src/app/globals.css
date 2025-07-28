@@ -48,6 +48,22 @@ html, body {
 }
 
 /* Theme variables are set by the theme system in themes.ts */
+
+/* Safe area padding utilities */
+@layer utilities {
+  .py-safe {
+    padding-top: env(safe-area-inset-top, 1rem);
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 1rem);
+  }
+  
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+}
 /* These are placeholder values that will be overridden by the theme system */
 :root {
   /* Default theme variables - will be overridden by theme system */
@@ -75,6 +91,8 @@ html, body {
   /* Additional colors */
   --success: 142 71% 45%;
   --success-foreground: 0 0% 98%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 48 96% 10%;
   
   /* Bottom navbar dimensions */
   --bottom-nav-height: 4rem; /* 64px */
@@ -104,6 +122,8 @@ html, body {
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

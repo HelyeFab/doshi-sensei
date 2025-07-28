@@ -32,14 +32,6 @@ export function YouTubeShadowingScreen({ onNext }: YouTubeShadowingScreenProps) 
         {/* Feature highlights */}
         <div className="space-y-3">
           <div className="flex items-start gap-3 text-left bg-white/10 p-3 rounded-lg">
-            <span className="text-2xl">📝</span>
-            <div>
-              <p className="font-medium text-sm text-white">AI-Powered Transcripts</p>
-              <p className="text-xs text-white/70">Get Japanese subtitles even when YouTube doesn't provide them</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start gap-3 text-left bg-white/10 p-3 rounded-lg">
             <span className="text-2xl">🔄</span>
             <div>
               <p className="font-medium text-sm text-white">Line-by-Line Practice</p>

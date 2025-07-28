@@ -48,8 +48,12 @@ export default function HomeClient() {
       const progress = (totalMinutes / dayMinutes) * 100;
       setDayProgress(progress);
       
-      // Format today's date
-      const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+      // Format today's date - only on client to avoid hydration issues
+      const options: Intl.DateTimeFormatOptions = { 
+        weekday: 'long', 
+        month: 'long', 
+        day: 'numeric'
+      };
       setTodayDate(now.toLocaleDateString('en-US', options));
     };
 
@@ -70,7 +74,20 @@ export default function HomeClient() {
     );
   }
 
-  const displayName = profile?.displayName || profile?.email || user?.email || strings.home.welcomeUser;
+  const fullDisplayName = profile?.displayName || profile?.email || user?.email || strings.home.welcomeUser;
+  
+  // Extract first name from display name
+  const displayName = (() => {
+    if (!fullDisplayName) return strings.home.welcomeUser;
+    
+    // If it's an email, take the part before @
+    if (fullDisplayName.includes('@')) {
+      return fullDisplayName.split('@')[0].split('.')[0];
+    }
+    
+    // Otherwise, take the first word (first name)
+    return fullDisplayName.split(' ')[0];
+  })();
 
   return (
     <div className="min-h-screen bg-background">
@@ -114,7 +131,7 @@ export default function HomeClient() {
       {isClient && (
         <section className="px-4 pb-6">
           <h2 className="text-lg font-medium text-foreground mb-2">
-            {isClient && todayDate ? `Today, ${todayDate}` : 'Today'}
+            {todayDate ? `Today, ${todayDate}` : 'Today'}
           </h2>
           
           {/* Day Progress Bar */}
@@ -130,7 +147,7 @@ export default function HomeClient() {
             <div 
               className="absolute left-0 top-0 h-full transition-all duration-300 ease-out"
               style={{
-                width: isClient ? `${dayProgress}%` : '0%',
+                width: `${dayProgress}%`,
                 backgroundColor: 'var(--primary)'
               }}
             />
@@ -343,54 +360,6 @@ export default function HomeClient() {
             </div>
           </section>
 
-          {/* Install PWA Section - if not installed */}
-          {!user && isClient && (
-            <>
-              <div className="border-t border-border"></div>
-              <section className="pb-20">
-                <div className="bg-primary/5 rounded-lg p-6 text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-                    <span className="text-3xl">📱</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">{strings.home.installPWA?.title || ''}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{strings.home.installPWA?.description || ''}</p>
-                  <button
-                    onClick={() => router.push('/login')}
-                    className="w-full px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
-                  >
-                    {strings.home.installPWA?.loginButton || 'Login'}
-                  </button>
-                </div>
-              </section>
-            </>
-          )}
-
-          {/* Login Prompt for non-users */}
-          {!user && isClient && (
-            <>
-              <div className="border-t border-border"></div>
-              <section className="pb-20">
-                <div className="bg-card rounded-lg shadow-sm border border-border p-6 text-center">
-                  <h3 className="text-lg font-bold text-foreground mb-2">{strings.home.loginPrompt?.title || ''}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{strings.home.loginPrompt?.description || ''}</p>
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => router.push('/login')}
-                      className="w-full px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
-                    >
-                      {strings.home.loginPrompt?.loginButton || 'Login'}
-                    </button>
-                    <button
-                      onClick={() => router.push('/drill/conjugation')}
-                      className="w-full px-6 py-3 bg-card border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary/5 transition-colors"
-                    >
-                      {strings.home.loginPrompt?.tryFreeButton || 'Try Free'}
-                    </button>
-                  </div>
-                </div>
-              </section>
-            </>
-          )}
         </div>
       </div>
       </div>

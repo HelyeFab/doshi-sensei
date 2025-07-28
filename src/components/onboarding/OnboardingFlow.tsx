@@ -154,7 +154,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
 
       {/* Main Content - Full Screen */}
-      <div className="relative h-full w-full flex flex-col">
+      <div className="relative h-full w-full">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={state.currentScreen}
@@ -173,15 +173,15 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             onDragEnd={handleDragEnd}
             className="absolute inset-0 flex flex-col"
           >
-            {/* Content Area - Takes up available space */}
-            <div className="flex-1 flex items-center justify-center overflow-y-auto px-4 md:px-12 min-h-0">
-              <div className="w-full max-w-3xl mx-auto py-4 md:py-8">
+            {/* Content Area - Centered with proper mobile spacing */}
+            <div className="flex-1 flex items-center justify-center px-4 md:px-12 py-safe">
+              <div className="w-full max-w-3xl mx-auto">
                 {screens[state.currentScreen]}
               </div>
             </div>
             
-            {/* Navigation Bar - Always at bottom */}
-            <div className="w-full flex-shrink-0">
+            {/* Navigation Bar - Fixed at bottom with safe area */}
+            <div className="w-full mt-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
               <div className="max-w-3xl mx-auto">
                 <NavigationBar
                   currentScreen={state.currentScreen}

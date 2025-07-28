@@ -53,10 +53,10 @@ export function getPasswordStrength(password: string): {
   const percentage = (metRequirements / passwordRequirements.length) * 100;
   
   if (percentage < 40) {
-    return { strength: 'weak', percentage, color: 'text-red-500' };
+    return { strength: 'weak', percentage, color: 'text-destructive' };
   } else if (percentage < 80) {
-    return { strength: 'medium', percentage, color: 'text-yellow-500' };
+    return { strength: 'medium', percentage, color: 'text-warning' };
   } else {
-    return { strength: 'strong', percentage, color: 'text-green-500' };
+    return { strength: 'strong', percentage, color: 'text-success' };
   }
 }

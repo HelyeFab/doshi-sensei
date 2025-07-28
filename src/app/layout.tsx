@@ -32,6 +32,7 @@ import { NavigationGestures } from '@/components/navigation/NavigationGestures';
 import { NavigationProvider } from '@/contexts/NavigationContext';
 import { KanjiPreloadInitializer } from '@/components/KanjiPreloadInitializer';
 import PWARecovery from '@/components/PWARecovery';
+import StructuredData from '@/components/StructuredData';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -200,6 +201,7 @@ export const viewport = {
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
+  "@id": "https://doshisensei.com/#application",
   "name": "Doshi Sensei",
   "url": "https://doshisensei.com",
   "description": "The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.",
@@ -231,14 +233,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
-        
         {/* PWA Manifest and Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="application-name" content="Doshi Sensei" />
@@ -318,6 +312,7 @@ export default function RootLayout({
                                 <OnboardingWrapper>
                                   <AchievementToastManager>
                                     <div className="min-h-screen bg-background text-foreground">
+                                      <StructuredData data={structuredData} />
                                       <OfflineNotification />
                                       <JMdictInitializer />
                                       <CacheSystemInitializer />

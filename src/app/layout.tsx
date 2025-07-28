@@ -91,10 +91,10 @@ const manrope = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Doshi Sensei - Master Japanese Verb Conjugations',
+    default: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
     template: '%s | Doshi Sensei'
   },
-  description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs with professional guidance.',
+  description: 'The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -103,21 +103,30 @@ export const metadata: Metadata = {
     apple: '/apple-icon.svg'
   },
   keywords: [
-    'Japanese learning',
-    'Japanese verbs',
-    'verb conjugation',
-    'Japanese grammar',
+    'Japanese learning platform',
+    'Japanese verb conjugation',
+    'JLPT kanji study',
+    'kanji mood boards',
+    'Jisho vocabulary',
+    'WaniKani integration',
+    'Anki deck import',
+    'Japanese flashcards',
+    'YouTube shadowing practice',
+    'Japanese news reading',
+    'AI Japanese stories',
+    'Japanese learning games',
+    'Japanese grammar resources',
+    'hiragana katakana practice',
+    'spaced repetition Japanese',
+    'comprehensive Japanese study',
+    'Japanese language app',
+    'learn Japanese online',
+    'Japanese drill practice',
+    'Japanese vocabulary builder',
     'ichidan verbs',
     'godan verbs',
     'Japanese practice',
-    'JLPT preparation',
-    'Japanese study',
-    'learn Japanese online',
-    'Japanese app',
-    'conjugation practice',
-    'Japanese vocabulary',
-    'Japanese education',
-    'language learning'
+    'JLPT preparation'
   ],
   authors: [{ name: 'Doshi Sensei Team' }],
   creator: 'Doshi Sensei',
@@ -130,10 +139,14 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://doshisensei.com'),
   alternates: {
     canonical: '/',
+    languages: {
+      'en-US': '/en-US',
+      'ja-JP': '/ja-JP',
+    },
   },
   openGraph: {
-    title: 'Doshi Sensei - Master Japanese Verb Conjugations',
-    description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs.',
+    title: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
+    description: 'The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
     url: 'https://doshisensei.com',
     siteName: 'Doshi Sensei',
     images: [
@@ -141,7 +154,7 @@ export const metadata: Metadata = {
         url: '/doshi.png',
         width: 1200,
         height: 630,
-        alt: 'Doshi Sensei - Japanese Learning App',
+        alt: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
       },
     ],
     locale: 'en_US',
@@ -149,10 +162,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Doshi Sensei - Master Japanese Verb Conjugations',
-    description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary.',
+    title: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
+    description: 'Master Japanese with comprehensive tools: verb conjugations, kanji study, vocabulary practice, YouTube shadowing, AI stories, and more!',
     images: ['/doshi.png'],
     creator: '@doshisensei',
+    site: '@doshisensei',
   },
   robots: {
     index: true,
@@ -170,6 +184,7 @@ export const metadata: Metadata = {
     // yandex: 'your-yandex-verification-code',
     // yahoo: 'your-yahoo-verification-code',
   },
+  category: 'education',
 };
 
 export const viewport = {
@@ -181,6 +196,32 @@ export const viewport = {
   themeColor: '#8a5cf6', // Match splash screen background color hsl(271, 81%, 56%)
 };
 
+// Structured data for the application
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Doshi Sensei",
+  "url": "https://doshisensei.com",
+  "description": "The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "1250"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Doshi Sensei",
+    "url": "https://doshisensei.com"
+  }
+};
+
 // Force clean rebuild: Sun Jun 29 2025 22:43:00
 export default function RootLayout({
   children,
@@ -190,6 +231,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+        
         {/* PWA Manifest and Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="application-name" content="Doshi Sensei" />

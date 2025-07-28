@@ -1,28 +1,33 @@
 'use client';
 
-import { strings } from '../../config/strings/strings';
-
 import { useState, useEffect } from 'react';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
+import type { ExampleSentence } from '@/types/sentences';
 import { searchWords } from '@/utils/api';
-import { useStrings } from '@/hooks/useLanguage';
-import { PageHeader } from '@/components/PageHeader';
+import { useStrings } from '@/contexts/LanguageContext';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
-import { SearchHistoryManager, SearchHistoryEntry } from '@/utils/searchHistory';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { SearchHistoryManager2, SearchHistoryEntry } from '@/utils/searchHistoryManager2';
 import { StudyListManager } from '@/utils/studyListManager';
 import { ExampleSentencesBlock } from '@/components/vocabulary/ExampleSentencesBlock';
+import StrokeOrderModal from '@/components/kanji/StrokeOrderModal';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 // Add JMdict search utility import (to be implemented)
 import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
 
 export default function VocabularyPage() {
   const { user } = useAuth();
-  const { subscription } = useSubscription2();
+  const { subscription, userType } = useSubscription2();
   const strings = useStrings();
+  const { track } = useAnalytics();
+  const navigation = useNavigation();
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -39,7 +44,7 @@ export default function VocabularyPage() {
   // Add state for search source
   const [searchSource, setSearchSource] = useState<'wanikani' | 'jmdict'>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem(strings.string_1) as 'wanikani' | 'jmdict') || 'wanikani';
+      return (localStorage.getItem('vocab_search_source') as 'wanikani' | 'jmdict') || 'wanikani';
     }
     return 'wanikani';
   });
@@ -51,23 +56,51 @@ export default function VocabularyPage() {
     }
   }, [searchSource]);
 
+  // Restore navigation state
+  useEffect(() => {
+    const restoredState = navigation.restoreState();
+    if (restoredState) {
+      if (restoredState.searchTerm) setSearchTerm(restoredState.searchTerm);
+      if (restoredState.searchSource) setSearchSource(restoredState.searchSource);
+      if (restoredState.currentSearchTerm) setCurrentSearchTerm(restoredState.currentSearchTerm);
+      if (restoredState.currentSearchResults) setCurrentSearchResults(restoredState.currentSearchResults);
+    }
+  }, [navigation]);
+
+  // Save navigation state on changes
+  useEffect(() => {
+    navigation.preserveState({
+      searchTerm,
+      searchSource,
+      currentSearchTerm,
+      currentSearchResults: currentSearchResults.slice(0, 10) // Limit to prevent large state
+    });
+  }, [searchTerm, searchSource, currentSearchTerm, currentSearchResults, navigation]);
+
   // Persist search source
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(strings.string_1, searchSource);
+      localStorage.setItem('vocab_search_source', searchSource);
     }
   }, [searchSource]);
 
   useEffect(() => {
     loadSearchHistory();
-  }, []);
+    // Migrate old history on first load
+    SearchHistoryManager2.migrateFromOldHistory(user, userType);
+  }, [user, userType]);
+
+  // Reload search history when user changes
+  useEffect(() => {
+    loadSearchHistory();
+  }, [user?.uid]);
 
   const loadSearchHistory = async () => {
     try {
-      const history = await SearchHistoryManager.getSearchHistory();
+      const history = await SearchHistoryManager2.getSearchHistory(user, userType);
       setSearchHistory(history);
     } catch (err) {
-      console.error(strings.error_loading_search, err);
+      console.error('Error loading search history:', err);
     }
   };
 
@@ -84,7 +117,7 @@ export default function VocabularyPage() {
       setSearching(true);
       setError(null);
       setDidYouMean(null);
-      
+
       let searchResults: SearchResult[] = [];
       if (searchSource === 'wanikani') {
         const results = await searchWords(term, 30);
@@ -107,7 +140,7 @@ export default function VocabularyPage() {
       setShowSearchResults(true);
 
       // Save to search history
-      await SearchHistoryManager.addSearchEntry(term, searchResults);
+      await SearchHistoryManager2.addSearchEntry(term, searchResults, user, userType, searchSource);
       await loadSearchHistory(); // Reload history to show the new entry
 
       // Track vocabulary search analytics
@@ -116,9 +149,17 @@ export default function VocabularyPage() {
         resultsCount: searchResults.length,
         searchedAt: new Date().toISOString(),
       });
+      
+      // Track in new analytics system
+      track('word_search', { 
+        searchTerm: term, 
+        resultsCount: searchResults.length,
+        source: searchSource 
+      });
+      console.log('📊 [Analytics] Word search tracked:', { term, results: searchResults.length, source: searchSource });
     } catch (err) {
-      setError(strings.search_please_try);
-      console.error(strings.error_searching, err);
+      setError('Search failed. Please try again.');
+      console.error('Error searching words:', err);
     } finally {
       setSearching(false);
     }
@@ -148,10 +189,10 @@ export default function VocabularyPage() {
       romaji: '',
       meaning: example.english || '',
       type: 'other',
-      jlpt: strings.string_5,
+      jlpt: 'N5',
       tags: ['sentence', 'example']
     };
-    
+
     setWordToSave(exampleAsWord);
     setExampleToSave(example);
     setShowSaveModal(true);
@@ -159,7 +200,7 @@ export default function VocabularyPage() {
 
   const handleSaveWordToLists = async (word: JapaneseWord, listIds: string[], newListName?: string) => {
     try {
-      let listsToSaveTo = [...listIds];
+      const listsToSaveTo = [...listIds];
 
       // Check if we're saving an example sentence
       if (exampleToSave) {
@@ -172,7 +213,7 @@ export default function VocabularyPage() {
           source: {
             type: 'tatoeba' as const,
             id: exampleToSave.id,
-            title: strings.tatoeba_example,
+            title: 'Tatoeba Example',
             url: `https://tatoeba.org/en/sentences/show/${exampleToSave.id}`
           }
         };
@@ -225,9 +266,9 @@ export default function VocabularyPage() {
       setExampleToSave(null);
 
       // Show success message (optional)
-      console.log(exampleToSave ? strings.sentence_saved_successfully : strings.word_saved_successfully);
+      console.log(exampleToSave ? 'Sentence saved successfully' : 'Word saved successfully');
     } catch (error) {
-      console.error(strings.error_saving_to, error);
+      console.error('Error saving to lists:', error);
     }
   };
 
@@ -240,20 +281,20 @@ export default function VocabularyPage() {
 
   const handleDeleteSearchEntry = async (entryId: string) => {
     try {
-      await SearchHistoryManager.deleteSearchEntry(entryId);
+      await SearchHistoryManager2.deleteSearchEntry(entryId, user, userType);
       await loadSearchHistory();
     } catch (error) {
-      console.error(strings.error_deleting_search, error);
+      console.error('Error deleting search entry:', error);
     }
   };
 
   const handleClearSearchHistory = async () => {
-    if (confirm(strings.are_you_sure_you_want)) {
+    if (confirm('Are you sure you want to clear all search history?')) {
       try {
-        await SearchHistoryManager.clearSearchHistory();
+        await SearchHistoryManager2.clearSearchHistory(user, userType);
         setSearchHistory([]);
       } catch (error) {
-        console.error(strings.error_clearing_search, error);
+        console.error('Error clearing search history:', error);
       }
     }
   };
@@ -266,7 +307,7 @@ export default function VocabularyPage() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return strings.just_now;
+    if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
@@ -274,21 +315,11 @@ export default function VocabularyPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
-
+    <div className="min-h-screen bg-background">
+      <SmartPageHeader title="Vocabulary" />
+      
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title={strings.vocab.title} helpKey="vocabulary" />
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <p className="text-muted-foreground text-center mt-2">
           {strings.vocab.searchPlaceholder}
         </p>
@@ -298,24 +329,42 @@ export default function VocabularyPage() {
             Search Japanese words and browse your search history
           </p>
 
-          {/* Search Source Toggle - moved here */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex rounded-lg overflow-hidden border border-border bg-muted">
+                    {/* Search Source Toggle - moved here */}
+          <div className="flex flex-col items-center mb-6">
+            <div className="inline-flex rounded-lg overflow-hidden border border-border bg-muted mb-3">
               <button
-                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'wanikani' ? strings.string_21 : strings.string_20}`}
+                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'wanikani' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'text-muted-foreground hover:bg-accent/30'}`}
                 onClick={() => setSearchSource('wanikani')}
                 aria-pressed={searchSource === 'wanikani'}
               >
                 WaniKani
               </button>
               <button
-                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'jmdict' ? strings.string_21 : strings.string_20}`}
+                className={`px-4 py-2 font-medium transition-colors ${searchSource === 'jmdict' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'text-muted-foreground hover:bg-accent/30'}`}
                 onClick={() => setSearchSource('jmdict')}
                 aria-pressed={searchSource === 'jmdict'}
               >
                 JMdict
               </button>
             </div>
+
+            {/* Dictionary differences dropdown */}
+            <details className="group">
+              <summary className="text-sm text-muted-foreground hover:text-foreground cursor-pointer flex items-center gap-1 justify-center transition-colors">
+                <span>What's the difference?</span>
+                <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="text-center max-w-md mt-2 p-3 bg-muted/30 rounded-lg border border-border/50">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-purple-600">WaniKani:</span> Curated vocabulary from JLPT levels, optimized for learners
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  <span className="font-medium text-purple-600">JMdict:</span> Comprehensive dictionary with 170,000+ entries, includes rare words
+                </p>
+              </div>
+            </details>
           </div>
 
           {/* Search */}
@@ -333,7 +382,7 @@ export default function VocabularyPage() {
                 disabled={searching}
                 className="absolute top-1/2 right-3 -translate-y-1/2 p-2 rounded-full hover:bg-muted transition-colors disabled:opacity-50"
                 style={{ lineHeight: 0 }}
-                aria-label={strings.search}
+                aria-label="Search"
               >
                 {searching ? (
                   <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
@@ -370,7 +419,7 @@ export default function VocabularyPage() {
                   ← Back to History
                 </button>
               </div>
-              
+
               {/* Did you mean suggestion */}
               {didYouMean && searchSource === 'jmdict' && (
                 <div className="mb-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
@@ -390,7 +439,7 @@ export default function VocabularyPage() {
                   </p>
                 </div>
               )}
-              
+
               {currentSearchResults.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {currentSearchResults.map((word) => (
@@ -466,10 +515,10 @@ export default function VocabularyPage() {
                             handleDeleteSearchEntry(entry.id);
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-600 p-1"
-                          title={strings.delete_entry}
+                          title="Delete entry"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
                       </div>
@@ -509,8 +558,8 @@ export default function VocabularyPage() {
         {searching && (
           <SearchLoadingOverlay searchTerm={searchTerm || currentSearchTerm} />
         )}
-      </div>
-    </>
+      </MobileAwareContainer>
+    </div>
   );
 }
 
@@ -531,7 +580,7 @@ function SearchLoadingOverlay({ searchTerm }: SearchLoadingOverlayProps) {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-card border border-border rounded-lg p-8 flex flex-col items-center gap-4 shadow-lg max-w-md mx-4">
         <div className="relative">
           <div className="animate-spin w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full"></div>
@@ -561,18 +610,18 @@ interface WordCardProps {
 function WordCard({ word, onWordClick }: WordCardProps) {
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "ichidan":
-        return strings.string_33;
-      case "godan":
-        return strings.string_35;
-      case "irregular":
-        return strings.string_37;
+      case 'Ichidan':
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      case 'Godan':
+        return 'bg-green-500/10 text-green-400 border-green-500/20';
+      case 'Irregular':
+        return 'bg-red-500/10 text-red-400 border-red-500/20';
       case 'i-adjective':
-        return strings.string_39;
+        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
       case 'na-adjective':
-        return strings.string_40;
+        return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
       default:
-        return strings.string_41;
+        return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
     }
   };
 
@@ -580,7 +629,7 @@ function WordCard({ word, onWordClick }: WordCardProps) {
     <div
       onClick={onWordClick}
       className={`bg-card border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer group ${
-        word.isCommon ? strings.string_43 : 'border-border'
+        word.isCommon ? 'border-primary/30 ring-1 ring-primary/10' : 'border-border'
       }`}
     >
       <div className="flex items-baseline gap-3 mb-2">
@@ -613,11 +662,26 @@ interface WordModalProps {
 }
 
 function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
+  const { checkAndTrack } = useAccess();
+  const [showStrokeOrder, setShowStrokeOrder] = useState(false);
+  const [strokeOrderKanji, setStrokeOrderKanji] = useState<string>('');
+
+  const handleStrokeOrderClick = async () => {
+    const canAccess = await checkAndTrack('kanji_stroke_order');
+    if (canAccess) {
+      // Extract all kanji characters from the word
+      const kanjiChars = (word.kanji || word.kana).match(/[\u4e00-\u9faf]/g) || [];
+      setStrokeOrderKanji(kanjiChars.join(''));
+      setShowStrokeOrder(true);
+    }
+  };
+
   return (
-    <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-      onClick={onClose}
-    >
+    <>
+      <div
+        className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        onClick={onClose}
+      >
       <div
         className="bg-card border border-border rounded-lg p-6 max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
@@ -629,7 +693,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -657,25 +721,40 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
 
           {/* Example Sentences */}
           {word.exampleSentences && word.exampleSentences.length > 0 && (
-            <ExampleSentencesBlock 
+            <ExampleSentencesBlock
               word={word.kanji || word.kana}
               examples={word.exampleSentences}
               onSaveExample={onSaveExample}
             />
           )}
 
-          {/* Save Button */}
-          <div className="pt-4 border-t border-border">
+          {/* Action Buttons */}
+          <div className="pt-4 border-t border-border space-y-2">
             <button
               onClick={() => onSave(word)}
               className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-center font-medium"
             >
               Save to Lists
             </button>
+
+            {/* Stroke Order Button - only show for kanji */}
+            {word.kanji && /[\u4e00-\u9faf]/.test(word.kanji) && (
+              <button
+                onClick={handleStrokeOrderClick}
+                className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-center font-medium"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  View Stroke Order
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Conjugation Link */}
-          {(word.type === strings.ichidan || word.type === strings.godan || word.type === strings.irregular ||
+          {(word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' ||
             word.type === 'i-adjective' || word.type === 'na-adjective') && (
             <div className="pt-2">
               <a
@@ -689,6 +768,18 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
         </div>
       </div>
     </div>
+
+    {/* Stroke Order Modal */}
+    {showStrokeOrder && strokeOrderKanji && (
+      <StrokeOrderModal
+        isOpen={showStrokeOrder}
+        onClose={() => setShowStrokeOrder(false)}
+        kanji={strokeOrderKanji}
+        word={word.kanji}
+        meaning={word.meaning}
+      />
+    )}
+    </>
   );
 }
 
@@ -719,7 +810,7 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
         const lists = await StudyListManager.getAllStudyLists();
         setStudyLists(lists);
       } catch (error) {
-        console.error(strings.error_loading_study, error);
+        console.error('Error loading study lists:', error);
       }
     };
     loadStudyLists();
@@ -769,18 +860,18 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
       await onSaveToLists(word, selectedLists, newListName.trim() || undefined);
       onClose();
     } catch (err) {
-      console.error(strings.error_saving, err);
-      setErrors([isSentence ? strings.failed_to_save_sentence_to : strings.failed_to_save_word_to]);
+      console.error('Error saving word:', err);
+      setErrors([isSentence ? 'Failed to save sentence to lists' : 'Failed to save word to lists']);
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          {isSentence ? strings.save_example_sentence_to_lists : `Save "${word.kanji}" to Lists`}
+          {isSentence ? 'Save Example Sentence to Lists' : `Save "${word.kanji}" to Lists`}
         </h3>
 
         {/* Error messages */}
@@ -801,7 +892,7 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
               const canAdd = canAddToList(list.type);
               return (
                 <label key={list.id} className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg transition-colors ${
-                  canAdd ? strings.string_66 : strings.string_81
+                  canAdd ? 'hover:bg-muted/50' : 'opacity-60'
                 }`}>
                   <input
                     type="checkbox"
@@ -821,12 +912,12 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
                         ({list.itemIds.length} items)
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded ${
-                        list.type === 'drillable' ? strings.string_62 : strings.string_61
+                        list.type === 'drillable' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
                       }`}>
                         {list.type}
                       </span>
                     </div>
-                    <div className={`text-xs ${canAdd ? strings.string_80 : strings.string_79}`}>
+                    <div className={`text-xs ${canAdd ? 'text-green-400' : 'text-red-400'}`}>
                       {getValidationMessage(list.type, canAdd)}
                     </div>
                   </div>
@@ -855,7 +946,7 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
                 type="text"
                 value={newListName}
                 onChange={(e) => setNewListName(e.target.value)}
-                placeholder={strings.new_list}
+                placeholder="New list name..."
                 className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 maxLength={50}
               />
@@ -867,7 +958,7 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
                     <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
                       <input
                         type="radio"
-                        name={strings.listtype}
+                        name="listType"
                         value="sentence"
                         checked={true}
                         disabled
@@ -884,7 +975,7 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
                       <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
                         <input
                           type="radio"
-                          name={strings.listtype}
+                          name="listType"
                           value="flashcard"
                           checked={newListType === 'flashcard'}
                           onChange={(e) => setNewListType(e.target.value as StudyListType)}
@@ -898,11 +989,11 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
                       </label>
 
                       <label className={`flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input ${
-                        !canAddToList('drillable') ? strings.string_81 : ''
+                        !canAddToList('drillable') ? 'opacity-60' : ''
                       }`}>
                         <input
                           type="radio"
-                          name={strings.listtype}
+                          name="listType"
                           value="drillable"
                           checked={newListType === 'drillable'}
                           onChange={(e) => setNewListType(e.target.value as StudyListType)}
@@ -913,9 +1004,9 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
                           <div className="text-sm font-medium text-foreground">Drillable List</div>
                           <div className="text-xs text-muted-foreground">For conjugation practice (verbs & adjectives only)</div>
                           <div className={`text-xs mt-1 ${
-                            canAddToList('drillable') ? strings.string_80 : strings.string_79
+                            canAddToList('drillable') ? 'text-green-400' : 'text-red-400'
                           }`}>
-                            {canAddToList('drillable') ? strings.can_be_conjugated : strings.cannot_be_conjugated}
+                            {canAddToList('drillable') ? '✓ Can be conjugated' : '⚠️ Cannot be conjugated'}
                           </div>
                         </div>
                       </label>
@@ -939,7 +1030,7 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
             disabled={(selectedLists.length === 0 && !newListName.trim()) || saving}
             className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? strings.string_89 : isSentence ? strings.save_sentence : strings.save_word}
+            {saving ? 'Saving...' : isSentence ? 'Save Sentence' : 'Save Word'}
           </button>
         </div>
       </div>

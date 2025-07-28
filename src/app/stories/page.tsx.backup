@@ -1,11 +1,9 @@
 'use client';
 
-import { strings } from '../../config/strings/strings';
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { PageHeader } from '@/components/PageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { Story } from '@/types/story';
 import { JLPTLevel, JLPT_LEVELS } from '@/types/kanji';
 import { storyManager } from '@/utils/storyManager';
@@ -15,13 +13,14 @@ import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import Link from 'next/link';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 
 export default function StoriesPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { checkAndTrack } = useAccess();
-  const { feature, access, remaining, isLoading: featureLoading } = useFeature(strings.string_3);
+  const { feature, access, remaining, isLoading: featureLoading } = useFeature('story_reading');
   const { isPremium, userType } = useSubscription2();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +70,7 @@ export default function StoriesPage() {
 
       setStories(loadedStories);
     } catch (error) {
-      console.error(strings.error_loading, error);
+      console.error('Error loading stories:', error);
     } finally {
       setLoading(false);
     }
@@ -87,13 +86,13 @@ export default function StoriesPage() {
       const cachedIds = new Set(cached.map(s => s.id));
       setCachedStoryIds(cachedIds);
     } catch (error) {
-      console.error(strings.error_loading_cached, error);
+      console.error('Error loading cached stories:', error);
     }
   };
 
   const handleStoryClick = async (story: Story) => {
     // Check if user can read more stories using new system
-    const canAccess = await checkAndTrack(strings.string_3);
+    const canAccess = await checkAndTrack('story_reading');
     if (!canAccess) {
       // The access system will show the appropriate modal
       return;
@@ -109,16 +108,11 @@ export default function StoriesPage() {
   };
 
   return (
-    <>
-      {/* Virtual Companion Section */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-      </div>
-
+    <div className="min-h-screen bg-background">
+      <SmartPageHeader title="Stories" backHref="/" />
+      
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen pb-24 md:pb-8">
-        <PageHeader title={strings.stories.title} showBackButton={true} helpKey="stories" />
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
         <p className="text-muted-foreground text-center mt-2">
           {strings.stories.description}
         </p>
@@ -126,13 +120,18 @@ export default function StoriesPage() {
         <div className="max-w-6xl mx-auto">
           {/* Description */}
           <div className="mb-8">
-            {!isPremium && access && access.limit && access.limit > 0 && !featureLoading && (
+            {userType !== 'guest' && !featureLoading && (
               <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="text-primary">
-                  📖 {remaining && remaining > 0
-                    ? `${remaining} ${remaining === 1 ? 'story' : 'stories'} remaining today`
-                    : strings.daily_limit_reached
-                  }
+                  📖 {isPremium ? (
+                    <span className="text-green-600">Unlimited stories</span>
+                  ) : remaining !== undefined && remaining !== null ? (
+                    remaining > 0
+                      ? `${remaining} ${remaining === 1 ? 'story' : 'stories'} remaining today`
+                      : 'Daily limit reached'
+                  ) : (
+                    'Loading...'
+                  )}
                 </span>
               </div>
             )}
@@ -149,8 +148,8 @@ export default function StoriesPage() {
                   <button
                     onClick={() => setSelectedLevel('all')}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === 'all'
-                      ? strings.string_20
-                      : strings.string_15
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
                       }`}
                   >
                     All Levels
@@ -160,8 +159,8 @@ export default function StoriesPage() {
                       key={level}
                       onClick={() => setSelectedLevel(level)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === level
-                        ? strings.string_20
-                        : strings.string_15
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
                         }`}
                     >
                       {level}
@@ -179,8 +178,8 @@ export default function StoriesPage() {
                   <button
                     onClick={() => setSelectedTheme('all')}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedTheme === 'all'
-                      ? strings.string_20
-                      : strings.string_15
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
                       }`}
                   >
                     All Themes
@@ -190,8 +189,8 @@ export default function StoriesPage() {
                       key={theme}
                       onClick={() => setSelectedTheme(theme)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedTheme === theme
-                        ? strings.string_20
-                        : strings.string_15
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
                         }`}
                     >
                       {theme}
@@ -205,12 +204,12 @@ export default function StoriesPage() {
                 <button
                   onClick={() => setShowOfflineOnly(!showOfflineOnly)}
                   className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${showOfflineOnly
-                    ? strings.string_20
-                    : strings.string_19
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/90'
                     }`}
                 >
                   {showOfflineOnly ? '📵' : '🌐'}
-                  {showOfflineOnly ? strings.offline : strings.all_stories}
+                  {showOfflineOnly ? 'Offline' : 'All Stories'}
                 </button>
               </div>
             </div>
@@ -231,11 +230,11 @@ export default function StoriesPage() {
                 {strings.stories.emptyState.description}
               </p>
               <button
-                onClick={() => router.push(strings.string_24)}
+                onClick={() => router.push('/stories/create')}
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 {strings.stories.emptyState.createButton}
               </button>
@@ -269,6 +268,11 @@ export default function StoriesPage() {
                         {cachedStoryIds.has(story.id) && (
                           <span className="px-2 py-1 bg-green-600/90 text-white text-xs rounded flex items-center gap-1">
                             <span>💾</span> Offline
+                          </span>
+                        )}
+                        {story.theme === 'Mood Board Story' && (
+                          <span className="px-2 py-1 bg-purple-600/90 text-white text-xs rounded flex items-center gap-1">
+                            <span>🎨</span> Mood Board
                           </span>
                         )}
                         <span className="px-2 py-1 bg-black/50 text-white text-xs rounded">
@@ -315,7 +319,7 @@ export default function StoriesPage() {
                 {strings.subscriptions.upgradeForUnlimited}
               </p>
               <button
-                onClick={() => router.push(strings.string_26)}
+                onClick={() => router.push('/account')}
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 {strings.subscriptions.viewPlans}
@@ -323,7 +327,7 @@ export default function StoriesPage() {
             </div>
           )}
         </div>
-      </div>
-    </>
+      </MobileAwareContainer>
+    </div>
   );
 }

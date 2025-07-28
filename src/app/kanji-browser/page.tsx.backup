@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Kanji, JLPTLevel, KanjiByLevel, KanjiList, StudyList, StudyListType } from '@/types';
-import { PageHeader } from '@/components/PageHeader';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAccess } from '@/hooks/useAccess';
@@ -15,7 +15,8 @@ import KanjiQuestTutorialModal from '@/components/games/KanjiQuestTutorialModal'
 import { useNotification } from '@/contexts/NotificationContext';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useStrings } from '@/hooks/useLanguage';
+import { useStrings } from '@/contexts/LanguageContext';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -63,9 +64,12 @@ export default function KanjiBrowserPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const strings = useStrings();
+  const { track } = useAnalytics();
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
+  const [loadingLevels, setLoadingLevels] = useState<Set<JLPTLevel>>(new Set());
   const [modalKanji, setModalKanji] = useState<Kanji | null>(null);
   const [savedKanjiSet, setSavedKanjiSet] = useState<Set<string>>(new Set());
   const [expandedLevels, setExpandedLevels] = useState<Set<JLPTLevel>>(new Set(['N5']));
@@ -147,11 +151,26 @@ export default function KanjiBrowserPage() {
   const loadKanjiData = async () => {
     try {
       setLoading(true);
-      const data = await KanjiManager.loadAllKanji();
-      setKanjiData(data);
+      
+      // Load only N5 initially for fast initial render
+      const n5Data = await KanjiManager.loadKanjiByLevel('N5');
+      setKanjiData({ N5: n5Data });
+      setLoading(false);
+      
+      // Load other levels progressively
+      const otherLevels: JLPTLevel[] = ['N4', 'N3', 'N2', 'N1'];
+      for (const level of otherLevels) {
+        setLoadingLevels(prev => new Set([...prev, level]));
+        const levelData = await KanjiManager.loadKanjiByLevel(level);
+        setKanjiData(prev => ({ ...prev, [level]: levelData }));
+        setLoadingLevels(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(level);
+          return newSet;
+        });
+      }
     } catch (error) {
       console.error('Error loading kanji data:', error);
-    } finally {
       setLoading(false);
     }
   };
@@ -229,6 +248,14 @@ export default function KanjiBrowserPage() {
 
   const handleKanjiClick = (kanji: Kanji) => {
     setModalKanji(kanji);
+    
+    // Track kanji view
+    track('kanji_viewed', {
+      kanji: kanji.character,
+      jlptLevel: kanji.jlpt,
+      source: 'kanji_browser'
+    });
+    console.log('📊 [Analytics] Kanji viewed:', { kanji: kanji.character, level: kanji.jlpt });
   };
 
   const handleKanjiSave = (kanji: Kanji) => {
@@ -252,7 +279,7 @@ export default function KanjiBrowserPage() {
 
   const handleSaveKanjiToLists = async (kanji: Kanji, listIds: string[], newListName?: string) => {
     try {
-      let listsToSaveTo = [...listIds];
+      const listsToSaveTo = [...listIds];
 
       // Create new list if specified
       if (newListName?.trim()) {
@@ -354,30 +381,24 @@ export default function KanjiBrowserPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{strings.kanjiBrowser.loadingKanjiData}</p>
+      <div className="min-h-screen bg-background">
+        <SmartPageHeader title="Loading..." backHref="/" />
+        <div className="container mx-auto px-4 py-8 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-muted-foreground">{strings.kanjiBrowser.loadingKanjiData}</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      {/* Virtual Companion Section - 1/6th of screen height */}
-      <div className="relative w-full h-[16.67vh] min-h-[120px] overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/25 to-secondary/20" />
-
-        {/* Gradient to White Fade */}
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Virtual Companion Button positioned within this section */}
-      </div>
-
+    <div className="min-h-screen bg-background">
+      <SmartPageHeader title="Kanji Browser" backHref="/" />
+      
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 min-h-screen">
+      <div className="container mx-auto px-4 py-8">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -386,47 +407,85 @@ export default function KanjiBrowserPage() {
           }}
         />
 
-        {/* Header */}
+        {/* Header with Introduction */}
         <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <PageHeader title={strings.kanjiBrowser.title} helpKey="kanji-browser" />
-            {/* Study Buttons */}
-            {studySelection.size > 0 && (
-              <div className="flex flex-row gap-2 flex-wrap self-start sm:self-auto">
-                <button
-                  onClick={() => setShowStudyModal(true)}
-                  className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
-                  </svg>
-                  <span>{strings.kanjiBrowser.studyButton} ({studySelection.size}/{strings.kanjiBrowser.studyLimit})</span>
-                </button>
-                {studySelection.size >= 3 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // Show tutorial modal first
-                      setShowKanjiQuestTutorial(true);
-                    }}
-                    className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
-                  >
-                    <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
-                    <span>{strings.kanjiBrowser.battleButton} ({studySelection.size} {strings.kanjiBrowser.kanji})</span>
-                  </button>
-                )}
-              </div>
-            )}
+          {/* Kanji Icon */}
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+              <span className="text-2xl font-bold japanese-text text-primary">漢</span>
+            </div>
           </div>
-          <p className="text-muted-foreground text-center mt-2">
-            {strings.kanjiBrowser.browseKanjiByLevel}
-          </p>
+
+          {/* Introduction Text */}
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Master Japanese Kanji Step by Step</h2>
+            <p className="text-muted-foreground mb-4">
+              Kanji are the building blocks of written Japanese. With over 2,000 characters in common use, learning kanji is a journey that requires patience and systematic study. Our browser organizes kanji by JLPT levels, from beginner (N5) to advanced (N1).
+            </p>
+            
+            {/* How to Use Dropdown */}
+            <div className="mt-4">
+              <button
+                onClick={() => setShowInstructions(!showInstructions)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span>How to use this tool</span>
+                <svg 
+                  className={`w-4 h-4 transition-transform ${showInstructions ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {showInstructions && (
+                <div className="mt-3 p-4 bg-muted/30 rounded-lg text-left max-w-2xl mx-auto">
+                  <p className="text-muted-foreground mb-3">
+                    <strong>How to use this tool:</strong> Click any kanji to see its meanings, readings, and stroke order. Use the purple corner checkbox to select up to 10 kanji for focused study sessions. Start with N5 level and gradually work your way up as you build confidence.
+                  </p>
+                  <p className="text-sm text-muted-foreground italic">
+                    💡 Pro tip: Focus on learning 5-10 new kanji per day. Quality over quantity leads to better retention!
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Study Buttons */}
+          {studySelection.size > 0 && (
+            <div className="flex flex-row gap-2 flex-wrap justify-center mb-4">
+              <button
+                onClick={() => setShowStudyModal(true)}
+                className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  />
+                </svg>
+                <span>{strings.kanjiBrowser.studyButton} ({studySelection.size}/{strings.kanjiBrowser.studyLimit})</span>
+              </button>
+              {studySelection.size >= 3 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Show tutorial modal first
+                    setShowKanjiQuestTutorial(true);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
+                >
+                  <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
+                  <span>{strings.kanjiBrowser.battleButton} ({studySelection.size} {strings.kanjiBrowser.kanji})</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-md mx-auto mb-8">
+        <div className="mb-8">
           <form onSubmit={e => { e.preventDefault(); performSearch(); }} className="relative">
             <input
               type="text"
@@ -506,7 +565,9 @@ export default function KanjiBrowserPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-card-foreground">{info.name}</h3>
-                        <p className="text-sm text-muted-foreground">{info.description} • {kanji.length} {strings.kanjiBrowser.kanji}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {info.description} • {loadingLevels.has(level) ? 'Loading...' : `${kanji.length} ${strings.kanjiBrowser.kanji}`}
+                        </p>
                       </div>
                     </div>
                     <svg
@@ -522,7 +583,12 @@ export default function KanjiBrowserPage() {
 
                 {isExpanded && (
                   <div className="px-6 pb-6">
-                    {kanji.length > 0 ? (
+                    {loadingLevels.has(level) ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <span className="ml-3 text-muted-foreground">Loading {level} kanji...</span>
+                      </div>
+                    ) : kanji.length > 0 ? (
                       renderKanjiGrid(kanji)
                     ) : (
                       <p className="text-muted-foreground text-center py-8">
@@ -657,7 +723,7 @@ export default function KanjiBrowserPage() {
           }}
         />
       </div>
-    </>
+    </div>
   );
 }
 
@@ -729,7 +795,7 @@ function SaveKanjiModal({ kanji, kanjiLists, onClose, onSaved, onSaveToLists }: 
       setSaving(true);
       setErrors([]);
 
-      let listsToSaveTo = [...selectedLists];
+      const listsToSaveTo = [...selectedLists];
 
       // Create new list if specified
       if (newListName.trim()) {

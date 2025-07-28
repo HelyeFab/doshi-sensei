@@ -204,21 +204,59 @@ class StoryManager {
   // Save user progress - migrated to use new reading_progress collection
   async saveProgress(userId: string, progress: Omit<StoryProgress, 'userId'>): Promise<void> {
     try {
+      // Get story to determine total pages if not provided
+      let totalPages = progress.totalPages;
+      if (!totalPages) {
+        const story = await this.getStory(progress.storyId);
+        totalPages = story?.pages?.length || 1;
+      }
+      
+      // Calculate progress percentage
+      const progressPercentage = progress.progress || ((progress.currentPage + 1) / totalPages) * 100;
+      
       // Save to new reading_progress collection
+      const additionalData: any = {
+        currentPage: progress.currentPage,
+        totalPages: totalPages
+      };
+      
+      // Only include lastReadSection if it's defined
+      if (progress.lastReadSection !== undefined) {
+        additionalData.lastReadSection = progress.lastReadSection;
+      }
+      
       await readingProgressManager.saveProgress(
         userId,
         progress.storyId,
         'story',
-        progress.progress,
-        {
-          currentPage: progress.currentPage,
-          totalPages: progress.totalPages,
-          lastReadSection: progress.lastReadSection
-        }
+        progressPercentage,
+        additionalData
       );
+      
+      // Save story-specific data to userStats collection
+      if (progress.savedWords || progress.quizAttempts !== undefined || progress.lastReadAt) {
+        const userStatsRef = doc(db, this.STATS_COLLECTION, userId);
+        const storyDataKey = `storyData.${progress.storyId}`;
+        
+        const updateData: any = {};
+        if (progress.savedWords) {
+          updateData[`${storyDataKey}.savedWords`] = progress.savedWords;
+        }
+        if (progress.quizAttempts !== undefined) {
+          updateData[`${storyDataKey}.quizAttempts`] = progress.quizAttempts;
+        }
+        if (progress.lastReadAt) {
+          updateData[`${storyDataKey}.lastReadAt`] = progress.lastReadAt;
+        }
+        if (progress.completed !== undefined) {
+          updateData[`${storyDataKey}.completed`] = progress.completed;
+        }
+        
+        await setDoc(userStatsRef, updateData, { merge: true });
+      }
 
       // Track analytics
-      if (progress.progress > 0 && progress.progress < 100) {
+      if (progressPercentage > 0 && progressPercentage < 100) {
         analyticsTracker.track('story_start', {
           storyId: progress.storyId,
           level: 'unknown' // You might want to pass the story level here

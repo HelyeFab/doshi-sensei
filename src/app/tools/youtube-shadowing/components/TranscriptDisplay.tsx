@@ -241,20 +241,27 @@ export default function TranscriptDisplay({
 
       // Save to cache for future use
       setLoadingMessage('Saving transcript for future use...');
+      
+      // Extract YouTube video ID if it's a YouTube URL
+      const youtubeVideoId = videoUrl ? TranscriptCacheManager.generateContentId({
+        type: 'youtube',
+        videoUrl
+      }).replace('youtube_', '') : undefined;
+      
       await TranscriptCacheManager.saveTranscriptToCache({
         contentId,
         contentType: videoUrl ? 'youtube' : 'audio',
         videoUrl: videoUrl || undefined,
-        videoTitle: undefined, // We could extract this from YouTube if needed
+        videoTitle: videoUrl ? `YouTube Video (${youtubeVideoId})` : fileInfo?.name || 'Untitled',
         transcript: data.transcript,
         language: data.language || 'ja',
         duration: data.duration,
         userId: user?.uid,
         metadata: {
-          youtubeVideoId: videoUrl ? TranscriptCacheManager.generateContentId({
-            type: 'youtube',
-            videoUrl
-          }).replace('youtube_', '') : undefined
+          youtubeVideoId: youtubeVideoId,
+          // Mark that this was transcribed via Whisper (no original metadata)
+          transcriptionMethod: 'whisper',
+          fileInfo: fileInfo
         }
       });
 

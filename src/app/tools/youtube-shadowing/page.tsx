@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useAuth } from '@/contexts/AuthContext';
 import YouTubeInput from './components/YouTubeInput';
 import AudioExtractor from './components/AudioExtractor';
 import TranscriptDisplay from './components/TranscriptDisplay';
@@ -19,6 +20,8 @@ import EnhancedShadowingPlayer from './components/EnhancedShadowingPlayer';
 import AudioUploader from './components/AudioUploader';
 import VideoUploader from './components/VideoUploader';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
+import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
+import { PracticeHistoryItem } from '@/services/practiceHistory/types';
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -62,6 +65,7 @@ export default function YouTubeShadowing() {
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining } = useFeature('youtube_shadowing');
   const { isPremium, userType } = useSubscription2();
+  const { user } = useAuth();
   const [session, setSession] = useState<ShadowingSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,6 +73,7 @@ export default function YouTubeShadowing() {
   const [showGrammar, setShowGrammar] = useState(false);
   const [showShadowingMode, setShowShadowingMode] = useState(true);
   const previousUrlsRef = useRef<{ videoUrl?: string; audioUrl?: string }>({});
+  const [practiceStartTime, setPracticeStartTime] = useState<Date | null>(null);
 
   // Extract video ID from YouTube URL
   const extractVideoId = (url: string): string | null => {
@@ -92,9 +97,21 @@ export default function YouTubeShadowing() {
     return id ? `youtu.be/${id}` : url;
   };
 
+  // Initialize practice history service
+  useEffect(() => {
+    if (user) {
+      practiceHistoryService.initialize(user.uid, isPremium);
+    }
+  }, [user, isPremium]);
+
   // Cleanup blob URLs when component unmounts or session changes
   useEffect(() => {
     return () => {
+      // Track practice session end if active
+      if (practiceStartTime && session) {
+        trackPracticeSession();
+      }
+      
       // Cleanup any previous blob URLs
       if (previousUrlsRef.current.videoUrl?.startsWith('blob:')) {
         URL.revokeObjectURL(previousUrlsRef.current.videoUrl);
@@ -163,7 +180,7 @@ export default function YouTubeShadowing() {
     }
   };
 
-  const handleTranscriptLoaded = (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => {
+  const handleTranscriptLoaded = async (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => {
     if (session) {
       updateSession({
         ...session,
@@ -171,6 +188,66 @@ export default function YouTubeShadowing() {
         ...(videoTitle && { videoTitle }),
         ...(videoMetadata && { videoMetadata })
       });
+      
+      // Start tracking practice session
+      setPracticeStartTime(new Date());
+      
+      // Save to practice history if user is logged in
+      if (user && session.videoUrl) {
+        try {
+          const videoId = extractVideoId(session.videoUrl) || session.videoUrl;
+          const historyItem: PracticeHistoryItem = {
+            id: `${user.uid}_${videoId}`,
+            videoUrl: session.videoUrl,
+            videoTitle: videoTitle || videoMetadata?.title || session.videoTitle || 'Untitled Video',
+            videoId: videoId,
+            thumbnailUrl: videoMetadata?.thumbnails?.medium?.url,
+            channelName: videoMetadata?.channelTitle,
+            lastPracticed: new Date(),
+            firstPracticed: new Date(),
+            practiceCount: 1,
+            contentType: session.videoUrl.includes('youtube') ? 'youtube' : 
+                        session.audioUrl ? 'audio' : 'video',
+            duration: videoMetadata?.duration ? parseDuration(videoMetadata.duration) : undefined,
+            metadata: videoMetadata
+          };
+          
+          await practiceHistoryService.addOrUpdateItem(historyItem);
+        } catch (error) {
+          console.error('Failed to save practice history:', error);
+        }
+      }
+    }
+  };
+
+  // Helper to parse YouTube duration format (PT3M45S) to seconds
+  const parseDuration = (duration: string): number => {
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!match) return 0;
+    
+    const hours = parseInt(match[1] || '0');
+    const minutes = parseInt(match[2] || '0');
+    const seconds = parseInt(match[3] || '0');
+    
+    return hours * 3600 + minutes * 60 + seconds;
+  };
+
+  // Track practice session duration
+  const trackPracticeSession = async () => {
+    if (!user || !session || !practiceStartTime) return;
+    
+    try {
+      const sessionDuration = Math.round((new Date().getTime() - practiceStartTime.getTime()) / 1000);
+      const videoId = extractVideoId(session.videoUrl) || session.videoUrl;
+      
+      // Update with session duration
+      const existingItem = await practiceHistoryService.getItem(videoId);
+      if (existingItem) {
+        existingItem.totalPracticeTime = (existingItem.totalPracticeTime || 0) + sessionDuration;
+        await practiceHistoryService.addOrUpdateItem(existingItem);
+      }
+    } catch (error) {
+      console.error('Failed to track practice session:', error);
     }
   };
 
@@ -258,34 +335,66 @@ export default function YouTubeShadowing() {
                 </div>
               </motion.div>
 
-              {/* Popular Videos Button */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15 }}
-                className="mb-6"
-              >
-                <SmartNavigationLink
-                  href="/popular-videos"
-                  className="block w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
-                  title="Browse Popular Videos"
+              {/* Quick Access Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Popular Videos Button */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.15 }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-4xl">🔥</div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-1">Most Popular Videos</h3>
-                        <p className="text-white/80 text-sm">
-                          Skip the wait! Practice with videos already transcribed by the community
-                        </p>
+                  <SmartNavigationLink
+                    href="/popular-videos"
+                    className="block w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+                    title="Browse Popular Videos"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="text-4xl">🔥</div>
+                        <div>
+                          <h3 className="text-xl font-bold mb-1">Most Popular Videos</h3>
+                          <p className="text-white/80 text-sm">
+                            Skip the wait! Practice with videos already transcribed by the community
+                          </p>
+                        </div>
                       </div>
+                      <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
-                    <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </SmartNavigationLink>
-              </motion.div>
+                  </SmartNavigationLink>
+                </motion.div>
+
+                {/* My Videos Button (only for logged in users) */}
+                {user && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <SmartNavigationLink
+                      href="/tools/my-videos"
+                      className="block w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+                      title="My Practice History"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="text-4xl">📚</div>
+                          <div>
+                            <h3 className="text-xl font-bold mb-1">My Videos</h3>
+                            <p className="text-white/80 text-sm">
+                              Quick access to videos you've practiced before
+                            </p>
+                          </div>
+                        </div>
+                        <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </SmartNavigationLink>
+                  </motion.div>
+                )}
+              </div>
 
               {/* Input Section */}
               <motion.div

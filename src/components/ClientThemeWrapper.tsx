@@ -23,7 +23,6 @@ export function ClientThemeWrapper({ children }: { children: React.ReactNode }) 
         const savedSettings = await SettingsManager.loadSettings();
         
         if (savedSettings && savedSettings.theme && savedSettings.theme !== 'system') {
-          console.log(`[ClientThemeWrapper] Loading initial theme from IndexedDB: ${savedSettings.theme}`);
           setInitialTheme(savedSettings.theme);
         } else {
           // Migration fallback: Check localStorage for existing theme
@@ -34,7 +33,6 @@ export function ClientThemeWrapper({ children }: { children: React.ReactNode }) 
             try {
               const parsed = JSON.parse(localStorageSettings);
               if (parsed.theme && parsed.theme !== 'system') {
-                console.log(`[ClientThemeWrapper] Found theme in localStorage during migration: ${parsed.theme}`);
                 setInitialTheme(parsed.theme);
               }
             } catch (e) {
@@ -48,7 +46,7 @@ export function ClientThemeWrapper({ children }: { children: React.ReactNode }) 
           }
         }
       } catch (error) {
-        console.error('[ClientThemeWrapper] Error loading initial theme from IndexedDB:', error);
+        // Silently handle error
       }
       
       setMounted(true);

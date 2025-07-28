@@ -19,11 +19,11 @@ export async function debugStatsSync(user: User | null) {
     // 1. Check current in-memory stats
     const currentStats = statsTracker.getStats();
     console.log('📊 Current In-Memory Stats:', {
-      totalActivities: currentStats.totalActivities,
-      articlesRead: currentStats.articlesRead,
-      drillsCompleted: currentStats.drillsCompleted,
-      gamesPlayed: currentStats.gamesPlayed,
-      lastUpdated: new Date(currentStats.lastUpdated).toISOString()
+      totalActivities: currentStats?.totalActivities || 0,
+      articlesRead: currentStats?.articlesRead || 0,
+      drillsCompleted: currentStats?.drillsCompleted || 0,
+      gamesPlayed: currentStats?.gamesPlayed || 0,
+      lastUpdated: currentStats?.lastUpdated ? new Date(currentStats.lastUpdated).toISOString() : 'N/A'
     });
     
     // 2. Check IndexedDB stats

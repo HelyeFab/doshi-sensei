@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import HomeClient from './HomeClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: {
     absolute: 'Doshi Sensei - The Ultimate Japanese Learning Platform',

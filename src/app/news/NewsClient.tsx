@@ -4,81 +4,52 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
-import { motion } from 'framer-motion';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 import { NewsArticle } from '@/types/news';
 import { getWatanocArticles, triggerArticleScraping, getArticleStats } from '@/utils/watanocArticles';
 import { LoginPromptModal } from '@/components/LoginPromptModal';
 import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
 
-export default function NewsClient() {
-  const router = useRouter();
-  const strings = useStrings();
-  const { user } = useAuth();
-  const { checkAndTrack } = useAccess();
-  const [articles, setArticles] = useState<NewsArticle[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedLevel, setSelectedLevel] = useState<string>('all');
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+// Loading skeleton component
+function ArticleCardSkeleton() {
+  return (
+    <div className="bg-card rounded-lg p-6 border border-border animate-pulse">
+      <div className="flex items-start gap-4">
+        <div className="w-24 h-24 bg-muted rounded-lg flex-shrink-0"></div>
+        <div className="flex-1 space-y-3">
+          <div className="h-6 bg-muted rounded w-3/4"></div>
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-2/3"></div>
+          <div className="flex items-center gap-3 mt-4">
+            <div className="h-6 bg-muted rounded-full w-12"></div>
+            <div className="h-6 bg-muted rounded-full w-16"></div>
+            <div className="h-4 bg-muted rounded w-20"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
+// Enhanced Article card component with ruby tag support
+interface ArticleCardProps {
+  article: NewsArticle;
+  onClick: (article: NewsArticle) => void;
+}
+
+function ArticleCard({ article, onClick }: ArticleCardProps) {
+  const [mounted, setMounted] = useState(false);
+  
   useEffect(() => {
-    loadArticles();
-  }, [selectedLevel]);
-
-  const loadArticles = async () => {
-    try {
-      setLoading(true);
-      const loadedArticles = await getWatanocArticles();
-      
-      // Filter by level if selected
-      const filtered = selectedLevel === 'all' 
-        ? loadedArticles 
-        : loadedArticles.filter(article => article.level === selectedLevel);
-      
-      setArticles(filtered);
-    } catch (error) {
-      console.error('Failed to load articles:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleReadArticle = async (article: NewsArticle) => {
-    // Check access
-    const result = await checkAndTrack('news_reading');
-    if (!result.hasAccess) {
-      if (!user) {
-        setShowLoginPrompt(true);
-      } else {
-        setShowUpgradeModal(true);
-      }
-      return;
-    }
-
-    router.push(`/news/${article.id}`);
-  };
-
-  const levels = ['all', 'N5', 'N4', 'N3', 'N2', 'N1'];
-
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'N5':
-      case 'N4':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-      case 'N3':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'N2':
-      case 'N1':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
-    }
-  };
+    setMounted(true);
+  }, []);
 
   const formatDate = (dateString: string | Date) => {
+    if (!mounted) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('ja-JP', {
       month: 'long',
@@ -86,114 +57,537 @@ export default function NewsClient() {
     });
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <SmartPageHeader
-        title={strings.news?.title || "Japanese News"}
-        icon="newspaper"
-        description={strings.news?.description || "Read real Japanese news articles"}
-      />
+  const getDifficultyColor = (difficulty: string) => {
+    // Use theme-aware colors that adapt to the current color scheme
+    const colors = {
+      N5: 'bg-primary/10 text-primary border border-primary/20',
+      N4: 'bg-secondary/50 text-secondary-foreground border border-secondary',
+      N3: 'bg-accent/20 text-accent-foreground border border-accent/30',
+      N2: 'bg-muted text-muted-foreground border border-border',
+      N1: 'bg-destructive/10 text-destructive border border-destructive/20'
+    };
+    return colors[difficulty as keyof typeof colors] || colors.N4;
+  };
 
-      <MobileAwareContainer className="pb-20">
-        {/* Filters */}
-        <div className="mb-6">
+  const getCategoryColor = (category: string) => {
+    // All categories use consistent theme-aware styling
+    return 'bg-muted text-muted-foreground border border-border';
+  };
+
+  // Generate a consistent random gradient based on article ID
+  const getRandomGradient = (id: string) => {
+    // Use article ID to generate consistent colors
+    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    const gradients = [
+      'from-purple-400 via-pink-500 to-red-500',
+      'from-green-400 via-blue-500 to-purple-500',
+      'from-yellow-400 via-red-500 to-pink-500',
+      'from-blue-400 via-purple-500 to-pink-500',
+      'from-indigo-400 via-purple-500 to-pink-500',
+      'from-green-400 via-teal-500 to-blue-500',
+      'from-orange-400 via-red-500 to-pink-500',
+      'from-cyan-400 via-blue-500 to-purple-500',
+      'from-rose-400 via-pink-500 to-purple-500',
+      'from-amber-400 via-orange-500 to-red-500'
+    ];
+    
+    return gradients[hash % gradients.length];
+  };
+
+  return (
+    <article
+      className="bg-card rounded-lg p-6 border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer hover:shadow-lg group"
+      onClick={() => onClick(article)}
+    >
+      <div className="flex items-start gap-4">
+        {/* Article Thumbnail with Gradient */}
+        <div className={`w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br ${getRandomGradient(article.id)} group-hover:scale-105 transition-transform relative flex items-center justify-center`}>
+          <span className="text-4xl drop-shadow-lg">📰</span>
+        </div>
+
+        {/* Article Content */}
+        <div className="flex-1 min-w-0">
+          {/* Title */}
+          <h3 className="font-semibold text-foreground mb-3 line-clamp-2 leading-relaxed text-lg group-hover:text-primary transition-colors">
+            {article.title}
+          </h3>
+
+          {/* Summary */}
+          {article.summary && (
+            <p className="text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
+              {article.summary}
+            </p>
+          )}
+
+          {/* Meta Information */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* JLPT Level */}
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(article.difficulty)}`}>
+              {article.difficulty}
+            </span>
+
+            {/* Category */}
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(article.category)}`}>
+              {article.category}
+            </span>
+
+            {/* Reading Time */}
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              📖 {article.estimatedReadingTime}分
+            </span>
+
+            {/* Date */}
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              📅 {formatDate(article.publishDate)}
+            </span>
+          </div>
+
+          {/* Tags */}
+          {article.tags && article.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {article.tags.slice(0, 3).map((tag, index) => (
+                <span
+                  key={index}
+                  className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground"
+                >
+                  #{tag}
+                </span>
+              ))}
+              {article.tags.length > 3 && (
+                <span className="text-xs text-muted-foreground">
+                  +{article.tags.length - 3} more
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// Filter component
+interface FilterBarProps {
+  onLevelChange: (level: string) => void;
+  onCategoryChange: (category: string) => void;
+  onRefresh: () => void;
+  selectedLevel: string;
+  selectedCategory: string;
+  isLoading: boolean;
+  stats: any;
+}
+
+function FilterBar({
+  onLevelChange,
+  onCategoryChange,
+  onRefresh,
+  selectedLevel,
+  selectedCategory,
+  isLoading,
+  stats
+}: FilterBarProps) {
+  const [showFilters, setShowFilters] = useState(false);
+  
+  const levels = [
+    { id: 'all', name: 'All Levels', count: stats?.totalArticles || 0 },
+    { id: 'N5', name: 'N5 (Beginner)', count: stats?.articlesByLevel?.N5 || 0 },
+    { id: 'N4', name: 'N4 (Elementary)', count: stats?.articlesByLevel?.N4 || 0 },
+    { id: 'N3', name: 'N3 (Intermediate)', count: stats?.articlesByLevel?.N3 || 0 },
+    { id: 'N2', name: 'N2 (Upper-Intermediate)', count: stats?.articlesByLevel?.N2 || 0 },
+    { id: 'N1', name: 'N1 (Advanced)', count: stats?.articlesByLevel?.N1 || 0 }
+  ];
+
+  const categories = [
+    { id: 'all', name: 'All Categories' },
+    { id: 'culture', name: 'Culture', icon: '🎌' },
+    { id: 'business', name: 'Business', icon: '💼' },
+    { id: 'technology', name: 'Technology', icon: '💻' },
+    { id: 'society', name: 'Society', icon: '🏛️' },
+    { id: 'transportation', name: 'Transportation', icon: '🚄' },
+    { id: 'general', name: 'General', icon: '📋' }
+  ];
+
+  const selectedLevelName = levels.find(l => l.id === selectedLevel)?.name || 'All Levels';
+  const selectedCategoryName = categories.find(c => c.id === selectedCategory)?.name || 'All Categories';
+
+  return (
+    <div className="bg-card rounded-lg p-4 border border-border mb-8">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        {/* Filter Toggle Button */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 px-4 py-2 bg-muted rounded-lg hover:bg-muted/80 transition-all text-sm font-medium"
+        >
+          <span>🔽</span>
+          <span>Filters</span>
+          {(selectedLevel !== 'all' || selectedCategory !== 'all') && (
+            <span className="ml-1 px-2 py-0.5 bg-primary/20 text-primary rounded-full text-xs">
+              Active
+            </span>
+          )}
+        </button>
+
+        {/* Active Filters Display */}
+        <div className="flex flex-wrap items-center gap-2 flex-1">
+          <span className="text-sm text-muted-foreground">Showing:</span>
+          <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+            {selectedLevelName}
+          </span>
+          {selectedCategory !== 'all' && (
+            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+              {selectedCategoryName}
+            </span>
+          )}
+        </div>
+
+        {/* Refresh Button */}
+        <button
+          onClick={onRefresh}
+          disabled={isLoading}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-sm"
+        >
+          <span className={isLoading ? 'animate-spin' : ''}>🔄</span>
+          Refresh
+        </button>
+      </div>
+
+      {/* Expandable Filters */}
+      {showFilters && (
+        <div className="mt-4 pt-4 border-t border-border space-y-4">
           {/* Level Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {strings.news?.level || "JLPT Level"}
+            <label className="block text-sm font-medium text-foreground mb-2">
+              📚 JLPT Level
             </label>
             <div className="flex flex-wrap gap-2">
-              {levels.map(level => (
+              {levels.map((level) => (
                 <button
-                  key={level}
-                  onClick={() => setSelectedLevel(level)}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    selectedLevel === level
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  key={level.id}
+                  onClick={() => {
+                    onLevelChange(level.id);
+                    setShowFilters(false);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    selectedLevel === level.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
                 >
-                  {level === 'all' ? strings.news?.allLevels || 'All Levels' : level}
+                  {level.name} {level.count > 0 && `(${level.count})`}
                 </button>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Articles Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          {/* Category Filter */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              🏷️ Category
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    onCategoryChange(category.id);
+                    setShowFilters(false);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${
+                    selectedCategory === category.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  {category.icon && <span>{category.icon}</span>}
+                  {category.name}
+                </button>
+              ))}
+            </div>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {articles.map((article, index) => (
-              <motion.div
-                key={article.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                onClick={() => handleReadArticle(article)}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
+
+          {/* Clear Filters */}
+          {(selectedLevel !== 'all' || selectedCategory !== 'all') && (
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  onLevelChange('all');
+                  onCategoryChange('all');
+                  setShowFilters(false);
+                }}
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
               >
-                <div className="flex items-start gap-4">
-                  {article.thumbnail && (
-                    <img 
-                      src={article.thumbnail} 
-                      alt={article.title}
-                      className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex-1">
-                        <span dangerouslySetInnerHTML={{ __html: article.titleWithRuby || article.title }} />
-                      </h3>
-                      <span className={`ml-2 text-xs px-2 py-1 rounded-full ${getLevelColor(article.level)}`}>
-                        {article.level}
-                      </span>
-                    </div>
-                    
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                      <span dangerouslySetInnerHTML={{ __html: article.summaryWithRuby || article.summary }} />
-                    </p>
-                    
-                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                      <span>{article.source}</span>
-                      <span>•</span>
-                      <span>{formatDate(article.publishedDate)}</span>
-                      {article.readingTime && (
-                        <>
-                          <span>•</span>
-                          <span>{article.readingTime} {strings.news?.minRead || "min read"}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                Clear all filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
-        {articles.length === 0 && !loading && (
-          <div className="text-center py-20">
-            <p className="text-gray-500 dark:text-gray-400">
-              {strings.news?.noArticles || "No articles found for the selected filters"}
+// Main news page component
+export default function NewsPage() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const { checkAndTrack, getRemainingUsage } = useAccess();
+  const { feature, access, remaining, isLoading: featureLoading } = useFeature('article_reading');
+  const { isPremium, userType } = useSubscription2();
+
+  // Modal states
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [stats, setStats] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+
+  // Load articles on mount and when page changes
+  useEffect(() => {
+    loadArticles(false, page);
+    loadStats();
+  }, [page]);
+
+  // Filter articles when filters change
+  useEffect(() => {
+    filterArticles();
+  }, [articles, selectedLevel, selectedCategory]);
+
+  const loadArticles = async (forceRefresh = false, pageNum = 1) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedArticles = await getWatanocArticles(forceRefresh, pageNum, pageSize);
+      setArticles(fetchedArticles);
+    } catch (err) {
+      console.error('Failed to load articles:', err);
+      setError('Failed to load articles. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const articleStats = await getArticleStats();
+      setStats(articleStats);
+    } catch (error) {
+      console.error('Failed to load article stats:', error);
+    }
+  };
+
+  const filterArticles = () => {
+    let filtered = articles;
+
+    // Filter by JLPT level
+    if (selectedLevel !== 'all') {
+      filtered = filtered.filter(article => article.difficulty === selectedLevel);
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(article => article.category === selectedCategory);
+    }
+
+    setFilteredArticles(filtered);
+  };
+
+  const handleArticleClick = async (article: NewsArticle) => {
+    // Check if user can access articles
+    const canAccess = await checkAndTrack('article_reading');
+
+    if (canAccess) {
+      // Navigate to individual article page using Next.js router
+      router.push(`/news/${article.id}`);
+    }
+    // The access system will automatically show the appropriate modal
+    // DO NOT manually handle modals here - the useAccess hook handles it
+  };
+
+  const handleRefresh = async () => {
+    // Try to trigger new scraping
+    try {
+      const scrapingResult = await triggerArticleScraping();
+      if (scrapingResult.success) {
+        // Wait a bit for the function to complete, then refresh
+        setTimeout(() => {
+          setPage(1);
+          loadArticles(true, 1);
+          loadStats();
+        }, 2000);
+      } else {
+        // Just refresh current data
+        setPage(1);
+        loadArticles(true, 1);
+      }
+    } catch (error) {
+      // Fallback to just refreshing current data
+      setPage(1);
+      loadArticles(true, 1);
+    }
+  };
+
+  // Calculate articles read today and limit
+  const articlesReadToday = access ? (access.usage || 0) : 0;
+  const articleLimit = access ? (access.limit || 0) : 0;
+  const articlesRemaining = remaining || 0;
+
+  // Main article list view
+  return (
+    <div className="min-h-screen bg-background">
+      <SmartPageHeader title="News" backHref="/" />
+
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
+
+        <div className="max-w-6xl mx-auto">
+          {/* Description */}
+          <div className="mb-8">
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Read curated Japanese articles from <strong>Watanoc</strong> 🌐 and <strong>Todaii</strong> 📚 to improve your reading comprehension.
+              Articles are organized by JLPT level and updated daily with fresh content from multiple sources.
             </p>
+            {stats && (
+              <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
+                <span>📚 {stats.totalArticles} articles available</span>
+                <span>📅 Updated: {new Date(stats.lastUpdated).toLocaleDateString()}</span>
+                {userType !== 'guest' && !featureLoading && (
+                  <span className="text-primary">
+                    📖 {isPremium ? (
+                      <span className="text-primary font-medium">Unlimited articles</span>
+                    ) : articlesRemaining !== undefined && articlesRemaining !== null ? (
+                      articlesRemaining > 0
+                        ? `${articlesRemaining} ${articlesRemaining === 1 ? 'article' : 'articles'} remaining today`
+                        : 'Daily limit reached'
+                    ) : (
+                      'Loading...'
+                    )}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Filter Bar */}
+          <FilterBar
+            onLevelChange={setSelectedLevel}
+            onCategoryChange={setSelectedCategory}
+            onRefresh={handleRefresh}
+            selectedLevel={selectedLevel}
+            selectedCategory={selectedCategory}
+            isLoading={loading}
+            stats={stats}
+          />
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 mb-8">
+              <div className="flex items-center gap-3 text-destructive">
+                <span className="text-2xl">⚠️</span>
+                <div>
+                  <h3 className="font-semibold">Error Loading Articles</h3>
+                  <p className="text-sm mt-1">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading && !error && (
+            <div className="space-y-6">
+              {[...Array(3)].map((_, index) => (
+                <ArticleCardSkeleton key={index} />
+              ))}
+            </div>
+          )}
+
+          {/* Articles List */}
+          {!loading && !error && (
+            <>
+              {/* Results count */}
+              <div className="mb-6">
+                <p className="text-muted-foreground">
+                  {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''} found
+                  {selectedLevel !== 'all' && ` for ${selectedLevel}`}
+                  {selectedCategory !== 'all' && ` in ${selectedCategory}`}
+                </p>
+              </div>
+
+              {/* Articles */}
+              {filteredArticles.length > 0 ? (
+                <div className="space-y-6">
+                  {filteredArticles.map((article) => (
+                    <ArticleCard
+                      key={article.id}
+                      article={article}
+                      onClick={handleArticleClick}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <div className="text-8xl mb-6">📰</div>
+                  <h3 className="text-2xl font-semibold text-foreground mb-4">
+                    No articles found
+                  </h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    No articles match your current filters. Try adjusting the JLPT level or category,
+                    or refresh to get the latest articles.
+                  </p>
+                  <button
+                    onClick={handleRefresh}
+                    className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    🔄 Refresh Articles
+                  </button>
+                </div>
+              )}
+
+            </>
+          )}
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center gap-4 my-8">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 rounded bg-muted text-muted-foreground disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">Page {page}</span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={articles.length < pageSize}
+              className="px-4 py-2 rounded bg-muted text-muted-foreground disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </MobileAwareContainer>
 
-      {/* Login Prompt Modal */}
-      {showLoginPrompt && (
-        <LoginPromptModal onClose={() => setShowLoginPrompt(false)} />
-      )}
+      {/* Modals */}
+      <LoginPromptModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        message={modalMessage}
+        feature="articles"
+      />
 
-      {/* Upgrade Modal */}
-      {showUpgradeModal && (
-        <UpgradeSlideUpModal onClose={() => setShowUpgradeModal(false)} />
-      )}
+      <UpgradeSlideUpModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        message={modalMessage}
+        feature="articles"
+      />
     </div>
   );
 }

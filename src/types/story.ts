@@ -56,6 +56,8 @@ export interface StoryProgress {
   storyId: string;
   userId: string;
   currentPage: number;
+  totalPages?: number; // Optional - total number of pages
+  lastReadSection?: string; // Optional - last read section identifier
   completed: boolean;
   completedAt?: Date;
   quizScore?: number;

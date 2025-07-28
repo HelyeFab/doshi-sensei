@@ -48,288 +48,285 @@ export default function StoriesClient() {
         if (typeof window !== 'undefined') {
           loadedStories = await storyOfflineManager.getAllCachedStories();
           if (selectedLevel !== 'all') {
-            loadedStories = loadedStories.filter(story => 
-              story.metadata.jlptLevel === selectedLevel
-            );
+            loadedStories = loadedStories.filter(s => s.jlptLevel === selectedLevel);
           }
           if (selectedTheme !== 'all') {
-            loadedStories = loadedStories.filter(story => 
-              story.metadata.themes.includes(selectedTheme)
-            );
+            loadedStories = loadedStories.filter(s => s.theme === selectedTheme);
           }
         }
       } else {
-        loadedStories = await storyManager.getStories({
-          level: selectedLevel === 'all' ? undefined : selectedLevel,
-          theme: selectedTheme === 'all' ? undefined : selectedTheme
-        });
+        // Load from Firebase
+        if (selectedLevel === 'all' && selectedTheme === 'all') {
+          loadedStories = await storyManager.getAllStories();
+        } else if (selectedLevel !== 'all') {
+          loadedStories = await storyManager.getStoriesByLevel(selectedLevel);
+          if (selectedTheme !== 'all') {
+            loadedStories = loadedStories.filter(s => s.theme === selectedTheme);
+          }
+        } else if (selectedTheme !== 'all') {
+          loadedStories = await storyManager.getStoriesByTheme(selectedTheme);
+        }
       }
-      
+
       setStories(loadedStories);
     } catch (error) {
-      console.error('Failed to load stories:', error);
+      console.error('Error loading stories:', error);
     } finally {
       setLoading(false);
     }
   };
 
+
   const loadCachedStories = async () => {
-    const cachedIds = await storyOfflineManager.getCachedStoryIds();
-    setCachedStoryIds(new Set(cachedIds));
+    try {
+      // Only run on client side
+      if (typeof window === 'undefined') return;
+
+      const cached = await storyOfflineManager.getAllCachedStories();
+      const cachedIds = new Set(cached.map(s => s.id));
+      setCachedStoryIds(cachedIds);
+    } catch (error) {
+      console.error('Error loading cached stories:', error);
+    }
   };
 
-  const handleReadStory = async (story: Story) => {
-    // Check access
-    const result = await checkAndTrack('story_reading');
-    if (!result.hasAccess) {
-      // Show upgrade modal or redirect to login
-      alert(strings.stories?.upgradePrompt || 'Please upgrade to read more stories');
+  const handleStoryClick = async (story: Story) => {
+    // Check if user can read more stories using new system
+    const canAccess = await checkAndTrack('story_reading');
+    if (!canAccess) {
+      // The access system will show the appropriate modal
       return;
     }
 
     router.push(`/stories/${story.slug}`);
   };
 
-  const handleCacheStory = async (story: Story, e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    if (cachedStoryIds.has(story.slug)) {
-      // Remove from cache
-      await storyOfflineManager.removeFromCache(story.slug);
-      setCachedStoryIds(prev => {
-        const next = new Set(prev);
-        next.delete(story.slug);
-        return next;
-      });
-    } else {
-      // Add to cache
-      await storyOfflineManager.cacheStory(story);
-      setCachedStoryIds(prev => new Set([...prev, story.slug]));
-    }
-  };
-
   const getThemes = () => {
     const themes = new Set<string>();
-    stories.forEach(story => {
-      story.metadata.themes.forEach(theme => themes.add(theme));
-    });
-    return Array.from(themes).sort();
+    stories.forEach(story => themes.add(story.theme));
+    return Array.from(themes);
   };
 
-  const filteredStories = stories;
-
-  const isAdmin = user?.email && ['emacdonald.ai@gmail.com', 'emacdonald86@gmail.com'].includes(user.email);
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <SmartPageHeader
-        title={strings.stories?.title || "Japanese Stories"}
-        icon="book-open"
-        rightContent={
-          isAdmin && (
-            <Link
-              href="/admin/stories"
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
-            >
-              {strings.stories?.manageStories || "Manage Stories"}
-            </Link>
-          )
-        }
-      />
+    <div className="min-h-screen bg-background">
+      <SmartPageHeader title="Stories" backHref="/" />
+      
+      {/* Main Content */}
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
+        <p className="text-muted-foreground text-center mt-2">
+          {strings.stories.description}
+        </p>
 
-      <MobileAwareContainer className="pb-20">
-        {/* Access Info */}
-        {!featureLoading && access && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
-              {userType === 'guest' && (
-                <>
-                  {strings.stories?.guestLimit || "Guest users can read"} {remaining || 0} {strings.stories?.storiesLeft || "stories today"}. 
-                  <Link href="/login" className="ml-1 underline">
-                    {strings.stories?.loginForMore || "Login for more"}
-                  </Link>
-                </>
-              )}
-              {userType === 'free' && (
-                <>
-                  {strings.stories?.freeLimit || "Free users can read"} {remaining || 0} {strings.stories?.storiesLeft || "stories today"}. 
-                  <Link href="/account" className="ml-1 underline">
-                    {strings.stories?.upgradeForUnlimited || "Upgrade for unlimited"}
-                  </Link>
-                </>
-              )}
-              {userType === 'premium' && (
-                strings.stories?.premiumUnlimited || "You have unlimited access to all stories"
-              )}
-            </p>
+        <div className="max-w-6xl mx-auto">
+          {/* Description */}
+          <div className="mb-8">
+            {userType !== 'guest' && !featureLoading && (
+              <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
+                <span className="text-primary">
+                  📖 {isPremium ? (
+                    <span className="text-green-600">Unlimited stories</span>
+                  ) : remaining !== undefined && remaining !== null ? (
+                    remaining > 0
+                      ? `${remaining} ${remaining === 1 ? 'story' : 'stories'} remaining today`
+                      : 'Daily limit reached'
+                  ) : (
+                    'Loading...'
+                  )}
+                </span>
+              </div>
+            )}
           </div>
-        )}
+          {/* Filter Bar */}
+          <div className="bg-card rounded-lg p-6 border border-border mb-8">
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* JLPT Levels */}
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-foreground mb-3">
+                  📚 JLPT Level
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedLevel('all')}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === 'all'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                  >
+                    All Levels
+                  </button>
+                  {JLPT_LEVELS.map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => setSelectedLevel(level)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === level
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-        {/* Filters */}
-        <div className="mb-6 space-y-4">
-          {/* Offline Toggle */}
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showOfflineOnly}
-                onChange={(e) => setShowOfflineOnly(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                {strings.stories?.showOfflineOnly || "Show offline stories only"} ({cachedStoryIds.size})
-              </span>
-            </label>
-          </div>
+              {/* Themes */}
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-foreground mb-3">
+                  🏷️ Theme
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedTheme('all')}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedTheme === 'all'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                  >
+                    All Themes
+                  </button>
+                  {getThemes().map((theme) => (
+                    <button
+                      key={theme}
+                      onClick={() => setSelectedTheme(theme)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedTheme === theme
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                    >
+                      {theme}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          {/* Level Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {strings.stories?.jlptLevel || "JLPT Level"}
-            </label>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSelectedLevel('all')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  selectedLevel === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                {strings.stories?.allLevels || "All Levels"}
-              </button>
-              {JLPT_LEVELS.map(level => (
+              {/* Actions */}
+              <div className="flex items-end gap-3">
                 <button
-                  key={level}
-                  onClick={() => setSelectedLevel(level)}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    selectedLevel === level
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                  onClick={() => setShowOfflineOnly(!showOfflineOnly)}
+                  className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${showOfflineOnly
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/90'
+                    }`}
                 >
-                  {level}
+                  {showOfflineOnly ? '📵' : '🌐'}
+                  {showOfflineOnly ? 'Offline' : 'All Stories'}
                 </button>
-              ))}
+              </div>
             </div>
           </div>
 
-          {/* Theme Filter */}
-          {getThemes().length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {strings.stories?.theme || "Theme"}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedTheme('all')}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    selectedTheme === 'all'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+          {/* Stories Grid */}
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : stories.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📖</div>
+              <h3 className="text-xl font-semibold text-foreground mb-4">
+                {strings.stories.emptyState.title}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                {strings.stories.emptyState.description}
+              </p>
+              <button
+                onClick={() => router.push('/stories/create')}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                {strings.stories.emptyState.createButton}
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {stories.map((story, index) => (
+                <motion.div
+                  key={story.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="cursor-pointer"
+                  onClick={() => handleStoryClick(story)}
                 >
-                  {strings.stories?.allThemes || "All Themes"}
-                </button>
-                {getThemes().map(theme => (
-                  <button
-                    key={theme}
-                    onClick={() => setSelectedTheme(theme)}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      selectedTheme === theme
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    {theme}
-                  </button>
-                ))}
-              </div>
+                  <div className="bg-card rounded-lg overflow-hidden border border-border hover:border-primary transition-colors h-full flex flex-col">
+                    {/* Cover Image */}
+                    <div className="relative h-48 bg-gradient-to-br from-primary/20 to-secondary/20">
+                      {story.coverImageUrl ? (
+                        <img
+                          src={story.coverImageUrl}
+                          alt={story.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <span className="text-6xl">📖</span>
+                        </div>
+                      )}
+                      <div className="absolute top-2 right-2 flex gap-2">
+                        {cachedStoryIds.has(story.id) && (
+                          <span className="px-2 py-1 bg-green-600/90 text-white text-xs rounded flex items-center gap-1">
+                            <span>💾</span> Offline
+                          </span>
+                        )}
+                        {story.theme === 'Mood Board Story' && (
+                          <span className="px-2 py-1 bg-purple-600/90 text-white text-xs rounded flex items-center gap-1">
+                            <span>🎨</span> Mood Board
+                          </span>
+                        )}
+                        <span className="px-2 py-1 bg-black/50 text-white text-xs rounded">
+                          {story.jlptLevel}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4 flex-grow flex flex-col">
+                      <h3 className="font-bold text-lg mb-1">{story.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-2 japanese-text">
+                        <span dangerouslySetInnerHTML={{ __html: story.titleJa }} />
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-4 flex-grow">
+                        {story.description}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <span>📄</span>
+                          {story.pages.length} pages
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span>❓</span>
+                          {story.quiz.length} questions
+                        </span>
+                        <span className="px-2 py-1 bg-secondary rounded">
+                          {story.theme}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {/* Premium Upsell */}
+          {!isPremium && stories.length > 0 && (
+            <div className="mt-12 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-6 text-center">
+              <h3 className="text-xl font-bold mb-2">Want unlimited stories?</h3>
+              <p className="text-center text-muted-foreground mb-4">
+                {strings.subscriptions.upgradeForUnlimited}
+              </p>
+              <button
+                onClick={() => router.push('/account')}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                {strings.subscriptions.viewPlans}
+              </button>
             </div>
           )}
         </div>
-
-        {/* Stories Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredStories.map((story, index) => (
-              <motion.div
-                key={story.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-              >
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                     onClick={() => handleReadStory(story)}>
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {story.title}
-                      </h3>
-                      <button
-                        onClick={(e) => handleCacheStory(story, e)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          cachedStoryIds.has(story.slug)
-                            ? 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400'
-                        }`}
-                        title={cachedStoryIds.has(story.slug) ? 'Remove from offline' : 'Save for offline'}
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                d={cachedStoryIds.has(story.slug) 
-                                  ? "M5 13l4 4L19 7"
-                                  : "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"} />
-                        </svg>
-                      </button>
-                    </div>
-                    
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                      {story.summary}
-                    </p>
-                    
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                        {story.metadata.jlptLevel}
-                      </span>
-                      <span className="text-gray-500 dark:text-gray-400">
-                        {story.metadata.length} {strings.stories?.characters || "characters"}
-                      </span>
-                      <span className="text-gray-500 dark:text-gray-400">
-                        {story.metadata.readingTime} {strings.stories?.minRead || "min read"}
-                      </span>
-                    </div>
-                    
-                    {story.metadata.themes.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        {story.metadata.themes.map(theme => (
-                          <span key={theme} className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
-                            {theme}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-        {filteredStories.length === 0 && !loading && (
-          <div className="text-center py-20">
-            <p className="text-gray-500 dark:text-gray-400">
-              {showOfflineOnly 
-                ? strings.stories?.noOfflineStories || "No offline stories available"
-                : strings.stories?.noStoriesFound || "No stories found for the selected filters"}
-            </p>
-          </div>
-        )}
       </MobileAwareContainer>
     </div>
   );

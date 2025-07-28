@@ -6,13 +6,49 @@ import { TranscriptCacheManager } from '@/utils/transcriptCache';
 // YouTube Data API v3 endpoint
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 
+// Helper function to validate YouTube and YouTube Music URLs
+function isValidYouTubeUrl(url: string): boolean {
+  // Check standard YouTube URLs
+  if (ytdl.validateURL(url)) {
+    return true;
+  }
+  
+  // Check YouTube Music URLs
+  const youtubeMusicPattern = /^https?:\/\/(music\.)?youtube\.com\/(watch|embed)\?v=([a-zA-Z0-9_-]{11})/;
+  const youtubeMusicShortPattern = /^https?:\/\/music\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
+  
+  return youtubeMusicPattern.test(url) || youtubeMusicShortPattern.test(url);
+}
+
+// Helper to extract video ID from YouTube Music URLs
+function extractVideoIdFromUrl(url: string): string | null {
+  // Try standard extraction first
+  try {
+    return ytdl.getVideoID(url);
+  } catch {
+    // Fallback for YouTube Music URLs
+    const patterns = [
+      /[?&]v=([a-zA-Z0-9_-]{11})/,
+      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      /embed\/([a-zA-Z0-9_-]{11})/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json();
     
-    if (!url || !ytdl.validateURL(url)) {
+    if (!url || !isValidYouTubeUrl(url)) {
       return NextResponse.json(
-        { error: 'Invalid YouTube URL' },
+        { error: 'Invalid YouTube or YouTube Music URL' },
         { status: 400 }
       );
     }
@@ -48,7 +84,7 @@ export async function POST(request: NextRequest) {
     console.log('Environment check - SUPA_YOUTUBE_API_KEY exists:', !!process.env.SUPA_YOUTUBE_API_KEY);
     
     // Extract video ID for YouTube API calls
-    const videoId = ytdl.getVideoID(url);
+    const videoId = extractVideoIdFromUrl(url);
     let videoMetadata = null;
     
     // First, try YouTube Data API v3 for video metadata using server-side API key

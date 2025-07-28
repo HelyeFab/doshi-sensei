@@ -116,7 +116,7 @@ export default function KanjiBrowserClient() {
 
         {/* Kanji Count */}
         <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-          {strings.kanjiBrowser?.showing || "Showing"} {filteredKanji.length} {strings.kanjiBrowser?.of || "of"} {kanjiList.length} {strings.kanjiBrowser?.kanji || "kanji"}
+          {strings.kanjiBrowser?.showing || "Showing"} {filteredKanji.length} {strings.kanjiBrowser?.of || "of"} {kanjiData.length} {strings.kanjiBrowser?.kanji || "kanji"}
         </div>
 
         {/* Kanji Grid */}

@@ -599,6 +599,36 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // User Practice History - users can only access their own history
+    match /userPracticeHistory/{document} {
+      // Users can read their own practice history
+      allow read: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+      
+      // Users can create practice history for themselves
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        request.resource.data.keys().hasAll(['userId', 'videoId', 'videoUrl', 'videoTitle', 
+          'lastPracticed', 'firstPracticed', 'practiceCount', 'contentType']) &&
+        request.resource.data.userId is string &&
+        request.resource.data.videoId is string &&
+        request.resource.data.videoUrl is string &&
+        request.resource.data.videoTitle is string &&
+        request.resource.data.lastPracticed is timestamp &&
+        request.resource.data.firstPracticed is timestamp &&
+        request.resource.data.practiceCount is number &&
+        request.resource.data.contentType in ['youtube', 'audio', 'video'];
+      
+      // Users can update their own practice history
+      allow update: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own practice history
+      allow delete: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

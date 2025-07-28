@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect } from 'react';
 import Link from 'next/link'
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
@@ -19,303 +17,392 @@ import UserAvatar from '@/components/UserAvatar';
 import UserAchievements from '@/components/achievements/UserAchievements';
 import { useRouter } from 'next/navigation';
 
-// Import debug utility in development
-if (process.env.NODE_ENV === 'development') {
-  import('@/utils/debugStats');
-}
-
-interface FeatureCard {
-  id: string;
-  title: string;
-  description: string;
-  href: string;
-  icon: string;
-  requiresAuth?: boolean;
-  isPremium?: boolean;
-  isNew?: boolean;
-}
-
 export default function HomeClient() {
-  const { user } = useAuth();
-  const { userProfile } = useUserProfile();
-  const { subscription, subscriptionLoading, isPremium } = useSubscription2();
-  const { theme } = useSettings();
+  const { profile, profilePicture } = useUserProfile();
+  const { subscription } = useSubscription2();
+  const { settings } = useSettings();
   const strings = useStrings();
+  const { user } = useAuth();
   const router = useRouter();
-  const [displayName, setDisplayName] = useState<string>('');
-  const [pokemonData, setPokemonData] = useState<{ name: string; sprite: string | null }>({ name: '', sprite: null });
-  const [showToriiGate, setShowToriiGate] = useState(false);
-  const [showEasterEgg, setShowEasterEgg] = useState(false);
-  const [easterEggClicks, setEasterEggClicks] = useState(0);
+  const [dayProgress, setDayProgress] = useState(0);
+  const [todayDate, setTodayDate] = useState<string>('');
+  const [isClient, setIsClient] = useState(false);
 
+  // Ensure strings are loaded
+  if (!strings || !strings.home || !strings.home.featureCards) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  const displayName = profile?.displayName || profile?.email || user?.email || strings.home.welcomeUser;
+
+  // Mark when we're on the client and load debug stats
   useEffect(() => {
-    if (userProfile) {
-      setDisplayName(userProfile.displayName || userProfile.email || '');
-    } else {
-      setDisplayName('');
-    }
-  }, [userProfile]);
-
-  useEffect(() => {
-    async function loadPokemon() {
-      if (user?.uid) {
-        const data = await pokemonManager.getUserPokemon(user.uid);
-        setPokemonData(data);
-      }
-    }
-    loadPokemon();
-  }, [user]);
-
-  const themeColors = colorPalettes[theme] || colorPalettes['dark-purple'];
-
-  const featureCards: FeatureCard[] = [
-    {
-      id: 'practice',
-      title: strings.home?.practice || 'Practice',
-      description: strings.home?.practiceDesc || 'Conjugation drills and exercises',
-      href: '/practice',
-      icon: '📝',
-    },
-    {
-      id: 'stories',
-      title: strings.home?.stories || 'Stories',
-      description: strings.home?.storiesDesc || 'Read Japanese stories',
-      href: '/stories',
-      icon: '📚',
-    },
-    {
-      id: 'games',
-      title: strings.home?.games || 'Games',
-      description: strings.home?.gamesDesc || 'Learn through play',
-      href: '/games',
-      icon: '🎮',
-    },
-    {
-      id: 'vocabulary',
-      title: strings.home?.vocabulary || 'Vocabulary',
-      description: strings.home?.vocabularyDesc || 'Build your word bank',
-      href: '/vocabulary',
-      icon: '📖',
-    },
-    {
-      id: 'kanji-browser',
-      title: strings.home?.kanjiBrowser || 'Kanji Browser',
-      description: strings.home?.kanjiBrowserDesc || 'Browse kanji by JLPT level',
-      href: '/kanji-browser',
-      icon: '🈸',
-    },
-    {
-      id: 'kanji-moods',
-      title: strings.home?.kanjiMoods || 'Kanji Moods',
-      description: strings.home?.kanjiMoodsDesc || 'Thematic kanji learning',
-      href: '/kanji-moods',
-      icon: '🎨',
-    },
-    {
-      id: 'news',
-      title: strings.home?.news || 'News',
-      description: strings.home?.newsDesc || 'Read real Japanese news',
-      href: '/news',
-      icon: '📰',
-    },
-    {
-      id: 'youtube-shadowing',
-      title: strings.home?.youtubeShadowing || 'YouTube Shadowing',
-      description: strings.home?.youtubeShadowingDesc || 'Practice with videos',
-      href: '/tools/youtube-shadowing',
-      icon: '🎬',
-    },
-    {
-      id: 'textbook-vocabulary',
-      title: strings.home?.textbookVocabulary || 'Textbook Vocabulary',
-      description: strings.home?.textbookVocabularyDesc || 'Study Genki & Minna vocab',
-      href: '/tools/textbook-vocabulary',
-      icon: '📚',
-      isNew: true,
-    },
-    {
-      id: 'achievements',
-      title: strings.home?.achievements || 'Achievements',
-      description: strings.home?.achievementsDesc || 'Track your progress',
-      href: '/achievements',
-      icon: '🏆',
-      requiresAuth: true,
-    },
-  ];
-
-  const handleEasterEggClick = () => {
-    const newClicks = easterEggClicks + 1;
-    setEasterEggClicks(newClicks);
+    setIsClient(true);
     
-    if (newClicks === 7) {
-      setShowEasterEgg(true);
+    // Load debug stats after client is ready
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      // Delay import to ensure all dependencies are loaded
       setTimeout(() => {
-        router.push('/test-three-pillar-integration');
-      }, 1500);
+        import('@/utils/debugStats').catch(err => {
+          console.warn('Failed to load debug stats:', err);
+        });
+      }, 1000);
     }
-  };
+  }, []);
+
+  // Calculate day progress
+  useEffect(() => {
+    if (!isClient) return;
+
+    const calculateDayProgress = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const totalMinutes = hours * 60 + minutes;
+      const dayMinutes = 24 * 60;
+      const progress = (totalMinutes / dayMinutes) * 100;
+      setDayProgress(progress);
+      
+      // Format today's date
+      const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+      setTodayDate(now.toLocaleDateString('en-US', options));
+    };
+
+    calculateDayProgress();
+
+    // Update every minute
+    const interval = setInterval(calculateDayProgress, 60000);
+
+    return () => clearInterval(interval);
+  }, [isClient]);
+
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mobile-nav-padding">
-        {/* Header with User Info */}
-        <header className="px-4 pt-6 pb-4" role="banner">
-          <div className="flex items-center gap-3">
-            <div 
-              className="relative w-12 h-12 flex-shrink-0 cursor-pointer"
-              onClick={handleEasterEggClick}
-            >
-              <UserAvatar size="medium" showPokemon={false} />
-              {pokemonData.sprite && (
-                <Image
-                  src={pokemonData.sprite}
-                  alt={pokemonData.name}
-                  width={20}
-                  height={20}
-                  className="absolute -bottom-1 -right-1 pixelated"
-                />
-              )}
-            </div>
-            <div className="flex-1">
-              <h1 className="text-xl font-semibold text-gray-900">
-                {displayName ? `${strings.home.greeting} ${displayName}-san! 👋` : strings.home.welcome}
-              </h1>
-              <p className="text-sm text-gray-600">{strings.home.readyToPractice}</p>
-            </div>
-          </div>
-
-          {/* Stats Bar */}
-          <div className="mt-4">
-            <StatsBar />
-          </div>
-
-          {/* Date and Progress */}
-          <div className="mt-4 flex items-center justify-between text-sm">
-            <div className="text-gray-600">
-              {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </div>
-            {user && (
+    <div className="min-h-screen bg-background">
+      {/* Desktop margin wrapper */}
+      <div className="md:mx-16 lg:mx-32 xl:mx-48 2xl:mx-64">
+        {/* Welcome Section */}
+        <header className="px-4 pt-8 pb-6" role="banner">
+        <div className="flex items-center gap-3">
+          {/* User Avatar */}
+          <UserAvatar size="md" />
+          
+          {/* Greeting Text */}
+          <div className="flex-1">
+            <h1 className="text-xl font-semibold text-foreground">
+              {strings.home.greeting} {displayName}-san! <span className="inline-block animate-wave">👋</span>
+            </h1>
+            {user ? (
+              <p className="text-sm text-muted-foreground">{strings.home.readyToPractice}</p>
+            ) : (
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${isPremium ? 'bg-purple-500' : 'bg-green-500'}`} />
-                <span className="text-gray-600">
-                  {isPremium ? strings.home.premiumActive : strings.home.freeAccount}
-                </span>
+                <button
+                  onClick={() => router.push('/login')}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Login
+                </button>
+                <span className="text-sm text-muted-foreground">/</span>
+                <button
+                  onClick={() => router.push('/login')}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Sign up
+                </button>
               </div>
             )}
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Main Content */}
-        <main className="px-4 pb-8">
-          {/* User Achievements */}
-          {user && (
-            <div className="mb-6">
-              <UserAchievements />
-            </div>
-          )}
+      {/* Today's Date Section */}
+      {isClient && (
+        <section className="px-4 pb-6">
+          <h2 className="text-lg font-medium text-foreground mb-2">
+            {isClient && todayDate ? `Today, ${todayDate}` : 'Today'}
+          </h2>
+          
+          {/* Day Progress Bar */}
+          <div 
+            className="relative h-0.5 w-full bg-muted overflow-hidden"
+            role="progressbar"
+            aria-label={strings.home.dayProgressTooltip}
+            aria-valuenow={Math.round(dayProgress)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            title={strings.home.dayProgressTooltip}
+          >
+            <div 
+              className="absolute left-0 top-0 h-full transition-all duration-300 ease-out"
+              style={{
+                width: isClient ? `${dayProgress}%` : '0%',
+                backgroundColor: 'var(--primary)'
+              }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">{strings.home.dayProgressTooltip}</p>
+        </section>
+      )}
+      
+      {/* User Achievements */}
+      <UserAchievements />
+      
+      {/* Stats Bar */}
+      <div className="px-4 pb-4">
+        <StatsBar />
+      </div>
 
-          {/* Feature Cards */}
-          <div className="space-y-3">
-            {featureCards.map((card) => {
-              if (card.requiresAuth && !user) return null;
-              
-              return (
-                <SmartNavigationLink key={card.id} href={card.href}>
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+      {/* Feature Cards - Scrollable Container */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
+        <div className="space-y-6">
+          {/* Foundation Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Foundation</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.hiragana.title, icon: strings.home.featureCards.hiragana.icon, href: '/practice/hiragana', description: strings.home.featureCards.hiragana.description },
+                { title: strings.home.featureCards.katakana.title, icon: strings.home.featureCards.katakana.icon, href: '/practice/katakana', description: strings.home.featureCards.katakana.description }
+              ].map((card) => (
+                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-2xl">
-                        {card.icon}
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+                        <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium text-gray-900">{card.title}</h3>
-                          {card.isNew && (
-                            <span className="px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-800 rounded-full">
-                              NEW
-                            </span>
-                          )}
-                          {card.isPremium && (
-                            <span className="px-2 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
-                              PREMIUM
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500">{card.description}</p>
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
                       </div>
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
                   </div>
                 </SmartNavigationLink>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          </section>
 
-          {/* Account Section */}
-          <div className="mt-8 space-y-3">
-            {!user ? (
-              <>
-                <Link href="/login">
-                  <div className="bg-purple-600 text-white rounded-lg p-4 text-center font-medium hover:bg-purple-700 transition-colors">
-                    {strings.home.loginToContinue}
-                  </div>
-                </Link>
-                <Link href="/drill/conjugation">
-                  <div className="bg-white border-2 border-purple-600 text-purple-600 rounded-lg p-4 text-center font-medium hover:bg-purple-50 transition-colors">
-                    {strings.home.tryFreeMode}
-                  </div>
-                </Link>
-              </>
-            ) : (
-              <>
-                {!isPremium && (
-                  <Link href="/account">
-                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg p-4 text-center">
-                      <p className="font-medium">{strings.home.upgradeToPremium}</p>
-                      <p className="text-sm opacity-90 mt-1">{strings.home.unlimitedAccess}</p>
-                    </div>
-                  </Link>
-                )}
-                <Link href="/settings">
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Core Learning Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Core Learning</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
+                { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
+                { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
+                { title: strings.home.featureCards.textbookVocabulary.title, icon: strings.home.featureCards.textbookVocabulary.icon, href: '/tools/textbook-vocabulary', description: strings.home.featureCards.textbookVocabulary.description },
+                { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description }
+              ].map((card) => (
+                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center">
-                        ⚙️
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+                        <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">{strings.home.settings}</h3>
-                        <p className="text-sm text-gray-500">{strings.home.settingsDesc}</p>
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
                       </div>
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
                   </div>
-                </Link>
-              </>
-            )}
-          </div>
-        </main>
-      </div>
+                </SmartNavigationLink>
+              ))}
+            </div>
+          </section>
 
-      {/* Torii Gate Animation */}
-      {showToriiGate && <ToriiGate onComplete={() => setShowToriiGate(false)} />}
+          {/* Divider */}
+          <div className="border-t border-border"></div>
 
-      {/* Easter Egg Message */}
-      {showEasterEgg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 text-center animate-bounce">
-            <p className="text-2xl mb-2">🎉</p>
-            <p className="text-lg font-semibold">Secret Developer Mode!</p>
-            <p className="text-sm text-gray-600 mt-2">Redirecting to Three-Pillar Test...</p>
-          </div>
+          {/* Practice & Review Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Practice & Review</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.practice.title, icon: strings.home.featureCards.practice.icon, href: '/practice', description: strings.home.featureCards.practice.description },
+                { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
+                { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description }
+              ].map((card) => (
+                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </SmartNavigationLink>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Immersion Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Immersion</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
+                { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
+                { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
+                ...(user ? [{ title: 'My Videos', icon: '📚', href: '/tools/my-videos', description: 'Quick access to your practice history' }] : [])
+              ].map((card) => (
+                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+                        {card.icon.startsWith('/') ? (
+                          <Image src={card.icon} alt="" width={32} height={32} />
+                        ) : (
+                          <span className="text-2xl">{card.icon}</span>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </SmartNavigationLink>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Tools & Resources Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Tools & Resources</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
+                { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description }
+              ].map((card) => (
+                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </SmartNavigationLink>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* App Settings Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">App Settings</h3>
+            <div className="space-y-3">
+              {[
+                { title: strings.home.featureCards.account.title, icon: strings.home.featureCards.account.icon, href: '/account', description: strings.home.featureCards.account.description },
+                { title: strings.home.featureCards.settings.title, icon: strings.home.featureCards.settings.icon, href: '/settings', description: strings.home.featureCards.settings.description }
+              ].map((card) => (
+                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+                        <span className="text-2xl">{card.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </SmartNavigationLink>
+              ))}
+            </div>
+          </section>
+
+          {/* Install PWA Section - if not installed */}
+          {!user && isClient && (
+            <>
+              <div className="border-t border-border"></div>
+              <section className="pb-20">
+                <div className="bg-primary/5 rounded-lg p-6 text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+                    <span className="text-3xl">📱</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">{strings.home.installPWA?.title || ''}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{strings.home.installPWA?.description || ''}</p>
+                  <button
+                    onClick={() => router.push('/login')}
+                    className="w-full px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    {strings.home.installPWA?.loginButton || 'Login'}
+                  </button>
+                </div>
+              </section>
+            </>
+          )}
+
+          {/* Login Prompt for non-users */}
+          {!user && isClient && (
+            <>
+              <div className="border-t border-border"></div>
+              <section className="pb-20">
+                <div className="bg-card rounded-lg shadow-sm border border-border p-6 text-center">
+                  <h3 className="text-lg font-bold text-foreground mb-2">{strings.home.loginPrompt?.title || ''}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{strings.home.loginPrompt?.description || ''}</p>
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => router.push('/login')}
+                      className="w-full px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                    >
+                      {strings.home.loginPrompt?.loginButton || 'Login'}
+                    </button>
+                    <button
+                      onClick={() => router.push('/drill/conjugation')}
+                      className="w-full px-6 py-3 bg-card border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary/5 transition-colors"
+                    >
+                      {strings.home.loginPrompt?.tryFreeButton || 'Try Free'}
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </>
+          )}
         </div>
-      )}
+      </div>
+      </div>
     </div>
   );
 }

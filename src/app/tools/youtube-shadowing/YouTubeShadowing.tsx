@@ -6,9 +6,12 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import Link from 'next/link'
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useAuth } from '@/contexts/AuthContext';
+import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
 import YouTubeInput from './components/YouTubeInput';
 import AudioExtractor from './components/AudioExtractor';
 import TranscriptDisplay from './components/TranscriptDisplay';
@@ -62,6 +65,8 @@ export default function YouTubeShadowing() {
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining } = useFeature('youtube_shadowing');
   const { isPremium, userType } = useSubscription2();
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<ShadowingSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +79,9 @@ export default function YouTubeShadowing() {
   const extractVideoId = (url: string): string | null => {
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s]+)/,
-      /youtube\.com\/v\/([^&\s]+)/
+      /youtube\.com\/v\/([^&\s]+)/,
+      /youtube\.com\/shorts\/([^&\s]+)/,
+      /music\.youtube\.com\/watch\?v=([^&\s]+)/
     ];
     
     for (const pattern of patterns) {
@@ -91,6 +98,27 @@ export default function YouTubeShadowing() {
     const id = extractVideoId(url);
     return id ? `youtu.be/${id}` : url;
   };
+
+  // Initialize practice history service
+  useEffect(() => {
+    if (user || userType === 'guest') {
+      practiceHistoryService.initialize(user?.uid, isPremium);
+    }
+  }, [user, isPremium, userType]);
+
+  // Handle URL parameters (e.g., from My Videos)
+  useEffect(() => {
+    const urlParam = searchParams.get('url');
+    const fromHistory = searchParams.get('fromHistory');
+    const fromPopular = searchParams.get('fromPopular');
+    
+    if (urlParam && !session) {
+      // Decode the URL and automatically start processing
+      const decodedUrl = decodeURIComponent(urlParam);
+      console.log('Loading video from URL param:', decodedUrl);
+      handleUrlSubmit(decodedUrl);
+    }
+  }, [searchParams]);
 
   // Cleanup blob URLs when component unmounts or session changes
   useEffect(() => {
@@ -163,7 +191,7 @@ export default function YouTubeShadowing() {
     }
   };
 
-  const handleTranscriptLoaded = (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => {
+  const handleTranscriptLoaded = async (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => {
     if (session) {
       updateSession({
         ...session,
@@ -171,6 +199,45 @@ export default function YouTubeShadowing() {
         ...(videoTitle && { videoTitle }),
         ...(videoMetadata && { videoMetadata })
       });
+      
+      // Save to practice history if it's a YouTube video
+      if (session.videoUrl && videoId) {
+        try {
+          const now = new Date();
+          const practiceItem = {
+            id: `${user?.uid || 'guest'}_${videoId}`,
+            videoUrl: session.videoUrl,
+            videoTitle: videoTitle || session.videoTitle || 'Untitled Video',
+            videoId: videoId,
+            thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
+            channelName: videoMetadata?.channelTitle,
+            lastPracticed: now,
+            firstPracticed: now,
+            practiceCount: 1,
+            contentType: 'youtube' as const,
+            duration: videoMetadata?.duration,
+            totalPracticeTime: 0,
+            metadata: {
+              channelTitle: videoMetadata?.channelTitle,
+              description: videoMetadata?.description,
+              publishedAt: videoMetadata?.publishedAt,
+            }
+          };
+          
+          // Check if already exists and update practice count
+          const existingItem = await practiceHistoryService.getItem(videoId);
+          if (existingItem) {
+            practiceItem.firstPracticed = existingItem.firstPracticed;
+            practiceItem.practiceCount = existingItem.practiceCount + 1;
+            practiceItem.totalPracticeTime = existingItem.totalPracticeTime || 0;
+          }
+          
+          await practiceHistoryService.addOrUpdateItem(practiceItem);
+          console.log('Saved to practice history:', videoTitle);
+        } catch (error) {
+          console.error('Failed to save practice history:', error);
+        }
+      }
     }
   };
 
@@ -402,20 +469,20 @@ export default function YouTubeShadowing() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-600/20 dark:to-pink-600/20 rounded-2xl border border-purple-500/20 dark:border-purple-600/30 p-8 mb-6"
+                className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-600/20 dark:to-pink-600/20 rounded-2xl border border-purple-500/20 dark:border-purple-600/30 p-6 md:p-8 mb-6"
               >
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="flex-1">
                     <h3 className="font-bold text-lg text-foreground mb-2 flex items-center gap-2">
                       <span className="text-2xl">🔥</span>
                       Community Favorites
                     </h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-sm md:text-base">
                       Skip the wait! Browse YouTube videos already transcribed by the community for instant practice.
                     </p>
                   </div>
                   <SmartNavigationLink href="/popular-videos"
-                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium whitespace-nowrap"
+                    className="w-full md:w-auto text-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium whitespace-nowrap"
                    title="Browse Videos">
                     Browse Videos
                   </SmartNavigationLink>

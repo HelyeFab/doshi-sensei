@@ -35,10 +35,10 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
       {/* Conjugation Section */}
       <div className="space-y-6 max-w-2xl mx-auto">
         <div className="text-center space-y-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+          <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground">
             {tutorial.conjugation.title}
           </h2>
-          <p className="text-lg text-foreground/80 leading-relaxed">
+          <p className="text-lg text-primary-foreground/90 leading-relaxed">
             {tutorial.conjugation.description}
             <span className="font-semibold text-primary"> {tutorial.conjugation.emphasis} </span>
             {tutorial.conjugation.continuation}
@@ -46,7 +46,7 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
         </div>
 
         {/* Demo Area */}
-        <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-6 space-y-4 shadow-lg">
+        <div className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-lg p-6 space-y-4 shadow-lg">
           <AnimatedWord
             word={demoWord}
             onAnimationComplete={() => setAnimationComplete(true)}
@@ -57,7 +57,7 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
       {/* Continue Button */}
       {animationComplete && (
         <div className="text-center space-y-2">
-          <p className="text-foreground font-medium">
+          <p className="text-primary-foreground font-medium">
             {tutorial.conjugation.successMessage}
           </p>
           <TutorialButton onClick={onNext} variant="primary">

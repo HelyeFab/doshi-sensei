@@ -2,12 +2,11 @@ import type { NavigationRule, NavigationEntry } from '@/types/navigation';
 
 // Default navigation rules for different sections of the app
 export const defaultNavigationRules: NavigationRule[] = [
-  // Games - preserve state and allow specific destinations
+  // Games - preserve state
   {
-    pattern: /^\/games\/.*/,
+    pattern: /^\/games(\/.*)?$/,
     preserveState: true,
     returnBehavior: 'restore-state',
-    allowedDestinations: ['/', '/vocabulary', '/practice/*', '/tools/*', '/read', '/admin/*', '/games/*', '/account', '/settings/*', '/kanji-browser', '/news/*', '/stories/*', '/drill/*', '/achievements', '/favourites', '/resources/*'],
     stateSerializer: (state) => {
       // Only serialize essential game state
       if (!state) return null;
@@ -101,19 +100,8 @@ class NavigationRulesEngine {
    * Check if navigation from one path to another is allowed
    */
   isNavigationAllowed(from: string, to: string): boolean {
-    const rule = this.findRule(from);
-    
-    if (!rule || !rule.allowedDestinations) {
-      return true; // No restrictions
-    }
-    
-    return rule.allowedDestinations.some(pattern => {
-      if (pattern.endsWith('*')) {
-        const prefix = pattern.slice(0, -1);
-        return to.startsWith(prefix);
-      }
-      return to === pattern;
-    });
+    // Always allow navigation - no restrictions
+    return true;
   }
   
   /**

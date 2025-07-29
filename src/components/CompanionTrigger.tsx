@@ -20,8 +20,10 @@ export default function CompanionTrigger() {
     setIsCompanionOpen(false);
   };
 
-  // Always hide the companion trigger since we're using the avatar now
-  return null;
+  // Hide the companion trigger on homepage
+  if (pathname === '/') {
+    return null;
+  }
 
   return (
     <>

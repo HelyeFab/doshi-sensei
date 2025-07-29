@@ -9,7 +9,7 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { TranscriptLine } from '@/app/tools/youtube-shadowing/page';
+import { TranscriptLine } from '@/app/tools/youtube-shadowing/YouTubeShadowing';
 
 interface CachedTranscript {
   id: string;
@@ -75,7 +75,9 @@ export class TranscriptCacheManager {
   private static extractYouTubeVideoId(url: string): string | null {
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s]+)/,
-      /youtube\.com\/v\/([^&\s]+)/
+      /youtube\.com\/v\/([^&\s]+)/,
+      /youtube\.com\/shorts\/([^&\s]+)/,
+      /music\.youtube\.com\/watch\?v=([^&\s]+)/
     ];
     
     for (const pattern of patterns) {

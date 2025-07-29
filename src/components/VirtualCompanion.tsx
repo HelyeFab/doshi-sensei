@@ -83,7 +83,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
       {/* Modal */}
       <div
-        className={`relative bg-card rounded-2xl shadow-2xl p-6 w-full max-w-md mx-auto transform transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        className={`relative bg-card rounded-2xl shadow-2xl px-6 pt-6 pb-4 w-full max-w-md mx-auto transform transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
           }`}
         style={{
           border: '2px solid white',
@@ -108,9 +108,9 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
         {/* Character Icon */}
         {character && (
-          <div className="flex flex-col items-center space-y-4">
+          <div className="flex flex-col items-center space-y-3">
             <div
-              className={`w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-4 flex items-center justify-center transform transition-all duration-700 ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
+              className={`w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-3 flex items-center justify-center transform transition-all duration-700 ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
                 }`}
               style={{
                 border: '3px solid white',
@@ -127,24 +127,24 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
             {/* Character Name */}
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-card-foreground mb-1">
+              <h3 className="text-lg font-semibold text-card-foreground">
                 Hello from {character.name}! 👋
               </h3>
-              <p className="text-sm text-muted-foreground capitalize">
-                Your {character.category.replace('-', ' ')} companion
+              <p className="text-xs text-muted-foreground capitalize">
+                Your {character.category.replace('-', ' ')} Companion
               </p>
             </div>
 
             {/* Quote */}
             <div
-              className={`bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-4 transform transition-all duration-700 delay-300 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              className={`bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-3 transform transition-all duration-700 delay-300 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 }`}
               style={{
                 border: '1px solid var(--primary)',
                 background: 'linear-gradient(135deg, rgba(var(--primary), 0.1), rgba(var(--accent), 0.1))'
               }}
             >
-              <p className="text-card-foreground text-center leading-relaxed">
+              <p className="text-card-foreground text-center text-sm leading-relaxed">
                 {quote}
               </p>
             </div>
@@ -154,10 +154,10 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
               className={`text-center transform transition-all duration-700 delay-500 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 }`}
             >
-              <p className="text-primary font-medium japanese-text text-lg">
+              <p className="text-primary font-medium japanese-text text-base">
                 頑張ってください！
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 (Gambatte kudasai! - Good luck!)
               </p>
             </div>
@@ -165,7 +165,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             {/* Action Button */}
             <button
               onClick={onClose}
-              className={`mt-4 px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              className={`mt-2 px-5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-sm transition-all duration-200 transform hover:scale-105 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 }`}
               style={{ transitionDelay: '700ms' }}
             >
@@ -175,17 +175,17 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         )}
 
         {/* Footer Section */}
-        <div className="mt-4 md:mt-6 pt-3 md:pt-4 border-t border-border/50">
-          <div className="grid grid-cols-2 gap-1.5 md:gap-2">
+        <div className="mt-4 pt-3 border-t border-border/50">
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => {
                 onClose();
                 router.push('/account');
               }}
-              className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <span className="text-xl">👤</span>
+                <span className="text-lg">👤</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Account</span>
             </button>
@@ -195,20 +195,20 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                 onClose();
                 router.push('/settings');
               }}
-              className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <span className="text-xl">⚙️</span>
+                <span className="text-lg">⚙️</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Settings</span>
             </button>
             
             <button
               onClick={() => setShowDoshiModal(true)}
-              className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500/20 to-pink-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <span className="text-xl">🌸</span>
+                <span className="text-lg">🌸</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Dōshi Sensei</span>
             </button>
@@ -216,10 +216,10 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             {user ? (
               <button
                 onClick={handleSignOut}
-                className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+                className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                  <span className="text-xl">👋</span>
+                  <span className="text-lg">👋</span>
                 </div>
                 <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Sign Out</span>
               </button>
@@ -229,10 +229,10 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                   onClose();
                   router.push('/login');
                 }}
-                className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+                className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                  <span className="text-xl">🔑</span>
+                  <span className="text-lg">🔑</span>
                 </div>
                 <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Sign In</span>
               </button>
@@ -249,8 +249,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         height="auto"
         showHandle={false}
       >
-        <div className="px-6 py-8">
-          <div className="flex flex-col items-center space-y-6">
+        <div className="px-6 py-6">
+          <div className="flex flex-col items-center space-y-4">
             {/* Profile Picture */}
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
               <Image

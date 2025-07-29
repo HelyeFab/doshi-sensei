@@ -496,15 +496,15 @@ export default function PopularVideos() {
               </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                   className="bg-white/20 backdrop-blur-sm rounded-2xl p-4"
                 >
-                  <div className="text-3xl font-bold">{popularVideos.length}</div>
-                  <div className="text-sm opacity-80">Popular Videos</div>
+                  <div className="text-2xl sm:text-3xl font-bold">{popularVideos.length}</div>
+                  <div className="text-xs sm:text-sm opacity-80">Popular Videos</div>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -512,21 +512,21 @@ export default function PopularVideos() {
                   transition={{ delay: 0.3 }}
                   className="bg-white/20 backdrop-blur-sm rounded-2xl p-4"
                 >
-                  <div className="text-3xl font-bold">
+                  <div className="text-2xl sm:text-3xl font-bold">
                     {popularVideos.reduce((sum, v) => sum + v.accessCount, 0).toLocaleString()}
                   </div>
-                  <div className="text-sm opacity-80">Total Uses</div>
+                  <div className="text-xs sm:text-sm opacity-80">Total Uses</div>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="bg-white/20 backdrop-blur-sm rounded-2xl p-4"
+                  className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 col-span-2 sm:col-span-1"
                 >
-                  <div className="text-3xl font-bold">
+                  <div className="text-2xl sm:text-3xl font-bold">
                     ${(popularVideos.reduce((sum, v) => sum + (v.accessCount - 1), 0) * 0.006).toFixed(0)}
                   </div>
-                  <div className="text-sm opacity-80">Saved by Community</div>
+                  <div className="text-xs sm:text-sm opacity-80">Saved by Community</div>
                 </motion.div>
               </div>
             </div>
@@ -598,37 +598,37 @@ export default function PopularVideos() {
           >
             <button
               onClick={() => setActiveTab('popular')}
-              className={`flex-1 px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 px-2 sm:px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 ${
                 activeTab === 'popular'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
                   : 'text-muted-foreground hover:bg-muted/50'
               }`}
             >
-              <Award className="w-5 h-5" />
-              Most Popular
+              <Award className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+              <span className="text-xs sm:text-sm md:text-base whitespace-nowrap">Most Popular</span>
             </button>
             <button
               onClick={() => setActiveTab('trending')}
-              className={`flex-1 px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 px-2 sm:px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 ${
                 activeTab === 'trending'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
                   : 'text-muted-foreground hover:bg-muted/50'
               }`}
             >
-              <TrendingUp className="w-5 h-5" />
-              Trending Now
+              <TrendingUp className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+              <span className="text-xs sm:text-sm md:text-base whitespace-nowrap">Trending Now</span>
             </button>
             {isPremium && (
               <button
                 onClick={() => setActiveTab('history')}
-                className={`flex-1 px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                className={`flex-1 px-2 sm:px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 ${
                   activeTab === 'history'
                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
                     : 'text-muted-foreground hover:bg-muted/50'
                 }`}
               >
-                <HistoryIcon className="w-5 h-5" />
-                My History
+                <HistoryIcon className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+                <span className="text-xs sm:text-sm md:text-base whitespace-nowrap">My History</span>
               </button>
             )}
           </motion.div>

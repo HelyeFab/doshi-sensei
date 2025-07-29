@@ -228,7 +228,7 @@ export default function Home() {
             className="block cursor-pointer"
             aria-label="Open user menu"
           >
-            <UserAvatar size="md" clickable={false} />
+            <UserAvatar size="md" />
           </button>
           
           {/* Greeting Text */}

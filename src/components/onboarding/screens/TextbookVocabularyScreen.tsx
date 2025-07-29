@@ -19,11 +19,11 @@ export function TextbookVocabularyScreen({ onNext }: TextbookVocabularyScreenPro
     <div className="flex flex-col items-center justify-center text-center space-y-6 h-full">
       {/* Main Content */}
       <div className="space-y-4 max-w-2xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground">
           {tutorial.textbookVocabularyTutorial.title}
         </h2>
         
-        <p className="text-lg text-foreground/80">
+        <p className="text-lg text-primary-foreground/90">
           {tutorial.textbookVocabularyTutorial.description}
         </p>
 
@@ -32,17 +32,17 @@ export function TextbookVocabularyScreen({ onNext }: TextbookVocabularyScreenPro
         </p>
 
         {/* Features */}
-        <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-4 space-y-3 text-left max-w-md mx-auto shadow-lg">
-          <div className="text-sm text-foreground/90">
+        <div className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-lg p-4 space-y-3 text-left max-w-md mx-auto shadow-lg">
+          <div className="text-sm text-primary-foreground">
             {tutorial.textbookVocabularyTutorial.features.genki}
           </div>
-          <div className="text-sm text-foreground/90">
+          <div className="text-sm text-primary-foreground">
             {tutorial.textbookVocabularyTutorial.features.minna}
           </div>
-          <div className="text-sm text-foreground/90">
+          <div className="text-sm text-primary-foreground">
             {tutorial.textbookVocabularyTutorial.features.srs}
           </div>
-          <div className="text-sm text-foreground/90">
+          <div className="text-sm text-primary-foreground">
             {tutorial.textbookVocabularyTutorial.features.progress}
           </div>
         </div>

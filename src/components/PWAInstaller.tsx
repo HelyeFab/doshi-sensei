@@ -110,17 +110,19 @@ export default function PWAInstaller() {
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg px-3 py-2">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900 dark:text-white leading-tight">
-              Install Doshi Sensei
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">
+      <div className="bg-card border border-border rounded-lg shadow-lg p-3 md:p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium text-foreground truncate">
+                Install Doshi Sensei
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
               Add to home screen for easy access
             </p>
           </div>
-          <div className="flex gap-2 ml-3">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => {
                 setShowInstallButton(false);
@@ -128,13 +130,13 @@ export default function PWAInstaller() {
                 localStorage.setItem('pwa-prompt-last-shown', Date.now().toString());
                 pwaAnalytics.trackEvent('install_prompt_dismissed_maybe_later');
               }}
-              className="px-2.5 py-0.5 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               Maybe later
             </button>
             <button
               onClick={handleInstallClick}
-              className="px-2.5 py-0.5 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary"
             >
               Install
             </button>

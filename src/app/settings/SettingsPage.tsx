@@ -874,13 +874,13 @@ function ToggleSetting({ label, description, checked, onChange }: ToggleSettingP
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${checked ? 'bg-primary' : 'bg-muted'}`}
-        style={{ minWidth: 56 }}
+        className={`relative inline-flex h-6 sm:h-6 w-11 items-center rounded-full transition-colors ${checked ? 'bg-primary' : 'bg-muted'}`}
+        style={{ minWidth: 44 }}
         aria-pressed={checked}
         tabIndex={0}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`}
+          className={`inline-block h-5 w-5 transform rounded-full bg-background shadow-sm transition-transform ${checked ? 'translate-x-6' : 'translate-x-0.5'}`}
         />
       </button>
     </div>

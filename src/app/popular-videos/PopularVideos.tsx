@@ -1,10 +1,6 @@
 'use client';
 
-<<<<<<< HEAD
-import { useState, useEffect, useCallback, useRef } from 'react';
-=======
 import { useState, useEffect, useCallback, useMemo } from 'react';
->>>>>>> SEO-v-3
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,15 +13,6 @@ import {
   where,
   Timestamp,
   startAfter,
-<<<<<<< HEAD
-  DocumentSnapshot
-} from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import Link from 'next/link';
-import { Play, TrendingUp, Clock, Users, Calendar, ExternalLink, Sparkles, Flame, Award, Search, Loader2 } from 'lucide-react';
-import { useAccess } from '@/hooks/useAccess';
-import { useRouter } from 'next/navigation';
-=======
   QueryDocumentSnapshot,
   DocumentData
 } from 'firebase/firestore';
@@ -36,7 +23,6 @@ import { useAccess } from '@/hooks/useAccess';
 import { useRouter } from 'next/navigation';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuthState } from 'react-firebase-hooks/auth';
->>>>>>> SEO-v-3
 
 interface PopularVideo {
   id: string;
@@ -48,24 +34,18 @@ interface PopularVideo {
   language: string;
   duration?: number;
   contentType: 'youtube' | 'audio' | 'video';
-<<<<<<< HEAD
-=======
   createdBy?: string;
->>>>>>> SEO-v-3
   metadata?: {
     youtubeVideoId?: string;
     channelName?: string;
   };
 }
 
-<<<<<<< HEAD
-=======
 type TabType = 'popular' | 'trending' | 'history';
 type FilterType = 'all' | 'youtube' | 'audio' | 'video';
 
 const ITEMS_PER_PAGE = 12;
 
->>>>>>> SEO-v-3
 const pageStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -74,86 +54,10 @@ const pageStructuredData = {
   "url": "https://doshisensei.com/popular-videos"
 };
 
-<<<<<<< HEAD
-const ITEMS_PER_PAGE = 20;
-
-=======
->>>>>>> SEO-v-3
 export default function PopularVideos() {
   const strings = useStrings();
   const { checkAndTrack } = useAccess();
   const router = useRouter();
-<<<<<<< HEAD
-  const [popularVideos, setPopularVideos] = useState<PopularVideo[]>([]);
-  const [trendingVideos, setTrendingVideos] = useState<PopularVideo[]>([]);
-  const [filteredVideos, setFilteredVideos] = useState<PopularVideo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [activeTab, setActiveTab] = useState<'popular' | 'trending'>('popular');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [lastDoc, setLastDoc] = useState<DocumentSnapshot | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-
-  // Initial load
-  useEffect(() => {
-    loadPopularVideos();
-  }, []);
-
-  // Set up intersection observer for lazy loading
-  useEffect(() => {
-    if (observerRef.current) observerRef.current.disconnect();
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !isLoading) {
-          loadMoreVideos();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (loadMoreRef.current) {
-      observerRef.current.observe(loadMoreRef.current);
-    }
-
-    return () => observerRef.current?.disconnect();
-  }, [hasMore, isLoadingMore, isLoading, activeTab]);
-
-  // Filter videos based on search query
-  useEffect(() => {
-    const videos = activeTab === 'popular' ? popularVideos : trendingVideos;
-    
-    if (!searchQuery.trim()) {
-      setFilteredVideos(videos);
-    } else {
-      const query = searchQuery.toLowerCase();
-      const filtered = videos.filter(video => {
-        const title = (video.videoTitle || `YouTube Video (${video.id})`).toLowerCase();
-        const channel = video.metadata?.channelName?.toLowerCase() || '';
-        return title.includes(query) || channel.includes(query);
-      });
-      setFilteredVideos(filtered);
-    }
-  }, [searchQuery, popularVideos, trendingVideos, activeTab]);
-
-  const loadPopularVideos = async () => {
-    try {
-      setIsLoading(true);
-      setHasMore(true);
-      setLastDoc(null);
-
-      // Query for most accessed YouTube videos only (for safety/privacy)
-      const popularQuery = query(
-        collection(db, 'transcriptCache'),
-        where('contentType', '==', 'youtube'),
-        orderBy('accessCount', 'desc'),
-        limit(ITEMS_PER_PAGE)
-      );
-
-      const popularSnapshot = await getDocs(popularQuery);
-=======
   const { isPremium } = useSubscription2();
   const [user] = useAuthState(auth);
   
@@ -237,31 +141,11 @@ export default function PopularVideos() {
         setPopularLastDoc(popularSnapshot.docs[popularSnapshot.docs.length - 1]);
       }
       
->>>>>>> SEO-v-3
       const popularData = popularSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       } as PopularVideo));
 
-<<<<<<< HEAD
-      setPopularVideos(popularData);
-      setLastDoc(popularSnapshot.docs[popularSnapshot.docs.length - 1] || null);
-      setHasMore(popularSnapshot.docs.length === ITEMS_PER_PAGE);
-
-      // Query for trending YouTube videos (accessed in last 7 days)
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-      const trendingQuery = query(
-        collection(db, 'transcriptCache'),
-        where('contentType', '==', 'youtube'),
-        where('lastAccessed', '>=', Timestamp.fromDate(sevenDaysAgo)),
-        orderBy('lastAccessed', 'desc'),
-        limit(ITEMS_PER_PAGE)
-      );
-
-      const trendingSnapshot = await getDocs(trendingQuery);
-=======
       if (isInitial) {
         setPopularVideos(popularData);
       } else {
@@ -313,39 +197,11 @@ export default function PopularVideos() {
         setTrendingLastDoc(trendingSnapshot.docs[trendingSnapshot.docs.length - 1]);
       }
       
->>>>>>> SEO-v-3
       const trendingData = trendingSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       } as PopularVideo));
 
-<<<<<<< HEAD
-      setTrendingVideos(trendingData);
-
-    } catch (error) {
-      console.error('Error loading popular videos:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadMoreVideos = async () => {
-    if (!lastDoc || isLoadingMore || activeTab === 'trending') return;
-
-    try {
-      setIsLoadingMore(true);
-
-      const moreQuery = query(
-        collection(db, 'transcriptCache'),
-        where('contentType', '==', 'youtube'),
-        orderBy('accessCount', 'desc'),
-        startAfter(lastDoc),
-        limit(ITEMS_PER_PAGE)
-      );
-
-      const moreSnapshot = await getDocs(moreQuery);
-      const moreData = moreSnapshot.docs.map(doc => ({
-=======
       if (isInitial) {
         setTrendingVideos(trendingData);
       } else {
@@ -396,24 +252,10 @@ export default function PopularVideos() {
       }
       
       const historyData = historySnapshot.docs.map(doc => ({
->>>>>>> SEO-v-3
         id: doc.id,
         ...doc.data()
       } as PopularVideo));
 
-<<<<<<< HEAD
-      if (moreData.length > 0) {
-        setPopularVideos(prev => [...prev, ...moreData]);
-        setLastDoc(moreSnapshot.docs[moreSnapshot.docs.length - 1]);
-        setHasMore(moreSnapshot.docs.length === ITEMS_PER_PAGE);
-      } else {
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error('Error loading more videos:', error);
-    } finally {
-      setIsLoadingMore(false);
-=======
       if (isInitial) {
         setHistoryVideos(historyData);
       } else {
@@ -438,7 +280,6 @@ export default function PopularVideos() {
       await loadTrendingVideos();
     } else if (activeTab === 'history' && hasMoreHistory) {
       await loadHistoryVideos();
->>>>>>> SEO-v-3
     }
   };
 
@@ -461,12 +302,6 @@ export default function PopularVideos() {
     if (!videoId) return null;
     return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
   };
-<<<<<<< HEAD
-
-  const VideoCard = ({ video, index }: { video: PopularVideo; index: number }) => {
-    const videoId = video.metadata?.youtubeVideoId || video.id.replace('youtube_', '');
-    const thumbnailUrl = getYouTubeThumbnail(videoId);
-=======
   
   const getContentIcon = (contentType: 'youtube' | 'audio' | 'video') => {
     switch (contentType) {
@@ -498,7 +333,6 @@ export default function PopularVideos() {
   const VideoCard = ({ video, index }: { video: PopularVideo; index: number }) => {
     const videoId = video.metadata?.youtubeVideoId || (video.contentType === 'youtube' ? video.id.replace('youtube_', '') : null);
     const thumbnailUrl = video.contentType === 'youtube' ? getYouTubeThumbnail(videoId) : null;
->>>>>>> SEO-v-3
 
     const handlePracticeClick = async (e: React.MouseEvent) => {
       e.preventDefault();
@@ -521,13 +355,8 @@ export default function PopularVideos() {
         whileHover={{ y: -5 }}
         className="bg-card rounded-2xl shadow-md border border-border overflow-hidden hover:shadow-xl transition-all duration-300"
       >
-<<<<<<< HEAD
-        {/* Thumbnail */}
-        <div className="relative aspect-video bg-black group">
-=======
         {/* Thumbnail or Content Type Indicator */}
         <div className="relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 group">
->>>>>>> SEO-v-3
           {thumbnailUrl ? (
             <img 
               src={thumbnailUrl} 
@@ -536,12 +365,6 @@ export default function PopularVideos() {
               loading="lazy"
             />
           ) : (
-<<<<<<< HEAD
-            <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-              <div className="text-white text-center">
-                <Play className="w-12 h-12 mx-auto mb-2 opacity-80" />
-                <p className="text-xs opacity-80">No thumbnail</p>
-=======
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center">
                 <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-2 shadow-lg">
@@ -550,7 +373,6 @@ export default function PopularVideos() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                   {video.contentType === 'audio' ? 'Audio File' : 'Video File'}
                 </p>
->>>>>>> SEO-v-3
               </div>
             </div>
           )}
@@ -574,11 +396,7 @@ export default function PopularVideos() {
           {/* Popularity badge */}
           {video.accessCount > 100 && (
             <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1">
-<<<<<<< HEAD
-              <Fire className="w-3 h-3" />
-=======
               <Flame className="w-3 h-3" />
->>>>>>> SEO-v-3
               Popular
             </div>
           )}
@@ -587,11 +405,7 @@ export default function PopularVideos() {
         {/* Content */}
         <div className="p-5">
           <h3 className="font-semibold text-foreground line-clamp-2 mb-3 text-lg">
-<<<<<<< HEAD
-            {video.videoTitle || `YouTube Video (${videoId})`}
-=======
             {video.videoTitle || `Untitled ${video.contentType === 'audio' ? 'Audio' : video.contentType === 'video' ? 'Video' : 'Content'}`}
->>>>>>> SEO-v-3
           </h3>
 
           {/* Stats */}
@@ -615,11 +429,7 @@ export default function PopularVideos() {
               <Play className="w-4 h-4" />
               Practice Now
             </button>
-<<<<<<< HEAD
-            {video.videoUrl && (
-=======
             {video.videoUrl && video.contentType === 'youtube' && (
->>>>>>> SEO-v-3
               <a
                 href={video.videoUrl}
                 target="_blank"
@@ -691,13 +501,8 @@ export default function PopularVideos() {
                   transition={{ delay: 0.2 }}
                   className="bg-white/20 backdrop-blur-sm rounded-2xl p-4"
                 >
-<<<<<<< HEAD
-                  <div className="text-3xl font-bold">{popularVideos.length}+</div>
-                  <div className="text-sm opacity-80">Videos Available</div>
-=======
                   <div className="text-3xl font-bold">{popularVideos.length}</div>
                   <div className="text-sm opacity-80">Popular Videos</div>
->>>>>>> SEO-v-3
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -706,11 +511,7 @@ export default function PopularVideos() {
                   className="bg-white/20 backdrop-blur-sm rounded-2xl p-4"
                 >
                   <div className="text-3xl font-bold">
-<<<<<<< HEAD
-                    {popularVideos.slice(0, 20).reduce((sum, v) => sum + v.accessCount, 0).toLocaleString()}+
-=======
                     {popularVideos.reduce((sum, v) => sum + v.accessCount, 0).toLocaleString()}
->>>>>>> SEO-v-3
                   </div>
                   <div className="text-sm opacity-80">Total Uses</div>
                 </motion.div>
@@ -721,11 +522,7 @@ export default function PopularVideos() {
                   className="bg-white/20 backdrop-blur-sm rounded-2xl p-4"
                 >
                   <div className="text-3xl font-bold">
-<<<<<<< HEAD
-                    ${(popularVideos.slice(0, 20).reduce((sum, v) => sum + (v.accessCount - 1), 0) * 0.006).toFixed(0)}+
-=======
                     ${(popularVideos.reduce((sum, v) => sum + (v.accessCount - 1), 0) * 0.006).toFixed(0)}
->>>>>>> SEO-v-3
                   </div>
                   <div className="text-sm opacity-80">Saved by Community</div>
                 </motion.div>
@@ -733,24 +530,11 @@ export default function PopularVideos() {
             </div>
           </motion.div>
 
-<<<<<<< HEAD
-          {/* Tabs */}
-=======
           {/* Search and Filters */}
->>>>>>> SEO-v-3
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-<<<<<<< HEAD
-            className="flex gap-2 mb-6 bg-card rounded-2xl p-2 shadow-sm border border-border"
-          >
-            <button
-              onClick={() => {
-                setActiveTab('popular');
-                setSearchQuery('');
-              }}
-=======
             className="mb-6 space-y-4"
           >
             {/* Search Bar */}
@@ -812,7 +596,6 @@ export default function PopularVideos() {
           >
             <button
               onClick={() => setActiveTab('popular')}
->>>>>>> SEO-v-3
               className={`flex-1 px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 activeTab === 'popular'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
@@ -823,14 +606,7 @@ export default function PopularVideos() {
               Most Popular
             </button>
             <button
-<<<<<<< HEAD
-              onClick={() => {
-                setActiveTab('trending');
-                setSearchQuery('');
-              }}
-=======
               onClick={() => setActiveTab('trending')}
->>>>>>> SEO-v-3
               className={`flex-1 px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 activeTab === 'trending'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
@@ -840,41 +616,6 @@ export default function PopularVideos() {
               <TrendingUp className="w-5 h-5" />
               Trending Now
             </button>
-<<<<<<< HEAD
-          </motion.div>
-
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-8"
-          >
-            <div className="relative max-w-xl mx-auto">
-              <input
-                type="text"
-                placeholder="Search videos by title or channel..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-12 py-3 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-              />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
-            {searchQuery && (
-              <p className="text-center text-sm text-muted-foreground mt-2">
-                Showing results for "{searchQuery}" ({filteredVideos.length} videos)
-              </p>
-=======
             {isPremium && (
               <button
                 onClick={() => setActiveTab('history')}
@@ -887,7 +628,6 @@ export default function PopularVideos() {
                 <HistoryIcon className="w-5 h-5" />
                 My History
               </button>
->>>>>>> SEO-v-3
             )}
           </motion.div>
 
@@ -911,11 +651,7 @@ export default function PopularVideos() {
           <AnimatePresence mode="wait">
             {!isLoading && (
               <motion.div
-<<<<<<< HEAD
-                key={activeTab + searchQuery}
-=======
                 key={activeTab}
->>>>>>> SEO-v-3
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -927,50 +663,6 @@ export default function PopularVideos() {
               </motion.div>
             )}
           </AnimatePresence>
-<<<<<<< HEAD
-
-          {/* Load More Trigger (for infinite scroll) */}
-          {!isLoading && activeTab === 'popular' && !searchQuery && hasMore && (
-            <div 
-              ref={loadMoreRef} 
-              className="flex justify-center items-center py-8"
-            >
-              {isLoadingMore ? (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Loading more videos...</span>
-                </div>
-              ) : (
-                <div className="text-muted-foreground">Scroll to load more</div>
-              )}
-            </div>
-          )}
-
-          {/* Empty States */}
-          {!isLoading && searchQuery && filteredVideos.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-16"
-            >
-              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                <Search className="w-12 h-12 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">No Results Found</h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                No videos match your search "{searchQuery}". Try different keywords.
-              </p>
-              <button
-                onClick={() => setSearchQuery('')}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium mt-6"
-              >
-                Clear Search
-              </button>
-            </motion.div>
-          )}
-
-          {!isLoading && !searchQuery && activeTab === 'popular' && popularVideos.length === 0 && (
-=======
           
           {/* Load More Button */}
           {!isLoading && filteredVideos.length > 0 && (
@@ -1005,7 +697,6 @@ export default function PopularVideos() {
 
           {/* Empty States */}
           {!isLoading && activeTab === 'popular' && filteredVideos.length === 0 && (
->>>>>>> SEO-v-3
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -1033,11 +724,7 @@ export default function PopularVideos() {
             </motion.div>
           )}
 
-<<<<<<< HEAD
-          {!isLoading && activeTab === 'trending' && trendingVideos.length === 0 && (
-=======
           {!isLoading && activeTab === 'trending' && filteredVideos.length === 0 && (
->>>>>>> SEO-v-3
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -1052,8 +739,6 @@ export default function PopularVideos() {
               </p>
             </motion.div>
           )}
-<<<<<<< HEAD
-=======
           
           {!isLoading && activeTab === 'history' && filteredVideos.length === 0 && (
             <motion.div
@@ -1070,7 +755,6 @@ export default function PopularVideos() {
               </p>
             </motion.div>
           )}
->>>>>>> SEO-v-3
 
           {/* Community Impact */}
           {!isLoading && popularVideos.length > 0 && (

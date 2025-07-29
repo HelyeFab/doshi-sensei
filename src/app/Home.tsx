@@ -308,7 +308,17 @@ export default function Home() {
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
-                        <span className="text-2xl">{card.icon}</span>
+                        {card.icon.startsWith('/') ? (
+                          <Image
+                            src={card.icon}
+                            alt={card.title}
+                            width={24}
+                            height={24}
+                            className="opacity-70"
+                          />
+                        ) : (
+                          <span className="text-2xl">{card.icon}</span>
+                        )}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">{card.title}</h3>
@@ -342,7 +352,17 @@ export default function Home() {
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
-                        <span className="text-2xl">{card.icon}</span>
+                        {card.icon.startsWith('/') ? (
+                          <Image
+                            src={card.icon}
+                            alt={card.title}
+                            width={24}
+                            height={24}
+                            className="opacity-70"
+                          />
+                        ) : (
+                          <span className="text-2xl">{card.icon}</span>
+                        )}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">{card.title}</h3>
@@ -374,7 +394,17 @@ export default function Home() {
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
-                        <span className="text-2xl">{card.icon}</span>
+                        {card.icon.startsWith('/') ? (
+                          <Image
+                            src={card.icon}
+                            alt={card.title}
+                            width={24}
+                            height={24}
+                            className="opacity-70"
+                          />
+                        ) : (
+                          <span className="text-2xl">{card.icon}</span>
+                        )}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">{card.title}</h3>
@@ -447,7 +477,17 @@ export default function Home() {
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
-                        <span className="text-2xl">{card.icon}</span>
+                        {card.icon.startsWith('/') ? (
+                          <Image
+                            src={card.icon}
+                            alt={card.title}
+                            width={24}
+                            height={24}
+                            className="opacity-70"
+                          />
+                        ) : (
+                          <span className="text-2xl">{card.icon}</span>
+                        )}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">{card.title}</h3>

@@ -1,40 +1,163 @@
 import { MetadataRoute } from 'next';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// Function to get dynamic stories
+async function getDynamicStories(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
+  try {
+    const storiesRef = collection(db, 'stories');
+    const q = query(
+      storiesRef,
+      where('published', '==', true),
+      orderBy('publishedAt', 'desc'),
+      limit(100) // Limit to 100 most recent stories
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        url: `/stories/${data.slug || doc.id}`,
+        lastModified: data.publishedAt?.toDate() || new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching stories for sitemap:', error);
+    return [];
+  }
+}
+
+// Function to get dynamic news articles
+async function getDynamicNews(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
+  try {
+    const newsRef = collection(db, 'news');
+    const q = query(
+      newsRef,
+      orderBy('date', 'desc'),
+      limit(100) // Limit to 100 most recent articles
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        url: `/news/${doc.id}`,
+        lastModified: data.date?.toDate() || new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching news for sitemap:', error);
+    return [];
+  }
+}
+
+// Function to get dynamic resources
+async function getDynamicResources(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
+  try {
+    const resourcesRef = collection(db, 'resources');
+    const q = query(
+      resourcesRef,
+      where('published', '==', true),
+      orderBy('publishedAt', 'desc'),
+      limit(50) // Limit to 50 most recent resources
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        url: `/resources/${data.slug || doc.id}`,
+        lastModified: data.publishedAt?.toDate() || new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.5
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching resources for sitemap:', error);
+    return [];
+  }
+}
+
+// Function to get dynamic mood boards
+async function getDynamicMoodBoards(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
+  try {
+    const moodBoardsRef = collection(db, 'moodBoards');
+    const q = query(
+      moodBoardsRef,
+      where('isPublic', '==', true),
+      orderBy('createdAt', 'desc'),
+      limit(50) // Limit to 50 most recent public mood boards
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => ({
+      url: `/kanji-moods/${doc.id}`,
+      lastModified: doc.data().createdAt?.toDate() || new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.5
+    }));
+  } catch (error) {
+    console.error('Error fetching mood boards for sitemap:', error);
+    return [];
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://doshisensei.com';
   
-  // Static routes
+  // Static routes - excluding admin and test pages
   const staticRoutes = [
-  {
-    url: `${baseUrl}/`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 1
-  },
-  {
-    url: `${baseUrl}/account`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/achievements`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/achievements-test`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/admin`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
+    // Main pages
+    { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 1.0 },
+    { url: `${baseUrl}/practice`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${baseUrl}/drill`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${baseUrl}/games`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${baseUrl}/vocabulary`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${baseUrl}/stories`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.8 },
+    { url: `${baseUrl}/resources`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.7 },
+    { url: `${baseUrl}/news`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.8 },
+    { url: `${baseUrl}/kanji-browser`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${baseUrl}/kanji-moods`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${baseUrl}/popular-videos`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.7 },
+    
+    // Tools
+    { url: `${baseUrl}/tools/youtube-shadowing`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${baseUrl}/tools/textbook-vocabulary`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    
+    // Practice pages
+    { url: `${baseUrl}/practice/hiragana`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${baseUrl}/practice/katakana`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${baseUrl}/practice/kana`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${baseUrl}/practice/conjugation`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    
+    // Drill pages
+    { url: `${baseUrl}/drill/conjugation`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${baseUrl}/drill/flashcards`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    
+    // Game pages
+    { url: `${baseUrl}/games/kanji-simon`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.7 },
+    { url: `${baseUrl}/games/reading-routes`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.7 },
+    { url: `${baseUrl}/games/stroke-order-practice`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.7 },
+    
+    // User pages
+    { url: `${baseUrl}/account`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.4 },
+    { url: `${baseUrl}/favourites`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.6 },
+    { url: `${baseUrl}/achievements`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.5 },
+    
+    // Legal and info pages
+    { url: `${baseUrl}/settings`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.3 },
+    { url: `${baseUrl}/settings/privacy-policy`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.3 },
+    { url: `${baseUrl}/settings/terms-of-service`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.3 },
+    { url: `${baseUrl}/settings/acknowledgments`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.2 },
+    { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.5 },
   {
     url: `${baseUrl}/admin/achievements`,
     lastModified: "2025-07-28T21:17:20.891Z",
@@ -457,18 +580,44 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 ];
 
-  // Add dynamic routes here
-  // Example:
-  // const posts = await getPosts();
-  // const dynamicRoutes = posts.map((post) => ({
-  //   url: `${baseUrl}/blog/${post.slug}`,
-  //   lastModified: post.updatedAt,
-  //   changeFrequency: 'monthly',
-  //   priority: 0.7,
-  // }));
+  // Get all dynamic content
+  const [stories, news, resources, moodBoards] = await Promise.all([
+    getDynamicStories(),
+    getDynamicNews(),
+    getDynamicResources(),
+    getDynamicMoodBoards()
+  ]);
+
+  // Convert dynamic routes to sitemap format
+  const dynamicRoutes = [
+    ...stories.map(item => ({
+      url: `${baseUrl}${item.url}`,
+      lastModified: item.lastModified,
+      changeFrequency: item.changeFrequency,
+      priority: item.priority,
+    })),
+    ...news.map(item => ({
+      url: `${baseUrl}${item.url}`,
+      lastModified: item.lastModified,
+      changeFrequency: item.changeFrequency,
+      priority: item.priority,
+    })),
+    ...resources.map(item => ({
+      url: `${baseUrl}${item.url}`,
+      lastModified: item.lastModified,
+      changeFrequency: item.changeFrequency,
+      priority: item.priority,
+    })),
+    ...moodBoards.map(item => ({
+      url: `${baseUrl}${item.url}`,
+      lastModified: item.lastModified,
+      changeFrequency: item.changeFrequency,
+      priority: item.priority,
+    })),
+  ];
 
   return [
     ...staticRoutes,
-    // ...dynamicRoutes,
+    ...dynamicRoutes,
   ];
 }

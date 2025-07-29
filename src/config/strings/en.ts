@@ -81,7 +81,7 @@ export const en = {
       },
       games: {
         title: "Games",
-        icon: "🎮",
+        icon: "/game-console.png",
         description: "Listening quiz"
       },
       resources: {
@@ -1645,7 +1645,7 @@ export const en = {
     },
     games: {
       label: 'Games',
-      icon: '🎮',
+      icon: '/game-console.png',
       description: 'Fun listening and word games'
     },
     pokedex: {

@@ -145,7 +145,7 @@ export function ExternalImage({
   };
   
   return (
-    <div ref={imageRef} className="relative" style={style}>
+    <div ref={imageRef} className="relative inline-block" style={style}>
       {isInView && (
         <>
           {!isLoaded && (

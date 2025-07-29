@@ -176,7 +176,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
         {/* Footer Section */}
         <div className="mt-6 pt-4 border-t border-border/50">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => {
                 onClose();
@@ -213,7 +213,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Dōshi Sensei</span>
             </button>
             
-            {user && (
+            {user ? (
               <button
                 onClick={handleSignOut}
                 className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
@@ -222,6 +222,19 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                   <span className="text-xl">👋</span>
                 </div>
                 <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Sign Out</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  onClose();
+                  router.push('/login');
+                }}
+                className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                  <span className="text-xl">🔑</span>
+                </div>
+                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Sign In</span>
               </button>
             )}
           </div>

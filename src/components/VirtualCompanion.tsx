@@ -175,14 +175,14 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         )}
 
         {/* Footer Section */}
-        <div className="mt-6 pt-4 border-t border-border/50">
-          <div className="grid grid-cols-2 gap-2">
+        <div className="mt-4 md:mt-6 pt-3 md:pt-4 border-t border-border/50">
+          <div className="grid grid-cols-2 gap-1.5 md:gap-2">
             <button
               onClick={() => {
                 onClose();
                 router.push('/account');
               }}
-              className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <span className="text-xl">👤</span>
@@ -195,7 +195,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                 onClose();
                 router.push('/settings');
               }}
-              className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <span className="text-xl">⚙️</span>
@@ -205,7 +205,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             
             <button
               onClick={() => setShowDoshiModal(true)}
-              className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500/20 to-pink-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <span className="text-xl">🌸</span>
@@ -216,7 +216,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             {user ? (
               <button
                 onClick={handleSignOut}
-                className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+                className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                   <span className="text-xl">👋</span>
@@ -229,7 +229,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                   onClose();
                   router.push('/login');
                 }}
-                className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+                className="group flex flex-col items-center gap-1 py-2 md:py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                   <span className="text-xl">🔑</span>

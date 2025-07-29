@@ -10,15 +10,10 @@
   NEXT_PRIVATE_TARGET = "server"
 
 # Form handling configuration
-[[forms]]
-  name = "contact"
-  
-  # Email notifications for contact form
-  [[forms.notifications]]
-    to = "queries@doshisensei.com"
-    subject = "[Doshi Sensei] New Contact Form Submission"
-    # You can also add a from address if needed
-    # from = "noreply@doshisensei.com"
+# Note: Netlify doesn't support forms configuration in netlify.toml
+# Forms are detected automatically from HTML with data-netlify="true"
+# Email notifications must be configured in the Netlify UI under:
+# Site settings > Forms > Form notifications
 
 # PWA Headers
 [[headers]]

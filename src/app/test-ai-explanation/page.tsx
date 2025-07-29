@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import TestAIExplanation from './TestAIExplanation';
+import TestAIExplanationClient from './TestAIExplanation';
 import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
@@ -34,11 +34,11 @@ const structuredData = {
   }
 };
 
-export default function TestAIExplanation() {
+export default function TestAIExplanationPage() {
   return (
     <>
       <StructuredData data={structuredData} />
-      <TestAIExplanation />
+      <TestAIExplanationClient />
     </>
   );
 }

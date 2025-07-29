@@ -34,7 +34,7 @@ const structuredData = {
   }
 };
 
-export default function TestKanaAudio() {
+export default function TestKanaAudioPage() {
   return (
     <>
       <StructuredData data={structuredData} />

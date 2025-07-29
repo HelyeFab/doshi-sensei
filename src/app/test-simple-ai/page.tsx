@@ -34,7 +34,7 @@ const structuredData = {
   }
 };
 
-export default function TestSimpleAI() {
+export default function TestSimpleAIPage() {
   return (
     <>
       <StructuredData data={structuredData} />

@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Create Stripe Customer Portal session
     const session = await stripe.billingPortal.sessions.create({
       customer: userData.subscription.stripeCustomerId,
-      return_url: `${request.headers.get('origin')}/account?billing=updated`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL || request.headers.get('origin')}/account?billing=updated`,
     });
 
     return NextResponse.json({ url: session.url });

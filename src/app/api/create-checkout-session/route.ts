@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'subscription',
-      success_url: `${request.nextUrl.origin}/account?success=true`,
-      cancel_url: `${request.nextUrl.origin}/account?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin}/account?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin}/account?canceled=true`,
       metadata: {
         firebaseUID: userId,
       },

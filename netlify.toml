@@ -1,11 +1,13 @@
 [build]
   command = "npm run build"
   publish = ".next"
-  functions = "netlify/functions"
-  environment = { NODE_VERSION = "20" }
+  environment = { NODE_VERSION = "20", NETLIFY_NEXT_PLUGIN_SKIP = "false" }
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NEXT_PRIVATE_TARGET = "server"
 
 # Form handling configuration
 [[forms]]
@@ -103,14 +105,6 @@
   to = "/_next/:splat"
   status = 200
   force = false
-
-# API routes are handled by Next.js/Netlify plugin - no redirect needed
-
-# Catch-all redirect for SPA (should be last)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
 
 # Scheduled Functions
 [functions]

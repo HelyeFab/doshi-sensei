@@ -11,7 +11,16 @@ import { Subscription } from '@/lib/subscriptions/types';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+export async function GET() {
+  return NextResponse.json({ 
+    status: 'Stripe webhook endpoint is active',
+    timestamp: new Date().toISOString()
+  });
+}
+
 export async function POST(request: NextRequest) {
+  console.log('Stripe webhook endpoint hit!');
+  console.log('Headers:', Object.fromEntries(request.headers.entries()));
   const body = await request.text();
   const signature = request.headers.get('stripe-signature')!;
 

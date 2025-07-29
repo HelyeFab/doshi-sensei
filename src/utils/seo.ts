@@ -71,16 +71,8 @@ export function generatePageMetadata(config: SEOPageConfig): Metadata {
     },
   };
 
-  // Log SEO metadata for each page
-  console.log('🔍 SEO Metadata Generated:', {
-    path: path || '/',
-    title: fullTitle,
-    description,
-    keywords: keywords.length > 0 ? keywords : '(none)',
-    url,
-    image: `${siteConfig.url}${image}`,
-    type,
-  });
+  // SEO metadata logging moved to browser console via SEOLogger component
+  // to avoid server-side logging noise
 
   return metadata;
 }

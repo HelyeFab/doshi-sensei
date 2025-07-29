@@ -32,6 +32,7 @@ import { NavigationGestures } from '@/components/navigation/NavigationGestures';
 import { NavigationProvider } from '@/contexts/NavigationContext';
 import { KanjiPreloadInitializer } from '@/components/KanjiPreloadInitializer';
 import PWARecovery from '@/components/PWARecovery';
+import { SEOLogger } from '@/components/SEOLogger';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -278,6 +279,7 @@ export default function RootLayout({
                                       <CacheSystemInitializer />
                                       <AchievementInitializer />
                                       <KanjiPreloadInitializer />
+                                      <SEOLogger />
                                       <div className="mobile-nav-padding">
                                         {children}
                                       </div>

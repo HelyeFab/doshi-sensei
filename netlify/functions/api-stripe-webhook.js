@@ -1,6 +1,4 @@
-import type { Handler } from '@netlify/functions';
-
-export const handler: Handler = async (event) => {
+exports.handler = async (event) => {
   console.log('Netlify Function: api-stripe-webhook called');
   console.log('Method:', event.httpMethod);
   console.log('Headers:', JSON.stringify(event.headers, null, 2));

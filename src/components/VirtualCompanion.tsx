@@ -12,6 +12,9 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import SlideUpModal from '@/components/SlideUpModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
 
 interface VirtualCompanionProps {
   isOpen: boolean;
@@ -22,10 +25,21 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
   const { settings, updateSetting } = useSettings();
   const strings = useStrings();
   const router = useRouter();
+  const { user } = useAuth();
   const [character, setCharacter] = useState<CompanionCharacter | null>(null);
   const [quote, setQuote] = useState<string>('');
   const [isAnimated, setIsAnimated] = useState(false);
   const [showDoshiModal, setShowDoshiModal] = useState(false);
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      onClose();
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   // Generate character and quote when modal opens
   useEffect(() => {
@@ -162,7 +176,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
         {/* Footer Section */}
         <div className="mt-6 pt-4 border-t border-border/50">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             <button
               onClick={() => {
                 onClose();
@@ -171,9 +185,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
               className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                <span className="text-xl">👤</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Account</span>
             </button>
@@ -186,10 +198,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
               className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <span className="text-xl">⚙️</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Settings</span>
             </button>
@@ -203,6 +212,18 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Dōshi Sensei</span>
             </button>
+            
+            {user && (
+              <button
+                onClick={handleSignOut}
+                className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                  <span className="text-xl">👋</span>
+                </div>
+                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Sign Out</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

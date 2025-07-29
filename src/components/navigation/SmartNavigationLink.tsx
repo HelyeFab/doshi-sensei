@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { navigationRules } from '@/lib/navigation/rules';
@@ -18,11 +18,41 @@ interface SmartNavigationLinkProps {
   preserveCurrentState?: boolean;
   // Optional state to preserve
   stateToPreserve?: any;
+  // Whether to prefetch on mount (default false to prevent initial load freeze)
+  prefetchOnMount?: boolean;
+  // Whether to prefetch on hover (default true)
+  prefetchOnHover?: boolean;
   // Additional props to pass to the wrapper
   className?: string;
   onClick?: (e: React.MouseEvent) => void;
   [key: string]: any;
 }
+
+// Queue for prefetch requests to prevent overwhelming the router
+const prefetchQueue: string[] = [];
+let isPrefetching = false;
+
+const processPrefetchQueue = async (router: any) => {
+  if (isPrefetching || prefetchQueue.length === 0) return;
+  
+  isPrefetching = true;
+  const href = prefetchQueue.shift();
+  
+  if (href) {
+    try {
+      await router.prefetch(href);
+    } catch (error) {
+      console.error(`Failed to prefetch ${href}:`, error);
+    }
+  }
+  
+  isPrefetching = false;
+  
+  // Process next item after a small delay
+  if (prefetchQueue.length > 0) {
+    setTimeout(() => processPrefetchQueue(router), 100);
+  }
+};
 
 export function SmartNavigationLink({
   href,
@@ -32,17 +62,54 @@ export function SmartNavigationLink({
   children,
   preserveCurrentState = true,
   stateToPreserve,
+  prefetchOnMount = false,
+  prefetchOnHover = true,
   className,
   onClick,
   ...props
 }: SmartNavigationLinkProps) {
   const router = useRouter();
   const navigation = useNavigation();
+  const [hasPrefetched, setHasPrefetched] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout>();
   
-  // Prefetch the route on mount and hover
+  // Only prefetch on mount if explicitly enabled
   useEffect(() => {
-    router.prefetch(href);
-  }, [href, router]);
+    if (prefetchOnMount && !hasPrefetched) {
+      // Add to queue instead of prefetching immediately
+      if (!prefetchQueue.includes(href)) {
+        prefetchQueue.push(href);
+        processPrefetchQueue(router);
+      }
+      setHasPrefetched(true);
+    }
+  }, [href, router, prefetchOnMount, hasPrefetched]);
+  
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+  
+  const handleMouseEnter = useCallback(() => {
+    if (prefetchOnHover && !hasPrefetched) {
+      // Delay prefetch slightly to avoid prefetching on quick mouse movements
+      timeoutRef.current = setTimeout(() => {
+        router.prefetch(href);
+        setHasPrefetched(true);
+      }, 150);
+    }
+  }, [href, router, prefetchOnHover, hasPrefetched]);
+  
+  const handleMouseLeave = useCallback(() => {
+    // Cancel prefetch if mouse leaves quickly
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  }, []);
   
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -81,7 +148,8 @@ export function SmartNavigationLink({
       href={href}
       onClick={handleClick}
       className={className}
-      onMouseEnter={() => router.prefetch(href)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       {...props}
     >
       {children}

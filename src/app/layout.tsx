@@ -33,6 +33,7 @@ import { NavigationProvider } from '@/contexts/NavigationContext';
 import { KanjiPreloadInitializer } from '@/components/KanjiPreloadInitializer';
 import PWARecovery from '@/components/PWARecovery';
 import { SEOLogger } from '@/components/SEOLogger';
+import { DeferredInitializers } from '@/components/DeferredInitializers';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -275,11 +276,7 @@ export default function RootLayout({
                                   <AchievementToastManager>
                                     <div className="min-h-screen bg-background text-foreground">
                                       <OfflineNotification />
-                                      <JMdictInitializer />
-                                      <CacheSystemInitializer />
-                                      <AchievementInitializer />
-                                      <KanjiPreloadInitializer />
-                                      <SEOLogger />
+                                      <DeferredInitializers />
                                       <div className="mobile-nav-padding">
                                         {children}
                                       </div>

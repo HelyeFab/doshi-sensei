@@ -9,6 +9,9 @@ export async function POST(request: NextRequest) {
   try {
     const { subscriptionId, idToken } = await request.json();
 
+    console.log('Cancel subscription request received');
+    console.log('Subscription ID:', subscriptionId);
+
     if (!subscriptionId) {
       return NextResponse.json(
         { error: 'Missing subscription ID' },
@@ -44,14 +47,50 @@ export async function POST(request: NextRequest) {
     }
 
     // Retrieve the subscription to verify ownership
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    let subscription;
+    try {
+      subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    } catch (stripeError: any) {
+      console.error('Error retrieving subscription from Stripe:', stripeError);
+      console.error('Subscription ID attempted:', subscriptionId);
+      return NextResponse.json(
+        { error: 'Invalid subscription ID or subscription not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Log subscription metadata for debugging
+    console.log('Subscription metadata:', subscription.metadata);
+    console.log('Expected Firebase UID:', decodedToken.uid);
+    console.log('Subscription Firebase UID:', subscription.metadata.firebaseUID);
     
     // Verify the subscription belongs to the authenticated user
     if (subscription.metadata.firebaseUID !== decodedToken.uid) {
-      return NextResponse.json(
-        { error: 'Unauthorized - subscription does not belong to this user' },
-        { status: 403 }
-      );
+      // Also check customer metadata as a fallback
+      let customerFirebaseUID = null;
+      if (typeof subscription.customer === 'string') {
+        try {
+          const customer = await stripe.customers.retrieve(subscription.customer);
+          if (customer && !customer.deleted && 'metadata' in customer) {
+            customerFirebaseUID = customer.metadata?.firebaseUID;
+            console.log('Customer Firebase UID:', customerFirebaseUID);
+          }
+        } catch (error) {
+          console.error('Error retrieving customer:', error);
+        }
+      }
+      
+      // Check if either subscription or customer metadata matches
+      if (customerFirebaseUID !== decodedToken.uid) {
+        console.error('Authorization failed:');
+        console.error('- User UID:', decodedToken.uid);
+        console.error('- Subscription UID:', subscription.metadata.firebaseUID);
+        console.error('- Customer UID:', customerFirebaseUID);
+        return NextResponse.json(
+          { error: 'Unauthorized - subscription does not belong to this user' },
+          { status: 403 }
+        );
+      }
     }
 
     // Cancel the subscription at the end of the current period

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, getDocs, doc, updateDoc, onSnapshot, getDoc } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, onSnapshot, getDoc, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AdminUserDetails } from '@/types/admin';
 import { UserSubscription, getDefaultSubscription } from '@/types/subscription';
@@ -103,57 +103,59 @@ export function useUsers(): UseUsersReturn {
 
       const userRef = doc(db, 'users', userId);
 
-      // Calculate renewal date
-      const renewalDate = new Date(Date.now() + (plan === 'yearly' ? 365 : 30) * 24 * 60 * 60 * 1000);
+      // Calculate period end date
+      const now = new Date();
+      const periodEnd = new Date(now);
+      if (plan === 'yearly') {
+        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+      } else {
+        periodEnd.setMonth(periodEnd.getMonth() + 1);
+      }
 
-      // Get existing usage to preserve counters
+      // Get existing data to preserve usage counters
       const userDoc = await getDoc(userRef);
       const existingData = userDoc.data();
-      const existingUsage = existingData?.subscription?.currentUsage || {};
+      const existingUsage = existingData?.currentUsage || {};
       
-      const today = new Date().toISOString().split('T')[0];
-      
-      // Create new subscription object with all required fields
-      const newSubscription: UserSubscription = {
+      // Create the subscription update matching the fix script structure
+      const subscriptionUpdate = {
         subscription: {
-          plan: plan,
+          userId: userId,
           status: 'active',
-          renewalDate: renewalDate.toISOString(),
+          plan: plan,
+          stripeCustomerId: existingData?.subscription?.stripeCustomerId || 'admin_manual_upgrade',
+          stripeSubscriptionId: existingData?.subscription?.stripeSubscriptionId || `admin_${plan}_${Date.now()}`,
+          currentPeriodEnd: periodEnd,
+          cancelAtPeriodEnd: false,
+          metadata: {
+            source: 'admin',
+            createdAt: now,
+            updatedAt: now,
+            upgradedBy: 'admin'
+          }
         },
         limits: {
-          maxLists: -1, // Unlimited for premium
-          maxDrillsPerDay: -1, // Unlimited for premium
-          maxKanjiQuestPerDay: -1, // Unlimited
-          maxStoriesPerDay: -1, // Unlimited
-          maxArticlesPerDay: -1, // Unlimited
+          maxLists: -1,
+          maxDrillsPerDay: -1,
+          maxKanjiQuestPerDay: -1,
+          maxStoriesPerDay: -1,
+          maxArticlesPerDay: -1,
+          maxKanaDropPerDay: -1,
           canSync: true,
-          canSave: true,
+          canSave: true
         },
-        currentUsage: {
-          listsCount: existingUsage.listsCount || 0,
-          drillsToday: existingUsage.drillsToday || 0,
-          lastDrillDate: existingUsage.lastDrillDate || today,
-          kanjiQuestToday: existingUsage.kanjiQuestToday || 0,
-          lastKanjiQuestDate: existingUsage.lastKanjiQuestDate || today,
-          kanaDropToday: existingUsage.kanaDropToday || 0,
-          lastKanaDropDate: existingUsage.lastKanaDropDate || today,
-          storiesToday: existingUsage.storiesToday || 0,
-          lastStoryDate: existingUsage.lastStoryDate || today,
-          articlesToday: existingUsage.articlesToday || 0,
-          lastArticleDate: existingUsage.lastArticleDate || today,
-        }
+        // Preserve existing usage data
+        currentUsage: existingUsage
       };
 
-      await updateDoc(userRef, {
-        subscription: newSubscription,
-        updatedAt: new Date(),
-      });
+      // Update the user document
+      await updateDoc(userRef, subscriptionUpdate);
 
-      // Update local state
+      // Update local state with the new subscription structure
       setUsers(prevUsers =>
         prevUsers.map(user =>
           user.id === userId
-            ? { ...user, subscription: newSubscription }
+            ? { ...user, subscription: subscriptionUpdate }
             : user
         )
       );
@@ -164,9 +166,29 @@ export function useUsers(): UseUsersReturn {
         targetUserId: userId,
         details: {
           newPlan: plan,
-          previousPlan: users.find(u => u.id === userId)?.subscription?.subscription?.plan || 'free',
+          previousPlan: existingData?.subscription?.plan || 'free',
         },
       });
+
+      // Also log to webhook_logs for consistency
+      try {
+        const webhookLogsRef = collection(db, 'webhook_logs');
+        await addDoc(webhookLogsRef, {
+          eventId: `admin_upgrade_${Date.now()}`,
+          type: 'admin_subscription_upgrade',
+          status: 'success',
+          timestamp: now,
+          data: {
+            userId: userId,
+            email: existingData?.email || 'unknown',
+            plan: plan,
+            upgradedBy: 'admin'
+          }
+        });
+      } catch (logError) {
+        console.error('Failed to create webhook log:', logError);
+        // Don't throw - the upgrade was successful
+      }
 
     } catch (err) {
       console.error('Error upgrading user to premium:', err);

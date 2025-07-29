@@ -84,6 +84,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing webhook:', error);
+    console.error('Event type:', event.type);
+    console.error('Event data:', JSON.stringify(event.data.object, null, 2));
 
     // Log failed processing
     await logWebhookEvent(event, 'error', error instanceof Error ? error.message : 'Unknown error');
@@ -122,8 +124,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
+  console.log('🔔 Processing subscription update:', subscription.id);
+  console.log('Subscription status:', subscription.status);
+  console.log('Customer ID:', subscription.customer);
+  
   // First try to get firebaseUID from subscription metadata
   let firebaseUID = subscription.metadata?.firebaseUID;
+  console.log('Firebase UID from subscription metadata:', firebaseUID);
   
   // If not found in subscription metadata, try to get it from customer
   if (!firebaseUID && typeof subscription.customer === 'string') {
@@ -139,10 +146,14 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   }
 
   if (!firebaseUID) {
-    console.error('No Firebase UID found in subscription or customer metadata. Subscription ID:', subscription.id);
+    console.error('❌ No Firebase UID found in subscription or customer metadata.');
+    console.error('Subscription ID:', subscription.id);
     console.error('Customer ID:', subscription.customer);
+    console.error('Subscription metadata:', subscription.metadata);
     return;
   }
+
+  console.log('✅ Processing subscription for Firebase UID:', firebaseUID);
 
   // Log subscription event for user history
   await logUserSubscriptionEvent(firebaseUID, {
@@ -232,8 +243,12 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     // Update the user document with the new structure
     transaction.set(userDocRef, userSubscriptionData, { merge: true });
     
-    console.log(`Updated subscription for user ${firebaseUID}: ${userType}`);
+    console.log(`✅ Updated subscription for user ${firebaseUID}: ${userType}`);
   });
+
+  console.log('🎉 Subscription update completed successfully for:', firebaseUID);
+  console.log('Plan:', plan);
+  console.log('Status:', subscription.status);
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {

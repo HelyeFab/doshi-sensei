@@ -1,90 +1,69 @@
 'use client';
 
-import { TutorialButton } from './TutorialButton';
+import { motion } from 'framer-motion';
 
 export interface NavigationBarProps {
-  currentScreen: number;
-  totalScreens: number;
   onSkip: () => void;
   onNext: () => void;
-  onBack?: () => void;
-  isLastScreen?: boolean;
-  showSkip?: boolean;
-  showNext?: boolean;
-  showBack?: boolean;
+  currentScreen: number;
+  totalScreens: number;
 }
 
 export function NavigationBar({
-  currentScreen,
-  totalScreens,
   onSkip,
   onNext,
-  onBack,
-  isLastScreen = false,
-  showSkip = true,
-  showNext = true,
-  showBack = false,
+  currentScreen,
+  totalScreens,
 }: NavigationBarProps) {
   return (
-    <div className="px-4 pt-8 pb-8 md:pb-12" style={{ paddingBottom: 'calc(2rem + env(safe-area-inset-bottom, 0px))' }}>
-      <div className="max-w-6xl mx-auto">
-        {/* Progression Dots */}
-        <div className="flex justify-center mb-6">
-          <div className="flex space-x-2">
+    <nav className="bg-primary border-t border-primary-foreground/10">
+      <div className="flex justify-between items-center px-6 py-4">
+        {/* Skip Button - flex: 1 for equal space */}
+        <div className="flex-1">
+          <button
+            onClick={onSkip}
+            className="text-primary-foreground/70 text-sm font-medium hover:text-primary-foreground transition-colors"
+          >
+            Skip
+          </button>
+        </div>
+
+        {/* Progress Dots - flex: 1 for equal space, centered */}
+        <div className="flex-1 flex justify-center">
+          <div className="flex items-center gap-2">
             {Array.from({ length: totalScreens }, (_, index) => (
-              <div
+              <motion.div
                 key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                className={`w-2 h-2 rounded-full ${
                   index === currentScreen
-                    ? 'bg-white scale-125'
-                    : index < currentScreen
-                    ? 'bg-white/60'
-                    : 'bg-white/30'
+                    ? 'bg-primary-foreground'
+                    : 'bg-primary-foreground/30'
                 }`}
+                animate={{
+                  y: [0, 0, -8, 0, 0, 0],
+                  scale: [1, 1, 1.3, 1, 1, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: index * 0.2,
+                  ease: "easeInOut",
+                }}
               />
             ))}
           </div>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center">
-          {/* Left side - Back button */}
-          <div className="flex-1">
-            {showBack && onBack && (
-              <button
-                onClick={onBack}
-                className="text-white/70 hover:text-white transition-colors text-base font-medium px-4 py-2"
-              >
-                Back
-              </button>
-            )}
-          </div>
-
-          {/* Center - Skip button */}
-          <div className="flex-1 flex justify-center">
-            {showSkip && !isLastScreen && (
-              <button
-                onClick={onSkip}
-                className="text-white/50 hover:text-white/70 transition-colors text-base"
-              >
-                Skip
-              </button>
-            )}
-          </div>
-
-          {/* Right side - Next button */}
-          <div className="flex-1 flex justify-end">
-            {showNext && !isLastScreen && (
-              <button
-                onClick={onNext}
-                className="text-white hover:text-white/80 transition-colors text-base font-medium px-4 py-2"
-              >
-                Next
-              </button>
-            )}
-          </div>
+        {/* Next Button - flex: 1 for equal space, right aligned */}
+        <div className="flex-1 flex justify-end">
+          <button
+            onClick={onNext}
+            className="text-primary-foreground text-sm font-medium hover:text-primary-foreground/80 transition-colors"
+          >
+            {currentScreen === totalScreens - 1 ? 'Get Started' : 'Next'}
+          </button>
         </div>
       </div>
-    </div>
+    </nav>
   );
-} 
+}

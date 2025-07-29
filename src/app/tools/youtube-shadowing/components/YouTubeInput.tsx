@@ -18,7 +18,8 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
     const patterns = [
       /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[\w-]+.*$/,
       /^(https?:\/\/)?(www\.)?youtube\.com\/shorts\/[\w-]+.*$/,
-      /^(https?:\/\/)?(m\.)?youtube\.com\/watch\?v=[\w-]+.*$/
+      /^(https?:\/\/)?(m\.)?youtube\.com\/watch\?v=[\w-]+.*$/,
+      /^(https?:\/\/)?(music\.)?youtube\.com\/watch\?v=[\w-]+.*$/  // YouTube Music support
     ];
     
     return patterns.some(pattern => pattern.test(url));
@@ -26,7 +27,7 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
 
   const extractVideoId = (url: string): string | null => {
     const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]+)/,
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/|music\.youtube\.com\/watch\?v=)([\w-]+)/,
     ];
     
     for (const pattern of patterns) {
@@ -123,6 +124,7 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
           <li>youtu.be/...</li>
           <li>youtube.com/shorts/...</li>
           <li>m.youtube.com/watch?v=...</li>
+          <li>music.youtube.com/watch?v=...</li>
         </ul>
       </div>
     </form>

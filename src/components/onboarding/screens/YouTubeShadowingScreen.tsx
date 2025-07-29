@@ -2,6 +2,7 @@
 
 import { TutorialButton } from '../components/TutorialButton';
 import { useStrings } from '@/contexts/LanguageContext';
+import Image from 'next/image';
 
 export interface YouTubeShadowingScreenProps {
   onNext: () => void;
@@ -9,53 +10,60 @@ export interface YouTubeShadowingScreenProps {
 
 export function YouTubeShadowingScreen({ onNext }: YouTubeShadowingScreenProps) {
   const strings = useStrings();
+  const tutorial = strings?.tutorial;
+
+  if (!tutorial || !tutorial.youtubeShadowingTutorial) {
+    return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center text-center space-y-6 h-full">
       {/* Hero Section */}
       <div className="relative">
-        <div className="text-6xl mb-4">🎬</div>
-        <div className="absolute -top-2 -right-2 text-2xl animate-pulse">🎤</div>
+        <Image 
+          src="/flat-icons/ui/youtube.svg" 
+          alt="YouTube" 
+          width={64} 
+          height={64}
+          className="mx-auto"
+        />
       </div>
 
       {/* Main Content */}
-      <div className="space-y-4 max-w-md">
-        <h2 className="text-3xl font-bold text-white">
-          YouTube Shadowing
+      <div className="space-y-4 max-w-2xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+          {tutorial.youtubeShadowingTutorial.title}
         </h2>
-        <p className="text-lg text-white/90 leading-relaxed">
-          Practice Japanese with real YouTube videos! 
-          <span className="font-semibold text-white"> Extract transcripts and shadow native speakers</span> 
-          to improve your pronunciation and listening skills.
-        </p>
         
-        {/* Feature highlights */}
-        <div className="space-y-3">
-          <div className="flex items-start gap-3 text-left bg-white/10 p-3 rounded-lg">
-            <span className="text-2xl">📝</span>
-            <div>
-              <p className="font-medium text-sm text-white">AI-Powered Transcripts</p>
-              <p className="text-xs text-white/70">Get Japanese subtitles even when YouTube doesn't provide them</p>
-            </div>
+        <p className="text-lg text-foreground/80">
+          {tutorial.youtubeShadowingTutorial.description}
+        </p>
+
+        {/* Features */}
+        <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-4 space-y-3 text-left max-w-md mx-auto shadow-lg">
+          <div className="text-sm text-foreground/90">
+            {tutorial.youtubeShadowingTutorial.features.extract}
           </div>
-          
-          <div className="flex items-start gap-3 text-left bg-white/10 p-3 rounded-lg">
-            <span className="text-2xl">🔄</span>
-            <div>
-              <p className="font-medium text-sm text-white">Line-by-Line Practice</p>
-              <p className="text-xs text-white/70">Repeat after native speakers with synchronized playback</p>
-            </div>
+          <div className="text-sm text-foreground/90">
+            {tutorial.youtubeShadowingTutorial.features.transcript}
           </div>
-          
-          <div className="flex items-start gap-3 text-left bg-white/10 p-3 rounded-lg">
-            <span className="text-2xl">📊</span>
-            <div>
-              <p className="font-medium text-sm text-white">Popular Videos</p>
-              <p className="text-xs text-white/70">Access community's favorite videos with cached transcripts</p>
-            </div>
+          <div className="text-sm text-foreground/90">
+            {tutorial.youtubeShadowingTutorial.features.shadow}
+          </div>
+          <div className="text-sm text-foreground/90">
+            {tutorial.youtubeShadowingTutorial.features.furigana}
           </div>
         </div>
+
+        <p className="text-sm text-primary font-medium">
+          {tutorial.youtubeShadowingTutorial.example}
+        </p>
       </div>
+
+      {/* CTA */}
+      <TutorialButton onClick={onNext} variant="primary">
+        {tutorial.youtubeShadowingTutorial.continueButton}
+      </TutorialButton>
     </div>
   );
 }

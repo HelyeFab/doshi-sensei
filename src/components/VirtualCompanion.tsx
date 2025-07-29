@@ -9,6 +9,9 @@ import {
   CompanionCharacter
 } from '@/utils/virtualCompanion';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import SlideUpModal from '@/components/SlideUpModal';
 
 interface VirtualCompanionProps {
   isOpen: boolean;
@@ -18,9 +21,11 @@ interface VirtualCompanionProps {
 export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionProps) {
   const { settings, updateSetting } = useSettings();
   const strings = useStrings();
+  const router = useRouter();
   const [character, setCharacter] = useState<CompanionCharacter | null>(null);
   const [quote, setQuote] = useState<string>('');
   const [isAnimated, setIsAnimated] = useState(false);
+  const [showDoshiModal, setShowDoshiModal] = useState(false);
 
   // Generate character and quote when modal opens
   useEffect(() => {
@@ -154,7 +159,107 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             </button>
           </div>
         )}
+
+        {/* Footer Section */}
+        <div className="mt-6 pt-4 border-t border-border/50">
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={() => {
+                onClose();
+                router.push('/account');
+              }}
+              className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+            >
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Account</span>
+            </button>
+            
+            <button
+              onClick={() => {
+                onClose();
+                router.push('/settings');
+              }}
+              className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+            >
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Settings</span>
+            </button>
+            
+            <button
+              onClick={() => setShowDoshiModal(true)}
+              className="group flex flex-col items-center gap-1 py-3 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
+            >
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500/20 to-pink-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <span className="text-xl">🌸</span>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Dōshi Sensei</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Doshi Sensei Info Modal */}
+      <SlideUpModal
+        isOpen={showDoshiModal}
+        onClose={() => setShowDoshiModal(false)}
+        title="About Dōshi Sensei"
+        height="auto"
+        showHandle={false}
+      >
+        <div className="px-6 py-8">
+          <div className="flex flex-col items-center space-y-6">
+            {/* Profile Picture */}
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
+              <Image
+                src="/doshi-emma.JPG"
+                alt="Dōshi Sensei"
+                width={128}
+                height={128}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="text-center space-y-4 text-muted-foreground max-w-md">
+              <p className="text-foreground font-medium">
+                Hi, I'm Emmanuel — and I love learning Japanese.
+              </p>
+              <p>
+                But learning a language isn't always easy. I've been there — bouncing between apps, flashcards, grammar charts, and never feeling fully immersed.
+              </p>
+              <p>
+                Dōshi Sensei is the app I always dreamed of: one space to read, listen, practise, and grow. It's made with care, for people who love Japanese and want to learn it their way.
+              </p>
+              <p>
+                I hope it brings you joy, confidence, and a sense of flow. 🌱
+              </p>
+              <p className="text-sm italic pt-4 border-t border-border">
+                "Dōshi" (動詞) means "verb" in Japanese, reflecting our origins as a conjugation practice app that has grown into a full-featured learning platform.
+              </p>
+              <p className="font-semibold text-foreground text-lg">
+                Welcome.
+              </p>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowDoshiModal(false)}
+              className="mt-4 px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
+            >
+              Got it! ✨
+            </button>
+          </div>
+        </div>
+      </SlideUpModal>
     </div>
   );
 }

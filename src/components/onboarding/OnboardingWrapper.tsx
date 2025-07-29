@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { OnboardingFlow } from './OnboardingFlow';
-import { TestModal } from './TestModal';
 
 export interface OnboardingWrapperProps {
   children: React.ReactNode;
@@ -46,6 +45,10 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
   }, []);
 
   const handleOnboardingComplete = () => {
+    // Mark onboarding as completed
+    localStorage.setItem('doshi_onboarding_completed', 'true');
+    localStorage.setItem('doshi_onboarding_completed_date', new Date().toISOString());
+    
     setShowOnboarding(false);
 
     // Clean up URL if tutorial was manually triggered

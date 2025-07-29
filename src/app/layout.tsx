@@ -91,10 +91,10 @@ const manrope = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Doshi Sensei - Master Japanese Verb Conjugations',
-    template: '%s | Doshi Sensei'
+    default: 'Dōshi Sensei - Master Japanese Verb Conjugations',
+    template: '%s | Dōshi Sensei'
   },
-  description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs with professional guidance.',
+  description: 'The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and themed mood boards, complete vocabulary sets from Genki I & II and Minna no Nihongo I & II textbooks, practice with Jisho/WaniKani integration, import Anki decks, read NHK news with furigana, enjoy AI-generated stories, practice YouTube shadowing, play interactive learning games, access comprehensive grammar resources from Japanese creators, and build fluency with our all-in-one toolkit.',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -119,9 +119,9 @@ export const metadata: Metadata = {
     'Japanese education',
     'language learning'
   ],
-  authors: [{ name: 'Doshi Sensei Team' }],
-  creator: 'Doshi Sensei',
-  publisher: 'Doshi Sensei',
+  authors: [{ name: 'Dōshi Sensei Team' }],
+  creator: 'Dōshi Sensei',
+  publisher: 'Dōshi Sensei',
   formatDetection: {
     email: false,
     address: false,
@@ -132,16 +132,16 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Doshi Sensei - Master Japanese Verb Conjugations',
+    title: 'Dōshi Sensei - Master Japanese Verb Conjugations',
     description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary. Master ichidan, godan, and irregular verbs.',
     url: 'https://doshisensei.com',
-    siteName: 'Doshi Sensei',
+    siteName: 'Dōshi Sensei',
     images: [
       {
         url: '/doshi.png',
         width: 1200,
         height: 630,
-        alt: 'Doshi Sensei - Japanese Learning App',
+        alt: 'Dōshi Sensei - Japanese Learning App',
       },
     ],
     locale: 'en_US',
@@ -149,7 +149,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Doshi Sensei - Master Japanese Verb Conjugations',
+    title: 'Dōshi Sensei - Master Japanese Verb Conjugations',
     description: 'Learn Japanese verb and adjective conjugations with interactive practice, drills, and vocabulary.',
     images: ['/doshi.png'],
     creator: '@doshisensei',
@@ -192,10 +192,10 @@ export default function RootLayout({
       <head>
         {/* PWA Manifest and Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="application-name" content="Doshi Sensei" />
+        <meta name="application-name" content="Dōshi Sensei" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Doshi Sensei" />
+        <meta name="apple-mobile-web-app-title" content="Dōshi Sensei" />
         <meta name="format-detection" content="telephone=no" />
         
         {/* Prevent browser-generated splash screens by providing our own */}

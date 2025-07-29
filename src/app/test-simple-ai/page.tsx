@@ -1,32 +1,30 @@
-'use client';
+import type { Metadata } from 'next';
+import TestSimpleAI from './TestSimpleAI';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-import { useState } from 'react';
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Simple Ai',
+  description: 'Test Simple Ai - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-simple-ai',
+});
 
-export default function TestSimpleAI() {
-  const [showComponent, setShowComponent] = useState(false);
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Simple Ai",
+      "url": "/test-simple-ai"
+    }
+  ]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-2xl font-bold mb-8">Simple AI Test</h1>
-      
-      <div className="space-y-4">
-        <div className="bg-white p-4 rounded shadow">
-          <p className="mb-4">Click the button below to show the AI component:</p>
-          <button
-            onClick={() => setShowComponent(!showComponent)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {showComponent ? 'Hide' : 'Show'} AI Component
-          </button>
-        </div>
-
-        {showComponent && (
-          <div className="bg-white p-4 rounded shadow">
-            <p className="mb-2">AI component would go here</p>
-            <p className="text-sm text-gray-600">If you see this without errors, the issue is in the AI components</p>
-          </div>
-        )}
-      </div>
-    </div>
+    <>
+      <StructuredData data={breadcrumbData} />
+      <TestSimpleAI />
+    </>
   );
 }

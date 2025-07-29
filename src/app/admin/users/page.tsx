@@ -1,59 +1,30 @@
-'use client';
+import type { Metadata } from 'next';
+import UsersPage from './UsersPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-import { AdminLayout } from '@/components/admin/AdminLayout';
-import { UserSearch } from '@/components/admin/UserSearch';
-import { UserTable } from '@/components/admin/UserTable';
-import { useState } from 'react';
-import { AdminUserDetails } from '@/types/admin';
-import { useStrings } from '@/contexts/LanguageContext';
-import { useRouter } from 'next/navigation';
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Users',
+  description: 'Users - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/users',
+});
 
-export default function UsersPage() {
-  const strings = useStrings();
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUser, setSelectedUser] = useState<AdminUserDetails | null>(null);
-  const [filterType, setFilterType] = useState<'all' | 'free' | 'premium' | 'active'>('all');
-
-  const handleUserSelect = (user: AdminUserDetails) => {
-    setSelectedUser(user);
-  };
-
-  const handleUserUpdate = (updatedUser: AdminUserDetails) => {
-    // Handle user updates after premium upgrade, etc.
-  };
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Users",
+      "url": "/users"
+    }
+  ]);
 
   return (
-    <AdminLayout title={strings.admin.userManagement}>
-
-      <div className="space-y-6">
-        {/* Page header */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 sm:p-6 border border-blue-200 dark:border-blue-800">
-          <h2 className="text-xl font-bold text-foreground mb-2">
-            {strings.admin.userManagement}
-          </h2>
-          <p className="text-muted-foreground">
-            {strings.admin.userManagementDescription}
-          </p>
-        </div>
-
-        {/* Search and filters */}
-        <UserSearch
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          filterType={filterType}
-          onFilterChange={setFilterType}
-        />
-
-        {/* User table */}
-        <UserTable
-          searchQuery={searchQuery}
-          filterType={filterType}
-          onUserSelect={handleUserSelect}
-          onUserUpdate={handleUserUpdate}
-          selectedUser={selectedUser}
-        />
-      </div>
-    </AdminLayout>
+    <>
+      <StructuredData data={breadcrumbData} />
+      <UsersPage />
+    </>
   );
 }

@@ -1,118 +1,30 @@
-'use client';
+import type { Metadata } from 'next';
+import ArticlePage from './ArticlePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { NewsArticle } from '@/types/news';
-import { getArticleById } from '@/utils/watanocArticles';
-import ArticleReader from '@/components/reading/ArticleReader';
-import { useAuth } from '@/contexts/AuthContext';
-import { useAccess } from '@/hooks/useAccess';
-import { useSubscription2 } from '@/hooks/useSubscription2';
-import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+export const metadata: Metadata = generatePageMetadata({
+  title: '[id]',
+  description: '[id] - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/news/[id]',
+});
 
-export default function ArticlePage() {
-    const router = useRouter();
-    const { user, loading: authLoading } = useAuth();
-    const { checkAndTrack } = useAccess();
-    const { isPremium, userType } = useSubscription2();
-    const [article, setArticle] = useState<NewsArticle | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [canRead, setCanRead] = useState(true);
-    const params = useParams();
-    const articleId = typeof params?.id === 'string'
-        ? params.id
-        : Array.isArray(params?.id)
-            ? params.id[0]
-            : undefined;
-
-    useEffect(() => {
-        loadArticle();
-    }, [articleId, authLoading]);
-
-    const loadArticle = async () => {
-        // Wait for auth to be ready
-        if (authLoading) {
-            return;
-        }
-
-        try {
-            setLoading(true);
-
-            if (!articleId) {
-                router.push('/news');
-                return;
-            }
-
-            // Check if user can read articles using new system
-            const canAccess = await checkAndTrack('article_reading');
-            setCanRead(canAccess);
-
-            if (!canAccess) {
-                // The access system will show the appropriate modal
-                router.push('/news');
-                return;
-            }
-
-            // Load article from Firebase
-            console.log('[ArticlePage] Loading article:', articleId);
-            const loadedArticle = await getArticleById(articleId);
-
-            if (!loadedArticle) {
-                console.error('[ArticlePage] Article not found:', articleId);
-                router.push('/news');
-                return;
-            }
-
-            console.log('[ArticlePage] Article loaded:', {
-                id: loadedArticle.id,
-                hasContent: !!loadedArticle.content,
-                contentLength: loadedArticle.content?.length || 0,
-                title: loadedArticle.title
-            });
-
-            setArticle(loadedArticle);
-            // Usage tracking is handled automatically by checkAndTrack
-        } catch (error) {
-            console.error('Error loading article:', error);
-            router.push('/news');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleComplete = () => {
-        router.push('/news');
-    };
-
-    const handleExit = () => {
-        router.push('/news');
-    };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-background">
-                <SmartPageHeader title="Loading..." />
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                        <p className="text-muted-foreground">Loading article...</p>
-                    </div>
-                </div>
-            </div>
-        );
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "[id]",
+      "url": "/[id]"
     }
+  ]);
 
-    if (!article || !canRead) {
-        return null;
-    }
-
-    return (
-        <div className="min-h-screen bg-background">
-            <SmartPageHeader title={article.title} />
-            <ArticleReader
-                article={article}
-                onBack={handleExit}
-            />
-        </div>
-    );
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <ArticlePage />
+    </>
+  );
 }

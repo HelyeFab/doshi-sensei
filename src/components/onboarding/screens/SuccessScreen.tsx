@@ -12,7 +12,7 @@ export interface SuccessScreenProps {
 
 export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
   const strings = useStrings();
-  const tutorial = strings.tutorial;
+  const tutorial = strings?.tutorial;
   const [settingsShown, setSettingsShown] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<ColorScheme>('default');
   const [showRomaji, setShowRomaji] = useState(true);
@@ -50,160 +50,141 @@ export function SuccessScreen({ onComplete, onBack }: SuccessScreenProps) {
       }
     }
 
-    // Just call onComplete instead of redirecting
-    // The navigation system will handle the routing properly
     onComplete();
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center h-full space-y-6">
-      {!settingsShown ? (
-        // Success Screen
-        <div className="text-center space-y-6">
-          <div className="relative">
-            <div className="text-6xl animate-bounce">🎌</div>
-            <div className="absolute -top-2 -right-2 text-2xl animate-pulse">🌟</div>
-            <div className="absolute -bottom-2 -left-2 text-2xl animate-pulse delay-300">✨</div>
-          </div>
+  if (settingsShown) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full space-y-6">
+        <div className="space-y-4 max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            {tutorial.success.settingsTitle}
+          </h2>
+          <p className="text-foreground/80">
+            {tutorial.success.settingsDescription}
+          </p>
 
-          <div className="space-y-4">
-            <h1 className="text-3xl font-bold text-white">
-              {tutorial.success.title}
-            </h1>
-            <p className="text-lg text-white/90 max-w-md mx-auto">
-              {tutorial.success.description}
-              <span className="font-semibold text-white"> {tutorial.success.emphasis} </span>
-            </p>
-          </div>
-
-
-          {/* Settings button removed to avoid duplication with navigation bar */}
-        </div>
-      ) : (
-        // Settings Demo
-        <div className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              {tutorial.success.settingsTitle}
-            </h2>
-            <p className="text-muted-foreground">
-              {tutorial.success.settingsDescription}
-            </p>
-          </div>
-
-          {/* Theme Selection Demo */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <h3 className="font-medium text-foreground mb-3">{tutorial.success.themeHeader}</h3>
-            <div className="grid grid-cols-2 gap-3">
+          {/* Theme Selection */}
+          <div className="space-y-3">
+            <h3 className="font-medium text-foreground">
+              {tutorial.success.themeHeader}
+            </h3>
+            <div className="flex justify-center gap-3 flex-wrap">
               {themes.map((theme) => (
                 <button
                   key={theme.name}
                   onClick={() => setSelectedTheme(theme.name)}
-                  className={`p-3 border rounded-lg transition-all text-center ${selectedTheme === theme.name
+                  className={`flex flex-col items-center p-3 rounded-lg border-2 transition-all ${
+                    selectedTheme === theme.name
                       ? 'border-primary bg-primary/10'
                       : 'border-border hover:border-primary/50'
-                    }`}
-                  style={{
-                    backgroundColor: selectedTheme === theme.name ? `${theme.color}10` : undefined,
-                    borderColor: selectedTheme === theme.name ? theme.color : undefined
-                  }}
+                  }`}
                 >
                   <div
-                    className="w-6 h-6 rounded-full mx-auto mb-2"
+                    className="w-12 h-12 rounded-full mb-2"
                     style={{ backgroundColor: theme.color }}
-                  ></div>
-                  <div className="text-sm font-medium">{theme.label}</div>
+                  />
+                  <span className="text-sm text-foreground">{theme.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Romaji Toggle Demo */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <h3 className="font-medium text-foreground mb-3">Learning Preferences:</h3>
+          {/* Romaji Toggle */}
+          <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-4 max-w-md mx-auto shadow-lg">
+            <h3 className="font-medium text-foreground mb-3">
+              {tutorial.success.preferencesHeader}
+            </h3>
             <label className="flex items-center justify-between cursor-pointer">
               <div>
-                <div className="font-medium text-foreground">Show Romaji</div>
-                <div className="text-sm text-muted-foreground">
-                  Display romanized pronunciation (たべる → taberu)
-                </div>
+                <div className="font-medium text-foreground">{tutorial.success.romajiLabel}</div>
+                <div className="text-sm text-foreground/70">{tutorial.success.romajiDescription}</div>
               </div>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  checked={showRomaji}
-                  onChange={(e) => setShowRomaji(e.target.checked)}
-                  className="sr-only"
-                />
-                <div
-                  className={`relative inline-flex h-4 sm:h-6 w-14 items-center rounded-full transition-colors px-1 ${showRomaji ? 'bg-primary' : 'bg-muted'}`}
-                  style={{ minWidth: 56 }}
-                  aria-pressed={showRomaji}
-                  tabIndex={0}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-background shadow transition-transform ${showRomaji ? 'translate-x-6' : 'translate-x-0'}`}
-                  />
-                </div>
-              </div>
+              <input
+                type="checkbox"
+                checked={showRomaji}
+                onChange={(e) => setShowRomaji(e.target.checked)}
+                className="w-5 h-5 rounded border-border"
+              />
             </label>
           </div>
 
           {/* Preview */}
-          <div className="bg-muted/50 border border-border rounded-lg p-4">
-            <div className="text-sm text-muted-foreground mb-2">Preview:</div>
-            <div className="space-y-1">
-              <div className="text-lg japanese-text font-bold" style={{ color: themes.find(t => t.name === selectedTheme)?.color }}>
-                食べる
-              </div>
+          <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-4 max-w-md mx-auto shadow-lg">
+            <h3 className="text-sm font-medium text-foreground/70 mb-2">
+              {tutorial.success.previewHeader}
+            </h3>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-foreground">食べる</div>
               {showRomaji && (
-                <div className="text-sm text-muted-foreground">taberu</div>
+                <div className="text-sm text-foreground/70">{tutorial.success.demoRomaji}</div>
               )}
-              <div className="text-sm text-foreground">"to eat"</div>
+              <div className="text-sm text-foreground/70 mt-1">{tutorial.success.demoWord}</div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Get Started Button - Only shown when not in settings demo */}
-      {!settingsShown && (
-        <div className="text-center pt-4">
+          <p className="text-sm text-foreground/70">
+            {tutorial.success.settingsNote}
+          </p>
+        </div>
+
+        <TutorialButton onClick={handleFinish} variant="primary" size="large">
+          {tutorial.success.startButtonSettings}
+        </TutorialButton>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full space-y-6">
+      {/* Success Animation */}
+      <div className="text-6xl md:text-7xl animate-bounce">🎉</div>
+
+      {/* Main Content */}
+      <div className="space-y-4 max-w-2xl mx-auto text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+          {tutorial.success.title}
+        </h2>
+        <p className="text-lg text-foreground/80">
+          {tutorial.success.description}
+        </p>
+        <p className="text-lg font-semibold text-primary">
+          {tutorial.success.emphasis}
+        </p>
+
+        {/* Checklist */}
+        <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-4 max-w-md mx-auto shadow-lg">
+          <h3 className="font-medium text-foreground mb-3">
+            {tutorial.success.checklistHeader}
+          </h3>
+          <div className="space-y-2 text-left">
+            <div className="text-sm text-foreground/90">{tutorial.success.checklistItems.vocabulary}</div>
+            <div className="text-sm text-foreground/90">{tutorial.success.checklistItems.conjugations}</div>
+            <div className="text-sm text-foreground/90">{tutorial.success.checklistItems.games}</div>
+            <div className="text-sm text-foreground/90">{tutorial.success.checklistItems.reading}</div>
+            <div className="text-sm text-foreground/90">{tutorial.success.checklistItems.tracking}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="space-y-3">
+        <TutorialButton onClick={handleFinish} variant="primary" size="large">
+          {tutorial.success.startButton}
+        </TutorialButton>
+        
+        <div className="text-center">
           <button
-            onClick={handleFinish}
-            className="px-8 py-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all transform hover:scale-105 text-lg"
-          >
-            🚀 Get Started
-          </button>
-        </div>
-      )}
-
-      {/* Settings Demo Button */}
-      {!settingsShown && (
-        <div className="text-center pt-4">
-          <TutorialButton
             onClick={handleSettingsDemo}
-            variant="secondary"
-            className="mb-2"
+            className="text-sm text-primary hover:text-primary/80 transition-colors"
           >
             {tutorial.success.settingsButton}
-          </TutorialButton>
-          <p className="text-xs text-white/70">
+          </button>
+          <p className="text-xs text-foreground/60 mt-1">
             {tutorial.success.settingsSubtext}
           </p>
         </div>
-      )}
-
-      {/* Finish Button - Only shown in settings demo */}
-      {settingsShown && (
-        <div className="text-center pt-4">
-          <button
-            onClick={handleFinish}
-            className="px-8 py-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all transform hover:scale-105 text-lg"
-          >
-            🏠 Go to Homepage
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

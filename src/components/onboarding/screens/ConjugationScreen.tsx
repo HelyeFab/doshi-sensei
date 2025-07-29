@@ -12,7 +12,7 @@ export interface ConjugationScreenProps {
 
 export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
   const strings = useStrings();
-  const tutorial = strings.tutorial;
+  const tutorial = strings?.tutorial;
   const [animationComplete, setAnimationComplete] = useState(false);
 
   if (!tutorial || !tutorial.conjugation) {
@@ -35,18 +35,18 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
       {/* Conjugation Section */}
       <div className="space-y-6 max-w-2xl mx-auto">
         <div className="text-center space-y-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-white">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground">
             {tutorial.conjugation.title}
           </h2>
-          <p className="text-lg text-white/90 leading-relaxed">
+          <p className="text-lg text-foreground/80 leading-relaxed">
             {tutorial.conjugation.description}
-            <span className="font-semibold text-white"> {tutorial.conjugation.emphasis} </span>
+            <span className="font-semibold text-primary"> {tutorial.conjugation.emphasis} </span>
             {tutorial.conjugation.continuation}
           </p>
         </div>
 
         {/* Demo Area */}
-        <div className="bg-white/10 border border-white/20 rounded-lg p-6 space-y-4">
+        <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-6 space-y-4 shadow-lg">
           <AnimatedWord
             word={demoWord}
             onAnimationComplete={() => setAnimationComplete(true)}
@@ -57,11 +57,11 @@ export function ConjugationScreen({ onNext }: ConjugationScreenProps) {
       {/* Continue Button */}
       {animationComplete && (
         <div className="text-center space-y-2">
-          <p className="text-white font-medium">
+          <p className="text-foreground font-medium">
             {tutorial.conjugation.successMessage}
           </p>
           <TutorialButton onClick={onNext} variant="primary">
-            Continue
+            {tutorial.conjugation.nextButton}
           </TutorialButton>
         </div>
       )}

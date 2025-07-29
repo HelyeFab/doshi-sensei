@@ -10,7 +10,7 @@ export interface OverviewScreenProps {
 
 export function OverviewScreen({ onNext }: OverviewScreenProps) {
   const strings = useStrings();
-  const tutorial = strings.tutorial;
+  const tutorial = strings?.tutorial;
 
   if (!tutorial || !tutorial.welcome) {
     return <div className="flex items-center justify-center h-full">Loading...</div>;
@@ -25,12 +25,12 @@ export function OverviewScreen({ onNext }: OverviewScreenProps) {
 
       {/* Main Content */}
       <div className="space-y-4 max-w-2xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-white">
-          Your Japanese Journey Includes:
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+          {tutorial.overview?.title || 'Your Japanese Journey Includes:'}
         </h2>
         
-        <div className="bg-white/10 border border-white/20 rounded-lg p-4 md:p-6 max-w-xl md:max-w-md mx-auto">
-          <div className="text-sm text-white/90 font-medium space-y-2">
+        <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-4 md:p-6 max-w-xl md:max-w-md mx-auto shadow-lg">
+          <div className="text-sm text-foreground/90 font-medium space-y-2">
             <div className="text-center">{tutorial.welcome.features.conjugations}</div>
             <div className="text-center">{tutorial.welcome.features.vocabulary}</div>
             <div className="text-center">{tutorial.welcome.features.textbookVocab}</div>
@@ -44,8 +44,7 @@ export function OverviewScreen({ onNext }: OverviewScreenProps) {
                 className="flex-shrink-0"
               />
               <span className="text-center max-w-[300px]">
-                Learn through games<br />
-                (Kanji Quest lets you catch 1000+ Pokémon!)
+                {tutorial.welcome.features.games.replace('🎮 ', '')}
               </span>
             </div>
             <div className="text-center">{tutorial.welcome.features.reading}</div>
@@ -59,13 +58,14 @@ export function OverviewScreen({ onNext }: OverviewScreenProps) {
               />
               <span className="text-center">{tutorial.welcome.features.youtubeShadowing.replace('🎬 ', '')}</span>
             </div>
+            <div className="text-center">{tutorial.welcome.features.tracking}</div>
           </div>
         </div>
       </div>
 
       {/* CTA */}
       <TutorialButton onClick={onNext} variant="primary">
-        Let's Get Started!
+        {tutorial.overview?.startButton || "Let's Get Started!"}
       </TutorialButton>
     </div>
   );

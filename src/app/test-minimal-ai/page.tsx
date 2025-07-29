@@ -1,12 +1,30 @@
-'use client';
+import type { Metadata } from 'next';
+import TestMinimalAI from './TestMinimalAI';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export default function TestMinimalAI() {
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Minimal Ai',
+  description: 'Test Minimal Ai - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-minimal-ai',
+});
+
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Minimal Ai",
+      "url": "/test-minimal-ai"
+    }
+  ]);
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl mb-4">Minimal AI Test</h1>
-      <div className="bg-white p-4 rounded shadow">
-        <p>This is a test page with no AI components to check if the error persists.</p>
-      </div>
-    </div>
+    <>
+      <StructuredData data={breadcrumbData} />
+      <TestMinimalAI />
+    </>
   );
 }

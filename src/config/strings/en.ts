@@ -2530,6 +2530,38 @@ export const en = {
       continueButton: "Choose Later →"
     },
 
+    // Overview Screen
+    overview: {
+      title: "Your Japanese Journey Includes:",
+      startButton: "Let's Get Started!"
+    },
+    // YouTube Shadowing Tutorial Screen
+    youtubeShadowingTutorial: {
+      title: "Practice with Real Japanese Videos! 🎬",
+      description: "Shadow native speakers to perfect your pronunciation",
+      features: {
+        extract: "📽️ Extract audio from any YouTube video",
+        transcript: "📝 Get automatic Japanese transcripts",
+        shadow: "🎯 Practice shadowing at your own pace",
+        furigana: "🔤 Toggle furigana for reading help"
+      },
+      example: "Try it with anime clips, J-pop songs, or Japanese YouTubers!",
+      continueButton: "Show Me More! →"
+    },
+    // Textbook Vocabulary Tutorial Screen
+    textbookVocabularyTutorial: {
+      title: "Master Textbook Vocabulary! 📚",
+      description: "Study words from Genki I & II and Minna no Nihongo I & II",
+      stats: "9,635 vocabulary cards with smart spaced repetition",
+      features: {
+        genki: "📘 Complete Genki I & II vocabulary",
+        minna: "📙 Full Minna no Nihongo coverage",
+        srs: "🧠 Smart spaced repetition system",
+        progress: "📊 Track your mastery level"
+      },
+      highlight: "Never forget a word again with our proven SRS algorithm!",
+      continueButton: "Almost There! →"
+    },
     // Success Screen
     success: {
       title: "おめでとう！ Welcome to the Dōshi Sensei Family!",

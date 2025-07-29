@@ -1,224 +1,30 @@
-'use client';
+import type { Metadata } from 'next';
+import DiagnoseArticlesPage from './DiagnoseArticlesPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-import { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, limit, query, doc, getDoc } from 'firebase/firestore';
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Diagnose Articles',
+  description: 'Diagnose Articles - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/diagnose-articles',
+});
 
-export default function DiagnoseArticlesPage() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [articles, setArticles] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
-  const [specificArticle, setSpecificArticle] = useState<any>(null);
-  const [articleId, setArticleId] = useState('watanoc_1751785217235_1');
-
-  useEffect(() => {
-    loadArticles();
-  }, []);
-
-  const loadArticles = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (!db) {
-        throw new Error('Firebase not initialized');
-      }
-
-      const articlesRef = collection(db, 'articles');
-      const q = query(articlesRef, limit(10));
-      const snapshot = await getDocs(q);
-
-      const articlesList: any[] = [];
-      const statsData = {
-        total: 0,
-        withContent: 0,
-        withBody: 0,
-        withText: 0,
-        withSummary: 0,
-        noContent: 0,
-        contentFields: new Set<string>()
-      };
-
-      snapshot.forEach(docSnap => {
-        statsData.total++;
-        const data = docSnap.data();
-
-        // Check which content fields exist
-        Object.keys(data).forEach(key => {
-          if (key.toLowerCase().includes('content') || 
-              key.toLowerCase().includes('body') || 
-              key.toLowerCase().includes('text')) {
-            statsData.contentFields.add(key);
-          }
-        });
-
-        const hasContent = !!data.content;
-        const hasBody = !!data.body;
-        const hasText = !!data.text;
-        const hasSummary = !!data.summary;
-
-        if (hasContent) statsData.withContent++;
-        if (hasBody) statsData.withBody++;
-        if (hasText) statsData.withText++;
-        if (hasSummary) statsData.withSummary++;
-        if (!hasContent && !hasBody && !hasText) statsData.noContent++;
-
-        articlesList.push({
-          id: docSnap.id,
-          title: data.title || 'NO TITLE',
-          fields: Object.keys(data),
-          hasContent,
-          hasBody,
-          hasText,
-          hasSummary,
-          contentLength: data.content?.length || 0,
-          bodyLength: data.body?.length || 0,
-          textLength: data.text?.length || 0,
-          summaryLength: data.summary?.length || 0,
-          sampleContent: (data.content || data.body || data.text || data.summary || '').substring(0, 100)
-        });
-      });
-
-      setArticles(articlesList);
-      setStats({
-        ...statsData,
-        contentFields: Array.from(statsData.contentFields)
-      });
-
-    } catch (err) {
-      console.error('Error loading articles:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Diagnose Articles",
+      "url": "/diagnose-articles"
     }
-  };
-
-  const loadSpecificArticle = async () => {
-    try {
-      if (!db) {
-        throw new Error('Firebase not initialized');
-      }
-
-      const articleDoc = await getDoc(doc(db, 'articles', articleId));
-
-      if (!articleDoc.exists()) {
-        setSpecificArticle({ error: 'Article not found' });
-        return;
-      }
-
-      const data = articleDoc.data();
-      setSpecificArticle({
-        id: articleId,
-        exists: true,
-        fields: Object.keys(data),
-        hasContent: !!data.content,
-        hasBody: !!data.body,
-        hasText: !!data.text,
-        hasSummary: !!data.summary,
-        contentLength: data.content?.length || 0,
-        bodyLength: data.body?.length || 0,
-        textLength: data.text?.length || 0,
-        summaryLength: data.summary?.length || 0,
-        title: data.title,
-        sampleContent: data.content?.substring(0, 200) || data.body?.substring(0, 200) || data.text?.substring(0, 200) || 'NO CONTENT',
-        fullData: data
-      });
-
-    } catch (err) {
-      console.error('Error loading specific article:', err);
-      setSpecificArticle({ error: err instanceof Error ? err.message : 'Unknown error' });
-    }
-  };
-
-  if (loading) {
-    return <div className="p-8">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="p-8 text-red-500">Error: {error}</div>;
-  }
+  ]);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Article Diagnosis</h1>
-
-      {/* Specific Article Check */}
-      <div className="mb-8 p-4 border rounded">
-        <h2 className="text-xl font-semibold mb-4">Check Specific Article</h2>
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            value={articleId}
-            onChange={(e) => setArticleId(e.target.value)}
-            className="flex-1 px-3 py-2 border rounded"
-            placeholder="Article ID"
-          />
-          <button
-            onClick={loadSpecificArticle}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Check Article
-          </button>
-        </div>
-        
-        {specificArticle && (
-          <div className="mt-4 p-4 bg-gray-100 rounded">
-            {specificArticle.error ? (
-              <p className="text-red-500">{specificArticle.error}</p>
-            ) : (
-              <>
-                <p><strong>Title:</strong> {specificArticle.title}</p>
-                <p><strong>Fields:</strong> {specificArticle.fields.join(', ')}</p>
-                <p><strong>Content:</strong> {specificArticle.hasContent ? `✅ (${specificArticle.contentLength} chars)` : '❌'}</p>
-                <p><strong>Body:</strong> {specificArticle.hasBody ? `✅ (${specificArticle.bodyLength} chars)` : '❌'}</p>
-                <p><strong>Text:</strong> {specificArticle.hasText ? `✅ (${specificArticle.textLength} chars)` : '❌'}</p>
-                <p><strong>Summary:</strong> {specificArticle.hasSummary ? `✅ (${specificArticle.summaryLength} chars)` : '❌'}</p>
-                <p className="mt-2"><strong>Sample:</strong> {specificArticle.sampleContent}</p>
-                <details className="mt-4">
-                  <summary className="cursor-pointer">Full Data (click to expand)</summary>
-                  <pre className="mt-2 p-2 bg-white rounded text-xs overflow-x-auto">
-                    {JSON.stringify(specificArticle.fullData, null, 2)}
-                  </pre>
-                </details>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Statistics */}
-      {stats && (
-        <div className="mb-8 p-4 border rounded">
-          <h2 className="text-xl font-semibold mb-4">Statistics</h2>
-          <p>Total articles checked: {stats.total}</p>
-          <p>Articles with 'content' field: {stats.withContent}</p>
-          <p>Articles with 'body' field: {stats.withBody}</p>
-          <p>Articles with 'text' field: {stats.withText}</p>
-          <p>Articles with 'summary' field: {stats.withSummary}</p>
-          <p>Articles with NO content fields: {stats.noContent}</p>
-          <p>Unique content-related fields found: {stats.contentFields.join(', ')}</p>
-        </div>
-      )}
-
-      {/* Article List */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Sample Articles</h2>
-        {articles.map((article) => (
-          <div key={article.id} className="mb-4 p-4 border rounded">
-            <h3 className="font-medium">{article.title}</h3>
-            <p className="text-sm text-gray-600">ID: {article.id}</p>
-            <p className="text-sm">
-              Content: {article.hasContent ? `✅ (${article.contentLength} chars)` : '❌'} | 
-              Body: {article.hasBody ? `✅ (${article.bodyLength} chars)` : '❌'} | 
-              Text: {article.hasText ? `✅ (${article.textLength} chars)` : '❌'} | 
-              Summary: {article.hasSummary ? `✅ (${article.summaryLength} chars)` : '❌'}
-            </p>
-            <p className="text-sm mt-1">Sample: {article.sampleContent}...</p>
-            <p className="text-xs text-gray-500 mt-1">Fields: {article.fields.join(', ')}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <>
+      <StructuredData data={breadcrumbData} />
+      <DiagnoseArticlesPage />
+    </>
   );
 }

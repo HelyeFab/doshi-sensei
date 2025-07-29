@@ -13,12 +13,12 @@
 [[forms]]
   name = "contact"
   
-# Email notifications for contact form
-[[forms.notifications]]
-  to = "queries@doshisensei.com"
-  subject = "[Doshi Sensei] New Contact Form Submission"
-  # You can also add a from address if needed
-  # from = "noreply@doshisensei.com"
+  # Email notifications for contact form
+  [[forms.notifications]]
+    to = "queries@doshisensei.com"
+    subject = "[Doshi Sensei] New Contact Form Submission"
+    # You can also add a from address if needed
+    # from = "noreply@doshisensei.com"
 
 # PWA Headers
 [[headers]]
@@ -138,10 +138,6 @@
   
   [functions."scrape-mainichi-news"]
     memory = 1024
-  
-  # Stripe webhook handler function
-  # No special configuration needed - using defaults
-  # [functions."api-stripe-webhook"]
   
   # Alternative times if you want multiple daily scrapes:
   # Morning scrape at 6 AM JST (9 PM UTC)

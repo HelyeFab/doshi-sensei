@@ -5,6 +5,10 @@ import { collection, getDocs, query, where, orderBy, limit } from 'firebase/fire
 // Function to get dynamic stories
 async function getDynamicStories(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
   try {
+    if (!db) {
+      console.log('Firestore not available during build, skipping dynamic stories');
+      return [];
+    }
     const storiesRef = collection(db, 'stories');
     const q = query(
       storiesRef,
@@ -33,6 +37,10 @@ async function getDynamicStories(): Promise<{ url: string; lastModified: Date; c
 // Function to get dynamic news articles
 async function getDynamicNews(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
   try {
+    if (!db) {
+      console.log('Firestore not available during build, skipping dynamic news');
+      return [];
+    }
     const newsRef = collection(db, 'news');
     const q = query(
       newsRef,
@@ -60,6 +68,10 @@ async function getDynamicNews(): Promise<{ url: string; lastModified: Date; chan
 // Function to get dynamic resources
 async function getDynamicResources(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
   try {
+    if (!db) {
+      console.log('Firestore not available during build, skipping dynamic resources');
+      return [];
+    }
     const resourcesRef = collection(db, 'resources');
     const q = query(
       resourcesRef,
@@ -88,6 +100,10 @@ async function getDynamicResources(): Promise<{ url: string; lastModified: Date;
 // Function to get dynamic mood boards
 async function getDynamicMoodBoards(): Promise<{ url: string; lastModified: Date; changeFrequency: any; priority: number }[]> {
   try {
+    if (!db) {
+      console.log('Firestore not available during build, skipping dynamic mood boards');
+      return [];
+    }
     const moodBoardsRef = collection(db, 'moodBoards');
     const q = query(
       moodBoardsRef,

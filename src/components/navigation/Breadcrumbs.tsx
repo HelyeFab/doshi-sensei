@@ -6,6 +6,7 @@ import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink
 import { useNavigation } from '@/contexts/NavigationContext';
 import { ChevronRight } from 'lucide-react';
 import type { NavigationEntry } from '@/types/navigation';
+import { structuredData } from '@/lib/structured-data';
 
 interface BreadcrumbsProps {
   // Maximum number of items to show (excluding current)
@@ -51,11 +52,27 @@ export function Breadcrumbs({
   
   const currentItem = stack[stack.length - 1];
   
+  // Generate structured data
+  const breadcrumbItems = [...items, currentItem].map(item => ({
+    name: item.title,
+    url: item.path
+  }));
+  const breadcrumbStructuredData = structuredData.breadcrumb(breadcrumbItems);
+  
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={`${showOnMobile ? '' : 'hidden md:block'} ${className}`}
-    >
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbStructuredData),
+        }}
+      />
+      
+      <nav
+        aria-label="Breadcrumb"
+        className={`${showOnMobile ? '' : 'hidden md:block'} ${className}`}
+      >
       <ol className="flex items-center space-x-2 text-sm">
         {items.map((item, index) => (
           <React.Fragment key={item.id}>
@@ -91,6 +108,7 @@ export function Breadcrumbs({
         </li>
       </ol>
     </nav>
+    </>
   );
 }
 

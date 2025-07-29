@@ -23,6 +23,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useRouter } from 'next/navigation';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { ExternalImage } from '@/components/ui/OptimizedImage';
 
 interface PopularVideo {
   id: string;
@@ -358,11 +359,12 @@ export default function PopularVideos() {
         {/* Thumbnail or Content Type Indicator */}
         <div className="relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 group">
           {thumbnailUrl ? (
-            <img 
+            <ExternalImage
               src={thumbnailUrl} 
               alt={video.videoTitle || 'Video thumbnail'}
               className="w-full h-full object-cover"
-              loading="lazy"
+              width={320}
+              height={180}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">

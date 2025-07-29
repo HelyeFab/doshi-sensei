@@ -30,7 +30,7 @@ const structuredData = {
   }
 };
 
-export default function MyVideos() {
+export default function MyVideosPage() {
   return (
     <>
       <StructuredData data={structuredData} />

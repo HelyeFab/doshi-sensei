@@ -247,6 +247,10 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/doshi.png" />
         <link rel="mask-icon" href="/doshi.png" color="#6366f1" />
 
+        {/* RSS Feeds */}
+        <link rel="alternate" type="application/rss+xml" title="Dōshi Sensei - Japanese News" href="/api/rss/news" />
+        <link rel="alternate" type="application/rss+xml" title="Dōshi Sensei - Japanese Stories" href="/api/rss/stories" />
+
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>
       <body

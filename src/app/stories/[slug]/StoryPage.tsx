@@ -11,6 +11,7 @@ import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { structuredData } from '@/lib/structured-data';
 
 export default function StoryPage() {
   const router = useRouter();
@@ -110,8 +111,29 @@ export default function StoryPage() {
     return null;
   }
 
+  // Generate Article structured data for story
+  const storyStructuredData = story ? structuredData.article({
+    title: story.title,
+    description: story.description || story.title,
+    publishedAt: story.publishedAt ? new Date(story.publishedAt).toISOString() : new Date().toISOString(),
+    modifiedAt: story.updatedAt ? new Date(story.updatedAt).toISOString() : 
+                story.publishedAt ? new Date(story.publishedAt).toISOString() : new Date().toISOString(),
+    author: story.author || "Dōshi Sensei AI",
+    imageUrl: story.imageUrl
+  }) : null;
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Article Schema for SEO */}
+      {storyStructuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(storyStructuredData),
+          }}
+        />
+      )}
+      
       <SmartPageHeader title={story.title} />
       <div className="max-w-4xl mx-auto px-4">
         <Breadcrumbs className="mt-4 mb-6" />

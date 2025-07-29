@@ -8,6 +8,7 @@ import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink
 import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import { pokemonManager } from '@/utils/pokemonManager';

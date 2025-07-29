@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import ReadingRoutesGameClient from './ReadingRoutesGameClient';
+import ReadingRoutesGameClient from './pageClient';
 
-export const metadata = {
-  title: '[boardId]',
-  description: '[boardId] - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+export const metadata: Metadata = {
+  title: 'Reading Routes Game',
+  description: 'Navigate through Japanese sentences in this path-finding reading game. Practice reading comprehension and sentence structure.',
   openGraph: {
-    title: '[boardId] | Doshi Sensei',
-    description: '[boardId] - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+    title: 'Reading Routes Game | Doshi Sensei',
+    description: 'Navigate through Japanese sentences in this path-finding reading game. Practice reading comprehension and sentence structure.',
   },
 };
 

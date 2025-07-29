@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import KanjiSimonGameClient from './KanjiSimonGameClient';
+import KanjiSimonGameClient from './pageClient';
 
-export const metadata = {
-  title: '[boardId]',
-  description: '[boardId] - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+export const metadata: Metadata = {
+  title: 'Kanji Simon Game',
+  description: 'Test your memory with the Kanji Simon memory game. Practice kanji recognition and memory skills in this fun interactive game.',
   openGraph: {
-    title: '[boardId] | Doshi Sensei',
-    description: '[boardId] - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+    title: 'Kanji Simon Game | Doshi Sensei',
+    description: 'Test your memory with the Kanji Simon memory game. Practice kanji recognition and memory skills in this fun interactive game.',
   },
 };
 

@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import EditResourceClient from './EditResourceClient';
+import EditResourceClient from './pageClient';
 
-export const metadata = {
-  title: 'Edit',
-  description: 'Edit - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+export const metadata: Metadata = {
+  title: 'Edit Resource',
+  description: 'Edit learning resource content and settings.',
   openGraph: {
-    title: 'Edit | Doshi Sensei',
-    description: 'Edit - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+    title: 'Edit Resource | Doshi Sensei Admin',
+    description: 'Edit learning resource content and settings.',
   },
 };
 

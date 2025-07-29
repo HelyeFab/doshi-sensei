@@ -1,8 +1,5 @@
 'use client';
 
-
-'use client';
-
 import { useParams, useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { MoodBoardEditor } from '@/components/admin/mood-boards/MoodBoardEditor';

@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import ArticleClient from './ArticleClient';
+import ArticleClient from './pageClient';
 
-export const metadata = {
-  title: '[id]',
-  description: '[id] - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+export const metadata: Metadata = {
+  title: 'Article',
+  description: 'Read Japanese news articles with interactive features. Practice reading comprehension with real news content.',
   openGraph: {
-    title: '[id] | Doshi Sensei',
-    description: '[id] - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+    title: 'Japanese News Article | Doshi Sensei',
+    description: 'Read Japanese news articles with interactive features. Practice reading comprehension with real news content.',
   },
 };
 

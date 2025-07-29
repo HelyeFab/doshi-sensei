@@ -727,6 +727,12 @@ export default function FlashcardReviewClient() {
     }
   };
 
+  // Review screen
+  const currentCard = cards[currentCardIndex];
+  const isSessionComplete = currentCardIndex >= cards.length;
+  const progress = ((currentCardIndex + (showAnswer ? 1 : 0)) / cards.length) * 100;
+  const totalTimeSpent = Date.now() - sessionStats.startTime;
+
   if (!sessionStarted) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -1012,13 +1018,8 @@ export default function FlashcardReviewClient() {
       </div>
     );
   }
-
-  // Review screen
-  const currentCard = cards[currentCardIndex];
-  const isSessionComplete = currentCardIndex >= cards.length;
-  const progress = ((currentCardIndex + (showAnswer ? 1 : 0)) / cards.length) * 100;
-  const totalTimeSpent = Date.now() - sessionStats.startTime;
-
+  
+  // Main return for when session is started
   return (
     <div className="min-h-screen bg-gray-50">
       <SmartPageHeader title="Flashcard Review" backHref="/drill" />
@@ -1141,14 +1142,6 @@ export default function FlashcardReviewClient() {
             loadUserLists();
             console.log('Reloading lists after Anki import...');
 
-export const metadata = {
-  title: 'Flashcards',
-  description: 'Flashcards - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  openGraph: {
-    title: 'Flashcards | Doshi Sensei',
-    description: 'Flashcards - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  },
-};
           }}
         />
       )}

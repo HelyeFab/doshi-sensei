@@ -38,6 +38,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if this is an admin-created subscription
+    if (subscriptionId.startsWith('admin_')) {
+      console.log('Admin-created subscription detected, handling differently');
+      
+      const db = admin.firestore();
+      
+      // Update the user's subscription to 'canceled' status
+      await db.collection('users').doc(decodedToken.uid).update({
+        'subscription.status': 'canceled',
+        'subscription.cancelAtPeriodEnd': true,
+        'subscription.plan': 'free',
+        'limits': {
+          maxLists: 3,
+          maxDrillsPerDay: 3,
+          maxKanjiQuestPerDay: 3,
+          maxStoriesPerDay: 1,
+          maxArticlesPerDay: 3,
+          maxKanaDropPerDay: 3,
+          canSync: false,
+          canSave: true
+        }
+      });
+      
+      return NextResponse.json({
+        success: true,
+        subscription: {
+          id: subscriptionId,
+          cancel_at_period_end: true,
+        }
+      });
+    }
+
     // Rate limiting - use user ID as identifier
     if (!apiRateLimiter.isAllowed(decodedToken.uid)) {
       return NextResponse.json(

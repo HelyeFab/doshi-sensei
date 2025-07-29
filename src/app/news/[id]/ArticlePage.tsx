@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { structuredData } from '@/lib/structured-data';
 
 export default function ArticlePage() {
     const router = useRouter();
@@ -106,8 +107,28 @@ export default function ArticlePage() {
         return null;
     }
 
+    // Generate Article structured data
+    const articleStructuredData = article ? structuredData.article({
+        title: article.title,
+        description: article.content?.substring(0, 160) + '...' || article.title,
+        publishedAt: article.date ? new Date(article.date).toISOString() : new Date().toISOString(),
+        modifiedAt: article.date ? new Date(article.date).toISOString() : new Date().toISOString(),
+        author: "NHK News Web Easy",
+        imageUrl: article.imageUrl
+    }) : null;
+
     return (
         <div className="min-h-screen bg-background">
+            {/* Article Schema for SEO */}
+            {articleStructuredData && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(articleStructuredData),
+                    }}
+                />
+            )}
+            
             <SmartPageHeader title={article.title} />
             <ArticleReader
                 article={article}

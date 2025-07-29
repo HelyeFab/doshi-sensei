@@ -22,6 +22,46 @@ const practiceStructuredData = {
   "learningResourceType": "Interactive Practice"
 };
 
+// FAQ Schema for Practice Page
+const practiceFAQData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What can I practice on this page?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can practice hiragana and katakana charts with pronunciation guides, verb and adjective conjugations with detailed explanations, and access interactive flashcard drills for vocabulary practice."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the practice content suitable for beginners?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Our practice tools are designed for all levels. Beginners can start with hiragana and katakana charts, while intermediate and advanced learners can focus on complex verb conjugations and vocabulary drills."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do the conjugation exercises work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our conjugation practice shows you all forms of Japanese verbs and adjectives including present, past, negative, polite, and special forms like passive and causative. Each form includes detailed explanations and examples."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I practice offline?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, many of our practice tools work offline once loaded. The app uses progressive web app technology to cache content for offline use."
+      }
+    }
+  ]
+};
+
 export default function PracticePage() {
   const strings = useStrings();
   const [activeTab, setActiveTab] = useState<'hiragana' | 'katakana'>('hiragana');
@@ -63,6 +103,12 @@ export default function PracticePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(practiceStructuredData),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(practiceFAQData),
         }}
       />
 

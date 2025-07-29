@@ -22,6 +22,54 @@ import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 // Add JMdict search utility import (to be implemented)
 import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
 
+// FAQ Schema for Vocabulary Page
+const vocabularyFAQData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does the vocabulary search work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can search for Japanese words using kanji, hiragana, katakana, or English meanings. The search supports both WaniKani integration and our comprehensive JMdict dictionary with over 180,000 entries."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I save words to study lists?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! You can create custom study lists and save words for later review. Premium users get unlimited lists while free users can create up to 3 lists with 100 words each."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What information is shown for each word?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Each word entry shows kanji writing, hiragana reading, pitch accent, meanings, JLPT level, word type, example sentences, and for kanji - stroke order animations and detailed breakdowns."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I hear the pronunciation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, click the speaker icon next to any word to hear native Japanese pronunciation using advanced text-to-speech technology."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work offline?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The JMdict search works completely offline once loaded, allowing you to search vocabulary without an internet connection. WaniKani search requires internet."
+      }
+    }
+  ]
+};
+
 export default function VocabularyPage() {
   const { user } = useAuth();
   const { subscription, userType } = useSubscription2();
@@ -316,6 +364,14 @@ export default function VocabularyPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* FAQ Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(vocabularyFAQData),
+        }}
+      />
+      
       <SmartPageHeader title="Vocabulary" />
       
       {/* Main Content */}

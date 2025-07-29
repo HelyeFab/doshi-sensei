@@ -15,6 +15,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import Link from 'next/link';
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { ExternalImage } from '@/components/ui/OptimizedImage';
 
 export default function StoriesPage() {
   const router = useRouter();
@@ -254,10 +255,12 @@ export default function StoriesPage() {
                     {/* Cover Image */}
                     <div className="relative h-48 bg-gradient-to-br from-primary/20 to-secondary/20">
                       {story.coverImageUrl ? (
-                        <img
+                        <ExternalImage
                           src={story.coverImageUrl}
                           alt={story.title}
                           className="w-full h-full object-cover"
+                          width={320}
+                          height={192}
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">

@@ -11,6 +11,7 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { getResourceColorTheme, getResourceIcon, getCategoryEmoji } from '@/utils/resourceVisuals';
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { ExternalImage } from '@/components/ui/OptimizedImage';
 
 export default function ResourcesPage() {
   const searchParams = useSearchParams();
@@ -260,10 +261,12 @@ export default function ResourcesPage() {
                     >
                       {resource.imageUrl ? (
                         <div className="relative h-48 overflow-hidden">
-                          <img
+                          <ExternalImage
                             src={resource.imageUrl}
                             alt={resource.imageAlt || resource.title}
                             className="w-full h-full object-cover"
+                            width={384}
+                            height={192}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 

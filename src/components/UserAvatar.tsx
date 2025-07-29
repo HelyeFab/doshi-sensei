@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 import VirtualCompanion from '@/components/VirtualCompanion';
+import { ExternalImage } from '@/components/ui/OptimizedImage';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -37,11 +38,13 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
   }
 
   const avatarElement = profilePicture ? (
-    <img
+    <ExternalImage
       src={profilePicture}
       alt={profile?.displayName || profile?.email || 'User avatar'}
       className={`${sizeClasses[size]} rounded-full object-cover ${clickable ? 'hover:opacity-90 transition-opacity' : ''} ${className}`}
       style={showBorder ? { boxShadow: '0 0 0 2px white, 0 0 0 4px var(--primary), 0 4px 12px rgba(0,0,0,0.15)' } : {}}
+      width={size === 'sm' ? 32 : size === 'md' ? 48 : size === 'lg' ? 64 : 80}
+      height={size === 'sm' ? 32 : size === 'md' ? 48 : size === 'lg' ? 64 : 80}
     />
   ) : (
     <div

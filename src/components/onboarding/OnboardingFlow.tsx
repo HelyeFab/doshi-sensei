@@ -86,7 +86,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col bg-background">
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto bg-gradient-to-br from-primary/30 via-primary/15 to-background">
+      <div className="flex-1 overflow-y-auto bg-primary">
         <div className="min-h-full flex flex-col px-6 py-8 items-center justify-center text-center">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div

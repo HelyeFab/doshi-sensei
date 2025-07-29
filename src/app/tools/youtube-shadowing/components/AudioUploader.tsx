@@ -71,10 +71,10 @@ export default function AudioUploader({ onAudioReady }: AudioUploaderProps) {
       </h3>
 
       {/* Mode Selector */}
-      <div className="flex gap-2 mb-4">
+      <div className="grid grid-cols-1 gap-2 mb-4">
         <button
           onClick={() => setMode('url')}
-          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+          className={`w-full py-3 px-4 rounded-lg text-sm font-medium transition-colors ${
             mode === 'url'
               ? 'bg-primary text-primary-foreground'
               : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -85,7 +85,7 @@ export default function AudioUploader({ onAudioReady }: AudioUploaderProps) {
         </button>
         <button
           onClick={() => setMode('file')}
-          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+          className={`w-full py-3 px-4 rounded-lg text-sm font-medium transition-colors ${
             mode === 'file'
               ? 'bg-primary text-primary-foreground'
               : 'bg-muted text-muted-foreground hover:bg-muted/80'

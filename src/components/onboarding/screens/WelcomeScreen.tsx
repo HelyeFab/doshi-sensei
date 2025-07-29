@@ -25,31 +25,31 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
 
       {/* Main Content */}
       <div className="space-y-4 max-w-2xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+        <h1 className="text-4xl md:text-5xl font-bold text-white">
           {tutorial.welcome.title}
         </h1>
-        <p className="text-xl text-foreground/80 leading-relaxed">
+        <p className="text-xl text-white/90 leading-relaxed">
           {tutorial.welcome.description}
         </p>
-        <p className="text-xl font-semibold text-primary">
+        <p className="text-xl font-semibold text-white">
           {tutorial.welcome.emphasis}
         </p>
       </div>
 
       {/* Features List */}
       <div className="space-y-3 max-w-2xl mx-auto">
-        <h3 className="text-lg font-semibold text-foreground">
+        <h3 className="text-lg font-semibold text-white">
           {tutorial.welcome.features.header}
         </h3>
-        <div className="bg-gradient-to-br from-background to-background/80 border border-primary/20 rounded-lg p-4 space-y-2 text-left max-w-md mx-auto shadow-lg">
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.conjugations}</div>
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.vocabulary}</div>
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.textbookVocab}</div>
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.games}</div>
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.reading}</div>
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.kanji}</div>
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.tracking}</div>
-          <div className="text-sm text-foreground/90">{tutorial.welcome.features.youtubeShadowing}</div>
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 space-y-2 text-left max-w-md mx-auto shadow-lg">
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.conjugations}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.vocabulary}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.textbookVocab}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.games}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.reading}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.kanji}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.tracking}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.youtubeShadowing}</div>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
       </TutorialButton>
 
       {/* Footer */}
-      <p className="text-xs text-foreground/60 italic">
+      <p className="text-xs text-white/70 italic">
         {tutorial.welcome.footer}
       </p>
     </div>

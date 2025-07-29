@@ -1,83 +1,41 @@
-import { Metadata } from 'next';
-import GamesClient from './GamesClient';
+import type { Metadata } from 'next';
+import GamesPage from './GamesPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Japanese Learning Games',
-  description: 'Play fun and interactive games to practice Japanese. Master kanji with memory games, practice stroke order, navigate reading challenges, and more. Learn Japanese through engaging gameplay.',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Japanese Learning Games - Kanji, Vocabulary & More',
+  description: 'Learn Japanese through engaging games: Kanji Simon Says, Reading Routes, stroke order practice, vocabulary matching, and more. Features content from Genki, Minna no Nihongo, and JLPT levels.',
   keywords: [
-    'Japanese learning games',
-    'kanji games',
-    'Japanese vocabulary games',
-    'stroke order practice',
-    'Japanese memory games',
-    'reading practice games',
-    'interactive Japanese learning',
-    'gamified language learning',
-    'Japanese educational games',
-    'kanji simon',
-    'reading routes game',
-    'fun Japanese practice'
+    "Japanese games",
+    "kanji games",
+    "vocabulary games",
+    "learning games",
+    "Kanji Simon",
+    "Reading Routes",
+    "stroke order game",
+    "educational games"
   ],
-  openGraph: {
-    title: 'Japanese Learning Games | Doshi Sensei',
-    description: 'Play fun and interactive games to practice Japanese. Master kanji, vocabulary, and reading through engaging gameplay.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Japanese Learning Games | Doshi Sensei',
-    description: 'Play fun and interactive games to practice Japanese. Master kanji, vocabulary, and reading through engaging gameplay.',
-  },
-  alternates: {
-    canonical: '/games',
-  },
-};
+  path: '/games',
+  image: '/og-images/og-games.png'
+});
 
-const gamesStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "Japanese Learning Games - Doshi Sensei",
-  "description": "A collection of interactive games for practicing Japanese kanji, vocabulary, reading, and writing skills.",
-  "url": "https://doshisensei.com/games",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "name": "Doshi Sensei"
-  },
-  "hasPart": [
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
     {
-      "@type": "Game",
-      "name": "Kanji Simon",
-      "description": "Memory game for learning kanji",
-      "gamePlatform": "Web",
-      "learningResourceType": "Interactive Game"
+      "name": "Home",
+      "url": "/"
     },
     {
-      "@type": "Game",
-      "name": "Reading Routes",
-      "description": "Navigate through Japanese text",
-      "gamePlatform": "Web",
-      "learningResourceType": "Interactive Game"
-    },
-    {
-      "@type": "Game",
-      "name": "Stroke Order Practice",
-      "description": "Learn correct kanji stroke order",
-      "gamePlatform": "Web",
-      "learningResourceType": "Interactive Game"
+      "name": "Games",
+      "url": "/games"
     }
-  ]
-};
+  ]);
 
-export default function GamesPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(gamesStructuredData),
-        }}
-      />
-      <GamesClient />
+      <StructuredData data={breadcrumbData} />
+      <GamesPage />
     </>
   );
 }

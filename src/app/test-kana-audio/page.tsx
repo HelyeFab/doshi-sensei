@@ -1,43 +1,29 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import TestKanaAudio from './TestKanaAudio';
-import StructuredData from '@/components/StructuredData';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Kana Audio Test | Doshi Sensei',
-  description: 'Kana Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Kana Audio Test | Doshi Sensei',
-    description: 'Kana Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/test-kana-audio',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Kana Audio Test | Doshi Sensei',
-    description: 'Kana Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Kana Audio',
+  description: 'Test Kana Audio - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-kana-audio',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Kana Audio Test - Doshi Sensei",
-  "description": "Kana Audio Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/test-kana-audio",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Kana Audio",
+      "url": "/test-kana-audio"
+    }
+  ]);
 
-export default function TestKanaAudioPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
+      <StructuredData data={breadcrumbData} />
       <TestKanaAudio />
     </>
   );

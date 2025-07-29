@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import SettingsClient from './SettingsClient';
+import type { Metadata } from 'next';
+import SettingsPage from './SettingsPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Settings - Customize Your Japanese Learning Experience',
-  description: 'Configure your Doshi Sensei app settings including theme, language, navigation, study preferences, and data synchronization options.',
-  keywords: [
-    'Japanese learning settings',
-    'app customization',
-    'theme settings',
-    'language preferences',
-    'navigation configuration',
-    'study settings',
-    'data sync',
-    'cache management',
-    'daily goals',
-    'app preferences'
-  ],
-  openGraph: {
-    title: 'Settings | Doshi Sensei',
-    description: 'Customize your Japanese learning experience with personalized settings and preferences.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Settings | Doshi Sensei',
-    description: 'Customize your Japanese learning experience with personalized settings and preferences.',
-  },
-  robots: {
-    index: false, // Settings pages shouldn't be indexed
-    follow: false,
-  },
-  alternates: {
-    canonical: '/settings',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Settings',
+  description: 'Manage your Dōshi Sensei settings, preferences, learning goals, and study options',
+  path: '/settings',
+});
 
-export default function SettingsPage() {
-  return <SettingsClient />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Settings",
+      "url": "/settings"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <SettingsPage />
+    </>
+  );
 }

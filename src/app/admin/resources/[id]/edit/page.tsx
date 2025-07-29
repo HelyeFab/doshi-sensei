@@ -1,15 +1,30 @@
-import { Metadata } from 'next';
-import EditResourceClient from './pageClient';
+import type { Metadata } from 'next';
+import EditResourcePage from './EditResourcePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Edit Resource',
-  description: 'Edit learning resource content and settings.',
-  openGraph: {
-    title: 'Edit Resource | Doshi Sensei Admin',
-    description: 'Edit learning resource content and settings.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Edit',
+  description: 'Edit - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/resources/[id]/edit',
+});
 
-export default function EditResourcePage(props: any) {
-  return <EditResourceClient {...props} />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Edit",
+      "url": "/edit"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <EditResourcePage />
+    </>
+  );
 }

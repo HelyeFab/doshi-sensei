@@ -1,69 +1,40 @@
-import { Metadata } from 'next';
-import NewsClient from './NewsClient';
+import type { Metadata } from 'next';
+import NewsPage from './NewsPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Japanese News Reading Practice',
-  description: 'Read real Japanese news articles adapted for language learners. Practice reading comprehension with articles categorized by difficulty level and topic. Improve your Japanese through current events.',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Japanese News Reader - NHK News with Furigana',
+  description: 'Read real Japanese news from NHK with automatic furigana, vocabulary lookup, and grammar explanations. Perfect for intermediate learners to improve reading comprehension with current events.',
   keywords: [
-    'Japanese news',
-    'Japanese reading practice',
-    'Japanese current events',
-    'NHK news Japanese',
-    'Japanese articles',
-    'reading comprehension',
-    'Japanese news for learners',
-    'beginner Japanese news',
-    'intermediate Japanese news',
-    'advanced Japanese news',
-    'Japanese news with furigana',
-    'Japanese news translation',
-    'daily Japanese practice'
+    "Japanese news",
+    "NHK news",
+    "Japanese reading",
+    "news with furigana",
+    "reading comprehension",
+    "current events Japanese",
+    "Japanese articles"
   ],
-  openGraph: {
-    title: 'Japanese News Reading Practice | Doshi Sensei',
-    description: 'Read real Japanese news articles adapted for language learners. Practice reading comprehension with current events.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Japanese News Reading Practice | Doshi Sensei',
-    description: 'Read real Japanese news articles adapted for language learners. Practice reading comprehension with current events.',
-  },
-  alternates: {
-    canonical: '/news',
-  },
-};
+  path: '/news',
+  image: '/og-images/og-news.png'
+});
 
-const newsStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "Japanese News Reading Practice - Doshi Sensei",
-  "description": "A collection of Japanese news articles adapted for language learners at different levels.",
-  "url": "https://doshisensei.com/news",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "name": "Doshi Sensei"
-  },
-  "about": {
-    "@type": "Thing",
-    "name": "Japanese Language News",
-    "description": "Current events and news articles in Japanese for language learning"
-  },
-  "educationalLevel": ["Beginner", "Intermediate", "Advanced"],
-  "learningResourceType": "News Articles",
-  "inLanguage": ["ja", "en"]
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "News",
+      "url": "/news"
+    }
+  ]);
 
-export default function NewsPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(newsStructuredData),
-        }}
-      />
-      <NewsClient />
+      <StructuredData data={breadcrumbData} />
+      <NewsPage />
     </>
   );
 }

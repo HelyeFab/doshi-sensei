@@ -1,15 +1,30 @@
-import { Metadata } from 'next';
-import EditMoodBoardClient from './pageClient';
+import type { Metadata } from 'next';
+import EditMoodBoardPage from './EditMoodBoardPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Edit Mood Board',
-  description: 'Edit kanji mood board settings and content.',
-  openGraph: {
-    title: 'Edit Mood Board | Doshi Sensei Admin',
-    description: 'Edit kanji mood board settings and content.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Edit',
+  description: 'Edit - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/mood-boards/[id]/edit',
+});
 
-export default function EditMoodBoardPage(props: any) {
-  return <EditMoodBoardClient {...props} />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Edit",
+      "url": "/edit"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <EditMoodBoardPage />
+    </>
+  );
 }

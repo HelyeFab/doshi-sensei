@@ -9,8 +9,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+<<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'next/navigation';
+=======
+>>>>>>> SEO-v-3
 import YouTubeInput from './components/YouTubeInput';
 import AudioExtractor from './components/AudioExtractor';
 import TranscriptDisplay from './components/TranscriptDisplay';
@@ -21,8 +24,11 @@ import EnhancedShadowingPlayer from './components/EnhancedShadowingPlayer';
 import AudioUploader from './components/AudioUploader';
 import VideoUploader from './components/VideoUploader';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
+<<<<<<< HEAD
 import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
 import { PracticeHistoryItem } from '@/services/practiceHistory/types';
+=======
+>>>>>>> SEO-v-3
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -66,8 +72,11 @@ export default function YouTubeShadowing() {
   const { checkAndTrack } = useAccess();
   const { feature, access, remaining } = useFeature('youtube_shadowing');
   const { isPremium, userType } = useSubscription2();
+<<<<<<< HEAD
   const { user } = useAuth();
   const searchParams = useSearchParams();
+=======
+>>>>>>> SEO-v-3
   const [session, setSession] = useState<ShadowingSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,8 +84,11 @@ export default function YouTubeShadowing() {
   const [showGrammar, setShowGrammar] = useState(false);
   const [showShadowingMode, setShowShadowingMode] = useState(true);
   const previousUrlsRef = useRef<{ videoUrl?: string; audioUrl?: string }>({});
+<<<<<<< HEAD
   const [practiceStartTime, setPracticeStartTime] = useState<Date | null>(null);
   const [urlFromParams, setUrlFromParams] = useState<string | null>(null);
+=======
+>>>>>>> SEO-v-3
 
   // Extract video ID from YouTube URL
   const extractVideoId = (url: string): string | null => {
@@ -100,6 +112,7 @@ export default function YouTubeShadowing() {
     return id ? `youtu.be/${id}` : url;
   };
 
+<<<<<<< HEAD
   // Initialize practice history service
   useEffect(() => {
     if (user) {
@@ -131,6 +144,11 @@ export default function YouTubeShadowing() {
         trackPracticeSession();
       }
       
+=======
+  // Cleanup blob URLs when component unmounts or session changes
+  useEffect(() => {
+    return () => {
+>>>>>>> SEO-v-3
       // Cleanup any previous blob URLs
       if (previousUrlsRef.current.videoUrl?.startsWith('blob:')) {
         URL.revokeObjectURL(previousUrlsRef.current.videoUrl);
@@ -199,7 +217,11 @@ export default function YouTubeShadowing() {
     }
   };
 
+<<<<<<< HEAD
   const handleTranscriptLoaded = async (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => {
+=======
+  const handleTranscriptLoaded = (transcript: TranscriptLine[], videoTitle?: string, videoMetadata?: any) => {
+>>>>>>> SEO-v-3
     if (session) {
       updateSession({
         ...session,
@@ -207,6 +229,7 @@ export default function YouTubeShadowing() {
         ...(videoTitle && { videoTitle }),
         ...(videoMetadata && { videoMetadata })
       });
+<<<<<<< HEAD
       
       // Start tracking practice session
       setPracticeStartTime(new Date());
@@ -267,6 +290,8 @@ export default function YouTubeShadowing() {
       }
     } catch (error) {
       console.error('Failed to track practice session:', error);
+=======
+>>>>>>> SEO-v-3
     }
   };
 
@@ -313,7 +338,11 @@ export default function YouTubeShadowing() {
         <div className="px-4 mb-4">
           <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
             <p className="text-sm text-amber-800 dark:text-amber-200">
+<<<<<<< HEAD
               Sign up for free to access YouTube shadowing (1 use per day) or upgrade to premium for 10 uses per day.
+=======
+              Sign in to start practicing with YouTube shadowing and save your progress.
+>>>>>>> SEO-v-3
             </p>
           </div>
         </div>
@@ -354,6 +383,7 @@ export default function YouTubeShadowing() {
                 </div>
               </motion.div>
 
+<<<<<<< HEAD
               {/* Quick Access Buttons */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {/* Popular Videos Button */}
@@ -414,6 +444,36 @@ export default function YouTubeShadowing() {
                   </motion.div>
                 )}
               </div>
+=======
+              {/* Popular Videos Button */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15 }}
+                className="mb-6"
+              >
+                <SmartNavigationLink
+                  href="/popular-videos"
+                  className="block w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+                  title="Browse Popular Videos"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-4xl">🔥</div>
+                      <div>
+                        <h3 className="text-xl font-bold mb-1">Most Popular Videos</h3>
+                        <p className="text-white/80 text-sm">
+                          Skip the wait! Practice with videos already transcribed by the community
+                        </p>
+                      </div>
+                    </div>
+                    <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </SmartNavigationLink>
+              </motion.div>
+>>>>>>> SEO-v-3
 
               {/* Input Section */}
               <motion.div
@@ -654,11 +714,14 @@ export default function YouTubeShadowing() {
                     audioUrl={session.audioUrl}
                     fileInfo={session.fileInfo}
                     onTranscriptLoaded={handleTranscriptLoaded}
+<<<<<<< HEAD
                     onGoBack={() => {
                       // Reset session to go back to URL input
                       updateSession(null);
                       setError(null);
                     }}
+=======
+>>>>>>> SEO-v-3
                   />
                 </motion.div>
               )}

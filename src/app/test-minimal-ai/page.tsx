@@ -1,43 +1,29 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import TestMinimalAI from './TestMinimalAI';
-import StructuredData from '@/components/StructuredData';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Minimal AI Test | Doshi Sensei',
-  description: 'Minimal AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Minimal AI Test | Doshi Sensei',
-    description: 'Minimal AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/test-minimal-ai',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Minimal AI Test | Doshi Sensei',
-    description: 'Minimal AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Minimal Ai',
+  description: 'Test Minimal Ai - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-minimal-ai',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Minimal AI Test - Doshi Sensei",
-  "description": "Minimal AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/test-minimal-ai",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Minimal Ai",
+      "url": "/test-minimal-ai"
+    }
+  ]);
 
-export default function TestMinimalAIPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
+      <StructuredData data={breadcrumbData} />
       <TestMinimalAI />
     </>
   );

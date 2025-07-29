@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import AchievementsTestClient from './AchievementsTestClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import AchievementsTestPage from './AchievementsTestPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Achievements Test | Doshi Sensei',
-  description: 'Achievements Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Achievements Test | Doshi Sensei',
-    description: 'Achievements Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/achievements-test',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Achievements Test | Doshi Sensei',
-    description: 'Achievements Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Achievements Test',
+  description: 'Achievements Test - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/achievements-test',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Achievements Test - Doshi Sensei",
-  "description": "Achievements Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/achievements-test",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Achievements Test",
+      "url": "/achievements-test"
+    }
+  ]);
 
-export default function AchievementsTestPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <AchievementsTestClient />
+      <StructuredData data={breadcrumbData} />
+      <AchievementsTestPage />
     </>
   );
 }

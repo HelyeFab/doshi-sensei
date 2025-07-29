@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import NewStoryClient from './NewStoryClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import NewStoryPage from './NewStoryPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'New | Doshi Sensei',
-  description: 'New - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'New | Doshi Sensei',
-    description: 'New - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/admin/stories/new',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'New | Doshi Sensei',
-    description: 'New - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'New',
+  description: 'New - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/stories/new',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "New - Doshi Sensei",
-  "description": "New - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/admin/stories/new",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "New",
+      "url": "/new"
+    }
+  ]);
 
-export default function NewStoryPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <NewStoryClient />
+      <StructuredData data={breadcrumbData} />
+      <NewStoryPage />
     </>
   );
 }

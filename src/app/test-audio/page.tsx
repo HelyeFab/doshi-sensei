@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import TestAudioClient from './TestAudioClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import TestAudioPage from './TestAudioPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Audio Test | Doshi Sensei',
-  description: 'Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Audio Test | Doshi Sensei',
-    description: 'Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/test-audio',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Audio Test | Doshi Sensei',
-    description: 'Audio Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Audio',
+  description: 'Test Audio - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-audio',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Audio Test - Doshi Sensei",
-  "description": "Audio Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/test-audio",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Audio",
+      "url": "/test-audio"
+    }
+  ]);
 
-export default function TestAudioPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <TestAudioClient />
+      <StructuredData data={breadcrumbData} />
+      <TestAudioPage />
     </>
   );
 }

@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import ThreePillarIntegrationTestClient from './ThreePillarIntegrationTestClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import ThreePillarIntegrationTestPage from './ThreePillarIntegrationTestPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Three Pillar Integration Test | Doshi Sensei',
-  description: 'Three Pillar Integration Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Three Pillar Integration Test | Doshi Sensei',
-    description: 'Three Pillar Integration Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/test-three-pillar-integration',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Three Pillar Integration Test | Doshi Sensei',
-    description: 'Three Pillar Integration Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Three Pillar Integration',
+  description: 'Test Three Pillar Integration - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-three-pillar-integration',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Three Pillar Integration Test - Doshi Sensei",
-  "description": "Three Pillar Integration Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/test-three-pillar-integration",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Three Pillar Integration",
+      "url": "/test-three-pillar-integration"
+    }
+  ]);
 
-export default function ThreePillarIntegrationTestPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <ThreePillarIntegrationTestClient />
+      <StructuredData data={breadcrumbData} />
+      <ThreePillarIntegrationTestPage />
     </>
   );
 }

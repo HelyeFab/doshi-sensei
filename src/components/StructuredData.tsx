@@ -1,5 +1,6 @@
 'use client';
 
+<<<<<<< HEAD
 import { useEffect, useState } from 'react';
 
 interface StructuredDataProps {
@@ -16,6 +17,13 @@ export default function StructuredData({ data }: StructuredDataProps) {
   // Only render on client after mount to avoid hydration issues
   if (!mounted) return null;
 
+=======
+interface StructuredDataProps {
+  data: any;
+}
+
+export function StructuredData({ data }: StructuredDataProps) {
+>>>>>>> SEO-v-3
   return (
     <script
       type="application/ld+json"

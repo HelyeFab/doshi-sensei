@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import SnakeDemoClient from './SnakeDemoClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import SnakeDemoPage from './SnakeDemoPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Snake Demo | Doshi Sensei',
-  description: 'Snake Demo - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Snake Demo | Doshi Sensei',
-    description: 'Snake Demo - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/practice/snake-demo',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Snake Demo | Doshi Sensei',
-    description: 'Snake Demo - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Snake Demo',
+  description: 'Snake Demo - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/practice/snake-demo',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Snake Demo - Doshi Sensei",
-  "description": "Snake Demo - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/practice/snake-demo",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Snake Demo",
+      "url": "/snake-demo"
+    }
+  ]);
 
-export default function SnakeDemoPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <SnakeDemoClient />
+      <StructuredData data={breadcrumbData} />
+      <SnakeDemoPage />
     </>
   );
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { JapaneseWord, ConjugationForms } from '@/types';
 import { ConjugationEngine } from '@/utils/conjugation';
-import { cn } from '@/lib/utils';
 
 export interface AnimatedWordProps {
   word: JapaneseWord;
@@ -52,14 +51,14 @@ export function AnimatedWord({ word, onAnimationComplete, className }: AnimatedW
   };
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={`space-y-4 ${className || ''}`}>
       {/* Input Word */}
       <div className="text-center">
         <div className="inline-block bg-blue-500/20 border border-blue-500/40 rounded-lg p-4">
-          <div className="text-2xl font-bold text-blue-400 japanese-text">
+          <div className="text-2xl font-bold text-blue-400">
             {word.kanji}
           </div>
-          <div className="text-sm text-white/90">
+          <div className="text-sm text-foreground/90">
             {word.kana} - "{word.meaning}"
           </div>
         </div>
@@ -90,13 +89,16 @@ export function AnimatedWord({ word, onAnimationComplete, className }: AnimatedW
             return (
               <div
                 key={form}
-                className="bg-green-500/20 border border-green-500/40 rounded p-3 text-center animate-slideIn"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="bg-green-500/20 border border-green-500/40 rounded p-3 text-center"
+                style={{ 
+                  animation: 'slideIn 0.3s ease-out forwards',
+                  animationDelay: `${index * 0.1}s` 
+                }}
               >
                 <div className="text-sm text-green-400 font-medium">
                   {getFormLabel(formKey)}
                 </div>
-                <div className="japanese-text text-lg font-bold text-foreground">
+                <div className="text-lg font-bold text-foreground">
                   {conjugatedForm}
                 </div>
               </div>

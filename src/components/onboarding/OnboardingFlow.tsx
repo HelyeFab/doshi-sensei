@@ -1,14 +1,9 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { useOnboardingState } from './hooks/useOnboardingState';
-import { cn } from '@/lib/utils';
 import { NavigationBar } from './components/NavigationBar';
-
-// Import all screens
 import { WelcomeScreen } from './screens/WelcomeScreen';
-import { OverviewScreen } from './screens/OverviewScreen';
 import { ConjugationScreen } from './screens/ConjugationScreen';
 import { YouTubeShadowingScreen } from './screens/YouTubeShadowingScreen';
 import { TextbookVocabularyScreen } from './screens/TextbookVocabularyScreen';
@@ -19,187 +14,111 @@ export interface OnboardingFlowProps {
 }
 
 export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
-  const {
-    state,
-    nextScreen,
-    previousScreen,
-    skipToScreen,
-    completeOnboarding,
-    markAsSeen,
-    trackDropOff,
-  } = useOnboardingState();
-
+  const [currentScreen, setCurrentScreen] = useState(0);
   const [direction, setDirection] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const totalScreens = 5;
 
-  // Track initial screen view
-  useEffect(() => {
-    if (state.isActive) {
-      // Track screen view
-    }
-  }, [state.isActive, state.currentScreen]);
+  const screens = [
+    <WelcomeScreen key="welcome" onNext={() => goToScreen(1)} />,
+    <ConjugationScreen key="conjugation" onNext={() => goToScreen(2)} />,
+    <YouTubeShadowingScreen key="youtube" onNext={() => goToScreen(3)} />,
+    <TextbookVocabularyScreen key="textbook" onNext={() => goToScreen(4)} />,
+    <SuccessScreen key="success" onComplete={onComplete} onBack={() => goToScreen(3)} />,
+  ];
 
-  const handleComplete = () => {
-    completeOnboarding();
-    onComplete();
-  };
-
-  const handleSkip = () => {
-    // Skip to the last screen (success screen)
-    setDirection(1);
-    skipToScreen(5); // Index of the last screen (SuccessScreen)
+  const goToScreen = (screenIndex: number) => {
+    setDirection(screenIndex > currentScreen ? 1 : -1);
+    setCurrentScreen(screenIndex);
   };
 
   const handleNext = () => {
-    if (state.currentScreen < screens.length - 1) {
-      setDirection(1);
-      nextScreen();
+    if (currentScreen < totalScreens - 1) {
+      goToScreen(currentScreen + 1);
+    } else {
+      onComplete();
     }
   };
 
   const handlePrevious = () => {
-    if (state.currentScreen > 0) {
-      setDirection(-1);
-      previousScreen();
+    if (currentScreen > 0) {
+      goToScreen(currentScreen - 1);
     }
   };
 
-  // Handle swipe gestures
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleSkip = () => {
+    onComplete();
+  };
+
+  const handleDragEnd = (event: any, info: PanInfo) => {
     const threshold = 50;
-    
-    if (info.offset.x > threshold && state.currentScreen > 0) {
-      handlePrevious();
-    } else if (info.offset.x < -threshold && state.currentScreen < screens.length - 1) {
-      handleNext();
+    const velocity = info.velocity.x;
+    const offset = info.offset.x;
+
+    // Swipe left (next screen)
+    if (offset < -threshold || velocity < -500) {
+      if (currentScreen < totalScreens - 1) {
+        handleNext();
+      }
+    }
+    // Swipe right (previous screen)
+    else if (offset > threshold || velocity > 500) {
+      if (currentScreen > 0) {
+        handlePrevious();
+      }
     }
   };
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (!state.isActive) return;
-
-      switch (event.key) {
-        case 'ArrowLeft':
-          if (state.currentScreen > 0) {
-            event.preventDefault();
-            handlePrevious();
-          }
-          break;
-        case 'ArrowRight':
-        case ' ':
-        case 'Enter':
-          if (state.currentScreen < screens.length - 1) {
-            event.preventDefault();
-            handleNext();
-          } else if (state.currentScreen === screens.length - 1 && event.key === 'Enter') {
-            handleComplete();
-          }
-          break;
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [state.isActive, state.currentScreen]);
-
-  if (!state.isActive) {
-    return null;
-  }
-
-
-  const screens = [
-    <WelcomeScreen key="welcome" onNext={handleNext} />,
-    <OverviewScreen key="overview" onNext={handleNext} />,
-    <ConjugationScreen key="conjugation" onNext={handleNext} />,
-    <YouTubeShadowingScreen key="youtube" onNext={handleNext} />,
-    <TextbookVocabularyScreen key="textbook" onNext={handleNext} />,
-    <SuccessScreen key="success" onComplete={handleComplete} onBack={handlePrevious} />,
-  ];
 
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? '100%' : '-100%',
-      opacity: 0,
+      opacity: 0
     }),
     center: {
       x: 0,
-      opacity: 1,
+      opacity: 1
     },
     exit: (direction: number) => ({
       x: direction < 0 ? '100%' : '-100%',
-      opacity: 0,
-    }),
+      opacity: 0
+    })
   };
 
   return (
-    <div 
-      ref={containerRef}
-      className="fixed inset-0 z-[9999] overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, rgb(124, 58, 237) 0%, rgb(109, 40, 217) 50%, rgb(91, 33, 182) 100%)',
-      }}
-    >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 1px)`,
-            backgroundSize: '32px 32px',
-          }}
-        />
+    <div className="fixed inset-0 z-[9999] flex flex-col bg-background">
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto bg-gradient-to-br from-primary/30 via-primary/15 to-background">
+        <div className="min-h-full flex flex-col px-6 py-8 items-center justify-center text-center">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentScreen}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 }
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={handleDragEnd}
+              className="w-full cursor-grab active:cursor-grabbing"
+            >
+              {screens[currentScreen]}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
-
-      {/* Main Content - Full Screen */}
-      <div className="relative h-full w-full">
-        <AnimatePresence initial={false} custom={direction} mode="wait">
-          <motion.div
-            key={state.currentScreen}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
-            }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragEnd={handleDragEnd}
-            className="absolute inset-0 flex flex-col"
-          >
-            {/* Content Area - Centered with proper mobile spacing */}
-            <div className="flex-1 flex items-center justify-center px-4 md:px-12 py-safe">
-              <div className="w-full max-w-3xl mx-auto">
-                {screens[state.currentScreen]}
-              </div>
-            </div>
-            
-            {/* Navigation Bar - Fixed at bottom with safe area */}
-            <div className="w-full mt-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-              <div className="max-w-3xl mx-auto">
-                <NavigationBar
-                  currentScreen={state.currentScreen}
-                  totalScreens={screens.length}
-                  onSkip={handleSkip}
-                  onNext={handleNext}
-                  onBack={state.currentScreen > 0 ? handlePrevious : undefined}
-                  isLastScreen={state.currentScreen === screens.length - 1}
-                  showSkip={state.currentScreen < screens.length - 1}
-                  showNext={state.currentScreen < screens.length - 1} // Show Next button on all screens except the last one
-                  showBack={state.currentScreen > 0}
-                />
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
+      {/* Bottom Navigation Bar - This is fixed at the very bottom */}
+      <NavigationBar
+        onSkip={handleSkip}
+        onNext={handleNext}
+        currentScreen={currentScreen}
+        totalScreens={totalScreens}
+      />
     </div>
   );
 }

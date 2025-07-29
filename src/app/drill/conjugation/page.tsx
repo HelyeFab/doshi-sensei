@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import ConjugationDrillClient from './ConjugationDrillClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import ConjugationDrillPage from './ConjugationDrillPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Conjugation | Doshi Sensei',
-  description: 'Practice Japanese verb and adjective conjugations with comprehensive exercises.',
-  openGraph: {
-    title: 'Conjugation | Doshi Sensei',
-    description: 'Practice Japanese verb and adjective conjugations with comprehensive exercises.',
-    type: 'website',
-    url: 'https://doshisensei.com/drill/conjugation',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Conjugation | Doshi Sensei',
-    description: 'Practice Japanese verb and adjective conjugations with comprehensive exercises.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Conjugation',
+  description: 'Conjugation - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/drill/conjugation',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Conjugation - Doshi Sensei",
-  "description": "Practice Japanese verb and adjective conjugations with comprehensive exercises.",
-  "url": "https://doshisensei.com/drill/conjugation",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Conjugation",
+      "url": "/conjugation"
+    }
+  ]);
 
-export default function ConjugationDrillPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <ConjugationDrillClient />
+      <StructuredData data={breadcrumbData} />
+      <ConjugationDrillPage />
     </>
   );
 }

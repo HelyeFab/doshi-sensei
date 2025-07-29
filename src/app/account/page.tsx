@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import AccountClient from './AccountClient';
+import type { Metadata } from 'next';
+import AccountPage from './AccountPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'My Account - Manage Your Japanese Learning Profile',
-  description: 'Access your Doshi Sensei account to track progress, manage subscriptions, view achievements, and customize your Japanese learning experience.',
-  keywords: [
-    'Japanese learning account',
-    'user profile',
-    'learning progress tracking',
-    'subscription management',
-    'achievement badges',
-    'study statistics',
-    'account settings',
-    'premium membership',
-    'learning history',
-    'profile customization'
-  ],
-  openGraph: {
-    title: 'My Account | Doshi Sensei',
-    description: 'Manage your Japanese learning profile, track progress, and customize your study experience.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'My Account | Doshi Sensei',
-    description: 'Manage your Japanese learning profile and track your progress.',
-  },
-  robots: {
-    index: false, // Account pages shouldn't be indexed
-    follow: false,
-  },
-  alternates: {
-    canonical: '/account',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'My Account',
+  description: 'Manage your Dōshi Sensei account, subscription, study progress, and achievements',
+  path: '/account',
+});
 
-export default function AccountPage() {
-  return <AccountClient />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Account",
+      "url": "/account"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <AccountPage />
+    </>
+  );
 }

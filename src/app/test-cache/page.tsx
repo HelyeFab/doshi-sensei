@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import TestCacheClient from './TestCacheClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import TestCachePage from './TestCachePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Cache Test | Doshi Sensei',
-  description: 'Cache Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Cache Test | Doshi Sensei',
-    description: 'Cache Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/test-cache',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Cache Test | Doshi Sensei',
-    description: 'Cache Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Cache',
+  description: 'Test Cache - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-cache',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Cache Test - Doshi Sensei",
-  "description": "Cache Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/test-cache",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Cache",
+      "url": "/test-cache"
+    }
+  ]);
 
-export default function TestCachePage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <TestCacheClient />
+      <StructuredData data={breadcrumbData} />
+      <TestCachePage />
     </>
   );
 }

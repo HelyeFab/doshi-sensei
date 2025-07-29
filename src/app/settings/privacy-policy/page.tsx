@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import PrivacyPolicyClient from './PrivacyPolicyClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import PrivacyPolicyPage from './PrivacyPolicyPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy | Doshi Sensei',
-  description: 'Privacy Policy - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Privacy Policy | Doshi Sensei',
-    description: 'Privacy Policy - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/settings/privacy-policy',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Privacy Policy | Doshi Sensei',
-    description: 'Privacy Policy - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Privacy Policy',
+  description: 'Privacy Policy - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/settings/privacy-policy',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Privacy Policy - Doshi Sensei",
-  "description": "Privacy Policy - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/settings/privacy-policy",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Privacy Policy",
+      "url": "/privacy-policy"
+    }
+  ]);
 
-export default function PrivacyPolicyPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <PrivacyPolicyClient />
+      <StructuredData data={breadcrumbData} />
+      <PrivacyPolicyPage />
     </>
   );
 }

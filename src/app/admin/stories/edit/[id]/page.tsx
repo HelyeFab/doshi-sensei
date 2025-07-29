@@ -1,15 +1,30 @@
-import { Metadata } from 'next';
-import EditStoryClient from './EditStoryClient';
+import type { Metadata } from 'next';
+import EditStoryPage from './EditStoryPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Edit Story',
-  description: 'Edit Story - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  openGraph: {
-    title: 'Edit Story | Doshi Sensei',
-    description: 'Edit Story - The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: '[id]',
+  description: '[id] - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/stories/edit/[id]',
+});
 
-export default function EditStoryPage(props: any) {
-  return <EditStoryClient {...props} />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "[id]",
+      "url": "/[id]"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <EditStoryPage />
+    </>
+  );
 }

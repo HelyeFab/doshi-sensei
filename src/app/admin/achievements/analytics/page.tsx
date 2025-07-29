@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import AchievementAnalyticsClient from './AchievementAnalyticsClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import AchievementAnalyticsPage from './AchievementAnalyticsPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Analytics | Doshi Sensei',
-  description: 'Analytics - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Analytics | Doshi Sensei',
-    description: 'Analytics - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/admin/achievements/analytics',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Analytics | Doshi Sensei',
-    description: 'Analytics - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Analytics',
+  description: 'Analytics - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/achievements/analytics',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Analytics - Doshi Sensei",
-  "description": "Analytics - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/admin/achievements/analytics",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Analytics",
+      "url": "/analytics"
+    }
+  ]);
 
-export default function AchievementAnalyticsPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <AchievementAnalyticsClient />
+      <StructuredData data={breadcrumbData} />
+      <AchievementAnalyticsPage />
     </>
   );
 }

@@ -1,36 +1,40 @@
-import { Metadata } from 'next';
-import ResourcesClient from './ResourcesClient';
+import type { Metadata } from 'next';
+import ResourcesPage from './ResourcesPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Japanese Learning Resources - Tools, Guides & Materials',
-  description: 'Discover curated Japanese learning resources including study guides, learning tools, grammar explanations, and helpful materials for all JLPT levels.',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Japanese Learning Resources - Grammar & Study Guides',
+  description: 'Access curated Japanese learning resources from top creators: comprehensive grammar guides, study tips, learning strategies, and expert recommendations for all levels.',
   keywords: [
-    'Japanese learning resources',
-    'Japanese study materials',
-    'JLPT resources',
-    'Japanese grammar guides',
-    'learning tools',
-    'study resources',
-    'Japanese textbooks',
-    'online Japanese resources',
-    'Japanese learning tips',
-    'study materials'
+    "Japanese resources",
+    "grammar guides",
+    "study resources",
+    "learning tips",
+    "Japanese creators",
+    "study guides",
+    "learning strategies"
   ],
-  openGraph: {
-    title: 'Japanese Learning Resources | Doshi Sensei',
-    description: 'Explore curated resources to enhance your Japanese learning journey.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Japanese Learning Resources | Doshi Sensei',
-    description: 'Explore curated resources to enhance your Japanese learning journey.',
-  },
-  alternates: {
-    canonical: '/resources',
-  },
-};
+  path: '/resources',
+  image: '/og-images/og-resources.png'
+});
 
-export default function ResourcesPage() {
-  return <ResourcesClient />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Resources",
+      "url": "/resources"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <ResourcesPage />
+    </>
+  );
 }

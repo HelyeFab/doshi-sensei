@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import ReadingRoutesClient from './ReadingRoutesClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import ReadingRoutesPage from './ReadingRoutesPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Reading Routes | Doshi Sensei',
-  description: 'Reading Routes - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Reading Routes | Doshi Sensei',
-    description: 'Reading Routes - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/games/reading-routes',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Reading Routes | Doshi Sensei',
-    description: 'Reading Routes - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Reading Routes',
+  description: 'Reading Routes - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/games/reading-routes',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Reading Routes - Doshi Sensei",
-  "description": "Reading Routes - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/games/reading-routes",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Reading Routes",
+      "url": "/reading-routes"
+    }
+  ]);
 
-export default function ReadingRoutesPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <ReadingRoutesClient />
+      <StructuredData data={breadcrumbData} />
+      <ReadingRoutesPage />
     </>
   );
 }

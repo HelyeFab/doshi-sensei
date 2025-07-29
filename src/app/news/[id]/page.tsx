@@ -1,15 +1,30 @@
-import { Metadata } from 'next';
-import ArticleClient from './pageClient';
+import type { Metadata } from 'next';
+import ArticlePage from './ArticlePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Article',
-  description: 'Read Japanese news articles with interactive features. Practice reading comprehension with real news content.',
-  openGraph: {
-    title: 'Japanese News Article | Doshi Sensei',
-    description: 'Read Japanese news articles with interactive features. Practice reading comprehension with real news content.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: '[id]',
+  description: '[id] - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/news/[id]',
+});
 
-export default function ArticlePage(props: any) {
-  return <ArticleClient {...props} />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "[id]",
+      "url": "/[id]"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <ArticlePage />
+    </>
+  );
 }

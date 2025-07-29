@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import VerifyEmailClient from './VerifyEmailClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import VerifyEmailPage from './VerifyEmailPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Verify Email | Doshi Sensei',
-  description: 'Verify Email - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Verify Email | Doshi Sensei',
-    description: 'Verify Email - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/verify-email',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Verify Email | Doshi Sensei',
-    description: 'Verify Email - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Verify Email',
+  description: 'Verify Email - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/verify-email',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Verify Email - Doshi Sensei",
-  "description": "Verify Email - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/verify-email",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Verify Email",
+      "url": "/verify-email"
+    }
+  ]);
 
-export default function VerifyEmailPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <VerifyEmailClient />
+      <StructuredData data={breadcrumbData} />
+      <VerifyEmailPage />
     </>
   );
 }

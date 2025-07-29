@@ -1,40 +1,47 @@
-import { Metadata } from 'next';
-import TextbookVocabularyClient from './TextbookVocabularyClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import TextbookVocabularyPage from './TextbookVocabularyPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Textbook Vocabulary | Doshi Sensei',
-  description: 'Study vocabulary from popular Japanese textbooks including Genki and Minna no Nihongo with spaced repetition.',
-  openGraph: {
-    title: 'Textbook Vocabulary | Doshi Sensei',
-    description: 'Study vocabulary from popular Japanese textbooks including Genki and Minna no Nihongo with spaced repetition.',
-    type: 'website',
-    url: 'https://doshisensei.com/tools/textbook-vocabulary',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Textbook Vocabulary | Doshi Sensei',
-    description: 'Study vocabulary from popular Japanese textbooks including Genki and Minna no Nihongo with spaced repetition.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Textbook Vocabulary - Complete Genki & Minna no Nihongo',
+  description: 'Study complete vocabulary sets from Genki I & II (1,700+ words) and Minna no Nihongo I & II (2,800+ words). Practice with interactive flashcards, spaced repetition, and track your progress through all chapters.',
+  keywords: [
+    "Genki vocabulary",
+    "Genki 1 vocabulary",
+    "Genki 2 vocabulary",
+    "Minna no Nihongo vocabulary",
+    "Minna no Nihongo 1",
+    "Minna no Nihongo 2",
+    "Japanese textbook vocabulary",
+    "textbook flashcards",
+    "spaced repetition",
+    "chapter vocabulary"
+  ],
+  path: '/tools/textbook-vocabulary',
+  image: '/og-images/og-tools.png'
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Textbook Vocabulary - Doshi Sensei",
-  "description": "Study vocabulary from popular Japanese textbooks including Genki and Minna no Nihongo with spaced repetition.",
-  "url": "https://doshisensei.com/tools/textbook-vocabulary",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Tools",
+      "url": "/tools"
+    },
+    {
+      "name": "Textbook Vocabulary",
+      "url": "/tools/textbook-vocabulary"
+    }
+  ]);
 
-export default function TextbookVocabularyPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <TextbookVocabularyClient />
+      <StructuredData data={breadcrumbData} />
+      <TextbookVocabularyPage />
     </>
   );
 }

@@ -1,15 +1,30 @@
-import { Metadata } from 'next';
-import ReadingRoutesGameClient from './pageClient';
+import type { Metadata } from 'next';
+import ReadingRoutesGamePage from './ReadingRoutesGamePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Reading Routes Game',
-  description: 'Navigate through Japanese sentences in this path-finding reading game. Practice reading comprehension and sentence structure.',
-  openGraph: {
-    title: 'Reading Routes Game | Doshi Sensei',
-    description: 'Navigate through Japanese sentences in this path-finding reading game. Practice reading comprehension and sentence structure.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: '[boardId]',
+  description: '[boardId] - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/games/reading-routes/[boardId]',
+});
 
-export default function ReadingRoutesGamePage(props: any) {
-  return <ReadingRoutesGameClient {...props} />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "[boardId]",
+      "url": "/[boardId]"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <ReadingRoutesGamePage />
+    </>
+  );
 }

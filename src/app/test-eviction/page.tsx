@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import TestEvictionClient from './TestEvictionClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import TestEvictionPage from './TestEvictionPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Eviction Test | Doshi Sensei',
-  description: 'Eviction Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Eviction Test | Doshi Sensei',
-    description: 'Eviction Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/test-eviction',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Eviction Test | Doshi Sensei',
-    description: 'Eviction Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Eviction',
+  description: 'Test Eviction - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-eviction',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Eviction Test - Doshi Sensei",
-  "description": "Eviction Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/test-eviction",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Eviction",
+      "url": "/test-eviction"
+    }
+  ]);
 
-export default function TestEvictionPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <TestEvictionClient />
+      <StructuredData data={breadcrumbData} />
+      <TestEvictionPage />
     </>
   );
 }

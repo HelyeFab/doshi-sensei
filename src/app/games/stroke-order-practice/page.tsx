@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import StrokeOrderPracticeClient from './StrokeOrderPracticeClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import StrokeOrderPracticePage from './StrokeOrderPracticePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Stroke Order Practice | Doshi Sensei',
-  description: 'Learn proper kanji stroke order with interactive drawing exercises.',
-  openGraph: {
-    title: 'Stroke Order Practice | Doshi Sensei',
-    description: 'Learn proper kanji stroke order with interactive drawing exercises.',
-    type: 'website',
-    url: 'https://doshisensei.com/games/stroke-order-practice',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Stroke Order Practice | Doshi Sensei',
-    description: 'Learn proper kanji stroke order with interactive drawing exercises.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Stroke Order Practice',
+  description: 'Stroke Order Practice - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/games/stroke-order-practice',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Stroke Order Practice - Doshi Sensei",
-  "description": "Learn proper kanji stroke order with interactive drawing exercises.",
-  "url": "https://doshisensei.com/games/stroke-order-practice",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Stroke Order Practice",
+      "url": "/stroke-order-practice"
+    }
+  ]);
 
-export default function StrokeOrderPracticePage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <StrokeOrderPracticeClient />
+      <StructuredData data={breadcrumbData} />
+      <StrokeOrderPracticePage />
     </>
   );
 }

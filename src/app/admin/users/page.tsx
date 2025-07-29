@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import UsersClient from './UsersClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import UsersPage from './UsersPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Users | Doshi Sensei',
-  description: 'Users - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Users | Doshi Sensei',
-    description: 'Users - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/admin/users',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Users | Doshi Sensei',
-    description: 'Users - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Users',
+  description: 'Users - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/users',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Users - Doshi Sensei",
-  "description": "Users - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/admin/users",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Users",
+      "url": "/users"
+    }
+  ]);
 
-export default function UsersPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <UsersClient />
+      <StructuredData data={breadcrumbData} />
+      <UsersPage />
     </>
   );
 }

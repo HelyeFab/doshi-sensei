@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import ContactClient from './ContactClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import ContactPage from './ContactPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Contact | Doshi Sensei',
-  description: 'Contact - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Contact | Doshi Sensei',
-    description: 'Contact - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/contact',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Contact | Doshi Sensei',
-    description: 'Contact - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Contact',
+  description: 'Contact - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/contact',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Contact - Doshi Sensei",
-  "description": "Contact - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/contact",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Contact",
+      "url": "/contact"
+    }
+  ]);
 
-export default function ContactPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <ContactClient />
+      <StructuredData data={breadcrumbData} />
+      <ContactPage />
     </>
   );
 }

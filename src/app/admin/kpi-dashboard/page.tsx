@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import KPIDashboardClient from './KPIDashboardClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import KPIDashboardPage from './KPIDashboardPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'KPI Dashboard | Doshi Sensei',
-  description: 'KPI Dashboard - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'KPI Dashboard | Doshi Sensei',
-    description: 'KPI Dashboard - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/admin/kpi-dashboard',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'KPI Dashboard | Doshi Sensei',
-    description: 'KPI Dashboard - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Kpi Dashboard',
+  description: 'Kpi Dashboard - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/kpi-dashboard',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "KPI Dashboard - Doshi Sensei",
-  "description": "KPI Dashboard - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/admin/kpi-dashboard",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Kpi Dashboard",
+      "url": "/kpi-dashboard"
+    }
+  ]);
 
-export default function KPIDashboardPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <KPIDashboardClient />
+      <StructuredData data={breadcrumbData} />
+      <KPIDashboardPage />
     </>
   );
 }

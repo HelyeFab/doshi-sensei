@@ -1,41 +1,40 @@
-import { Metadata } from 'next';
-import DrillClient from './DrillClient';
+import type { Metadata } from 'next';
+import DrillPage from './DrillPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Japanese Conjugation Practice - Interactive Grammar Drills',
-  description: 'Master Japanese verb and adjective conjugations with interactive drills. Practice verb forms, adjective conjugations, and grammar patterns with instant feedback. Perfect for JLPT preparation.',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Japanese Drills - Conjugation & Vocabulary Practice',
+  description: 'Master Japanese with focused drill exercises: verb conjugations, adjective forms, vocabulary from Genki and Minna no Nihongo, and kanji recognition. Features spaced repetition and progress tracking.',
   keywords: [
-    'Japanese conjugation practice',
-    'verb conjugation drill',
-    'Japanese grammar quiz',
-    'JLPT conjugation',
-    'i-adjective conjugation',
-    'na-adjective conjugation',
-    'Japanese verb forms',
-    'polite form practice',
-    'past tense Japanese',
-    'negative form drill',
-    'te-form practice',
-    'conditional form',
-    'passive form Japanese',
-    'causative form',
-    'interactive Japanese learning'
+    "Japanese drills",
+    "conjugation drills",
+    "vocabulary drills",
+    "spaced repetition",
+    "Genki drills",
+    "Minna drills",
+    "practice exercises"
   ],
-  openGraph: {
-    title: 'Japanese Conjugation Practice | Doshi Sensei',
-    description: 'Master Japanese verb and adjective conjugations with interactive drills and instant feedback.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Japanese Conjugation Practice | Doshi Sensei',
-    description: 'Master Japanese verb and adjective conjugations with interactive drills and instant feedback.',
-  },
-  alternates: {
-    canonical: '/drill',
-  },
-};
+  path: '/drill',
+  image: '/og-images/og-drill.png'
+});
 
-export default function DrillPage() {
-  return <DrillClient />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Drills",
+      "url": "/drill"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <DrillPage />
+    </>
+  );
 }

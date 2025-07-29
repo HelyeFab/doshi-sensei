@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 export const structuredData = [
   {
     "@context": "https://schema.org",
@@ -29,5 +30,15 @@ export const structuredData = [
 export function getStructuredDataScript() {
   return {
     __html: JSON.stringify(structuredData),
+=======
+export function generateStructuredData(config: any) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": config.siteName,
+    "description": config.siteDescription,
+    "url": config.siteUrl,
+    "sameAs": ["https://twitter.com/@doshisensei"],
+>>>>>>> SEO-v-3
   };
 }

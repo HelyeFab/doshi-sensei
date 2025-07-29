@@ -1,39 +1,43 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import YouTubeShadowing from './YouTubeShadowing';
-import StructuredData from '@/components/StructuredData';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'YouTube Shadowing | Doshi Sensei',
-  description: 'Practice Japanese pronunciation with YouTube video shadowing. Extract transcripts and practice speaking along with native speakers.',
-  openGraph: {
-    title: 'YouTube Shadowing | Doshi Sensei',
-    description: 'Practice Japanese pronunciation with YouTube video shadowing. Extract transcripts and practice speaking along with native speakers.',
-    type: 'website',
-    url: 'https://doshisensei.com/tools/youtube-shadowing',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'YouTube Shadowing | Doshi Sensei',
-    description: 'Practice Japanese pronunciation with YouTube video shadowing. Extract transcripts and practice speaking along with native speakers.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'YouTube Shadowing - Japanese Pronunciation Practice',
+  description: 'Practice Japanese shadowing with any YouTube video. Extract audio, get AI-generated transcripts, practice pronunciation, and improve listening skills with native content.',
+  keywords: [
+    "Japanese shadowing",
+    "YouTube shadowing",
+    "pronunciation practice",
+    "listening practice",
+    "Japanese audio",
+    "speech practice",
+    "native content"
+  ],
+  path: '/tools/youtube-shadowing',
+  image: '/og-images/og-tools.png'
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "YouTube Shadowing - Doshi Sensei",
-  "description": "Practice Japanese pronunciation with YouTube video shadowing. Extract transcripts and practice speaking along with native speakers.",
-  "url": "https://doshisensei.com/tools/youtube-shadowing",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Tools",
+      "url": "/tools"
+    },
+    {
+      "name": "YouTube Shadowing",
+      "url": "/tools/youtube-shadowing"
+    }
+  ]);
 
-export default function YouTubeShadowing() {
   return (
     <>
-      <StructuredData data={structuredData} />
+      <StructuredData data={breadcrumbData} />
       <YouTubeShadowing />
     </>
   );

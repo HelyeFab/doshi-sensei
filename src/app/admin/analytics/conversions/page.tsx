@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import ConversionAnalyticsClient from './ConversionAnalyticsClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import ConversionAnalyticsPage from './ConversionAnalyticsPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Conversions | Doshi Sensei',
-  description: 'Conversions - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Conversions | Doshi Sensei',
-    description: 'Conversions - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/admin/analytics/conversions',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Conversions | Doshi Sensei',
-    description: 'Conversions - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Conversions',
+  description: 'Conversions - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/analytics/conversions',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Conversions - Doshi Sensei",
-  "description": "Conversions - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/admin/analytics/conversions",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Conversions",
+      "url": "/conversions"
+    }
+  ]);
 
-export default function ConversionAnalyticsPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <ConversionAnalyticsClient />
+      <StructuredData data={breadcrumbData} />
+      <ConversionAnalyticsPage />
     </>
   );
 }

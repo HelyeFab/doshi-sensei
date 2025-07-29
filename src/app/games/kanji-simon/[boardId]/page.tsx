@@ -1,15 +1,30 @@
-import { Metadata } from 'next';
-import KanjiSimonGameClient from './pageClient';
+import type { Metadata } from 'next';
+import KanjiSimonGamePage from './KanjiSimonGamePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Kanji Simon Game',
-  description: 'Test your memory with the Kanji Simon memory game. Practice kanji recognition and memory skills in this fun interactive game.',
-  openGraph: {
-    title: 'Kanji Simon Game | Doshi Sensei',
-    description: 'Test your memory with the Kanji Simon memory game. Practice kanji recognition and memory skills in this fun interactive game.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: '[boardId]',
+  description: '[boardId] - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/games/kanji-simon/[boardId]',
+});
 
-export default function KanjiSimonGamePage(props: any) {
-  return <KanjiSimonGameClient {...props} />;
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "[boardId]",
+      "url": "/[boardId]"
+    }
+  ]);
+
+  return (
+    <>
+      <StructuredData data={breadcrumbData} />
+      <KanjiSimonGamePage />
+    </>
+  );
 }

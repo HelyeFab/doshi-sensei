@@ -195,29 +195,33 @@
       ]
     },
     {
-      "collectionGroup": "userPracticeHistory",
+      "collectionGroup": "transcriptCache",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "userId",
+          "fieldPath": "createdBy",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastPracticed",
+          "fieldPath": "lastAccessed",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "userPracticeHistory",
+      "collectionGroup": "transcriptCache",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "userId",
+          "fieldPath": "createdBy",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "practiceCount",
+          "fieldPath": "contentType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastAccessed",
           "order": "DESCENDING"
         }
       ]

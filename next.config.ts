@@ -7,19 +7,48 @@ const pwaConfig = withPWA({
   register: true,
   skipWaiting: true,
   reloadOnOnline: false,
-  importScripts: ['/sw-config.js'],
+  publicExcludes: [
+    '!robots.txt', 
+    '!sitemap.xml',
+    '!data/**/*',
+    '!audio/**/*',
+    '!flat-icons/**/*',
+    '!**/*.mp3',
+    '!**/*.svg',
+    '!**/*.json',
+    '!**/*.dat',
+    '!**/*.gz'
+  ],
+  maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
   exclude: [
-    // Exclude audio files from service worker precaching
+    // Exclude all audio files
     ({ asset }) => asset.name.endsWith('.mp3'),
-    // Exclude external resources from precaching
+    ({ asset }) => asset.name.endsWith('.wav'),
+    ({ asset }) => asset.name.endsWith('.ogg'),
+    // Exclude all data files
+    ({ asset }) => asset.name.includes('/data/'),
+    ({ asset }) => asset.name.includes('/audio/'),
+    ({ asset }) => asset.name.includes('/flat-icons/'),
+    ({ asset }) => asset.name.endsWith('.json'),
+    ({ asset }) => asset.name.endsWith('.dat'),
+    ({ asset }) => asset.name.endsWith('.gz'),
+    ({ asset }) => asset.name.endsWith('.svg'),
+    // Exclude external resources
     ({ asset }) => asset.name.includes('githubusercontent'),
     ({ asset }) => asset.name.includes('watanoc'),
-    // Exclude large data files
+    // Exclude large files
     ({ asset }) => asset.name.includes('jmdict'),
-    ({ asset }) => asset.name.includes('.dat.gz'),
-    // Exclude pages that need server-side rendering
+    ({ asset }) => asset.name.includes('kanjidb'),
+    ({ asset }) => asset.name.includes('tts-sentences'),
+    // Exclude build artifacts
+    ({ asset }) => asset.name.includes('_next/static/chunks/'),
+    ({ asset }) => asset.name.includes('_next/static/css/'),
+    ({ asset }) => asset.name.includes('_next/static/media/'),
+    // Exclude pages
     ({ asset }) => asset.name === 'index.html',
     ({ asset }) => asset.name === '/',
+    // Exclude any file larger than 500KB
+    ({ asset }) => asset.size > 500 * 1024,
   ],
   runtimeCaching: [
     {
@@ -124,7 +153,23 @@ const pwaConfig = withPWA({
       }
     }
   ],
-  buildExcludes: [/middleware-manifest\.json$/]
+  buildExcludes: [
+    /middleware-manifest\.json$/,
+    /app-path-routes-manifest\.json$/,
+    /react-loadable-manifest\.json$/,
+    /build-manifest\.json$/,
+    /_buildManifest\.js$/,
+    /_ssgManifest\.js$/,
+    /pages-manifest\.json$/,
+    /\/data\//,
+    /\/audio\//,
+    /\/flat-icons\//,
+    /\.mp3$/,
+    /\.svg$/,
+    /\.dat$/,
+    /\.gz$/
+  ],
+  customWorkerDir: 'worker'
 });
 
 const securityHeaders = [

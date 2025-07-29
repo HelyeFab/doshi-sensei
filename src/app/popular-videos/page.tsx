@@ -1,39 +1,29 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import PopularVideos from './PopularVideos';
-import StructuredData from '@/components/StructuredData';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Popular Videos | Doshi Sensei',
-  description: 'Browse the most popular Japanese YouTube videos for shadowing practice. Learn from content loved by the community.',
-  openGraph: {
-    title: 'Popular Videos | Doshi Sensei',
-    description: 'Browse the most popular Japanese YouTube videos for shadowing practice. Learn from content loved by the community.',
-    type: 'website',
-    url: 'https://doshisensei.com/popular-videos',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Popular Videos | Doshi Sensei',
-    description: 'Browse the most popular Japanese YouTube videos for shadowing practice. Learn from content loved by the community.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Popular Videos',
+  description: 'Popular Videos - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/popular-videos',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Popular Videos - Doshi Sensei",
-  "description": "Browse the most popular Japanese YouTube videos for shadowing practice. Learn from content loved by the community.",
-  "url": "https://doshisensei.com/popular-videos",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Popular Videos",
+      "url": "/popular-videos"
+    }
+  ]);
 
-export default function PopularVideos() {
   return (
     <>
-      <StructuredData data={structuredData} />
+      <StructuredData data={breadcrumbData} />
       <PopularVideos />
     </>
   );

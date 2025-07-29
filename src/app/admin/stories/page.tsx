@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import AdminStoriesClient from './AdminStoriesClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import AdminStoriesPage from './AdminStoriesPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Stories | Doshi Sensei',
-  description: 'Stories - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Stories | Doshi Sensei',
-    description: 'Stories - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/admin/stories',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Stories | Doshi Sensei',
-    description: 'Stories - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Stories',
+  description: 'Stories - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/admin/stories',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Stories - Doshi Sensei",
-  "description": "Stories - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/admin/stories",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Stories",
+      "url": "/stories"
+    }
+  ]);
 
-export default function AdminStoriesPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <AdminStoriesClient />
+      <StructuredData data={breadcrumbData} />
+      <AdminStoriesPage />
     </>
   );
 }

@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import KanjiSimonClient from './KanjiSimonClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import KanjiSimonPage from './KanjiSimonPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Kanji Simon | Doshi Sensei',
-  description: 'Test your kanji memory with this fun Simon Says-style memory game.',
-  openGraph: {
-    title: 'Kanji Simon | Doshi Sensei',
-    description: 'Test your kanji memory with this fun Simon Says-style memory game.',
-    type: 'website',
-    url: 'https://doshisensei.com/games/kanji-simon',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Kanji Simon | Doshi Sensei',
-    description: 'Test your kanji memory with this fun Simon Says-style memory game.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Kanji Simon',
+  description: 'Kanji Simon - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/games/kanji-simon',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Kanji Simon - Doshi Sensei",
-  "description": "Test your kanji memory with this fun Simon Says-style memory game.",
-  "url": "https://doshisensei.com/games/kanji-simon",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Kanji Simon",
+      "url": "/kanji-simon"
+    }
+  ]);
 
-export default function KanjiSimonPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <KanjiSimonClient />
+      <StructuredData data={breadcrumbData} />
+      <KanjiSimonPage />
     </>
   );
 }

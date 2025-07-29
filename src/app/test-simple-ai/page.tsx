@@ -1,43 +1,29 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import TestSimpleAI from './TestSimpleAI';
-import StructuredData from '@/components/StructuredData';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Simple AI Test | Doshi Sensei',
-  description: 'Simple AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Simple AI Test | Doshi Sensei',
-    description: 'Simple AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/test-simple-ai',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Simple AI Test | Doshi Sensei',
-    description: 'Simple AI Test - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Test Simple Ai',
+  description: 'Test Simple Ai - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/test-simple-ai',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Simple AI Test - Doshi Sensei",
-  "description": "Simple AI Test - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/test-simple-ai",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Test Simple Ai",
+      "url": "/test-simple-ai"
+    }
+  ]);
 
-export default function TestSimpleAIPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
+      <StructuredData data={breadcrumbData} />
       <TestSimpleAI />
     </>
   );

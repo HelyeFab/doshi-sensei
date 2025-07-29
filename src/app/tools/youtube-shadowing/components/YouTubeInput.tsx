@@ -19,7 +19,7 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
       /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[\w-]+.*$/,
       /^(https?:\/\/)?(www\.)?youtube\.com\/shorts\/[\w-]+.*$/,
       /^(https?:\/\/)?(m\.)?youtube\.com\/watch\?v=[\w-]+.*$/,
-      /^(https?:\/\/)?(music\.)?youtube\.com\/watch\?v=[\w-]+.*$/ // YouTube Music support
+      /^(https?:\/\/)?(music\.)?youtube\.com\/watch\?v=[\w-]+.*$/  // YouTube Music support
     ];
     
     return patterns.some(pattern => pattern.test(url));
@@ -48,12 +48,6 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
     
     if (!trimmedUrl) {
       setError(strings.youtubeShadowing?.errors?.emptyUrl || 'Please enter a YouTube URL');
-      return;
-    }
-
-    // Check for playlist URLs
-    if (trimmedUrl.includes('/playlist?') || trimmedUrl.includes('&list=')) {
-      setError('Playlists are not supported. Please select an individual video from the playlist and use its URL.');
       return;
     }
 
@@ -86,7 +80,7 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://www.youtube.com/watch?v=..."
-            className="w-full px-4 py-3 pl-12 pr-12 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors bg-background text-foreground"
+            className="w-full px-4 py-3 pl-12 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors bg-background text-foreground"
             disabled={isLoading}
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -98,22 +92,6 @@ export default function YouTubeInput({ onSubmit, isLoading }: YouTubeInputProps)
               className="opacity-60"
             />
           </div>
-          {url && (
-            <button
-              type="button"
-              onClick={() => {
-                setUrl('');
-                setError('');
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded transition-colors"
-              title="Clear URL"
-              disabled={isLoading}
-            >
-              <svg className="w-5 h-5 text-muted-foreground hover:text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
         </div>
         
         {error && (

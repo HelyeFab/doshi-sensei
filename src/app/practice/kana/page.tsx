@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import KanaClient from './KanaClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import KanaPage from './KanaPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Kana | Doshi Sensei',
-  description: 'Kana - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Kana | Doshi Sensei',
-    description: 'Kana - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/practice/kana',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Kana | Doshi Sensei',
-    description: 'Kana - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Kana',
+  description: 'Kana - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/practice/kana',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Kana - Doshi Sensei",
-  "description": "Kana - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/practice/kana",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Kana",
+      "url": "/kana"
+    }
+  ]);
 
-export default function KanaPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <KanaClient />
+      <StructuredData data={breadcrumbData} />
+      <KanaPage />
     </>
   );
 }

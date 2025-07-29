@@ -1,91 +1,41 @@
-import { Metadata } from 'next';
-import PracticeClient from './PracticeClient';
+import type { Metadata } from 'next';
+import PracticePage from './PracticePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Japanese Practice Hub',
-  description: 'Practice Japanese with various exercises: hiragana, katakana, verb conjugations, and flashcards. Choose from beginner to advanced practice modes tailored to your learning level.',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Japanese Practice - Conjugations, Kana & Drills',
+  description: 'Master Japanese through interactive practice: verb and adjective conjugations, hiragana/katakana drills, kanji writing practice, and comprehensive exercises. Features content from Genki and Minna no Nihongo textbooks.',
   keywords: [
-    'Japanese practice',
-    'hiragana practice',
-    'katakana practice',
-    'kana practice',
-    'verb conjugation practice',
-    'Japanese drills',
-    'Japanese exercises',
-    'flashcard practice',
-    'spaced repetition',
-    'Japanese learning exercises',
-    'JLPT practice',
-    'beginner Japanese practice',
-    'intermediate Japanese practice'
+    "Japanese practice",
+    "conjugation practice",
+    "hiragana practice",
+    "katakana practice",
+    "kanji practice",
+    "Japanese drills",
+    "Genki exercises",
+    "Minna no Nihongo practice"
   ],
-  openGraph: {
-    title: 'Japanese Practice Hub | Doshi Sensei',
-    description: 'Practice Japanese with various exercises: hiragana, katakana, verb conjugations, and flashcards.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Japanese Practice Hub | Doshi Sensei',
-    description: 'Practice Japanese with various exercises: hiragana, katakana, verb conjugations, and flashcards.',
-  },
-  alternates: {
-    canonical: '/practice',
-  },
-};
+  path: '/practice',
+  image: '/og-images/og-practice.png'
+});
 
-const practiceStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "Japanese Practice Hub - Doshi Sensei",
-  "description": "A collection of Japanese practice exercises organized by skill level and type.",
-  "url": "https://doshisensei.com/practice",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "name": "Doshi Sensei"
-  },
-  "hasPart": [
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
     {
-      "@type": "LearningResource",
-      "name": "Hiragana Practice",
-      "educationalLevel": "Beginner",
-      "learningResourceType": "Exercise",
-      "url": "https://doshisensei.com/practice/hiragana"
+      "name": "Home",
+      "url": "/"
     },
     {
-      "@type": "LearningResource",
-      "name": "Katakana Practice",
-      "educationalLevel": "Beginner",
-      "learningResourceType": "Exercise",
-      "url": "https://doshisensei.com/practice/katakana"
-    },
-    {
-      "@type": "LearningResource",
-      "name": "Verb Conjugation Practice",
-      "educationalLevel": "Intermediate",
-      "learningResourceType": "Exercise",
-      "url": "https://doshisensei.com/practice/conjugation"
-    },
-    {
-      "@type": "LearningResource",
-      "name": "Flashcard Practice",
-      "educationalLevel": "All Levels",
-      "learningResourceType": "Exercise",
-      "url": "https://doshisensei.com/drill/flashcards"
+      "name": "Practice",
+      "url": "/practice"
     }
-  ]
-};
+  ]);
 
-export default function PracticePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(practiceStructuredData),
-        }}
-      />
-      <PracticeClient />
+      <StructuredData data={breadcrumbData} />
+      <PracticePage />
     </>
   );
 }

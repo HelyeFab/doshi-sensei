@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import OfflineClient from './OfflineClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import OfflinePage from './OfflinePage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Offline | Doshi Sensei',
-  description: 'Offline - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Offline | Doshi Sensei',
-    description: 'Offline - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/offline',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Offline | Doshi Sensei',
-    description: 'Offline - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Offline',
+  description: 'Offline - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/offline',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Offline - Doshi Sensei",
-  "description": "Offline - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/offline",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Offline",
+      "url": "/offline"
+    }
+  ]);
 
-export default function OfflinePage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <OfflineClient />
+      <StructuredData data={breadcrumbData} />
+      <OfflinePage />
     </>
   );
 }

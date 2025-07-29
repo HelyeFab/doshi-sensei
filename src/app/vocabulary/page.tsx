@@ -1,65 +1,33 @@
-import { Metadata } from 'next';
-import VocabularyClient from './VocabularyClient';
+import type { Metadata } from 'next';
+import VocabularyPage from './VocabularyPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Vocabulary Search & Study Lists',
-  description: 'Search Japanese vocabulary with WaniKani/Jisho or offline JMdict. Save words and example sentences to custom study lists. Practice with flashcards and track your progress.',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Japanese Vocabulary Builder',
+  description: 'Build your Japanese vocabulary with our comprehensive database. Search kanji, words, and phrases with meanings, readings, and example sentences.',
   keywords: [
     'Japanese vocabulary',
-    'Jisho search',
-    'WaniKani integration',
-    'JMdict offline',
-    'vocabulary lists',
-    'study lists',
-    'Japanese flashcards',
-    'example sentences',
-    'vocabulary builder',
+    'Japanese words',
+    'kanji dictionary',
+    'Japanese phrases',
+    'JLPT vocabulary',
     'Japanese dictionary',
-    'word search',
-    'kanji lookup'
   ],
-  openGraph: {
-    title: 'Vocabulary Search & Study Lists | Doshi Sensei',
-    description: 'Search Japanese vocabulary with WaniKani/Jisho or offline JMdict. Save words and example sentences to custom study lists.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Vocabulary Search & Study Lists | Doshi Sensei',
-    description: 'Search Japanese vocabulary with WaniKani/Jisho or offline JMdict. Save words and example sentences to custom study lists.',
-  },
-  alternates: {
-    canonical: '/vocabulary',
-  },
-};
+  path: '/vocabulary',
+  image: '/og-images/og-vocabulary.png'
+});
 
-const vocabularyStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Japanese Vocabulary Search - Doshi Sensei",
-  "description": "Search and study Japanese vocabulary with multiple dictionaries, create custom study lists, and practice with flashcards.",
-  "url": "https://doshisensei.com/vocabulary",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "name": "Doshi Sensei"
-  },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://doshisensei.com/vocabulary?search={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    { name: 'Home', url: '/' },
+    { name: 'Vocabulary', url: '/vocabulary' },
+  ]);
 
-export default function VocabularyPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(vocabularyStructuredData),
-        }}
-      />
-      <VocabularyClient />
+      <StructuredData data={breadcrumbData} />
+      <VocabularyPage />
     </>
   );
 }

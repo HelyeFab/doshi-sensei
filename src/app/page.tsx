@@ -1,96 +1,44 @@
-import { Metadata } from 'next';
-import HomeClient from './HomeClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import Home from './Home';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const dynamic = 'force-dynamic';
-
-export const metadata: Metadata = {
-  title: {
-    absolute: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
-  },
-  description: 'The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Dōshi Sensei - The Ultimate Japanese Learning Platform',
+  description: 'Master Japanese with our all-in-one platform: verb conjugations, JLPT kanji study, themed kanji mood boards, complete vocabulary sets from Genki I & II and Minna no Nihongo I & II textbooks, practice with Jisho/WaniKani integration, import Anki decks, read NHK news with furigana, enjoy AI-generated stories, practice YouTube shadowing, play interactive learning games, access comprehensive grammar resources from Japanese creators, and build fluency with our all-in-one toolkit.',
   keywords: [
     'Japanese learning platform',
     'Japanese verb conjugation',
     'JLPT kanji study',
     'kanji mood boards',
+    'Genki vocabulary',
+    'Genki I and II',
+    'Minna no Nihongo vocabulary',
+    'Minna no Nihongo I and II',
     'Jisho vocabulary',
     'WaniKani integration',
     'Anki deck import',
     'Japanese flashcards',
     'YouTube shadowing practice',
-    'Japanese news reading',
+    'NHK news reading',
     'AI Japanese stories',
     'Japanese learning games',
     'Japanese grammar resources',
     'hiragana katakana practice',
     'spaced repetition Japanese',
     'comprehensive Japanese study',
-    'Japanese language app',
-    'learn Japanese online',
-    'Japanese drill practice',
-    'Japanese vocabulary builder'
+    'Japanese language app'
   ],
-  openGraph: {
-    title: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
-    description: 'The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.',
-    type: 'website',
-    url: 'https://doshisensei.com',
-    images: [
-      {
-        url: '/doshi.png',
-        width: 1200,
-        height: 630,
-        alt: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Doshi Sensei - The Ultimate Japanese Learning Platform',
-    description: 'Master Japanese with comprehensive tools: verb conjugations, kanji study, vocabulary practice, YouTube shadowing, AI stories, and more!',
-    images: ['/doshi.png'],
-    creator: '@doshisensei',
-    site: '@doshisensei',
-  },
-  alternates: {
-    canonical: '/',
-  },
-};
+  path: '/',
+});
 
-const homeStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Doshi Sensei - Home",
-  "description": "The ultimate Japanese learning platform: Master verb conjugations, study kanji through JLPT levels and mood boards, practice with Jisho/WaniKani vocabulary, import Anki decks, read news articles and AI stories, practice YouTube shadowing, play learning games, access grammar resources, and build fluency with our comprehensive suite of interactive tools.",
-  "url": "https://doshisensei.com",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  },
-  "keywords": [
-    "Japanese verb conjugation practice",
-    "JLPT kanji study by level",
-    "Kanji mood boards for thematic learning",
-    "Jisho/WaniKani vocabulary integration",
-    "Anki deck import and export",
-    "YouTube video shadowing practice",
-    "AI-generated Japanese stories",
-    "Japanese news reading practice",
-    "Interactive learning games",
-    "Textbook vocabulary (Genki/Minna no Nihongo)",
-    "Spaced repetition flashcards",
-    "Offline learning support",
-    "Progress tracking and achievements",
-    "Grammar explanations and resources"
-  ]
-};
-
-export default function HomePage() {
+export default function Page() {
   return (
     <>
-      <StructuredData data={homeStructuredData} />
-      <HomeClient />
+      <StructuredData data={structuredData.website} />
+      <StructuredData data={structuredData.organization} />
+      <StructuredData data={structuredData.educationalApp} />
+      <Home />
     </>
   );
 }

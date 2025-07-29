@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import FlashcardReviewClient from './FlashcardReviewClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import FlashcardReviewPage from './FlashcardReviewPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Flashcards | Doshi Sensei',
-  description: 'Flashcards - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Flashcards | Doshi Sensei',
-    description: 'Flashcards - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/drill/flashcards',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Flashcards | Doshi Sensei',
-    description: 'Flashcards - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Flashcards',
+  description: 'Flashcards - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/drill/flashcards',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Flashcards - Doshi Sensei",
-  "description": "Flashcards - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/drill/flashcards",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Flashcards",
+      "url": "/flashcards"
+    }
+  ]);
 
-export default function FlashcardReviewPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <FlashcardReviewClient />
+      <StructuredData data={breadcrumbData} />
+      <FlashcardReviewPage />
     </>
   );
 }

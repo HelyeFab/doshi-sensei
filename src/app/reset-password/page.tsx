@@ -1,44 +1,30 @@
-import { Metadata } from 'next';
-import ResetPasswordClient from './ResetPasswordClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import ResetPasswordPage from './ResetPasswordPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Reset Password | Doshi Sensei',
-  description: 'Reset Password - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  openGraph: {
-    title: 'Reset Password | Doshi Sensei',
-    description: 'Reset Password - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-    type: 'website',
-    url: 'https://doshisensei.com/reset-password',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Reset Password | Doshi Sensei',
-    description: 'Reset Password - Part of Doshi Sensei\'s comprehensive Japanese learning platform.',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Reset Password',
+  description: 'Reset Password - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/reset-password',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Reset Password - Doshi Sensei",
-  "description": "Reset Password - Part of Doshi Sensei's comprehensive Japanese learning platform.",
-  "url": "https://doshisensei.com/reset-password",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Reset Password",
+      "url": "/reset-password"
+    }
+  ]);
 
-export default function ResetPasswordPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <ResetPasswordClient />
+      <StructuredData data={breadcrumbData} />
+      <ResetPasswordPage />
     </>
   );
 }

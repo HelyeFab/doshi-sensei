@@ -1,40 +1,30 @@
-import { Metadata } from 'next';
-import KatakanaClient from './KatakanaClient';
-import StructuredData from '@/components/StructuredData';
+import type { Metadata } from 'next';
+import KatakanaPage from './KatakanaPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
-export const metadata: Metadata = {
-  title: 'Katakana | Doshi Sensei',
-  description: 'Learn katakana characters through engaging practice drills and memory aids.',
-  openGraph: {
-    title: 'Katakana | Doshi Sensei',
-    description: 'Learn katakana characters through engaging practice drills and memory aids.',
-    type: 'website',
-    url: 'https://doshisensei.com/practice/katakana',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Katakana | Doshi Sensei',
-    description: 'Learn katakana characters through engaging practice drills and memory aids.',
-  },
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Katakana',
+  description: 'Katakana - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',
+  path: '/practice/katakana',
+});
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Katakana - Doshi Sensei",
-  "description": "Learn katakana characters through engaging practice drills and memory aids.",
-  "url": "https://doshisensei.com/practice/katakana",
-  "isPartOf": {
-    "@type": "WebApplication",
-    "@id": "https://doshisensei.com/#application"
-  }
-};
+export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Katakana",
+      "url": "/katakana"
+    }
+  ]);
 
-export default function KatakanaPage() {
   return (
     <>
-      <StructuredData data={structuredData} />
-      <KatakanaClient />
+      <StructuredData data={breadcrumbData} />
+      <KatakanaPage />
     </>
   );
 }

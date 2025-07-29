@@ -140,8 +140,8 @@
     memory = 1024
   
   # Stripe webhook handler function
+  # No special configuration needed - using defaults
   # [functions."api-stripe-webhook"]
-  #   No special configuration needed - using defaults
   
   # Alternative times if you want multiple daily scrapes:
   # Morning scrape at 6 AM JST (9 PM UTC)

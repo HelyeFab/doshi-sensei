@@ -153,23 +153,9 @@ export default function ContactClient() {
                 {strings.contact.intro}
               </p>
             </div>
-            {/* Hidden form for Netlify detection */}
-            <form name="contact" data-netlify="true" hidden>
-              <input type="text" name="name" />
-              <input type="email" name="email" />
-              <input type="text" name="subject" />
-              <select name="category">
-                <option value="general">General</option>
-                <option value="bug">Bug Report</option>
-                <option value="feedback">Feedback</option>
-                <option value="feature">Feature Request</option>
-                <option value="support">Technical Support</option>
-              </select>
-              <textarea name="message"></textarea>
-            </form>
             
             {/* Actual form */}
-            <form onSubmit={handleSubmit} className="space-y-4" data-netlify="true" name="contact">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input type="hidden" name="form-name" value="contact" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

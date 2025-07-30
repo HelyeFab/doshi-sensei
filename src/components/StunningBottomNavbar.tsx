@@ -2,8 +2,7 @@
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
-import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -32,6 +31,7 @@ interface NavItem {
  */
 const StunningBottomNavbar = React.memo(() => {
   const pathname = usePathname();
+  const router = useRouter();
   const [activeItem, setActiveItem] = useState<string>('');
   const [showIndicator, setShowIndicator] = useState(false);
   const { user } = useAuth();
@@ -122,12 +122,14 @@ const StunningBottomNavbar = React.memo(() => {
           }
           
           return (
-            <SmartNavigationLink 
+            <button
               key={item.id}
-              href={item.href}
-              title={item.label}
+              onClick={() => {
+                setActiveItem(item.id);
+                router.push(item.href);
+              }}
               className="flex flex-col items-center justify-center flex-1 h-full py-2 transition-colors"
-              onClick={() => setActiveItem(item.id)}
+              aria-label={item.label}
             >
               {/* Icon */}
               <div className="relative w-6 h-6 mb-1">
@@ -154,7 +156,7 @@ const StunningBottomNavbar = React.memo(() => {
               }`}>
                 {item.label}
               </span>
-            </SmartNavigationLink>
+            </button>
           );
         })}
       </div>

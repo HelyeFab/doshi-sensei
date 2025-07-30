@@ -2,13 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Rubik, Dancing_Script } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SettingsProvider } from "@/contexts/SettingsContext";
-import { LanguageProvider } from "@/contexts/LanguageContext";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { UserProfileProvider } from "@/contexts/UserProfileContext";
-import { AdminProvider } from "@/contexts/AdminContext";
-import { NotificationProvider } from "@/contexts/NotificationContext";
-import { ClientThemeWrapper } from "@/components/ClientThemeWrapper";
+import { CombinedAuthProvider } from "@/contexts/CombinedAuthProvider";
+import { CombinedUIProvider } from "@/contexts/CombinedUIProvider";
+import { CombinedFeatureProvider } from "@/contexts/CombinedFeatureProvider";
 import { ToastContainer } from "@/components/ui/Toast";
 import { EnvProvider } from "@/components/EnvProvider";
 import MobileMenu from "@/components/MobileMenu";
@@ -20,20 +16,12 @@ import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
-import JMdictInitializer from "@/components/JMdictInitializer";
 import OfflineNotification from "@/components/OfflineNotification";
-import { ModalProvider } from "@/contexts/ModalContext";
-import { KanjiSelectionProvider } from '@/contexts/KanjiSelectionContext';
-import { CacheSystemInitializer } from '@/components/CacheSystemInitializer';
 import { DevHelper } from '@/components/DevHelper';
 import { AchievementToastManager } from '@/components/achievements/AchievementToast';
-import { AchievementInitializer } from '@/components/achievements/AchievementInitializer';
 import { NavigationGestures } from '@/components/navigation/NavigationGestures';
-import { NavigationProvider } from '@/contexts/NavigationContext';
-import { KanjiPreloadInitializer } from '@/components/KanjiPreloadInitializer';
 import PWARecovery from '@/components/PWARecovery';
-import { SEOLogger } from '@/components/SEOLogger';
-import { DeferredInitializers } from '@/components/DeferredInitializers';
+import { LazyInitializers } from '@/components/LazyInitializers';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -260,51 +248,36 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <EnvProvider>
-          <KanjiSelectionProvider>
-            <SettingsProvider>
-              <LanguageProvider>
-                <AuthProvider>
-                  <UserProfileProvider>
-                    <NotificationProvider>
-                      <AdminProvider>
-                        <ModalProvider>
-                          <NavigationProvider>
-                            {/* Use a client component to connect settings to theme */}
-                            <ClientThemeWrapper>
-                              <PWAWrapper>
-                                <OnboardingWrapper>
-                                  <AchievementToastManager>
-                                    <div className="min-h-screen bg-background text-foreground">
-                                      <OfflineNotification />
-                                      <DeferredInitializers />
-                                      <div className="mobile-nav-padding">
-                                        {children}
-                                      </div>
-                                      <StunningBottomNavbar />
-                                      <MobileMenu />
-                                      <DesktopNavMenu />
-                                      <PWAInstaller />
-                                      <PWAUpdateNotification />
-                                      <FloatingDonateButton />
-                                      <CompanionTrigger />
-                                      <ToastContainer />
-                                      <NavigationGestures />
-                                      <DevHelper />
-                                      <PWARecovery />
-                                    </div>
-                                  </AchievementToastManager>
-                                </OnboardingWrapper>
-                              </PWAWrapper>
-                            </ClientThemeWrapper>
-                          </NavigationProvider>
-                        </ModalProvider>
-                      </AdminProvider>
-                    </NotificationProvider>
-                  </UserProfileProvider>
-                </AuthProvider>
-              </LanguageProvider>
-            </SettingsProvider>
-          </KanjiSelectionProvider>
+          <CombinedUIProvider>
+            <CombinedAuthProvider>
+              <CombinedFeatureProvider>
+                <PWAWrapper>
+                  <OnboardingWrapper>
+                    <AchievementToastManager>
+                      <div className="min-h-screen bg-background text-foreground">
+                        <OfflineNotification />
+                        <LazyInitializers />
+                        <div className="mobile-nav-padding">
+                          {children}
+                        </div>
+                        <StunningBottomNavbar />
+                        <MobileMenu />
+                        <DesktopNavMenu />
+                        <PWAInstaller />
+                        <PWAUpdateNotification />
+                        <FloatingDonateButton />
+                        <CompanionTrigger />
+                        <ToastContainer />
+                        <NavigationGestures />
+                        <DevHelper />
+                        <PWARecovery />
+                      </div>
+                    </AchievementToastManager>
+                  </OnboardingWrapper>
+                </PWAWrapper>
+              </CombinedFeatureProvider>
+            </CombinedAuthProvider>
+          </CombinedUIProvider>
         </EnvProvider>
       </body>
     </html>

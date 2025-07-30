@@ -2,13 +2,13 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { SettingsProvider, useSettings } from './SettingsContext';
-import { LanguageProvider, useLanguage, useStrings } from './LanguageContext';
+import { LanguageProvider, useLanguageContext, useStrings } from './LanguageContext';
 import { ClientThemeWrapper } from '@/components/ClientThemeWrapper';
 
 // Combined context that provides all UI-related contexts
 interface CombinedUIContextType {
   settings: ReturnType<typeof useSettings>;
-  language: ReturnType<typeof useLanguage>;
+  language: ReturnType<typeof useLanguageContext>;
   strings: ReturnType<typeof useStrings>;
 }
 
@@ -26,7 +26,7 @@ export function useCombinedUI() {
 // Inner component that has access to all individual contexts
 function CombinedUIInner({ children }: { children: ReactNode }) {
   const settings = useSettings();
-  const language = useLanguage();
+  const language = useLanguageContext();
   const strings = useStrings();
 
   const value = React.useMemo(() => ({
@@ -59,4 +59,4 @@ export function CombinedUIProvider({ children }: { children: ReactNode }) {
 
 // Export individual hooks for backward compatibility
 export { useSettings } from './SettingsContext';
-export { useLanguage, useStrings } from './LanguageContext';
+export { useLanguageContext, useStrings } from './LanguageContext';

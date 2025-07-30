@@ -16,9 +16,24 @@ function initializeFirebase() {
   
   try {
     // Try to use service account from environment variable
-    const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
-      ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-      : null;
+    let serviceAccount = null;
+    
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      try {
+        // First try to parse as base64
+        const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('utf8');
+        serviceAccount = JSON.parse(decoded);
+        console.log('Successfully decoded base64 service account');
+      } catch (base64Error) {
+        // If base64 decode fails, try direct JSON parse (legacy support)
+        try {
+          serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+          console.log('Using direct JSON service account (legacy)');
+        } catch (jsonError) {
+          console.error('Failed to parse service account:', jsonError.message);
+        }
+      }
+    }
 
     if (serviceAccount) {
       if (!admin.apps.length) {

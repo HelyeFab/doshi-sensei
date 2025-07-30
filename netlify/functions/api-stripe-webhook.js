@@ -188,6 +188,20 @@ async function handleCheckoutCompleted(session) {
   }
 
   console.log('Checkout completed for user:', firebaseUID);
+  
+  // For subscription mode, we need to retrieve the subscription
+  if (session.mode === 'subscription' && session.subscription) {
+    try {
+      // Retrieve the full subscription object
+      const subscription = await stripe.subscriptions.retrieve(session.subscription);
+      console.log('Retrieved subscription from checkout:', subscription.id);
+      
+      // Process the subscription update
+      await handleSubscriptionUpdate(subscription);
+    } catch (error) {
+      console.error('Error retrieving subscription from checkout:', error);
+    }
+  }
 }
 
 async function handleSubscriptionUpdate(subscription) {

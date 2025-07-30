@@ -7,17 +7,48 @@
   <!-- This file helps Netlify detect forms in SPA applications -->
   <!-- It's not meant to be accessed directly -->
   
-  <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+  <!-- General Contact Form (queries@doshisensei.com) -->
+  <form name="contact-general" netlify netlify-honeypot="bot-field" hidden>
     <input type="text" name="name" />
     <input type="email" name="email" />
     <input type="text" name="subject" />
-    <select name="category">
-      <option value="general">General</option>
-      <option value="bug">Bug Report</option>
-      <option value="feedback">Feedback</option>
-      <option value="feature">Feature Request</option>
-      <option value="support">Technical Support</option>
-    </select>
+    <input type="hidden" name="category" value="general" />
+    <textarea name="message"></textarea>
+  </form>
+  
+  <!-- Bug Report Form (noreply@doshisensei.com) -->
+  <form name="contact-bug" netlify netlify-honeypot="bot-field" hidden>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="text" name="subject" />
+    <input type="hidden" name="category" value="bug" />
+    <textarea name="message"></textarea>
+  </form>
+  
+  <!-- Feedback Form (queries@doshisensei.com) -->
+  <form name="contact-feedback" netlify netlify-honeypot="bot-field" hidden>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="text" name="subject" />
+    <input type="hidden" name="category" value="feedback" />
+    <textarea name="message"></textarea>
+  </form>
+  
+  <!-- Feature Request Form (queries@doshisensei.com) -->
+  <form name="contact-feature" netlify netlify-honeypot="bot-field" hidden>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="text" name="subject" />
+    <input type="hidden" name="category" value="feature" />
+    <textarea name="message"></textarea>
+  </form>
+  
+  <!-- Technical Support Form (noreply@doshisensei.com) -->
+  <form name="contact-support" netlify netlify-honeypot="bot-field" hidden>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="text" name="subject" />
+    <input type="hidden" name="category" value="support" />
     <textarea name="message"></textarea>
   </form>
   

@@ -17,6 +17,7 @@ export default function ContactPage() {
     category: 'general',
     message: ''
   });
+  const [messageLength, setMessageLength] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -46,14 +47,28 @@ export default function ContactPage() {
     try {
       // Validate email before sending
       if (!validator.isEmail(formData.email)) {
-        setErrorMessage(strings.forms?.validation?.invalidEmail || 'Please enter a valid email address');
+        setErrorMessage(strings.contact?.form?.validation?.emailInvalid || strings.forms?.validation?.invalidEmail || 'Please enter a valid email address');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Validate message length
+      if (formData.message.length < 10) {
+        setErrorMessage(strings.contact?.form?.validation?.messageTooShort || 'Message must be at least 10 characters');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      if (formData.message.length > 5000) {
+        setErrorMessage(strings.contact?.form?.validation?.messageTooLong || 'Message exceeds the 5000 character limit');
         setIsSubmitting(false);
         return;
       }
 
-      // Submit to Netlify Forms
+      // Submit to Netlify Forms - use the appropriate form based on category
+      const formName = `contact-${formData.category}`;
       const formBody = new URLSearchParams({
-        'form-name': 'contact',
+        'form-name': formName,
         ...formData
       }).toString();
 
@@ -103,6 +118,11 @@ export default function ContactPage() {
       ...prev,
       [name]: value
     }));
+    
+    // Track message length for character counter
+    if (name === 'message') {
+      setMessageLength(value.length);
+    }
   };
 
   if (showSuccess) {
@@ -259,7 +279,113 @@ export default function ContactPage() {
                 </button>
               </div>
             </form>
+            
+            {/* Tips for Effective Communication */}
+            {strings.contact.form?.tips && (
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                  {strings.contact.form.tips.title}
+                </h3>
+                <ul className="space-y-1">
+                  {strings.contact.form.tips.items.map((tip, index) => (
+                    <li key={index} className="text-xs text-blue-800 dark:text-blue-200 flex items-start gap-2">
+                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {/* Urgent Note */}
+            {strings.contact.urgentNote && (
+              <p className="text-xs text-amber-600 dark:text-amber-400 mt-4 text-center">
+                ⚠️ {strings.contact.urgentNote}
+              </p>
+            )}
           </div>
+          
+          {/* FAQ Section */}
+          {strings.contact.faq && (
+            <div className="mt-6 bg-card border border-border rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-3">
+                {strings.contact.faq.title}
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                {strings.contact.faq.description}
+              </p>
+              <ul className="space-y-2">
+                {strings.contact.faq.items.map((item, index) => (
+                  <li key={index} className="flex items-center gap-2 text-sm text-primary hover:underline cursor-pointer">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* Alternative Contact Methods */}
+          {strings.contact.alternativeContact && (
+            <div className="mt-6 bg-card border border-border rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
+                {strings.contact.alternativeContact.title}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium text-foreground mb-2">
+                    {strings.contact.alternativeContact.email.label}
+                  </h4>
+                  <div className="space-y-1">
+                    <a href={`mailto:${strings.contact.alternativeContact.email.general}`} className="text-sm text-primary hover:underline block">
+                      {strings.contact.alternativeContact.email.general}
+                    </a>
+                    <a href={`mailto:${strings.contact.alternativeContact.email.privacy}`} className="text-sm text-primary hover:underline block">
+                      {strings.contact.alternativeContact.email.privacy}
+                    </a>
+                    <a href={`mailto:${strings.contact.alternativeContact.email.partnerships}`} className="text-sm text-primary hover:underline block">
+                      {strings.contact.alternativeContact.email.partnerships}
+                    </a>
+                  </div>
+                </div>
+                {strings.contact.alternativeContact.social && (
+                  <div>
+                    <h4 className="text-sm font-medium text-foreground mb-2">
+                      {strings.contact.alternativeContact.social.label}
+                    </h4>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">
+                        {strings.contact.alternativeContact.social.twitter}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {strings.contact.alternativeContact.social.discord}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
+          {/* Business Hours */}
+          {strings.contact.businessHours && (
+            <div className="mt-6 text-center p-4 bg-muted/30 rounded-lg">
+              <h4 className="text-sm font-medium text-foreground mb-2">
+                {strings.contact.businessHours.title}
+              </h4>
+              <p className="text-xs text-muted-foreground">
+                {strings.contact.businessHours.description}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {strings.contact.businessHours.hours}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {strings.contact.businessHours.weekends} • {strings.contact.businessHours.holidays}
+              </p>
+            </div>
+          )}
         </main>
       </div>
       {/* Error Message Modal */}

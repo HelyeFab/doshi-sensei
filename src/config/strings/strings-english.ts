@@ -1496,32 +1496,97 @@ export const strings = {
   "contact": {
     "title": "Contact Us",
     "description": "Get in touch with our support team",
-    "getInTouch": "Get in Touch",
-    "intro": "We'd love to hear from you! Send us a message and we'll respond as soon as possible.",
+    "getInTouch": "How Can We Help?",
+    "intro": "We're here to help and would love to hear from you. Whether you have a question, feedback, or need support, we'll get back to you as quickly as possible.",
+    "responseTime": "Average response time: 24-48 hours",
     "successTitle": "Message Sent Successfully!",
-    "successMessage": "Thank you for contacting us. We'll get back to you as soon as possible.",
+    "successMessage": "Thank you for reaching out. We've received your message and will respond within 24-48 hours. Please check your email for our reply.",
     "sendAnother": "Send Another Message",
     "sending": "Sending...",
     "sendMessage": "Send Message",
+    "urgentNote": "For urgent technical issues, please include 'URGENT' in your subject line.",
     "form": {
       "name": "Name",
       "email": "Email",
       "subject": "Subject",
       "message": "Message",
       "category": "Category",
+      "required": "Required",
+      "optional": "Optional",
+      "characterCount": "{{count}} / {{max}} characters",
       "placeholders": {
-        "name": "Your name",
+        "name": "Your full name",
         "email": "your.email@example.com",
-        "subject": "Subject (optional)",
-        "message": "Type your message here..."
+        "subject": "Brief summary of your inquiry",
+        "message": "Please describe your issue or feedback in detail..."
       },
       "categories": {
-        "general": "General Question",
+        "general": "General Inquiry",
         "bug": "Bug Report",
-        "feedback": "Feedback",
+        "feedback": "Feedback & Suggestions",
         "feature": "Feature Request",
-        "support": "Technical Support"
+        "support": "Technical Support",
+        "billing": "Billing & Subscription",
+        "privacy": "Privacy & Data",
+        "partnership": "Partnership Opportunities"
+      },
+      "categoryDescriptions": {
+        "general": "Questions about Dōshi Sensei or Japanese learning",
+        "bug": "Report issues or problems you've encountered",
+        "feedback": "Share your thoughts on how we can improve",
+        "feature": "Suggest new features you'd like to see",
+        "support": "Get help with technical issues",
+        "billing": "Questions about payments or subscriptions",
+        "privacy": "Privacy concerns or data requests",
+        "partnership": "Business inquiries and collaborations"
+      },
+      "validation": {
+        "nameRequired": "Please enter your name",
+        "emailRequired": "Please enter your email address",
+        "emailInvalid": "Please enter a valid email address",
+        "messageRequired": "Please enter a message",
+        "messageTooShort": "Message must be at least 10 characters",
+        "messageTooLong": "Message exceeds the 5000 character limit"
+      },
+      "tips": {
+        "title": "Tips for Effective Communication",
+        "items": [
+          "Be specific about the issue or suggestion",
+          "Include steps to reproduce bugs",
+          "Mention your device type and app version for technical issues",
+          "One topic per message for faster resolution"
+        ]
       }
+    },
+    "alternativeContact": {
+      "title": "Other Ways to Reach Us",
+      "email": {
+        "label": "Direct Email",
+        "general": "support@doshisensei.com",
+        "privacy": "privacy@doshisensei.com",
+        "partnerships": "partnerships@doshisensei.com"
+      },
+      "social": {
+        "label": "Follow Us",
+        "twitter": "@DoshiSenseiApp",
+        "discord": "Join our Discord community"
+      }
+    },
+    "faq": {
+      "title": "Before You Contact Us",
+      "description": "You might find instant answers in our:",
+      "items": [
+        "Help Center & FAQ",
+        "Community Forums",
+        "Video Tutorials"
+      ]
+    },
+    "businessHours": {
+      "title": "Support Hours",
+      "description": "Our support team is available:",
+      "hours": "Monday - Friday: 9:00 AM - 6:00 PM EST",
+      "weekends": "Limited support on weekends",
+      "holidays": "Closed on major holidays"
     }
   },
   "forms": {
@@ -1732,51 +1797,511 @@ export const strings = {
       "termsOfService": "Terms of Service",
       "privacyPolicy": "Privacy Policy"
     },
-    "acknowledgments": {
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "subtitle": "Your Privacy Matters",
+      "lastUpdated": "Last updated: January 2025",
+      "effectiveDate": "Effective date: January 1, 2025",
       "sections": {
-        "coreTechnologies": "Core Technologies",
-        "japaneseLanguageData": "Japanese Language Data",
-        "developmentTools": "Development Tools"
-      },
-      "technologies": {
-        "wanikani": "WaniKani API",
-        "typescript": "TypeScript",
-        "eslint": "ESLint",
-        "prettier": "Prettier",
-        "jest": "Jest",
-        "netlify": "Netlify"
-      },
-      "descriptions": {
-        "codeLinting": "Code linting",
-        "codeFormatting": "Code formatting",
-        "testingFramework": "Testing framework",
-        "hostingPlatform": "Hosting platform"
-      },
-      "communities": {
-        "japaneseLearning": "Japanese Language Learning Community",
-        "openSource": "Open Source Contributors",
-        "betaTesters": "Beta Testers"
-      },
-      "license": "License Information"
+        "introduction": {
+          "title": "Introduction",
+          "content": "Dōshi Sensei ('we', 'our', or 'us') is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your information when you use our Japanese language learning application."
+        },
+        "privacyCommitment": {
+          "title": "Our Privacy Commitment",
+          "content": "We believe in complete transparency and user control. Dōshi Sensei has been designed with privacy as a fundamental principle. Your learning data belongs to you, and we're committed to keeping it that way.",
+          "principles": [
+            "Your data stays on your device by default",
+            "No tracking or analytics without explicit consent",
+            "Complete transparency in all data practices",
+            "You maintain full control over your information"
+          ]
+        },
+        "informationCollection": {
+          "title": "Information We Collect",
+          "subsections": {
+            "localData": {
+              "title": "Data Stored Locally on Your Device",
+              "description": "The following information is stored exclusively on your device:",
+              "items": [
+                "Learning progress and statistics",
+                "Custom vocabulary lists and saved items",
+                "App preferences and settings",
+                "Study session history",
+                "Practice scores and achievements",
+                "Offline content cache"
+              ]
+            },
+            "accountData": {
+              "title": "Account Information (Premium Users Only)",
+              "description": "If you create an account for premium features:",
+              "items": [
+                "Email address for account authentication",
+                "Encrypted password (never stored in plain text)",
+                "Subscription status and billing information (processed by Stripe)",
+                "Cloud sync preferences"
+              ]
+            },
+            "automaticData": {
+              "title": "Automatically Collected Information",
+              "description": "When you use our service, we may collect:",
+              "items": [
+                "Device type and operating system version",
+                "App version information",
+                "Crash reports and error logs (anonymized)",
+                "Performance metrics (app load times, response times)"
+              ]
+            }
+          }
+        },
+        "dataUsage": {
+          "title": "How We Use Your Information",
+          "content": "We use the collected information solely to:",
+          "purposes": [
+            "Provide and improve the language learning experience",
+            "Sync your data across devices (premium feature)",
+            "Process payments and manage subscriptions",
+            "Send important service updates (opt-in only)",
+            "Diagnose and fix technical issues",
+            "Develop new features based on usage patterns"
+          ]
+        },
+        "dataSharing": {
+          "title": "Information Sharing and Disclosure",
+          "content": "We do not sell, trade, or rent your personal information. We may share information only in these circumstances:",
+          "circumstances": [
+            "With your explicit consent",
+            "To comply with legal obligations or court orders",
+            "To protect our rights, privacy, safety, or property",
+            "With service providers who assist our operations (under strict confidentiality agreements)"
+          ],
+          "serviceProviders": {
+            "title": "Third-Party Service Providers",
+            "list": [
+              "Stripe - Payment processing (PCI-DSS compliant)",
+              "Firebase - Authentication and cloud storage (for premium users)",
+              "Netlify - Application hosting (no user data access)"
+            ]
+          }
+        },
+        "dataSecurity": {
+          "title": "Data Security",
+          "content": "We implement industry-standard security measures to protect your information:",
+          "measures": [
+            "End-to-end encryption for cloud sync data",
+            "Secure HTTPS connections for all data transfers",
+            "Regular security audits and updates",
+            "Strict access controls and authentication",
+            "Automatic logout after extended inactivity"
+          ]
+        },
+        "dataRetention": {
+          "title": "Data Retention",
+          "content": "We retain your information only as long as necessary:",
+          "policies": [
+            "Local data remains on your device until you delete it",
+            "Account data is retained while your account is active",
+            "Deleted account data is permanently removed within 30 days",
+            "Anonymized analytics data may be retained for improvement purposes"
+          ]
+        },
+        "userRights": {
+          "title": "Your Rights and Choices",
+          "content": "You have complete control over your information:",
+          "rights": [
+            "Access - View all data we have about you",
+            "Export - Download your data in a portable format",
+            "Correction - Update inaccurate information",
+            "Deletion - Remove your data permanently",
+            "Opt-out - Disable any optional data collection",
+            "Portability - Transfer your data to another service"
+          ],
+          "howTo": "To exercise these rights, visit Settings > Data Management or contact us at privacy@doshisensei.com"
+        },
+        "childrenPrivacy": {
+          "title": "Children's Privacy",
+          "content": "Dōshi Sensei is designed for learners of all ages. We do not knowingly collect personal information from children under 13 without parental consent. If you believe we have inadvertently collected such information, please contact us immediately."
+        },
+        "cookies": {
+          "title": "Cookies and Local Storage",
+          "content": "We use browser local storage to:",
+          "uses": [
+            "Save your app preferences and settings",
+            "Store your learning progress locally",
+            "Remember your login status",
+            "Cache content for offline use"
+          ],
+          "note": "These are essential for app functionality and are stored only on your device."
+        },
+        "internationalUsers": {
+          "title": "International Users",
+          "content": "Dōshi Sensei is available globally. By using our service, you consent to the processing of your information in accordance with this policy, regardless of your location."
+        },
+        "changes": {
+          "title": "Changes to This Policy",
+          "content": "We may update this Privacy Policy to reflect changes in our practices or for legal reasons. We will notify you of significant changes through:",
+          "methods": [
+            "In-app notifications",
+            "Email (if you've provided one)",
+            "Prominent notice on our website"
+          ]
+        },
+        "contact": {
+          "title": "Contact Us",
+          "content": "If you have questions, concerns, or requests regarding this Privacy Policy:",
+          "methods": {
+            "email": {
+              "label": "Email",
+              "value": "privacy@doshisensei.com"
+            },
+            "form": {
+              "label": "Contact Form",
+              "value": "Use the in-app contact form"
+            },
+            "address": {
+              "label": "Mail",
+              "value": "Privacy Team, Dōshi Sensei, [Address]"
+            }
+          },
+          "responseTime": "We aim to respond to all privacy inquiries within 48 hours."
+        },
+        "consent": {
+          "title": "Consent",
+          "content": "By using Dōshi Sensei, you consent to the collection and use of information as described in this Privacy Policy."
+        }
+      }
     },
     "termsOfService": {
+      "title": "Terms of Service",
+      "subtitle": "Terms and Conditions of Use",
+      "lastUpdated": "Last updated: January 2025",
+      "effectiveDate": "Effective date: January 1, 2025",
       "sections": {
-        "agreementToTerms": "Agreement to Terms",
-        "permittedUse": "Permitted Use",
-        "prohibitedActivities": "Prohibited Activities",
-        "contentAndData": "Content and Data",
-        "disclaimerOfWarranties": "Disclaimer of Warranties",
-        "limitationOfLiability": "Limitation of Liability"
+        "acceptance": {
+          "title": "1. Acceptance of Terms",
+          "content": "By accessing or using Dōshi Sensei ('the Service'), you agree to be bound by these Terms of Service ('Terms'). If you disagree with any part of these terms, you may not access the Service."
+        },
+        "definitions": {
+          "title": "2. Definitions",
+          "terms": {
+            "service": "'Service' refers to the Dōshi Sensei application and all related services",
+            "user": "'User', 'you', and 'your' refer to the individual accessing the Service",
+            "content": "'Content' includes text, images, audio, and other materials available through the Service",
+            "userContent": "'User Content' refers to content created or uploaded by users"
+          }
+        },
+        "eligibility": {
+          "title": "3. Eligibility",
+          "content": "You must be at least 13 years old to use the Service. Users under 18 must have parental or guardian consent. By using the Service, you represent that you meet these requirements."
+        },
+        "accountTerms": {
+          "title": "4. Account Terms",
+          "responsibilities": [
+            "You are responsible for maintaining the confidentiality of your account",
+            "You must provide accurate and complete information",
+            "You are responsible for all activities under your account",
+            "You must notify us immediately of any unauthorized use",
+            "One person may not maintain multiple free accounts"
+          ]
+        },
+        "acceptableUse": {
+          "title": "5. Acceptable Use Policy",
+          "permitted": {
+            "title": "Permitted Uses",
+            "uses": [
+              "Personal educational use for learning Japanese",
+              "Creating and sharing study materials within the app",
+              "Accessing all available features per your subscription level",
+              "Exporting your personal data for backup purposes"
+            ]
+          },
+          "prohibited": {
+            "title": "Prohibited Uses",
+            "uses": [
+              "Reverse engineering or decompiling the Service",
+              "Using automated systems to access the Service",
+              "Interfering with or disrupting the Service",
+              "Violating any applicable laws or regulations",
+              "Impersonating others or providing false information",
+              "Sharing account credentials with others",
+              "Using the Service for commercial purposes without permission",
+              "Uploading malicious code or harmful content"
+            ]
+          }
+        },
+        "intellectualProperty": {
+          "title": "6. Intellectual Property Rights",
+          "ourRights": {
+            "title": "Our Rights",
+            "content": "The Service and its original content (excluding User Content) remain the property of Dōshi Sensei and are protected by copyright, trademark, and other laws."
+          },
+          "yourRights": {
+            "title": "Your Rights",
+            "content": "You retain ownership of any content you create. By uploading content, you grant us a license to use, display, and distribute it within the Service."
+          },
+          "thirdPartyRights": {
+            "title": "Third-Party Rights",
+            "content": "Some content is licensed from third parties (e.g., WaniKani API data). Such content is subject to their respective licenses and terms."
+          }
+        },
+        "userContent": {
+          "title": "7. User Content",
+          "guidelines": [
+            "You are solely responsible for your User Content",
+            "You must have the right to upload any content you share",
+            "Content must be appropriate for all ages",
+            "We may remove content that violates these Terms",
+            "We do not endorse or verify User Content accuracy"
+          ]
+        },
+        "payments": {
+          "title": "8. Payments and Subscriptions",
+          "terms": [
+            "Premium features require a paid subscription",
+            "Payments are processed securely through Stripe",
+            "Subscriptions auto-renew unless cancelled",
+            "Refunds are provided per our refund policy",
+            "Prices may change with 30 days notice"
+          ],
+          "refundPolicy": "We offer a 7-day money-back guarantee for first-time subscribers. After that, refunds are provided at our discretion."
+        },
+        "privacyAndData": {
+          "title": "9. Privacy and Data Protection",
+          "content": "Your use of the Service is also governed by our Privacy Policy. By using the Service, you consent to our data practices as described in the Privacy Policy."
+        },
+        "disclaimers": {
+          "title": "10. Disclaimers and Warranties",
+          "content": "THE SERVICE IS PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND. WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING:",
+          "disclaimers": [
+            "Merchantability and fitness for a particular purpose",
+            "Accuracy, reliability, or completeness of content",
+            "Uninterrupted or error-free service",
+            "Security of data transmission",
+            "Results from using the Service"
+          ]
+        },
+        "limitationOfLiability": {
+          "title": "11. Limitation of Liability",
+          "content": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, DŌSHI SENSEI SHALL NOT BE LIABLE FOR:",
+          "exclusions": [
+            "Indirect, incidental, or consequential damages",
+            "Loss of profits, data, or use",
+            "Damages exceeding the amount paid in the past 12 months",
+            "Any matter beyond our reasonable control"
+          ]
+        },
+        "indemnification": {
+          "title": "12. Indemnification",
+          "content": "You agree to indemnify and hold harmless Dōshi Sensei from any claims, damages, or expenses arising from your use of the Service or violation of these Terms."
+        },
+        "termination": {
+          "title": "13. Termination",
+          "content": "We may terminate or suspend your account at any time for violations of these Terms. You may terminate your account at any time through the app settings.",
+          "effects": "Upon termination, your right to use the Service ceases immediately. Provisions that should survive termination will remain in effect."
+        },
+        "governingLaw": {
+          "title": "14. Governing Law and Disputes",
+          "content": "These Terms are governed by the laws of [Jurisdiction]. Any disputes shall be resolved through binding arbitration in accordance with [Arbitration Rules].",
+          "exceptions": "You may bring claims in small claims court if eligible. We may seek injunctive relief in any court for intellectual property violations."
+        },
+        "changes": {
+          "title": "15. Changes to Terms",
+          "content": "We reserve the right to modify these Terms at any time. Material changes will be notified through:",
+          "methods": [
+            "Email notification (if provided)",
+            "In-app notification",
+            "Notice on our website"
+          ],
+          "continuation": "Continued use after changes constitutes acceptance of the new Terms."
+        },
+        "generalProvisions": {
+          "title": "16. General Provisions",
+          "provisions": {
+            "entireAgreement": "These Terms constitute the entire agreement between you and Dōshi Sensei",
+            "severability": "If any provision is found invalid, the remaining provisions continue in effect",
+            "waiver": "Failure to enforce any right is not a waiver of that right",
+            "assignment": "You may not assign these Terms; we may assign them without restriction",
+            "forceMAjeure": "We are not liable for failures due to circumstances beyond our control"
+          }
+        },
+        "contact": {
+          "title": "17. Contact Information",
+          "content": "For questions about these Terms of Service:",
+          "methods": {
+            "email": {
+              "label": "Email",
+              "value": "legal@doshisensei.com"
+            },
+            "form": {
+              "label": "Contact Form",
+              "value": "Use the in-app contact form"
+            },
+            "address": {
+              "label": "Mail",
+              "value": "Legal Department, Dōshi Sensei, [Address]"
+            }
+          }
+        }
+      }
+    },
+    "acknowledgments": {
+      "title": "Acknowledgments",
+      "subtitle": "Built with Amazing Open Source Technologies",
+      "intro": "Dōshi Sensei wouldn't be possible without these incredible projects and communities:",
+      "sections": {
+        "coreTechnologies": {
+          "title": "Core Technologies",
+          "items": {
+            "nextjs": {
+              "name": "Next.js",
+              "version": "14.0+",
+              "description": "The React framework for production",
+              "license": "MIT License",
+              "url": "https://nextjs.org"
+            },
+            "react": {
+              "name": "React",
+              "version": "18.0+",
+              "description": "A JavaScript library for building user interfaces",
+              "license": "MIT License",
+              "url": "https://reactjs.org"
+            },
+            "typescript": {
+              "name": "TypeScript",
+              "version": "5.0+",
+              "description": "Typed superset of JavaScript",
+              "license": "Apache-2.0 License",
+              "url": "https://www.typescriptlang.org"
+            },
+            "tailwindcss": {
+              "name": "Tailwind CSS",
+              "version": "3.0+",
+              "description": "A utility-first CSS framework",
+              "license": "MIT License",
+              "url": "https://tailwindcss.com"
+            }
+          }
+        },
+        "japaneseLanguageData": {
+          "title": "Japanese Language Data",
+          "items": {
+            "wanikani": {
+              "name": "WaniKani API",
+              "description": "Comprehensive kanji and vocabulary learning system",
+              "license": "API Terms of Service",
+              "url": "https://www.wanikani.com",
+              "note": "Primary source for vocabulary and kanji data"
+            },
+            "jisho": {
+              "name": "Jisho.org",
+              "description": "Japanese-English dictionary",
+              "license": "Creative Commons",
+              "url": "https://jisho.org",
+              "note": "Fallback dictionary for additional coverage"
+            },
+            "kanjiVG": {
+              "name": "KanjiVG",
+              "description": "Kanji stroke order data",
+              "license": "Creative Commons Attribution-ShareAlike 3.0",
+              "url": "https://kanjivg.tagaini.net"
+            },
+            "tatoeba": {
+              "name": "Tatoeba",
+              "description": "Collection of sentences and translations",
+              "license": "CC BY 2.0",
+              "url": "https://tatoeba.org"
+            }
+          }
+        },
+        "developmentTools": {
+          "title": "Development Tools",
+          "items": {
+            "firebase": {
+              "name": "Firebase",
+              "description": "Authentication and cloud storage",
+              "license": "Apache-2.0 License",
+              "category": "Backend Services"
+            },
+            "stripe": {
+              "name": "Stripe",
+              "description": "Payment processing",
+              "license": "Commercial Service",
+              "category": "Payment Processing"
+            },
+            "netlify": {
+              "name": "Netlify",
+              "description": "Hosting and deployment",
+              "license": "Commercial Service",
+              "category": "Infrastructure"
+            },
+            "openai": {
+              "name": "OpenAI API",
+              "description": "AI-powered features and content generation",
+              "license": "Commercial API",
+              "category": "AI Services"
+            }
+          }
+        },
+        "uiLibraries": {
+          "title": "UI Libraries & Components",
+          "items": {
+            "framerMotion": {
+              "name": "Framer Motion",
+              "description": "Animation library for React",
+              "license": "MIT License"
+            },
+            "radixUI": {
+              "name": "Radix UI",
+              "description": "Unstyled, accessible UI components",
+              "license": "MIT License"
+            },
+            "lucideReact": {
+              "name": "Lucide React",
+              "description": "Beautiful & consistent icons",
+              "license": "ISC License"
+            },
+            "recharts": {
+              "name": "Recharts",
+              "description": "Charting library for React",
+              "license": "MIT License"
+            }
+          }
+        },
+        "specialThanks": {
+          "title": "Special Thanks",
+          "items": [
+            {
+              "title": "Japanese Language Learning Community",
+              "description": "For invaluable feedback and feature suggestions"
+            },
+            {
+              "title": "Beta Testers",
+              "description": "For helping us identify and fix issues before launch"
+            },
+            {
+              "title": "Open Source Contributors",
+              "description": "For creating and maintaining the tools we rely on"
+            },
+            {
+              "title": "Language Teachers & Educators",
+              "description": "For insights into effective learning methodologies"
+            },
+            {
+              "title": "Our Users",
+              "description": "For trusting us with your Japanese learning journey"
+            }
+          ]
+        },
+        "licenses": {
+          "title": "License Information",
+          "content": "This application is built using open source software under various licenses. The complete list of dependencies and their licenses can be found in our source code repository.",
+          "note": "We respect and comply with all open source licenses. If you believe we've missed an attribution, please contact us."
+        }
       },
-      "subsections": {
-        "educationalPurpose": "Educational Purpose",
-        "personalUse": "Personal Use",
-        "dataExport": "Data Export",
-        "reverseEngineering": "Reverse Engineering",
-        "commercialRedistribution": "Commercial Redistribution",
-        "harmfulActivities": "Harmful Activities",
-        "yourData": "Your Data",
-        "educationalContent": "Educational Content"
+      "footer": {
+        "madeWith": "Made with ❤️ for Japanese learners worldwide",
+        "tagline": "みんなで一緒に日本語を勉強しましょう！",
+        "taglineTranslation": "Let's study Japanese together, everyone!"
       }
     }
   },

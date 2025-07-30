@@ -57,13 +57,26 @@ export default function ContactPage() {
         ...formData
       }).toString();
 
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formBody
-      });
+      // For Next.js apps, we need to ensure Netlify can intercept the form
+      // Try submitting to the static HTML file first, then fallback to root
+      let response;
+      try {
+        response = await fetch('/netlify-forms.html', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formBody
+        });
+      } catch (error) {
+        // Fallback to root if the static file isn't accessible
+        response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formBody
+        });
+      }
 
-      if (response.ok) {
+      // Netlify returns a 200 or 303 redirect on successful form submission
+      if (response.ok || response.status === 303) {
         setShowSuccess(true);
         setFormData({
           name: '',
@@ -73,7 +86,8 @@ export default function ContactPage() {
           message: ''
         });
       } else {
-        throw new Error('Form submission failed');
+        console.error('Form submission failed with status:', response.status);
+        throw new Error(`Form submission failed with status: ${response.status}`);
       }
     } catch (error) {
       console.error('Contact form error:', error);
@@ -153,23 +167,8 @@ export default function ContactPage() {
                 {strings.contact.intro}
               </p>
             </div>
-            {/* Hidden form for Netlify detection */}
-            <form name="contact" data-netlify="true" hidden>
-              <input type="text" name="name" />
-              <input type="email" name="email" />
-              <input type="text" name="subject" />
-              <select name="category">
-                <option value="general">General</option>
-                <option value="bug">Bug Report</option>
-                <option value="feedback">Feedback</option>
-                <option value="feature">Feature Request</option>
-                <option value="support">Technical Support</option>
-              </select>
-              <textarea name="message"></textarea>
-            </form>
-            
             {/* Actual form */}
-            <form onSubmit={handleSubmit} className="space-y-4" data-netlify="true" name="contact">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input type="hidden" name="form-name" value="contact" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

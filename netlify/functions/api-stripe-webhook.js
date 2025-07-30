@@ -59,6 +59,15 @@ exports.handler = async (event) => {
   const signature = event.headers['stripe-signature'];
   let stripeEvent;
 
+  // Check if webhook secret is configured
+  if (!webhookSecret) {
+    console.error('STRIPE_WEBHOOK_SECRET not configured in environment variables');
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Webhook secret not configured' }),
+    };
+  }
+
   try {
     // Verify webhook signature
     stripeEvent = stripe.webhooks.constructEvent(
@@ -68,6 +77,8 @@ exports.handler = async (event) => {
     );
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
+    console.error('Signature header:', signature);
+    console.error('Webhook secret exists:', !!webhookSecret);
     return {
       statusCode: 400,
       body: JSON.stringify({ error: 'Invalid signature' }),

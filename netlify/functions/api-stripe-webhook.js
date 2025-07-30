@@ -10,8 +10,10 @@ const admin = require('firebase-admin');
 let db;
 let firebaseInitialized = false;
 
-// Initialize Firebase Admin if not already initialized
-if (!admin.apps.length) {
+// Function to initialize Firebase
+function initializeFirebase() {
+  if (firebaseInitialized) return true;
+  
   try {
     // Try to use service account from environment variable
     const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
@@ -19,22 +21,29 @@ if (!admin.apps.length) {
       : null;
 
     if (serviceAccount) {
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || serviceAccount.project_id
-      });
+      if (!admin.apps.length) {
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || serviceAccount.project_id
+        });
+      }
       db = admin.firestore();
       firebaseInitialized = true;
       console.log('Firebase Admin initialized with service account');
+      return true;
     } else {
       console.log('Warning: No Firebase service account found, Firebase operations will be skipped');
-      firebaseInitialized = false;
+      return false;
     }
   } catch (error) {
     console.error('Error initializing Firebase Admin:', error);
-    firebaseInitialized = false;
+    console.error('Error details:', error.message);
+    return false;
   }
 }
+
+// Try to initialize on module load
+initializeFirebase();
 
 exports.handler = async (event) => {
   console.log('Netlify Function: api-stripe-webhook called');
@@ -208,6 +217,21 @@ async function handleSubscriptionUpdate(subscription) {
   console.log('🔔 Processing subscription update:', subscription.id);
   console.log('Subscription status:', subscription.status);
   console.log('Customer ID:', subscription.customer);
+  
+  // Try to initialize Firebase if not already done
+  if (!firebaseInitialized) {
+    console.log('Firebase not initialized, attempting to initialize now...');
+    initializeFirebase();
+  }
+  
+  if (!db) {
+    console.error('CRITICAL: Cannot update subscription - Firebase Firestore not available');
+    console.error('Environment check:');
+    console.error('- FIREBASE_SERVICE_ACCOUNT exists:', !!process.env.FIREBASE_SERVICE_ACCOUNT);
+    console.error('- FIREBASE_SERVICE_ACCOUNT length:', process.env.FIREBASE_SERVICE_ACCOUNT?.length || 0);
+    console.error('- firebaseInitialized:', firebaseInitialized);
+    throw new Error('Firebase Firestore not initialized');
+  }
   
   // First try to get firebaseUID from subscription metadata
   let firebaseUID = subscription.metadata?.firebaseUID;

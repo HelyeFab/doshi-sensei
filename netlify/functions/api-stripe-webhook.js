@@ -7,6 +7,9 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 // Initialize Firebase Admin
 const admin = require('firebase-admin');
 
+let db;
+let firebaseInitialized = false;
+
 // Initialize Firebase Admin if not already initialized
 if (!admin.apps.length) {
   try {
@@ -18,21 +21,20 @@ if (!admin.apps.length) {
     if (serviceAccount) {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || serviceAccount.project_id
       });
+      db = admin.firestore();
+      firebaseInitialized = true;
+      console.log('Firebase Admin initialized with service account');
     } else {
-      // Fallback to default credentials
-      admin.initializeApp({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      });
+      console.log('Warning: No Firebase service account found, Firebase operations will be skipped');
+      firebaseInitialized = false;
     }
   } catch (error) {
     console.error('Error initializing Firebase Admin:', error);
-    throw error;
+    firebaseInitialized = false;
   }
 }
-
-const db = admin.firestore();
 
 exports.handler = async (event) => {
   console.log('Netlify Function: api-stripe-webhook called');
@@ -87,20 +89,22 @@ exports.handler = async (event) => {
 
   // Check for idempotency - prevent duplicate processing
   const idempotencyKey = stripeEvent.id;
-  const processedEventRef = db.doc(`webhook_events/${idempotencyKey}`);
-
-  try {
-    const existingEvent = await processedEventRef.get();
-    if (existingEvent.exists) {
-      console.log(`Webhook event ${idempotencyKey} already processed, skipping`);
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ received: true, duplicate: true }),
-      };
+  
+  if (firebaseInitialized && db) {
+    try {
+      const processedEventRef = db.doc(`webhook_events/${idempotencyKey}`);
+      const existingEvent = await processedEventRef.get();
+      if (existingEvent.exists) {
+        console.log(`Webhook event ${idempotencyKey} already processed, skipping`);
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ received: true, duplicate: true }),
+        };
+      }
+    } catch (error) {
+      console.error('Error checking idempotency:', error);
+      // Continue processing if idempotency check fails
     }
-  } catch (error) {
-    console.error('Error checking idempotency:', error);
-    // Continue processing if idempotency check fails
   }
 
   try {
@@ -132,19 +136,22 @@ exports.handler = async (event) => {
     }
 
     // Mark event as processed
-    try {
-      await processedEventRef.set({
-        eventId: stripeEvent.id,
-        type: stripeEvent.type,
-        processedAt: new Date(),
-        result: 'success'
-      });
-    } catch (error) {
-      console.error('Error marking event as processed:', error);
-    }
+    if (firebaseInitialized && db) {
+      try {
+        const processedEventRef = db.doc(`webhook_events/${stripeEvent.id}`);
+        await processedEventRef.set({
+          eventId: stripeEvent.id,
+          type: stripeEvent.type,
+          processedAt: new Date(),
+          result: 'success'
+        });
+      } catch (error) {
+        console.error('Error marking event as processed:', error);
+      }
 
-    // Log successful processing
-    await logWebhookEvent(stripeEvent, 'success');
+      // Log successful processing
+      await logWebhookEvent(stripeEvent, 'success');
+    }
 
     return {
       statusCode: 200,
@@ -450,17 +457,22 @@ async function handlePaymentFailed(invoice) {
 
 async function logWebhookEvent(event, status, errorMessage) {
   try {
-    await db.collection('webhook_logs').add({
+    const logData = {
       eventId: event.id,
       type: event.type,
       status,
-      errorMessage,
       timestamp: new Date(),
       data: {
-        objectId: event.data.object.id,
-        customerId: event.data.object.customer
+        objectId: event.data.object.id || 'unknown',
+        customerId: event.data.object.customer || 'unknown'
       }
-    });
+    };
+    
+    if (errorMessage) {
+      logData.errorMessage = errorMessage;
+    }
+    
+    await db.collection('webhook_logs').add(logData);
   } catch (error) {
     console.error('Error logging webhook event:', error);
   }

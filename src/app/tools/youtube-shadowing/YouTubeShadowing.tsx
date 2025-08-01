@@ -101,8 +101,16 @@ export default function YouTubeShadowing() {
 
   // Initialize practice history service
   useEffect(() => {
+    console.log('=== Practice History Init ===');
+    console.log('User:', user?.uid);
+    console.log('User Type:', userType);
+    console.log('Is Premium:', isPremium);
+    
     if (user || userType === 'guest') {
-      practiceHistoryService.initialize(user?.uid, isPremium);
+      practiceHistoryService.initialize(user?.uid, isPremium).then(() => {
+        console.log('Practice history service initialized');
+        console.log('Service status:', practiceHistoryService.getStatus());
+      });
     }
   }, [user, isPremium, userType]);
 
@@ -200,8 +208,15 @@ export default function YouTubeShadowing() {
         ...(videoMetadata && { videoMetadata })
       });
       
-      // Save to practice history if it's a YouTube video
-      if (session.videoUrl && videoId) {
+      // Save to practice history if it's a YouTube video AND user is authenticated
+      if (session.videoUrl && videoId && user) {
+        console.log('=== Saving Practice History ===');
+        console.log('Video ID:', videoId);
+        console.log('Video URL:', session.videoUrl);
+        console.log('Video Title:', videoTitle || session.videoTitle);
+        console.log('User ID:', user?.uid);
+        console.log('Service Status:', practiceHistoryService.getStatus());
+        
         try {
           const now = new Date();
           const practiceItem = {
@@ -224,8 +239,12 @@ export default function YouTubeShadowing() {
             }
           };
           
+          console.log('Practice item to save:', practiceItem);
+          
           // Check if already exists and update practice count
           const existingItem = await practiceHistoryService.getItem(videoId);
+          console.log('Existing item:', existingItem);
+          
           if (existingItem) {
             practiceItem.firstPracticed = existingItem.firstPracticed;
             practiceItem.practiceCount = existingItem.practiceCount + 1;
@@ -233,9 +252,22 @@ export default function YouTubeShadowing() {
           }
           
           await practiceHistoryService.addOrUpdateItem(practiceItem);
-          console.log('Saved to practice history:', videoTitle);
+          console.log('✅ Successfully saved to practice history:', videoTitle);
+          
+          // Verify it was saved
+          const savedItem = await practiceHistoryService.getItem(videoId);
+          console.log('Verification - saved item:', savedItem);
+          
         } catch (error) {
-          console.error('Failed to save practice history:', error);
+          console.error('❌ Failed to save practice history:', error);
+        }
+      } else {
+        console.log('⚠️ Not saving to practice history - missing data or user not authenticated');
+        console.log('Session URL:', session?.videoUrl);
+        console.log('Video ID:', videoId);
+        console.log('User authenticated:', !!user);
+        if (!user) {
+          console.log('Guest users cannot save practice history - please sign in!');
         }
       }
     }

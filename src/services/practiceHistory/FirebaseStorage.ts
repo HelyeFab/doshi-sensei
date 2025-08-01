@@ -32,9 +32,16 @@ export class FirebasePracticeHistoryStorage {
     const docId = this.getDocId(item.videoId);
     const docRef = doc(db, COLLECTION_NAME, docId);
     
+    console.log('=== Firebase Practice History Save ===');
+    console.log('Collection:', COLLECTION_NAME);
+    console.log('Doc ID:', docId);
+    console.log('User ID:', this.userId);
+    console.log('Item:', item);
+    
     try {
       // Check if document exists
       const docSnap = await getDoc(docRef);
+      console.log('Document exists:', docSnap.exists());
       
       if (docSnap.exists()) {
         // Update existing item
@@ -44,25 +51,35 @@ export class FirebasePracticeHistoryStorage {
           id: docId,
           userId: this.userId,
           practiceCount: (existingData.practiceCount || 0) + 1,
-          lastPracticed: serverTimestamp(),
+          lastPracticed: Timestamp.fromDate(item.lastPracticed),
+          firstPracticed: existingData.firstPracticed || Timestamp.fromDate(item.firstPracticed),
           totalPracticeTime: (existingData.totalPracticeTime || 0) + (item.totalPracticeTime || 0),
           updatedAt: serverTimestamp()
         }, { merge: true });
+        console.log('✅ Successfully updated practice history in Firebase');
       } else {
         // Create new item
         await setDoc(docRef, {
           ...item,
           id: docId,
           userId: this.userId,
-          firstPracticed: serverTimestamp(),
-          lastPracticed: serverTimestamp(),
+          firstPracticed: Timestamp.fromDate(item.firstPracticed),
+          lastPracticed: Timestamp.fromDate(item.lastPracticed),
           practiceCount: 1,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
+        console.log('✅ Successfully created new practice history in Firebase');
       }
-    } catch (error) {
-      console.error('Error saving practice history to Firebase:', error);
+    } catch (error: any) {
+      console.error('❌ Error saving practice history to Firebase:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      if (error.code === 'permission-denied') {
+        console.error('Permission denied - user may not be authenticated or rules may be blocking the write');
+      }
+      
       throw error;
     }
   }

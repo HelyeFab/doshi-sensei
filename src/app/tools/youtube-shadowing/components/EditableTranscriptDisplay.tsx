@@ -11,7 +11,7 @@ import {
 } from '@/services/userTranscripts/UserTranscriptService';
 import { EditableTranscriptSegment } from '@/components/transcript/EditableTranscriptSegment';
 import { motion } from 'framer-motion';
-import { AlertCircle, Edit2, Save, RefreshCw } from 'lucide-react';
+import { AlertCircle, Edit2, Save, RefreshCw, Music, CheckCircle } from 'lucide-react';
 import { TranscriptSegment } from '@/types/transcript';
 
 interface EditableTranscriptDisplayProps {
@@ -49,6 +49,13 @@ export default function EditableTranscriptDisplay({
   const [hasEdits, setHasEdits] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showEditTip, setShowEditTip] = useState(false);
+  const [lyricsValidation, setLyricsValidation] = useState<{
+    isValidated: boolean;
+    confidence: number;
+    lyricsFound: boolean;
+    isMusic: boolean;
+  } | null>(null);
+  const [isValidatingLyrics, setIsValidatingLyrics] = useState(false);
 
   // Convert TranscriptLine to TranscriptSegment format
   const convertToSegments = (lines: TranscriptLine[]): TranscriptSegment[] => {
@@ -66,6 +73,14 @@ export default function EditableTranscriptDisplay({
   useEffect(() => {
     loadUserTranscript();
   }, [videoId, user]);
+
+  // Validate with lyrics if it's a music video
+  useEffect(() => {
+    if (metadata?.isMusic || videoTitle?.toLowerCase().includes('mv') || 
+        videoTitle?.toLowerCase().includes('music')) {
+      validateWithLyrics();
+    }
+  }, [videoId, videoTitle, metadata]);
 
   const loadUserTranscript = async () => {
     if (!user || !isPremium) {
@@ -111,6 +126,44 @@ export default function EditableTranscriptDisplay({
       console.error('Error loading user transcript:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Validate transcript with lyrics
+  const validateWithLyrics = async () => {
+    if (!videoTitle && !metadata?.channelName) return;
+
+    setIsValidatingLyrics(true);
+    try {
+      const validation = await userTranscriptService.validateWithLyrics(
+        convertToSegments(transcript),
+        {
+          title: videoTitle,
+          channelName: metadata?.channelName,
+          category: metadata?.category,
+          tags: metadata?.tags,
+        }
+      );
+
+      setLyricsValidation({
+        isValidated: validation.isValidated,
+        confidence: validation.confidence,
+        lyricsFound: validation.lyricsFound,
+        isMusic: validation.lyricsFound || validation.confidence > 0.5,
+      });
+
+      // Update confidence scores if lyrics were found and validated
+      if (validation.isValidated && validation.validationResult) {
+        const updatedTranscript = await userTranscriptService.updateConfidenceWithLyrics(
+          mergedTranscript,
+          validation.validationResult
+        );
+        setMergedTranscript(updatedTranscript);
+      }
+    } catch (error) {
+      console.error('Error validating with lyrics:', error);
+    } finally {
+      setIsValidatingLyrics(false);
     }
   };
 
@@ -229,6 +282,44 @@ export default function EditableTranscriptDisplay({
 
   return (
     <div className="space-y-4">
+      {/* Lyrics validation status */}
+      {lyricsValidation?.isMusic && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-lg border ${
+            lyricsValidation.lyricsFound 
+              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+              : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Music className="w-5 h-5 text-primary" />
+              <div>
+                <p className="font-medium text-sm">
+                  Music Video Detected
+                  {lyricsValidation.lyricsFound && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-green-600 dark:text-green-400">
+                      <CheckCircle className="w-4 h-4" />
+                      Lyrics Validated
+                    </span>
+                  )}
+                </p>
+                {lyricsValidation.lyricsFound && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Transcript confidence boosted by {Math.round(lyricsValidation.confidence * 20)}% based on lyrics match
+                  </p>
+                )}
+              </div>
+            </div>
+            {isValidatingLyrics && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
+            )}
+          </div>
+        </motion.div>
+      )}
+
       {/* Header with edit controls */}
       {isPremium && (
         <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
@@ -268,7 +359,7 @@ export default function EditableTranscriptDisplay({
       )}
 
       {/* Confidence legend */}
-      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
         <span>Confidence indicators:</span>
         <span className="flex items-center gap-1">
           <span className="inline-block w-12 border-b-2 border-green-500"></span>
@@ -286,6 +377,12 @@ export default function EditableTranscriptDisplay({
           <span className="inline-block w-12 border-b-2 border-blue-500 border-dotted"></span>
           User edited
         </span>
+        {lyricsValidation?.lyricsFound && (
+          <span className="flex items-center gap-1">
+            <CheckCircle className="w-3 h-3 text-green-500" />
+            Lyrics verified
+          </span>
+        )}
       </div>
 
       {/* Transcript segments */}

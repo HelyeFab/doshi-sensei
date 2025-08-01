@@ -795,6 +795,35 @@ service cloud.firestore {
          (resource.data.userId == request.auth.uid && isPremiumUser(request.auth.uid)));
     }
 
+    // Lyrics Cache - cached lyrics from APIs
+    match /lyricsCache/{lyricsId} {
+      // Anyone can read cached lyrics
+      allow read: if true;
+      
+      // Only authenticated users can create lyrics cache entries
+      allow create: if request.auth != null &&
+        request.resource.data.keys().hasAll(['searchQuery', 'artist', 'title', 
+          'lyrics', 'source', 'confidence', 'createdAt', 'lastAccessed', 'accessCount']) &&
+        request.resource.data.searchQuery is string &&
+        request.resource.data.artist is string &&
+        request.resource.data.title is string &&
+        request.resource.data.lyrics is string &&
+        request.resource.data.source in ['genius', 'musixmatch', 'manual'] &&
+        request.resource.data.confidence is number &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastAccessed is timestamp &&
+        request.resource.data.accessCount is number;
+      
+      // Allow updating access count and last accessed
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accessCount', 'lastAccessed']) &&
+        request.resource.data.accessCount == resource.data.accessCount + 1 &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Only admin can delete lyrics cache
+      allow delete: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

@@ -10,6 +10,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { TranscriptSegment } from '@/types/transcript';
+import { lyricsService } from '@/services/lyrics/LyricsService';
 
 export interface UserEdit {
   originalText: string;
@@ -238,6 +239,111 @@ class UserTranscriptService {
     // For now, we'll check if user is authenticated
     // TODO: Check premium status
     return true;
+  }
+
+  /**
+   * Validate transcript with lyrics for music videos
+   */
+  async validateWithLyrics(
+    transcript: TranscriptSegment[],
+    videoData: {
+      title?: string;
+      channelName?: string;
+      category?: string;
+      tags?: string[];
+    }
+  ): Promise<{
+    isValidated: boolean;
+    confidence: number;
+    lyricsFound: boolean;
+    validationResult?: {
+      isValid: boolean;
+      confidence: number;
+      matchedLines: number;
+      totalLines: number;
+    };
+  }> {
+    try {
+      // First, detect if it's a music video
+      const musicInfo = lyricsService.detectMusicVideo(videoData);
+      
+      if (!musicInfo.isMusic) {
+        return {
+          isValidated: false,
+          confidence: 0,
+          lyricsFound: false,
+        };
+      }
+
+      // Search for lyrics
+      const searchQuery = musicInfo.artist && musicInfo.title
+        ? `${musicInfo.artist} ${musicInfo.title}`
+        : videoData.title || '';
+
+      const lyrics = await lyricsService.searchLyrics(searchQuery, {
+        artist: musicInfo.artist,
+        title: musicInfo.title,
+        preferJapanese: true,
+      });
+
+      if (!lyrics || !lyrics.lyrics) {
+        return {
+          isValidated: false,
+          confidence: musicInfo.confidence,
+          lyricsFound: false,
+        };
+      }
+
+      // Validate transcript against lyrics
+      const transcriptText = transcript.map(seg => seg.text);
+      const validationResult = lyricsService.validateTranscriptWithLyrics(
+        transcriptText,
+        lyrics.lyrics,
+        {
+          fuzzyThreshold: 0.75, // Allow some variation for speech vs written
+          minMatchRatio: 0.6,   // 60% of lines should match
+        }
+      );
+
+      return {
+        isValidated: true,
+        confidence: validationResult.confidence,
+        lyricsFound: true,
+        validationResult,
+      };
+    } catch (error) {
+      console.error('Error validating with lyrics:', error);
+      return {
+        isValidated: false,
+        confidence: 0,
+        lyricsFound: false,
+      };
+    }
+  }
+
+  /**
+   * Update confidence scores based on lyrics validation
+   */
+  async updateConfidenceWithLyrics(
+    transcript: TranscriptWithConfidence[],
+    lyricsValidation: {
+      confidence: number;
+      matchedLines: number;
+      totalLines: number;
+    }
+  ): TranscriptWithConfidence[] {
+    const confidenceBoost = lyricsValidation.confidence * 0.2; // Max 20% boost
+    
+    return transcript.map((segment, index) => {
+      // Calculate if this line likely matched
+      const lineMatchProbability = lyricsValidation.matchedLines / lyricsValidation.totalLines;
+      
+      return {
+        ...segment,
+        confidence: Math.min(segment.confidence + confidenceBoost * lineMatchProbability, 1),
+        validationSource: segment.validationSource === 'original' ? 'lyrics_api' as const : segment.validationSource,
+      };
+    });
   }
 }
 

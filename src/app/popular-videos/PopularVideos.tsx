@@ -18,12 +18,13 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import Link from 'next/link';
-import { Play, TrendingUp, Clock, Users, Calendar, ExternalLink, Sparkles, Flame, Award, Search, Filter, History as HistoryIcon, ChevronDown, FileVideo, Mic, Youtube } from 'lucide-react';
+import { Play, TrendingUp, Clock, Users, Calendar, ExternalLink, Sparkles, Flame, Award, Search, Filter, History as HistoryIcon, ChevronDown, FileVideo, Mic, Youtube, Trash2 } from 'lucide-react';
 import { useAccess } from '@/hooks/useAccess';
 import { useRouter } from 'next/navigation';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { ExternalImage } from '@/components/ui/OptimizedImage';
+import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
 
 interface PopularVideo {
   id: string;
@@ -86,7 +87,7 @@ export default function PopularVideos() {
   
   useEffect(() => {
     if (activeTab === 'history' && user && historyVideos.length === 0) {
-      loadHistoryVideos();
+      loadHistoryVideos(true);
     }
   }, [activeTab, user]);
 
@@ -368,9 +369,25 @@ export default function PopularVideos() {
     );
   }, [activeTab, popularVideos, historyVideos, searchQuery]);
 
+  const handleDeleteVideo = async (video: PopularVideo) => {
+    if (!confirm('Are you sure you want to remove this video from your history?')) return;
+    
+    try {
+      const videoId = video.metadata?.youtubeVideoId || video.id;
+      await practiceHistoryService.deleteItem(videoId);
+      
+      // Remove from local state
+      setHistoryVideos(prev => prev.filter(v => v.id !== video.id));
+    } catch (error) {
+      console.error('Error deleting video:', error);
+    }
+  };
+
   const VideoCard = ({ video, index }: { video: PopularVideo; index: number }) => {
     const videoId = video.metadata?.youtubeVideoId || (video.contentType === 'youtube' ? video.id.replace('youtube_', '') : null);
     const thumbnailUrl = video.contentType === 'youtube' ? getYouTubeThumbnail(videoId) : null;
+    const isHistoryTab = activeTab === 'history';
+    const isOwnVideo = user && video.createdBy === user.uid;
 
     const handlePracticeClick = async (e: React.MouseEvent) => {
       e.preventDefault();
@@ -478,6 +495,18 @@ export default function PopularVideos() {
               >
                 <ExternalLink className="w-5 h-5" />
               </a>
+            )}
+            {isHistoryTab && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteVideo(video);
+                }}
+                className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 rounded-xl transition-all duration-200 hover:scale-105"
+                title="Remove from history"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
             )}
           </div>
         </div>

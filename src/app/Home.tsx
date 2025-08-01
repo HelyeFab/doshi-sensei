@@ -432,7 +432,8 @@ export default function Home() {
               {[
                 { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
                 { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
-                { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description }
+                { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
+                { title: 'My Videos', icon: '🎬', href: '/tools/my-videos', description: 'View your saved videos and practice history' }
               ].map((card) => (
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">

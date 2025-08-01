@@ -18,7 +18,6 @@ import TranscriptDisplay from './components/TranscriptDisplay';
 import ShadowingPlayer from './components/ShadowingPlayer';
 import YouTubePlayer from './components/YouTubePlayer';
 import TranscriptReader from './components/TranscriptReader';
-import EditableTranscriptDisplay from './components/EditableTranscriptDisplay';
 import EnhancedShadowingPlayer from './components/EnhancedShadowingPlayer';
 import AudioUploader from './components/AudioUploader';
 import VideoUploader from './components/VideoUploader';
@@ -707,23 +706,12 @@ export default function YouTubeShadowing() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      <EditableTranscriptDisplay
+                      <TranscriptReader
                         transcript={session.transcript}
-                        videoId={session.videoUrl ? extractVideoId(session.videoUrl) || session.videoUrl : session.videoUrl}
-                        videoTitle={session.videoTitle}
-                        videoUrl={session.videoUrl}
-                        metadata={{
-                          youtubeVideoId: session.videoUrl ? extractVideoId(session.videoUrl) : undefined,
-                          channelName: session.videoMetadata?.channelTitle,
-                          duration: session.videoMetadata?.duration,
-                          thumbnailUrl: session.videoMetadata?.thumbnailUrl,
-                          isMusic: session.videoMetadata?.isMusic || false,
-                        }}
                         currentLineIndex={session.currentLineIndex}
+                        onLineClick={(index) => updateSession({ ...session, currentLineIndex: index })}
                         showFurigana={showFurigana}
-                        onTranscriptUpdate={(updatedTranscript) => {
-                          updateSession({ ...session, transcript: updatedTranscript });
-                        }}
+                        showGrammar={showGrammar}
                       />
                     </motion.div>
                   )}

@@ -232,27 +232,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       features: {
         guest: [], // No features for guests
         free: ['youtube_url', 'file_upload', 'basic_playback', 'transcript_view', 'recording', 'vocabulary_lookup'],
-        premium: ['youtube_url', 'file_upload', 'basic_playback', 'transcript_view', 'recording', 'vocabulary_lookup', 'offline_caching', 'advanced_analysis', 'transcript_editing']
-      }
-    }
-  },
-
-  'transcript_editing': {
-    id: 'transcript_editing',
-    name: 'Transcript Editing',
-    description: 'Edit and save corrections to AI-generated transcripts',
-    category: 'learning',
-    icon: '✏️',
-    limitType: 'none', // No usage limit, just premium-only
-    requiresAuth: true,
-    requiresSubscription: true, // Premium only
-    status: 'active',
-    metadata: {
-      requiresPremium: true,
-      features: {
-        guest: [],
-        free: [],
-        premium: ['edit_transcripts', 'save_edits', 'view_confidence_scores', 'lyrics_validation']
+        premium: ['youtube_url', 'file_upload', 'basic_playback', 'transcript_view', 'recording', 'vocabulary_lookup', 'offline_caching', 'advanced_analysis']
       }
     }
   },

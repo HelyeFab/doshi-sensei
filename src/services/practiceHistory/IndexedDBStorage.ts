@@ -1,7 +1,7 @@
 import { PracticeHistoryItem } from './types';
 
 const DB_NAME = 'DoshiSenseiPracticeHistory';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Increment version to trigger upgrade
 const STORE_NAME = 'practiceHistory';
 
 export class IndexedDBPracticeHistoryStorage {
@@ -20,12 +20,16 @@ export class IndexedDBPracticeHistoryStorage {
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
         
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-          store.createIndex('lastPracticed', 'lastPracticed', { unique: false });
-          store.createIndex('practiceCount', 'practiceCount', { unique: false });
-          store.createIndex('videoId', 'videoId', { unique: true });
+        // Delete old store if it exists (to handle upgrade)
+        if (db.objectStoreNames.contains(STORE_NAME)) {
+          db.deleteObjectStore(STORE_NAME);
         }
+        
+        // Create new store with correct indexes
+        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        store.createIndex('lastPracticed', 'lastPracticed', { unique: false });
+        store.createIndex('practiceCount', 'practiceCount', { unique: false });
+        store.createIndex('videoId', 'videoId', { unique: false }); // Changed to non-unique
       };
     });
   }

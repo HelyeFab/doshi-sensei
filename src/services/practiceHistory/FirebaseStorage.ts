@@ -46,29 +46,37 @@ export class FirebasePracticeHistoryStorage {
       if (docSnap.exists()) {
         // Update existing item
         const existingData = docSnap.data();
-        await setDoc(docRef, {
-          ...item,
-          id: docId,
+        const updateData = {
           userId: this.userId,
-          practiceCount: (existingData.practiceCount || 0) + 1,
+          videoId: item.videoId,
+          videoUrl: item.videoUrl,
+          videoTitle: item.videoTitle,
           lastPracticed: Timestamp.fromDate(item.lastPracticed),
           firstPracticed: existingData.firstPracticed || Timestamp.fromDate(item.firstPracticed),
-          totalPracticeTime: (existingData.totalPracticeTime || 0) + (item.totalPracticeTime || 0),
-          updatedAt: serverTimestamp()
-        }, { merge: true });
+          practiceCount: (existingData.practiceCount || 0) + 1,
+          contentType: item.contentType
+        };
+        
+        console.log('Update data:', updateData);
+        
+        await setDoc(docRef, updateData, { merge: true });
         console.log('✅ Successfully updated practice history in Firebase');
       } else {
-        // Create new item
-        await setDoc(docRef, {
-          ...item,
-          id: docId,
+        // Create new item - only include required fields
+        const dataToSave = {
           userId: this.userId,
-          firstPracticed: Timestamp.fromDate(item.firstPracticed),
+          videoId: item.videoId,
+          videoUrl: item.videoUrl,
+          videoTitle: item.videoTitle,
           lastPracticed: Timestamp.fromDate(item.lastPracticed),
+          firstPracticed: Timestamp.fromDate(item.firstPracticed),
           practiceCount: 1,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
+          contentType: item.contentType
+        };
+        
+        console.log('Data to save (required fields only):', dataToSave);
+        
+        await setDoc(docRef, dataToSave);
         console.log('✅ Successfully created new practice history in Firebase');
       }
     } catch (error: any) {

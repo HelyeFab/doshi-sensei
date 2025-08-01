@@ -16,16 +16,16 @@ export interface LyricsResult {
   artist: string;
   title: string;
   lyrics: string;
-  source: 'genius' | 'musixmatch' | 'manual';
+  source: 'genius' | 'manual';
   language?: string;
   romanizedLyrics?: string;
   confidence: number; // 0-1, how confident we are in the match
   metadata?: {
     geniusId?: number;
-    musixmatchId?: string;
     albumName?: string;
     releaseDate?: string;
     thumbnailUrl?: string;
+    lyricsUrl?: string;
   };
 }
 
@@ -50,7 +50,6 @@ class LyricsService {
   private readonly GENIUS_CLIENT_ID = process.env.NEXT_PUBLIC_GENIUS_CLIENT_ID;
   private readonly GENIUS_CLIENT_SECRET = process.env.GENIUS_CLIENT_SECRET;
   private readonly GENIUS_ACCESS_TOKEN = process.env.GENIUS_ACCESS_TOKEN;
-  private readonly MUSIXMATCH_API_KEY = process.env.MUSIXMATCH_API_KEY;
 
   /**
    * Detect if a YouTube video is likely a music video
@@ -206,30 +205,16 @@ class LyricsService {
     title: string,
     preferJapanese = true
   ): Promise<LyricsResult | null> {
-    // Try Genius first (better for international music)
-    let result = await this.searchGenius(`${artist} ${title}`);
-    
-    // Try Musixmatch if Genius fails
-    if (!result && this.MUSIXMATCH_API_KEY) {
-      result = await this.searchMusixmatch(artist, title);
-    }
-
-    return result;
+    // Search Genius with artist and title
+    return await this.searchGenius(`${artist} ${title}`);
   }
 
   /**
    * General search across all providers
    */
   private async searchGeneral(query: string, preferJapanese = true): Promise<LyricsResult | null> {
-    // Try Genius
-    let result = await this.searchGenius(query);
-    
-    // Try Musixmatch
-    if (!result && this.MUSIXMATCH_API_KEY) {
-      result = await this.searchMusixmatch(query);
-    }
-
-    return result;
+    // Search Genius
+    return await this.searchGenius(query);
   }
 
   /**
@@ -283,15 +268,14 @@ class LyricsService {
       const songData = await songResponse.json();
       const fullSong = songData.response.song;
 
-      // Note: Genius API doesn't provide lyrics directly
-      // We'd need to scrape the lyrics URL, which is against their ToS
-      // For now, we'll return the metadata and indicate lyrics need to be fetched separately
+      // Note: Genius API doesn't provide lyrics directly in the API response
+      // The lyrics URL is provided for users to visit and view lyrics on Genius.com
       
       return {
         id: `genius_${song.id}`,
         artist: song.primary_artist.name,
         title: song.title,
-        lyrics: '', // Would need to be scraped or entered manually
+        lyrics: '', // Lyrics must be viewed on Genius.com
         source: 'genius',
         confidence: 0.8,
         metadata: {
@@ -299,6 +283,7 @@ class LyricsService {
           albumName: fullSong.album?.name,
           releaseDate: fullSong.release_date,
           thumbnailUrl: song.header_image_thumbnail_url,
+          lyricsUrl: song.url, // Link to view lyrics on Genius
         },
       };
     } catch (error) {
@@ -307,78 +292,6 @@ class LyricsService {
     }
   }
 
-  /**
-   * Search Musixmatch API
-   */
-  private async searchMusixmatch(query: string, title?: string): Promise<LyricsResult | null> {
-    if (!this.MUSIXMATCH_API_KEY) {
-      console.warn('Musixmatch API key not configured');
-      return null;
-    }
-
-    try {
-      // Search for the track
-      const searchParams = new URLSearchParams({
-        apikey: this.MUSIXMATCH_API_KEY,
-        q: query,
-        page_size: '5',
-        s_track_rating: 'desc',
-      });
-
-      if (title) {
-        searchParams.set('q_track', title);
-      }
-
-      const searchResponse = await fetch(
-        `https://api.musixmatch.com/ws/1.1/track.search?${searchParams}`
-      );
-
-      if (!searchResponse.ok) {
-        throw new Error(`Musixmatch search failed: ${searchResponse.status}`);
-      }
-
-      const searchData = await searchResponse.json();
-      const tracks = searchData.message.body.track_list;
-
-      if (!tracks || tracks.length === 0) {
-        return null;
-      }
-
-      const track = tracks[0].track;
-
-      // Get lyrics
-      const lyricsResponse = await fetch(
-        `https://api.musixmatch.com/ws/1.1/track.lyrics.get?apikey=${this.MUSIXMATCH_API_KEY}&track_id=${track.track_id}`
-      );
-
-      if (!lyricsResponse.ok) {
-        throw new Error(`Musixmatch lyrics fetch failed: ${lyricsResponse.status}`);
-      }
-
-      const lyricsData = await lyricsResponse.json();
-      const lyrics = lyricsData.message.body.lyrics;
-
-      if (!lyrics) {
-        return null;
-      }
-
-      return {
-        id: `musixmatch_${track.track_id}`,
-        artist: track.artist_name,
-        title: track.track_name,
-        lyrics: lyrics.lyrics_body,
-        source: 'musixmatch',
-        confidence: 0.85,
-        metadata: {
-          musixmatchId: track.track_id.toString(),
-          albumName: track.album_name,
-        },
-      };
-    } catch (error) {
-      console.error('Musixmatch API error:', error);
-      return null;
-    }
-  }
 
   /**
    * Get cached lyrics

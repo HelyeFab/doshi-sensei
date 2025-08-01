@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lyricsService } from '@/services/lyrics/LyricsService';
 import { getAuth } from 'firebase-admin/auth';
-import { initAdmin } from '@/lib/firebaseAdmin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Verify auth token
     try {
-      initAdmin();
+      await getFirebaseAdmin(); // Ensure admin is initialized
       const token = authHeader.split('Bearer ')[1];
       await getAuth().verifyIdToken(token);
     } catch (error) {

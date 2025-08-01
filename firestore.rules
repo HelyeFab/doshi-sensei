@@ -808,7 +808,7 @@ service cloud.firestore {
         request.resource.data.artist is string &&
         request.resource.data.title is string &&
         request.resource.data.lyrics is string &&
-        request.resource.data.source in ['genius', 'musixmatch', 'manual'] &&
+        request.resource.data.source in ['genius', 'manual'] &&
         request.resource.data.confidence is number &&
         request.resource.data.createdAt is timestamp &&
         request.resource.data.lastAccessed is timestamp &&

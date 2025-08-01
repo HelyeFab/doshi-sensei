@@ -233,7 +233,6 @@ export async function POST(request: NextRequest) {
               method: 'supadata-ai'
             });
           }
-        }
       } else if (lastError) {
         // Handle error if all retries failed
         console.error('=== SupaData AI error after all retries ===');

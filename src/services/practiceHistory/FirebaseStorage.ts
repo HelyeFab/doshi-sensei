@@ -51,8 +51,8 @@ export class FirebasePracticeHistoryStorage {
           videoId: item.videoId,
           videoUrl: item.videoUrl,
           videoTitle: item.videoTitle,
-          lastPracticed: Timestamp.fromDate(item.lastPracticed),
-          firstPracticed: existingData.firstPracticed || Timestamp.fromDate(item.firstPracticed),
+          lastPracticed: Timestamp.fromDate(new Date(item.lastPracticed)),
+          firstPracticed: existingData.firstPracticed || Timestamp.fromDate(new Date(item.firstPracticed)),
           practiceCount: (existingData.practiceCount || 0) + 1,
           contentType: item.contentType
         };
@@ -68,13 +68,29 @@ export class FirebasePracticeHistoryStorage {
           videoId: item.videoId,
           videoUrl: item.videoUrl,
           videoTitle: item.videoTitle,
-          lastPracticed: Timestamp.fromDate(item.lastPracticed),
-          firstPracticed: Timestamp.fromDate(item.firstPracticed),
+          lastPracticed: Timestamp.fromDate(new Date(item.lastPracticed)),
+          firstPracticed: Timestamp.fromDate(new Date(item.firstPracticed)),
           practiceCount: 1,
           contentType: item.contentType
         };
         
         console.log('Data to save (required fields only):', dataToSave);
+        console.log('Field types:', {
+          userId: typeof dataToSave.userId,
+          videoId: typeof dataToSave.videoId,
+          videoUrl: typeof dataToSave.videoUrl,
+          videoTitle: typeof dataToSave.videoTitle,
+          lastPracticed: dataToSave.lastPracticed?.constructor?.name,
+          firstPracticed: dataToSave.firstPracticed?.constructor?.name,
+          practiceCount: typeof dataToSave.practiceCount,
+          contentType: typeof dataToSave.contentType
+        });
+        
+        // Validate contentType
+        if (!['youtube', 'audio', 'video'].includes(dataToSave.contentType)) {
+          console.error('Invalid contentType:', dataToSave.contentType);
+          throw new Error(`Invalid contentType: ${dataToSave.contentType}. Must be one of: youtube, audio, video`);
+        }
         
         await setDoc(docRef, dataToSave);
         console.log('✅ Successfully created new practice history in Firebase');

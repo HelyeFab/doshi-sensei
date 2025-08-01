@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { PracticeHistoryItem } from './types';
+import { waitForAuth, getFreshIdToken } from '@/utils/auth-helper';
 
 const COLLECTION_NAME = 'userPracticeHistory';
 
@@ -38,11 +39,22 @@ export class FirebasePracticeHistoryStorage {
     console.log('User ID:', this.userId);
     console.log('Item:', item);
     
-    // Check authentication status
-    const { auth } = await import('@/lib/firebase');
-    const currentUser = auth.currentUser;
+    // Ensure authentication is ready
+    const currentUser = await waitForAuth();
     console.log('Current auth user:', currentUser?.uid);
     console.log('Auth user matches userId:', currentUser?.uid === this.userId);
+    
+    if (!currentUser || currentUser.uid !== this.userId) {
+      console.error('Authentication mismatch!', {
+        currentUserId: currentUser?.uid,
+        expectedUserId: this.userId
+      });
+      throw new Error('Authentication mismatch - cannot save to Firebase');
+    }
+    
+    // Get fresh token to ensure auth is current
+    const token = await getFreshIdToken();
+    console.log('Got fresh auth token:', !!token);
     
     try {
       // Check if document exists

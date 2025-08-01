@@ -604,8 +604,9 @@ service cloud.firestore {
     // User Practice History - users can only access their own history
     match /userPracticeHistory/{document} {
       // Users can read their own practice history
+      // Allow read if document doesn't exist (for checking before create) or if userId matches
       allow read: if request.auth != null && 
-        resource.data.userId == request.auth.uid;
+        (resource == null || resource.data.userId == request.auth.uid);
       
       // Users can create practice history for themselves
       allow create: if request.auth != null && 

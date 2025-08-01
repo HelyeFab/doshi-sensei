@@ -762,6 +762,39 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // User Transcripts - Premium users can edit and save transcript corrections
+    match /userTranscripts/{transcriptId} {
+      // Premium users can read their own transcript edits
+      // Document ID format: userId_videoId
+      allow read: if request.auth != null && 
+        (isAdmin() || 
+         (resource != null && resource.data.userId == request.auth.uid && isPremiumUser(request.auth.uid)));
+      
+      // Premium users can create transcript edits for themselves
+      allow create: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['videoId', 'userId', 'originalTranscript', 
+          'userEdits', 'lastModified', 'createdAt']) &&
+        request.resource.data.videoId is string &&
+        request.resource.data.userId is string &&
+        request.resource.data.originalTranscript is list &&
+        request.resource.data.userEdits is map &&
+        request.resource.data.lastModified is timestamp &&
+        request.resource.data.createdAt is timestamp;
+      
+      // Premium users can update their own transcript edits
+      allow update: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Premium users can delete their own transcript edits
+      allow delete: if request.auth != null && 
+        (isAdmin() || 
+         (resource.data.userId == request.auth.uid && isPremiumUser(request.auth.uid)));
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

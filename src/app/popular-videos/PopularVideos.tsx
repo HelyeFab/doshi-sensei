@@ -30,6 +30,8 @@ interface PopularVideo {
   videoTitle?: string;
   videoUrl?: string;
   accessCount: number;
+  userCount?: number; // Number of unique users who practiced this
+  totalPractices?: number; // Total practice sessions across all users
   createdAt: Timestamp;
   lastAccessed: Timestamp;
   language: string;
@@ -39,10 +41,11 @@ interface PopularVideo {
   metadata?: {
     youtubeVideoId?: string;
     channelName?: string;
+    thumbnailUrl?: string;
   };
 }
 
-type TabType = 'popular' | 'trending' | 'history';
+type TabType = 'popular' | 'history';
 type FilterType = 'all' | 'youtube' | 'audio' | 'video';
 
 const ITEMS_PER_PAGE = 12;
@@ -63,7 +66,6 @@ export default function PopularVideos() {
   const [user] = useAuthState(auth);
   
   const [popularVideos, setPopularVideos] = useState<PopularVideo[]>([]);
-  const [trendingVideos, setTrendingVideos] = useState<PopularVideo[]>([]);
   const [historyVideos, setHistoryVideos] = useState<PopularVideo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('popular');
@@ -73,10 +75,8 @@ export default function PopularVideos() {
   
   // Pagination states
   const [popularLastDoc, setPopularLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
-  const [trendingLastDoc, setTrendingLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [historyLastDoc, setHistoryLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMorePopular, setHasMorePopular] = useState(true);
-  const [hasMoreTrending, setHasMoreTrending] = useState(true);
   const [hasMoreHistory, setHasMoreHistory] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -93,16 +93,10 @@ export default function PopularVideos() {
   const loadInitialVideos = async () => {
     setIsLoading(true);
     setPopularVideos([]);
-    setTrendingVideos([]);
     setPopularLastDoc(null);
-    setTrendingLastDoc(null);
     setHasMorePopular(true);
-    setHasMoreTrending(true);
     
-    await Promise.all([
-      loadPopularVideos(true),
-      loadTrendingVideos(true)
-    ]);
+    await loadPopularVideos(true);
     
     setIsLoading(false);
   };
@@ -113,45 +107,72 @@ export default function PopularVideos() {
         setIsLoadingMore(true);
       }
 
-      // Build query constraints
-      const constraints: any[] = [
-        collection(db, 'transcriptCache'),
-        orderBy('accessCount', 'desc'),
-        limit(ITEMS_PER_PAGE)
-      ];
-      
-      // Add content type filter if not 'all'
-      if (contentFilter !== 'all') {
-        constraints.splice(1, 0, where('contentType', '==', contentFilter));
-      }
-      
-      // Add pagination
-      if (popularLastDoc && !isInitial) {
-        constraints.push(startAfter(popularLastDoc));
-      }
-      
-      const popularQuery = query(...constraints);
+      // Query all practice history to aggregate by video
+      const practiceQuery = query(
+        collection(db, 'userPracticeHistory'),
+        where('contentType', contentFilter === 'all' ? 'in' : '==', 
+          contentFilter === 'all' ? ['youtube', 'audio', 'video'] : contentFilter)
+      );
 
-      const popularSnapshot = await getDocs(popularQuery);
+      const snapshot = await getDocs(practiceQuery);
       
-      if (popularSnapshot.docs.length < ITEMS_PER_PAGE) {
-        setHasMorePopular(false);
-      }
-      
-      if (popularSnapshot.docs.length > 0) {
-        setPopularLastDoc(popularSnapshot.docs[popularSnapshot.docs.length - 1]);
-      }
-      
-      const popularData = popularSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as PopularVideo));
+      // Aggregate by videoId to count unique users
+      const videoAggregation = new Map<string, {
+        video: any;
+        userCount: number;
+        uniqueUsers: Set<string>;
+        totalPractices: number;
+      }>();
 
-      if (isInitial) {
-        setPopularVideos(popularData);
-      } else {
-        setPopularVideos(prev => [...prev, ...popularData]);
-      }
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const videoId = data.videoId;
+        
+        if (!videoAggregation.has(videoId)) {
+          videoAggregation.set(videoId, {
+            video: data,
+            userCount: 0,
+            uniqueUsers: new Set(),
+            totalPractices: 0
+          });
+        }
+        
+        const agg = videoAggregation.get(videoId)!;
+        agg.uniqueUsers.add(data.userId);
+        agg.totalPractices += data.practiceCount || 1;
+        
+        // Keep the most recent version of video data
+        if (new Date(data.lastPracticed.toDate()) > new Date(agg.video.lastPracticed.toDate())) {
+          agg.video = data;
+        }
+      });
+
+      // Convert to array and sort by unique user count
+      const sortedVideos = Array.from(videoAggregation.values())
+        .map(agg => ({
+          ...agg.video,
+          id: agg.video.videoId,
+          accessCount: agg.uniqueUsers.size,
+          userCount: agg.uniqueUsers.size,
+          totalPractices: agg.totalPractices,
+          createdAt: agg.video.firstPracticed,
+          lastAccessed: agg.video.lastPracticed,
+          language: 'ja',
+          duration: agg.video.duration,
+          contentType: agg.video.contentType,
+          metadata: {
+            youtubeVideoId: agg.video.videoId,
+            channelName: agg.video.channelName || agg.video.metadata?.channelTitle,
+            thumbnailUrl: agg.video.thumbnailUrl
+          }
+        } as PopularVideo))
+        .sort((a, b) => b.userCount - a.userCount)
+        .slice(0, ITEMS_PER_PAGE);
+
+      setPopularVideos(sortedVideos);
+      
+      // Since we're loading all at once, disable pagination
+      setHasMorePopular(false);
 
     } catch (error) {
       console.error('Error loading popular videos:', error);
@@ -162,61 +183,6 @@ export default function PopularVideos() {
     }
   };
   
-  const loadTrendingVideos = async (isInitial = false) => {
-    try {
-      if (!isInitial) {
-        setIsLoadingMore(true);
-      }
-      
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-      const constraints: any[] = [
-        collection(db, 'transcriptCache'),
-        where('lastAccessed', '>=', Timestamp.fromDate(sevenDaysAgo)),
-        orderBy('lastAccessed', 'desc'),
-        limit(ITEMS_PER_PAGE)
-      ];
-      
-      if (contentFilter !== 'all') {
-        constraints.splice(1, 0, where('contentType', '==', contentFilter));
-      }
-      
-      if (trendingLastDoc && !isInitial) {
-        constraints.push(startAfter(trendingLastDoc));
-      }
-      
-      const trendingQuery = query(...constraints);
-
-      const trendingSnapshot = await getDocs(trendingQuery);
-      
-      if (trendingSnapshot.docs.length < ITEMS_PER_PAGE) {
-        setHasMoreTrending(false);
-      }
-      
-      if (trendingSnapshot.docs.length > 0) {
-        setTrendingLastDoc(trendingSnapshot.docs[trendingSnapshot.docs.length - 1]);
-      }
-      
-      const trendingData = trendingSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as PopularVideo));
-
-      if (isInitial) {
-        setTrendingVideos(trendingData);
-      } else {
-        setTrendingVideos(prev => [...prev, ...trendingData]);
-      }
-
-    } catch (error) {
-      console.error('Error loading trending videos:', error);
-    } finally {
-      if (!isInitial) {
-        setIsLoadingMore(false);
-      }
-    }
-  };
   
   const loadHistoryVideos = async (isInitial = false) => {
     if (!user) return;
@@ -352,8 +318,6 @@ export default function PopularVideos() {
     
     if (activeTab === 'popular' && hasMorePopular) {
       await loadPopularVideos();
-    } else if (activeTab === 'trending' && hasMoreTrending) {
-      await loadTrendingVideos();
     } else if (activeTab === 'history' && hasMoreHistory) {
       await loadHistoryVideos();
     }
@@ -394,9 +358,7 @@ export default function PopularVideos() {
   
   // Filter videos based on search query
   const filteredVideos = useMemo(() => {
-    const videos = activeTab === 'popular' ? popularVideos : 
-                   activeTab === 'trending' ? trendingVideos : 
-                   historyVideos;
+    const videos = activeTab === 'popular' ? popularVideos : historyVideos;
     
     if (!searchQuery) return videos;
     
@@ -404,7 +366,7 @@ export default function PopularVideos() {
       video.videoTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       video.metadata?.channelName?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [activeTab, popularVideos, trendingVideos, historyVideos, searchQuery]);
+  }, [activeTab, popularVideos, historyVideos, searchQuery]);
 
   const VideoCard = ({ video, index }: { video: PopularVideo; index: number }) => {
     const videoId = video.metadata?.youtubeVideoId || (video.contentType === 'youtube' ? video.id.replace('youtube_', '') : null);
@@ -471,7 +433,7 @@ export default function PopularVideos() {
           )}
 
           {/* Popularity badge */}
-          {video.accessCount > 100 && (
+          {(video.userCount || video.accessCount || 0) > 10 && (
             <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1">
               <Flame className="w-3 h-3" />
               Popular
@@ -489,7 +451,7 @@ export default function PopularVideos() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
             <div className="flex items-center gap-1.5">
               <Users className="w-4 h-4" />
-              <span className="font-medium">{video.accessCount.toLocaleString()}</span>
+              <span className="font-medium">{(video.userCount || video.accessCount || 0).toLocaleString()} users</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Calendar className="w-4 h-4" />
@@ -564,10 +526,10 @@ export default function PopularVideos() {
               </motion.div>
               
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Trending Japanese Content
+                Popular Japanese Videos
               </h1>
               <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-                Discover what the community is watching. All videos come with pre-generated transcripts for instant practice!
+                Discover what the community is practicing. Videos ranked by how many users have practiced with them!
               </p>
 
               {/* Stats */}
@@ -682,17 +644,6 @@ export default function PopularVideos() {
               <Award className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
               <span className="text-xs sm:text-sm md:text-base whitespace-nowrap">Most Popular</span>
             </button>
-            <button
-              onClick={() => setActiveTab('trending')}
-              className={`flex-1 px-2 sm:px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 ${
-                activeTab === 'trending'
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
-                  : 'text-muted-foreground hover:bg-muted/50'
-              }`}
-            >
-              <TrendingUp className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
-              <span className="text-xs sm:text-sm md:text-base whitespace-nowrap">Trending Now</span>
-            </button>
             {user && (
               <button
                 onClick={() => setActiveTab('history')}
@@ -749,7 +700,6 @@ export default function PopularVideos() {
               className="flex justify-center mt-8"
             >
               {((activeTab === 'popular' && hasMorePopular) ||
-                (activeTab === 'trending' && hasMoreTrending) ||
                 (activeTab === 'history' && hasMoreHistory)) && (
                 <button
                   onClick={loadMore}
@@ -801,22 +751,6 @@ export default function PopularVideos() {
             </motion.div>
           )}
 
-          {!isLoading && activeTab === 'trending' && filteredVideos.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-16"
-            >
-              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-12 h-12 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">No Trending Videos</h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Check back soon to see what the community is practicing!
-              </p>
-            </motion.div>
-          )}
-          
           {!isLoading && activeTab === 'history' && filteredVideos.length === 0 && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -846,11 +780,11 @@ export default function PopularVideos() {
                   <Award className="w-8 h-8 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-lg text-foreground mb-1">Community Achievement</h3>
+                  <h3 className="font-bold text-lg text-foreground mb-1">Community Impact</h3>
                   <p className="text-muted-foreground">
-                    Together, we've saved <span className="font-semibold text-foreground">{popularVideos.reduce((sum, v) => sum + (v.accessCount - 1), 0).toLocaleString()}</span> API calls
-                    by sharing transcripts. That's approximately <span className="font-semibold text-green-600">${(popularVideos.reduce((sum, v) => sum + (v.accessCount - 1), 0) * 0.006).toFixed(2)}</span> saved
-                    for the community!
+                    <span className="font-semibold text-foreground">{popularVideos.reduce((sum, v) => sum + (v.userCount || 1), 0).toLocaleString()}</span> users
+                    have practiced with these videos, creating <span className="font-semibold text-green-600">{popularVideos.reduce((sum, v) => sum + (v.totalPractices || 1), 0).toLocaleString()}</span> total
+                    practice sessions!
                   </p>
                 </div>
               </div>

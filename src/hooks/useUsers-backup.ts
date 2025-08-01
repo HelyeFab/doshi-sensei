@@ -112,40 +112,50 @@ export function useUsers(): UseUsersReturn {
         periodEnd.setMonth(periodEnd.getMonth() + 1);
       }
 
-      // Get existing data
+      // Get existing data to preserve usage counters
       const userDoc = await getDoc(userRef);
       const existingData = userDoc.data();
+      const existingUsage = existingData?.currentUsage || {};
       
-      // Create CLEAN subscription structure matching the new architecture
-      // This should match EXACTLY what the webhook creates
-      const subscriptionData = {
-        status: 'active',
-        plan: plan,
-        stripeCustomerId: existingData?.subscription?.stripeCustomerId || 'admin_manual_upgrade',
-        stripeSubscriptionId: existingData?.subscription?.stripeSubscriptionId || `admin_${plan}_${Date.now()}`,
-        stripePriceId: plan === 'yearly' ? 'price_1RakzXHdrJomitOwE7B56erf' : 'price_1RakzXHdrJomitOwZc0HJC4J',
-        currentPeriodEnd: periodEnd,
-        cancelAtPeriodEnd: false,
-        metadata: {
-          source: 'admin',
-          createdAt: now,
-          updatedAt: now,
-          upgradedBy: 'admin'
-        }
+      // Create the subscription update matching the fix script structure
+      const subscriptionUpdate = {
+        subscription: {
+          userId: userId,
+          status: 'active',
+          plan: plan,
+          stripeCustomerId: existingData?.subscription?.stripeCustomerId || 'admin_manual_upgrade',
+          stripeSubscriptionId: existingData?.subscription?.stripeSubscriptionId || `admin_${plan}_${Date.now()}`,
+          currentPeriodEnd: periodEnd,
+          cancelAtPeriodEnd: false,
+          metadata: {
+            source: 'admin',
+            createdAt: now,
+            updatedAt: now,
+            upgradedBy: 'admin'
+          }
+        },
+        limits: {
+          maxLists: -1,
+          maxDrillsPerDay: -1,
+          maxKanjiQuestPerDay: -1,
+          maxStoriesPerDay: -1,
+          maxArticlesPerDay: -1,
+          maxKanaDropPerDay: -1,
+          canSync: true,
+          canSave: true
+        },
+        // Preserve existing usage data
+        currentUsage: existingUsage
       };
 
-      // Update ONLY the subscription field (clean structure)
-      // This matches the webhook's update() approach
-      await updateDoc(userRef, {
-        subscription: subscriptionData,
-        updatedAt: now
-      });
+      // Update the user document
+      await updateDoc(userRef, subscriptionUpdate);
 
       // Update local state with the new subscription structure
       setUsers(prevUsers =>
         prevUsers.map(user =>
           user.id === userId
-            ? { ...user, subscription: subscriptionData }
+            ? { ...user, subscription: subscriptionUpdate }
             : user
         )
       );
@@ -259,18 +269,17 @@ export function searchUsers(users: AdminUserDetails[], query: string): AdminUser
 }
 
 // Utility function to filter users by subscription type
-// FIXED: Now checks the FLAT structure (subscription.plan) instead of nested
 export function filterUsersBySubscription(
   users: AdminUserDetails[],
   filterType: 'all' | 'free' | 'premium' | 'active'
 ): AdminUserDetails[] {
   switch (filterType) {
     case 'free':
-      return users.filter(user => user.subscription?.plan === 'free');
+      return users.filter(user => user.subscription?.subscription?.plan === 'free');
     case 'premium':
       return users.filter(user =>
-        user.subscription?.plan === 'monthly' ||
-        user.subscription?.plan === 'yearly'
+        user.subscription?.subscription?.plan === 'monthly' ||
+        user.subscription?.subscription?.plan === 'yearly'
       );
     case 'active':
       const today = new Date();

@@ -110,7 +110,7 @@ export function PremiumUpgradeButton({ user, onUpgrade }: PremiumUpgradeButtonPr
           ✓ Premium
         </span>
         <span className="text-xs text-muted-foreground">
-          ({user.subscription?.subscription?.plan})
+          ({user.subscription?.plan})
         </span>
       </div>
     );

@@ -10,6 +10,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { VersionDisplay } from '@/components/VersionDisplay';
 
 function QuickAction({ title, description, icon, onClick, loading }: {
   title: string;
@@ -226,6 +227,10 @@ export default function AdminDashboard() {
               <div className="flex justify-between">
                 <span>{strings.admin.branch}</span>
                 <span className="text-blue-600">{gitBranch}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Version</span>
+                <VersionDisplay showDetails={true} className="text-foreground" />
               </div>
             </div>
           </div>

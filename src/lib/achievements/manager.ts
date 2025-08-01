@@ -359,7 +359,7 @@ export class AchievementManager {
   }
 
   /**
-   * Save user stats (with premium sync)
+   * Save user stats (with premium sync and leaderboard sync)
    */
   static async saveUserStats(stats: UserStats): Promise<void> {
     try {

@@ -12,7 +12,9 @@ service cloud.firestore {
       let userData = get(/databases/$(database)/documents/users/$(userId)).data;
       return userData.subscription != null &&
         userData.subscription.status == 'active' &&
-        userData.subscription.plan in ['monthly', 'yearly'];
+        userData.subscription.plan in ['monthly', 'yearly'] ||
+        (userData.subscriptionStatus == 'active' &&
+         userData.subscriptionType in ['monthly', 'yearly']);
     }
 
     // Helper function to validate bookmark structure
@@ -627,6 +629,136 @@ service cloud.firestore {
       // Users can delete their own practice history
       allow delete: if request.auth != null && 
         resource.data.userId == request.auth.uid;
+    }
+
+    // Kanji Mastery - Premium users can sync their kanji progress
+    match /users/{userId}/kanjiProgress/{kanjiId} {
+      // Premium users can read their own kanji progress
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create/update their own kanji progress with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'lastReviewed', 'nextReview', 'reviewCount', 
+          'easeFactor', 'interval', 'difficulty', 'lapses', 'quality', 'retentionRate', 
+          'masteryLevel', 'createdAt', 'updatedAt']) &&
+        request.resource.data.id is string &&
+        request.resource.data.lastReviewed is string &&
+        request.resource.data.nextReview is string &&
+        request.resource.data.reviewCount is number &&
+        request.resource.data.easeFactor is number &&
+        request.resource.data.interval is number &&
+        request.resource.data.difficulty is number &&
+        request.resource.data.lapses is number &&
+        request.resource.data.quality is number &&
+        request.resource.data.retentionRate is number &&
+        request.resource.data.masteryLevel is number &&
+        request.resource.data.createdAt is string &&
+        request.resource.data.updatedAt is string;
+      
+      // Premium users can delete their own kanji progress
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Kanji Study Sessions - Premium users can sync their study sessions
+    match /users/{userId}/kanjiStudySessions/{sessionId} {
+      // Premium users can read their own study sessions
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create their own study sessions with validation
+      allow create: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'date', 'kanjiReviewed', 'averageQuality', 'timeSpent']) &&
+        request.resource.data.id is string &&
+        request.resource.data.date is string &&
+        request.resource.data.kanjiReviewed is number &&
+        request.resource.data.averageQuality is number &&
+        request.resource.data.timeSpent is number;
+      
+      // Premium users cannot update sessions (immutable for data integrity)
+      allow update: if false;
+      
+      // Premium users can delete their own old sessions
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Social Features - User Social Profiles
+    match /userSocial/{userId} {
+      // Anyone can read public profiles
+      allow read: if request.auth != null;
+      
+      // Users can create/update their own social profile
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.userId == userId;
+      
+      // Only admin can delete social profiles
+      allow delete: if isAdmin();
+    }
+
+    // Friend Requests
+    match /friendRequests/{requestId} {
+      // Users can read requests they're involved in
+      allow read: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid ||
+         isAdmin());
+      
+      // Users can create friend requests
+      allow create: if request.auth != null &&
+        request.resource.data.fromUserId == request.auth.uid;
+      
+      // Users involved can update request status
+      allow update: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid);
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // Challenges
+    match /challenges/{challengeId} {
+      // Users can read challenges they're involved in
+      allow read: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid ||
+         isAdmin());
+      
+      // Users can create challenges
+      allow create: if request.auth != null &&
+        request.resource.data.fromUserId == request.auth.uid;
+      
+      // Users involved can update challenge
+      allow update: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid);
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // Time-based stats subcollection
+    match /userStats/{userId}/timeBasedStats/{statDocument} {
+      // Users can read their own time-based stats, all users can read for leaderboard
+      allow read: if request.auth != null;
+      
+      // Only the user can write their own stats
+      allow create, update: if request.auth != null &&
+        request.auth.uid == userId;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
     }
 
     // Deny all other access

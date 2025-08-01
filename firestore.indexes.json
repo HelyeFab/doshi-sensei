@@ -225,6 +225,144 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "kanjiProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextReview",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "kanjiProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "jlptLevel",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextReview",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "kanjiProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastReviewed",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "kanjiStudySessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "achievementStats.lastActivityDate",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "achievementStats.totalXP",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "friendRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "toUserId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "friendRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "fromUserId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "toUserId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "challenges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "fromUserId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "challenges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "toUserId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

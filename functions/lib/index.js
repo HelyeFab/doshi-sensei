@@ -45,7 +45,14 @@ admin.initializeApp();
 const db = admin.firestore();
 // Initialize Stripe (will be initialized in the function)
 let stripe;
-// Webhook endpoint (v2 function - requires explicit public access)
+/**
+ * Clean Stripe Webhook using Three-Pillar Architecture
+ *
+ * This webhook ONLY manages the subscription data structure.
+ * The Three-Pillar system handles all entitlements, features, and access control.
+ *
+ * UPDATED: Now replaces entire subscription object to prevent mixing old/new structures
+ */
 exports.stripeWebhook = v2_1.https.onRequest({ cors: true }, async (req, res) => {
     console.log('Firebase Function: stripeWebhook called');
     console.log('Method:', req.method);
@@ -65,7 +72,8 @@ exports.stripeWebhook = v2_1.https.onRequest({ cors: true }, async (req, res) =>
     if (req.method === 'GET') {
         res.status(200).json({
             status: 'Stripe webhook endpoint is active',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            architecture: 'Three-Pillar System'
         });
         return;
     }
@@ -113,16 +121,42 @@ exports.stripeWebhook = v2_1.https.onRequest({ cors: true }, async (req, res) =>
         res.status(500).json({ error: 'Webhook processing failed' });
     }
 });
+/**
+ * Handle subscription updates - CLEAN STRUCTURE ONLY
+ *
+ * The subscription object in Firebase should contain ONLY:
+ * - status: 'active' | 'inactive' | 'canceled' | 'past_due'
+ * - plan: 'free' | 'monthly' | 'yearly'
+ * - stripeSubscriptionId: string
+ * - stripeCustomerId: string
+ * - stripePriceId: string
+ * - currentPeriodEnd: Timestamp
+ * - cancelAtPeriodEnd: boolean
+ * - metadata: { source, createdAt, updatedAt }
+ *
+ * UPDATED: Now uses update() to completely replace subscription object
+ */
 async function handleSubscriptionUpdate(subscription) {
     var _a;
     console.log('Handling subscription update:', subscription.id);
-    const firebaseUID = subscription.metadata.firebaseUID;
+    // Check both subscription and customer metadata for firebaseUID
+    let firebaseUID = subscription.metadata.firebaseUID;
+    if (!firebaseUID && subscription.customer) {
+        try {
+            const customer = await stripe.customers.retrieve(subscription.customer);
+            if (customer && !customer.deleted && 'metadata' in customer) {
+                firebaseUID = customer.metadata.firebaseUID;
+            }
+        }
+        catch (error) {
+            console.error('Error retrieving customer:', error);
+        }
+    }
     if (!firebaseUID) {
-        console.error('No firebaseUID in subscription metadata');
+        console.error('No firebaseUID found in subscription or customer metadata');
         return;
     }
     const status = subscription.status;
-    // Handle cases where current_period_end might be null/undefined
     const currentPeriodEnd = subscription.current_period_end
         ? admin.firestore.Timestamp.fromDate(new Date(subscription.current_period_end * 1000))
         : null;
@@ -132,7 +166,6 @@ async function handleSubscriptionUpdate(subscription) {
     // Determine the plan based on status and price ID
     let plan = 'free';
     if (isActive && priceId) {
-        // Map price IDs to plan names that match the app's expectations
         const planMap = {
             'price_1RakzXHdrJomitOwZc0HJC4J': 'monthly',
             'price_1RakzXHdrJomitOwE7B56erf': 'yearly'
@@ -140,23 +173,32 @@ async function handleSubscriptionUpdate(subscription) {
         plan = planMap[priceId] || 'free';
     }
     try {
-        const updateData = {
-            'subscription.status': status,
-            'subscription.plan': plan, // THIS IS THE CRITICAL FIX
-            'subscription.stripeSubscriptionId': subscription.id,
-            'subscription.stripePriceId': priceId,
-            'subscription.stripeCustomerId': subscription.customer,
-            'entitlements.isPremium': isActive,
-            'entitlements.premiumType': isActive ? 'stripe' : null,
-            'entitlements.premiumSince': isActive ? admin.firestore.FieldValue.serverTimestamp() : null,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        // CLEAN subscription structure - no nested objects!
+        const subscriptionData = {
+            status: status,
+            plan: plan,
+            stripeSubscriptionId: subscription.id,
+            stripeCustomerId: subscription.customer,
+            stripePriceId: priceId,
+            currentPeriodEnd: currentPeriodEnd,
+            cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+            metadata: {
+                source: 'stripe',
+                createdAt: admin.firestore.Timestamp.now(),
+                updatedAt: admin.firestore.Timestamp.now()
+            }
         };
-        // Only add currentPeriodEnd if it exists
-        if (currentPeriodEnd) {
-            updateData['subscription.currentPeriodEnd'] = currentPeriodEnd;
-        }
-        await db.collection('users').doc(firebaseUID).update(updateData);
-        console.log(`Updated subscription for user ${firebaseUID}: ${status}, plan: ${plan}`);
+        // UPDATED: Use update() to completely replace subscription object
+        // This prevents mixing old nested structures with new flat structure
+        await db.collection('users').doc(firebaseUID).update({
+            subscription: subscriptionData,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        console.log(`Updated subscription for user ${firebaseUID}:`, {
+            status,
+            plan,
+            subscriptionId: subscription.id
+        });
     }
     catch (error) {
         console.error('Error updating user subscription:', error);
@@ -165,18 +207,42 @@ async function handleSubscriptionUpdate(subscription) {
 }
 async function handleSubscriptionDeleted(subscription) {
     console.log('Handling subscription deletion:', subscription.id);
-    const firebaseUID = subscription.metadata.firebaseUID;
+    // Check both subscription and customer metadata for firebaseUID
+    let firebaseUID = subscription.metadata.firebaseUID;
+    if (!firebaseUID && subscription.customer) {
+        try {
+            const customer = await stripe.customers.retrieve(subscription.customer);
+            if (customer && !customer.deleted && 'metadata' in customer) {
+                firebaseUID = customer.metadata.firebaseUID;
+            }
+        }
+        catch (error) {
+            console.error('Error retrieving customer:', error);
+        }
+    }
     if (!firebaseUID) {
-        console.error('No firebaseUID in subscription metadata');
+        console.error('No firebaseUID found in subscription or customer metadata');
         return;
     }
     try {
+        // Set to free plan with canceled status
+        const subscriptionData = {
+            status: 'canceled',
+            plan: 'free',
+            stripeSubscriptionId: subscription.id,
+            stripeCustomerId: subscription.customer,
+            stripePriceId: null,
+            currentPeriodEnd: null,
+            cancelAtPeriodEnd: false,
+            canceledAt: admin.firestore.Timestamp.now(),
+            metadata: {
+                source: 'stripe',
+                updatedAt: admin.firestore.Timestamp.now()
+            }
+        };
+        // UPDATED: Use update() to completely replace subscription object
         await db.collection('users').doc(firebaseUID).update({
-            'subscription.status': 'canceled',
-            'subscription.plan': 'free', // Reset plan to free when canceled
-            'subscription.canceledAt': admin.firestore.FieldValue.serverTimestamp(),
-            'entitlements.isPremium': false,
-            'entitlements.premiumType': null,
+            subscription: subscriptionData,
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
         console.log(`Canceled subscription for user ${firebaseUID}`);

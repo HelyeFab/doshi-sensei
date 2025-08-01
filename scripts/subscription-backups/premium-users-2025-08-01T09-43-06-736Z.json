@@ -1,0 +1,16 @@
+[
+  {
+    "userId": "WKBWkN894df73VoQfM6OkxXNN2u2",
+    "email": "esfabiani@outlook.com",
+    "plan": "monthly",
+    "stripeCustomerId": "cus_SluUOE6ZSKCz06",
+    "stripeSubscriptionId": "sub_1RqXpQHdrJomitOw7eIm2izj",
+    "status": "active"
+  },
+  {
+    "userId": "WawMEtfq0dcoVPMr3nuwpFAzr9F2",
+    "email": "emmanuelfabiani23@gmail.com",
+    "plan": "yearly",
+    "status": "active"
+  }
+]

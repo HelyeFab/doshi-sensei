@@ -1,0 +1,128 @@
+[
+  {
+    "userId": "3XsntoKfV0Sphq42jmNLtHp6HZT2",
+    "email": "developerfabiani@gmail.com",
+    "subscription": {
+      "subscription": {
+        "plan": "free",
+        "status": "active"
+      },
+      "limits": {
+        "maxLists": 3,
+        "maxDrillsPerDay": 3,
+        "maxKanjiQuestPerDay": 3,
+        "maxStoriesPerDay": 3,
+        "maxArticlesPerDay": 3,
+        "canSync": false,
+        "canSave": true
+      },
+      "currentUsage": {
+        "listsCount": 0,
+        "drillsToday": 0,
+        "lastDrillDate": "2025-07-30T12:04:32.078Z",
+        "kanjiQuestToday": 0,
+        "lastKanjiQuestDate": "2025-07-30T12:04:32.078Z",
+        "kanaDropToday": 0,
+        "lastKanaDropDate": "2025-07-30T12:04:32.078Z",
+        "storiesToday": 0,
+        "lastStoryDate": "2025-07-30T12:04:32.078Z",
+        "articlesToday": 0,
+        "lastArticleDate": "2025-07-30T12:04:32.078Z"
+      }
+    },
+    "createdAt": {
+      "_seconds": 1753877073,
+      "_nanoseconds": 437000000
+    },
+    "lastLoginAt": {
+      "_seconds": 1753900443,
+      "_nanoseconds": 199000000
+    }
+  },
+  {
+    "userId": "WKBWkN894df73VoQfM6OkxXNN2u2",
+    "email": "esfabiani@outlook.com",
+    "subscription": {
+      "subscription": {
+        "plan": "free",
+        "status": "active"
+      },
+      "limits": {
+        "maxLists": 3,
+        "maxDrillsPerDay": 3,
+        "maxKanjiQuestPerDay": 3,
+        "maxStoriesPerDay": 3,
+        "maxArticlesPerDay": 3,
+        "canSync": false,
+        "canSave": true
+      },
+      "currentUsage": {
+        "listsCount": 0,
+        "drillsToday": 0,
+        "lastDrillDate": "2025-07-30T10:55:52.809Z",
+        "kanjiQuestToday": 0,
+        "lastKanjiQuestDate": "2025-07-30T10:55:52.809Z",
+        "kanaDropToday": 0,
+        "lastKanaDropDate": "2025-07-30T10:55:52.809Z",
+        "storiesToday": 0,
+        "lastStoryDate": "2025-07-30T10:55:52.809Z",
+        "articlesToday": 0,
+        "lastArticleDate": "2025-07-30T10:55:52.809Z"
+      },
+      "stripeSubscriptionId": "sub_1RqXpQHdrJomitOw7eIm2izj",
+      "currentPeriodEnd": {
+        "_seconds": 1756551899,
+        "_nanoseconds": 0
+      },
+      "stripeCustomerId": "cus_SluUOE6ZSKCz06",
+      "plan": "monthly",
+      "stripePriceId": "price_1RakzXHdrJomitOwZc0HJC4J",
+      "status": "active"
+    },
+    "entitlements": {
+      "isPremium": true,
+      "premiumType": "stripe",
+      "premiumSince": {
+        "_seconds": 1753873837,
+        "_nanoseconds": 733000000
+      }
+    },
+    "createdAt": {
+      "_seconds": 1753873461,
+      "_nanoseconds": 316000000
+    },
+    "lastLoginAt": {
+      "_seconds": 1753964946,
+      "_nanoseconds": 970000000
+    }
+  },
+  {
+    "userId": "WawMEtfq0dcoVPMr3nuwpFAzr9F2",
+    "email": "emmanuelfabiani23@gmail.com",
+    "subscription": {
+      "userId": "WawMEtfq0dcoVPMr3nuwpFAzr9F2",
+      "status": "active",
+      "plan": "yearly",
+      "stripeCustomerId": null,
+      "stripeSubscriptionId": null,
+      "currentPeriodEnd": null,
+      "cancelAtPeriodEnd": false,
+      "metadata": {
+        "source": "admin_fix",
+        "createdAt": {
+          "_seconds": 1752183779,
+          "_nanoseconds": 937000000
+        },
+        "updatedAt": {
+          "_seconds": 1752183779,
+          "_nanoseconds": 937000000
+        },
+        "originalStructure": "nested_subscription"
+      }
+    },
+    "lastLoginAt": {
+      "_seconds": 1754038220,
+      "_nanoseconds": 931000000
+    }
+  }
+]

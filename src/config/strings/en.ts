@@ -119,6 +119,11 @@ export const en = {
         icon: "📚",
         description: "Learn from Genki & Minna"
       },
+      kanjiMastery: {
+        title: "Kanji Mastery",
+        icon: "🎯",
+        description: "Master kanji with SRS"
+      },
       read: {
         title: "Read",
         icon: "📖",
@@ -128,8 +133,35 @@ export const en = {
         title: "Practice Hub",
         icon: "🎯",
         description: "All practice modes"
+      },
+      leaderboard: {
+        title: "Leaderboard",
+        icon: "🏆",
+        description: "View top learners and compete"
       }
     }
+  },
+
+  // Leaderboard
+  leaderboard: {
+    title: "Leaderboard",
+    description: "View top learners and compete for the highest rank",
+    yourRank: "Your Rank",
+    totalXP: "Total XP",
+    timePeriods: {
+      allTime: "All Time",
+      thisMonth: "This Month",
+      thisWeek: "This Week", 
+      today: "Today"
+    },
+    loading: "Loading leaderboard...",
+    error: "Failed to load leaderboard. Please try again later.",
+    noData: "No data available for this time period.",
+    howScoringWorks: "How scoring works",
+    scoringExplanation: "Earn XP by completing lessons, playing games, reading articles, and achieving milestones. Premium members get bonus XP!",
+    notInTop: "Not in top 100",
+    you: "You",
+    xp: "XP"
   },
 
   // Practice Screen

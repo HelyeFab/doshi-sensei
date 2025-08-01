@@ -13,6 +13,7 @@ interface SlideUpModalProps {
   closeOnOutsideClick?: boolean;
   className?: string;
   useNewWrapper?: boolean;
+  showCloseButton?: boolean;
 }
 
 export default function SlideUpModal({
@@ -24,6 +25,7 @@ export default function SlideUpModal({
   showHandle = false,
   closeOnOutsideClick = true,
   className = '',
+  showCloseButton = true,
 }: SlideUpModalProps) {
   const [mounted, setMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -76,9 +78,33 @@ export default function SlideUpModal({
         } ${className}`}
         style={{
           height: height === 'full' ? '100%' : height === 'auto' ? 'auto' : height,
-          maxHeight: '100vh',
+          maxHeight: height === '90%' && typeof window !== 'undefined' && window.innerWidth < 768 ? '90vh' : '100vh',
+          marginTop: height === '90%' && typeof window !== 'undefined' && window.innerWidth < 768 ? '10vh' : '0',
         }}
       >
+        {/* Close button (always at top right) */}
+        {showCloseButton && !title && (
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-muted/80 hover:bg-muted transition-colors"
+            aria-label="Close modal"
+          >
+            <svg
+              className="w-5 h-5 text-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        )}
+
         {/* Handle */}
         {showHandle && (
           <div className="modal-handle flex justify-center pt-3 pb-2">
@@ -90,30 +116,32 @@ export default function SlideUpModal({
         {title && (
           <div className="modal-header flex items-center justify-between px-6 py-4 border-b border-border">
             <h2 className="text-xl font-semibold text-foreground">{title}</h2>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
-              aria-label="Close modal"
-            >
-              <svg
-                className="w-6 h-6 text-muted-foreground"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {showCloseButton && (
+              <button
+                onClick={onClose}
+                className="p-2 rounded-lg hover:bg-muted transition-colors"
+                aria-label="Close modal"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="w-6 h-6 text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain rounded-t-3xl">
           {children}
         </div>
       </div>

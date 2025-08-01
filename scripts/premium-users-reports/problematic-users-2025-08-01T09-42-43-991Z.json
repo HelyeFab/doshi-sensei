@@ -1,0 +1,23 @@
+[
+  {
+    "userId": "WKBWkN894df73VoQfM6OkxXNN2u2",
+    "email": "esfabiani@outlook.com",
+    "plan": "monthly",
+    "outerPlan": "monthly",
+    "innerPlan": "free",
+    "entitlementsPremium": true,
+    "status": "active",
+    "stripeCustomerId": "cus_SluUOE6ZSKCz06",
+    "stripeSubscriptionId": "sub_1RqXpQHdrJomitOw7eIm2izj",
+    "stripePriceId": "price_1RakzXHdrJomitOwZc0HJC4J",
+    "hasConflict": false,
+    "createdAt": {
+      "_seconds": 1753873461,
+      "_nanoseconds": 316000000
+    },
+    "lastLoginAt": {
+      "_seconds": 1753964946,
+      "_nanoseconds": 970000000
+    }
+  }
+]

@@ -440,6 +440,32 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: true,
     requiresSubscription: false,
     status: 'active'
+  },
+
+  // Kanji Mastery
+  'kanji_mastery': {
+    id: 'kanji_mastery',
+    name: 'Kanji Mastery',
+    description: 'Learn and master kanji with spaced repetition',
+    category: 'learning',
+    icon: '🎯',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+
+  // Leaderboard
+  'leaderboard': {
+    id: 'leaderboard',
+    name: 'Leaderboard',
+    description: 'View rankings of all registered users based on total score',
+    category: 'system',
+    icon: '🏆',
+    limitType: 'none',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
   }
 };
 

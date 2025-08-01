@@ -41,7 +41,7 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
       <ExternalImage
         src={profilePicture}
         alt={profile?.displayName || profile?.email || 'User avatar'}
-        className="w-full h-full object-cover"
+        className={`w-full h-full ${profilePicture.includes('.svg') || profilePicture.includes('flat-icons') ? 'object-contain p-1' : 'object-cover'}`}
         width={size === 'sm' ? 32 : size === 'md' ? 48 : size === 'lg' ? 64 : 80}
         height={size === 'sm' ? 32 : size === 'md' ? 48 : size === 'lg' ? 64 : 80}
       />

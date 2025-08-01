@@ -93,7 +93,9 @@ export async function GET() {
           'background_sync': 'premium_features',
           'ai_context_explanation': 'ai_explanations',
           'anki_import': 'anki_import',
-          'anki_set_creation': 'anki_set_creation'
+          'anki_set_creation': 'anki_set_creation',
+          'kanji_mastery': 'learn_kanji',
+          'leaderboard': 'view_leaderboard'
         };
         
         const requiredPermission = permissionMap[feature.id];

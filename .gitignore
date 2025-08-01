@@ -100,3 +100,4 @@ public/anki/*.apkg
 # Test files
 test-indexeddb.html
 
+firebase-debug.log

@@ -3,6 +3,7 @@ import { UserScopedStorage } from '@/utils/userScopedStorage';
 import { User } from 'firebase/auth';
 import { collection, doc, setDoc, getDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { updateTimeBasedStats } from '@/utils/timeBasedStats';
 
 // Activity event types
 export type ActivityType = 'drill' | 'story' | 'article' | 'kanji' | 'game' | 'vocab' | 'flashcard' | 'practice';
@@ -198,6 +199,20 @@ export class StatsTracker {
 
     // Process immediately
     await this.processPendingActivities();
+    
+    // Update time-based stats for premium users
+    if (this.currentUser && this.isPremium) {
+      try {
+        await updateTimeBasedStats(
+          this.currentUser.uid,
+          type,
+          details.score || 0
+        );
+      } catch (error) {
+        console.error('❌ [StatsTracker] Error updating time-based stats:', error);
+        // Don't throw - continue with normal operation
+      }
+    }
     
     // Debug logging after processing
     if (this.stats) {

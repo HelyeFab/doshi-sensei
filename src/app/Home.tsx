@@ -344,9 +344,10 @@ export default function Home() {
             <div className="space-y-3">
               {[
                 { title: strings.home.featureCards.kanji.title, icon: strings.home.featureCards.kanji.icon, href: '/kanji-browser', description: strings.home.featureCards.kanji.description },
+                { title: strings.home.featureCards.kanjiMastery?.title || "Kanji Mastery", icon: strings.home.featureCards.kanjiMastery?.icon || "🎯", href: '/tools/kanji-mastery', description: strings.home.featureCards.kanjiMastery?.description || "Master kanji with SRS" },
                 { title: strings.home.featureCards.moodBoards.title, icon: strings.home.featureCards.moodBoards.icon, href: '/kanji-moods', description: strings.home.featureCards.moodBoards.description },
-                { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
                 { title: strings.home.featureCards.textbookVocabulary.title, icon: strings.home.featureCards.textbookVocabulary.icon, href: '/tools/textbook-vocabulary', description: strings.home.featureCards.textbookVocabulary.description },
+                { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
                 { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description }
               ].map((card) => (
                 <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
@@ -448,6 +449,37 @@ export default function Home() {
                         ) : (
                           <span className="text-2xl">{card.icon}</span>
                         )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                      </div>
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </SmartNavigationLink>
+              ))}
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border"></div>
+
+          {/* Social & Community Section */}
+          <section>
+            <h3 className="text-lg font-bold text-foreground mb-3">Community</h3>
+            <div className="space-y-3">
+              {[
+                { title: 'Leaderboard', icon: '🏆', href: '/leaderboard', description: 'View rankings and compete' },
+                { title: 'Friends', icon: '👥', href: '/friends', description: 'Connect with other learners' }
+              ].map((card) => (
+                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+                        <span className="text-2xl">{card.icon}</span>
                       </div>
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">{card.title}</h3>

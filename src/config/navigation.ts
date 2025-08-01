@@ -79,6 +79,27 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
     href: '/games',
     description: strings.nav.gamesDescription || 'Games'
   },
+  {
+    id: 'kanji-mastery',
+    label: 'Kanji Mastery',
+    icon: '🎯', // Fallback icon
+    href: '/tools/kanji-mastery',
+    description: 'Master kanji with spaced repetition'
+  },
+  {
+    id: 'leaderboard',
+    label: 'Leaderboard',
+    icon: '🏆', // Fallback icon
+    href: '/leaderboard',
+    description: 'View top learners and rankings'
+  },
+  {
+    id: 'friends',
+    label: 'Friends',
+    icon: '👥', // Fallback icon
+    href: '/friends',
+    description: 'Connect with other learners'
+  },
   // {
   //   id: 'favourites',
   //   label: strings.navigation.favourites.label,

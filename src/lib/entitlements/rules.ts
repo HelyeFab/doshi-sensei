@@ -10,7 +10,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
   {
     id: 'guest_basic',
     userTypes: ['guest'],
-    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary'],
+    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary', 'learn_kanji', 'view_leaderboard'],
     limits: {
       daily: {
         drill_practice: 3,
@@ -32,7 +32,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         stroke_order_practice: 3,
         youtube_shadowing: 1, // 1 YouTube URL or upload per day for guests
         ai_context_explanation: 3,
-        textbook_vocabulary: 20
+        textbook_vocabulary: 20,
+        kanji_mastery: 5 // 5 kanji per day for guests
       }
     },
     description: 'Basic access for non-registered users'
@@ -53,7 +54,9 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
       'view_stroke_order',
       'youtube_shadowing',
       'ai_explanations',
-      'textbook_vocabulary'
+      'textbook_vocabulary',
+      'learn_kanji',
+      'view_leaderboard'
     ],
     limits: {
       daily: {
@@ -76,7 +79,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         stroke_order_practice: 3,
         youtube_shadowing: 3, // 3 YouTube shadowing sessions per day for free users
         ai_context_explanation: 3,
-        textbook_vocabulary: 50
+        textbook_vocabulary: 50,
+        kanji_mastery: 10 // 10 kanji per day for free users
       },
       total: {
         word_lists: 3,
@@ -107,6 +111,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         flashcard_review: -1,
         article_reading: -1,
         story_reading: -1,
+        kanji_moods: -1,
         speaking_practice: -1,
         ai_tutor: -1, // Unlimited AI tutor for premium monthly
         ai_context_explanation: -1, // Unlimited AI explanations
@@ -115,7 +120,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         youtube_shadowing: -1, // Unlimited YouTube URLs or uploads for premium
         anki_import: -1, // Unlimited Anki imports
         anki_set_creation: -1, // Unlimited Anki set creation
-        textbook_vocabulary: -1 // Unlimited textbook vocabulary
+        textbook_vocabulary: -1, // Unlimited textbook vocabulary
+        kanji_mastery: -1 // Unlimited kanji mastery for premium
       },
       total: {
         word_lists: -1,
@@ -146,6 +152,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         flashcard_review: -1,
         article_reading: -1,
         story_reading: -1,
+        kanji_moods: -1,
         speaking_practice: -1,
         ai_tutor: -1, // Yearly gets truly unlimited
         ai_context_explanation: -1, // Unlimited AI explanations
@@ -154,7 +161,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         youtube_shadowing: -1, // Unlimited YouTube URLs or uploads for premium
         anki_import: -1, // Unlimited Anki imports
         anki_set_creation: -1, // Unlimited Anki set creation
-        textbook_vocabulary: -1 // Unlimited textbook vocabulary
+        textbook_vocabulary: -1, // Unlimited textbook vocabulary
+        kanji_mastery: -1 // Unlimited kanji mastery for premium
       },
       total: {
         word_lists: -1,

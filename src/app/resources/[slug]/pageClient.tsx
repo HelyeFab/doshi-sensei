@@ -17,6 +17,7 @@ import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 export default function ResourcePostClient() {
   const params = useParams();
   const router = useRouter();
+  const strings = useStrings();
   const slug = params.slug as string;
 
   const [resource, setResource] = useState<ResourcePost | null>(null);
@@ -82,7 +83,7 @@ export default function ResourcePostClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SmartPageHeader title="Loading..." backHref="/resources" />
         <MobileAwareContainer className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto text-center py-12">
@@ -96,12 +97,12 @@ export default function ResourcePostClient() {
 
   if (error || !resource) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SmartPageHeader title="Resource Not Found" backHref="/resources" />
         <MobileAwareContainer className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="text-6xl mb-4">📄</div>
-            <h2 className="text-2xl font-semibold mb-4">Resource Not Found</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">Resource Not Found</h2>
             <p className="text-muted-foreground mb-6">
               The resource you're looking for doesn't exist or has been moved.
             </p>
@@ -117,7 +118,7 @@ export default function ResourcePostClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <SmartPageHeader title={resource.title} backHref="/resources" />
       
       {/* Hero Section */}
@@ -134,17 +135,6 @@ export default function ResourcePostClient() {
 
       <MobileAwareContainer className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          {/* Back Navigation */}
-          <div className="mb-6">
-            <SmartNavigationLink href="/resources"
-              className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
-             title={strings.resources.backToResources || "Back to Resources"}>
-              <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to Resources
-            </SmartNavigationLink>
-          </div>
 
           {/* Article Header */}
           <header className="mb-8">
@@ -155,13 +145,13 @@ export default function ResourcePostClient() {
                 </span>
               )}
               {resource.featured && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500/10 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400">
                   Featured
                 </span>
               )}
               {resource.isPremium && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                  {useStrings().subscriptions.plans.monthly.name}
+                  {strings.subscriptions?.plans?.monthly?.name || 'Premium'}
                 </span>
               )}
             </div>
@@ -208,13 +198,13 @@ export default function ResourcePostClient() {
 
           {/* External Resource CTA */}
           {resource.externalUrl && (
-            <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+            <div className="mb-8 p-6 bg-accent/10 rounded-xl border border-accent/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     🔗 External Resource
                   </h3>
-                  <p className="text-blue-700 dark:text-blue-300 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     Click below to visit the original resource
                   </p>
                 </div>
@@ -222,7 +212,7 @@ export default function ResourcePostClient() {
                   href={resource.externalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                  className="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
                 >
                   Visit Resource
                   <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,7 +224,7 @@ export default function ResourcePostClient() {
           )}
 
           {/* Article Content */}
-          <article className="prose prose-lg max-w-none dark:prose-invert">
+          <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:text-primary hover:prose-a:text-primary/80">
             <div dangerouslySetInnerHTML={{ __html: marked(resource.content) as string }} />
           </article>
 

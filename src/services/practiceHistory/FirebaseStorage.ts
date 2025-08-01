@@ -38,6 +38,12 @@ export class FirebasePracticeHistoryStorage {
     console.log('User ID:', this.userId);
     console.log('Item:', item);
     
+    // Check authentication status
+    const { auth } = await import('@/lib/firebase');
+    const currentUser = auth.currentUser;
+    console.log('Current auth user:', currentUser?.uid);
+    console.log('Auth user matches userId:', currentUser?.uid === this.userId);
+    
     try {
       // Check if document exists
       const docSnap = await getDoc(docRef);
@@ -46,6 +52,9 @@ export class FirebasePracticeHistoryStorage {
       if (docSnap.exists()) {
         // Update existing item
         const existingData = docSnap.data();
+        console.log('Existing document data:', existingData);
+        
+        // Ensure we include all required fields in the update
         const updateData = {
           userId: this.userId,
           videoId: item.videoId,
@@ -58,8 +67,10 @@ export class FirebasePracticeHistoryStorage {
         };
         
         console.log('Update data:', updateData);
+        console.log('Update field keys:', Object.keys(updateData));
         
-        await setDoc(docRef, updateData, { merge: true });
+        // Use set instead of merge to ensure all fields are present
+        await setDoc(docRef, updateData);
         console.log('✅ Successfully updated practice history in Firebase');
       } else {
         // Create new item - only include required fields
@@ -74,7 +85,13 @@ export class FirebasePracticeHistoryStorage {
           contentType: item.contentType
         };
         
+        // Double-check userId matches document ID pattern
+        console.log('Document ID:', docId);
+        console.log('User ID in data:', dataToSave.userId);
+        console.log('Expected pattern:', `${this.userId}_${item.videoId}`);
+        
         console.log('Data to save (required fields only):', dataToSave);
+        console.log('Field keys:', Object.keys(dataToSave));
         console.log('Field types:', {
           userId: typeof dataToSave.userId,
           videoId: typeof dataToSave.videoId,
@@ -85,6 +102,11 @@ export class FirebasePracticeHistoryStorage {
           practiceCount: typeof dataToSave.practiceCount,
           contentType: typeof dataToSave.contentType
         });
+        
+        // Validate all required fields
+        const requiredFields = ['userId', 'videoId', 'videoUrl', 'videoTitle', 'lastPracticed', 'firstPracticed', 'practiceCount', 'contentType'];
+        const hasAllFields = requiredFields.every(field => field in dataToSave);
+        console.log('Has all required fields:', hasAllFields);
         
         // Validate contentType
         if (!['youtube', 'audio', 'video'].includes(dataToSave.contentType)) {

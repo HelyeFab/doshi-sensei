@@ -32,13 +32,18 @@ export class PracticeHistoryService {
 
     // Initialize Firebase for all authenticated users (free and premium)
     if (userId) {
-      console.log('Initializing Firebase storage for user:', userId);
+      console.log('🔥 Initializing Firebase storage for user:', userId);
+      console.log('User type:', isPremium ? 'premium' : 'free');
       this.firebaseStorage = new FirebasePracticeHistoryStorage(userId);
       this.userType = isPremium ? 'premium' : 'free';
+      console.log('Firebase storage created:', !!this.firebaseStorage);
+      console.log('Firebase user ID stored:', (this.firebaseStorage as any).userId);
       // Sync local data to Firebase on first login
       await this.syncLocalToFirebase();
     } else {
+      console.log('⚠️ No userId provided - initializing as guest');
       this.userType = 'guest';
+      this.firebaseStorage = null;
     }
 
     this.isInitialized = true;
@@ -56,20 +61,36 @@ export class PracticeHistoryService {
       throw new Error('PracticeHistoryService not initialized');
     }
 
+    console.log('=== PracticeHistoryService.addOrUpdateItem ===');
+    console.log('Service status:', this.getStatus());
+    console.log('Item to save:', item);
+
     // Always save to IndexedDB
     await this.indexedDBStorage.addOrUpdateItem(item);
+    console.log('✅ Saved to IndexedDB');
 
     // Also save to Firebase for authenticated users
     if (this.firebaseStorage) {
-      console.log('Saving to Firebase storage...');
+      console.log('🔥 Firebase storage is available, attempting to save...');
+      console.log('Firebase user ID:', (this.firebaseStorage as any).userId);
       try {
         await this.firebaseStorage.addOrUpdateItem(item);
-        console.log('Successfully saved to Firebase');
-      } catch (error) {
-        console.error('Failed to save to Firebase, but local save succeeded:', error);
+        console.log('✅ Successfully saved to Firebase');
+      } catch (error: any) {
+        console.error('❌ Failed to save to Firebase, but local save succeeded:', error);
+        console.error('Error details:', {
+          code: error.code,
+          message: error.message,
+          stack: error.stack
+        });
       }
     } else {
-      console.log('No Firebase storage available - saved locally only');
+      console.log('⚠️ No Firebase storage available - saved locally only');
+      console.log('Service details:', {
+        isInitialized: this.isInitialized,
+        userType: this.userType,
+        hasFirebaseStorage: !!this.firebaseStorage
+      });
     }
   }
 

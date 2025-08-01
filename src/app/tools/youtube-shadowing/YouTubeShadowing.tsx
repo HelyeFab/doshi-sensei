@@ -81,6 +81,21 @@ export default function YouTubeShadowing() {
     console.log(`[${timestamp}] [${category}] ${message}`, data || '');
   };
 
+  // Parse YouTube duration format (ISO 8601) to seconds
+  const parseDuration = (duration: string): number => {
+    if (!duration) return 0;
+    
+    // YouTube uses ISO 8601 format: PT1H2M10S = 1 hour, 2 minutes, 10 seconds
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!match) return 0;
+    
+    const hours = parseInt(match[1] || '0');
+    const minutes = parseInt(match[2] || '0');
+    const seconds = parseInt(match[3] || '0');
+    
+    return hours * 3600 + minutes * 60 + seconds;
+  };
+
   // Extract video ID from YouTube URL
   const extractVideoId = (url: string): string | null => {
     const patterns = [
@@ -229,12 +244,14 @@ export default function YouTubeShadowing() {
       });
       
       // Save to practice history if it's a YouTube video AND user is authenticated
-      if (session.videoUrl && videoId && user) {
+      if (session.videoUrl && videoId && user && user.uid) {
         debugLog('PRACTICE_HISTORY_SAVE', 'Starting save process', {
           videoId,
           videoUrl: session.videoUrl,
           videoTitle: videoTitle || session.videoTitle,
-          userId: user?.uid,
+          userId: user.uid,
+          userEmail: user.email,
+          isAuthenticated: !!user,
           serviceStatus: practiceHistoryService.getStatus()
         });
         
@@ -251,7 +268,7 @@ export default function YouTubeShadowing() {
             firstPracticed: now,
             practiceCount: 1,
             contentType: 'youtube' as const,
-            duration: videoMetadata?.duration,
+            duration: videoMetadata?.duration ? parseDuration(videoMetadata.duration) : undefined,
             totalPracticeTime: 0,
             metadata: {
               channelTitle: videoMetadata?.channelTitle,
@@ -268,9 +285,12 @@ export default function YouTubeShadowing() {
           
           if (existingItem) {
             practiceItem.firstPracticed = existingItem.firstPracticed;
-            practiceItem.practiceCount = existingItem.practiceCount + 1;
+            practiceItem.practiceCount = (existingItem.practiceCount || 0) + 1;
             practiceItem.totalPracticeTime = existingItem.totalPracticeTime || 0;
-            debugLog('PRACTICE_HISTORY_SAVE', 'Updated practice count', { newCount: practiceItem.practiceCount });
+            debugLog('PRACTICE_HISTORY_SAVE', 'Updated practice count', { 
+              existingCount: existingItem.practiceCount,
+              newCount: practiceItem.practiceCount 
+            });
           }
           
           debugLog('PRACTICE_HISTORY_SAVE', 'Calling addOrUpdateItem...');

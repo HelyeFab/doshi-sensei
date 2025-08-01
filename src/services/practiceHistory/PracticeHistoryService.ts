@@ -18,14 +18,12 @@ export class PracticeHistoryService {
     // Initialize IndexedDB for all users
     await this.indexedDBStorage.init();
 
-    // Initialize Firebase for premium users
-    if (userId && isPremium) {
+    // Initialize Firebase for all authenticated users (free and premium)
+    if (userId) {
       this.firebaseStorage = new FirebasePracticeHistoryStorage(userId);
-      this.userType = 'premium';
-      // Sync local data to Firebase on first premium login
+      this.userType = isPremium ? 'premium' : 'free';
+      // Sync local data to Firebase on first login
       await this.syncLocalToFirebase();
-    } else if (userId) {
-      this.userType = 'free';
     } else {
       this.userType = 'guest';
     }

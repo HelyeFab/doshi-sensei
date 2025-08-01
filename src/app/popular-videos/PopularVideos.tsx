@@ -226,7 +226,49 @@ export default function PopularVideos() {
         setIsLoadingMore(true);
       }
       
-      const constraints: any[] = [
+      // First, try to get from userPracticeHistory (actual user history)
+      const practiceHistoryConstraints: any[] = [
+        collection(db, 'userPracticeHistory'),
+        where('userId', '==', user.uid),
+        orderBy('lastPracticed', 'desc'),
+        limit(ITEMS_PER_PAGE)
+      ];
+      
+      if (contentFilter !== 'all') {
+        practiceHistoryConstraints.splice(2, 0, where('contentType', '==', contentFilter));
+      }
+      
+      if (historyLastDoc && !isInitial) {
+        practiceHistoryConstraints.push(startAfter(historyLastDoc));
+      }
+      
+      const practiceHistoryQuery = query(...practiceHistoryConstraints);
+      const practiceHistorySnapshot = await getDocs(practiceHistoryQuery);
+      
+      // Convert practice history items to PopularVideo format
+      const practiceHistoryData = practiceHistorySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: data.videoId || doc.id,
+          videoTitle: data.videoTitle,
+          videoUrl: data.videoUrl,
+          accessCount: data.practiceCount || 1,
+          createdAt: data.firstPracticed || data.createdAt,
+          lastAccessed: data.lastPracticed,
+          language: 'ja',
+          duration: data.duration,
+          contentType: data.contentType || 'youtube',
+          createdBy: data.userId,
+          metadata: {
+            youtubeVideoId: data.videoId,
+            channelName: data.channelName || data.metadata?.channelTitle,
+            thumbnailUrl: data.thumbnailUrl
+          }
+        } as PopularVideo;
+      });
+
+      // Also get from transcriptCache (fallback for older data)
+      const cacheConstraints: any[] = [
         collection(db, 'transcriptCache'),
         where('createdBy', '==', user.uid),
         orderBy('lastAccessed', 'desc'),
@@ -234,33 +276,50 @@ export default function PopularVideos() {
       ];
       
       if (contentFilter !== 'all') {
-        constraints.splice(2, 0, where('contentType', '==', contentFilter));
+        cacheConstraints.splice(2, 0, where('contentType', '==', contentFilter));
       }
       
-      if (historyLastDoc && !isInitial) {
-        constraints.push(startAfter(historyLastDoc));
-      }
+      const cacheQuery = query(...cacheConstraints);
+      const cacheSnapshot = await getDocs(cacheQuery);
       
-      const historyQuery = query(...constraints);
-      const historySnapshot = await getDocs(historyQuery);
-      
-      if (historySnapshot.docs.length < ITEMS_PER_PAGE) {
-        setHasMoreHistory(false);
-      }
-      
-      if (historySnapshot.docs.length > 0) {
-        setHistoryLastDoc(historySnapshot.docs[historySnapshot.docs.length - 1]);
-      }
-      
-      const historyData = historySnapshot.docs.map(doc => ({
+      const cacheData = cacheSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       } as PopularVideo));
 
+      // Merge and deduplicate the results
+      const mergedData = [...practiceHistoryData];
+      const seenIds = new Set(practiceHistoryData.map(item => item.id));
+      
+      cacheData.forEach(item => {
+        if (!seenIds.has(item.id)) {
+          mergedData.push(item);
+          seenIds.add(item.id);
+        }
+      });
+
+      // Sort by most recent
+      mergedData.sort((a, b) => {
+        const aTime = a.lastAccessed?.toDate?.()?.getTime() || 0;
+        const bTime = b.lastAccessed?.toDate?.()?.getTime() || 0;
+        return bTime - aTime;
+      });
+
+      // Take only the requested page size
+      const pageData = mergedData.slice(0, ITEMS_PER_PAGE);
+      
+      if (pageData.length < ITEMS_PER_PAGE) {
+        setHasMoreHistory(false);
+      }
+      
+      if (practiceHistorySnapshot.docs.length > 0) {
+        setHistoryLastDoc(practiceHistorySnapshot.docs[practiceHistorySnapshot.docs.length - 1]);
+      }
+
       if (isInitial) {
-        setHistoryVideos(historyData);
+        setHistoryVideos(pageData);
       } else {
-        setHistoryVideos(prev => [...prev, ...historyData]);
+        setHistoryVideos(prev => [...prev, ...pageData]);
       }
 
     } catch (error) {
@@ -618,7 +677,7 @@ export default function PopularVideos() {
               <TrendingUp className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
               <span className="text-xs sm:text-sm md:text-base whitespace-nowrap">Trending Now</span>
             </button>
-            {isPremium && (
+            {user && (
               <button
                 onClick={() => setActiveTab('history')}
                 className={`flex-1 px-2 sm:px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 ${

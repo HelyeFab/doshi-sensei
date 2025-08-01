@@ -29,6 +29,8 @@ export default function TranscriptDisplay({
   const [status, setStatus] = useState<'idle' | 'loading' | 'completed' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [retryCount, setRetryCount] = useState(0);
+  const [showRetryHint, setShowRetryHint] = useState(false);
   const strings = useStrings();
   const { user } = useAuth();
 
@@ -293,6 +295,12 @@ export default function TranscriptDisplay({
   };
 
   const retry = () => {
+    setRetryCount(prev => prev + 1);
+    setShowRetryHint(false);
+    // Show retry hint after first failure
+    if (retryCount === 0) {
+      setTimeout(() => setShowRetryHint(true), 3000);
+    }
     loadTranscript();
   };
 
@@ -309,7 +317,11 @@ export default function TranscriptDisplay({
             </svg>
             <span className="text-sm text-muted-foreground">
               {audioUrl === 'youtube-player' 
-                ? 'Checking for YouTube subtitles...' 
+                ? (retryCount === 0 
+                    ? 'Checking for YouTube subtitles...' 
+                    : retryCount === 1 
+                      ? 'Giving it another shot... 🎲'
+                      : 'Third time\'s the charm! 🍀')
                 : (loadingMessage || strings.youtubeShadowing?.fetchingTranscript || 'Transcribing audio with OpenAI Whisper...')}
             </span>
           </div>
@@ -393,12 +405,34 @@ export default function TranscriptDisplay({
                 </div>
               </div>
               
-              <button
-                onClick={retry}
-                className="text-sm text-primary hover:text-primary/80 font-medium"
-              >
-                {strings.youtubeShadowing?.tryAgain || 'Try again'}
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={retry}
+                  className="text-sm text-primary hover:text-primary/80 font-medium inline-flex items-center gap-2"
+                >
+                  {retryCount === 0 ? '🔄' : retryCount === 1 ? '🤔' : '💪'} 
+                  {strings.youtubeShadowing?.tryAgain || 'Try again'}
+                </button>
+                
+                {showRetryHint && retryCount === 1 && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 <strong>Pro tip:</strong> Sometimes the subtitle elves are just taking a coffee break! 
+                      Trying again often works like magic. ☕✨
+                    </p>
+                  </div>
+                )}
+                
+                {retryCount >= 2 && (
+                  <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mt-3">
+                    <p className="text-sm text-purple-800 dark:text-purple-200">
+                      🎯 <strong>Still not working?</strong> The video might genuinely lack Japanese captions. 
+                      You can upload the audio manually above for AI transcription! 
+                      {retryCount >= 3 && " (You're persistent, I like that! 😄)"}
+                    </p>
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>

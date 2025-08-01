@@ -130,30 +130,56 @@ export async function POST(request: NextRequest) {
     const SUPA_API_KEY = process.env.SUPA_YOUTUBE_API_KEY;
     
     if (SUPA_API_KEY) {
-      try {
-        console.log('=== Trying SupaData AI ===');
-        console.log('SupaData API Key first 10 chars:', SUPA_API_KEY.substring(0, 10) + '...');
-        console.log('Request URL:', url);
-        console.log('Request params:', { url, lang: 'ja' });
-        
-        const supaResponse = await axios.get(
-          `https://api.supadata.ai/v1/transcript`,
-          {
-            params: { 
-              url,
-              lang: 'ja' // Request Japanese subtitles specifically
-            },
-            headers: {
-              'x-api-key': SUPA_API_KEY
-            },
-            timeout: 30000 // 30 second timeout
+      // Retry logic for SupaData API
+      let supaResponse = null;
+      let lastError = null;
+      const maxRetries = 2;
+      
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          console.log(`=== Trying SupaData AI (attempt ${attempt + 1}/${maxRetries}) ===`);
+          console.log('SupaData API Key first 10 chars:', SUPA_API_KEY.substring(0, 10) + '...');
+          console.log('Request URL:', url);
+          console.log('Request params:', { url, lang: 'ja' });
+          
+          // Add a small delay between retries
+          if (attempt > 0) {
+            console.log(`Waiting ${attempt * 1000}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, attempt * 1000));
           }
-        );
+          
+          supaResponse = await axios.get(
+            `https://api.supadata.ai/v1/transcript`,
+            {
+              params: { 
+                url,
+                lang: 'ja' // Request Japanese subtitles specifically
+              },
+              headers: {
+                'x-api-key': SUPA_API_KEY
+              },
+              timeout: 30000 // 30 second timeout
+            }
+          );
+          
+          // If successful, break out of retry loop
+          if (supaResponse && supaResponse.data) {
+            console.log(`SupaData succeeded on attempt ${attempt + 1}`);
+            break;
+          }
+        } catch (error: any) {
+          lastError = error;
+          console.error(`SupaData attempt ${attempt + 1} failed:`, error.message);
+          if (attempt === maxRetries - 1) {
+            throw error; // Re-throw on last attempt
+          }
+        }
+      }
+      
+      if (supaResponse && supaResponse.data) {
         
         console.log('SupaData response status:', supaResponse.status);
         console.log('SupaData response data keys:', Object.keys(supaResponse.data || {}));
-        
-        if (supaResponse.data) {
           console.log('Successfully got transcript from SupaData AI');
           console.log('Response lang:', supaResponse.data.lang);
           console.log('Available langs:', supaResponse.data.availableLangs);
@@ -208,19 +234,22 @@ export async function POST(request: NextRequest) {
             });
           }
         }
-      } catch (supaError: any) {
-        console.error('=== SupaData AI error ===');
-        console.error('Error message:', supaError.message);
-        console.error('Error response status:', supaError.response?.status);
-        console.error('Error response data:', supaError.response?.data);
-        console.error('Error response headers:', supaError.response?.headers);
-        console.error('Full error object:', JSON.stringify(supaError, null, 2));
-        if (supaError.response?.status === 404) {
+      } else if (lastError) {
+        // Handle error if all retries failed
+        console.error('=== SupaData AI error after all retries ===');
+        console.error('Error message:', lastError.message);
+        console.error('Error response status:', lastError.response?.status);
+        console.error('Error response data:', lastError.response?.data);
+        if (lastError.response?.status === 404) {
           console.log('No transcript available from SupaData');
-        } else if (supaError.response?.status === 401) {
+        } else if (lastError.response?.status === 401) {
           console.error('SupaData API key authentication failed');
-        } else if (supaError.response?.status === 403) {
+        } else if (lastError.response?.status === 403) {
           console.error('SupaData API key forbidden - check permissions');
+        } else if (lastError.code === 'ECONNABORTED' || lastError.code === 'ETIMEDOUT') {
+          console.error('SupaData request timed out - service may be slow');
+        } else if (lastError.response?.status >= 500) {
+          console.error('SupaData server error - service may be temporarily down');
         }
         // Continue to fallback methods
       }

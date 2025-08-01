@@ -11,6 +11,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
 import { PracticeHistoryItem } from '@/services/practiceHistory/types';
 import { LoginRequired } from '@/components/FeatureGate';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -31,6 +32,15 @@ export default function MyVideos() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'recent' | 'mostPracticed'>('recent');
   const [serviceStatus, setServiceStatus] = useState<any>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    video: PracticeHistoryItem | null;
+    isDeleting: boolean;
+  }>({
+    isOpen: false,
+    video: null,
+    isDeleting: false
+  });
 
   // Initialize service and load videos
   useEffect(() => {
@@ -93,15 +103,31 @@ export default function MyVideos() {
     router.push(`/tools/youtube-shadowing?url=${encodeURIComponent(video.videoUrl)}&fromHistory=true`);
   };
 
-  const handleDelete = async (video: PracticeHistoryItem) => {
-    if (!confirm('Are you sure you want to remove this video from your history?')) return;
+  const handleDelete = (video: PracticeHistoryItem) => {
+    setDeleteConfirm({
+      isOpen: true,
+      video,
+      isDeleting: false
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.video) return;
+    
+    setDeleteConfirm(prev => ({ ...prev, isDeleting: true }));
     
     try {
-      await practiceHistoryService.deleteItem(video.videoId);
-      setVideos(prev => prev.filter(v => v.videoId !== video.videoId));
+      await practiceHistoryService.deleteItem(deleteConfirm.video.videoId);
+      setVideos(prev => prev.filter(v => v.videoId !== deleteConfirm.video!.videoId));
+      setDeleteConfirm({ isOpen: false, video: null, isDeleting: false });
     } catch (error) {
       console.error('Error deleting video:', error);
+      setDeleteConfirm(prev => ({ ...prev, isDeleting: false }));
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, video: null, isDeleting: false });
   };
 
   const formatDate = (date: Date) => {
@@ -402,6 +428,19 @@ export default function MyVideos() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deleteConfirm.isOpen}
+        title="Remove Video"
+        message={`Are you sure you want to remove "${deleteConfirm.video?.videoTitle || 'this video'}" from your history?`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        isDestructive={true}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        loading={deleteConfirm.isDeleting}
+      />
     </div>
   );
 }

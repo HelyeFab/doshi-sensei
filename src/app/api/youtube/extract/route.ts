@@ -215,7 +215,9 @@ export async function POST(request: NextRequest) {
                 metadata: {
                   youtubeVideoId: videoId,
                   channelName: videoMetadata?.channelTitle,
-                  uploadDate: videoMetadata?.publishedAt
+                  uploadDate: videoMetadata?.publishedAt,
+                  thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
+                  duration: videoMetadata?.duration
                 }
               });
               console.log('=== Cache save completed ===');

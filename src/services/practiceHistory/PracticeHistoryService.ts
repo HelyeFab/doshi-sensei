@@ -13,6 +13,18 @@ export class PracticeHistoryService {
   }
 
   async initialize(userId?: string, isPremium?: boolean): Promise<void> {
+    // If already initialized with Firebase, don't reinitialize
+    if (this.isInitialized && this.firebaseStorage) {
+      console.log('PracticeHistoryService already initialized with Firebase');
+      return;
+    }
+    
+    // If initializing with a user after being initialized as guest, reinitialize
+    if (this.isInitialized && !this.firebaseStorage && userId) {
+      console.log('Reinitializing PracticeHistoryService with user after guest init');
+      this.isInitialized = false;
+    }
+    
     if (this.isInitialized) return;
 
     // Initialize IndexedDB for all users
@@ -20,6 +32,7 @@ export class PracticeHistoryService {
 
     // Initialize Firebase for all authenticated users (free and premium)
     if (userId) {
+      console.log('Initializing Firebase storage for user:', userId);
       this.firebaseStorage = new FirebasePracticeHistoryStorage(userId);
       this.userType = isPremium ? 'premium' : 'free';
       // Sync local data to Firebase on first login
@@ -29,6 +42,13 @@ export class PracticeHistoryService {
     }
 
     this.isInitialized = true;
+    
+    console.log('PracticeHistoryService initialized', {
+      userId,
+      userType: this.userType,
+      hasFirebase: !!this.firebaseStorage,
+      isPremium
+    });
   }
 
   async addOrUpdateItem(item: PracticeHistoryItem): Promise<void> {
@@ -39,13 +59,17 @@ export class PracticeHistoryService {
     // Always save to IndexedDB
     await this.indexedDBStorage.addOrUpdateItem(item);
 
-    // Also save to Firebase for premium users
+    // Also save to Firebase for authenticated users
     if (this.firebaseStorage) {
+      console.log('Saving to Firebase storage...');
       try {
         await this.firebaseStorage.addOrUpdateItem(item);
+        console.log('Successfully saved to Firebase');
       } catch (error) {
         console.error('Failed to save to Firebase, but local save succeeded:', error);
       }
+    } else {
+      console.log('No Firebase storage available - saved locally only');
     }
   }
 
@@ -172,7 +196,8 @@ export class PracticeHistoryService {
     return {
       initialized: this.isInitialized,
       userType: this.userType,
-      hasFirebase: !!this.firebaseStorage
+      hasFirebase: !!this.firebaseStorage,
+      firebaseUserId: this.firebaseStorage ? (this.firebaseStorage as any).userId : null
     };
   }
 }

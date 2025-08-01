@@ -450,6 +450,7 @@ export default function EnhancedShadowingPlayer({
       // Seek to start and play
       youtubePlayerRef.current.seekTo(currentLine.startTime, true);
       youtubePlayerRef.current.playVideo();
+      setIsPlaying(true); // Ensure state is updated
       
       // For repeat mode, use a separate interval to check position
       if (repeatCount > 1) {

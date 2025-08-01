@@ -83,9 +83,11 @@ export default function EditableTranscriptDisplay({
   }, [videoId, videoTitle, metadata]);
 
   const loadUserTranscript = async () => {
+    // Always convert segments first
+    const segments = convertToSegments(transcript);
+    
     if (!user || !isPremium) {
       // Just use original transcript for non-premium users
-      const segments = convertToSegments(transcript);
       setMergedTranscript(
         segments.map((seg, index) => ({
           ...seg,
@@ -132,7 +134,8 @@ export default function EditableTranscriptDisplay({
   // Validate transcript with lyrics
   const validateWithLyrics = async () => {
     if (!videoTitle && !metadata?.channelName) return;
-
+    
+    // Only validate for premium users or if it's just detection (no Firebase access needed)
     setIsValidatingLyrics(true);
     try {
       const validation = await userTranscriptService.validateWithLyrics(

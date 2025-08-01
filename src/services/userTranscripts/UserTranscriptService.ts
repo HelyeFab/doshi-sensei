@@ -235,10 +235,24 @@ class UserTranscriptService {
     const user = auth.currentUser;
     if (!user) return false;
 
-    // This will be integrated with your subscription system
-    // For now, we'll check if user is authenticated
-    // TODO: Check premium status
-    return true;
+    try {
+      // Check if user document exists and has premium subscription
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) return false;
+      
+      const userData = userDoc.data();
+      const isActive = userData.subscriptionStatus === 'active' || 
+                      userData.subscription?.status === 'active';
+      const isPremium = userData.subscriptionType === 'monthly' || 
+                       userData.subscriptionType === 'yearly' ||
+                       userData.subscription?.plan === 'monthly' ||
+                       userData.subscription?.plan === 'yearly';
+      
+      return isActive && isPremium;
+    } catch (error) {
+      console.error('Error checking edit permissions:', error);
+      return false;
+    }
   }
 
   /**

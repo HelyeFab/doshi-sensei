@@ -18,6 +18,7 @@ export type Permission =
   | 'youtube_shadowing'
   | 'ai_explanations'
   | 'textbook_vocabulary'
+  | 'transcript_editing'
   | 'premium_features'
   | '*'; // Wildcard for all permissions
 

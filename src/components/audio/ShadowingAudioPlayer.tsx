@@ -250,6 +250,10 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
           setIsLoading(false);
         };
 
+        // Handle play/pause events to sync button state
+        audio.onplay = () => setIsPlaying(true);
+        audio.onpause = () => setIsPlaying(false);
+
         // Start playback
         try {
           console.log('[Shadowing] Starting playback');

@@ -52,10 +52,14 @@ export default function ShadowingPlayer({ session, onLineChange }: ShadowingPlay
 
       audio.addEventListener('timeupdate', handleTimeUpdate);
       audio.addEventListener('ended', handleAudioEnded);
+      audio.addEventListener('play', () => setIsPlaying(true));
+      audio.addEventListener('pause', () => setIsPlaying(false));
 
       return () => {
         audio.removeEventListener('timeupdate', handleTimeUpdate);
         audio.removeEventListener('ended', handleAudioEnded);
+        audio.removeEventListener('play', () => setIsPlaying(true));
+        audio.removeEventListener('pause', () => setIsPlaying(false));
         audio.pause();
       };
     }

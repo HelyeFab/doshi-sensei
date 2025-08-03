@@ -149,9 +149,13 @@ Branch: `fix/typescript-errors`
 - [x] `imageStorage.ts` - Fixed Firebase import
 - [x] `tts.ts` - Resolved duplicate function
 - [x] `stats.ts` - Added StatsDebugger import
+- [x] `ankiImporter.ts` - Fixed error handling for unknown types (HIGH RISK)
+- [x] `largeDataStorage.ts` - No errors found (HIGH RISK)
+- [x] `ttsFirebaseCache.ts` - No errors found (HIGH RISK)
+- [x] `articleTTS.ts` - Fixed undefined blob handling (HIGH RISK)
 
 ### Pending Fixes
-- [ ] High Risk (4 files)
+- [x] High Risk (4 files) ✅ COMPLETED
 - [ ] Medium Risk (4 files)
 - [ ] Low Risk (25 files)
 

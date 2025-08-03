@@ -159,7 +159,7 @@ IMPORTANT: Keep consistent character appearances and style across all images. Sa
           style: 'vivid'
         });
 
-        imageUrl = imageResponse.data[0]?.url || '';
+        imageUrl = imageResponse.data?.[0]?.url || '';
       } catch (imageError: any) {
         console.error('Error generating image:', imageError);
         // Continue without image if generation fails

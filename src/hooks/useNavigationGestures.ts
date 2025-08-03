@@ -100,10 +100,11 @@ export function useNavigationGestures(config: SwipeConfig = {}) {
       ) {
         if (deltaX > 0 && navigation.canGoBack) {
           // Swipe right - go back
-          navigation.goBack();
+          navigation.pop();
         } else if (deltaX < 0 && navigation.canGoForward) {
           // Swipe left - go forward
-          navigation.goForward();
+          // NavigationContext doesn't provide goForward, using browser history
+          window.history.forward();
         }
       }
     };

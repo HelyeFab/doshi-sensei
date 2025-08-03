@@ -218,14 +218,14 @@ function convertToJapaneseWord(word: JMdictWord): JapaneseWord | null {
     kana: kanaText || mainForm, // Use kana text or fallback to main form
     romaji: '', // Would need romanization library
     meaning: meanings.join('; '),
-    english: meanings.join('; '), // Some places expect 'english' property
+    // english: meanings.join('; '), // Removed: not in JapaneseWord interface
     type: wordType as JapaneseWord['type'],
-    jlpt: 5 as JLPTLevel, // Default, could be enhanced with JLPT data
+    jlpt: 'N5' as JLPTLevel, // Default, could be enhanced with JLPT data
     tags: [], // Could add tags based on frequency
-    word: mainForm, // Keep for backward compatibility
-    reading: reading,
-    meanings: meanings,
-    jlptLevel: 5,
+    // word: mainForm, // Removed: not in JapaneseWord interface
+    // reading: reading, // Removed: not in JapaneseWord interface
+    // meanings: meanings, // Removed: not in JapaneseWord interface
+    // jlptLevel: 5, // Removed: not in JapaneseWord interface
     frequency: commonalityScore, // Use commonality score as frequency
     kanaReading: kanaText,
     godanEnding: godanEnding,
@@ -265,8 +265,8 @@ export async function loadJMdictForPractice(): Promise<void> {
     }
     
     // Sort by frequency (higher score = more common, so reverse order)
-    verbs.sort((a, b) => b.frequency - a.frequency);
-    adjectives.sort((a, b) => b.frequency - a.frequency);
+    verbs.sort((a, b) => (b.frequency || 0) - (a.frequency || 0));
+    adjectives.sort((a, b) => (b.frequency || 0) - (a.frequency || 0));
     
     // Cache the results
     practiceVerbsCache = verbs;
@@ -344,23 +344,23 @@ export async function searchJMdictWords(
   
   // Search in word, reading, and meanings
   const results = allWords.filter(word => {
-    const inWord = word.word.includes(searchTerm);
-    const inReading = word.reading.includes(searchTerm) || word.kanaReading.includes(searchTerm);
-    const inMeanings = word.meanings.some(m => m.toLowerCase().includes(searchLower));
+    const inWord = word.kanji.includes(searchTerm);
+    const inReading = word.kana.includes(searchTerm);
+    const inMeanings = word.meaning.toLowerCase().includes(searchLower);
     
     return inWord || inReading || inMeanings;
   });
   
   // Sort by relevance (exact matches first)
   results.sort((a, b) => {
-    const aExact = a.word === searchTerm || a.reading === searchTerm || a.kanaReading === searchTerm;
-    const bExact = b.word === searchTerm || b.reading === searchTerm || b.kanaReading === searchTerm;
+    const aExact = a.kanji === searchTerm || a.kana === searchTerm;
+    const bExact = b.kanji === searchTerm || b.kana === searchTerm;
     
     if (aExact && !bExact) return -1;
     if (!aExact && bExact) return 1;
     
     // Then by frequency
-    return a.frequency - b.frequency;
+    return (a.frequency || 0) - (b.frequency || 0);
   });
   
   return results.slice(0, limit);

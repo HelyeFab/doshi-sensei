@@ -1,29 +1,16 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import { promises as fs } from 'fs';
+import kanjiData4 from '@kanji_data/jlpt_4/jlpt_4.json';
+import kanjiData4_1 from '@kanji_data/jlpt_4_1/jlpt_4_1.json';
 
 export async function GET() {
   try {
-    // N4 has multiple folders: jlpt_4, jlpt_4_1
-    const folders = [
-      'jlpt_4',
-      'jlpt_4_1'
-    ];
-
     const allKanjiData: any[] = [];
-
-    for (const folder of folders) {
-      try {
-        const filePath = path.join(process.cwd(), 'kanji_data', folder, `${folder}.json`);
-        const fileContents = await fs.readFile(filePath, 'utf8');
-        const kanjiData = JSON.parse(fileContents);
-
-        if (Array.isArray(kanjiData)) {
-          allKanjiData.push(...kanjiData);
-        }
-      } catch (error) {
-        // Continue loading other folders even if one fails
-      }
+    
+    if (Array.isArray(kanjiData4)) {
+      allKanjiData.push(...kanjiData4);
+    }
+    if (Array.isArray(kanjiData4_1)) {
+      allKanjiData.push(...kanjiData4_1);
     }
 
     return NextResponse.json(allKanjiData);

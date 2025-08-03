@@ -12,12 +12,13 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuth } from '@/contexts/AuthContext';
 import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
+import { TranscriptCacheManager } from '@/utils/transcriptCache';
 import YouTubeInput from './components/YouTubeInput';
 import AudioExtractor from './components/AudioExtractor';
 import TranscriptDisplay from './components/TranscriptDisplay';
 import ShadowingPlayer from './components/ShadowingPlayer';
 import YouTubePlayer from './components/YouTubePlayer';
-import TranscriptReader from './components/TranscriptReader';
+import EditableTranscriptReader from './components/EditableTranscriptReader';
 import EnhancedShadowingPlayer from './components/EnhancedShadowingPlayer';
 import AudioUploader from './components/AudioUploader';
 import VideoUploader from './components/VideoUploader';
@@ -118,6 +119,39 @@ export default function YouTubeShadowing() {
   const getShortYouTubeUrl = (url: string): string => {
     const id = extractVideoId(url);
     return id ? `youtu.be/${id}` : url;
+  };
+
+  // Generate content ID for caching
+  const getContentId = (): string => {
+    if (!session) return '';
+    
+    if (session.videoUrl && (!session.fileInfo || session.videoUrl.includes('youtube'))) {
+      return TranscriptCacheManager.generateContentId({
+        type: 'youtube',
+        videoUrl: session.videoUrl
+      });
+    } else if (session.fileInfo) {
+      return TranscriptCacheManager.generateContentId({
+        type: session.fileInfo.type.startsWith('video/') ? 'video' : 'audio',
+        fileName: session.fileInfo.name,
+        fileSize: session.fileInfo.size
+      });
+    }
+    
+    return 'unknown_' + Date.now();
+  };
+
+  // Determine content type
+  const getContentType = (): 'youtube' | 'audio' | 'video' => {
+    if (!session) return 'youtube';
+    
+    if (session.videoUrl && (!session.fileInfo || session.videoUrl.includes('youtube'))) {
+      return 'youtube';
+    } else if (session.fileInfo) {
+      return session.fileInfo.type.startsWith('video/') ? 'video' : 'audio';
+    }
+    
+    return 'youtube';
   };
 
   // Initialize practice history service
@@ -699,6 +733,66 @@ export default function YouTubeShadowing() {
                   transition={{ delay: 0.2 }}
                   className="space-y-6"
                 >
+                  {/* Mode Toggle and Controls */}
+                  <div className="bg-card rounded-lg shadow-sm border border-border p-4">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      {/* Mode Toggle */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setShowShadowingMode(true)}
+                          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                            showShadowingMode 
+                              ? 'bg-primary text-primary-foreground' 
+                              : 'bg-secondary hover:bg-secondary/80'
+                          }`}
+                        >
+                          Shadowing Mode
+                        </button>
+                        <button
+                          onClick={() => setShowShadowingMode(false)}
+                          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                            !showShadowingMode 
+                              ? 'bg-primary text-primary-foreground' 
+                              : 'bg-secondary hover:bg-secondary/80'
+                          }`}
+                        >
+                          Transcript Mode
+                        </button>
+                        {/* Quick Edit Button - Always visible for premium users */}
+                        {isPremium && showShadowingMode && (
+                          <button
+                            onClick={() => setShowShadowingMode(false)}
+                            className="px-4 py-2 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700 transition-all"
+                            title="Switch to transcript mode to edit"
+                          >
+                            ✏️ Edit Transcript
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Display Options */}
+                      <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={showFurigana}
+                            onChange={(e) => setShowFurigana(e.target.checked)}
+                            className="w-4 h-4 text-primary rounded focus:ring-primary"
+                          />
+                          <span className="text-sm font-medium">Furigana</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={showGrammar}
+                            onChange={(e) => setShowGrammar(e.target.checked)}
+                            className="w-4 h-4 text-primary rounded focus:ring-primary"
+                          />
+                          <span className="text-sm font-medium">Grammar</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Transcript Reader */}
                   {!showShadowingMode && (
@@ -706,12 +800,16 @@ export default function YouTubeShadowing() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      <TranscriptReader
+                      <EditableTranscriptReader
                         transcript={session.transcript}
                         currentLineIndex={session.currentLineIndex}
                         onLineClick={(index) => updateSession({ ...session, currentLineIndex: index })}
                         showFurigana={showFurigana}
                         showGrammar={showGrammar}
+                        contentId={getContentId()}
+                        contentType={getContentType()}
+                        videoUrl={session.videoUrl}
+                        videoTitle={session.videoTitle}
                       />
                     </motion.div>
                   )}

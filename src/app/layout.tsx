@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Rubik, Dancing_Script } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { CombinedAuthProvider } from "@/contexts/CombinedAuthProvider";
 import { CombinedUIProvider } from "@/contexts/CombinedUIProvider";
 import { CombinedFeatureProvider } from "@/contexts/CombinedFeatureProvider";
+import { NotificationServiceProvider } from "@/contexts/NotificationServiceContext";
 import { ToastContainer } from "@/components/ui/Toast";
 import { EnvProvider } from "@/components/EnvProvider";
 import MobileMenu from "@/components/MobileMenu";
@@ -23,26 +23,73 @@ import { NavigationGestures } from '@/components/navigation/NavigationGestures';
 import PWARecovery from '@/components/PWARecovery';
 import { LazyInitializers } from '@/components/LazyInitializers';
 
-const geistSans = Geist({
+const geistSans = localFont({
+  src: "../../public/fonts/Geist/Geist-VariableFont_wght.ttf",
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  weight: "100 900",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "../../public/fonts/Geist_Mono/GeistMono-VariableFont_wght.ttf",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: "100 900",
 });
 
-const rubik = Rubik({
+const rubik = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Rubik/static/Rubik-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Rubik/static/Rubik-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Rubik/static/Rubik-Medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Rubik/static/Rubik-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Rubik/static/Rubik-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-rubik",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
 });
 
-const savoyeFont = Dancing_Script({
+const savoyeFont = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Dancing_Script/static/DancingScript-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Dancing_Script/static/DancingScript-Medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Dancing_Script/static/DancingScript-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Dancing_Script/static/DancingScript-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-savoye",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 const manrope = localFont({
@@ -251,30 +298,32 @@ export default function RootLayout({
           <CombinedUIProvider>
             <CombinedAuthProvider>
               <CombinedFeatureProvider>
-                <PWAWrapper>
-                  <OnboardingWrapper>
-                    <AchievementToastManager>
-                      <div className="min-h-screen bg-background text-foreground">
-                        <OfflineNotification />
-                        <LazyInitializers />
-                        <div className="mobile-nav-padding">
-                          {children}
+                <NotificationServiceProvider>
+                  <PWAWrapper>
+                    <OnboardingWrapper>
+                      <AchievementToastManager>
+                        <div className="min-h-screen bg-background text-foreground">
+                          <OfflineNotification />
+                          <LazyInitializers />
+                          <div className="mobile-nav-padding">
+                            {children}
+                          </div>
+                          <StunningBottomNavbar />
+                          <MobileMenu />
+                          <DesktopNavMenu />
+                          <PWAInstaller />
+                          <PWAUpdateNotification />
+                          <FloatingDonateButton />
+                          <CompanionTrigger />
+                          <ToastContainer />
+                          <NavigationGestures />
+                          <DevHelper />
+                          <PWARecovery />
                         </div>
-                        <StunningBottomNavbar />
-                        <MobileMenu />
-                        <DesktopNavMenu />
-                        <PWAInstaller />
-                        <PWAUpdateNotification />
-                        <FloatingDonateButton />
-                        <CompanionTrigger />
-                        <ToastContainer />
-                        <NavigationGestures />
-                        <DevHelper />
-                        <PWARecovery />
-                      </div>
-                    </AchievementToastManager>
-                  </OnboardingWrapper>
-                </PWAWrapper>
+                      </AchievementToastManager>
+                    </OnboardingWrapper>
+                  </PWAWrapper>
+                </NotificationServiceProvider>
               </CombinedFeatureProvider>
             </CombinedAuthProvider>
           </CombinedUIProvider>

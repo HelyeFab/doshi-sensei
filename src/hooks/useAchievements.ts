@@ -104,7 +104,8 @@ export function useAchievements() {
       return { current: 0, target: 1, percentage: 0 };
     }
 
-    const current = userStats[achievement.conditionField];
+    const currentRaw = userStats[achievement.conditionField];
+    const current = typeof currentRaw === 'number' ? currentRaw : Number(currentRaw) || 0;
     let target = achievement.conditionValue;
     
     // Handle multi-level achievements
@@ -122,7 +123,7 @@ export function useAchievements() {
       }
     }
     
-    const percentage = Math.min((current / target) * 100, 100);
+    const percentage = target > 0 ? Math.min((current / target) * 100, 100) : 0;
 
     return { current, target, percentage };
   }, [achievements, userStats]);

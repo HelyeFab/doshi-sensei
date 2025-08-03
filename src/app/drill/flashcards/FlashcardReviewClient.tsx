@@ -325,7 +325,7 @@ export default function FlashcardReviewClient() {
             meaning: card.ankiData?.back || '',
             type: 'anki' as any
           }));
-          allCards = [...allCards, ...words, ...ankiAsWords];
+          allCards = [...allCards, ...words, ...ankiAsWords] as JapaneseWord[];
         }
         
         // Load SRS data

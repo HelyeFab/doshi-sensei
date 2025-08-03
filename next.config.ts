@@ -5,7 +5,7 @@ const pwaConfig = withPWA({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
-  skipWaiting: true,
+  skipWaiting: false,
   reloadOnOnline: false,
   publicExcludes: [
     '!robots.txt', 
@@ -22,33 +22,33 @@ const pwaConfig = withPWA({
   maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
   exclude: [
     // Exclude all audio files
-    ({ asset }) => asset.name.endsWith('.mp3'),
-    ({ asset }) => asset.name.endsWith('.wav'),
-    ({ asset }) => asset.name.endsWith('.ogg'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.mp3'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.wav'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.ogg'),
     // Exclude all data files
-    ({ asset }) => asset.name.includes('/data/'),
-    ({ asset }) => asset.name.includes('/audio/'),
-    ({ asset }) => asset.name.includes('/flat-icons/'),
-    ({ asset }) => asset.name.endsWith('.json'),
-    ({ asset }) => asset.name.endsWith('.dat'),
-    ({ asset }) => asset.name.endsWith('.gz'),
-    ({ asset }) => asset.name.endsWith('.svg'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('/data/'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('/audio/'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('/flat-icons/'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.json'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.dat'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.gz'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.svg'),
     // Exclude external resources
-    ({ asset }) => asset.name.includes('githubusercontent'),
-    ({ asset }) => asset.name.includes('watanoc'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('githubusercontent'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('watanoc'),
     // Exclude large files
-    ({ asset }) => asset.name.includes('jmdict'),
-    ({ asset }) => asset.name.includes('kanjidb'),
-    ({ asset }) => asset.name.includes('tts-sentences'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('jmdict'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('kanjidb'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('tts-sentences'),
     // Exclude build artifacts
-    ({ asset }) => asset.name.includes('_next/static/chunks/'),
-    ({ asset }) => asset.name.includes('_next/static/css/'),
-    ({ asset }) => asset.name.includes('_next/static/media/'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('_next/static/chunks/'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('_next/static/css/'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('_next/static/media/'),
     // Exclude pages
-    ({ asset }) => asset.name === 'index.html',
-    ({ asset }) => asset.name === '/',
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name === 'index.html',
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name === '/',
     // Exclude any file larger than 500KB
-    ({ asset }) => asset.size > 500 * 1024,
+    ({ asset }: { asset: { name: string; size: number } }) => asset.size > 500 * 1024,
   ],
   runtimeCaching: [
     {
@@ -350,4 +350,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default pwaConfig(nextConfig);
+export default pwaConfig(nextConfig as any);

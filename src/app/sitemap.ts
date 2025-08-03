@@ -457,12 +457,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8
   },
   {
-    url: `${baseUrl}/pwa-test`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
     url: `${baseUrl}/read`,
     lastModified: "2025-07-28T21:17:20.891Z",
     changeFrequency: "weekly",
@@ -506,60 +500,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   },
   {
     url: `${baseUrl}/stories`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-ai-explanation`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-audio`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-cache`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-eviction`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-kana-audio`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-minimal-ai`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-shadowing`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-simple-ai`,
-    lastModified: "2025-07-28T21:17:20.891Z",
-    changeFrequency: "weekly",
-    priority: 0.8
-  },
-  {
-    url: `${baseUrl}/test-three-pillar-integration`,
     lastModified: "2025-07-28T21:17:20.891Z",
     changeFrequency: "weekly",
     priority: 0.8

@@ -23,8 +23,9 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
   // Use smart navigation for back button
   const handleBack = () => {
     // Check if we have navigation history
-    if (navigation.canGoBack()) {
-      navigation.goBack();
+    if (navigation.canGoBack) {
+      navigation.pop();
+      router.back();
     } else {
       // Fallback to hardcoded destinations if no history
       if (pathname.startsWith('/admin/stories/')) router.push('/admin/stories');

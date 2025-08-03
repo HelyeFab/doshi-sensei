@@ -6,6 +6,14 @@ import Stripe from 'stripe';
 admin.initializeApp();
 const db = admin.firestore();
 
+// Export notification functions
+export {
+  sendStudyReminders,
+  sendReviewReminders,
+  sendStreakReminders,
+  cleanupNotificationLogs
+} from './notifications';
+
 // Initialize Stripe (will be initialized in the function)
 let stripe: Stripe;
 

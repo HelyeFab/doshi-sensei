@@ -231,8 +231,8 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
         maxStoriesPerDay: limits.daily?.story_reading ?? (userType === 'free' ? 1 : -1),
         maxArticlesPerDay: limits.daily?.article_reading ?? (userType === 'free' ? 3 : -1),
         maxKanaDropPerDay: limits.daily?.games ?? (userType === 'free' ? 3 : -1),
-        canSync: userType !== 'guest' && userType !== 'free',
-        canSave: userType !== 'guest'
+        canSync: userType !== 'free',
+        canSave: true
       },
       currentUsage: currentData?.currentUsage || {
         listsCount: 0,
@@ -305,7 +305,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     status: 'canceled',
     plan: 'free',
     stripeCustomerId: subscription.customer as string,
-    stripeSubscriptionId: null,
+    stripeSubscriptionId: undefined,
     cancelAtPeriodEnd: false,
     metadata: {
       source: 'stripe',

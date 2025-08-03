@@ -124,7 +124,7 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
     
     try {
       // Track import start
-      track('anki_import_started', {
+      track('anki_import_started' as any, {
         fileSize: file.size,
         fileName: file.name
       });
@@ -139,7 +139,7 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
             setProgressMessage(message);
           }
         });
-      } catch (importError) {
+      } catch (importError: any) {
         console.error('Anki import error:', importError);
         // Provide more specific error messages
         if (importError.message?.includes('RootLayout')) {
@@ -167,7 +167,7 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
         setImportResult(result);
         
         // Track success
-        track('anki_import_completed', {
+        track('anki_import_completed' as any, {
           cardsImported: result.cardsImported,
           listName: result.listName
         });
@@ -180,7 +180,7 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
         setError(result.error || 'Import failed');
         
         // Track failure
-        track('anki_import_failed', {
+        track('anki_import_failed' as any, {
           error: result.error
         });
       }
@@ -188,7 +188,7 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
       setError(err.message || 'An error occurred during import');
       
       // Track error
-      track('anki_import_error', {
+      track('anki_import_error' as any, {
         error: err.message
       });
     } finally {

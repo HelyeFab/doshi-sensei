@@ -42,11 +42,11 @@ class SubscriptionLogger {
         isAuthenticated: !!data.user
       },
       '💳 Subscription': data.userSubscription ? {
-        status: data.userSubscription.subscription?.status || data.userSubscription.status || 'N/A',
-        plan: data.userSubscription.subscription?.plan || data.userSubscription.plan || 'N/A',
-        stripeId: data.userSubscription.subscription?.stripeSubscriptionId || data.userSubscription.stripeSubscriptionId || 'N/A',
-        cancelAtPeriodEnd: data.userSubscription.subscription?.cancelAtPeriodEnd || data.userSubscription.cancelAtPeriodEnd || false,
-        renewalDate: data.userSubscription.subscription?.renewalDate || data.userSubscription.renewalDate || 'N/A'
+        status: data.userSubscription.subscription?.status || 'N/A',
+        plan: data.userSubscription.subscription?.plan || 'N/A',
+        stripeId: data.userSubscription.subscription?.stripeSubscriptionId || 'N/A',
+        cancelAtPeriodEnd: data.userSubscription.subscription?.cancelAtPeriodEnd || false,
+        renewalDate: data.userSubscription.subscription?.renewalDate || 'N/A'
       } : 'No subscription data',
       '🏷️ User Type': data.userType,
       '📊 Limits': data.userSubscription?.limits || 'N/A',
@@ -178,7 +178,7 @@ export function logFullUserDebugInfo({
   const yes = '✅';
   const no = '❌';
   const dash = '—';
-  const get = (v: any, fallback = dash) => v !== undefined && v !== null ? v : fallback;
+  const get = (v: any, fallback: any = dash) => v !== undefined && v !== null ? v : fallback;
 
   // User Info
   const userInfo = [
@@ -192,32 +192,32 @@ export function logFullUserDebugInfo({
   const subInfo = [
     `💳  Plan: ${get(sub?.plan, 'N/A')}${userType === 'premium' ? ' 🌟' : ''}`,
     `📅  Status: ${get(sub?.status, 'N/A')}`,
-    `♾️  Unlimited: ${userSubscription?.hasUnlimited ? yes : no}`,
+    `♾️  Unlimited: ${(userSubscription?.limits?.maxDrillsPerDay === -1) ? yes : no}`,
     `🆔  Stripe ID: ${get(sub?.stripeSubscriptionId, 'N/A')}`,
     `⏳  Cancel At: ${get(sub?.cancelAtPeriodEnd, dash)}`,
     `🔁  Renewal: ${get(sub?.renewalDate, dash)}`
   ].join('\n');
 
   // Limits
-  const limits = userSubscription?.limits || {};
+  const limits = userSubscription?.limits || {} as any;
   const limitsInfo = [
-    `🈚  Max Kanji: ${get(limits.maxKanji)}`,
-    `📝  Max Drills: ${get(limits.maxDrill)}`,
-    `📚  Max Stories: ${get(limits.maxStories)}`,
-    `📰  Max Articles: ${get(limits.maxArticles)}`,
+    `🈚  Max Kanji/Day: ${get(limits.maxKanjiQuestPerDay)}`,
+    `📝  Max Drills/Day: ${get(limits.maxDrillsPerDay)}`,
+    `📚  Max Stories/Day: ${get(limits.maxStoriesPerDay)}`,
+    `📰  Max Articles/Day: ${get(limits.maxArticlesPerDay)}`,
     `📋  Max Lists: ${get(limits.maxLists)}`,
     `💾  Can Save: ${limits.canSave ? yes : no}`,
     `🔄  Can Sync: ${limits.canSync ? yes : no}`
   ].join('\n');
 
   // Usage
-  const usage = userSubscription?.currentUsage || {};
+  const usage = userSubscription?.currentUsage || {} as any;
   const usageInfo = [
-    `🈴  Kanji Used: ${get(usage.kanji, 0)}`,
-    `📝  Drills Used: ${get(usage.drills, 0)}`,
-    `📚  Stories Used: ${get(usage.stories, 0)}`,
-    `📰  Articles Used: ${get(usage.articles, 0)}`,
-    `📋  Lists Used: ${get(usage.lists, 0)}`
+    `🈴  KanjiQuest Today: ${get(usage.kanjiQuestToday, 0)}`,
+    `📝  Drills Today: ${get(usage.drillsToday, 0)}`,
+    `📚  Stories Today: ${get(usage.storiesToday, 0)}`,
+    `📰  Articles Today: ${get(usage.articlesToday, 0)}`,
+    `📋  Lists Count: ${get(usage.listsCount, 0)}`
   ].join('\n');
 
   // KanjiQuest
@@ -229,7 +229,7 @@ export function logFullUserDebugInfo({
 
   // All Checks
   const allChecks = [
-    `🟢  All Checks Passed: ${userSubscription?.allChecksPassed ? yes : no}`,
+    `🟢  Has Access: ${userSubscription ? yes : no}`,
     `🌟  Is Premium: ${userType === 'premium' ? yes : no}`,
     `🔄  Loading: ${loading ? yes : no}`
   ].join('\n');

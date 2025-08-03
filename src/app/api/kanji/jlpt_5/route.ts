@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import { promises as fs } from 'fs';
+import kanjiData from '@kanji_data/jlpt_5/jlpt_5.json';
 
 export async function GET() {
   try {
-    // Read the kanji data file from the kanji_data directory
-    const filePath = path.join(process.cwd(), 'kanji_data', 'jlpt_5', 'jlpt_5.json');
-    const fileContents = await fs.readFile(filePath, 'utf8');
-    const kanjiData = JSON.parse(fileContents);
-
     return NextResponse.json(kanjiData);
   } catch (error) {
     console.error('Error loading N5 kanji data:', error);

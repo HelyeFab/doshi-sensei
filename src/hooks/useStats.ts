@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { statsTracker, UserStatsV2, ActivityType, DailyActivity } from '@/lib/stats/statsTracker';
@@ -20,6 +21,7 @@ interface UseStatsReturn {
 }
 
 export function useStats(): UseStatsReturn {
+  const { user } = useAuth();
   const { profile } = useUserProfile();
   const { subscription, isPremium: isPremiumUser } = useSubscription2();
   const [stats, setStats] = useState<UserStatsV2>(statsTracker.getStats());
@@ -59,12 +61,12 @@ export function useStats(): UseStatsReturn {
           email: profile.email,
           subscription: subscription,
           isPremiumFromHook: isPremiumUser,
-          userType: subscription?.type || 'free'
+          userType: subscription?.plan || 'free'
         });
 
         // Only pass isPremium as true if user has an active premium subscription
         const actuallyPremium = isPremiumUser && subscription?.status === 'active';
-        await statsTracker.initialize(profile, actuallyPremium);
+        await statsTracker.initialize(user, actuallyPremium);
         
         // Get initial stats and activities
         setStats(statsTracker.getStats());
@@ -137,7 +139,7 @@ export function useStats(): UseStatsReturn {
 
       // Only pass isPremium as true if user has an active premium subscription
       const actuallyPremium = isPremiumUser && subscription?.status === 'active';
-      await statsTracker.initialize(profile, actuallyPremium);
+      await statsTracker.initialize(user, actuallyPremium);
       setStats(statsTracker.getStats());
       const activitiesData = await statsTracker.getActivitiesData();
       setActivities(activitiesData);

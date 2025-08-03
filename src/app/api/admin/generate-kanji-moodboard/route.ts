@@ -17,6 +17,10 @@ export const maxDuration = 60; // 60 seconds max execution time
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
   console.log('=== Generate Kanji Moodboard API Called ===');
   
+  let theme: string | undefined;
+  let jlptLevel: JLPTLevel | undefined;
+  let kanjiCount: number | undefined;
+  
   try {
     const apiKey = process.env.OPEN_AI_API_KEY || process.env.OPENAI_API_KEY;
     
@@ -40,7 +44,8 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     const body: GenerateMoodboardRequest = await request.json();
     console.log('Request body:', body);
     
-    const { theme, jlptLevel = 'N5', kanjiCount = 15, tags = [] } = body;
+    ({ theme, jlptLevel = 'N5', kanjiCount = 15 } = body);
+    const { tags = [] } = body;
 
     if (!theme) {
       console.error('Theme is missing from request');
@@ -248,7 +253,7 @@ ${themeGuidance}`;
     }
     
     // For manga heroes specifically, provide a helpful message
-    if (theme.toLowerCase().includes('manga') || theme.toLowerCase().includes('hero')) {
+    if (theme && (theme.toLowerCase().includes('manga') || theme.toLowerCase().includes('hero'))) {
       return NextResponse.json(
         { error: `Failed to generate manga/hero kanji. The theme might be too specific. Try "action characters" or "warrior kanji" instead.` },
         { status: 500 }

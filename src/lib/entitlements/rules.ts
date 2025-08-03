@@ -10,7 +10,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
   {
     id: 'guest_basic',
     userTypes: ['guest'],
-    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary', 'learn_kanji', 'view_leaderboard'],
+    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary', 'learn_kanji', 'view_leaderboard', 'share_content'],
     limits: {
       daily: {
         drill_practice: 3,
@@ -30,10 +30,11 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         kanji_moods: 3,
         kanji_stroke_order: -1,
         stroke_order_practice: 3,
-        youtube_shadowing: 1, // 1 YouTube URL or upload per day for guests
+        youtube_shadowing: 0, // No access for guests
         ai_context_explanation: 3,
         textbook_vocabulary: 20,
-        kanji_mastery: 5 // 5 kanji per day for guests
+        kanji_mastery: 5, // 5 kanji per day for guests
+        share_app: 3 // 3 shares per day for guests
       }
     },
     description: 'Basic access for non-registered users'
@@ -56,7 +57,9 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
       'ai_explanations',
       'textbook_vocabulary',
       'learn_kanji',
-      'view_leaderboard'
+      'view_leaderboard',
+      'share_content',
+      'earn_rewards'
     ],
     limits: {
       daily: {
@@ -77,10 +80,11 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         kanji_moods: 3,
         kanji_stroke_order: -1,
         stroke_order_practice: 3,
-        youtube_shadowing: 3, // 3 YouTube shadowing sessions per day for free users
+        youtube_shadowing: 5, // 5 YouTube shadowing sessions per day for free users
         ai_context_explanation: 3,
         textbook_vocabulary: 50,
-        kanji_mastery: 10 // 10 kanji per day for free users
+        kanji_mastery: 10, // 10 kanji per day for free users
+        share_app: 10 // 10 shares per day for free users
       },
       total: {
         word_lists: 3,
@@ -121,7 +125,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         anki_import: -1, // Unlimited Anki imports
         anki_set_creation: -1, // Unlimited Anki set creation
         textbook_vocabulary: -1, // Unlimited textbook vocabulary
-        kanji_mastery: -1 // Unlimited kanji mastery for premium
+        kanji_mastery: -1, // Unlimited kanji mastery for premium
+        share_app: -1 // Unlimited shares for premium
       },
       total: {
         word_lists: -1,
@@ -162,7 +167,8 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         anki_import: -1, // Unlimited Anki imports
         anki_set_creation: -1, // Unlimited Anki set creation
         textbook_vocabulary: -1, // Unlimited textbook vocabulary
-        kanji_mastery: -1 // Unlimited kanji mastery for premium
+        kanji_mastery: -1, // Unlimited kanji mastery for premium
+        share_app: -1 // Unlimited shares for premium
       },
       total: {
         word_lists: -1,

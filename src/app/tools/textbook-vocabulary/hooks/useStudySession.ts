@@ -1,12 +1,74 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useReducer, useCallback, useRef, useEffect } from 'react';
 import { spacedRepetition, vocabStorage } from '@/services/textbook-vocabulary';
 import type { VocabularyItem } from '../types';
 
 interface StudySessionStats {
   studied: number;
   correct: number;
+}
+
+interface StudySessionState {
+  studyQueue: VocabularyItem[];
+  currentCardIndex: number;
+  sessionId: string | null;
+  sessionStats: StudySessionStats;
+  isStudying: boolean;
+}
+
+type StudySessionAction = 
+  | { type: 'START_SESSION'; payload: { cards: VocabularyItem[]; sessionId: string } }
+  | { type: 'ADVANCE_CARD'; payload: { newStats: StudySessionStats } }
+  | { type: 'END_SESSION' }
+  | { type: 'RESET' };
+
+const initialState: StudySessionState = {
+  studyQueue: [],
+  currentCardIndex: 0,
+  sessionId: null,
+  sessionStats: { studied: 0, correct: 0 },
+  isStudying: false,
+};
+
+function studySessionReducer(state: StudySessionState, action: StudySessionAction): StudySessionState {
+  switch (action.type) {
+    case 'START_SESSION':
+      console.log('Reducer: Starting session with', action.payload.cards.length, 'cards');
+      return {
+        ...state,
+        studyQueue: action.payload.cards,
+        currentCardIndex: 0,
+        sessionId: action.payload.sessionId,
+        sessionStats: { studied: 0, correct: 0 },
+        isStudying: true,
+      };
+    
+    case 'ADVANCE_CARD':
+      console.log('Reducer: Advancing card from index', state.currentCardIndex, 'to', state.currentCardIndex + 1);
+      return {
+        ...state,
+        currentCardIndex: state.currentCardIndex + 1,
+        sessionStats: action.payload.newStats,
+      };
+    
+    case 'END_SESSION':
+      console.log('Reducer: Ending session');
+      return {
+        ...state,
+        studyQueue: [],
+        currentCardIndex: 0,
+        sessionId: null,
+        isStudying: false,
+        // Keep sessionStats for display
+      };
+    
+    case 'RESET':
+      return initialState;
+    
+    default:
+      return state;
+  }
 }
 
 interface UseStudySessionReturn {
@@ -24,38 +86,31 @@ interface UseStudySessionReturn {
 }
 
 export function useStudySession(): UseStudySessionReturn {
-  const [studyQueue, setStudyQueue] = useState<VocabularyItem[]>([]);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sessionStats, setSessionStats] = useState<StudySessionStats>({ studied: 0, correct: 0 });
-  const [isStudying, setIsStudying] = useState(false);
+  const [state, dispatch] = useReducer(studySessionReducer, initialState);
   
-  // Track if component is mounted to prevent state updates after unmount
-  const isMountedRef = useRef(true);
-  
+  // Keep a ref to the latest state to avoid stale closures
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  // Debug: Log when studyQueue changes
   useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+    console.log('useStudySession: studyQueue changed, length:', state.studyQueue.length);
+  }, [state.studyQueue.length]);
   
   const startStudySession = useCallback(async (cards: VocabularyItem[], textbook: string) => {
+    console.log('useStudySession: Starting session with cards:', cards.length);
     try {
-      // Reset state
-      if (isMountedRef.current) {
-        setStudyQueue(cards);
-        setCurrentCardIndex(0);
-        setIsStudying(true);
-      }
-      
-      // Start a new study session
+      // Start a new study session first
       const newSessionId = await vocabStorage.startStudySession(textbook);
+      console.log('useStudySession: Session created with ID:', newSessionId);
       
-      // Only update state if still mounted
-      if (isMountedRef.current) {
-        setSessionId(newSessionId);
-        setSessionStats({ studied: 0, correct: 0 });
-      }
+      // Use reducer for reliable state updates
+      console.log('useStudySession: Dispatching START_SESSION');
+      dispatch({ 
+        type: 'START_SESSION', 
+        payload: { cards, sessionId: newSessionId } 
+      });
+      console.log('useStudySession: START_SESSION dispatched successfully');
     } catch (error) {
       console.error('Failed to start study session:', error);
       throw error; // Re-throw for error handling in component
@@ -66,79 +121,83 @@ export function useStudySession(): UseStudySessionReturn {
   const endSession = useCallback(async () => {
     try {
       // Save session end time
-      if (sessionId) {
-        await vocabStorage.updateStudySession(sessionId, {
+      if (state.sessionId) {
+        await vocabStorage.updateStudySession(state.sessionId, {
           endTime: new Date()
         });
       }
       
-      // Reset state only if still mounted
-      if (isMountedRef.current) {
-        setStudyQueue([]);
-        setCurrentCardIndex(0);
-        setSessionId(null);
-        setIsStudying(false);
-        // Keep sessionStats for display until next session starts
-      }
+      console.log('endSession: Dispatching END_SESSION');
+      dispatch({ type: 'END_SESSION' });
     } catch (error) {
       console.error('Failed to end session:', error);
-      // Still reset UI state even if save fails, but only if mounted
-      if (isMountedRef.current) {
-        setStudyQueue([]);
-        setCurrentCardIndex(0);
-        setSessionId(null);
-        setIsStudying(false);
-      }
+      // Still reset UI state even if save fails
+      dispatch({ type: 'END_SESSION' });
     }
-  }, [sessionId]);
+  }, [state.sessionId]);
   
   const completeCard = useCallback(async (quality: number) => {
-    if (currentCardIndex >= studyQueue.length) return;
+    // Use the ref to get the latest state
+    const currentState = stateRef.current;
+    console.log('completeCard: Starting with quality:', quality, 'currentCardIndex:', currentState.currentCardIndex, 'studyQueue.length:', currentState.studyQueue.length);
     
-    const currentCard = studyQueue[currentCardIndex];
+    if (currentState.currentCardIndex >= currentState.studyQueue.length) {
+      console.log('completeCard: currentCardIndex >= studyQueue.length, returning');
+      return;
+    }
+    
+    const currentCard = currentState.studyQueue[currentState.currentCardIndex];
+    console.log('completeCard: Processing card:', currentCard.japanese);
     
     try {
       // Process the review with spaced repetition
       await spacedRepetition.processReview(currentCard.id, quality, currentCard);
+      console.log('completeCard: Spaced repetition processed');
       
-      // Only update state if still mounted
-      if (isMountedRef.current) {
-        // Update session stats
-        const newStats = {
-          studied: sessionStats.studied + 1,
-          correct: sessionStats.correct + (quality >= 3 ? 1 : 0)
-        };
-        setSessionStats(newStats);
-        
-        // Update session in storage
-        if (sessionId) {
-          await vocabStorage.updateStudySession(sessionId, {
-            cardsStudied: newStats.studied,
-            cardsCorrect: newStats.correct,
-            avgQuality: quality
-          });
-        }
-        
-        // Move to next card or end session
-        if (currentCardIndex < studyQueue.length - 1) {
-          setCurrentCardIndex(currentCardIndex + 1);
-        } else {
+      // Update session stats
+      const newStats = {
+        studied: currentState.sessionStats.studied + 1,
+        correct: currentState.sessionStats.correct + (quality >= 3 ? 1 : 0)
+      };
+      
+      // Update session in storage
+      if (currentState.sessionId) {
+        await vocabStorage.updateStudySession(currentState.sessionId, {
+          cardsStudied: newStats.studied,
+          cardsCorrect: newStats.correct,
+          avgQuality: quality
+        });
+      }
+      
+      // Check if this was the last card
+      const isLastCard = currentState.currentCardIndex === currentState.studyQueue.length - 1;
+      console.log('completeCard: isLastCard:', isLastCard, 'currentIndex:', currentState.currentCardIndex, 'queueLength:', currentState.studyQueue.length);
+      
+      if (isLastCard) {
+        console.log('completeCard: Last card completed, updating stats and ending session');
+        // First update the stats in state
+        dispatch({ type: 'ADVANCE_CARD', payload: { newStats } });
+        // Small delay to ensure state update completes
+        setTimeout(async () => {
           await endSession();
-        }
+        }, 100);
+      } else {
+        console.log('completeCard: Moving to next card, new index will be:', currentState.currentCardIndex + 1);
+        dispatch({ type: 'ADVANCE_CARD', payload: { newStats } });
       }
     } catch (error) {
       console.error('Failed to save progress:', error);
       throw error; // Re-throw for error handling in component
     }
-  }, [currentCardIndex, studyQueue, sessionStats, sessionId, endSession]);
+  }, [endSession]);
   
   return {
     // State
-    studyQueue,
-    currentCardIndex,
-    sessionId,
-    sessionStats,
-    isStudying,
+    studyQueue: state.studyQueue,
+    currentCardIndex: state.currentCardIndex,
+    sessionId: state.sessionId,
+    sessionStats: state.sessionStats,
+    isStudying: state.isStudying,
     
     // Actions
     startStudySession,

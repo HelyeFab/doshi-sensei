@@ -12,7 +12,7 @@ import { AchievementManager } from '@/lib/achievements/manager';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 
 interface DisplayAchievement extends Achievement {
-  progress: number;
+  progress: string | number;
   maxProgress: number;
   isUnlocked: boolean;
   progressPercentage: number;

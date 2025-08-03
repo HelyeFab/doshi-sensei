@@ -127,7 +127,7 @@ export default function ContentAnalyticsPage() {
     Math.round(contentData.articles.totalReadTime / totalArticleCompletions) : 0;
   const avgStoryReadTime = totalStoryCompletions > 0 && contentData ? 
     Math.round(contentData.stories.totalReadTime / totalStoryCompletions) : 0;
-  const avgMoodboardViewTime = contentData?.moodboards.viewed > 0 ? 
+  const avgMoodboardViewTime = contentData?.moodboards?.viewed && contentData.moodboards.viewed > 0 ? 
     Math.round(contentData.moodboards.totalViewTime / contentData.moodboards.viewed) : 0;
 
   return (

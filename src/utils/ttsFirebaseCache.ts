@@ -3,6 +3,10 @@
 // NOTE: This should only be used server-side to avoid CORS issues
 
 import crypto from 'crypto';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, listAll, getMetadata } from 'firebase/storage';
+import app from '@/lib/firebase';
+
+const storage = getStorage(app);
 
 interface CachedArticleAudio {
   articleId: string;

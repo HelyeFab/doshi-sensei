@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
           };
           console.log('Successfully fetched video metadata:', videoMetadata.title);
         }
-      } catch (youtubeApiError) {
+      } catch (youtubeApiError: any) {
         console.error('YouTube Data API error:', youtubeApiError.message);
         if (youtubeApiError.response) {
           console.error('API Response:', youtubeApiError.response.status, youtubeApiError.response.data);
@@ -334,10 +334,10 @@ export async function POST(request: NextRequest) {
         const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
         
         if (captionTracks) {
-          console.log('Found caption tracks via get_video_info:', captionTracks.map(t => t.languageCode));
+          console.log('Found caption tracks via get_video_info:', captionTracks.map((t: any) => t.languageCode));
           
           // Look for Japanese captions
-          const jaTrack = captionTracks.find(track => 
+          const jaTrack = captionTracks.find((track: any) => 
             track.languageCode === 'ja' || 
             track.languageCode === 'ja-JP'
           );
@@ -480,9 +480,9 @@ function parseYouTubeCaptions(data: string): any[] {
         const events = json.events || json;
         
         if (Array.isArray(events)) {
-          events.forEach((event, index) => {
+          events.forEach((event: any, index: number) => {
             if (event.segs || event.text) {
-              const text = event.text || event.segs.map(s => s.utf8).join('');
+              const text = event.text || event.segs.map((s: any) => s.utf8).join('');
               const start = (event.tStartMs || event.start || 0) / 1000;
               const duration = (event.dDurationMs || event.dur || 5000) / 1000;
               
@@ -491,7 +491,7 @@ function parseYouTubeCaptions(data: string): any[] {
                 text: text.trim(),
                 startTime: start,
                 endTime: start + duration,
-                words: text.trim().split(/[\s、。！？]/g).filter(w => w.length > 0)
+                words: text.trim().split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
               });
             }
           });
@@ -511,7 +511,7 @@ function parseSupaDataTranscript(data: any): any[] {
   try {
     // SupaData returns data in format: { lang: 'ja', content: [...], availableLangs: [...] }
     if (data.content && Array.isArray(data.content)) {
-      data.content.forEach((segment, index) => {
+      data.content.forEach((segment: any, index: number) => {
         // Convert milliseconds to seconds
         const startTime = (segment.offset || 0) / 1000;
         const duration = (segment.duration || 5000) / 1000;
@@ -522,7 +522,7 @@ function parseSupaDataTranscript(data: any): any[] {
           text: segment.text || '',
           startTime: startTime,
           endTime: endTime,
-          words: (segment.text || '').split(/[\s、。！？]/g).filter(w => w.length > 0)
+          words: (segment.text || '').split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
         });
       });
     }
@@ -530,29 +530,29 @@ function parseSupaDataTranscript(data: any): any[] {
     else if (data.transcript) {
       // If it's already formatted as an array of segments
       if (Array.isArray(data.transcript)) {
-        data.transcript.forEach((segment, index) => {
+        data.transcript.forEach((segment: any, index: number) => {
           transcript.push({
             id: String(index + 1),
             text: segment.text || segment.content || '',
             startTime: segment.start || segment.startTime || index * 5,
             endTime: segment.end || segment.endTime || (index + 1) * 5,
-            words: (segment.text || segment.content || '').split(/[\s、。！？]/g).filter(w => w.length > 0)
+            words: (segment.text || segment.content || '').split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
           });
         });
       } 
       // If it's a plain text transcript
       else if (typeof data.transcript === 'string') {
         // Split by sentences or paragraphs and create segments
-        const sentences = data.transcript.split(/[。！？\n]+/).filter(s => s.trim());
+        const sentences = data.transcript.split(/[。！？\n]+/).filter((s: string) => s.trim());
         const avgDuration = 5; // 5 seconds per segment as default
         
-        sentences.forEach((sentence, index) => {
+        sentences.forEach((sentence: string, index: number) => {
           transcript.push({
             id: String(index + 1),
             text: sentence.trim(),
             startTime: index * avgDuration,
             endTime: (index + 1) * avgDuration,
-            words: sentence.trim().split(/[\s、。！？]/g).filter(w => w.length > 0)
+            words: sentence.trim().split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
           });
         });
       }

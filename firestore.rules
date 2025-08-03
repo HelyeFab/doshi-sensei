@@ -605,8 +605,8 @@ service cloud.firestore {
     match /userPracticeHistory/{document} {
       // Users can read their own practice history
       // Allow read if document doesn't exist (for checking before create) or if userId matches
-      allow read: if request.auth != null && 
-        (resource == null || resource.data.userId == request.auth.uid);
+      // OR if reading for popular videos aggregation (any authenticated user)
+      allow read: if request.auth != null;
       
       // Users can create practice history for themselves
       allow create: if request.auth != null && 
@@ -683,6 +683,69 @@ service cloud.firestore {
         request.resource.data.kanjiReviewed is number &&
         request.resource.data.averageQuality is number &&
         request.resource.data.timeSpent is number;
+      
+      // Premium users cannot update sessions (immutable for data integrity)
+      allow update: if false;
+      
+      // Premium users can delete their own old sessions
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Textbook Vocabulary Progress - Premium users can sync their vocabulary progress
+    match /users/{userId}/textbookVocabularyProgress/{vocabularyId} {
+      // Premium users can read their own vocabulary progress
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create/update their own vocabulary progress with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'textbook', 'lesson', 'lastReviewed', 
+          'nextReview', 'reviewCount', 'easeFactor', 'interval', 'quality', 
+          'masteryLevel', 'createdAt', 'updatedAt']) &&
+        request.resource.data.id is string &&
+        request.resource.data.textbook is string &&
+        request.resource.data.lesson is number &&
+        request.resource.data.lastReviewed is string &&
+        request.resource.data.nextReview is string &&
+        request.resource.data.reviewCount is number &&
+        request.resource.data.easeFactor is number &&
+        request.resource.data.interval is number &&
+        request.resource.data.quality is number &&
+        request.resource.data.masteryLevel is number &&
+        request.resource.data.createdAt is string &&
+        request.resource.data.updatedAt is string;
+      
+      // Premium users can delete their own vocabulary progress
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Textbook Vocabulary Study Sessions - Premium users can sync their study sessions
+    match /users/{userId}/textbookVocabularyStudySessions/{sessionId} {
+      // Premium users can read their own study sessions
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create their own study sessions with validation
+      allow create: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'date', 'cardsStudied', 'cardsCorrect', 
+          'averageQuality', 'timeSpent', 'textbook']) &&
+        request.resource.data.id is string &&
+        request.resource.data.date is string &&
+        request.resource.data.cardsStudied is number &&
+        request.resource.data.cardsCorrect is number &&
+        request.resource.data.averageQuality is number &&
+        request.resource.data.timeSpent is number &&
+        request.resource.data.textbook is string;
       
       // Premium users cannot update sessions (immutable for data integrity)
       allow update: if false;
@@ -790,6 +853,77 @@ service cloud.firestore {
       
       // Only admin can delete lyrics cache
       allow delete: if isAdmin();
+    }
+
+    // User Edited Transcripts - Premium users can edit transcripts
+    match /userEditedTranscripts/{documentId} {
+      // Premium users can read their own edited transcripts
+      allow read: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        isPremiumUser(request.auth.uid);
+      
+      // Premium users can create edited transcripts with validation
+      allow create: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['id', 'userId', 'contentId', 'contentType', 
+          'transcript', 'createdAt', 'updatedAt']) &&
+        request.resource.data.id == documentId &&
+        request.resource.data.userId is string &&
+        request.resource.data.contentId is string &&
+        request.resource.data.contentType in ['youtube', 'audio', 'video'] &&
+        request.resource.data.transcript is list &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Premium users can update their own edited transcripts
+      allow update: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        isPremiumUser(request.auth.uid) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.contentId == resource.data.contentId;
+      
+      // Premium users can delete their own edited transcripts
+      allow delete: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        isPremiumUser(request.auth.uid);
+    }
+
+    // Notification Preferences - users can manage their own notification settings
+    match /notificationPreferences/{userId} {
+      // Users can read their own notification preferences
+      allow read: if request.auth != null && 
+        (request.auth.uid == userId || isAdmin());
+      
+      // Users can create their own notification preferences with validation
+      allow create: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['userId', 'enabled', 'timezone', 'preferences', 
+          'createdAt', 'updatedAt']) &&
+        request.resource.data.userId == userId &&
+        request.resource.data.enabled is bool &&
+        request.resource.data.timezone is string &&
+        request.resource.data.preferences is map &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Users can update their own notification preferences
+      allow update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.userId == userId;
+      
+      // Users can delete their own notification preferences
+      allow delete: if request.auth != null && 
+        (request.auth.uid == userId || isAdmin());
+    }
+
+    // Notification Logs - admin only (functions write to this)
+    match /notificationLogs/{logId} {
+      // Only admin can read notification logs
+      allow read: if isAdmin();
+      
+      // Only Cloud Functions should write (no client writes)
+      allow write: if false;
     }
 
     // Deny all other access

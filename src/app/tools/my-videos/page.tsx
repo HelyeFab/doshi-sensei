@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import MyVideos from './MyVideos';
 import StructuredData from '@/components/StructuredData';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'My Videos | Doshi Sensei',
   description: 'Access your saved YouTube videos and practice history for Japanese shadowing exercises.',

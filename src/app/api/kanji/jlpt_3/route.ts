@@ -1,31 +1,24 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import { promises as fs } from 'fs';
+import kanjiData3 from '@kanji_data/jlpt_3/jlpt_3.json';
+import kanjiData3_1 from '@kanji_data/jlp_3_1/jlpt_3_1.json';
+import kanjiData3_2 from '@kanji_data/jlpt_3_2/jlpt_3_2.json';
+import kanjiData3_3 from '@kanji_data/jlpt_3_3/jlpt_3_3.json';
 
 export async function GET() {
   try {
-    // N3 has multiple folders: jlpt_3, jlp_3_1 (note typo), jlpt_3_2, jlpt_3_3
-    const folderConfigs = [
-      { folder: 'jlpt_3', file: 'jlpt_3.json' },
-      { folder: 'jlp_3_1', file: 'jlpt_3_1.json' }, // Note: folder has typo but file doesn't
-      { folder: 'jlpt_3_2', file: 'jlpt_3_2.json' },
-      { folder: 'jlpt_3_3', file: 'jlpt_3_3.json' }
-    ];
-
     const allKanjiData: any[] = [];
-
-    for (const config of folderConfigs) {
-      try {
-        const filePath = path.join(process.cwd(), 'kanji_data', config.folder, config.file);
-        const fileContents = await fs.readFile(filePath, 'utf8');
-        const kanjiData = JSON.parse(fileContents);
-
-        if (Array.isArray(kanjiData)) {
-          allKanjiData.push(...kanjiData);
-        }
-      } catch (error) {
-        // Continue loading other folders even if one fails
-      }
+    
+    if (Array.isArray(kanjiData3)) {
+      allKanjiData.push(...kanjiData3);
+    }
+    if (Array.isArray(kanjiData3_1)) {
+      allKanjiData.push(...kanjiData3_1);
+    }
+    if (Array.isArray(kanjiData3_2)) {
+      allKanjiData.push(...kanjiData3_2);
+    }
+    if (Array.isArray(kanjiData3_3)) {
+      allKanjiData.push(...kanjiData3_3);
     }
 
     return NextResponse.json(allKanjiData);

@@ -70,7 +70,7 @@ export interface AdminUserDetails {
 }
 
 // Admin dashboard sections
-export type AdminSection = 'dashboard' | 'users' | 'user-entitlements' | 'mood-boards' | 'logs' | 'resources' | 'features' | 'analytics' | 'stories' | 'articles' | 'activities' | 'activity-logs' | 'debug' | 'snake-path' | 'achievements';
+export type AdminSection = 'dashboard' | 'users' | 'user-entitlements' | 'mood-boards' | 'logs' | 'resources' | 'features' | 'analytics' | 'stories' | 'articles' | 'activities' | 'activity-logs' | 'debug' | 'snake-path' | 'achievements' | 'notifications' | 'kpi-dashboard';
 
 // Admin context type
 export interface AdminContextType {

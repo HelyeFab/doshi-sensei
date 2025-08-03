@@ -14,97 +14,134 @@ interface SidebarItem {
   href: string;
 }
 
+// Define categories
+interface SidebarCategory {
+  label: string;
+  items: Omit<SidebarItem, 'label' | 'icon'>[];
+}
+
 // Define the structure without calling hooks
-const sidebarItemsConfig: Omit<SidebarItem, 'label' | 'icon'>[] = [
+const sidebarCategories: SidebarCategory[] = [
   {
-    id: 'dashboard',
-    labelKey: 'dashboard',
-    iconKey: 'dashboard',
-    href: '/admin',
+    label: 'Overview',
+    items: [
+      {
+        id: 'dashboard',
+        labelKey: 'dashboard',
+        iconKey: 'dashboard',
+        href: '/admin',
+      },
+    ]
   },
   {
-    id: 'users',
-    labelKey: 'users',
-    iconKey: 'users',
-    href: '/admin/users',
+    label: 'User Management',
+    items: [
+      {
+        id: 'users',
+        labelKey: 'users',
+        iconKey: 'users',
+        href: '/admin/users',
+      },
+      {
+        id: 'user-entitlements' as AdminSection,
+        labelKey: 'userEntitlements',
+        iconKey: 'userEntitlements',
+        href: '/admin/user-entitlements',
+      },
+      {
+        id: 'features' as AdminSection,
+        labelKey: 'features',
+        iconKey: 'features',
+        href: '/admin/features',
+      },
+    ]
   },
   {
-    id: 'user-entitlements' as AdminSection,
-    labelKey: 'userEntitlements',
-    iconKey: 'userEntitlements',
-    href: '/admin/user-entitlements',
+    label: 'Content Management',
+    items: [
+      {
+        id: 'mood-boards' as AdminSection,
+        labelKey: 'moodBoards',
+        iconKey: 'moodBoards',
+        href: '/admin/mood-boards',
+      },
+      {
+        id: 'resources' as AdminSection,
+        labelKey: 'resources',
+        iconKey: 'resources',
+        href: '/admin/resources',
+      },
+      {
+        id: 'stories' as AdminSection,
+        labelKey: 'stories',
+        iconKey: 'stories',
+        href: '/admin/stories',
+      },
+      {
+        id: 'articles' as AdminSection,
+        labelKey: 'articles',
+        iconKey: 'articles',
+        href: '/admin/articles',
+      },
+    ]
   },
   {
-    id: 'features' as AdminSection,
-    labelKey: 'features',
-    iconKey: 'features',
-    href: '/admin/features',
+    label: 'Analytics & Monitoring',
+    items: [
+      {
+        id: 'analytics' as AdminSection,
+        labelKey: 'analytics',
+        iconKey: 'analytics',
+        href: '/admin/analytics',
+      },
+      {
+        id: 'kpi-dashboard' as AdminSection,
+        labelKey: 'kpiDashboard',
+        iconKey: 'kpiDashboard',
+        href: '/admin/kpi-dashboard',
+      },
+      {
+        id: 'activities' as AdminSection,
+        labelKey: 'activities',
+        iconKey: 'activities',
+        href: '/admin/activities',
+      },
+      {
+        id: 'activity-logs' as AdminSection,
+        labelKey: 'logs',
+        iconKey: 'logs',
+        href: '/admin/logs',
+      },
+      {
+        id: 'notifications' as AdminSection,
+        labelKey: 'notifications',
+        iconKey: 'notifications',
+        href: '/admin/notifications',
+      },
+    ]
   },
   {
-    id: 'achievements' as AdminSection,
-    labelKey: 'achievements',
-    iconKey: 'achievements',
-    href: '/admin/achievements',
-  },
-  {
-    id: 'analytics' as AdminSection,
-    labelKey: 'analytics',
-    iconKey: 'analytics',
-    href: '/admin/analytics',
-  },
-  {
-    id: 'kpi-dashboard' as AdminSection,
-    labelKey: 'kpiDashboard',
-    iconKey: 'kpiDashboard',
-    href: '/admin/kpi-dashboard',
-  },
-  {
-    id: 'mood-boards' as AdminSection,
-    labelKey: 'moodBoards',
-    iconKey: 'moodBoards',
-    href: '/admin/mood-boards',
-  },
-  {
-    id: 'resources' as AdminSection,
-    labelKey: 'resources',
-    iconKey: 'resources',
-    href: '/admin/resources',
-  },
-  {
-    id: 'stories' as AdminSection,
-    labelKey: 'stories',
-    iconKey: 'stories',
-    href: '/admin/stories',
-  },
-  {
-    id: 'articles' as AdminSection,
-    labelKey: 'articles',
-    iconKey: 'articles',
-    href: '/admin/articles',
-  },
-  {
-    id: 'activities' as AdminSection,
-    labelKey: 'activities',
-    iconKey: 'activities',
-    href: '/admin/activities',
-  },
-  {
-    id: 'activity-logs' as AdminSection,
-    labelKey: 'logs',
-    iconKey: 'logs',
-    href: '/admin/logs',
-  },
-  {
-    id: 'debug' as AdminSection,
-    labelKey: 'debug',
-    iconKey: 'debug',
-    href: '/admin/debug',
-  },
-  {
-    id: 'snake-path' as AdminSection,
-    labelKey: 'snakePath',
-    iconKey: 'snakePath',
-    href: '/admin/snake-path',
+    label: 'System Tools',
+    items: [
+      {
+        id: 'achievements' as AdminSection,
+        labelKey: 'achievements',
+        iconKey: 'achievements',
+        href: '/admin/achievements',
+      },
+      {
+        id: 'snake-path' as AdminSection,
+        labelKey: 'snakePath',
+        iconKey: 'snakePath',
+        href: '/admin/snake-path',
+      },
+      {
+        id: 'debug' as AdminSection,
+        labelKey: 'debug',
+        iconKey: 'debug',
+        href: '/admin/debug',
+      },
+    ]
   },
 ];
 
@@ -118,24 +155,37 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
   const strings = useStrings();
 
-  // Build sidebar items with translated labels
-  const sidebarItems = sidebarItemsConfig.map(item => ({
-    ...item,
-    label: strings.navigation?.admin?.[item.labelKey]?.label || 
-           (item.labelKey === 'debug' ? 'Debug Tools' : 
-            item.labelKey === 'snakePath' ? 'Snake Path' : 
-            item.labelKey === 'analytics' ? 'Analytics' : 
-            item.labelKey === 'kpiDashboard' ? 'KPI Dashboard' : 
-            item.labelKey === 'achievements' ? 'Achievements' : 
-            item.labelKey === 'userEntitlements' ? 'User Entitlements' : item.labelKey),
-    icon: strings.navigation?.admin?.[item.labelKey]?.icon || 
-          (item.labelKey === 'debug' ? '🐛' : 
-           item.labelKey === 'snakePath' ? '🐍' : 
-           item.labelKey === 'analytics' ? '📊' : 
-           item.labelKey === 'kpiDashboard' ? '📈' : 
-           item.labelKey === 'achievements' ? '🏆' : 
-           item.labelKey === 'userEntitlements' ? '🔐' : '📋'),
-  }));
+  // Helper to get translated label for an item
+  const getItemLabel = (labelKey: string) => {
+    return strings.navigation?.admin?.[labelKey]?.label || 
+           (labelKey === 'debug' ? 'Debug Tools' : 
+            labelKey === 'snakePath' ? 'Snake Path' : 
+            labelKey === 'analytics' ? 'Analytics' : 
+            labelKey === 'kpiDashboard' ? 'KPI Dashboard' : 
+            labelKey === 'achievements' ? 'Achievements' : 
+            labelKey === 'userEntitlements' ? 'User Entitlements' : 
+            labelKey === 'articles' ? 'Articles' : 
+            labelKey === 'moodBoards' ? 'Mood Boards' : 
+            labelKey === 'logs' ? 'Activity Logs' :
+            labelKey === 'activities' ? 'Activities' : 
+            labelKey === 'notifications' ? 'Notifications' : labelKey);
+  };
+
+  // Helper to get icon for an item
+  const getItemIcon = (iconKey: string) => {
+    return strings.navigation?.admin?.[iconKey]?.icon || 
+          (iconKey === 'debug' ? '🐛' : 
+           iconKey === 'snakePath' ? '🐍' : 
+           iconKey === 'analytics' ? '📊' : 
+           iconKey === 'kpiDashboard' ? '📈' : 
+           iconKey === 'achievements' ? '🏆' : 
+           iconKey === 'userEntitlements' ? '🔐' : 
+           iconKey === 'articles' ? '📄' : 
+           iconKey === 'moodBoards' ? '🎨' : 
+           iconKey === 'logs' ? '📝' :
+           iconKey === 'activities' ? '📊' : 
+           iconKey === 'notifications' ? '🔔' : '📋');
+  };
 
   const handleSectionClick = (section: AdminSection) => {
     setCurrentSection(section);
@@ -203,30 +253,49 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               <li className="pt-2 pb-1">
                 <div className="h-px bg-border"></div>
               </li>
-              {sidebarItems.map((item) => {
-                const isActive = pathname === item.href ||
-                  (item.id !== 'dashboard' && pathname.startsWith(item.href));
-
-                return (
-                  <li key={item.id}>
-                    <SmartNavigationLink 
-                      href={item.href}
-                      title={item.label}
-                      onClick={() => handleSectionClick(item.id)}
-                      className={`
-                        flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-                        ${isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                        }
-                      `}
-                    >
-                      <span className="text-lg">{item.icon}</span>
-                      <span className="font-medium">{item.label}</span>
-                    </SmartNavigationLink>
+              {sidebarCategories.map((category, categoryIndex) => (
+                <div key={category.label}>
+                  {/* Category header */}
+                  <li className="px-3 pt-4 pb-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      {category.label}
+                    </span>
                   </li>
-                );
-              })}
+                  
+                  {/* Category items */}
+                  {category.items.map((item) => {
+                    const isActive = pathname === item.href ||
+                      (item.id !== 'dashboard' && pathname.startsWith(item.href));
+
+                    return (
+                      <li key={item.id}>
+                        <SmartNavigationLink 
+                          href={item.href}
+                          title={getItemLabel(item.labelKey)}
+                          onClick={() => handleSectionClick(item.id)}
+                          className={`
+                            flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
+                            ${isActive
+                              ? 'bg-primary text-primary-foreground'
+                              : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                            }
+                          `}
+                        >
+                          <span className="text-lg">{getItemIcon(item.iconKey)}</span>
+                          <span className="font-medium">{getItemLabel(item.labelKey)}</span>
+                        </SmartNavigationLink>
+                      </li>
+                    );
+                  })}
+                  
+                  {/* Add separator between categories except after the last one */}
+                  {categoryIndex < sidebarCategories.length - 1 && (
+                    <li className="pt-2 pb-1">
+                      <div className="h-px bg-border mx-3"></div>
+                    </li>
+                  )}
+                </div>
+              ))}
             </ul>
             </div>
           </nav>

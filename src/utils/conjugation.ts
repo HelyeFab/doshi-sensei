@@ -23,9 +23,9 @@ export class ConjugationEngine {
 
   // Comprehensive Ichidan verb conjugations (る-verbs)
   private static conjugateIchidan(word: JapaneseWord): ConjugationForms {
-    const kanji = word.kanji || word.word || '';
+    const kanji = word.kanji || '';
     const kanjiStem = kanji.slice(0, -1); // Remove る from kanji
-    const kana = word.kana || word.kanji || word.word || ''; // Fallback to kanji/word if kana is undefined
+    const kana = word.kana || word.kanji || ''; // Fallback to kanji if kana is undefined
     const kanaStem = kana.slice(0, -1); // Remove る from kana
 
     return {
@@ -134,8 +134,8 @@ export class ConjugationEngine {
 
   // Comprehensive Godan verb conjugations (う-verbs)
   private static conjugateGodan(word: JapaneseWord): ConjugationForms {
-    const kanji = word.kanji || word.word || '';
-    const kana = word.kana || word.kanji || word.word || ''; // Fallback to kanji/word if kana is undefined
+    const kanji = word.kanji || '';
+    const kana = word.kana || word.kanji || ''; // Fallback to kanji if kana is undefined
     const lastChar = kana.slice(-1);
     const kanaStem = kana.slice(0, -1);
     const kanjiStem = kanji.slice(0, -1);
@@ -385,8 +385,8 @@ export class ConjugationEngine {
 
   // Comprehensive irregular verb conjugations
   private static conjugateIrregular(word: JapaneseWord): ConjugationForms {
-    const kanji = word.kanji || word.word || '';
-    const kana = word.kana || word.kanji || word.word || '';
+    const kanji = word.kanji || '';
+    const kana = word.kana || word.kanji || '';
 
     // Handle suru verbs
     if (kana === 'する' || (kana && kana.endsWith('する'))) {
@@ -611,7 +611,7 @@ export class ConjugationEngine {
 
   // i-adjective conjugations
   private static conjugateIAdjective(word: JapaneseWord): ConjugationForms {
-    const kanji = word.kanji || word.word || '';
+    const kanji = word.kanji || '';
     const stem = kanji.slice(0, -1); // Remove い
 
     return {
@@ -667,7 +667,7 @@ export class ConjugationEngine {
 
   // na-adjective conjugations
   private static conjugateNaAdjective(word: JapaneseWord): ConjugationForms {
-    const stem = word.kanji || word.word || '';
+    const stem = word.kanji || '';
 
     return {
       // Basic Forms
@@ -882,28 +882,28 @@ export function generateQuestionStem(word: JapaneseWord, targetForm: keyof Conju
   // Create a partial conjugation to show the stem
   switch (word.type) {
     case 'Ichidan': {
-      const kana = word.kana || word.kanji || word.word || '';
+      const kana = word.kana || word.kanji || '';
       if (!kana) return '？';
       return kana.slice(0, -1) + '？';
     }
     case 'Godan': {
       // For Godan verbs, show the full word since conjugation changes the ending vowel
-      const kana = word.kana || word.kanji || word.word || '';
+      const kana = word.kana || word.kanji || '';
       if (!kana) return '？';
       return kana + '？';
     }
     case 'i-adjective': {
-      const kana = word.kana || word.kanji || word.word || '';
+      const kana = word.kana || word.kanji || '';
       if (!kana) return '？';
       return kana.slice(0, -1) + '？';
     }
     case 'na-adjective': {
-      const kana = word.kana || word.kanji || word.word || '';
+      const kana = word.kana || word.kanji || '';
       if (!kana) return '？';
       return kana + '？';
     }
     default: {
-      const kana = word.kana || word.kanji || word.word || '';
+      const kana = word.kana || word.kanji || '';
       if (!kana) return '？';
       return kana + '？';
     }

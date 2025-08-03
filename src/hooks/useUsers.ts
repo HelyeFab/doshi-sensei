@@ -145,7 +145,7 @@ export function useUsers(): UseUsersReturn {
       setUsers(prevUsers =>
         prevUsers.map(user =>
           user.id === userId
-            ? { ...user, subscription: subscriptionData }
+            ? { ...user, subscription: subscriptionData as any }
             : user
         )
       );

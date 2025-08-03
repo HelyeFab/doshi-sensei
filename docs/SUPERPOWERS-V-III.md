@@ -212,6 +212,268 @@ export default function MyFeature() {
 
 ---
 
+## 🔔 Notifications Integration
+
+### Adding Notifications to Features
+
+When implementing notifications for any feature (current or future), follow these patterns:
+
+#### 1. Feature-Specific Notifications
+```typescript
+// In your feature component
+import { useNotifications } from '@/contexts/NotificationServiceContext';
+import { useAccess } from '@/hooks/useAccess';
+
+export default function MyFeature() {
+  const { checkAndTrack } = useAccess();
+  const { testNotification, preferences } = useNotifications();
+  
+  const handleCompleteSession = async () => {
+    // Track feature usage
+    if (await checkAndTrack('my_feature')) {
+      // Do the work
+      await performFeatureAction();
+      
+      // Send completion notification if enabled
+      if (preferences?.preferences.studyReminders?.enabled) {
+        await testNotification('study_reminder');
+      }
+    }
+  };
+}
+```
+
+#### 2. Scheduled Notifications (Firebase Functions)
+```typescript
+// In functions/src/notifications.ts
+export const sendFeatureReminders = functions.pubsub
+  .schedule('0 9 * * *') // Daily at 9 AM
+  .onRun(async (context) => {
+    // Get users with feature access
+    const users = await getActiveUsers();
+    
+    for (const user of users) {
+      // Check entitlements
+      const entitlements = await getUserEntitlements(user.uid);
+      
+      // Check if user has feature access AND notifications enabled
+      if (entitlements.hasFeature('my_feature') && user.notificationsEnabled) {
+        await sendNotification({
+          userId: user.uid,
+          type: 'feature_reminder',
+          title: 'Time for your daily practice!',
+          body: `You have ${entitlements.remaining('my_feature')} sessions left today`,
+          data: {
+            featureId: 'my_feature',
+            url: '/my-feature'
+          }
+        });
+      }
+    }
+  });
+```
+
+#### 3. Usage-Based Notifications
+```typescript
+// Notify when approaching limits
+export function useFeatureWithNotifications(featureId: string) {
+  const { checkAndTrack, getUsageInfo } = useAccess();
+  const { showNotification } = useNotification();
+  
+  const trackWithNotification = async () => {
+    const hasAccess = await checkAndTrack(featureId);
+    
+    if (hasAccess) {
+      const usage = await getUsageInfo(featureId);
+      
+      // Warn when 80% of limit reached
+      if (usage.percentage >= 80 && usage.percentage < 100) {
+        showNotification({
+          title: 'Approaching Daily Limit',
+          message: `You have ${usage.remaining} ${featureId} sessions left today`,
+          type: 'warning'
+        });
+      }
+    }
+    
+    return hasAccess;
+  };
+  
+  return { trackWithNotification };
+}
+```
+
+#### 4. Achievement Notifications
+```typescript
+// Integrate with achievement system
+import { useAchievements } from '@/hooks/useAchievements';
+
+export function useFeatureAchievements() {
+  const { trackProgress } = useAchievements();
+  const { preferences, testNotification } = useNotifications();
+  
+  const completeFeature = async (featureId: string) => {
+    const achievement = await trackProgress(featureId);
+    
+    if (achievement && preferences?.enabled) {
+      // Send achievement notification
+      await testNotification('achievement', {
+        title: `Achievement Unlocked! 🏆`,
+        body: achievement.name,
+        data: {
+          achievementId: achievement.id,
+          url: '/achievements'
+        }
+      });
+    }
+  };
+}
+```
+
+### Best Practices for Feature Notifications
+
+#### DO ✅
+- **Respect user preferences**: Always check if notifications are enabled
+- **Use feature IDs**: Link notifications to specific features for tracking
+- **Include context**: Show remaining uses, streaks, or progress
+- **Provide value**: Only notify when it benefits the user's learning
+- **Track engagement**: Use notification analytics to improve
+
+#### DON'T ❌
+- **Spam users**: Limit notifications per feature per day
+- **Ignore timezone**: Schedule based on user's local time
+- **Skip permission checks**: Always verify notification permissions
+- **Hard-code messages**: Use the strings system for i18n
+- **Bypass entitlements**: Check feature access before notifying
+
+### Notification Types by Feature Category
+
+#### Learning Features
+- Study reminders (morning/evening)
+- Review due notifications
+- Streak maintenance alerts
+- Progress milestones
+
+#### Game Features
+- Daily challenge available
+- Tournament starts
+- Achievement unlocked
+- Leaderboard updates
+
+#### System Features
+- Subscription expiring
+- New features available
+- Maintenance windows
+- Security alerts
+
+### Integration Checklist
+
+When adding notifications to a feature:
+
+1. **Update Feature Registry** (if needed)
+```typescript
+'my_feature': {
+  // ... existing config
+  notificationsEnabled: true, // Optional flag
+}
+```
+
+2. **Add Notification Preferences**
+```typescript
+// In NotificationPreferences type
+myFeatureReminders: {
+  enabled: boolean;
+  frequency: 'daily' | 'weekly';
+  time: string;
+}
+```
+
+3. **Create Notification Templates**
+```typescript
+// In notification service
+const templates = {
+  my_feature_reminder: {
+    title: (data) => `Time for ${data.featureName}!`,
+    body: (data) => `You have ${data.remaining} sessions left`,
+    icon: '/icons/my-feature.png',
+    badge: '/badge-72x72.png',
+    actions: [
+      { action: 'start', title: 'Start Now' },
+      { action: 'later', title: 'Remind Later' }
+    ]
+  }
+};
+```
+
+4. **Track Notification Metrics**
+```typescript
+// In analytics
+trackNotificationEvent({
+  type: 'feature_notification',
+  featureId: 'my_feature',
+  action: 'sent' | 'clicked' | 'dismissed',
+  userId: user.uid,
+  timestamp: new Date()
+});
+```
+
+### Example: Adding Notifications to a New Vocabulary Feature
+
+```typescript
+// 1. Feature component
+export default function VocabularyPractice() {
+  const { checkAndTrack } = useAccess();
+  const { preferences, showNotification } = useNotifications();
+  const [wordsLearned, setWordsLearned] = useState(0);
+  
+  const completeSession = async () => {
+    if (await checkAndTrack('vocabulary_practice')) {
+      const newWords = await practiceVocabulary();
+      setWordsLearned(prev => prev + newWords);
+      
+      // Milestone notification
+      if (wordsLearned >= 100 && wordsLearned < 100 + newWords) {
+        showNotification({
+          title: '100 Words Learned! 🎉',
+          message: 'You\\'re making great progress!',
+          type: 'success'
+        });
+      }
+      
+      // Schedule review reminder
+      if (preferences?.preferences.reviewReminders?.enabled) {
+        await scheduleReviewReminder(newWords);
+      }
+    }
+  };
+}
+
+// 2. Firebase Function for daily reminders
+export const vocabularyReminders = functions.pubsub
+  .schedule('0 19 * * *') // 7 PM daily
+  .timeZone('user/timezone') // Dynamic timezone
+  .onRun(async (context) => {
+    const users = await getUsersWithFeature('vocabulary_practice');
+    
+    for (const user of users) {
+      const stats = await getVocabularyStats(user.uid);
+      
+      if (stats.dailyGoalRemaining > 0) {
+        await sendNotification({
+          userId: user.uid,
+          template: 'vocabulary_reminder',
+          data: {
+            wordsRemaining: stats.dailyGoalRemaining,
+            streak: stats.currentStreak
+          }
+        });
+      }
+    }
+  });
+```
+
+---
+
 ## 🛠️ Admin Tools & Debugging
 
 ### New User Entitlements Dashboard

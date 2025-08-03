@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from './useAccess';
 import { LoginPromptModal } from '@/components/LoginPromptModal';

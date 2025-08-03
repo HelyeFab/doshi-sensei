@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSettings } from '@/contexts/SettingsContext';
 import { TTSManager } from '@/utils/tts';
@@ -20,15 +20,20 @@ export function InteractiveCard({ word, onComplete, mode }: InteractiveCardProps
   const { settings } = useSettings();
   const { showError, ErrorNotificationDialog } = useErrorNotification();
   
+  // Reset card state when word changes (moving to next card)
+  useEffect(() => {
+    setRevealed(false);
+    setShowHint(false);
+  }, [word.id]);
+  
   const handleReveal = () => {
     setRevealed(true);
   };
   
   const handleQualitySelect = (quality: number) => {
+    // Just call onComplete, don't reset state here
+    // The state will reset when the word prop changes
     onComplete(quality);
-    // Reset for next card
-    setRevealed(false);
-    setShowHint(false);
   };
   
   const handlePlayAudio = async () => {

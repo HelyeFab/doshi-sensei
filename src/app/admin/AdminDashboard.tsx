@@ -97,6 +97,9 @@ export default function AdminDashboard() {
       case 'analytics':
         router.push('/admin/analytics');
         break;
+      case 'pricing':
+        router.push('/admin/pricing');
+        break;
       default:
     }
   };
@@ -175,6 +178,12 @@ export default function AdminDashboard() {
               description="View platform usage and insights"
               icon="📊"
               onClick={() => handleQuickAction('analytics')}
+            />
+            <QuickAction
+              title="Pricing Configuration"
+              description="Manage subscription pricing"
+              icon="💰"
+              onClick={() => handleQuickAction('pricing')}
             />
           </div>
         </div>

@@ -65,7 +65,7 @@ async function initializeAdmin(): Promise<void> {
 
           if (isValidServiceAccount(serviceAccount)) {
             adminApp = admin.initializeApp({
-              credential: admin.credential.cert(serviceAccount),
+              credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
               projectId: serviceAccount.project_id || projectId,
               storageBucket: 'doshi-sensei',
             });

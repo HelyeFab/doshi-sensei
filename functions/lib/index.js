@@ -36,13 +36,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripeWebhook = void 0;
+exports.stripeWebhook = exports.cleanupNotificationLogs = exports.sendStreakReminders = exports.sendReviewReminders = exports.sendStudyReminders = void 0;
 const v2_1 = require("firebase-functions/v2");
 const admin = __importStar(require("firebase-admin"));
 const stripe_1 = __importDefault(require("stripe"));
 // Initialize Firebase Admin
 admin.initializeApp();
 const db = admin.firestore();
+// Export notification functions
+var notifications_1 = require("./notifications");
+Object.defineProperty(exports, "sendStudyReminders", { enumerable: true, get: function () { return notifications_1.sendStudyReminders; } });
+Object.defineProperty(exports, "sendReviewReminders", { enumerable: true, get: function () { return notifications_1.sendReviewReminders; } });
+Object.defineProperty(exports, "sendStreakReminders", { enumerable: true, get: function () { return notifications_1.sendStreakReminders; } });
+Object.defineProperty(exports, "cleanupNotificationLogs", { enumerable: true, get: function () { return notifications_1.cleanupNotificationLogs; } });
 // Initialize Stripe (will be initialized in the function)
 let stripe;
 /**

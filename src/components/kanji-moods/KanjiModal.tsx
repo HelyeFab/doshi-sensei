@@ -32,7 +32,7 @@ export default function KanjiModal({
   const [sentenceToSave, setSentenceToSave] = useState<{ text: string; index: number } | null>(null);
   const [savedSentences, setSavedSentences] = useState<Set<number>>(new Set());
   const { speak: speakKanji, isLoading: isKanjiTTSLoading, isPlaying: isKanjiPlaying } = useKanjiTTS();
-  const { speak: speakSentence, isLoading: isSentenceTTSLoading, isPlaying: isSentencePlaying } = useTTS();
+  const { speak: speakSentence, state: { isLoading: isSentenceTTSLoading, isPlaying: isSentencePlaying } } = useTTS();
   const { user } = useAuth();
 
   // Process examples with furigana when needed

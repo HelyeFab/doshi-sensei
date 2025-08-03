@@ -345,6 +345,18 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
 
   
   // System Features
+  'push_notifications': {
+    id: 'push_notifications',
+    name: 'Push Notifications',
+    description: 'Receive study and review reminders',
+    category: 'system',
+    icon: '🔔',
+    limitType: 'none',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active'
+  },
+
   'cloud_sync': {
     id: 'cloud_sync',
     name: 'Cloud Sync',
@@ -466,6 +478,36 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active'
+  },
+
+  // Share & Referral Features
+  'share_app': {
+    id: 'share_app',
+    name: 'Share App',
+    description: 'Share Doshi Sensei with friends and earn rewards',
+    category: 'system',
+    icon: '🔗',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+  
+  'referral_rewards': {
+    id: 'referral_rewards',
+    name: 'Referral Rewards',
+    description: 'Earn premium days for successful referrals',
+    category: 'system',
+    icon: '🎁',
+    limitType: 'none',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      referrerReward: 7, // days of premium
+      referredReward: 3, // days of premium for new user
+      maxActiveReferrals: -1 // unlimited
+    }
   }
 };
 

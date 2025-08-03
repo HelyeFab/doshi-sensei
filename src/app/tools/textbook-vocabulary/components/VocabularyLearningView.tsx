@@ -8,6 +8,7 @@ import { InteractiveCard } from './InteractiveCard';
 import { GoldenTimeScheduler } from './GoldenTimeScheduler';
 import { ProgressTracker } from './ProgressTracker';
 import { StudyProgress } from './StudyProgress';
+import { VocabularyCardModal } from './VocabularyCardModal';
 import { useVocabularyData } from '../hooks/useVocabularyData';
 import { useFilteredVocab } from '../hooks/useFilteredVocab';
 import { useStudySession } from '../hooks/useStudySession';
@@ -22,13 +23,15 @@ import { useErrorNotification, ERROR_MESSAGES } from '@/hooks/useErrorNotificati
 interface VocabularyLearningViewProps {
   textbook: string;
   onBack: () => void;
+  checkAndTrack: (feature: string) => Promise<boolean>;
 }
 
-export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningViewProps) {
+export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: VocabularyLearningViewProps) {
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'study' | 'golden-time'>('grid');
   const [progressRefreshKey, setProgressRefreshKey] = useState(0);
-  const isMountedRef = useRef(true);
+  const [selectedCard, setSelectedCard] = useState<VocabularyItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Subscription
   const { isPremium } = useSubscription2();
@@ -51,13 +54,6 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
   const { data: vocabulary, loading, error } =
     useVocabularyData(textbook, selectedLesson || undefined);
   const { filteredVocab, filters, updateFilter } = useFilteredVocab(vocabulary);
-  
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
 
   // Handle lesson selection with premium gating
   const handleLessonSelect = (lesson: number | null) => {
@@ -80,14 +76,50 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
 
   const handleStartStudy = async (cards: VocabularyItem[]) => {
     console.log('Starting study session with cards:', cards);
+    
+    // Debug checkAndTrack
+    console.log('checkAndTrack prop:', checkAndTrack);
+    console.log('checkAndTrack type:', typeof checkAndTrack);
+    
+    if (!checkAndTrack || typeof checkAndTrack !== 'function') {
+      console.error('checkAndTrack is not a function or is undefined');
+      showError('Configuration Error', 'Access control is not properly configured. Please refresh the page.');
+      return;
+    }
+    
+    // FIRST check access and track usage
+    const canAccess = await checkAndTrack('textbook_vocabulary');
+    if (!canAccess) {
+      console.log('Access denied - limit reached');
+      return; // Modal shown automatically by checkAndTrack
+    }
+    
     try {
+      // Close modal if open first
+      setIsModalOpen(false);
+      setSelectedCard(null);
+      
+      // Start the study session
       await startStudySession(cards, textbook);
-      console.log('Study session started, changing view mode to study');
-      setViewMode('study');
+      console.log('Study session started, view mode will be set by useEffect');
     } catch (error) {
       console.error('Failed to start study session:', error);
       showError(ERROR_MESSAGES.SESSION_START_FAILED.title, ERROR_MESSAGES.SESSION_START_FAILED.message);
     }
+  };
+
+  const handleCardClick = (card: VocabularyItem) => {
+    setSelectedCard(card);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedCard(null);
+  };
+
+  const handlePracticeThis = (card: VocabularyItem) => {
+    handleStartStudy([card]);
   };
 
   const handleCardComplete = async (quality: number) => {
@@ -108,13 +140,22 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
     }
   }, [isStudying, viewMode]);
 
+  // Watch for study queue changes and switch to study view
+  useEffect(() => {
+    if (studyQueue.length > 0 && viewMode !== 'study') {
+      console.log('Study queue populated, switching to study view');
+      setViewMode('study');
+    }
+  }, [studyQueue.length, viewMode]);
+
   // Debug log for view mode and study queue
   useEffect(() => {
     console.log('Current state:', { 
       viewMode, 
       studyQueueLength: studyQueue.length, 
       isStudying,
-      currentCardIndex 
+      currentCardIndex,
+      shouldShowStudyView: viewMode === 'study' && studyQueue.length > 0 && currentCardIndex < studyQueue.length
     });
   }, [viewMode, studyQueue.length, isStudying, currentCardIndex]);
 
@@ -245,11 +286,12 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
             <VocabularyGrid
               vocabulary={filteredVocab}
               onStartStudy={handleStartStudy}
+              onCardClick={handleCardClick}
             />
           </motion.div>
         )}
 
-        {viewMode === 'study' && studyQueue.length > 0 && (
+        {viewMode === 'study' && studyQueue.length > 0 && currentCardIndex < studyQueue.length && (
           <motion.div
             key="study"
             initial={{ opacity: 0 }}
@@ -279,6 +321,7 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
             </div>
 
             <InteractiveCard
+              key={studyQueue[currentCardIndex].id}
               word={studyQueue[currentCardIndex]}
               onComplete={handleCardComplete}
               mode="review"
@@ -319,6 +362,14 @@ export function VocabularyLearningView({ textbook, onBack }: VocabularyLearningV
           refreshKey={progressRefreshKey}
         />
       </div>
+      
+      {/* Vocabulary Card Modal */}
+      <VocabularyCardModal
+        word={selectedCard}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onStartStudy={handlePracticeThis}
+      />
       
       {/* Error Notification Dialog */}
       <ErrorNotificationDialog />

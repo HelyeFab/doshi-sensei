@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, Timestamp, doc, getDoc, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 export interface SubscriptionMetrics {
@@ -20,11 +20,32 @@ export interface ConversionMetrics {
   trialToPayConversion: number;
 }
 
-const MONTHLY_PRICE = 3.99;
-const YEARLY_PRICE = 39.99;
+// Default prices - will be overridden by pricing config if available
+let MONTHLY_PRICE = 3.99;
+let YEARLY_PRICE = 39.99;
+
+// Fetch pricing config from Firestore
+async function fetchPricingConfig() {
+  try {
+    const configRef = doc(db, 'config', 'pricing');
+    const configSnap = await getDoc(configRef);
+    
+    if (configSnap.exists()) {
+      const pricing = configSnap.data();
+      MONTHLY_PRICE = pricing.monthly?.amount || 3.99;
+      YEARLY_PRICE = pricing.yearly?.amount || 39.99;
+      console.log('[SubscriptionAnalytics] Loaded pricing config:', { MONTHLY_PRICE, YEARLY_PRICE });
+    }
+  } catch (error) {
+    console.error('[SubscriptionAnalytics] Error fetching pricing config:', error);
+  }
+}
 
 export async function calculateSubscriptionMetrics(): Promise<SubscriptionMetrics> {
   try {
+    // Fetch latest pricing config
+    await fetchPricingConfig();
+    
     // Get all users with subscriptions
     const usersRef = collection(db, 'users');
     const activeSubQuery = query(
@@ -34,16 +55,69 @@ export async function calculateSubscriptionMetrics(): Promise<SubscriptionMetric
     
     const snapshot = await getDocs(activeSubQuery);
     
+    console.log('[SubscriptionAnalytics] Active subscribers found:', snapshot.size);
+    
     let monthlyCount = 0;
     let yearlyCount = 0;
+    let debugSubscriptions: any[] = [];
+    
+    // Hard-coded price IDs since env vars aren't available in browser
+    const MONTHLY_PRICE_ID = 'price_1RakzXHdrJomitOwZc0HJC4J';
+    const YEARLY_PRICE_ID = 'price_1RakzXHdrJomitOwE7B56erf';
+    
+    console.log('[SubscriptionAnalytics] Using price IDs:', {
+      monthly: MONTHLY_PRICE_ID,
+      yearly: YEARLY_PRICE_ID
+    });
     
     snapshot.forEach((doc) => {
       const data = doc.data();
+      const subData = {
+        userId: doc.id,
+        email: data.email,
+        plan: data.subscription?.plan,
+        status: data.subscription?.status,
+        priceId: data.subscription?.priceId,
+        productId: data.subscription?.productId,
+        stripeSubscriptionId: data.subscription?.stripeSubscriptionId,
+        stripeCustomerId: data.subscription?.stripeCustomerId,
+        currentPeriodEnd: data.subscription?.currentPeriodEnd,
+        cancelAtPeriodEnd: data.subscription?.cancelAtPeriodEnd,
+        // Check for legacy fields
+        legacyPlan: data.plan,
+        legacySubscription: data.subscriptionPlan,
+        legacyStatus: data.subscriptionStatus
+      };
+      debugSubscriptions.push(subData);
+      
+      // Determine plan type - check explicit plan field first
       if (data.subscription?.plan === 'monthly') {
         monthlyCount++;
       } else if (data.subscription?.plan === 'yearly') {
         yearlyCount++;
+      } else if (!data.subscription?.plan && data.subscription?.status === 'active') {
+        // No plan field but subscription is active - try to infer from price ID
+        const priceId = data.subscription?.priceId;
+        
+        if (priceId === MONTHLY_PRICE_ID) {
+          console.log(`[SubscriptionAnalytics] User ${doc.id} inferred as monthly from price ID`);
+          monthlyCount++;
+        } else if (priceId === YEARLY_PRICE_ID) {
+          console.log(`[SubscriptionAnalytics] User ${doc.id} inferred as yearly from price ID`);
+          yearlyCount++;
+        } else {
+          // Can't determine from price ID, default to monthly
+          console.warn(`[SubscriptionAnalytics] User ${doc.id} has unknown price ID ${priceId}, defaulting to monthly:`, subData);
+          monthlyCount++;
+        }
       }
+    });
+    
+    console.log('[SubscriptionAnalytics] Subscription breakdown:', {
+      total: snapshot.size,
+      monthly: monthlyCount,
+      yearly: yearlyCount,
+      subscriptions: debugSubscriptions
     });
     
     const totalSubscribers = monthlyCount + yearlyCount;
@@ -54,6 +128,17 @@ export async function calculateSubscriptionMetrics(): Promise<SubscriptionMetric
     
     // Calculate average revenue per user
     const averageRevenue = totalSubscribers > 0 ? totalMRR / totalSubscribers : 0;
+    
+    console.log('[SubscriptionAnalytics] Revenue calculation:', {
+      monthlyCount,
+      yearlyCount,
+      monthlyPrice: MONTHLY_PRICE,
+      yearlyPrice: YEARLY_PRICE,
+      monthlyMRR: monthlyMRR.toFixed(2),
+      yearlyMRR: yearlyMRR.toFixed(2),
+      totalMRR: totalMRR.toFixed(2),
+      totalARR: totalARR.toFixed(2)
+    });
     
     // TODO: Calculate actual churn rate based on cancellations
     const churnRate = 0; // Placeholder - would need historical data
@@ -127,7 +212,7 @@ export async function calculateConversionMetrics(): Promise<ConversionMetrics> {
 export async function trackPaywallView(userId: string, feature: string) {
   try {
     const paywallRef = collection(db, 'analytics_paywall_views');
-    await paywallRef.add({
+    await addDoc(paywallRef, {
       userId,
       feature,
       timestamp: Timestamp.now(),
@@ -135,6 +220,44 @@ export async function trackPaywallView(userId: string, feature: string) {
     });
   } catch (error) {
     console.error('Error tracking paywall view:', error);
+  }
+}
+
+// Debug function to check all subscriptions regardless of status
+export async function debugAllSubscriptions() {
+  try {
+    const usersRef = collection(db, 'users');
+    const allUsersSnapshot = await getDocs(usersRef);
+    
+    let allSubscriptions: any[] = [];
+    let statusCounts: Record<string, number> = {};
+    
+    allUsersSnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.subscription) {
+        const sub = data.subscription;
+        allSubscriptions.push({
+          userId: doc.id,
+          email: data.email,
+          subscription: sub
+        });
+        
+        const status = sub.status || 'no_status';
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      }
+    });
+    
+    console.log('[SubscriptionAnalytics] Debug - All subscriptions:', {
+      totalUsers: allUsersSnapshot.size,
+      usersWithSubscription: allSubscriptions.length,
+      statusBreakdown: statusCounts,
+      allSubscriptions
+    });
+    
+    return allSubscriptions;
+  } catch (error) {
+    console.error('Error in debugAllSubscriptions:', error);
+    return [];
   }
 }
 

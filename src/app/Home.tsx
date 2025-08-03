@@ -20,11 +20,13 @@ import UserAvatar from '@/components/UserAvatar';
 import UserAchievements from '@/components/achievements/UserAchievements';
 import VirtualCompanion from '@/components/VirtualCompanion';
 import { useRouter } from 'next/navigation';
+import InAppNotificationBell from '@/components/notifications/InAppNotificationBell';
 
 // Import debug utility in development
-if (process.env.NODE_ENV === 'development') {
-  import('@/utils/debugStats');
-}
+// Commented out to fix build issues - uncomment for debugging
+// if (process.env.NODE_ENV === 'development') {
+//   import('@/utils/debugStats');
+// }
 
 // Structured Data for SEO
 const structuredData = {
@@ -256,6 +258,9 @@ export default function Home() {
               </div>
             )}
           </div>
+          
+          {/* Notification Bell */}
+          {user && <InAppNotificationBell />}
         </div>
       </header>
 

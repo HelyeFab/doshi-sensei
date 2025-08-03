@@ -16,12 +16,16 @@ import { ThemeSelector } from '@/components/ThemeSelector';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { AVAILABLE_NAV_ITEMS, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 import { CacheCleaner } from '@/utils/cacheCleaner';
+import { useNotifications } from '@/contexts/NotificationServiceContext';
+import NotificationPermissionCard from '@/components/notifications/NotificationPermissionCard';
+import { NotificationPreferences } from '@/components/notifications/NotificationPreferences';
 
 export default function SettingsPage() {
   const strings = useStrings();
   const { settings, updateSetting, resetSettings } = useSettings();
   const { user } = useAuth();
   const { subscription, isPremium } = useSubscription2();
+  const { isInitialized: notificationsInitialized, permissionStatus } = useNotifications();
   const canSync = isPremium;
   const {
     syncStatus,
@@ -453,6 +457,48 @@ export default function SettingsPage() {
               </div>
             </SettingsSection>
 
+            {/* Notifications */}
+            <SettingsSection title="Notifications">
+              <div className="space-y-4">
+                {/* Show permission card if not granted */}
+                {user && permissionStatus !== 'granted' && (
+                  <NotificationPermissionCard />
+                )}
+                
+                {/* Show preferences if permission is granted */}
+                {user && permissionStatus === 'granted' && (
+                  <>
+                    <NotificationPreferences />
+                    <div className="pt-2 border-t border-border">
+                      <p className="text-xs text-muted-foreground">
+                        Receive reminders to study, review your progress, and maintain your learning streak. 
+                        Notifications help you stay consistent with your Japanese learning journey.
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                {/* Show login prompt if not logged in */}
+                {!user && (
+                  <div className="text-center p-6 border border-border rounded-lg">
+                    <div className="text-3xl mb-3">🔔</div>
+                    <h3 className="text-lg font-medium text-foreground mb-2">
+                      Login Required
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Please login to enable notifications and stay on track with your learning.
+                    </p>
+                    <button
+                      onClick={() => router.push('/account')}
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    >
+                      Login
+                    </button>
+                  </div>
+                )}
+              </div>
+            </SettingsSection>
+
             {/* Data Management */}
             <SettingsSection title={strings.settings.dataManagement}>
               <div className="space-y-4">
@@ -495,23 +541,6 @@ export default function SettingsPage() {
                       <SyncStatusIndicator />
                     </div>
 
-                    {/* Sync Progress */}
-                    {syncProgress && (
-                      <div className="p-3 bg-muted/30 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">{syncProgress.operation}</span>
-                          <span className="text-sm text-muted-foreground">
-                            {syncProgress.current}/{syncProgress.total}
-                          </span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div
-                            className="bg-primary h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${(syncProgress.current / syncProgress.total) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
 
                     {/* Sync Error */}
                     {syncError && (
@@ -891,13 +920,17 @@ interface LinkButtonProps {
   label: string;
   description: string;
   onClick: () => void;
+  disabled?: boolean;
 }
 
-function LinkButton({ label, description, onClick }: LinkButtonProps) {
+function LinkButton({ label, description, onClick, disabled }: LinkButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group"
+      disabled={disabled}
+      className={`w-full text-left p-3 rounded-lg border border-border transition-colors group ${
+        disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-muted/50'
+      }`}
     >
       <div className="flex items-center justify-between">
         <div>

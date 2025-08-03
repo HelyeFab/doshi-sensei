@@ -145,7 +145,7 @@ export function useUsers(): UseUsersReturn {
       setUsers(prevUsers =>
         prevUsers.map(user =>
           user.id === userId
-            ? { ...user, subscription: subscriptionData }
+            ? { ...user, subscription: subscriptionData as any }
             : user
         )
       );
@@ -266,11 +266,11 @@ export function filterUsersBySubscription(
 ): AdminUserDetails[] {
   switch (filterType) {
     case 'free':
-      return users.filter(user => user.subscription?.plan === 'free');
+      return users.filter(user => (user.subscription as any)?.plan === 'free');
     case 'premium':
       return users.filter(user =>
-        user.subscription?.plan === 'monthly' ||
-        user.subscription?.plan === 'yearly'
+        (user.subscription as any)?.plan === 'monthly' ||
+        (user.subscription as any)?.plan === 'yearly'
       );
     case 'active':
       const today = new Date();

@@ -120,7 +120,7 @@ export function usePremiumSync(): UsePremiumSyncReturn {
         const registration = await navigator.serviceWorker.ready;
         
         try {
-          await registration.sync.register('premium-content-sync');
+          await (registration as any).sync.register('premium-content-sync');
           // Only log in development
           if (process.env.NODE_ENV === 'development') {
             console.log('Premium sync registered with service worker');

@@ -208,7 +208,7 @@ export function useAchievementAdmin() {
       return { canUnlock: false, reason: 'Invalid condition configuration' };
     }
 
-    const currentValue = testStats[conditionField];
+    const currentValue = typeof testStats[conditionField] === 'number' ? testStats[conditionField] : Number(testStats[conditionField]);
     let canUnlock = false;
 
     switch (conditionOperator) {

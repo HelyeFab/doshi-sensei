@@ -23,16 +23,8 @@ export default function TextbookVocabularyClient() {
   const [selectedTextbook, setSelectedTextbook] = useState<Textbook>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // Track feature usage
-    const trackUsage = async () => {
-      const canAccess = await checkAndTrack('textbook_vocabulary');
-      if (!canAccess) {
-        console.log('Access denied for textbook_vocabulary feature');
-      }
-    };
-    trackUsage();
-  }, [checkAndTrack]);
+  // Removed useEffect that was tracking on page load
+  // Usage should be tracked when user actually starts studying, not when browsing
 
   const textbooks = [
     {
@@ -246,6 +238,7 @@ export default function TextbookVocabularyClient() {
           <VocabularyLearningView 
             textbook={selectedTextbook!} 
             onBack={() => setSelectedTextbook(null)}
+            checkAndTrack={checkAndTrack}
           />
         )}
       </AnimatePresence>

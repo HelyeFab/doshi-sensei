@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
     // Get dynamic rules
     const dynamicRules = await getServerDynamicRules();
-    const userRule = dynamicRules.find(rule => rule.userTypes.includes(userType));
+    const userRule = dynamicRules.find(rule => rule.userTypes.includes(userType as any));
     
     // Get usage data
     const usageDoc = await db.collection('users').doc(uid).collection('usageTracking').doc('current').get();
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get daily activities from userStats
-    let dailyActivities = [];
+    let dailyActivities: any[] = [];
     try {
       const dailyActivitiesSnapshot = await db
         .collection('userStats')

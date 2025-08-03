@@ -51,8 +51,18 @@ export class ArticleManagerServer {
           .get();
       } catch (queryError) {
         console.log('Complex query failed, trying simpler query:', queryError);
-        // If the complex query fails, try just getting all articles
-        snapshot = await articlesRef.limit(100).get();
+        // If the complex query fails, try to get all articles without filters
+        try {
+          snapshot = await articlesRef.get();
+        } catch (fallbackError) {
+          console.log('Fallback query also failed:', fallbackError);
+          // Return empty snapshot if all queries fail
+          snapshot = {
+            size: 0,
+            docs: [],
+            empty: true
+          } as any;
+        }
       }
 
       console.log(`Found ${snapshot.size} active articles`);

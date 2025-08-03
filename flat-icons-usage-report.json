@@ -1,0 +1,721 @@
+{
+  "totalSets": 11,
+  "totalIcons": 118,
+  "totalSize": 3890746,
+  "usedIcons": 0,
+  "unusedIcons": 118,
+  "unusedSize": 3890746,
+  "setDetails": [
+    {
+      "name": "17517790-summer-watermelon",
+      "totalIcons": 7,
+      "totalSizeMB": "0.06",
+      "usedIcons": 0,
+      "unusedIcons": 7,
+      "unusedSizeMB": "0.06",
+      "unusedFiles": [
+        {
+          "name": "001-happy.svg",
+          "path": "public/flat-icons/17517790-summer-watermelon/svg/001-happy.svg",
+          "sizeKB": "6.71"
+        },
+        {
+          "name": "002-love.svg",
+          "path": "public/flat-icons/17517790-summer-watermelon/svg/002-love.svg",
+          "sizeKB": "6.85"
+        },
+        {
+          "name": "011-laugh-emoji.svg",
+          "path": "public/flat-icons/17517790-summer-watermelon/svg/011-laugh-emoji.svg",
+          "sizeKB": "9.37"
+        },
+        {
+          "name": "013-wow.svg",
+          "path": "public/flat-icons/17517790-summer-watermelon/svg/013-wow.svg",
+          "sizeKB": "9.78"
+        },
+        {
+          "name": "014-angel.svg",
+          "path": "public/flat-icons/17517790-summer-watermelon/svg/014-angel.svg",
+          "sizeKB": "12.50"
+        },
+        {
+          "name": "018-valentin-day.svg",
+          "path": "public/flat-icons/17517790-summer-watermelon/svg/018-valentin-day.svg",
+          "sizeKB": "8.93"
+        },
+        {
+          "name": "020-ok.svg",
+          "path": "public/flat-icons/17517790-summer-watermelon/svg/020-ok.svg",
+          "sizeKB": "8.16"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "1752632-pokemon",
+      "totalIcons": 8,
+      "totalSizeMB": "0.33",
+      "usedIcons": 0,
+      "unusedIcons": 8,
+      "unusedSizeMB": "0.33",
+      "unusedFiles": [
+        {
+          "name": "017-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/017-gaming.png",
+          "sizeKB": "41.12"
+        },
+        {
+          "name": "019-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/019-gaming.png",
+          "sizeKB": "42.28"
+        },
+        {
+          "name": "025-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/025-gaming.png",
+          "sizeKB": "47.59"
+        },
+        {
+          "name": "028-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/028-gaming.png",
+          "sizeKB": "42.00"
+        },
+        {
+          "name": "030-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/030-gaming.png",
+          "sizeKB": "42.48"
+        },
+        {
+          "name": "035-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/035-gaming.png",
+          "sizeKB": "42.12"
+        },
+        {
+          "name": "040-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/040-gaming.png",
+          "sizeKB": "41.31"
+        },
+        {
+          "name": "055-gaming.png",
+          "path": "public/flat-icons/1752632-pokemon/png/055-gaming.png",
+          "sizeKB": "40.54"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "188915-pokemon-go",
+      "totalIcons": 5,
+      "totalSizeMB": "2.16",
+      "usedIcons": 0,
+      "unusedIcons": 5,
+      "unusedSizeMB": "2.16",
+      "unusedFiles": [
+        {
+          "name": "map.png",
+          "path": "public/flat-icons/188915-pokemon-go/png/map.png",
+          "sizeKB": "59.71"
+        },
+        {
+          "name": "pokeball.png",
+          "path": "public/flat-icons/188915-pokemon-go/png/pokeball.png",
+          "sizeKB": "59.71"
+        },
+        {
+          "name": "pokedex.png",
+          "path": "public/flat-icons/188915-pokemon-go/png/pokedex.png",
+          "sizeKB": "1018.43"
+        },
+        {
+          "name": "smartphone.png",
+          "path": "public/flat-icons/188915-pokemon-go/png/smartphone.png",
+          "sizeKB": "1018.43"
+        },
+        {
+          "name": "star.png",
+          "path": "public/flat-icons/188915-pokemon-go/png/star.png",
+          "sizeKB": "59.71"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "4193242-animals",
+      "totalIcons": 12,
+      "totalSizeMB": "0.31",
+      "usedIcons": 0,
+      "unusedIcons": 12,
+      "unusedSizeMB": "0.31",
+      "unusedFiles": [
+        {
+          "name": "002-buffalo.svg",
+          "path": "public/flat-icons/4193242-animals/svg/002-buffalo.svg",
+          "sizeKB": "33.69"
+        },
+        {
+          "name": "003-flamingo.svg",
+          "path": "public/flat-icons/4193242-animals/svg/003-flamingo.svg",
+          "sizeKB": "21.32"
+        },
+        {
+          "name": "004-sheep.svg",
+          "path": "public/flat-icons/4193242-animals/svg/004-sheep.svg",
+          "sizeKB": "21.77"
+        },
+        {
+          "name": "005-horse.svg",
+          "path": "public/flat-icons/4193242-animals/svg/005-horse.svg",
+          "sizeKB": "27.14"
+        },
+        {
+          "name": "006-cow.svg",
+          "path": "public/flat-icons/4193242-animals/svg/006-cow.svg",
+          "sizeKB": "15.39"
+        },
+        {
+          "name": "007-pig.svg",
+          "path": "public/flat-icons/4193242-animals/svg/007-pig.svg",
+          "sizeKB": "20.66"
+        },
+        {
+          "name": "008-hedgehog.svg",
+          "path": "public/flat-icons/4193242-animals/svg/008-hedgehog.svg",
+          "sizeKB": "25.17"
+        },
+        {
+          "name": "010-rabbit.svg",
+          "path": "public/flat-icons/4193242-animals/svg/010-rabbit.svg",
+          "sizeKB": "23.83"
+        },
+        {
+          "name": "015-alpaca.svg",
+          "path": "public/flat-icons/4193242-animals/svg/015-alpaca.svg",
+          "sizeKB": "38.36"
+        },
+        {
+          "name": "019-llama.svg",
+          "path": "public/flat-icons/4193242-animals/svg/019-llama.svg",
+          "sizeKB": "29.06"
+        },
+        {
+          "name": "020-goat.svg",
+          "path": "public/flat-icons/4193242-animals/svg/020-goat.svg",
+          "sizeKB": "28.05"
+        },
+        {
+          "name": "026-squirrel.svg",
+          "path": "public/flat-icons/4193242-animals/svg/026-squirrel.svg",
+          "sizeKB": "35.99"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "4341021-education",
+      "totalIcons": 10,
+      "totalSizeMB": "0.06",
+      "usedIcons": 0,
+      "unusedIcons": 10,
+      "unusedSizeMB": "0.06",
+      "unusedFiles": [
+        {
+          "name": "011-book.svg",
+          "path": "public/flat-icons/4341021-education/svg/011-book.svg",
+          "sizeKB": "7.55"
+        },
+        {
+          "name": "012-laptop.svg",
+          "path": "public/flat-icons/4341021-education/svg/012-laptop.svg",
+          "sizeKB": "5.30"
+        },
+        {
+          "name": "017-dictionary.svg",
+          "path": "public/flat-icons/4341021-education/svg/017-dictionary.svg",
+          "sizeKB": "5.99"
+        },
+        {
+          "name": "018-paper-plane.svg",
+          "path": "public/flat-icons/4341021-education/svg/018-paper-plane.svg",
+          "sizeKB": "3.21"
+        },
+        {
+          "name": "025-medal.svg",
+          "path": "public/flat-icons/4341021-education/svg/025-medal.svg",
+          "sizeKB": "4.90"
+        },
+        {
+          "name": "029-telescope.svg",
+          "path": "public/flat-icons/4341021-education/svg/029-telescope.svg",
+          "sizeKB": "8.61"
+        },
+        {
+          "name": "037-trophy.svg",
+          "path": "public/flat-icons/4341021-education/svg/037-trophy.svg",
+          "sizeKB": "7.37"
+        },
+        {
+          "name": "044-color-palette.svg",
+          "path": "public/flat-icons/4341021-education/svg/044-color-palette.svg",
+          "sizeKB": "8.59"
+        },
+        {
+          "name": "048-microscope.svg",
+          "path": "public/flat-icons/4341021-education/svg/048-microscope.svg",
+          "sizeKB": "6.84"
+        },
+        {
+          "name": "049-mortarboard.svg",
+          "path": "public/flat-icons/4341021-education/svg/049-mortarboard.svg",
+          "sizeKB": "5.62"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "8376275-wild-animals-flat-1-of-1",
+      "totalIcons": 18,
+      "totalSizeMB": "0.44",
+      "usedIcons": 0,
+      "unusedIcons": 18,
+      "unusedSizeMB": "0.44",
+      "unusedFiles": [
+        {
+          "name": "007-giraffe.png",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/png/007-giraffe.png",
+          "sizeKB": "55.06"
+        },
+        {
+          "name": "001-raccoon.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/001-raccoon.svg",
+          "sizeKB": "21.41"
+        },
+        {
+          "name": "002-zebra.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/002-zebra.svg",
+          "sizeKB": "25.05"
+        },
+        {
+          "name": "003-bear.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/003-bear.svg",
+          "sizeKB": "19.25"
+        },
+        {
+          "name": "004-cheetah.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/004-cheetah.svg",
+          "sizeKB": "24.29"
+        },
+        {
+          "name": "005-fox.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/005-fox.svg",
+          "sizeKB": "21.37"
+        },
+        {
+          "name": "006-leopard.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/006-leopard.svg",
+          "sizeKB": "24.29"
+        },
+        {
+          "name": "007-giraffe.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg",
+          "sizeKB": "23.49"
+        },
+        {
+          "name": "008-koala.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/008-koala.svg",
+          "sizeKB": "22.37"
+        },
+        {
+          "name": "009-panda-bear.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/009-panda-bear.svg",
+          "sizeKB": "19.97"
+        },
+        {
+          "name": "010-tiger.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/010-tiger.svg",
+          "sizeKB": "29.20"
+        },
+        {
+          "name": "012-sloth.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/012-sloth.svg",
+          "sizeKB": "21.02"
+        },
+        {
+          "name": "013-hippopotamus.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/013-hippopotamus.svg",
+          "sizeKB": "21.60"
+        },
+        {
+          "name": "014-rhinoceros.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/014-rhinoceros.svg",
+          "sizeKB": "20.53"
+        },
+        {
+          "name": "015-monkey.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/015-monkey.svg",
+          "sizeKB": "31.04"
+        },
+        {
+          "name": "016-deer.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/016-deer.svg",
+          "sizeKB": "21.56"
+        },
+        {
+          "name": "019-lion.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/019-lion.svg",
+          "sizeKB": "25.47"
+        },
+        {
+          "name": "020-elephant.svg",
+          "path": "public/flat-icons/8376275-wild-animals-flat-1-of-1/svg/020-elephant.svg",
+          "sizeKB": "24.52"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "root-icons",
+      "totalIcons": 22,
+      "totalSizeMB": "0.11",
+      "usedIcons": 0,
+      "unusedIcons": 22,
+      "unusedSizeMB": "0.11",
+      "unusedFiles": [
+        {
+          "name": "bot.svg",
+          "path": "public/flat-icons/root-icons/bot.svg",
+          "sizeKB": "4.45"
+        },
+        {
+          "name": "calligraphy (1).svg",
+          "path": "public/flat-icons/root-icons/calligraphy (1).svg",
+          "sizeKB": "3.22"
+        },
+        {
+          "name": "calligraphy.svg",
+          "path": "public/flat-icons/root-icons/calligraphy.svg",
+          "sizeKB": "17.30"
+        },
+        {
+          "name": "construction.svg",
+          "path": "public/flat-icons/root-icons/construction.svg",
+          "sizeKB": "3.42"
+        },
+        {
+          "name": "cpu.svg",
+          "path": "public/flat-icons/root-icons/cpu.svg",
+          "sizeKB": "1.25"
+        },
+        {
+          "name": "headphones.svg",
+          "path": "public/flat-icons/root-icons/headphones.svg",
+          "sizeKB": "7.43"
+        },
+        {
+          "name": "installation.svg",
+          "path": "public/flat-icons/root-icons/installation.svg",
+          "sizeKB": "4.65"
+        },
+        {
+          "name": "jackhammer.svg",
+          "path": "public/flat-icons/root-icons/jackhammer.svg",
+          "sizeKB": "3.57"
+        },
+        {
+          "name": "kana-drop.svg",
+          "path": "public/flat-icons/root-icons/kana-drop.svg",
+          "sizeKB": "2.88"
+        },
+        {
+          "name": "listening.svg",
+          "path": "public/flat-icons/root-icons/listening.svg",
+          "sizeKB": "6.44"
+        },
+        {
+          "name": "logogram.svg",
+          "path": "public/flat-icons/root-icons/logogram.svg",
+          "sizeKB": "3.03"
+        },
+        {
+          "name": "magnifying-glass.svg",
+          "path": "public/flat-icons/root-icons/magnifying-glass.svg",
+          "sizeKB": "5.96"
+        },
+        {
+          "name": "matching.svg",
+          "path": "public/flat-icons/root-icons/matching.svg",
+          "sizeKB": "4.45"
+        },
+        {
+          "name": "music.svg",
+          "path": "public/flat-icons/root-icons/music.svg",
+          "sizeKB": "3.64"
+        },
+        {
+          "name": "phone-installation.svg",
+          "path": "public/flat-icons/root-icons/phone-installation.svg",
+          "sizeKB": "1.42"
+        },
+        {
+          "name": "smartphone.svg",
+          "path": "public/flat-icons/root-icons/smartphone.svg",
+          "sizeKB": "0.76"
+        },
+        {
+          "name": "story.svg",
+          "path": "public/flat-icons/root-icons/story.svg",
+          "sizeKB": "14.66"
+        },
+        {
+          "name": "target.svg",
+          "path": "public/flat-icons/root-icons/target.svg",
+          "sizeKB": "5.72"
+        },
+        {
+          "name": "text.svg",
+          "path": "public/flat-icons/root-icons/text.svg",
+          "sizeKB": "1.21"
+        },
+        {
+          "name": "volume.svg",
+          "path": "public/flat-icons/root-icons/volume.svg",
+          "sizeKB": "0.96"
+        },
+        {
+          "name": "woman.svg",
+          "path": "public/flat-icons/root-icons/woman.svg",
+          "sizeKB": "10.38"
+        },
+        {
+          "name": "word.svg",
+          "path": "public/flat-icons/root-icons/word.svg",
+          "sizeKB": "5.97"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "sakura",
+      "totalIcons": 6,
+      "totalSizeMB": "0.02",
+      "usedIcons": 0,
+      "unusedIcons": 6,
+      "unusedSizeMB": "0.02",
+      "unusedFiles": [
+        {
+          "name": "petals.svg",
+          "path": "public/flat-icons/sakura/petals.svg",
+          "sizeKB": "2.45"
+        },
+        {
+          "name": "sakura (1).svg",
+          "path": "public/flat-icons/sakura/sakura (1).svg",
+          "sizeKB": "2.92"
+        },
+        {
+          "name": "sakura (2).svg",
+          "path": "public/flat-icons/sakura/sakura (2).svg",
+          "sizeKB": "5.19"
+        },
+        {
+          "name": "sakura (5).svg",
+          "path": "public/flat-icons/sakura/sakura (5).svg",
+          "sizeKB": "0.97"
+        },
+        {
+          "name": "sakura (6).svg",
+          "path": "public/flat-icons/sakura/sakura (6).svg",
+          "sizeKB": "2.36"
+        },
+        {
+          "name": "wind-chimes.svg",
+          "path": "public/flat-icons/sakura/wind-chimes.svg",
+          "sizeKB": "3.78"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "stats-bar",
+      "totalIcons": 4,
+      "totalSizeMB": "0.02",
+      "usedIcons": 0,
+      "unusedIcons": 4,
+      "unusedSizeMB": "0.02",
+      "unusedFiles": [
+        {
+          "name": "30-days.svg",
+          "path": "public/flat-icons/stats-bar/30-days.svg",
+          "sizeKB": "6.98"
+        },
+        {
+          "name": "7-days.svg",
+          "path": "public/flat-icons/stats-bar/7-days.svg",
+          "sizeKB": "3.90"
+        },
+        {
+          "name": "sakura (5).svg",
+          "path": "public/flat-icons/stats-bar/sakura (5).svg",
+          "sizeKB": "0.97"
+        },
+        {
+          "name": "today.svg",
+          "path": "public/flat-icons/stats-bar/today.svg",
+          "sizeKB": "7.10"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "tori",
+      "totalIcons": 10,
+      "totalSizeMB": "0.08",
+      "usedIcons": 0,
+      "unusedIcons": 10,
+      "unusedSizeMB": "0.08",
+      "unusedFiles": [
+        {
+          "name": "fuji.svg",
+          "path": "public/flat-icons/tori/fuji.svg",
+          "sizeKB": "10.95"
+        },
+        {
+          "name": "temple (1).svg",
+          "path": "public/flat-icons/tori/temple (1).svg",
+          "sizeKB": "9.28"
+        },
+        {
+          "name": "temple (2).svg",
+          "path": "public/flat-icons/tori/temple (2).svg",
+          "sizeKB": "5.25"
+        },
+        {
+          "name": "temple.svg",
+          "path": "public/flat-icons/tori/temple.svg",
+          "sizeKB": "3.99"
+        },
+        {
+          "name": "tori (1).svg",
+          "path": "public/flat-icons/tori/tori (1).svg",
+          "sizeKB": "1.13"
+        },
+        {
+          "name": "tori (2).svg",
+          "path": "public/flat-icons/tori/tori (2).svg",
+          "sizeKB": "2.79"
+        },
+        {
+          "name": "tori.svg",
+          "path": "public/flat-icons/tori/tori.svg",
+          "sizeKB": "12.11"
+        },
+        {
+          "name": "torii (1).svg",
+          "path": "public/flat-icons/tori/torii (1).svg",
+          "sizeKB": "3.93"
+        },
+        {
+          "name": "torii-gate.svg",
+          "path": "public/flat-icons/tori/torii-gate.svg",
+          "sizeKB": "32.18"
+        },
+        {
+          "name": "torii.svg",
+          "path": "public/flat-icons/tori/torii.svg",
+          "sizeKB": "3.93"
+        }
+      ],
+      "usedFiles": []
+    },
+    {
+      "name": "ui",
+      "totalIcons": 16,
+      "totalSizeMB": "0.11",
+      "usedIcons": 0,
+      "unusedIcons": 16,
+      "unusedSizeMB": "0.11",
+      "unusedFiles": [
+        {
+          "name": "app-settings.svg",
+          "path": "public/flat-icons/ui/Shadowing /app-settings.svg",
+          "sizeKB": "9.80"
+        },
+        {
+          "name": "setting-syncing.svg",
+          "path": "public/flat-icons/ui/Shadowing /setting-syncing.svg",
+          "sizeKB": "4.26"
+        },
+        {
+          "name": "diamond (2).svg",
+          "path": "public/flat-icons/ui/achievements/diamond (2).svg",
+          "sizeKB": "4.86"
+        },
+        {
+          "name": "gold-medal.svg",
+          "path": "public/flat-icons/ui/achievements/gold-medal.svg",
+          "sizeKB": "16.88"
+        },
+        {
+          "name": "target (1).svg",
+          "path": "public/flat-icons/ui/achievements/target (1).svg",
+          "sizeKB": "6.61"
+        },
+        {
+          "name": "facebook.svg",
+          "path": "public/flat-icons/ui/facebook.svg",
+          "sizeKB": "2.38"
+        },
+        {
+          "name": "flash-card.svg",
+          "path": "public/flat-icons/ui/flash-card.svg",
+          "sizeKB": "6.32"
+        },
+        {
+          "name": "kanji.svg",
+          "path": "public/flat-icons/ui/kanji.svg",
+          "sizeKB": "5.49"
+        },
+        {
+          "name": "account.svg",
+          "path": "public/flat-icons/ui/navbar/account.svg",
+          "sizeKB": "8.12"
+        },
+        {
+          "name": "books.svg",
+          "path": "public/flat-icons/ui/navbar/books.svg",
+          "sizeKB": "5.06"
+        },
+        {
+          "name": "dashboard.svg",
+          "path": "public/flat-icons/ui/navbar/dashboard.svg",
+          "sizeKB": "2.89"
+        },
+        {
+          "name": "game-console.svg",
+          "path": "public/flat-icons/ui/navbar/game-console.svg",
+          "sizeKB": "9.56"
+        },
+        {
+          "name": "home.svg",
+          "path": "public/flat-icons/ui/navbar/home.svg",
+          "sizeKB": "3.93"
+        },
+        {
+          "name": "practice.svg",
+          "path": "public/flat-icons/ui/navbar/practice.svg",
+          "sizeKB": "9.36"
+        },
+        {
+          "name": "robot.svg",
+          "path": "public/flat-icons/ui/robot.svg",
+          "sizeKB": "11.52"
+        },
+        {
+          "name": "youtube.svg",
+          "path": "public/flat-icons/ui/youtube.svg",
+          "sizeKB": "3.93"
+        }
+      ],
+      "usedFiles": []
+    }
+  ]
+}

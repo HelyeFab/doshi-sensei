@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import AnalyticsOverview from './AnalyticsOverview';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Analytics',

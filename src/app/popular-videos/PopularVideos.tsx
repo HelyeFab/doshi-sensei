@@ -49,7 +49,7 @@ interface PopularVideo {
 type TabType = 'popular' | 'history';
 type FilterType = 'all' | 'youtube' | 'audio' | 'video';
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 20; // Load 20 items at a time
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -102,78 +102,100 @@ export default function PopularVideos() {
     setIsLoading(false);
   };
   
+  // Store all aggregated videos for pagination
+  const [allAggregatedVideos, setAllAggregatedVideos] = useState<PopularVideo[]>([]);
+  const [isAggregating, setIsAggregating] = useState(false);
+
   const loadPopularVideos = async (isInitial = false) => {
     try {
       if (!isInitial) {
         setIsLoadingMore(true);
       }
 
-      // Query all practice history to aggregate by video
-      const practiceQuery = query(
-        collection(db, 'userPracticeHistory'),
-        where('contentType', contentFilter === 'all' ? 'in' : '==', 
-          contentFilter === 'all' ? ['youtube', 'audio', 'video'] : contentFilter)
-      );
-
-      const snapshot = await getDocs(practiceQuery);
-      
-      // Aggregate by videoId to count unique users
-      const videoAggregation = new Map<string, {
-        video: any;
-        userCount: number;
-        uniqueUsers: Set<string>;
-        totalPractices: number;
-      }>();
-
-      snapshot.docs.forEach(doc => {
-        const data = doc.data();
-        const videoId = data.videoId;
+      // First time: aggregate all videos
+      if (isInitial || allAggregatedVideos.length === 0) {
+        setIsAggregating(true);
         
-        if (!videoAggregation.has(videoId)) {
-          videoAggregation.set(videoId, {
-            video: data,
-            userCount: 0,
-            uniqueUsers: new Set(),
-            totalPractices: 0
-          });
-        }
-        
-        const agg = videoAggregation.get(videoId)!;
-        agg.uniqueUsers.add(data.userId);
-        agg.totalPractices += data.practiceCount || 1;
-        
-        // Keep the most recent version of video data
-        if (new Date(data.lastPracticed.toDate()) > new Date(agg.video.lastPracticed.toDate())) {
-          agg.video = data;
-        }
-      });
+        // Query all practice history to aggregate by video
+        const practiceQuery = query(
+          collection(db, 'userPracticeHistory'),
+          where('contentType', contentFilter === 'all' ? 'in' : '==', 
+            contentFilter === 'all' ? ['youtube', 'audio', 'video'] : contentFilter)
+        );
 
-      // Convert to array and sort by unique user count
-      const sortedVideos = Array.from(videoAggregation.values())
-        .map(agg => ({
-          ...agg.video,
-          id: agg.video.videoId,
-          accessCount: agg.uniqueUsers.size,
-          userCount: agg.uniqueUsers.size,
-          totalPractices: agg.totalPractices,
-          createdAt: agg.video.firstPracticed,
-          lastAccessed: agg.video.lastPracticed,
-          language: 'ja',
-          duration: agg.video.duration,
-          contentType: agg.video.contentType,
-          metadata: {
-            youtubeVideoId: agg.video.videoId,
-            channelName: agg.video.channelName || agg.video.metadata?.channelTitle,
-            thumbnailUrl: agg.video.thumbnailUrl
+        const snapshot = await getDocs(practiceQuery);
+        
+        // Aggregate by videoId to count unique users
+        const videoAggregation = new Map<string, {
+          video: any;
+          userCount: number;
+          uniqueUsers: Set<string>;
+          totalPractices: number;
+        }>();
+
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          const videoId = data.videoId;
+          
+          if (!videoAggregation.has(videoId)) {
+            videoAggregation.set(videoId, {
+              video: data,
+              userCount: 0,
+              uniqueUsers: new Set(),
+              totalPractices: 0
+            });
           }
-        } as PopularVideo))
-        .sort((a, b) => b.userCount - a.userCount)
-        .slice(0, ITEMS_PER_PAGE);
+          
+          const agg = videoAggregation.get(videoId)!;
+          agg.uniqueUsers.add(data.userId);
+          agg.totalPractices += data.practiceCount || 1;
+          
+          // Keep the most recent version of video data
+          if (new Date(data.lastPracticed.toDate()) > new Date(agg.video.lastPracticed.toDate())) {
+            agg.video = data;
+          }
+        });
 
-      setPopularVideos(sortedVideos);
-      
-      // Since we're loading all at once, disable pagination
-      setHasMorePopular(false);
+        // Convert to array and sort by unique user count
+        const sortedVideos = Array.from(videoAggregation.values())
+          .map(agg => ({
+            ...agg.video,
+            id: agg.video.videoId,
+            accessCount: agg.uniqueUsers.size,
+            userCount: agg.uniqueUsers.size,
+            totalPractices: agg.totalPractices,
+            createdAt: agg.video.firstPracticed,
+            lastAccessed: agg.video.lastPracticed,
+            language: 'ja',
+            duration: agg.video.duration,
+            contentType: agg.video.contentType,
+            metadata: {
+              youtubeVideoId: agg.video.videoId,
+              channelName: agg.video.channelName || agg.video.metadata?.channelTitle,
+              thumbnailUrl: agg.video.thumbnailUrl
+            }
+          } as PopularVideo))
+          .sort((a, b) => b.userCount - a.userCount);
+
+        setAllAggregatedVideos(sortedVideos);
+        setIsAggregating(false);
+        
+        // Load first page
+        const firstPage = sortedVideos.slice(0, ITEMS_PER_PAGE);
+        setPopularVideos(firstPage);
+        setHasMorePopular(sortedVideos.length > ITEMS_PER_PAGE);
+      } else {
+        // Load more: get next batch from allAggregatedVideos
+        const currentLength = popularVideos.length;
+        const nextBatch = allAggregatedVideos.slice(currentLength, currentLength + ITEMS_PER_PAGE);
+        
+        if (nextBatch.length > 0) {
+          setPopularVideos([...popularVideos, ...nextBatch]);
+          setHasMorePopular(currentLength + nextBatch.length < allAggregatedVideos.length);
+        } else {
+          setHasMorePopular(false);
+        }
+      }
 
     } catch (error) {
       console.error('Error loading popular videos:', error);
@@ -181,6 +203,7 @@ export default function PopularVideos() {
       if (!isInitial) {
         setIsLoadingMore(false);
       }
+      setIsAggregating(false);
     }
   };
   

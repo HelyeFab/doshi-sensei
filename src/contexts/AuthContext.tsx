@@ -112,6 +112,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
           console.warn('Failed to track session start:', error);
         }
+
+        // Initialize textbook vocabulary sync for premium users
+        try {
+          const { textbookVocabularySyncManager } = await import('@/services/textbook-vocabulary');
+          await textbookVocabularySyncManager.initializeSync();
+        } catch (error) {
+          console.warn('Failed to initialize textbook vocabulary sync:', error);
+        }
       }
 
       // Note: Session end tracking is now handled in the logout function
@@ -145,6 +153,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    // Force account selection even if user is already signed in to Google
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
     const result = await signInWithPopup(auth, provider);
 
     // Create/update user document in Firestore

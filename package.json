@@ -63,6 +63,7 @@
     "puppeteer": "^24.10.2",
     "puppeteer-core": "^24.10.2",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.0.0",
     "react-firebase-hooks": "^5.1.1",

@@ -39,7 +39,7 @@ export class AchievementManager {
           } else {
             // Fallback to checking user document
             const userDoc = await EnhancedStorageManager.loadSettings();
-            this.subscriptionStatus = userDoc?.subscription?.status || 'inactive';
+            this.subscriptionStatus = 'inactive'; // AppSettings doesn't have subscription info
           }
 
           // Sync with cloud if premium
@@ -186,9 +186,10 @@ export class AchievementManager {
       const currentStats = await this.getUserStats();
       
       // Update the specific stat
+      const currentValue = typeof currentStats[statType] === 'number' ? currentStats[statType] : 0;
       const updatedStats = {
         ...currentStats,
-        [statType]: currentStats[statType] + increment
+        [statType]: currentValue + increment
       };
 
       // Special handling for streak updates

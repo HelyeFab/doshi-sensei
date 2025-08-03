@@ -14,7 +14,7 @@ interface DisplayAchievement {
   icon: string;
   title: string;
   description: string;
-  progress: number;
+  progress: string | number;
   maxProgress: number;
   isUnlocked: boolean;
   rarity: string;

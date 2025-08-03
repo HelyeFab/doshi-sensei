@@ -6,12 +6,12 @@ import type { VocabularyItem } from '../types';
 interface VocabularyGridProps {
   vocabulary: VocabularyItem[];
   onStartStudy: (cards: VocabularyItem[]) => void;
+  onCardClick: (card: VocabularyItem) => void;
 }
 
-export function VocabularyGrid({ vocabulary, onStartStudy }: VocabularyGridProps) {
+export function VocabularyGrid({ vocabulary, onStartStudy, onCardClick }: VocabularyGridProps) {
   const handleCardClick = (item: VocabularyItem) => {
-    // Start study session with just this card for now
-    onStartStudy([item]);
+    onCardClick(item);
   };
 
   const handleStudyAll = () => {

@@ -5,7 +5,9 @@ import { TranscriptLine } from '../page';
 import { useStrings } from '@/contexts/LanguageContext';
 import SubtitleUploader from './SubtitleUploader';
 import { TranscriptCacheManager } from '@/utils/transcriptCache';
+import { UserEditedTranscriptsManager } from '@/utils/userEditedTranscripts';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
 
 interface TranscriptDisplayProps {
   videoUrl: string;
@@ -33,6 +35,7 @@ export default function TranscriptDisplay({
   const [showRetryHint, setShowRetryHint] = useState(false);
   const strings = useStrings();
   const { user } = useAuth();
+  const { isPremium } = useSubscription2();
 
   useEffect(() => {
     loadTranscript();
@@ -52,8 +55,76 @@ export default function TranscriptDisplay({
     
     window.addEventListener('error', handleError);
 
+    // Declare contentId at the top of the try block
+    let contentId: string = '';
+    
     try {
-      // For YouTube player mode, try to extract subtitles first
+      // Generate content ID for cache lookup FIRST
+      if (videoUrl && !fileInfo) {
+        // YouTube video
+        contentId = TranscriptCacheManager.generateContentId({
+          type: 'youtube',
+          videoUrl: videoUrl
+        });
+      } else if (fileInfo) {
+        // Generate content ID for uploaded files
+        contentId = TranscriptCacheManager.generateContentId({
+          type: fileInfo.type.startsWith('video/') ? 'video' : 'audio',
+          fileName: fileInfo.name,
+          fileSize: fileInfo.size
+        });
+      } else {
+        // Fallback
+        contentId = 'unknown_' + Date.now();
+      }
+      
+      console.log('Generated contentId:', contentId);
+      
+      // Always check cache first, regardless of mode
+      if (contentId && !contentId.startsWith('unknown_')) {
+        console.log('Checking cache for contentId:', contentId);
+        const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
+        
+        if (cachedTranscript && cachedTranscript.transcript.length > 0) {
+          console.log('Found cached transcript! Using it instead of extraction.');
+          console.log('Cache details:', {
+            contentId,
+            transcriptLength: cachedTranscript.transcript.length,
+            videoTitle: cachedTranscript.videoTitle,
+            accessCount: cachedTranscript.accessCount
+          });
+          setLoadingMessage('Found cached transcript!');
+          
+          // Check if user has edited this transcript
+          if (user && isPremium) {
+            const userEdited = await UserEditedTranscriptsManager.getUserEditedTranscript(
+              user.uid,
+              contentId
+            );
+            
+            if (userEdited) {
+              console.log('Using user-edited transcript!');
+              setStatus('completed');
+              onTranscriptLoaded(userEdited.transcript, userEdited.metadata?.videoTitle || cachedTranscript.videoTitle);
+              window.removeEventListener('error', handleError);
+              return;
+            }
+          }
+          
+          setStatus('completed');
+          onTranscriptLoaded(cachedTranscript.transcript, cachedTranscript.videoTitle, cachedTranscript.metadata);
+          window.removeEventListener('error', handleError);
+          return;
+        } else {
+          console.log('No cached transcript found or empty transcript', {
+            contentId,
+            cacheExists: !!cachedTranscript,
+            transcriptLength: cachedTranscript?.transcript?.length || 0
+          });
+        }
+      }
+      
+      // For YouTube player mode, try to extract subtitles if no cache
       if (audioUrl === 'youtube-player') {
         // Use local Next.js API route
         const response = await fetch('/api/youtube/extract', {
@@ -80,6 +151,21 @@ export default function TranscriptDisplay({
               if (data.videoMetadata) {
                 console.log('Video metadata:', data.videoMetadata);
               }
+              
+              // Save to cache for future use
+              console.log('Saving extracted transcript to cache...');
+              await TranscriptCacheManager.saveTranscriptToCache({
+                contentId,
+                contentType: 'youtube',
+                videoUrl: videoUrl,
+                videoTitle: data.videoTitle || 'Untitled',
+                transcript: data.transcript,
+                language: data.language || 'ja',
+                duration: data.duration,
+                userId: user?.uid,
+                metadata: data.videoMetadata
+              });
+              
               setStatus('completed');
               onTranscriptLoaded(data.transcript, data.videoTitle, data.videoMetadata);
               return;
@@ -141,39 +227,8 @@ export default function TranscriptDisplay({
         return;
       }
       
-      // First, check if we have a cached transcript
+      // If not YouTube mode or no cached transcript found, check for uploaded files
       setLoadingMessage('Checking for cached transcript...');
-      
-      // Generate content ID for cache lookup
-      let contentId: string;
-      if (videoUrl && !fileInfo) {
-        // YouTube video
-        contentId = TranscriptCacheManager.generateContentId({
-          type: 'youtube',
-          videoUrl: videoUrl
-        });
-      } else if (fileInfo) {
-        // Uploaded file
-        contentId = TranscriptCacheManager.generateContentId({
-          type: fileInfo.type.startsWith('video/') ? 'video' : 'audio',
-          fileName: fileInfo.name,
-          fileSize: fileInfo.size
-        });
-      } else {
-        // Fallback
-        contentId = 'unknown_' + Date.now();
-      }
-
-      // Try to get cached transcript
-      const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
-      
-      if (cachedTranscript && cachedTranscript.transcript.length > 0) {
-        console.log('Using cached transcript!');
-        setLoadingMessage('Found cached transcript!');
-        setStatus('completed');
-        onTranscriptLoaded(cachedTranscript.transcript, cachedTranscript.videoTitle);
-        return;
-      }
 
       // No cache hit, proceed with transcription
       setLoadingMessage('Generating new transcript...');

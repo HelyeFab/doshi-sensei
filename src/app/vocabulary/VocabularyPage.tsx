@@ -70,6 +70,13 @@ const vocabularyFAQData = {
   ]
 };
 
+// Helper to map UserType to the expected type for SearchHistoryManager2
+const mapUserType = (type: string): 'guest' | 'free' | 'premium' | 'premium_yearly' => {
+  if (type === 'monthly') return 'premium';
+  if (type === 'yearly') return 'premium_yearly';
+  return type as 'guest' | 'free';
+};
+
 export default function VocabularyPage() {
   const { user } = useAuth();
   const { subscription, userType } = useSubscription2();
@@ -135,7 +142,7 @@ export default function VocabularyPage() {
   useEffect(() => {
     loadSearchHistory();
     // Migrate old history on first load
-    SearchHistoryManager2.migrateFromOldHistory(user, userType);
+    SearchHistoryManager2.migrateFromOldHistory(user, mapUserType(userType));
   }, [user, userType]);
 
   // Reload search history when user changes
@@ -145,10 +152,12 @@ export default function VocabularyPage() {
 
   const loadSearchHistory = async () => {
     try {
-      const history = await SearchHistoryManager2.getSearchHistory(user, userType);
-      setSearchHistory(history);
+      const history = await SearchHistoryManager2.getSearchHistory(user, mapUserType(userType));
+      // Ensure history is always an array
+      setSearchHistory(Array.isArray(history) ? history : []);
     } catch (err) {
       console.error('Error loading search history:', err);
+      setSearchHistory([]); // Set empty array on error
     }
   };
 
@@ -188,7 +197,7 @@ export default function VocabularyPage() {
       setShowSearchResults(true);
 
       // Save to search history
-      await SearchHistoryManager2.addSearchEntry(term, searchResults, user, userType, searchSource);
+      await SearchHistoryManager2.addSearchEntry(term, searchResults, user, mapUserType(userType), searchSource);
       await loadSearchHistory(); // Reload history to show the new entry
 
       // Track vocabulary search analytics
@@ -329,7 +338,7 @@ export default function VocabularyPage() {
 
   const handleDeleteSearchEntry = async (entryId: string) => {
     try {
-      await SearchHistoryManager2.deleteSearchEntry(entryId, user, userType);
+      await SearchHistoryManager2.deleteSearchEntry(entryId, user, mapUserType(userType));
       await loadSearchHistory();
     } catch (error) {
       console.error('Error deleting search entry:', error);
@@ -339,7 +348,7 @@ export default function VocabularyPage() {
   const handleClearSearchHistory = async () => {
     if (confirm('Are you sure you want to clear all search history?')) {
       try {
-        await SearchHistoryManager2.clearSearchHistory(user, userType);
+        await SearchHistoryManager2.clearSearchHistory(user, mapUserType(userType));
         setSearchHistory([]);
       } catch (error) {
         console.error('Error clearing search history:', error);
@@ -539,7 +548,7 @@ export default function VocabularyPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {searchHistory.map((entry) => (
+                  {Array.isArray(searchHistory) && searchHistory.map((entry) => (
                     <div
                       key={entry.id}
                       className="bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer group"

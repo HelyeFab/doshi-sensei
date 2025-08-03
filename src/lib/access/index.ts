@@ -140,7 +140,9 @@ export class AccessControl {
       'textbook_vocabulary': 'textbook_vocabulary',
       'kana_study': 'do_drills',
       'kanji_mastery': 'learn_kanji',
-      'leaderboard': 'view_leaderboard'
+      'leaderboard': 'view_leaderboard',
+      'share_app': 'share_content',
+      'referral_rewards': 'earn_rewards'
     };
     
     const permission = permissionMap[featureId];

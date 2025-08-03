@@ -28,56 +28,56 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
     label: strings.nav.drill,
     icon: '⚡', // Fallback icon
     href: '/drill',
-    description: strings.nav.drillDescription || 'Drill mode'
+    description: 'Practice Japanese conjugations with quick drills'
   },
   {
     id: 'kanji-moods',
     label: strings.nav.kanjiMoods,
     icon: '🎭', // Fallback icon
     href: '/kanji-moods',
-    description: strings.nav.kanjiMoodsDescription || 'Kanji Moods'
+    description: 'Learn kanji through thematic mood boards'
   },
   {
     id: 'resources',
     label: strings.nav.resources,
     icon: '📚', // Fallback icon
     href: '/resources',
-    description: strings.nav.resourcesDescription || 'Resources'
+    description: 'Learning resources and study materials'
   },
   {
     id: 'vocabulary',
-    label: strings.nav.vocabulary,
+    label: strings.nav.vocab,
     icon: '📝', // Fallback icon
     href: '/vocabulary',
-    description: strings.nav.vocabularyDescription || 'Vocabulary'
+    description: 'Browse and search Japanese vocabulary'
   },
   {
     id: 'practice',
     label: strings.nav.practice,
     icon: '💪', // Fallback icon
     href: '/practice',
-    description: strings.nav.practiceDescription || 'Practice'
+    description: 'Practice conjugations and grammar'
   },
   {
     id: 'news',
     label: strings.nav.news,
     icon: '📰', // Fallback icon
     href: '/news',
-    description: strings.nav.newsDescription || 'News'
+    description: 'Read Japanese news articles'
   },
   {
     id: 'stories',
     label: strings.nav.stories,
     icon: '📖', // Fallback icon
     href: '/stories',
-    description: strings.nav.storiesDescription || 'Stories'
+    description: 'Read AI-generated Japanese stories'
   },
   {
     id: 'games',
     label: strings.nav.games,
     icon: '🎮', // Fallback icon
     href: '/games',
-    description: strings.nav.gamesDescription || 'Games'
+    description: 'Learn Japanese through fun games'
   },
   {
     id: 'kanji-mastery',
@@ -119,14 +119,14 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
     label: strings.nav.account,
     icon: '👤', // Fallback icon
     href: '/account',
-    description: strings.nav.accountDescription || 'Account'
+    description: 'Manage your account and subscription'
   },
   {
     id: 'settings',
     label: strings.nav.settings,
     icon: '⚙️', // Fallback icon
     href: '/settings',
-    description: strings.nav.settingsDescription || 'Settings'
+    description: 'Customize your app preferences'
   }
 ];
 
@@ -138,7 +138,7 @@ export const HOME_NAV_ITEM: NavItem = {
   label: strings.nav.home,
   icon: '🏠', // Fallback icon
   href: '/',
-  description: strings.nav.homeDescription || 'Home'
+  description: 'Return to the home screen'
 };
 
 /**

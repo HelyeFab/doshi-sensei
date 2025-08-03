@@ -332,17 +332,17 @@ class AudioCacheManager {
   /**
    * Load specific item from localStorage
    */
-  private loadFromStorageByKey(key: string): CachedAudio | null {
+  private loadFromStorageByKey(key: string): CachedAudio | undefined {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (stored) {
         const data = JSON.parse(stored);
-        return data[key] || null;
+        return data[key] || undefined;
       }
     } catch {
       // Ignore errors
     }
-    return null;
+    return undefined;
   }
 
   /**

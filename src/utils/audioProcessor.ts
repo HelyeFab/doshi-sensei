@@ -85,7 +85,7 @@ export const processVideoAudio = async (
     ]);
 
     const audioData = await ff.readFile(outputFileName);
-    const audioBlob = new Blob([audioData], { type: 'audio/mp3' });
+    const audioBlob = new Blob([audioData as Uint8Array], { type: 'audio/mp3' });
     
     onProgress?.({ stage: 'processing', progress: 1, percent: 100 });
     
@@ -128,7 +128,7 @@ export const createAudioChunks = async (
       
       try {
         const chunkData = await ff.readFile(outputFileName);
-        chunks.push(new Blob([chunkData], { type: 'audio/mp3' }));
+        chunks.push(new Blob([chunkData as Uint8Array], { type: 'audio/mp3' }));
       } catch (error) {
         // No more chunks
         break;

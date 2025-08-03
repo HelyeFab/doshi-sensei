@@ -197,7 +197,7 @@ export class ArticleManager {
       const bookmarkDoc = await addDoc(bookmarksRef, {
         ...bookmark,
         bookmarkedAt: Timestamp.fromDate(bookmark.bookmarkedAt),
-        lastReadAt: Timestamp.fromDate(bookmark.lastReadAt),
+        lastReadAt: bookmark.lastReadAt ? Timestamp.fromDate(bookmark.lastReadAt) : null,
         updatedAt: Timestamp.fromDate(bookmark.updatedAt)
       });
 

@@ -85,7 +85,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         youtube_shadowing: 5, // 5 YouTube shadowing sessions per day for free users
         ai_context_explanation: 3,
         textbook_vocabulary: 50,
-        word_learning_session: 1, // 1 learning session per day for free users
+        word_learning_session: 5, // 5 learning sessions per day for free users
         kanji_mastery: 10, // 10 kanji per day for free users
         share_app: 10 // 10 shares per day for free users
       },

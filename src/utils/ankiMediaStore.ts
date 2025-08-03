@@ -31,19 +31,13 @@ export class AnkiMediaStore {
   
   /**
    * Store media blob in IndexedDB
+   * NOTE: Anki media storage is temporarily disabled per documentation
    */
   async storeMedia(filename: string, blob: Blob): Promise<string> {
     try {
-      // Store in IndexedDB
-      const media: StoredMedia = {
-        id: filename,
-        blob: blob,
-        type: blob.type,
-        size: blob.size,
-        createdAt: new Date()
-      };
-      
-      await this.dbManager.put('ankiMedia', media);
+      // TODO: Implement proper media storage when re-enabled
+      // For now, just return object URL without persisting
+      console.warn('Anki media storage is temporarily disabled');
       
       // Create and cache blob URL
       const blobUrl = URL.createObjectURL(blob);
@@ -51,9 +45,8 @@ export class AnkiMediaStore {
       
       return blobUrl;
     } catch (error) {
-      console.error('Failed to store media:', error);
-      // Return object URL even if storage fails
-      return URL.createObjectURL(blob);
+      console.error('Failed to create blob URL:', error);
+      throw error;
     }
   }
   
@@ -66,18 +59,8 @@ export class AnkiMediaStore {
       return this.blobUrlCache.get(filename)!;
     }
     
-    try {
-      // Load from IndexedDB
-      const media = await this.dbManager.get('ankiMedia', filename);
-      if (media && media.blob) {
-        const blobUrl = URL.createObjectURL(media.blob);
-        this.blobUrlCache.set(filename, blobUrl);
-        return blobUrl;
-      }
-    } catch (error) {
-      console.error('Failed to retrieve media:', error);
-    }
-    
+    // TODO: Implement retrieval when storage is re-enabled
+    console.warn('Anki media retrieval is temporarily disabled');
     return null;
   }
   
@@ -113,31 +96,13 @@ export class AnkiMediaStore {
     totalSize: number;
     fileTypes: Map<string, number>;
   }> {
-    try {
-      const allMedia = await this.dbManager.getAll('ankiMedia');
-      
-      const stats = {
-        totalFiles: allMedia.length,
-        totalSize: 0,
-        fileTypes: new Map<string, number>()
-      };
-      
-      for (const media of allMedia) {
-        stats.totalSize += media.size;
-        
-        const type = media.type.split('/')[0] || 'unknown';
-        stats.fileTypes.set(type, (stats.fileTypes.get(type) || 0) + 1);
-      }
-      
-      return stats;
-    } catch (error) {
-      console.error('Failed to get media stats:', error);
-      return {
-        totalFiles: 0,
-        totalSize: 0,
-        fileTypes: new Map()
-      };
-    }
+    // Only return cache stats for now
+    console.warn('Anki media stats are limited to cache only (storage temporarily disabled)');
+    return {
+      totalFiles: this.blobUrlCache.size,
+      totalSize: 0, // Can't determine size from blob URLs
+      fileTypes: new Map()
+    };
   }
   
   /**
@@ -152,12 +117,11 @@ export class AnkiMediaStore {
           URL.revokeObjectURL(cachedUrl);
           this.blobUrlCache.delete(filename);
         }
-        
-        // Remove from IndexedDB
-        await this.dbManager.delete('ankiMedia', filename);
       }
       
-      console.log(`Deleted ${filenames.length} media files from storage`);
+      // TODO: Remove from storage when re-enabled
+      console.warn('Anki media deletion is limited to cache only (storage temporarily disabled)');
+      console.log(`Removed ${filenames.length} media files from cache`);
     } catch (error) {
       console.error('Failed to delete media:', error);
     }
@@ -171,10 +135,9 @@ export class AnkiMediaStore {
       // Revoke all cached URLs
       this.cleanup();
       
-      // Clear IndexedDB store
-      await this.dbManager.clear('ankiMedia');
-      
-      console.log('Deleted all media files from storage');
+      // TODO: Clear from storage when re-enabled
+      console.warn('Anki media clearing is limited to cache only (storage temporarily disabled)');
+      console.log('Cleared all media files from cache');
     } catch (error) {
       console.error('Failed to delete all media:', error);
     }

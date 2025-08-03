@@ -147,17 +147,26 @@ Branch: `fix/typescript-errors`
 - [x] `kanjiSearch.ts` - Added KanjiItem import
 - [x] `sql.js.d.ts` - Created type declaration file
 - [x] `imageStorage.ts` - Fixed Firebase import
-- [x] `tts.ts` - Resolved duplicate function
+- [x] `tts.ts` - Resolved duplicate function and fixed playbackSpeed references (MEDIUM RISK)
 - [x] `stats.ts` - Added StatsDebugger import
 - [x] `ankiImporter.ts` - Fixed error handling for unknown types (HIGH RISK)
 - [x] `largeDataStorage.ts` - No errors found (HIGH RISK)
 - [x] `ttsFirebaseCache.ts` - No errors found (HIGH RISK)
 - [x] `articleTTS.ts` - Fixed undefined blob handling (HIGH RISK)
+- [x] `kanjiManager.ts` - No errors found (MEDIUM RISK)
+- [x] `ankiMediaStore.ts` - Disabled storage operations per documentation (LOW RISK)
+- [x] `audioCache.ts` - Changed null returns to undefined (LOW RISK)
+- [x] `audioProcessor.ts` - Cast FileData to Uint8Array (LOW RISK)
+- [x] `articleManager.ts` - Handle optional lastReadAt field (LOW RISK)
 
 ### Pending Fixes
 - [x] High Risk (4 files) ✅ COMPLETED
-- [ ] Medium Risk (4 files)
-- [ ] Low Risk (25 files)
+- [x] Medium Risk (4 files) ✅ COMPLETED
+- [ ] Low Risk (21 files remaining)
+
+### Progress Summary
+- Total errors reduced from 887 to 876 (11 fixed)
+- Files fixed: 14/33 (42%)
 
 ## 🔧 Common Fix Patterns
 

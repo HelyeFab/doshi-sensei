@@ -278,7 +278,7 @@ export class TTSManager {
       // If we have audio from either provider, play it
       if (audioBlob) {
         const audio = new Audio(URL.createObjectURL(audioBlob));
-        audio.playbackRate = playbackSpeed;
+        audio.playbackRate = speed;
         
         // Store reference to current audio
         this.currentAudio = audio;
@@ -310,12 +310,12 @@ export class TTSManager {
       } else {
         // Final fallback to Web Speech API
         console.log('🎤 Using Web Speech API as final fallback...');
-        await this.fallbackToWebSpeech(text, playbackSpeed);
+        await this.fallbackToWebSpeech(text, speed);
       }
     } catch (error) {
       console.error('❌ TTS speak error:', error);
       // Last resort: try Web Speech API
-      await this.fallbackToWebSpeech(text, playbackSpeed);
+      await this.fallbackToWebSpeech(text, speed);
     }
   }
 
@@ -606,19 +606,6 @@ export class TTSManager {
     }
   }
 
-  /**
-   * Get cached audio for an article
-   */
-  static async getArticleAudio(articleId: string) {
-    return await this.cache.getArticleAudio(articleId);
-  }
-
-  /**
-   * Remove cached audio for an article
-   */
-  static async removeArticleAudio(articleId: string): Promise<void> {
-    await this.cache.removeArticleAudio(articleId);
-  }
 
   /**
    * Get TTS cache statistics

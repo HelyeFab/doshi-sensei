@@ -1,17 +1,29 @@
 import { Metadata } from 'next';
 import WordLearningSessionClient from './WordLearningSessionClient';
-import { generatePageMetadata } from '@/lib/structured-data';
+import WordLearningSessionStructuredData from './StructuredData';
+import { generatePageMetadata } from '@/utils/seo';
 
-export const metadata: Metadata = {
-  title: 'Word Learning Session | Doshi Sensei',
-  description: 'Multimodal session for learning new Japanese words with audio-visual matching and active recall',
-  openGraph: {
-    title: 'Word Learning Session | Doshi Sensei',
-    description: 'Learn Japanese vocabulary through interactive multimodal sessions',
-  },
-  ...generatePageMetadata('/tools/word-learning-session', true),
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Word Learning Session - Multimodal Japanese Vocabulary Learning',
+  description: 'Learn Japanese vocabulary through interactive multimodal sessions with audio-visual matching, context sentences, and active recall drills.',
+  keywords: [
+    'Japanese vocabulary',
+    'word learning',
+    'multimodal learning',
+    'active recall',
+    'Genki vocabulary',
+    'Japanese audio',
+    'vocabulary practice'
+  ],
+  path: '/tools/word-learning-session',
+  image: '/og-images/og-tools.png'
+});
 
 export default function WordLearningSessionPage() {
-  return <WordLearningSessionClient />;
+  return (
+    <>
+      <WordLearningSessionStructuredData />
+      <WordLearningSessionClient />
+    </>
+  );
 }

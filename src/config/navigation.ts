@@ -94,6 +94,13 @@ export const AVAILABLE_NAV_ITEMS: NavItem[] = [
     description: 'View top learners and rankings'
   },
   {
+    id: 'word-learning-session',
+    label: 'Word Learning',
+    icon: '🧠', // Fallback icon
+    href: '/tools/word-learning-session',
+    description: 'Learn new words with multimodal sessions'
+  },
+  {
     id: 'friends',
     label: 'Friends',
     icon: '👥', // Fallback icon

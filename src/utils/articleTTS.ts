@@ -82,8 +82,10 @@ export class ArticleTTSManager {
           const cached = await EnhancedStorageManager2.getCachedResource('audio', cacheKey);
           if (cached && cached.assets?.audio?.get('main')) {
             const blob = cached.assets.audio.get('main');
-            const blobUrl = URL.createObjectURL(blob);
-            return blobUrl;
+            if (blob) {
+              const blobUrl = URL.createObjectURL(blob);
+              return blobUrl;
+            }
           }
         }
       } catch (cacheError) {

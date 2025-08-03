@@ -172,7 +172,8 @@ export class AnkiImporter {
       };
     } catch (error) {
       console.error('Error parsing Anki package:', error);
-      throw new Error(`Failed to parse Anki package: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to parse Anki package: ${errorMessage}`);
     }
   }
 
@@ -484,7 +485,9 @@ export class AnkiImporter {
       
       // Update list metadata
       createdList.metadata = list.metadata;
-      await StudyListManager.updateListMetadata(createdList.id, createdList.metadata);
+      if (createdList.metadata) {
+        await StudyListManager.updateListMetadata(createdList.id, createdList.metadata);
+      }
       
       if (onProgress) onProgress(100, 'Import complete!');
       
@@ -496,9 +499,10 @@ export class AnkiImporter {
       };
     } catch (error) {
       console.error('Import failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       return {
         success: false,
-        error: error.message || 'Unknown error occurred'
+        error: errorMessage
       };
     }
   }

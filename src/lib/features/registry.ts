@@ -178,6 +178,18 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
   
+  'word_learning_session': {
+    id: 'word_learning_session',
+    name: 'Word Learning Session',
+    description: 'Multimodal session for learning new words with audio-visual matching and active recall',
+    category: 'learning',
+    icon: '🧠',
+    limitType: 'daily',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active'
+  },
+  
   'kanji_stroke_order': {
     id: 'kanji_stroke_order',
     name: 'Kanji Stroke Order',

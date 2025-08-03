@@ -94,6 +94,7 @@ export async function GET() {
           'ai_context_explanation': 'ai_explanations',
           'anki_import': 'anki_import',
           'anki_set_creation': 'anki_set_creation',
+          'word_learning_session': 'do_learning_sessions',
           'kanji_mastery': 'learn_kanji',
           'leaderboard': 'view_leaderboard'
         };

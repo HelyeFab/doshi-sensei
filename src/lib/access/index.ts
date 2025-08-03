@@ -138,6 +138,7 @@ export class AccessControl {
       'flashcard_review': 'do_drills',
       'ai_context_explanation': 'ai_explanations',
       'textbook_vocabulary': 'textbook_vocabulary',
+      'word_learning_session': 'do_learning_sessions',
       'kana_study': 'do_drills',
       'kanji_mastery': 'learn_kanji',
       'leaderboard': 'view_leaderboard',

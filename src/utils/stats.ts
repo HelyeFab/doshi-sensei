@@ -1,6 +1,7 @@
 import { User } from 'firebase/auth';
 import CloudSync from './cloudSync';
 import { safeNavigator } from './browserCheck';
+import { StatsDebugger } from './debugHelpers';
 
 export interface UserStats {
   drillsCompleted: number;

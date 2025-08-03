@@ -105,7 +105,7 @@ export default function BroadcastNotificationForm() {
           >
             <option value="all">All Users</option>
             <option value="active">Active Users (last 7 days)</option>
-            <option value="inactive">Inactive Users (>7 days)</option>
+            <option value="inactive">Inactive Users</option>
             <option value="premium">Premium Users Only</option>
             <option value="free">Free Users Only</option>
           </select>

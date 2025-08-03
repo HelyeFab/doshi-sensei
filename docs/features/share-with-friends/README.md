@@ -68,10 +68,10 @@ const handleShareApp = () => {
 - Rich media previews
 
 ### 3. Incentive Program
-- 7 days premium for referrer
-- 3 days premium for new user
 - Achievement badges for sharing milestones
 - Leaderboard for top referrers
+- Community recognition
+- Special badges for active sharers
 
 ### 4. Share Moments
 - Share achievements unlocked
@@ -88,16 +88,16 @@ const handleShareApp = () => {
 ## User Benefits
 
 ### For Referrers
-- **Premium Access**: Earn free premium days
 - **Achievements**: Unlock exclusive badges
 - **Recognition**: Appear on referrer leaderboard
 - **Impact**: Help friends learn Japanese
+- **Community**: Build a learning network
 
 ### For New Users
-- **Welcome Bonus**: Start with premium features
 - **Guided Onboarding**: Personalized based on referral
 - **Community**: Join through trusted recommendation
 - **Motivation**: Learn alongside friends
+- **Support**: Get help from the friend who referred you
 
 ## Technical Stack
 

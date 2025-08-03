@@ -11,7 +11,14 @@ export type ShareMethod =
   | 'telegram' 
   | 'email' 
   | 'qr'
-  | 'linkedin';
+  | 'linkedin'
+  | 'discord'
+  | 'instagram'
+  | 'snapchat'
+  | 'wechat'
+  | 'line'
+  | 'sms'
+  | 'copy';
 
 export type ShareTemplateType = 
   | 'general' 
@@ -95,16 +102,6 @@ export interface ReferralConversion {
   referrerId: string;
   referredUserId: string;
   convertedAt: Date;
-  rewardsDistributed: {
-    referrer: boolean;
-    referred: boolean;
-  };
-  rewards: {
-    referrerDays: number;
-    referredDays: number;
-    referrerPoints?: number;
-    referredPoints?: number;
-  };
   metadata?: {
     signupMethod?: string;
     device?: string;

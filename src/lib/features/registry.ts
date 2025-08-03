@@ -484,10 +484,10 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
   'share_app': {
     id: 'share_app',
     name: 'Share App',
-    description: 'Share Doshi Sensei with friends and earn rewards',
+    description: 'Share Doshi Sensei with friends',
     category: 'system',
     icon: '🔗',
-    limitType: 'daily',
+    limitType: 'none',
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active'

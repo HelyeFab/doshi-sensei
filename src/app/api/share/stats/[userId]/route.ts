@@ -4,8 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { ReferralService } from '@/services/sharing/ReferralService';
-import { auth } from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
+import { UserShareStats } from '@/types/sharing';
 
 export async function GET(
   request: NextRequest,
@@ -26,7 +26,8 @@ export async function GET(
     let requestingUserId: string;
     
     try {
-      const decodedToken = await auth.verifyIdToken(token);
+      const admin = await getFirebaseAdmin();
+      const decodedToken = await admin.auth().verifyIdToken(token);
       requestingUserId = decodedToken.uid;
     } catch (error) {
       return NextResponse.json(
@@ -44,22 +45,57 @@ export async function GET(
       );
     }
     
-    // Get user stats
-    const referralService = ReferralService.getInstance();
-    const stats = await referralService.getUserReferralStats(params.userId);
+    // Get user stats from Firestore
+    const admin = await getFirebaseAdmin();
+    const firestore = admin.firestore();
     
-    // Calculate additional metrics
-    const topPlatform = Object.entries(stats.sharesByMethod)
+    // Get share events
+    const shareEventsRef = firestore.collection('shareEvents');
+    const shareEventsQuery = await shareEventsRef
+      .where('userId', '==', params.userId)
+      .get();
+    
+    // Get conversions
+    const conversionsRef = firestore.collection('referralConversions');
+    const conversionsQuery = await conversionsRef
+      .where('referrerId', '==', params.userId)
+      .get();
+    
+    // Calculate stats
+    const totalShares = shareEventsQuery.size;
+    const totalConversions = conversionsQuery.size;
+    const conversionRate = totalShares > 0 ? totalConversions / totalShares : 0;
+    
+    // Aggregate share methods
+    const sharesByMethod: Record<string, number> = {};
+    const sharesByContent: Record<string, number> = {};
+    let successfulShares = 0;
+    
+    shareEventsQuery.forEach(doc => {
+      const data = doc.data();
+      if (data.method) {
+        sharesByMethod[data.method] = (sharesByMethod[data.method] || 0) + 1;
+      }
+      if (data.success) {
+        successfulShares++;
+      }
+      if (data.content?.type) {
+        sharesByContent[data.content.type] = (sharesByContent[data.content.type] || 0) + 1;
+      }
+    });
+    
+    const topPlatform = Object.entries(sharesByMethod)
       .sort(([, a], [, b]) => b - a)[0]?.[0] || 'none';
     
     return NextResponse.json({
-      totalShares: stats.totalShares,
-      sharesByMethod: stats.sharesByMethod,
-      conversions: stats.totalConversions,
-      conversionRate: stats.conversionRate,
-      rewardsEarned: stats.rewardsEarned.premiumDays,
+      totalShares,
+      successfulShares,
+      sharesByMethod,
+      sharesByContent,
+      conversions: totalConversions,
+      conversionRate,
       topPlatform,
-      lastShareDate: stats.lastUpdated?.toISOString()
+      lastShareDate: new Date().toISOString()
     });
   } catch (error) {
     console.error('Get share stats error:', error);

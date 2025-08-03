@@ -970,10 +970,14 @@ service cloud.firestore {
       allow read: if request.auth != null &&
         (resource.data.userId == request.auth.uid || isAdmin());
       
-      // Users can create share events for themselves
-      allow create: if request.auth != null &&
-        request.resource.data.userId == request.auth.uid &&
-        request.resource.data.keys().hasAll(['userId', 'timestamp', 'method', 'content', 'result']);
+      // Allow creating share events - both authenticated and anonymous users can share
+      allow create: if 
+        // For authenticated users, userId must match
+        (request.auth != null && request.resource.data.userId == request.auth.uid &&
+         request.resource.data.keys().hasAll(['userId', 'timestamp', 'method', 'content', 'result'])) ||
+        // For anonymous shares, allow without userId
+        (request.auth == null && !('userId' in request.resource.data) &&
+         request.resource.data.keys().hasAll(['timestamp', 'method', 'content', 'result']));
       
       // No updates allowed (immutable)
       allow update: if false;

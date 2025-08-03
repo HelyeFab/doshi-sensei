@@ -422,7 +422,7 @@ export class TTSManager {
   /**
    * Fallback to Web Speech API (browser built-in TTS)
    */
-  private static fallbackToWebSpeech(text: string): Promise<void> {
+  private static fallbackToWebSpeech(text: string, speed: number = 1.0): Promise<void> {
     return new Promise((resolve, reject) => {
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         // Cancel any ongoing speech
@@ -430,7 +430,7 @@ export class TTSManager {
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'ja-JP';
-        utterance.rate = 0.8;
+        utterance.rate = speed * 0.8;
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
 
@@ -632,49 +632,6 @@ export class TTSManager {
    */
   static async clearCache(): Promise<void> {
     await this.cache.clearCache();
-  }
-
-  /**
-   * Add fallback method for Web Speech API
-   */
-  private static async fallbackToWebSpeech(text: string, speed: number = 1.0): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        // Cancel any ongoing speech
-        speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ja-JP';
-        utterance.rate = speed * 0.8;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-
-        // Try to find a Japanese voice
-        const voices = speechSynthesis.getVoices();
-        const japaneseVoice = voices.find(voice =>
-          voice.lang.startsWith('ja') || voice.lang.includes('JP')
-        );
-
-        if (japaneseVoice) {
-          utterance.voice = japaneseVoice;
-        }
-
-        // Handle speech events
-        utterance.onend = () => {
-          resolve();
-        };
-
-        utterance.onerror = (event) => {
-          console.error('❌ Web Speech TTS error:', event.error);
-          reject(new Error(`Speech synthesis failed: ${event.error}`));
-        };
-
-        // Start speaking
-        speechSynthesis.speak(utterance);
-      } else {
-        reject(new Error('Speech synthesis not supported'));
-      }
-    });
   }
 }
 

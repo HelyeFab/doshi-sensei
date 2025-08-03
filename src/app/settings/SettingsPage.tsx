@@ -19,6 +19,7 @@ import { CacheCleaner } from '@/utils/cacheCleaner';
 import { useNotifications } from '@/contexts/NotificationServiceContext';
 import NotificationPermissionCard from '@/components/notifications/NotificationPermissionCard';
 import { NotificationPreferences } from '@/components/notifications/NotificationPreferences';
+import { ShareModal } from '@/components/sharing';
 
 export default function SettingsPage() {
   const strings = useStrings();
@@ -44,6 +45,7 @@ export default function SettingsPage() {
   const [showCacheModal, setShowCacheModal] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState(false);
   const [cacheStats, setCacheStats] = useState<any>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [syncModal, setSyncModal] = useState<{
     show: boolean;
     type: 'success' | 'error';
@@ -261,22 +263,7 @@ export default function SettingsPage() {
   };
 
   const handleShareApp = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Doshi Sensei - Japanese Conjugation Practice',
-        text: 'Check out this amazing app for learning Japanese verb and adjective conjugations!',
-        url: window.location.origin
-      });
-    } else {
-      const shareText = `Check out Doshi Sensei - an amazing app for learning Japanese conjugations! ${window.location.origin}`;
-      navigator.clipboard.writeText(shareText);
-      setSyncModal({
-        show: true,
-        type: 'success',
-        title: 'Share Link Copied',
-        message: 'Share link has been copied to your clipboard!'
-      });
-    }
+    setShowShareModal(true);
   };
 
   const handleAcknowledgments = () => {
@@ -858,6 +845,13 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Share Modal */}
+        <ShareModal 
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          contentType="app"
+        />
       </div>
     </div>
   );

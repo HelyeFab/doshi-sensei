@@ -16,6 +16,11 @@ export class SubscriptionManager {
    * Get subscription for a user
    */
   async getSubscription(userId: string): Promise<Subscription | null> {
+    // Skip during SSR/build time
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    
     // Check cache first
     if (this.subscriptionCache.has(userId)) {
       return this.subscriptionCache.get(userId)!;

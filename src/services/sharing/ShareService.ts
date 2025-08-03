@@ -31,9 +31,14 @@ export class ShareService {
         success = await this.fallbackShare(content, method);
       }
       
-      // Track share event
+      // Track share event only for authenticated users
       if (userId) {
-        await this.trackShare(userId, method, content, success);
+        try {
+          await this.trackShare(userId, method, content, success);
+        } catch (trackError) {
+          // Silently fail tracking - sharing should still work
+          console.warn('Failed to track share event:', trackError);
+        }
       }
       
       return {
@@ -97,6 +102,20 @@ export class ShareService {
         return this.shareToLinkedIn(content);
       case 'email':
         return this.shareViaEmail(content);
+      case 'discord':
+        return this.shareToDiscord(content);
+      case 'instagram':
+        return this.shareToInstagram(content);
+      case 'snapchat':
+        return this.shareToSnapchat(content);
+      case 'wechat':
+        return this.shareToWeChat(content);
+      case 'line':
+        return this.shareToLine(content);
+      case 'sms':
+        return this.shareViaSMS(content);
+      case 'copy':
+        return this.copyToClipboard(content);
       default:
         return false;
     }
@@ -188,6 +207,75 @@ export class ShareService {
   }
   
   /**
+   * Share to Discord
+   */
+  private shareToDiscord(content: ShareContent): boolean {
+    // Discord doesn't have a direct share URL, so we copy to clipboard
+    // and show a message to paste in Discord
+    const text = `${content.text}\n\n${content.url}`;
+    navigator.clipboard.writeText(text);
+    alert('Link copied! Paste it in your Discord channel.');
+    return true;
+  }
+  
+  /**
+   * Share to Instagram
+   */
+  private shareToInstagram(content: ShareContent): boolean {
+    // Instagram doesn't support direct URL sharing from web
+    // Copy to clipboard for Stories/DMs
+    navigator.clipboard.writeText(content.url);
+    alert('Link copied! You can paste it in Instagram Stories or Direct Messages.');
+    // Open Instagram
+    window.open('https://www.instagram.com/', '_blank');
+    return true;
+  }
+  
+  /**
+   * Share to Snapchat
+   */
+  private shareToSnapchat(content: ShareContent): boolean {
+    const url = encodeURIComponent(content.url);
+    const text = encodeURIComponent(content.text);
+    // Snapchat Creative Kit URL scheme
+    const snapchatUrl = `https://www.snapchat.com/scan?attachmentUrl=${url}`;
+    window.open(snapchatUrl, '_blank');
+    return true;
+  }
+  
+  /**
+   * Share to WeChat
+   */
+  private shareToWeChat(content: ShareContent): boolean {
+    // WeChat requires their SDK for proper sharing
+    // For now, copy to clipboard
+    const text = `${content.text}\n\n${content.url}`;
+    navigator.clipboard.writeText(text);
+    alert('Link copied! You can paste it in WeChat.');
+    return true;
+  }
+  
+  /**
+   * Share to LINE
+   */
+  private shareToLine(content: ShareContent): boolean {
+    const text = encodeURIComponent(`${content.text}\n${content.url}`);
+    const lineUrl = `https://line.me/R/msg/text/?${text}`;
+    window.open(lineUrl, '_blank');
+    return true;
+  }
+  
+  /**
+   * Share via SMS
+   */
+  private shareViaSMS(content: ShareContent): boolean {
+    const text = encodeURIComponent(`${content.text}\n\n${content.url}`);
+    const smsUrl = `sms:?body=${text}`;
+    window.location.href = smsUrl;
+    return true;
+  }
+  
+  /**
    * Track share event
    */
   private async trackShare(
@@ -209,14 +297,14 @@ export class ShareService {
             hasHashtags: !!(content.hashtags && content.hashtags.length > 0)
           }
         },
-        referralCode: content.referralCode,
+        ...(content.referralCode ? { referralCode: content.referralCode } : {}),
         result: {
           success,
-          error: success ? undefined : 'Share failed or cancelled'
+          ...(success ? {} : { error: 'Share failed or cancelled' })
         },
         deviceInfo: {
-          platform: navigator.platform || 'unknown',
-          userAgent: navigator.userAgent
+          platform: typeof navigator !== 'undefined' ? (navigator.platform || 'unknown') : 'unknown',
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
         }
       };
       

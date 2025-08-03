@@ -24,6 +24,9 @@ export default function TextbookVocabularyPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // Skip during SSR/build time
+    if (typeof window === 'undefined') return;
+    
     // Track feature usage
     const trackUsage = async () => {
       const canAccess = await checkAndTrack('textbook_vocabulary');
@@ -246,6 +249,7 @@ export default function TextbookVocabularyPage() {
           <VocabularyLearningView 
             textbook={selectedTextbook!} 
             onBack={() => setSelectedTextbook(null)}
+            checkAndTrack={checkAndTrack}
           />
         )}
       </AnimatePresence>

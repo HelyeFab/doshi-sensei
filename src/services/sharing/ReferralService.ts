@@ -28,8 +28,6 @@ import {
 
 export class ReferralService {
   private static instance: ReferralService;
-  private readonly REFERRER_REWARD_DAYS = 7;
-  private readonly REFERRED_REWARD_DAYS = 3;
   
   static getInstance(): ReferralService {
     if (!ReferralService.instance) {
@@ -178,14 +176,6 @@ export class ReferralService {
         referrerId: validation.referrerId,
         referredUserId: newUserId,
         convertedAt: new Date(),
-        rewardsDistributed: {
-          referrer: false,
-          referred: false
-        },
-        rewards: {
-          referrerDays: this.REFERRER_REWARD_DAYS,
-          referredDays: this.REFERRED_REWARD_DAYS
-        }
       };
       
       await addDoc(collection(db, 'referralConversions'), {
@@ -249,53 +239,6 @@ export class ReferralService {
     }
   }
   
-  /**
-   * Distribute rewards (called by Cloud Functions)
-   */
-  async distributeRewards(conversion: ReferralConversion): Promise<void> {
-    const batch = writeBatch(db);
-    
-    try {
-      // Update referrer's premium days
-      const referrerRef = doc(db, 'users', conversion.referrerId);
-      batch.update(referrerRef, {
-        premiumDays: increment(conversion.rewards.referrerDays),
-        totalReferrals: increment(1),
-        lastReferralAt: serverTimestamp()
-      });
-      
-      // Update referred user's premium days
-      const referredRef = doc(db, 'users', conversion.referredUserId);
-      batch.update(referredRef, {
-        premiumDays: increment(conversion.rewards.referredDays),
-        referredBy: conversion.referrerId,
-        referredAt: serverTimestamp()
-      });
-      
-      // Update conversion record
-      const conversionQuery = query(
-        collection(db, 'referralConversions'),
-        where('referralCode', '==', conversion.referralCode),
-        where('referredUserId', '==', conversion.referredUserId),
-        limit(1)
-      );
-      
-      const conversionSnapshot = await getDocs(conversionQuery);
-      if (!conversionSnapshot.empty) {
-        const conversionRef = conversionSnapshot.docs[0].ref;
-        batch.update(conversionRef, {
-          'rewardsDistributed.referrer': true,
-          'rewardsDistributed.referred': true,
-          distributedAt: serverTimestamp()
-        });
-      }
-      
-      await batch.commit();
-    } catch (error) {
-      console.error('Failed to distribute rewards:', error);
-      throw error;
-    }
-  }
   
   /**
    * Get user's referral stats
@@ -334,9 +277,9 @@ export class ReferralService {
           (sharesByContent[data.content?.type || 'general'] || 0) + 1;
       });
       
-      // Calculate rewards earned
+      // Calculate rewards earned (no premium days anymore)
       const rewardsEarned = {
-        premiumDays: totalConversions * this.REFERRER_REWARD_DAYS,
+        premiumDays: 0,
         points: 0, // Future feature
         achievements: [] // Future feature
       };

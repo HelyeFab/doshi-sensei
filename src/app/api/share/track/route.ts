@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ShareService } from '@/services/sharing/ShareService';
-import { auth } from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +16,8 @@ export async function POST(request: NextRequest) {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       try {
         const token = authHeader.split('Bearer ')[1];
-        const decodedToken = await auth.verifyIdToken(token);
+        const admin = await getFirebaseAdmin();
+        const decodedToken = await admin.auth().verifyIdToken(token);
         userId = decodedToken.uid;
       } catch (error) {
         // Continue without user ID - anonymous tracking

@@ -1,4 +1,5 @@
 import { Kanji } from '@/types';
+import { KanjiItem } from '@/types/moodBoard';
 import KanjiManager from './kanjiManager';
 
 // Extract all unique kanji from all JLPT levels

@@ -926,6 +926,62 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Referrals collection - for share/referral system
+    match /referrals/{referralId} {
+      // Users can read referrals they created
+      allow read: if request.auth != null &&
+        (resource.data.referrerId == request.auth.uid || isAdmin());
+      
+      // Users can create referrals for themselves
+      allow create: if request.auth != null && 
+        request.resource.data.referrerId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['referrerId', 'referralCode', 'createdAt', 'status']) &&
+        request.resource.data.status == 'active';
+      
+      // Only allow updating stats fields
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stats', 'metadata']);
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // Referral conversions - track successful referrals
+    match /referralConversions/{conversionId} {
+      // Users can read conversions they're involved in
+      allow read: if request.auth != null &&
+        (resource.data.referrerId == request.auth.uid || 
+         resource.data.referredUserId == request.auth.uid ||
+         isAdmin());
+      
+      // System creates conversions (via API/Functions)
+      allow create: if request.auth != null;
+      
+      // No updates allowed (immutable)
+      allow update: if false;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // Share events - track all share activities
+    match /shareEvents/{eventId} {
+      // Users can read their own share events
+      allow read: if request.auth != null &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Users can create share events for themselves
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['userId', 'timestamp', 'method', 'content', 'result']);
+      
+      // No updates allowed (immutable)
+      allow update: if false;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

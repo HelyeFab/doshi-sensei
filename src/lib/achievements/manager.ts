@@ -274,18 +274,20 @@ export class AchievementManager {
       }
 
       const currentValue = stats[conditionField];
+      const numericValue = typeof currentValue === 'number' ? currentValue : Number(currentValue);
+      const numericCondition = typeof conditionValue === 'number' ? conditionValue : Number(conditionValue);
       
       switch (conditionOperator) {
         case '>=':
-          return currentValue >= conditionValue;
+          return numericValue >= numericCondition;
         case '>':
-          return currentValue > conditionValue;
+          return numericValue > numericCondition;
         case '==':
-          return currentValue === conditionValue;
+          return currentValue === conditionValue; // Keep original for equality
         case '<':
-          return currentValue < conditionValue;
+          return numericValue < numericCondition;
         case '<=':
-          return currentValue <= conditionValue;
+          return numericValue <= numericCondition;
         default:
           return false;
       }
@@ -464,10 +466,11 @@ export class AchievementManager {
     }
 
     const current = stats[achievement.conditionField];
+    const numericCurrent = typeof current === 'number' ? current : Number(current);
     const target = achievement.conditionValue;
-    const percentage = Math.min((current / target) * 100, 100);
+    const percentage = Math.min((numericCurrent / target) * 100, 100);
 
-    return { current, target, percentage };
+    return { current: numericCurrent, target, percentage };
   }
 
   /**
@@ -515,6 +518,7 @@ export class AchievementManager {
     }
 
     const currentValue = stats[achievement.conditionField];
+    const numericValue = typeof currentValue === 'number' ? currentValue : Number(currentValue);
     const newlyUnlocked: UnlockedAchievement[] = [];
 
     // Find the highest level already unlocked for this achievement
@@ -534,7 +538,7 @@ export class AchievementManager {
         continue; // Already unlocked
       }
 
-      if (currentValue >= level.targetValue) {
+      if (numericValue >= level.targetValue) {
         const levelAchievementId = `${achievement.id}_level_${level.level}`;
         const unlockedAchievement = await this.unlockMultiLevelAchievement(
           levelAchievementId,
@@ -697,6 +701,7 @@ export class AchievementManager {
     }
 
     const currentValue = stats[achievement.conditionField];
+    const numericValue = typeof currentValue === 'number' ? currentValue : Number(currentValue);
     const unlockedAchievements = await this.getUnlockedAchievements();
     
     // Find highest unlocked level
@@ -714,9 +719,9 @@ export class AchievementManager {
     return {
       currentLevel,
       nextLevel: nextLevel?.level || null,
-      currentProgress: currentValue,
+      currentProgress: numericValue,
       nextTarget: nextLevel?.targetValue || null,
-      percentage: nextLevel ? Math.min((currentValue / nextLevel.targetValue) * 100, 100) : 100,
+      percentage: nextLevel ? Math.min((numericValue / nextLevel.targetValue) * 100, 100) : 100,
       totalLevels: achievement.levels.length
     };
   }

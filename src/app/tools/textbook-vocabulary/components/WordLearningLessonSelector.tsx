@@ -264,13 +264,13 @@ export function WordLearningLessonSelector({
               disabled={isLocked || status === 'empty'}
               className={`relative p-4 rounded-lg border transition-all ${
                 isLocked
-                  ? 'bg-gray-100 border-gray-200 cursor-not-allowed'
+                  ? 'bg-muted/50 border-muted cursor-not-allowed'
                   : status === 'empty'
-                  ? 'bg-gray-50 border-gray-200 cursor-not-allowed opacity-50'
+                  ? 'bg-muted/30 border-muted cursor-not-allowed opacity-50'
                   : status === 'complete'
-                  ? 'bg-green-50 border-green-300 hover:border-green-400'
+                  ? 'bg-primary/10 border-primary/30 hover:border-primary/50'
                   : status === 'partial'
-                  ? 'bg-blue-50 border-blue-300 hover:border-blue-400'
+                  ? 'bg-primary/5 border-primary/20 hover:border-primary/40'
                   : 'bg-card border-border hover:border-primary'
               }`}
             >
@@ -301,9 +301,9 @@ export function WordLearningLessonSelector({
                   </p>
                   
                   {/* Progress Bar */}
-                  <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-300"
+                      className="h-full bg-primary transition-all duration-300"
                       style={{ width: `${((progress?.learned || 0) / totalWords) * 100}%` }}
                     />
                   </div>

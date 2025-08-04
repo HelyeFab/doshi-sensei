@@ -14,10 +14,40 @@ const PUBLIC_PATHS = [
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const url = request.nextUrl;
 
   // Skip middleware for public paths
   if (PUBLIC_PATHS.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
+  }
+
+  // Check if this is an RSC (React Server Component) request
+  const isRSC = url.searchParams.has('_rsc') || 
+                request.headers.get('rsc') === '1' ||
+                request.headers.get('accept')?.includes('text/x-component');
+
+  // Handle RSC requests specially to prevent 502 errors
+  if (isRSC) {
+    console.log(`[Middleware] RSC request for: ${pathname}`);
+    
+    // For problematic pages, add special handling
+    const problematicPaths = ['/vocabulary', '/admin', '/drill', '/practice'];
+    const isProblematicPath = problematicPaths.some(path => pathname.startsWith(path));
+    
+    if (isProblematicPath) {
+      // Add headers to prevent timeout issues
+      const response = NextResponse.next();
+      response.headers.set('X-RSC-Route', pathname);
+      response.headers.set('Cache-Control', 'no-store, must-revalidate');
+      response.headers.set('X-Accel-Buffering', 'no'); // Disable proxy buffering
+      
+      // For Netlify, increase timeout
+      if (process.env.NETLIFY) {
+        response.headers.set('X-Function-Timeout', '25000'); // 25 seconds
+      }
+      
+      return response;
+    }
   }
 
   // Add security headers

@@ -15,4 +15,7 @@ export {
   isStorageAvailable
 } from './storage';
 
-export default EnhancedStorageManager;
+// Import EnhancedStorageManager to make it available for default export
+import { EnhancedStorageManager as DefaultEnhancedStorageManager } from './storage';
+
+export default DefaultEnhancedStorageManager;

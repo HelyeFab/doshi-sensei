@@ -36,6 +36,9 @@ const pwaConfig = withPWA({
     // Exclude external resources
     ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('githubusercontent'),
     ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('watanoc'),
+    // Exclude Stripe resources - they should never be cached
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('stripe.com'),
+    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('stripe'),
     // Exclude large files
     ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('jmdict'),
     ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('kanjidb'),
@@ -78,6 +81,10 @@ const pwaConfig = withPWA({
     {
       urlPattern: /^\/api\/admin\/.*/i,
       handler: 'NetworkOnly' // Never cache admin API calls
+    },
+    {
+      urlPattern: /^https:\/\/(js|api)\.stripe\.com\/.*/i,
+      handler: 'NetworkOnly' // Never cache Stripe resources
     },
     {
       urlPattern: /^\/audio\/kana\/.*\.mp3$/i,

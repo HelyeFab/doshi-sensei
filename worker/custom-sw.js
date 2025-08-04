@@ -253,10 +253,13 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Skip service worker for RSC requests
-  if (url.searchParams.has('_rsc') || request.headers.get('RSC') === '1') {
+  // Skip service worker for RSC requests - MULTIPLE CHECKS
+  if (url.searchParams.has('_rsc') || 
+      request.headers.get('RSC') === '1' ||
+      request.headers.get('X-Service-Worker-Bypass') === '1' ||
+      request.headers.get('accept')?.includes('text/x-component')) {
     console.log('[Custom SW] Bypassing cache for RSC request:', url.pathname);
-    return; // Let the browser handle it
+    return; // Let the browser handle it directly
   }
   
   // Skip service worker for Next.js HMR in development

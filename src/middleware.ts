@@ -30,24 +30,29 @@ export function middleware(request: NextRequest) {
   if (isRSC) {
     console.log(`[Middleware] RSC request for: ${pathname}`);
     
-    // For problematic pages, add special handling
-    const problematicPaths = ['/vocabulary', '/admin', '/drill', '/practice'];
-    const isProblematicPath = problematicPaths.some(path => pathname.startsWith(path));
+    // ALWAYS handle RSC requests specially, not just problematic paths
+    const response = NextResponse.next();
     
-    if (isProblematicPath) {
-      // Add headers to prevent timeout issues
-      const response = NextResponse.next();
-      response.headers.set('X-RSC-Route', pathname);
-      response.headers.set('Cache-Control', 'no-store, must-revalidate');
-      response.headers.set('X-Accel-Buffering', 'no'); // Disable proxy buffering
-      
-      // For Netlify, increase timeout
-      if (process.env.NETLIFY) {
-        response.headers.set('X-Function-Timeout', '25000'); // 25 seconds
-      }
-      
-      return response;
+    // AGGRESSIVE: Force no caching for all RSC requests
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    response.headers.set('X-Accel-Expires', '0');
+    
+    // Tell service workers to bypass cache
+    response.headers.set('X-Service-Worker-Bypass', '1');
+    response.headers.set('X-RSC-Route', pathname);
+    
+    // Disable proxy buffering
+    response.headers.set('X-Accel-Buffering', 'no');
+    
+    // For Netlify, increase timeout
+    if (process.env.NETLIFY) {
+      response.headers.set('X-Function-Timeout', '25000'); // 25 seconds
     }
+    
+    return response;
   }
 
   // Add security headers

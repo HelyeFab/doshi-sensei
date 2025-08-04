@@ -5,7 +5,7 @@ const pwaConfig = withPWA({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
-  skipWaiting: false,
+  skipWaiting: true,
   reloadOnOnline: false,
   publicExcludes: [
     '!robots.txt', 
@@ -22,36 +22,136 @@ const pwaConfig = withPWA({
   maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
   exclude: [
     // Exclude all audio files
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.mp3'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.wav'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.ogg'),
+    ({ asset }) => asset.name.endsWith('.mp3'),
+    ({ asset }) => asset.name.endsWith('.wav'),
+    ({ asset }) => asset.name.endsWith('.ogg'),
     // Exclude all data files
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('/data/'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('/audio/'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('/flat-icons/'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.json'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.dat'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.gz'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.endsWith('.svg'),
+    ({ asset }) => asset.name.includes('/data/'),
+    ({ asset }) => asset.name.includes('/audio/'),
+    ({ asset }) => asset.name.includes('/flat-icons/'),
+    ({ asset }) => asset.name.endsWith('.json'),
+    ({ asset }) => asset.name.endsWith('.dat'),
+    ({ asset }) => asset.name.endsWith('.gz'),
+    ({ asset }) => asset.name.endsWith('.svg'),
     // Exclude external resources
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('githubusercontent'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('watanoc'),
-    // Exclude Stripe resources - they should never be cached
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('stripe.com'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('stripe'),
+    ({ asset }) => asset.name.includes('githubusercontent'),
+    ({ asset }) => asset.name.includes('watanoc'),
     // Exclude large files
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('jmdict'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('kanjidb'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('tts-sentences'),
+    ({ asset }) => asset.name.includes('jmdict'),
+    ({ asset }) => asset.name.includes('kanjidb'),
+    ({ asset }) => asset.name.includes('tts-sentences'),
     // Exclude build artifacts
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('_next/static/chunks/'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('_next/static/css/'),
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name.includes('_next/static/media/'),
+    ({ asset }) => asset.name.includes('_next/static/chunks/'),
+    ({ asset }) => asset.name.includes('_next/static/css/'),
+    ({ asset }) => asset.name.includes('_next/static/media/'),
     // Exclude pages
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name === 'index.html',
-    ({ asset }: { asset: { name: string; size: number } }) => asset.name === '/',
+    ({ asset }) => asset.name === 'index.html',
+    ({ asset }) => asset.name === '/',
     // Exclude any file larger than 500KB
-    ({ asset }: { asset: { name: string; size: number } }) => asset.size > 500 * 1024,
+    ({ asset }) => asset.size > 500 * 1024,
+  ],
+  runtimeCaching: [
+    {
+      urlPattern: /^\/$/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'homepage',
+        networkTimeoutSeconds: 3,
+        expiration: {
+          maxEntries: 1,
+          maxAgeSeconds: 60 * 60 // 1 hour
+        }
+      }
+    },
+    {
+      urlPattern: /^\/admin\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'admin-pages',
+        networkTimeoutSeconds: 3,
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 60 // 1 minute cache for admin pages
+        }
+      }
+    },
+    {
+      urlPattern: /^\/api\/admin\/.*/i,
+      handler: 'NetworkOnly' // Never cache admin API calls
+    },
+    {
+      urlPattern: /^\/audio\/kana\/.*\.mp3$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'kana-audio-cache',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    {
+      urlPattern: /^\/audio\/.*\.mp3$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'audio-cache',
+        expiration: {
+          maxEntries: 500,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    // Handle GitHub raw content (Pokemon sprites, etc.)
+    {
+      urlPattern: /^https:\/\/raw\.githubusercontent\.com\/.*/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'github-assets',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    // Handle Watanoc media content
+    {
+      urlPattern: /^https:\/\/watanoc\.com\/.*/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'watanoc-media',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 24 * 60 * 60 // 1 day
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    // Handle all external images and media
+    {
+      urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif|webp|mp3|mp4)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'external-media',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    }
   ],
   buildExcludes: [
     /middleware-manifest\.json$/,
@@ -69,8 +169,7 @@ const pwaConfig = withPWA({
     /\.dat$/,
     /\.gz$/
   ],
-  customWorkerDir: 'worker',
-  swSrc: 'worker/custom-sw.js'
+  customWorkerDir: 'worker'
 });
 
 const securityHeaders = [
@@ -251,4 +350,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default pwaConfig(nextConfig as any);
+export default pwaConfig(nextConfig);

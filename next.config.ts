@@ -3,8 +3,8 @@ import withPWA from 'next-pwa';
 
 const pwaConfig = withPWA({
   dest: 'public',
-  disable: true, // EMERGENCY: Completely disable PWA to fix RSC errors
-  register: false, // Don't register service worker
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
   skipWaiting: true,
   reloadOnOnline: false,
   publicExcludes: [
@@ -169,7 +169,8 @@ const pwaConfig = withPWA({
     /\.dat$/,
     /\.gz$/
   ],
-  customWorkerDir: 'worker'
+  customWorkerDir: 'worker',
+  swSrc: 'worker/custom-sw.js'
 });
 
 const securityHeaders = [

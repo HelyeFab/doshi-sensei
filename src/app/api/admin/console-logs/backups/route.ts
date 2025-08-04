@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
 import { adminGuard } from '@/lib/adminGuard';
 import fs from 'fs/promises';
 import path from 'path';
 
 export async function GET(request: NextRequest) {
+  // Console log management is development-only
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Console log management is not available in production' },
+      { status: 404 }
+    );
+  }
   try {
     // Check admin access
-    const session = await getServerSession();
     const adminCheck = await adminGuard(request);
     
     if (!adminCheck.isAdmin) {

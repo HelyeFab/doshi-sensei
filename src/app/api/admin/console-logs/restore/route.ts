@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
 import { adminGuard } from '@/lib/adminGuard';
+import { getConsoleLogManager } from '@/lib/console-log-manager-wrapper';
 
 export async function POST(request: NextRequest) {
+  // Console log management is development-only
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Console log management is not available in production' },
+      { status: 404 }
+    );
+  }
   try {
     // Check admin access
-    const session = await getServerSession();
     const adminCheck = await adminGuard(request);
     
     if (!adminCheck.isAdmin) {
@@ -15,10 +21,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { backupFile, logIds, categories, files } = body;
 
-    // Dynamic import for CommonJS module
-    const ConsoleLogManager = require('../../../../../scripts/console-log-manager');
-    
-    // Create manager instance
+    // Get console log manager
+    const ConsoleLogManager = await getConsoleLogManager();
     const manager = new ConsoleLogManager();
     
     // Restore console logs

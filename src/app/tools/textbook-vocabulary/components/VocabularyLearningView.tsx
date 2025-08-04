@@ -392,7 +392,7 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
       />
 
       {/* Bottom Stats Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-primary/90 backdrop-blur-sm px-4 py-3">
+      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 pb-20 md:pb-3 mobile-nav-padding">
         <ProgressTracker 
           vocabulary={vocabulary} 
           textbook={textbook} 

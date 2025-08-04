@@ -1,17 +1,254 @@
 // Custom Service Worker Extensions for Doshi Sensei
-// This file extends the Workbox-generated service worker
+// Import Workbox libraries
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
 
-self.addEventListener('install', (event) => {
-  console.log('[Custom SW] Installing custom service worker extensions...');
-  self.skipWaiting();
-});
+// Configure Workbox
+workbox.core.setCacheNameDetails({ prefix: 'doshi-sensei' });
+workbox.core.skipWaiting();
+workbox.core.clientsClaim();
 
-self.addEventListener('activate', (event) => {
-  console.log('[Custom SW] Activating custom service worker...');
-  event.waitUntil(clients.claim());
-});
+// Precaching (will be injected by next-pwa)
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
 
-// Handle fetch events with custom logic
+// Define caching strategies
+const { registerRoute } = workbox.routing;
+const { NetworkFirst, NetworkOnly, CacheFirst, StaleWhileRevalidate } = workbox.strategies;
+const { ExpirationPlugin } = workbox.expiration;
+const { CacheableResponsePlugin } = workbox.cacheableResponse;
+const { BackgroundSyncPlugin } = workbox.backgroundSync;
+
+// CRITICAL: Handle RSC (React Server Component) requests
+registerRoute(
+  ({ url }) => url.searchParams.has('_rsc'),
+  new NetworkOnly({
+    plugins: [
+      new BackgroundSyncPlugin('rsc-queue', {
+        maxRetentionTime: 5 * 60 // 5 minutes
+      })
+    ]
+  })
+);
+
+// Handle Next.js data requests
+registerRoute(
+  ({ url }) => url.pathname.includes('/_next/data/'),
+  new NetworkFirst({
+    cacheName: 'nextjs-data',
+    networkTimeoutSeconds: 5,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 5 * 60 // 5 minutes
+      })
+    ]
+  })
+);
+
+// Handle problematic pages
+registerRoute(
+  ({ url }) => /^\/(vocabulary|drill|practice|news|stories|kanji-browser|admin)\/?$/i.test(url.pathname),
+  new NetworkFirst({
+    cacheName: 'dynamic-pages',
+    networkTimeoutSeconds: 10,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 20,
+        maxAgeSeconds: 5 * 60 // 5 minutes
+      })
+    ]
+  })
+);
+
+// Handle API routes
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/'),
+  new NetworkOnly()
+);
+
+// Handle Stripe
+registerRoute(
+  ({ url }) => url.host.includes('stripe.com'),
+  new NetworkOnly()
+);
+
+// Handle audio files
+registerRoute(
+  ({ url }) => url.pathname.match(/^\/audio\/.*\.mp3$/i),
+  new CacheFirst({
+    cacheName: 'audio-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 500,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+      }),
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
+
+// Handle static data files
+registerRoute(
+  ({ url }) => url.pathname.match(/\/data\/.*\.(json|dat)$/i),
+  new CacheFirst({
+    cacheName: 'static-data',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+      }),
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
+
+// Homepage - network first with short cache
+registerRoute(
+  ({ url }) => url.pathname === '/',
+  new NetworkFirst({
+    cacheName: 'homepage',
+    networkTimeoutSeconds: 3,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 1,
+        maxAgeSeconds: 60 * 60 // 1 hour
+      })
+    ]
+  })
+);
+
+// Admin pages - always fresh
+registerRoute(
+  ({ url }) => /^\/admin\/.*/i.test(url.pathname),
+  new NetworkFirst({
+    cacheName: 'admin-pages',
+    networkTimeoutSeconds: 3,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 10,
+        maxAgeSeconds: 60 // 1 minute cache for admin pages
+      })
+    ]
+  })
+);
+
+// Kana audio files - cache permanently
+registerRoute(
+  ({ url }) => /^\/audio\/kana\/.*\.mp3$/i.test(url.pathname),
+  new CacheFirst({
+    cacheName: 'kana-audio-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 200,
+        maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+      }),
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
+
+// Handle external media
+registerRoute(
+  ({ url }) => url.protocol === 'https:' && /\.(png|jpg|jpeg|svg|gif|webp|mp3|mp4)$/i.test(url.pathname),
+  new StaleWhileRevalidate({
+    cacheName: 'external-media',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+      }),
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
+
+// Static CSS files - cache long term
+registerRoute(
+  ({ url }) => url.pathname.match(/\.css$/i),
+  new StaleWhileRevalidate({
+    cacheName: 'static-css',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 20,
+        maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+      })
+    ]
+  })
+);
+
+// JavaScript files - cache with validation
+registerRoute(
+  ({ url }) => url.pathname.match(/\.js$/i) && !url.pathname.includes('sw.js'),
+  new StaleWhileRevalidate({
+    cacheName: 'static-js',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+      })
+    ]
+  })
+);
+
+// Images - cache long term
+registerRoute(
+  ({ url }) => /\.(png|jpg|jpeg|gif|webp|svg|ico)$/i.test(url.pathname),
+  new CacheFirst({
+    cacheName: 'images',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 200,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+      }),
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
+
+// Fonts - cache forever
+registerRoute(
+  ({ url }) => /\.(woff|woff2|ttf|otf)$/i.test(url.pathname),
+  new CacheFirst({
+    cacheName: 'fonts',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 20,
+        maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+      }),
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
+
+// External APIs (excluding Stripe) - cache with validation
+registerRoute(
+  ({ url }) => url.origin !== self.location.origin && 
+             !url.host.includes('stripe.com') &&
+             !url.host.includes('firebaseio.com') &&
+             !url.host.includes('googleapis.com'),
+  new StaleWhileRevalidate({
+    cacheName: 'external-api',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 5 * 60 // 5 minutes
+      })
+    ]
+  })
+);
+
+// Custom fetch handling for edge cases
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);

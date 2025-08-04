@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 export async function POST(request: NextRequest) {
   try {
     // Simple admin check - you can enhance this later
-    const headersList = headers();
+    const headersList = await headers();
     const authorization = headersList.get('authorization');
     
     if (!authorization?.startsWith('Bearer ')) {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { WordItem, RecognitionQuestion } from '../types';
-import { playAudio } from '../utils/audio';
+import { TTSManager } from '@/utils/tts';
 
 interface RecognitionGameProps {
   words: WordItem[];
@@ -25,11 +25,41 @@ export default function RecognitionGame({
   
   const currentWord = words[currentIndex];
 
+  // Define playQuestionAudio before using it
+  const playQuestionAudio = async () => {
+    if (question?.type === 'audio' && currentWord) {
+      try {
+        console.log('Playing audio for word:', currentWord.kana);
+        await TTSManager.speak(
+          currentWord.kana,
+          {
+            voice: 'female',
+            provider: 'google',
+            context: 'vocabulary'
+          }
+        );
+      } catch (error) {
+        console.error('Failed to play question audio:', error);
+      }
+    }
+  };
+
   useEffect(() => {
     generateQuestion();
     setSelectedAnswer(null);
     setShowResult(false);
   }, [currentIndex]);
+
+  // Auto-play audio for audio questions
+  useEffect(() => {
+    if (question?.type === 'audio' && currentWord) {
+      // Small delay to ensure UI is ready
+      const timer = setTimeout(() => {
+        playQuestionAudio();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [question, currentWord]);
 
   const generateQuestion = () => {
     if (!currentWord) return;
@@ -117,12 +147,6 @@ export default function RecognitionGame({
     } else {
       // Finished all words, move to next phase
       onComplete();
-    }
-  };
-
-  const playQuestionAudio = async () => {
-    if (question?.type === 'audio' && question.audioUrl) {
-      await playAudio(question.audioUrl);
     }
   };
 

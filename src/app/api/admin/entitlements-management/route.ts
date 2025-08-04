@@ -43,7 +43,7 @@ async function verifyAuth(request: NextRequest) {
 
   const token = authHeader.substring(7);
   const admin = await getFirebaseAdmin();
-  const decodedToken = await admin.auth.verifyIdToken(token);
+  const decodedToken = await admin.auth().verifyIdToken(token);
 
   // Check if user is admin (matching pattern from other admin routes)
   const userEmail = decodedToken.email || '';
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     // Get current rules
     const rules = await getServerDynamicRulesAdmin(true); // Force refresh
     const admin = await getFirebaseAdmin();
-    const db = admin.firestore;
+    const db = admin.firestore();
     const rulesDocRef = db.doc(`config/${RULES_DOC_ID}`);
     const rulesDoc = await rulesDocRef.get();
     
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
     
-    const db = admin.firestore;
+    const db = admin.firestore();
     const rulesDocRef = db.doc(`config/${RULES_DOC_ID}`);
     
     const fixResult: EntitlementFixResult = {

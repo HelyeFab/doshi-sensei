@@ -88,26 +88,35 @@ export function AnkiSetCreator({ isOpen, onClose }: AnkiSetCreatorProps) {
         const ankiItem = {
           id: `anki_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           itemType: 'anki_card' as const,
+          savedAt: new Date(),
+          listIds: [list.id],
           ankiData: {
+            originalId: `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            deckName: setName,
+            cardType: 'basic' as const,
             front: card.front,
             back: card.back,
-            type: 0, // Basic card type
-            queue: 0, // New card
-            due: Date.now(),
-            interval: 0,
-            factor: 2500,
-            reps: 0,
-            lapses: 0,
-            left: 0,
-            odue: 0,
-            odid: 0,
-            flags: 0,
-            data: ''
+            tags: [],
+            media: [],
+            srsData: {
+              due: new Date(),
+              ease: 2.5,
+              interval: 0,
+              reviews: 0,
+              lapses: 0,
+              lastReview: undefined,
+              state: 'new' as const,
+              step: 0,
+              left: 0,
+              odue: 0,
+              odid: 0,
+              flags: 0,
+              data: ''
+            }
           }
         };
         
-        await StudyListManager.saveItem(ankiItem, user);
-        await StudyListManager.addItemToLists(ankiItem, 'anki_card', [list.id], user);
+        await StudyListManager.saveItem(ankiItem);
       }
       
       // Track success
@@ -127,7 +136,7 @@ export function AnkiSetCreator({ isOpen, onClose }: AnkiSetCreatorProps) {
       
       // Track error
       track('anki_set_creation_error', {
-        error: err.message
+        error: err instanceof Error ? err.message : 'Unknown error'
       });
     } finally {
       setSaving(false);
@@ -200,15 +209,13 @@ export function AnkiSetCreator({ isOpen, onClose }: AnkiSetCreatorProps) {
               <label className="text-sm font-medium">
                 Cards ({cards.filter(c => c.front.trim() && c.back.trim()).length} valid)
               </label>
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={handleAddCard}
-                className="gap-1"
+                className="px-3 py-1.5 text-sm font-medium rounded-lg border border-border hover:bg-accent transition-colors flex items-center gap-1"
               >
                 <Plus className="w-4 h-4" />
                 Add Card
-              </Button>
+              </button>
             </div>
             
             <div className="space-y-3">

@@ -21,6 +21,7 @@ interface AudioControls {
 }
 
 export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps) {
+  const strings = useStrings();
   const [sentences, setSentences] = useState<string[]>([]);
   const [controls, setControls] = useState<AudioControls>({
     isPlaying: false,

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import TextbookVocabularyPage from './TextbookVocabularyPage';
-import { generatePageMetadata, structuredData } from '@/utils/seo';
-import { StructuredData } from '@/components/StructuredData';
+import { generatePageMetadata } from '@/utils/seo';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Textbook Vocabulary - Complete Genki & Minna no Nihongo',
@@ -23,25 +22,5 @@ export const metadata: Metadata = generatePageMetadata({
 });
 
 export default function Page() {
-  const breadcrumbData = structuredData.breadcrumb([
-    {
-      "name": "Home",
-      "url": "/"
-    },
-    {
-      "name": "Tools",
-      "url": "/tools"
-    },
-    {
-      "name": "Textbook Vocabulary",
-      "url": "/tools/textbook-vocabulary"
-    }
-  ]);
-
-  return (
-    <>
-      <StructuredData data={breadcrumbData} />
-      <TextbookVocabularyPage />
-    </>
-  );
+  return <TextbookVocabularyPage />;
 }

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { FEATURE_REGISTRY } from '@/lib/features/registry';
 import { ENTITLEMENT_RULES } from '@/lib/entitlements/rules';
 import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
+import { dynamicRegistry } from '@/lib/features/dynamic-registry';
+import { getFeaturePermission } from '@/lib/features/permission-map';
 import { UserType } from '@/lib/entitlements/types';
 
 // Add cache control headers
@@ -26,9 +28,20 @@ export async function GET() {
       console.log('Using static rules as fallback:', error);
     }
     
+    // Get features from dynamic registry (with static fallback)
+    let features = Object.values(FEATURE_REGISTRY);
+    try {
+      // Clear cache to ensure fresh data
+      dynamicRegistry.clearCache();
+      const registry = await dynamicRegistry.getRegistry();
+      features = Object.values(registry);
+      console.log('[FeatureMatrix] Using dynamic registry');
+    } catch (error) {
+      console.log('[FeatureMatrix] Using static registry as fallback');
+    }
+    
     // Build feature matrix data
     const userTypes: UserType[] = ['guest', 'free', 'monthly', 'yearly'];
-    const features = Object.values(FEATURE_REGISTRY);
     
     // Create matrix
     const matrix = features.map(feature => {
@@ -59,47 +72,8 @@ export async function GET() {
         // Check if feature is allowed for this user type
         let allowed = false;
         
-        // Map feature to permission
-        const permissionMap: Record<string, string> = {
-          'drill_practice': 'do_drills',
-          'kana_study': 'do_drills', // Add kana_study mapping
-          'article_reading': 'read_articles',
-          'story_reading': 'read_stories',
-          'kanji_quest': 'play_games',
-          'kana_drop': 'play_games',
-          'sentence_scramble': 'play_games',
-          'matching_game': 'play_games',
-          'memory_match': 'play_games',
-          'reading_routes': 'play_games',
-          'kanji_simon': 'play_games',
-          'listening_quiz': 'play_games',
-          'word_assembly': 'play_games',
-          'word_lists': 'create_lists',
-          'bookmarks': 'create_lists',
-          'sentences-bookmark': 'create_lists',
-          'cloud_sync': 'cloud_sync',
-          'progress_saving': 'save_progress',
-          'kanji_moods': 'kanji_moods',
-          'speaking_practice': 'do_drills',
-          'ai_tutor': 'premium_features',
-          'youtube_shadowing': 'youtube_shadowing',
-          'textbook_vocabulary': 'textbook_vocabulary',
-          'kanji_stroke_order': 'view_stroke_order',
-          'stroke_order_practice': 'view_stroke_order',
-          'flashcard_review': 'do_drills',
-          'offline_articles': 'premium_features',
-          'offline_stories': 'premium_features',
-          'resource_caching': 'premium_features',
-          'background_sync': 'premium_features',
-          'ai_context_explanation': 'ai_explanations',
-          'anki_import': 'anki_import',
-          'anki_set_creation': 'anki_set_creation',
-          'word_learning_session': 'do_learning_sessions',
-          'kanji_mastery': 'learn_kanji',
-          'leaderboard': 'view_leaderboard'
-        };
-        
-        const requiredPermission = permissionMap[feature.id];
+        // Use centralized permission mapping
+        const requiredPermission = getFeaturePermission(feature.id);
         if (rule.permissions.includes('*') || rule.permissions.includes(requiredPermission as any)) {
           allowed = true;
         }

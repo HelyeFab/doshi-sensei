@@ -679,10 +679,10 @@ export function CardSettingsModal({
                     </label>
                     <input
                       type="number"
-                      value={Math.round((localSRSConfig?.lapseNewInterval || 0) * 100)}
+                      value={Math.round((localSRSConfig?.newInterval || 0) * 100)}
                       onChange={(e) => {
                         const config = localSRSConfig || DEFAULT_ANKI_CONFIG;
-                        setLocalSRSConfig({ ...config, lapseNewInterval: Math.max(0, Math.min(100, parseInt(e.target.value) || 0)) / 100 });
+                        setLocalSRSConfig({ ...config, newInterval: Math.max(0, Math.min(100, parseInt(e.target.value) || 0)) / 100 });
                       }}
                       className="w-full px-3 py-2 border border-border rounded-lg bg-background"
                       min="0"
@@ -699,10 +699,10 @@ export function CardSettingsModal({
                     </label>
                     <input
                       type="number"
-                      value={localSRSConfig?.minimumLapseInterval || 1}
+                      value={localSRSConfig?.minimumInterval || 1}
                       onChange={(e) => {
                         const config = localSRSConfig || DEFAULT_ANKI_CONFIG;
-                        setLocalSRSConfig({ ...config, minimumLapseInterval: Math.max(1, parseInt(e.target.value) || 1) });
+                        setLocalSRSConfig({ ...config, minimumInterval: Math.max(1, parseInt(e.target.value) || 1) });
                       }}
                       className="w-full px-3 py-2 border border-border rounded-lg bg-background"
                       min="1"

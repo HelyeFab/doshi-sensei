@@ -101,3 +101,6 @@ public/anki/*.apkg
 test-indexeddb.html
 
 firebase-debug.log
+
+# Console log backups
+console-logs-backup/

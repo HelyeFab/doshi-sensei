@@ -3,16 +3,50 @@
  * Manages the feature registry and feature-related queries
  */
 
-import { Feature, FeatureCategory, FeatureStatus } from './types';
+import { Feature, FeatureCategory, FeatureStatus, FeatureRegistry } from './types';
 import { FEATURE_REGISTRY } from './registry';
+import { dynamicRegistry } from './dynamic-registry';
 
 export class FeatureManager {
-  private features = FEATURE_REGISTRY;
+  private features: FeatureRegistry = FEATURE_REGISTRY;
+  private initialized = false;
+  
+  /**
+   * Initialize with dynamic registry if available
+   */
+  private async ensureInitialized(): Promise<void> {
+    if (this.initialized) return;
+    
+    try {
+      // Try to load from dynamic registry
+      this.features = await dynamicRegistry.getRegistry();
+      this.initialized = true;
+      
+      // Subscribe to changes
+      dynamicRegistry.subscribe((registry) => {
+        this.features = registry;
+      });
+    } catch (error) {
+      console.warn('[FeatureManager] Failed to load dynamic registry, using static:', error);
+      this.features = FEATURE_REGISTRY;
+      this.initialized = true;
+    }
+  }
   
   /**
    * Get a specific feature by ID
    */
   getFeature(featureId: string): Feature | undefined {
+    // Use static registry for synchronous calls
+    // Dynamic registry will update this.features when loaded
+    return this.features[featureId];
+  }
+  
+  /**
+   * Get a specific feature by ID (async version that ensures dynamic registry is loaded)
+   */
+  async getFeatureAsync(featureId: string): Promise<Feature | undefined> {
+    await this.ensureInitialized();
     return this.features[featureId];
   }
   

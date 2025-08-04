@@ -14,10 +14,40 @@ interface AnkiNote {
   data: string;
 }
 
+interface ProcessedAnkiCard {
+  id: string;
+  nid: string;
+  did: string;
+  ord: number;
+  mod: number;
+  type: number;
+  queue: number;
+  due: number;
+  ivl: number;
+  factor: number;
+  reps: number;
+  lapses: number;
+  note: AnkiNote;
+  front: string;
+  back: string;
+  modelName: string;
+  tags: string[];
+}
+
+interface AnkiDeckInfo {
+  id: string;
+  name: string;
+  desc?: string;
+  lrnToday?: number[];
+  revToday?: number[];
+  newToday?: number[];
+  timeToday?: number[];
+}
+
 export class AnkiParserBrowser {
   static async parseApkg(file: File): Promise<{
-    cards: any[];
-    decks: any[];
+    cards: ProcessedAnkiCard[];
+    decks: AnkiDeckInfo[];
     media: Map<string, Blob>;
   }> {
     try {
@@ -201,7 +231,7 @@ export class AnkiParserBrowser {
       console.log('\nProcessing summary:');
       console.log(`Total cards processed: ${processedCards.length}`);
       const sampleCards = processedCards.slice(0, 3);
-      sampleCards.forEach((card: any, i: number) => {
+      sampleCards.forEach((card, i) => {
         console.log(`Sample card ${i}:`, {
           front: card.front.substring(0, 50) + '...',
           back: card.back.substring(0, 50) + '...'
@@ -210,10 +240,10 @@ export class AnkiParserBrowser {
       
       db.close();
       
-      const deckList = Object.entries(decks).map(([id, deck]: [string, any]) => ({
+      const deckList = Object.entries(decks).map(([id, deck]) => ({
         id,
-        name: deck.name,
-        ...deck
+        name: (deck as any).name,
+        ...(deck as any)
       }));
       
       return {
@@ -251,13 +281,13 @@ export class AnkiParserBrowser {
     return SQL;
   }
   
-  private static parseQueryResult(result: any): any[] {
+  private static parseQueryResult(result: { columns: string[]; values: any[][] } | undefined): Record<string, any>[] {
     if (!result) return [];
     
     const { columns, values } = result;
-    return values.map((row: any[]) => {
-      const obj: any = {};
-      columns.forEach((col: string, idx: number) => {
+    return values.map((row) => {
+      const obj: Record<string, any> = {};
+      columns.forEach((col, idx) => {
         obj[col] = row[idx];
       });
       return obj;

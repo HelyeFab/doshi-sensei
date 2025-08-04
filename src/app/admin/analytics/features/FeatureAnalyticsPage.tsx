@@ -299,14 +299,15 @@ export default function FeatureAnalyticsPage() {
                             .map(([game, totalScore]) => {
                               const completed = featureData.games.completed[game] || 1;
                               const avgScore = Math.round(totalScore / completed);
-                              return (
-                                <div key={game} className="flex items-center justify-between">
-                                  <span className="text-sm capitalize">{game.replace(/_/g, ' ')}</span>
-                                  <span className="font-medium">{avgScore.toLocaleString()}</span>
-                                </div>
-                              );
+                              return { game, avgScore };
                             })
-                            .sort((a, b) => b[1] - a[1])}
+                            .sort((a, b) => b.avgScore - a.avgScore)
+                            .map(({ game, avgScore }) => (
+                              <div key={game} className="flex items-center justify-between">
+                                <span className="text-sm capitalize">{game.replace(/_/g, ' ')}</span>
+                                <span className="font-medium">{avgScore.toLocaleString()}</span>
+                              </div>
+                            ))}
                         </div>
                       ) : (
                         <p className="text-muted-foreground text-center py-4">No score data</p>

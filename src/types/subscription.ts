@@ -18,7 +18,24 @@ export interface GuestUsage {
 export interface UserSubscription {
   id?: string;
   userId?: string;
-  subscription: {
+  // Flattened structure as per Firebase Functions migration
+  plan: 'free' | 'monthly' | 'yearly';
+  status: 'active' | 'inactive' | 'canceled' | 'past_due';
+  stripeSubscriptionId?: string;
+  stripeCustomerId?: string;
+  stripePriceId?: string;
+  currentPeriodStart?: Date;
+  currentPeriodEnd?: Date;
+  cancelAtPeriodEnd?: boolean;
+  canceledAt?: Date;
+  metadata?: {
+    source: 'stripe' | 'admin';
+    createdAt?: Date;
+    updatedAt?: Date;
+    upgradedBy?: string;
+  };
+  // Legacy nested structure - DEPRECATED
+  subscription?: {
     plan: 'free' | 'monthly' | 'yearly';
     status: 'active' | 'inactive' | 'canceled' | 'past_due';
     stripeSubscriptionId?: string;
@@ -29,7 +46,7 @@ export interface UserSubscription {
     priceId?: string;
     renewalDate?: string;
   };
-  limits: {
+  limits?: {
     maxLists: number; // -1 means unlimited
     maxDrillsPerDay: number; // -1 means unlimited
     maxKanjiQuestPerDay: number; // -1 means unlimited
@@ -38,7 +55,7 @@ export interface UserSubscription {
     canSync: boolean;
     canSave: boolean;
   };
-  currentUsage: {
+  currentUsage?: {
     listsCount: number;
     drillsToday: number;
     lastDrillDate: string;

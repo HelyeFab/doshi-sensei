@@ -90,9 +90,9 @@ export default function AdminStoriesPage() {
     setConfirmDialog(prev => ({ ...prev, loading: true }));
     try {
       await confirmDialog.onConfirm();
-      showNotification && showNotification({ type: 'success', message: strings.admin.deletedSuccess });
+      showNotification && showNotification({ type: 'success', title: strings.admin.deletedSuccess || 'Deleted successfully' });
     } catch (error) {
-      showNotification && showNotification({ type: 'error', message: strings.admin.deleteFailed });
+      showNotification && showNotification({ type: 'error', title: strings.admin.deleteFailed || 'Delete failed' });
     } finally {
       setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }));
     }
@@ -152,7 +152,7 @@ export default function AdminStoriesPage() {
                     }
                     setStories([]);
                     setSelected([]);
-                    showNotification && showNotification({ type: 'success', message: strings.admin.deletedSuccess });
+                    showNotification && showNotification({ type: 'success', title: strings.admin.deletedSuccess || 'Deleted successfully' });
                   },
                 })}
                 disabled={stories.length === 0 || loading}
@@ -173,7 +173,7 @@ export default function AdminStoriesPage() {
                     }
                     setStories(prev => prev.filter(story => !selected.includes(story.id)));
                     setSelected([]);
-                    showNotification && showNotification({ type: 'success', message: strings.admin.deletedSuccess });
+                    showNotification && showNotification({ type: 'success', title: strings.admin.deletedSuccess || 'Deleted successfully' });
                   },
                 })}
                 disabled={selected.length === 0 || loading}
@@ -284,7 +284,7 @@ export default function AdminStoriesPage() {
                                   await storyManager.deleteStory(story.id);
                                   setStories(prev => prev.filter(s => s.id !== story.id));
                                   setSelected(prev => prev.filter(id => id !== story.id));
-                                  showNotification && showNotification({ type: 'success', message: strings.admin.deletedSuccess });
+                                  showNotification && showNotification({ type: 'success', title: strings.admin.deletedSuccess || 'Deleted successfully' });
                                 },
                               })}
                               disabled={loading}

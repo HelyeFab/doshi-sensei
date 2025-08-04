@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Upload, FileText, AlertCircle } from 'lucide-react';
-import { TranscriptLine } from '../page';
+import { TranscriptLine } from '../YouTubeShadowing';
 import { useStrings } from '@/contexts/LanguageContext';
 
 interface SubtitleUploaderProps {

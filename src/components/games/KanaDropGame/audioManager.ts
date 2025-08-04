@@ -186,7 +186,9 @@ export class GameAudioManager {
         if (error.name === 'NotAllowedError' || error.name === 'AbortError') {
           console.warn('[KanaDrop Audio] First attempt failed for background music, trying fetch method');
           try {
-            await this.playViaFetch(this.backgroundMusic.src.split('?')[0], this.backgroundMusic);
+            if (this.backgroundMusic) {
+              await this.playViaFetch(this.backgroundMusic.src.split('?')[0], this.backgroundMusic);
+            }
           } catch (fetchError) {
             console.error('[KanaDrop Audio] Failed to play background music:', fetchError);
           }

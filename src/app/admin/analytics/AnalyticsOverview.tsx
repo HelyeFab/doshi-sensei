@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useRouter } from 'next/navigation';
+import { useStrings } from '@/contexts/LanguageContext';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Line, Bar, Pie } from 'recharts';
@@ -40,6 +41,7 @@ interface RegistrationStats {
 export default function AnalyticsOverview() {
   const { isAdmin, loading: adminLoading } = useAdmin();
   const router = useRouter();
+  const strings = useStrings();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [registrationStats, setRegistrationStats] = useState<RegistrationStats>({ today: 0, thisWeek: 0, thisMonth: 0 });

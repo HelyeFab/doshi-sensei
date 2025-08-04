@@ -41,7 +41,7 @@ export default function AcknowledgmentsPage() {
                   {ackStrings.sections.coreTechnologies.title}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(ackStrings.sections.coreTechnologies.items).map(([key, item]) => (
+                  {Object.entries(ackStrings.sections.coreTechnologies.items).map(([key, item]: [string, any]) => (
                     <div key={key} className="p-4 bg-muted/30 rounded-lg hover:bg-muted/40 transition-colors">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-medium text-foreground">{item.name}</h3>
@@ -82,7 +82,7 @@ export default function AcknowledgmentsPage() {
                   {ackStrings.sections.japaneseLanguageData.title}
                 </h2>
                 <div className="space-y-4">
-                  {Object.entries(ackStrings.sections.japaneseLanguageData.items).map(([key, item]) => (
+                  {Object.entries(ackStrings.sections.japaneseLanguageData.items).map(([key, item]: [string, any]) => (
                     <div key={key} className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg">
                       <div className="text-3xl flex-shrink-0">🇯🇵</div>
                       <div className="flex-1">
@@ -120,7 +120,7 @@ export default function AcknowledgmentsPage() {
                   {ackStrings.sections.developmentTools.title}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {Object.entries(ackStrings.sections.developmentTools.items).map(([key, item]) => (
+                  {Object.entries(ackStrings.sections.developmentTools.items).map(([key, item]: [string, any]) => (
                     <div key={key} className="p-4 bg-muted/20 rounded-lg">
                       <h3 className="font-medium text-foreground text-sm mb-1">
                         {item.name}
@@ -147,7 +147,7 @@ export default function AcknowledgmentsPage() {
                   {ackStrings.sections.uiLibraries.title}
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {Object.entries(ackStrings.sections.uiLibraries.items).map(([key, item]) => (
+                  {Object.entries(ackStrings.sections.uiLibraries.items).map(([key, item]: [string, any]) => (
                     <div key={key} className="p-3 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border border-primary/20">
                       <h4 className="font-medium text-sm text-foreground">
                         {item.name}

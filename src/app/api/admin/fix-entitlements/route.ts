@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     
     // Get Firebase Admin instance
     const admin = await getFirebaseAdmin();
-    const decodedToken = await admin.auth.verifyIdToken(token);
+    const decodedToken = await admin.auth().verifyIdToken(token);
 
     // Check if user is admin (matching pattern from other admin routes)
     const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     console.log('🔧 Fixing entitlements structure...');
     
     // Get Firestore instance
-    const db = admin.firestore;
+    const db = admin.firestore();
     const rulesDocRef = db.doc(`config/${RULES_DOC_ID}`);
     
     // Get current rules or use defaults
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
             ...rule,
             limits: {
               daily: {
-                ...defaultRule.limits.daily,
+                ...(defaultRule.limits.daily || {}),
                 ...(rule.limits?.daily || {})
               },
               total: {
@@ -107,14 +107,14 @@ export async function POST(request: NextRequest) {
       rulesCount: rules.length,
       youtubeLimits: rules.map(rule => ({
         userTypes: rule.userTypes,
-        daily: rule.limits.daily.youtube_shadowing
+        daily: rule.limits.daily?.youtube_shadowing || 0
       }))
     });
     
   } catch (error) {
     console.error('Error fixing entitlements:', error);
     return NextResponse.json(
-      { error: 'Failed to fix entitlements', details: error.message },
+      { error: 'Failed to fix entitlements', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

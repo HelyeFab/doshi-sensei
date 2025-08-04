@@ -46,7 +46,7 @@ export default function TermsOfServicePage() {
                   {termsStrings.sections.definitions.title}
                 </h2>
                 <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
-                  {Object.entries(termsStrings.sections.definitions.terms).map(([key, value]) => (
+                  {Object.entries(termsStrings.sections.definitions.terms).map(([key, value]: [string, any]) => (
                     <p key={key} className="text-sm text-muted-foreground">
                       • {value}
                     </p>
@@ -70,7 +70,7 @@ export default function TermsOfServicePage() {
                   {termsStrings.sections.accountTerms.title}
                 </h2>
                 <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.accountTerms.responsibilities.map((item, index) => (
+                  {termsStrings.sections.accountTerms.responsibilities.map((item: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{item}</span>
@@ -92,7 +92,7 @@ export default function TermsOfServicePage() {
                     {termsStrings.sections.acceptableUse.permitted.title}
                   </h3>
                   <div className="space-y-2 ml-8">
-                    {termsStrings.sections.acceptableUse.permitted.uses.map((use, index) => (
+                    {termsStrings.sections.acceptableUse.permitted.uses.map((use: string, index: number) => (
                       <div key={index} className="flex items-start gap-2">
                         <span className="text-green-500 mt-0.5">✓</span>
                         <span className="text-sm text-muted-foreground">{use}</span>
@@ -108,7 +108,7 @@ export default function TermsOfServicePage() {
                     {termsStrings.sections.acceptableUse.prohibited.title}
                   </h3>
                   <div className="space-y-2 ml-8">
-                    {termsStrings.sections.acceptableUse.prohibited.uses.map((use, index) => (
+                    {termsStrings.sections.acceptableUse.prohibited.uses.map((use: string, index: number) => (
                       <div key={index} className="flex items-start gap-2">
                         <span className="text-red-500 mt-0.5">✗</span>
                         <span className="text-sm text-muted-foreground">{use}</span>
@@ -160,7 +160,7 @@ export default function TermsOfServicePage() {
                   {termsStrings.sections.userContent.title}
                 </h2>
                 <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.userContent.guidelines.map((guideline, index) => (
+                  {termsStrings.sections.userContent.guidelines.map((guideline: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{guideline}</span>
@@ -175,7 +175,7 @@ export default function TermsOfServicePage() {
                   {termsStrings.sections.payments.title}
                 </h2>
                 <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.payments.terms.map((term, index) => (
+                  {termsStrings.sections.payments.terms.map((term: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{term}</span>
@@ -209,7 +209,7 @@ export default function TermsOfServicePage() {
                     {termsStrings.sections.disclaimers.content}
                   </p>
                   <ul className="space-y-1">
-                    {termsStrings.sections.disclaimers.disclaimers.map((disclaimer, index) => (
+                    {termsStrings.sections.disclaimers.disclaimers.map((disclaimer: string, index: number) => (
                       <li key={index} className="text-sm text-muted-foreground">
                         • {disclaimer}
                       </li>
@@ -228,7 +228,7 @@ export default function TermsOfServicePage() {
                     {termsStrings.sections.limitationOfLiability.content}
                   </p>
                   <ul className="space-y-1">
-                    {termsStrings.sections.limitationOfLiability.exclusions.map((exclusion, index) => (
+                    {termsStrings.sections.limitationOfLiability.exclusions.map((exclusion: string, index: number) => (
                       <li key={index} className="text-sm text-muted-foreground">
                         • {exclusion}
                       </li>
@@ -282,7 +282,7 @@ export default function TermsOfServicePage() {
                   {termsStrings.sections.changes.content}
                 </p>
                 <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.changes.methods.map((method, index) => (
+                  {termsStrings.sections.changes.methods.map((method: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{method}</span>
@@ -300,7 +300,7 @@ export default function TermsOfServicePage() {
                   {termsStrings.sections.generalProvisions.title}
                 </h2>
                 <div className="space-y-3">
-                  {Object.entries(termsStrings.sections.generalProvisions.provisions).map(([key, value]) => (
+                  {Object.entries(termsStrings.sections.generalProvisions.provisions).map(([key, value]: [string, any]) => (
                     <div key={key} className="p-3 bg-muted/30 rounded-lg">
                       <p className="text-sm text-muted-foreground">
                         <strong className="text-foreground capitalize">
@@ -322,7 +322,7 @@ export default function TermsOfServicePage() {
                   {termsStrings.sections.contact.content}
                 </p>
                 <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
-                  {Object.entries(termsStrings.sections.contact.methods).map(([key, method]) => (
+                  {Object.entries(termsStrings.sections.contact.methods).map(([key, method]: [string, any]) => (
                     <div key={key} className="flex items-center gap-3">
                       <span className="text-sm font-medium text-foreground min-w-[80px]">
                         {method.label}:

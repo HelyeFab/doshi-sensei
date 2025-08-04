@@ -66,7 +66,7 @@ export default function PricingConfigPage() {
       }
     } catch (error) {
       console.error('Error loading pricing:', error);
-      showNotification('Error loading pricing configuration', 'error');
+      showNotification({ title: 'Error loading pricing configuration', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -88,15 +88,15 @@ export default function PricingConfigPage() {
       });
 
       if (response.ok) {
-        showNotification('Pricing updated successfully!', 'success');
+        showNotification({ title: 'Pricing updated successfully!', type: 'success' });
         await loadPricing(); // Reload to get updated timestamp
       } else {
         const error = await response.json();
-        showNotification(error.error || 'Failed to update pricing', 'error');
+        showNotification({ title: error.error || 'Failed to update pricing', type: 'error' });
       }
     } catch (error) {
       console.error('Error saving pricing:', error);
-      showNotification('Error saving pricing configuration', 'error');
+      showNotification({ title: 'Error saving pricing configuration', type: 'error' });
     } finally {
       setSaving(false);
     }

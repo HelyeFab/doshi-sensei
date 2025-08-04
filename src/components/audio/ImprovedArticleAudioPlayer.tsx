@@ -19,6 +19,7 @@ interface AudioControls {
 }
 
 export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlayerProps) {
+  const strings = useStrings();
   const [controls, setControls] = useState<AudioControls>({
     isPlaying: false,
     isPaused: false,

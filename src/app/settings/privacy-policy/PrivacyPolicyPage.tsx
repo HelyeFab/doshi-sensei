@@ -49,7 +49,7 @@ export default function PrivacyPolicyPage() {
                   {privacyStrings.sections.privacyCommitment.content}
                 </p>
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
-                  {privacyStrings.sections.privacyCommitment.principles.map((principle, index) => (
+                  {privacyStrings.sections.privacyCommitment.principles.map((principle: string, index: number) => (
                     <div key={index} className="flex items-start gap-3">
                       <div className="text-primary mt-0.5">✓</div>
                       <p className="text-sm text-foreground">{principle}</p>
@@ -73,7 +73,7 @@ export default function PrivacyPolicyPage() {
                     {privacyStrings.sections.informationCollection.subsections.localData.description}
                   </p>
                   <ul className="space-y-2 ml-4">
-                    {privacyStrings.sections.informationCollection.subsections.localData.items.map((item, index) => (
+                    {privacyStrings.sections.informationCollection.subsections.localData.items.map((item: string, index: number) => (
                       <li key={index} className="flex items-start gap-2">
                         <span className="text-primary mt-0.5">•</span>
                         <span className="text-sm text-muted-foreground">{item}</span>
@@ -91,7 +91,7 @@ export default function PrivacyPolicyPage() {
                     {privacyStrings.sections.informationCollection.subsections.accountData.description}
                   </p>
                   <ul className="space-y-2 ml-4">
-                    {privacyStrings.sections.informationCollection.subsections.accountData.items.map((item, index) => (
+                    {privacyStrings.sections.informationCollection.subsections.accountData.items.map((item: string, index: number) => (
                       <li key={index} className="flex items-start gap-2">
                         <span className="text-primary mt-0.5">•</span>
                         <span className="text-sm text-muted-foreground">{item}</span>
@@ -109,7 +109,7 @@ export default function PrivacyPolicyPage() {
                     {privacyStrings.sections.informationCollection.subsections.automaticData.description}
                   </p>
                   <ul className="space-y-2 ml-4">
-                    {privacyStrings.sections.informationCollection.subsections.automaticData.items.map((item, index) => (
+                    {privacyStrings.sections.informationCollection.subsections.automaticData.items.map((item: string, index: number) => (
                       <li key={index} className="flex items-start gap-2">
                         <span className="text-primary mt-0.5">•</span>
                         <span className="text-sm text-muted-foreground">{item}</span>
@@ -128,7 +128,7 @@ export default function PrivacyPolicyPage() {
                   {privacyStrings.sections.dataUsage.content}
                 </p>
                 <ul className="space-y-2 ml-4">
-                  {privacyStrings.sections.dataUsage.purposes.map((purpose, index) => (
+                  {privacyStrings.sections.dataUsage.purposes.map((purpose: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{purpose}</span>
@@ -146,7 +146,7 @@ export default function PrivacyPolicyPage() {
                   {privacyStrings.sections.dataSharing.content}
                 </p>
                 <ul className="space-y-2 ml-4">
-                  {privacyStrings.sections.dataSharing.circumstances.map((circumstance, index) => (
+                  {privacyStrings.sections.dataSharing.circumstances.map((circumstance: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{circumstance}</span>
@@ -159,7 +159,7 @@ export default function PrivacyPolicyPage() {
                     {privacyStrings.sections.dataSharing.serviceProviders.title}
                   </h4>
                   <ul className="space-y-1">
-                    {privacyStrings.sections.dataSharing.serviceProviders.list.map((provider, index) => (
+                    {privacyStrings.sections.dataSharing.serviceProviders.list.map((provider: string, index: number) => (
                       <li key={index} className="text-sm text-muted-foreground">• {provider}</li>
                     ))}
                   </ul>
@@ -175,7 +175,7 @@ export default function PrivacyPolicyPage() {
                   {privacyStrings.sections.dataSecurity.content}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {privacyStrings.sections.dataSecurity.measures.map((measure, index) => (
+                  {privacyStrings.sections.dataSecurity.measures.map((measure: string, index: number) => (
                     <div key={index} className="flex items-start gap-2 p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
                       <div className="text-green-600 dark:text-green-400 mt-0.5">🛡️</div>
                       <span className="text-sm text-foreground">{measure}</span>
@@ -193,7 +193,7 @@ export default function PrivacyPolicyPage() {
                   {privacyStrings.sections.dataRetention.content}
                 </p>
                 <ul className="space-y-2 ml-4">
-                  {privacyStrings.sections.dataRetention.policies.map((policy, index) => (
+                  {privacyStrings.sections.dataRetention.policies.map((policy: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{policy}</span>
@@ -245,7 +245,7 @@ export default function PrivacyPolicyPage() {
                   {privacyStrings.sections.cookies.content}
                 </p>
                 <ul className="space-y-2 ml-4">
-                  {privacyStrings.sections.cookies.uses.map((use, index) => (
+                  {privacyStrings.sections.cookies.uses.map((use: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{use}</span>
@@ -276,7 +276,7 @@ export default function PrivacyPolicyPage() {
                   {privacyStrings.sections.changes.content}
                 </p>
                 <ul className="space-y-2 ml-4">
-                  {privacyStrings.sections.changes.methods.map((method, index) => (
+                  {privacyStrings.sections.changes.methods.map((method: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="text-sm text-muted-foreground">{method}</span>

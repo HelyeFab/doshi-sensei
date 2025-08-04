@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ShadowingSession, TranscriptLine } from '../page';
+import { ShadowingSession, TranscriptLine } from '../YouTubeShadowing';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Settings, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotification } from '@/contexts/NotificationContext';

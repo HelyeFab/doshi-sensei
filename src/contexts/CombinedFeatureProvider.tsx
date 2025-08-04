@@ -2,14 +2,12 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { ModalProvider, useModal } from './ModalContext';
-import { NavigationProvider, useNavigation } from './NavigationContext';
 import { NotificationProvider, useNotification } from './NotificationContext';
 import { KanjiSelectionProvider, useKanjiSelection } from './KanjiSelectionContext';
 
 // Combined context that provides all feature-related contexts
 interface CombinedFeatureContextType {
   modal: ReturnType<typeof useModal>;
-  navigation: ReturnType<typeof useNavigation>;
   notification: ReturnType<typeof useNotification>;
   kanjiSelection: ReturnType<typeof useKanjiSelection>;
 }
@@ -28,16 +26,14 @@ export function useCombinedFeature() {
 // Inner component that has access to all individual contexts
 function CombinedFeatureInner({ children }: { children: ReactNode }) {
   const modal = useModal();
-  const navigation = useNavigation();
   const notification = useNotification();
   const kanjiSelection = useKanjiSelection();
 
   const value = React.useMemo(() => ({
     modal,
-    navigation,
     notification,
     kanjiSelection
-  }), [modal, navigation, notification, kanjiSelection]);
+  }), [modal, notification, kanjiSelection]);
 
   return (
     <CombinedFeatureContext.Provider value={value}>
@@ -52,11 +48,9 @@ export function CombinedFeatureProvider({ children }: { children: ReactNode }) {
     <KanjiSelectionProvider>
       <NotificationProvider>
         <ModalProvider>
-          <NavigationProvider>
-            <CombinedFeatureInner>
-              {children}
-            </CombinedFeatureInner>
-          </NavigationProvider>
+          <CombinedFeatureInner>
+            {children}
+          </CombinedFeatureInner>
         </ModalProvider>
       </NotificationProvider>
     </KanjiSelectionProvider>
@@ -65,6 +59,5 @@ export function CombinedFeatureProvider({ children }: { children: ReactNode }) {
 
 // Export individual hooks for backward compatibility
 export { useModal } from './ModalContext';
-export { useNavigation } from './NavigationContext';
 export { useNotification } from './NotificationContext';
 export { useKanjiSelection } from './KanjiSelectionContext';

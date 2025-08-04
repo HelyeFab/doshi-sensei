@@ -108,12 +108,8 @@ export default function StrokeOrderPracticePage() {
       if (board) {
         let kanjiItems: string[] = [];
         
-        // Handle both old 'kanji' array and new 'items' array structure
-        if ('items' in board && board.items && board.items.length > 0) {
-          kanjiItems = board.items
-            .filter((item: any) => item.type === 'kanji')
-            .map((item: any) => item.content);
-        } else if (board.kanji && board.kanji.length > 0) {
+        // Extract kanji characters from the board
+        if (board.kanji && Array.isArray(board.kanji) && board.kanji.length > 0) {
           // Extract the character from KanjiItem objects
           console.log('Board kanji:', board.kanji);
           kanjiItems = board.kanji.map(k => {
@@ -189,7 +185,7 @@ export default function StrokeOrderPracticePage() {
                   <span className="text-sm font-medium text-foreground">
                     {isPremium ? (
                       <span className="text-green-600 font-bold">Unlimited practices</span>
-                    ) : remaining > 0 ? (
+                    ) : remaining && remaining > 0 ? (
                       <>
                         <span className="text-primary font-bold">{remaining}</span> practices remaining today
                       </>
@@ -318,14 +314,8 @@ export default function StrokeOrderPracticePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredBoards.map((board) => {
-                  // Handle both old and new data structures
-                  let kanjiCount = 0;
-                  
-                  if ('items' in board && board.items && board.items.length > 0) {
-                    kanjiCount = board.items.filter((item: any) => item.type === 'kanji').length;
-                  } else if (board.kanji && board.kanji.length > 0) {
-                    kanjiCount = board.kanji.length;
-                  }
+                  // Get kanji count
+                  const kanjiCount = board.kanji && Array.isArray(board.kanji) ? board.kanji.length : 0;
 
                   return (
                     <button

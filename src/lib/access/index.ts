@@ -110,43 +110,10 @@ export class AccessControl {
       return false;
     }
     
-    // Map feature categories to permissions
-    const permissionMap: Record<string, string> = {
-      'drill_practice': 'do_drills',
-      'article_reading': 'read_articles',
-      'story_reading': 'read_stories',
-      'kanji_quest': 'play_games',
-      'kana_drop': 'play_games',
-      'sentence_scramble': 'play_games',
-      'matching_game': 'play_games',
-      'memory_match': 'play_games',
-      'reading_routes': 'play_games',
-      'kanji_simon': 'play_games',
-      'listening_quiz': 'play_games',
-      'word_assembly': 'play_games',
-      'word_lists': 'create_lists',
-      'bookmarks': 'create_lists',
-      'sentences-bookmark': 'create_lists',
-      'cloud_sync': 'cloud_sync',
-      'progress_saving': 'save_progress',
-      'kanji_moods': 'kanji_moods',
-      'kanji_stroke_order': 'view_stroke_order',
-      'stroke_order_practice': 'view_stroke_order',
-      'youtube_shadowing': 'youtube_shadowing',
-      'anki_import': 'create_lists',
-      'anki_set_creation': 'create_lists',
-      'flashcard_review': 'do_drills',
-      'ai_context_explanation': 'ai_explanations',
-      'textbook_vocabulary': 'textbook_vocabulary',
-      'word_learning_session': 'do_learning_sessions',
-      'kana_study': 'do_drills',
-      'kanji_mastery': 'learn_kanji',
-      'leaderboard': 'view_leaderboard',
-      'share_app': 'share_content',
-      'referral_rewards': 'earn_rewards'
-    };
+    // Use centralized permission mapping
+    const { getFeaturePermission } = await import('../features/permission-map');
     
-    const permission = permissionMap[featureId];
+    const permission = getFeaturePermission(featureId);
     if (!permission) {
       console.error(`[Access] No permission mapping for feature: ${featureId}`);
       return false;

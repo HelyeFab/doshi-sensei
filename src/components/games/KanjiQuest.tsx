@@ -997,7 +997,8 @@ export default function KanjiQuest({
         : 'meaning';
       const allQuestionsAnswered = questionsAnswered.size + 1 >= totalPossibleQuestions;
       
-      if (isCorrect && (kanjiHP - battleLog[battleLog.length - 1]?.damage <= 0 || allQuestionsAnswered)) {
+      const lastBattleEntry = battleLog[battleLog.length - 1];
+      if (isCorrect && (kanjiHP - (lastBattleEntry?.damage || 0) <= 0 || allQuestionsAnswered)) {
         // Trigger defeat animation
         setShowKanjiDefeat(true);
         

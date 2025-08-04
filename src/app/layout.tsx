@@ -19,9 +19,12 @@ import CompanionTrigger from "@/components/CompanionTrigger";
 import OfflineNotification from "@/components/OfflineNotification";
 import { DevHelper } from '@/components/DevHelper';
 import { AchievementToastManager } from '@/components/achievements/AchievementToast';
-import { NavigationGestures } from '@/components/navigation/NavigationGestures';
 import PWARecovery from '@/components/PWARecovery';
 import { LazyInitializers } from '@/components/LazyInitializers';
+import { FastRefreshLogger } from '@/components/FastRefreshLogger';
+import { NavigationErrorBoundary } from './NavigationErrorBoundary';
+import { PersistentLogger } from '@/components/PersistentLogger';
+import { ConsoleLogInitializer } from '@/components/ConsoleLogInitializer';
 
 const geistSans = localFont({
   src: "../../public/fonts/Geist/Geist-VariableFont_wght.ttf",
@@ -303,11 +306,16 @@ export default function RootLayout({
                     <OnboardingWrapper>
                       <AchievementToastManager>
                         <div className="min-h-screen bg-background text-foreground">
+                          <FastRefreshLogger />
+                          <ConsoleLogInitializer />
+                          <PersistentLogger />
                           <OfflineNotification />
                           <LazyInitializers />
-                          <div className="mobile-nav-padding">
-                            {children}
-                          </div>
+                          <NavigationErrorBoundary>
+                            <div className="mobile-nav-padding">
+                              {children}
+                            </div>
+                          </NavigationErrorBoundary>
                           <StunningBottomNavbar />
                           <MobileMenu />
                           <DesktopNavMenu />
@@ -316,7 +324,6 @@ export default function RootLayout({
                           <FloatingDonateButton />
                           <CompanionTrigger />
                           <ToastContainer />
-                          <NavigationGestures />
                           <DevHelper />
                           <PWARecovery />
                         </div>

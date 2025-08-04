@@ -154,7 +154,7 @@ export function ArticleMonitoringDashboard({ className }: ArticleMonitoringDashb
         </CardHeader>
         <CardContent>
           <p className="text-red-600">{error}</p>
-          <Button onClick={fetchStats} className="mt-4">
+          <Button onClick={() => fetchStats()} className="mt-4">
             Try Again
           </Button>
         </CardContent>

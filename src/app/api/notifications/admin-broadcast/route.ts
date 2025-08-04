@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         const batch = tokens.slice(i, i + 500);
         
         try {
-          const response = await messaging.sendMulticast({
+          const response = await messaging.sendEachForMulticast({
             tokens: batch,
             notification: {
               title,
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
           failedCount += response.failureCount;
           
           // Remove invalid tokens
-          response.responses.forEach((resp, idx) => {
+          response.responses.forEach((resp: any, idx: number) => {
             if (resp.error?.code === 'messaging/registration-token-not-registered') {
               // Remove invalid token
               const invalidToken = batch[idx];

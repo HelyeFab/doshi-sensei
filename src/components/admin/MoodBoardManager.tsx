@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
+import { useStrings } from '@/contexts/LanguageContext';
 import { MoodBoard } from '@/types/moodBoard';
 import Link from 'next/link'
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
@@ -15,6 +16,7 @@ interface MoodBoardManagerProps {
 
 export function MoodBoardManager({ searchQuery, filterJLPT }: MoodBoardManagerProps) {
   const { moodBoards, loading, error, refreshMoodBoards, deleteMoodBoard, toggleMoodBoardStatus } = useMoodBoards();
+  const strings = useStrings();
   const [filteredBoards, setFilteredBoards] = useState<MoodBoard[]>([]);
   const [sortBy, setSortBy] = useState<'title' | 'jlpt' | 'updated' | 'kanji_count'>('updated');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');

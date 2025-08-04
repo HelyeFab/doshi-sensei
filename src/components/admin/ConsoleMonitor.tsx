@@ -32,7 +32,9 @@ export function ConsoleMonitor() {
       setLogs(newLogs);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

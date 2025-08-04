@@ -10,7 +10,7 @@ export const metadata: Metadata = generatePageMetadata({
   path: '/admin/resources/[id]/edit',
 });
 
-export default function Page() {
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const breadcrumbData = structuredData.breadcrumb([
     {
       "name": "Home",
@@ -25,7 +25,7 @@ export default function Page() {
   return (
     <>
       <StructuredData data={breadcrumbData} />
-      <EditResourcePage />
+      <EditResourcePage params={params} />
     </>
   );
 }

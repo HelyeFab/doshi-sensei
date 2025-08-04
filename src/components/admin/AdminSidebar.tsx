@@ -141,6 +141,12 @@ const sidebarCategories: SidebarCategory[] = [
         iconKey: 'debug',
         href: '/admin/debug',
       },
+      {
+        id: 'console-monitor' as AdminSection,
+        labelKey: 'consoleMonitor',
+        iconKey: 'consoleMonitor',
+        href: '/admin/console-monitor',
+      },
     ]
   },
 ];
@@ -168,7 +174,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             labelKey === 'moodBoards' ? 'Mood Boards' : 
             labelKey === 'logs' ? 'Activity Logs' :
             labelKey === 'activities' ? 'Activities' : 
-            labelKey === 'notifications' ? 'Notifications' : labelKey);
+            labelKey === 'notifications' ? 'Notifications' : 
+            labelKey === 'consoleMonitor' ? 'Console Monitor' : labelKey);
   };
 
   // Helper to get icon for an item
@@ -184,7 +191,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
            iconKey === 'moodBoards' ? '🎨' : 
            iconKey === 'logs' ? '📝' :
            iconKey === 'activities' ? '📊' : 
-           iconKey === 'notifications' ? '🔔' : '📋');
+           iconKey === 'notifications' ? '🔔' : 
+           iconKey === 'consoleMonitor' ? '💻' : '📋');
   };
 
   const handleSectionClick = (section: AdminSection) => {

@@ -98,7 +98,7 @@ export default function PokedexContent({ userId, onClose }: { userId?: string; o
         if (user === undefined) return; // Still loading
         
         // Determine if user is premium based on userType
-        const isPremiumUser = userType === 'monthly' || userType === 'yearly' || userType === 'admin';
+        const isPremiumUser = userType === 'monthly' || userType === 'yearly';
         
         // Pass user (can be null for guests) and premium status
         const caughtIds = await pokemonManager.getCaughtPokemon(user, isPremiumUser);

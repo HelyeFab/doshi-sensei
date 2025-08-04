@@ -402,7 +402,7 @@ export default function GamesClient() {
       // Play the audio immediately
       setTimeout(() => {
         const text = question.question.reading || question.question.word;
-        TTSManager.speak(text, 'ja', 0.8);
+        TTSManager.speak(text, { voice: 'female', speed: 0.8 });
       }, 100);
     }
   };
@@ -457,7 +457,7 @@ export default function GamesClient() {
       // Play the audio
       setTimeout(() => {
         const text = question.question.reading || question.question.word;
-        TTSManager.speak(text, 'ja', 0.8);
+        TTSManager.speak(text, { voice: 'female', speed: 0.8 });
       }, 100);
     }
   };
@@ -465,7 +465,7 @@ export default function GamesClient() {
   const handleReplayAudio = () => {
     if (currentQuestion) {
       const text = currentQuestion.question.reading || currentQuestion.question.word;
-      TTSManager.speak(text, 'ja', 0.8);
+      TTSManager.speak(text, { voice: 'female', speed: 0.8 });
     }
   };
 
@@ -479,10 +479,10 @@ export default function GamesClient() {
     if (!word.kana) return null;
 
     // Split kana into segments (simplified - could be improved)
-    const kanaSegments = word.kana.match(/[\u3040-\u309f\u30a0-\u30ff]+/g) || [];
+    const kanaSegments: string[] = word.kana.match(/[\u3040-\u309f\u30a0-\u30ff]+/g) || [];
     
     // Generate distractors from other words
-    const distractorKana = savedWords
+    const distractorKana: string[] = savedWords
       .filter(w => w.id !== word.id && w.kana)
       .map(w => w.kana)
       .join('')
@@ -705,6 +705,7 @@ export default function GamesClient() {
                   </p>
                   <SmartNavigationLink
                     href="/vocabulary"
+                    title="Create Study Lists"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                   >
                     Create Study Lists
@@ -1049,15 +1050,14 @@ export default function GamesClient() {
               <KanjiQuest
                 jlptLevel={kanjiQuestJlptLevel}
                 onBack={handleBackToGameSelection}
-                onComplete={(completedIds, caughtIds) => {
-                  setCompletedKanjiIds(new Set([...completedKanjiIds, ...completedIds]));
-                  setCaughtPokemonIds(new Set([...caughtPokemonIds, ...caughtIds]));
-                  console.log('Kanji Quest completed!', {
-                    totalCompleted: completedKanjiIds.size + completedIds.size,
-                    totalCaught: caughtPokemonIds.size + caughtIds.size
-                  });
+                onPokemonCaught={(pokemonId, kanjiIds) => {
+                  setCaughtPokemonIds(new Set([...caughtPokemonIds, pokemonId]));
                 }}
-                customKanjiList={customKanjiSelection}
+                completedKanjiIds={completedKanjiIds}
+                onKanjiCompleted={(kanjiIds: string[]) => {
+                  setCompletedKanjiIds(new Set([...completedKanjiIds, ...kanjiIds]));
+                }}
+                customKanji={customKanjiSelection}
               />
             ) : null;
           })()}
@@ -1071,15 +1071,12 @@ export default function GamesClient() {
           isOpen={showMatchingInstructions}
           onClose={() => {
             setShowMatchingInstructions(false);
-            setShowGameSelection(true);
-          }}
-          onBackdropClick={() => {
-            setShowMatchingInstructions(false);
             setShowListSelection(true);
           }}
           title="Matching Game Instructions"
           height="auto"
           showHandle={false}
+          closeOnOutsideClick={true}
         >
           <div className="p-6 space-y-6">
             <div className="text-center">
@@ -1161,6 +1158,7 @@ export default function GamesClient() {
               setShowKanaDropModal(false);
               setShowGameSelection(true);
             }}
+            selectedKana={[]}
           />
         )}
 
@@ -1189,7 +1187,7 @@ export default function GamesClient() {
               setShowMatchingInstructions(false);
               setShowListSelection(true);
             }}
-            studyLists={studyLists.filter(list => selectedListIds.includes(list.id))}
+            words={savedWords}
           />
         )}
 

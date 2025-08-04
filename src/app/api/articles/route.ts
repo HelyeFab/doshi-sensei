@@ -18,9 +18,18 @@ export async function GET(request: NextRequest) {
       sortOrder: searchParams.get('sortOrder') as any || 'desc'
     };
     
-    // Filter out empty arrays
+    // Filter out empty arrays and validate JLPT levels
     if (options.difficulty?.length === 1 && options.difficulty[0] === '') {
       options.difficulty = undefined;
+    } else if (options.difficulty) {
+      // Filter out any empty strings and validate JLPT levels
+      const validLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+      const filteredDifficulty = options.difficulty.filter(level => level && validLevels.includes(level));
+      if (filteredDifficulty.length === 0) {
+        options.difficulty = undefined;
+      } else {
+        options.difficulty = filteredDifficulty as any;
+      }
     }
     if (options.category?.length === 1 && options.category[0] === '') {
       options.category = undefined;

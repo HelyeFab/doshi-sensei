@@ -27,7 +27,7 @@ export async function GET(
       const db = admin.firestore();
       
       // Check authorization header
-      const headersList = headers();
+      const headersList = await headers();
       const authorization = headersList.get('authorization');
       
       if (!authorization || !authorization.startsWith('Bearer ')) {

@@ -9,10 +9,11 @@ import { GoldenTimeScheduler } from './GoldenTimeScheduler';
 import { ProgressTracker } from './ProgressTracker';
 import { StudyProgress } from './StudyProgress';
 import { VocabularyCardModal } from './VocabularyCardModal';
+import { WordLearningLessonSelector } from './WordLearningLessonSelector';
 import { useVocabularyData } from '../hooks/useVocabularyData';
 import { useFilteredVocab } from '../hooks/useFilteredVocab';
 import { useStudySession } from '../hooks/useStudySession';
-import { vocabStorage } from '@/services/textbook-vocabulary';
+import { vocabStorage } from '@/services/textbook-vocabulary/client';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import type { VocabularyItem } from '../types';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -28,7 +29,7 @@ interface VocabularyLearningViewProps {
 
 export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: VocabularyLearningViewProps) {
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'study' | 'golden-time'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'study' | 'golden-time' | 'learn'>('grid');
   const [progressRefreshKey, setProgressRefreshKey] = useState(0);
   const [selectedCard, setSelectedCard] = useState<VocabularyItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -182,7 +183,10 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
   if (!loading && vocabulary.length === 0 && !selectedLesson) {
     return (
       <div className="min-h-screen bg-background">
-        <SmartPageHeader title={currentTextbook.title} />
+        <SmartPageHeader 
+          title={currentTextbook.title}
+          customBackUrl="/"
+        />
         <div className="text-center p-8 mt-8">
           <div className="text-6xl mb-4">📚</div>
           <h2 className="text-xl font-semibold mb-2">No Vocabulary Available</h2>
@@ -227,29 +231,42 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
               </p>
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex gap-1 p-1 bg-muted rounded-lg">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                  viewMode === 'grid' 
-                    ? 'bg-background text-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Browse
-              </button>
-              <button
-                onClick={() => setViewMode('golden-time')}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                  viewMode === 'golden-time' 
-                    ? 'bg-background text-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Review
-              </button>
-            </div>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="px-4 pb-2 overflow-x-auto">
+          <div className="flex gap-1 p-1 bg-muted rounded-lg inline-flex min-w-full">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-4 py-1.5 rounded text-sm font-medium transition-colors whitespace-nowrap ${
+                viewMode === 'grid' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Browse
+            </button>
+            <button
+              onClick={() => setViewMode('learn')}
+              className={`px-4 py-1.5 rounded text-sm font-medium transition-colors whitespace-nowrap ${
+                viewMode === 'learn' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Study
+            </button>
+            <button
+              onClick={() => setViewMode('golden-time')}
+              className={`px-4 py-1.5 rounded text-sm font-medium transition-colors whitespace-nowrap ${
+                viewMode === 'golden-time' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Review
+            </button>
           </div>
         </div>
 
@@ -341,6 +358,26 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
               vocabulary={vocabulary}
               textbook={textbook}
               onStartReview={(cards) => handleStartStudy(cards)}
+            />
+          </motion.div>
+        )}
+
+        {viewMode === 'learn' && (
+          <motion.div
+            key="learn"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="px-4 py-4"
+          >
+            <WordLearningLessonSelector
+              textbook={textbook}
+              currentTextbook={currentTextbook}
+              selectedLesson={selectedLesson}
+              onLessonSelect={handleLessonSelect}
+              isPremium={isPremium}
+              checkAndTrack={checkAndTrack}
+              vocabulary={vocabulary}
             />
           </motion.div>
         )}

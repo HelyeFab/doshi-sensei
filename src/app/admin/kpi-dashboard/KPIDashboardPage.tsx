@@ -11,7 +11,7 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
 import { 
-  TrendingUp, Users, BookOpen, GameController2, Target, Activity,
+  TrendingUp, Users, BookOpen, Gamepad2, Target, Activity,
   Calendar, Clock, Zap, Award
 } from 'lucide-react';
 import { db } from '@/lib/firebase';

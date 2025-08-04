@@ -114,8 +114,8 @@ export class ArticleCache {
   async setProcessedContent(articleId: string, processedContent: string): Promise<void> {
     try {
       // Get existing cached article
-      const article = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
-                   await this.cacheManager.getDB<CachedArticle>('articles', articleId);
+      const memoryArticle = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`);
+      const article = memoryArticle || await this.cacheManager.getDB<CachedArticle>('articles', articleId);
 
       if (article) {
         article.processedContent = processedContent;
@@ -137,8 +137,8 @@ export class ArticleCache {
    */
   async getProcessedContent(articleId: string): Promise<string | null> {
     try {
-      const article = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
-                   await this.cacheManager.getDB<CachedArticle>('articles', articleId);
+      const memoryArticle = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`);
+      const article = memoryArticle || await this.cacheManager.getDB<CachedArticle>('articles', articleId);
 
       return article?.processedContent || null;
     } catch (error) {
@@ -156,8 +156,8 @@ export class ArticleCache {
     const promises = articleIds.map(async (articleId) => {
       try {
         // Check if already cached
-        const cached = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
-                      await this.cacheManager.getDB<CachedArticle>('articles', articleId);
+        const memoryCached = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`);
+        const cached = memoryCached || await this.cacheManager.getDB<CachedArticle>('articles', articleId);
         
         if (!cached) {
           const article = await fetchFn(articleId);
@@ -183,8 +183,8 @@ export class ArticleCache {
 
     // Check cache for each article
     for (const articleId of articleIds) {
-      const cached = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`) ||
-                    await this.cacheManager.getDB<CachedArticle>('articles', articleId);
+      const memoryCached = this.cacheManager.getMemory<CachedArticle>(`article:${articleId}`);
+      const cached = memoryCached || await this.cacheManager.getDB<CachedArticle>('articles', articleId);
       
       if (cached) {
         results.push(cached);

@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link'
-import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import Link from 'next/link';
 
 export default function Error({
   error,
@@ -94,11 +93,10 @@ export default function Error({
           >
             Try Again
           </button>
-          <SmartNavigationLink href="/"
-            className="block w-full px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
-           title="Return Home">
+          <Link href="/"
+            className="block w-full px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
             Return Home
-          </SmartNavigationLink>
+          </Link>
         </div>
         {process.env.NODE_ENV === 'development' && (
           <details className="mt-6 text-left">

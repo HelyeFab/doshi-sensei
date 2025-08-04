@@ -542,7 +542,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
 
   const handleClose = () => {
     // Track early exit if game has been playing
-    if (gameState.phase === 'playing' && gameState.gameStartTime > 0) {
+    if (gameState.phase === 'scramble' && gameState.gameStartTime > 0) {
       const timePlayed = Date.now() - gameState.gameStartTime;
       if (timePlayed > 10000) { // Only track if played for more than 10 seconds
         const score = Math.round((gameState.totalScore / Math.max(gameState.currentSentenceIndex + 1, 1)) * 100);

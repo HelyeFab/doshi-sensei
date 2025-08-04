@@ -2,21 +2,52 @@
 import { JapaneseWord } from '@/types';
 import { batchSearchTatoebaExamples } from './tatoebaSearch';
 
-let jmdictData: any = null;
+interface JMDictGloss {
+  lang: string;
+  text: string;
+}
+
+interface JMDictSense {
+  gloss?: JMDictGloss[];
+  partOfSpeech?: string[];
+}
+
+interface JMDictKanji {
+  text?: string;
+  tags?: string[];
+}
+
+interface JMDictKana {
+  text?: string;
+  tags?: string[];
+}
+
+interface JMDictWord {
+  id: string;
+  kanji?: JMDictKanji[];
+  kana?: JMDictKana[];
+  sense?: JMDictSense[];
+}
+
+interface JMDictData {
+  words: JMDictWord[];
+}
+
+let jmdictData: JMDictData | null = null;
 let loadingPromise: Promise<void> | null = null;
 
-export async function loadJMdictData() {
+export async function loadJMdictData(): Promise<void> {
   if (jmdictData) return;
   if (loadingPromise) return loadingPromise;
   loadingPromise = fetch('/data/jmdict-eng-common.json')
     .then(res => res.json())
-    .then(data => {
+    .then((data: JMDictData) => {
       jmdictData = data;
     })
     .catch(err => {
       console.error('Failed to load JMdict data:', err);
       jmdictData = null;
-    }) as any;
+    });
   return loadingPromise;
 }
 
@@ -130,10 +161,10 @@ function getPosScore(pos: string[]): number {
   return score;
 }
 
-function getWordLengthScore(word: any): number {
+function getWordLengthScore(word: JMDictWord): number {
   // Prefer shorter, simpler words
-  const kanjiLength = word.kanji[0]?.text?.length || 0;
-  const kanaLength = word.kana[0]?.text?.length || 0;
+  const kanjiLength = word.kanji?.[0]?.text?.length || 0;
+  const kanaLength = word.kana?.[0]?.text?.length || 0;
   const minLength = Math.min(kanjiLength || 999, kanaLength || 999);
   
   if (minLength === 1) return 100;
@@ -144,10 +175,10 @@ function getWordLengthScore(word: any): number {
   return 0;
 }
 
-function isCompoundWord(word: any): boolean {
+function isCompoundWord(word: JMDictWord): boolean {
   // Check if word has multiple kanji that could be separate words
-  const kanjiText = word.kanji[0]?.text || '';
-  const senseText = word.sense[0]?.gloss?.map((g: any) => g.text).join(' ') || '';
+  const kanjiText = word.kanji?.[0]?.text || '';
+  const senseText = word.sense?.[0]?.gloss?.map((g) => g.text).join(' ') || '';
   
   // If it contains parentheses in the meaning, it's likely a compound or specific usage
   if (senseText.includes('(') && senseText.includes(')')) return true;
@@ -169,7 +200,7 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
   if (!jmdictData) return [];
   
   const lowerTerm = term.toLowerCase().trim();
-  const results: { word: any; score: number; matchType: 'exact' | 'reading' | 'meaning' }[] = [];
+  const results: { word: JMDictWord; score: number; matchType: 'exact' | 'reading' | 'meaning' }[] = [];
   
   // For very short search terms (1-3 letters), we need to be more strict
   const isShortTerm = lowerTerm.length <= 3;
@@ -183,10 +214,10 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
   for (const word of jmdictData.words) {
     // Gather tags and part of speech
     const tags = [
-      ...(word.kanji?.flatMap((k: any) => k.tags || []) || []),
-      ...(word.kana?.flatMap((k: any) => k.tags || []) || [])
+      ...(word.kanji?.flatMap((k) => k.tags || []) || []),
+      ...(word.kana?.flatMap((k) => k.tags || []) || [])
     ];
-    const pos = word.sense?.flatMap((s: any) => s.partOfSpeech || []) || [];
+    const pos = word.sense?.flatMap((s) => s.partOfSpeech || []) || [];
 
     // Scoring
     let score = 0;
@@ -306,15 +337,15 @@ export async function searchJMdictWords(term: string, limit: number = 30): Promi
   
   // Convert to JapaneseWord format with extra metadata
   const topResults = results.slice(0, limit).map(({ word, score, matchType }) => {
-    const mainKanji = word.kanji[0]?.text || word.kana[0]?.text || '';
-    const mainKana = word.kana[0]?.text || '';
-    const meaning = word.sense[0]?.gloss?.find((g: any) => g.lang === 'eng')?.text || '';
+    const mainKanji = word.kanji?.[0]?.text || word.kana?.[0]?.text || '';
+    const mainKana = word.kana?.[0]?.text || '';
+    const meaning = word.sense?.[0]?.gloss?.find((g) => g.lang === 'eng')?.text || '';
     const tags = [
-      ...(word.kanji?.flatMap((k: any) => k.tags || []) || []),
-      ...(word.kana?.flatMap((k: any) => k.tags || []) || [])
+      ...(word.kanji?.flatMap((k) => k.tags || []) || []),
+      ...(word.kana?.flatMap((k) => k.tags || []) || [])
     ];
     
-    const isCommon = tags.some((tag: string) => 
+    const isCommon = tags.some((tag) => 
       ['news1', 'ichi1', 'spec1', 'gai1', 'news2', 'ichi2'].includes(tag)
     );
     

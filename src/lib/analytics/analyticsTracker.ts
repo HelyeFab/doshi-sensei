@@ -8,7 +8,11 @@ export type AnalyticsEventType =
   | 'moodboard_view'
   // Feature events  
   | 'game_start' | 'game_complete' | 'drill_start' | 'drill_complete'
-  | 'flashcard_session' | 'list_created' | 'list_used'
+  | 'flashcard_session' | 'flashcard_session_started' | 'flashcard_session_completed' | 'flashcard_undo_used'
+  | 'list_created' | 'list_used'
+  // Anki events
+  | 'anki_set_creation_started' | 'anki_set_creation_completed' | 'anki_set_creation_error'
+  | 'anki_import_started' | 'anki_import_completed' | 'anki_import_error'
   // Behavior events
   | 'page_view' | 'feature_discovered' | 'session_start' | 'session_end'
   | 'error_occurred'

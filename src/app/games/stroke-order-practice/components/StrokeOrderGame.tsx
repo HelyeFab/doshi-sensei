@@ -381,11 +381,18 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
       <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Page Header */}
-          <PageHeader 
-            title={practiceSet.name}
-            showBackButton={true}
-            onBack={handleBack}
-          />
+          <div className="flex items-center gap-4 mb-6">
+            <button
+              onClick={handleBack}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <PageHeader 
+              title={practiceSet.name}
+              showBackButton={false}
+            />
+          </div>
 
           <div className="mb-4 mt-8">
             <GameControls

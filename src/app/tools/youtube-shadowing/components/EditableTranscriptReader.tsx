@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { TranscriptLine } from '../page';
+import { TranscriptLine } from '../YouTubeShadowing';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { generateFuriganaWithCache } from '@/utils/furigana';
 import { searchWords } from '@/utils/api';
@@ -365,7 +365,11 @@ export default function EditableTranscriptReader({
                   {editMode ? (
                     <div>
                       <div
-                        ref={el => editRefs.current[item.original.id] = el}
+                        ref={(el) => {
+                          if (el) {
+                            editRefs.current[item.original.id] = el;
+                          }
+                        }}
                         contentEditable
                         suppressContentEditableWarning
                         className="text-foreground japanese-text text-lg leading-relaxed outline-none focus:ring-2 focus:ring-primary rounded p-2"
@@ -393,6 +397,7 @@ export default function EditableTranscriptReader({
                     <GrammarHighlightedText
                       text={showFurigana ? item.withFurigana : item.original.text}
                       onWordClick={handleWordClick}
+                      highlightMode="all"
                     />
                   ) : (
                     <p 

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     console.log('🔐 Getting Firebase Admin instance...');
     const admin = await getFirebaseAdmin();
     console.log('✅ Firebase Admin obtained');
-    const decodedToken = await admin.auth.verifyIdToken(token);
+    const decodedToken = await admin.auth().verifyIdToken(token);
 
     // Check if user is admin (matching pattern from other admin routes)
     const userEmail = decodedToken.email || '';
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get Firestore instance
-    const db = admin.firestore;
+    const db = admin.firestore();
     const rulesDocRef = db.collection('config').doc(RULES_DOC_ID);
     
     // Get current rules

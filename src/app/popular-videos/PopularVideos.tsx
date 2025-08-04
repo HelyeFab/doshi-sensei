@@ -246,7 +246,7 @@ export default function PopularVideos() {
       
       // Convert practice history items to PopularVideo format
       const practiceHistoryData = practiceHistorySnapshot.docs.map(doc => {
-        const data = doc.data();
+        const data = doc.data() as any;
         console.log('Practice history doc:', doc.id, data);
         return {
           id: data.videoId || doc.id,

@@ -1,17 +1,81 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+// Log when this module is loaded
+console.log('[NavigationContext] Module loading at:', new Date().toISOString());
+
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import type { 
-  NavigationContextValue, 
-  NavigationEntry, 
-  NavigationEntryInput, 
-  NavigationProviderProps,
-  NavigationState
-} from '@/types/navigation';
-import { statePreservation } from '@/services/navigation/statePreservation';
-import { navigationRules } from '@/lib/navigation/rules';
-import { v4 as uuidv4 } from 'uuid';
+
+// Log after imports
+console.log('[NavigationContext] Imports completed');
+
+// Define types inline to avoid import errors
+interface NavigationEntry {
+  id: string;
+  path: string;
+  title: string;
+  type: 'page' | 'modal' | 'action';
+  timestamp: number;
+  metadata?: any;
+}
+
+interface NavigationEntryInput {
+  path: string;
+  title: string;
+  type: 'page' | 'modal' | 'action';
+  metadata?: any;
+}
+
+interface NavigationState {
+  stack: NavigationEntry[];
+  currentIndex: number;
+  maxStackSize: number;
+}
+
+interface NavigationProviderProps {
+  children: React.ReactNode;
+  maxStackSize?: number;
+  enablePersistence?: boolean;
+  debug?: boolean;
+}
+
+interface NavigationContextValue {
+  stack: NavigationEntry[];
+  currentEntry: NavigationEntry | null;
+  canGoBack: boolean;
+  canGoForward: boolean;
+  push: (entry: NavigationEntryInput) => void;
+  pop: () => NavigationEntry | null;
+  replace: (entry: NavigationEntryInput) => void;
+  clear: () => void;
+  getBackUrl: () => string | null;
+  getBackTitle: () => string | null;
+  findInStack: (predicate: (entry: NavigationEntry) => boolean) => NavigationEntry | null;
+  preserveState: (state: any) => void;
+  restoreState: () => any;
+}
+
+// Create a stub for statePreservation
+const statePreservation = {
+  save: () => {},
+  restore: () => null,
+  clear: () => {},
+  clearOld: () => {}
+};
+
+// Create a stub for navigationRules
+const navigationRules = {
+  getMaxStackDepth: () => 20,
+  getReturnBehavior: () => 'default',
+  getCustomReturnHandler: () => null,
+  shouldPreserveState: () => false,
+  getStateSerializer: () => null
+};
+
+// Simple UUID generator
+function generateId() {
+  return Math.random().toString(36).substr(2, 9);
+}
 
 const NavigationContext = createContext<NavigationContextValue | null>(null);
 
@@ -21,6 +85,8 @@ export function NavigationProvider({
   enablePersistence = true,
   debug = false
 }: NavigationProviderProps) {
+  console.log('[NavigationContext] NavigationProvider rendering');
+  
   const pathname = usePathname();
   const router = useRouter();
   const [state, setState] = useState<NavigationState>(() => {
@@ -85,7 +151,7 @@ export function NavigationProvider({
     setState(prev => {
       const newEntry: NavigationEntry = {
         ...entry,
-        id: uuidv4(),
+        id: generateId(),
         timestamp: Date.now()
       };
       
@@ -368,9 +434,13 @@ function NavigationDebugger({ stack, currentIndex }: { stack: NavigationEntry[],
 
 // Custom hook to use navigation context
 export function useNavigation() {
+  console.log('[NavigationContext] useNavigation called');
+  console.trace('useNavigation call trace:');
+  
   const context = useContext(NavigationContext);
   
   if (!context) {
+    console.error('[NavigationContext] No context found! useNavigation must be used within NavigationProvider');
     throw new Error('useNavigation must be used within NavigationProvider');
   }
   

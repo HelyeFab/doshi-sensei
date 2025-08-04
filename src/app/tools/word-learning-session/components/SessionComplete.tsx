@@ -1,29 +1,84 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { SessionData } from '../types';
 import Link from 'next/link';
+import { learnedWordsStorage } from '../services/learnedWordsStorage';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SessionCompleteProps {
   sessionData: SessionData;
   onRestart: () => void;
+  availableLessons: Array<{ id: string; name: string; totalWords: number }>;
 }
 
-export default function SessionComplete({ sessionData, onRestart }: SessionCompleteProps) {
+export default function SessionComplete({ sessionData, onRestart, availableLessons }: SessionCompleteProps) {
+  const { user } = useAuth();
+  const [lessonProgress, setLessonProgress] = useState<{ learned: number; total: number } | null>(null);
+  const [isLessonComplete, setIsLessonComplete] = useState(false);
+  const [nextLesson, setNextLesson] = useState<{ id: string; name: string } | null>(null);
+  
   const percentage = Math.round((sessionData.score / sessionData.words.length) * 100);
   const totalWords = sessionData.words.length;
   const weakWordsCount = sessionData.weakWords.length;
+
+  useEffect(() => {
+    checkLessonProgress();
+  }, []);
+
+  const checkLessonProgress = async () => {
+    const userId = user?.uid || 'guest';
+    const currentLesson = availableLessons.find(l => l.id === sessionData.setId);
+    
+    if (currentLesson) {
+      const progress = await learnedWordsStorage.getLessonProgress(
+        userId,
+        sessionData.setId,
+        currentLesson.totalWords
+      );
+      
+      setLessonProgress({
+        learned: progress.learnedWords.length,
+        total: currentLesson.totalWords
+      });
+      
+      // Check if lesson is complete
+      if (progress.learnedWords.length === currentLesson.totalWords) {
+        setIsLessonComplete(true);
+        
+        // Find next lesson
+        const currentIndex = availableLessons.findIndex(l => l.id === sessionData.setId);
+        if (currentIndex < availableLessons.length - 1) {
+          setNextLesson(availableLessons[currentIndex + 1]);
+        }
+      }
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto">
       {/* Completion Header */}
       <div className="text-center mb-8">
-        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+        <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 ${
+          isLessonComplete ? 'bg-yellow-100' : 'bg-green-100'
+        }`}>
+          {isLessonComplete ? (
+            <span className="text-5xl">🎉</span>
+          ) : (
+            <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          )}
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Session Complete!</h2>
-        <p className="text-gray-600">Great job completing your learning session</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          {isLessonComplete ? 'Lesson Complete! 🎊' : 'Session Complete!'}
+        </h2>
+        <p className="text-gray-600">
+          {isLessonComplete 
+            ? `Congratulations! You've learned all ${lessonProgress?.total} words in this lesson!`
+            : 'Great job completing your learning session'
+          }
+        </p>
       </div>
 
       {/* Stats */}
@@ -49,6 +104,14 @@ export default function SessionComplete({ sessionData, onRestart }: SessionCompl
             </p>
           </div>
         )}
+        
+        {lessonProgress && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              Lesson Progress: <span className="font-medium">{lessonProgress.learned} / {lessonProgress.total}</span> words learned
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Achievement Messages */}
@@ -69,12 +132,21 @@ export default function SessionComplete({ sessionData, onRestart }: SessionCompl
 
       {/* Actions */}
       <div className="space-y-3">
-        <button
-          onClick={onRestart}
-          className="w-full py-3 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-        >
-          Start New Session
-        </button>
+        {isLessonComplete && nextLesson ? (
+          <button
+            onClick={onRestart}
+            className="w-full py-3 px-4 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+          >
+            Continue to {nextLesson.name} →
+          </button>
+        ) : (
+          <button
+            onClick={onRestart}
+            className="w-full py-3 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+          >
+            Start New Session
+          </button>
+        )}
         
         <Link
           href="/"
@@ -84,10 +156,15 @@ export default function SessionComplete({ sessionData, onRestart }: SessionCompl
         </Link>
       </div>
 
-      {/* Future Features Note */}
-      <div className="mt-6 text-center text-sm text-gray-500">
-        <p>✨ Coming soon: Review reminders & spaced repetition tracking</p>
-      </div>
+      {/* Celebration for completing all lessons */}
+      {isLessonComplete && !nextLesson && (
+        <div className="mt-6 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg text-center">
+          <p className="text-lg font-semibold text-orange-900">🏆 Amazing Achievement!</p>
+          <p className="text-sm text-orange-800 mt-1">
+            You've completed all available lessons. More content coming soon!
+          </p>
+        </div>
+      )}
     </div>
   );
 }

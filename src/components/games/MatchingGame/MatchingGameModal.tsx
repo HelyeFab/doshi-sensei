@@ -58,6 +58,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
   const [musicEnabled, setMusicEnabled] = useState(true); // Music ON by default
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isMusicFirstRender = useRef(true);
+  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize game
   useEffect(() => {
@@ -222,7 +223,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
 
     // Play the word sound
     if (clickedTile.word) {
-      playSound(clickedTile.word.kana || clickedTile.word.word);
+      playSound(clickedTile.word.kana || clickedTile.word.kanji || '');
     }
 
     // Flip the tile

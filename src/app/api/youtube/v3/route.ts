@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (captionsResponse.data.items) {
-        captions = captionsResponse.data.items.map(caption => ({
+        captions = captionsResponse.data.items.map((caption: any) => ({
           id: caption.id,
           language: caption.snippet.language,
           name: caption.snippet.name,
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         }));
 
         // Find Japanese captions
-        const jaCaption = captions.find(cap => 
+        const jaCaption = captions.find((cap: any) => 
           cap.language === 'ja' || 
           cap.language === 'ja-JP'
         );

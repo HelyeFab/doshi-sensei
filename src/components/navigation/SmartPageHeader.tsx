@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useNavigation } from '@/contexts/NavigationContext';
 import { useStrings } from '@/contexts/LanguageContext';
 
 interface SmartPageHeaderProps {
@@ -31,14 +30,13 @@ export function SmartPageHeader({
   className = ''
 }: SmartPageHeaderProps) {
   const router = useRouter();
-  const navigation = useNavigation();
   const strings = useStrings();
   
   // Determine back URL and title (support both customBackUrl and backHref for backward compatibility)
   const fallbackUrl = customBackUrl || backHref;
-  const backUrl = fallbackUrl || navigation.getBackUrl() || '/';
-  const backTitle = customBackTitle || navigation.getBackTitle() || strings.navigation?.home || 'Home';
-  const canGoBack = showBack && (fallbackUrl || navigation.canGoBack);
+  const backUrl = fallbackUrl || '/';
+  const backTitle = customBackTitle || strings.navigation?.home || 'Home';
+  const canGoBack = showBack; // Always show back button when showBack is true
   
   return (
     <header className={`px-4 pt-24 pb-4 md:pt-24 ${className}`}>

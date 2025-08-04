@@ -13,7 +13,6 @@ import StudyListManager from '@/utils/studyListManager';
 import { usePremiumSync } from '@/hooks/usePremiumSync';
 import { SyncStatusIndicator } from '@/components/sync/SyncStatusIndicator';
 import { ThemeSelector } from '@/components/ThemeSelector';
-import { LanguageSelector } from '@/components/LanguageSelector';
 import { AVAILABLE_NAV_ITEMS, DEFAULT_NAV_ITEMS } from '@/config/navigation';
 import { CacheCleaner } from '@/utils/cacheCleaner';
 

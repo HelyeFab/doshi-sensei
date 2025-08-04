@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     
     // Get Firebase Admin instance
     const admin = await getFirebaseAdmin();
-    const db = admin.firestore;
+    const db = admin.firestore();
     
     // Get the rules document directly
     const rulesDocRef = db.doc(`config/${RULES_DOC_ID}`);
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Debug error:', error);
     return NextResponse.json(
-      { error: 'Failed to debug YouTube limits', details: error.message },
+      { error: 'Failed to debug YouTube limits', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

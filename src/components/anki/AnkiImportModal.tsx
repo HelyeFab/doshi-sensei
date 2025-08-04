@@ -185,11 +185,12 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
         });
       }
     } catch (err) {
-      setError(err.message || 'An error occurred during import');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred during import';
+      setError(errorMessage);
       
       // Track error
       track('anki_import_error' as any, {
-        error: err.message
+        error: errorMessage
       });
     } finally {
       setImporting(false);

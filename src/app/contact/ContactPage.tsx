@@ -287,7 +287,7 @@ export default function ContactPage() {
                   {strings.contact.form.tips.title}
                 </h3>
                 <ul className="space-y-1">
-                  {strings.contact.form.tips.items.map((tip, index) => (
+                  {strings.contact.form.tips.items.map((tip: string, index: number) => (
                     <li key={index} className="text-xs text-blue-800 dark:text-blue-200 flex items-start gap-2">
                       <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
                       <span>{tip}</span>
@@ -315,7 +315,7 @@ export default function ContactPage() {
                 {strings.contact.faq.description}
               </p>
               <ul className="space-y-2">
-                {strings.contact.faq.items.map((item, index) => (
+                {strings.contact.faq.items.map((item: string, index: number) => (
                   <li key={index} className="flex items-center gap-2 text-sm text-primary hover:underline cursor-pointer">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

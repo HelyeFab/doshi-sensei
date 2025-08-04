@@ -1,7 +1,7 @@
 'use client';
 
 import { useReducer, useCallback, useRef, useEffect } from 'react';
-import { spacedRepetition, vocabStorage } from '@/services/textbook-vocabulary';
+import { spacedRepetition, vocabStorage } from '@/services/textbook-vocabulary/client';
 import type { VocabularyItem } from '../types';
 
 interface StudySessionStats {

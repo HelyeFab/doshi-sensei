@@ -8,11 +8,13 @@
 ## 📋 Table of Contents
 
 1. [Critical Changes Made](#critical-changes-made)
-2. [The Shared Limit Group Problem](#the-shared-limit-group-problem)
-3. [Updated Three-Pillar Architecture](#updated-three-pillar-architecture)
-4. [Complete Feature Implementation Checklist](#complete-feature-implementation-checklist)
-5. [Admin Tools & Debugging](#admin-tools--debugging)
-6. [Migration Guide](#migration-guide)
+2. [Subscription Structure Migration](#subscription-structure-migration-critical-update)
+3. [The Shared Limit Group Problem](#the-shared-limit-group-problem)
+4. [Updated Three-Pillar Architecture](#updated-three-pillar-architecture)
+5. [Complete Feature Implementation Checklist](#complete-feature-implementation-checklist)
+6. [Admin Tools & Debugging](#admin-tools--debugging)
+7. [Migration Guide](#migration-guide)
+8. [TypeScript Error Audit - January 2025](#typescript-error-audit---january-2025)
 
 ---
 
@@ -33,6 +35,138 @@ We discovered a critical violation of the Single Source of Truth principle cause
 - **Debugging**: Easy to see exactly what's being used
 - **Flexibility**: Can adjust individual feature limits without affecting others
 - **Truth**: Firebase data now matches what users see
+
+---
+
+## 🔄 Subscription Structure Migration (Critical Update)
+
+### The Great Flattening: From Nested to Flat Structure
+
+**Historical Context**: When we migrated to Firebase Functions for Stripe webhook handling, we made a critical architectural change to simplify the subscription data structure.
+
+### Old Structure (Pre-Firebase Functions)
+```typescript
+// The old nested structure that caused confusion
+user: {
+  subscription: {
+    subscription: {
+      plan: 'monthly',
+      status: 'active',
+      stripeSubscriptionId: 'sub_xxx',
+      // ... other fields
+    }
+  }
+}
+
+// Accessing plan required: user.subscription?.subscription?.plan
+```
+
+### New Structure (Post-Firebase Functions) ✅
+```typescript
+// The clean, flat structure we use now
+user: {
+  subscription: {
+    plan: 'monthly',
+    status: 'active', 
+    stripeSubscriptionId: 'sub_xxx',
+    stripeCustomerId: 'cus_xxx',
+    stripePriceId: 'price_xxx',
+    currentPeriodEnd: Timestamp,
+    cancelAtPeriodEnd: false,
+    metadata: {
+      source: 'stripe',
+      createdAt: Timestamp,
+      updatedAt: Timestamp
+    }
+  }
+}
+
+// Accessing plan is now simple: user.subscription?.plan
+```
+
+### Source of Truth: Firebase Functions
+The **ONLY** source of truth for the subscription structure is the Firebase Functions webhook handler at `/functions/src/index.ts`. This is what actually writes to Firestore:
+
+```typescript
+// From handleSubscriptionUpdate() in Firebase Functions
+const subscriptionData = {
+  status: status,
+  plan: plan, // 'free' | 'monthly' | 'yearly'
+  stripeSubscriptionId: subscription.id,
+  stripeCustomerId: subscription.customer as string,
+  stripePriceId: priceId,
+  currentPeriodEnd: currentPeriodEnd,
+  cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+  metadata: {
+    source: 'stripe',
+    createdAt: admin.firestore.Timestamp.now(),
+    updatedAt: admin.firestore.Timestamp.now()
+  }
+};
+
+// Direct update - no nesting!
+await db.collection('users').doc(firebaseUID).update({
+  subscription: subscriptionData,
+  updatedAt: admin.firestore.FieldValue.serverTimestamp()
+});
+```
+
+### TypeScript Type Mismatch Issue
+**Problem**: The TypeScript type definition in `/src/types/subscription.ts` still shows the old nested structure, causing confusion:
+
+```typescript
+// INCORRECT TYPE (needs fixing)
+export interface UserSubscription {
+  subscription: {
+    subscription: { // ❌ This nesting doesn't exist in production!
+      plan: 'free' | 'monthly' | 'yearly';
+      // ...
+    }
+  }
+}
+```
+
+### Migration Checklist
+When fixing TypeScript errors related to subscriptions:
+
+1. **Always use flat access**: `user.subscription?.plan` ✅
+2. **Never use nested access**: `user.subscription?.subscription?.plan` ❌
+3. **Check Firebase Functions** for the actual structure being written
+4. **Update TypeScript types** to match the flat structure
+5. **Test with real Firestore data** to confirm structure
+
+### Common Patterns After Migration
+
+```typescript
+// ✅ CORRECT - Checking if user is premium
+const isPremium = user.subscription?.plan === 'monthly' || 
+                  user.subscription?.plan === 'yearly';
+
+// ✅ CORRECT - Getting subscription status
+const status = user.subscription?.status;
+const plan = user.subscription?.plan || 'free';
+
+// ✅ CORRECT - Checking specific plans
+if (userData?.subscription?.plan === 'monthly' && userData?.subscription?.status === 'active') {
+  // Monthly subscriber logic
+}
+
+// ❌ WRONG - Using old nested structure
+const plan = user.subscription?.subscription?.plan; // This will always be undefined!
+```
+
+### Files That Need Attention
+These files may still reference the old nested structure and need updating:
+- `/src/types/subscription.ts` - Type definitions
+- Any component using `subscription?.subscription?.plan`
+- Admin components that display subscription info
+- Test files with mock subscription data
+
+### Why This Migration Matters
+1. **Simplicity**: Flat structure is easier to work with
+2. **Performance**: Less nesting means faster access
+3. **Consistency**: Firebase Functions is the single source of truth
+4. **Debugging**: Easier to inspect subscription state in Firestore
 
 ---
 
@@ -584,7 +718,145 @@ No more phantom limits. No more confusing usage counts. Just clean, simple, trut
 
 ---
 
-*Last Updated: July 2025*  
-*Version: 3.0*  
+## 📊 TypeScript Error Audit - January 2025
+
+### Overview
+After migrating to Next.js 15 and cleaning up the codebase, we've made significant progress reducing TypeScript errors:
+- **Starting Point**: 887 errors
+- **Previous State**: 439 errors (50% reduction!)
+- **Current State**: 431 errors (51.4% reduction!)
+- **Target**: 0 errors for production safety
+
+### Error Breakdown by Category
+
+#### 1. **Type Incompatibilities** (Highest Priority)
+- **Anki Card vs JapaneseWord** (✅ COMPLETELY FIXED - all errors resolved!)
+  - Created `FlashcardItem` union type in `/src/types/flashcard.ts`
+  - Updated FlashcardReviewClient and FlashcardReviewPage to use new types
+  - Added type guards (`isAnkiCard`, `isJapaneseWord`) for safe type checking
+  - Fixed AnkiSetCreator to create proper `SavedStudyItem` objects
+  - Fixed Button component references and AnkiConfig property names
+  - **Result**: Zero ankiData-related errors remaining!
+
+- **Property Mismatches** (~30 errors)
+  - `english` property doesn't exist on `JapaneseWord` (use `meaning`)
+  - `on`/`kun` properties missing from `Kanji` type
+  - `reading` property doesn't exist on `JapaneseWord`
+  - **Solution**: Update type definitions to match actual data structure
+
+#### 2. **Analytics Event Types** (~20 errors)
+- Events like `'flashcard_session_started'` not in `AnalyticsEventType`
+- **Solution**: Update analytics type definitions or use type assertions
+
+#### 3. **Function Signature Mismatches** (~15 errors)
+- `Expected 1 arguments, but got 2` (notification functions)
+- `Expected 2 arguments, but got 1` (various utility functions)
+- **Solution**: Align function calls with their type definitions
+
+#### 4. **Duplicate Object Properties** (~17 errors)
+- In `scripts/temp-en.ts` - object literals with duplicate keys
+- **Solution**: Clean up or remove temporary script files
+
+#### 5. **Component Prop Issues** (~10 errors)
+- Missing required props (`onSelectWord` in `QuickDrillPreview`)
+- Extra props not in type definitions (`indicatorClassName`)
+- **Solution**: Update component interfaces
+
+#### 6. **Unknown Type Errors** (~8 errors)
+- `'error' is of type 'unknown'` in catch blocks
+- **Solution**: Use proper error type guards
+
+### Recently Fixed (January 2025 Session)
+
+#### ✅ Anki Card Type System (8 errors fixed - COMPLETE!)
+- Created new `FlashcardItem` union type to handle both JapaneseWord and AnkiCard types
+- Added proper type guards for runtime type checking
+- Fixed all flashcard review components to use the new type system
+- Added missing analytics event types for Anki functionality
+- Fixed Button component usage in AnkiSetCreator
+- Fixed AnkiConfig property names (lapseNewInterval → newInterval, minimumLapseInterval → minimumInterval)
+- **Result**: All ankiData-related errors eliminated (16 → 0)!
+
+#### ✅ Settings Legal Pages (72 errors)
+- Fixed all `unknown` type errors in map functions
+- Added proper type annotations to:
+  - `AcknowledgmentsPage.tsx`
+  - `PrivacyPolicyPage.tsx`
+  - `TermsOfServicePage.tsx`
+
+#### ✅ YouTube Shadowing (10+ errors)
+- Fixed import paths from `../page` to `../YouTubeShadowing`
+- Added Chrome API type guards
+- Fixed `AudioProcessingProgress` interface usage
+- Corrected `showNotification` function calls
+
+#### ✅ API validate-feature-access (15 errors)
+- Added null checks for `limits` and `currentUsage`
+- Used optional chaining throughout
+
+#### ✅ Anki Importer (2 specific errors)
+- Fixed error handling with proper type guards
+- Corrected `StudyListManager.saveItem` function call
+
+### High-Priority Fixes Needed
+
+1. **Create Proper Types for Anki Cards**
+   ```typescript
+   interface AnkiCard {
+     id: string;
+     itemType: 'anki_card';
+     ankiData: AnkiData;
+     // Basic display properties
+     kanji: string;
+     kana: string;
+     meaning: string;
+   }
+   
+   type StudyItem = JapaneseWord | AnkiCard;
+   ```
+
+2. **Fix JapaneseWord Type**
+   - Add missing properties or create extended types
+   - Ensure consistency across the codebase
+
+3. **Update Analytics Types**
+   - Add all missing event types to `AnalyticsEventType`
+   - Or create a more flexible analytics system
+
+4. **Clean Up Temporary Files**
+   - Remove or fix `scripts/temp-en.ts`
+   - Archive old migration scripts
+
+### Recommended Approach
+
+1. **Phase 1**: Fix critical type incompatibilities (Anki cards, JapaneseWord)
+2. **Phase 2**: Update all function signatures and component props
+3. **Phase 3**: Add missing analytics events and clean up scripts
+4. **Phase 4**: Enable strict TypeScript checks in CI/CD
+
+### Tools & Commands
+
+```bash
+# Count total errors
+npx tsc --noEmit 2>&1 | grep "error TS" | wc -l
+
+# Find most common errors
+npx tsc --noEmit 2>&1 | grep "error TS" | sed 's/.*error TS[0-9]*: //' | sort | uniq -c | sort -rn
+
+# Check specific file
+npx tsc --noEmit path/to/file.ts
+```
+
+### Impact on Development
+
+- **Current**: Errors don't block builds but hide real issues
+- **Goal**: Zero errors for confident refactoring and maintenance
+- **Benefit**: Catch bugs at compile time, not runtime
+
+---
+
+*Last Updated: January 2025*  
+*Version: 3.1*  
 *Status: Production Ready*  
 *Shared Limit Groups: Eliminated* 🎉
+*TypeScript Health: Improving* 📈

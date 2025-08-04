@@ -6,10 +6,55 @@ if (typeof window !== 'undefined' && typeof window.Buffer === 'undefined') {
   (window as any).Buffer = Buffer;
 }
 
+interface ParsedAnkiNote {
+  id: string;
+  fields: string[];
+  tags: string[];
+  deckName: string;
+}
+
+interface ProcessedCard {
+  id: string;
+  noteId: string;
+  deckId: string;
+  front: string;
+  back: string;
+  tags: string[];
+  fields: string[];
+}
+
+interface AnkiDeckInfo {
+  id: string;
+  name: string;
+  desc: string;
+  cards: ProcessedCard[];
+}
+
+interface MediaFile {
+  filename: string;
+  data: Uint8Array;
+}
+
+interface DeckMeta {
+  name: string;
+}
+
+interface ParsedDeck {
+  meta?: DeckMeta;
+  notes: Array<{
+    id: string;
+    guid?: string;
+    modelId?: string;
+    fields: string[];
+    tags: string[];
+  }>;
+  mediaFiles?: MediaFile[];
+}
+
 export class AnkiParserGenesis {
   static async parseApkg(file: File): Promise<{
-    cards: any[];
-    decks: any[];
+    cards: ProcessedCard[];
+    decks: AnkiDeckInfo[];
     media: Map<string, Blob>;
   }> {
     try {
@@ -30,7 +75,7 @@ export class AnkiParserGenesis {
       });
       
       // Map notes to our card structure as shown in your example
-      const mappedNotes = deck.notes.map((note: any) => ({
+      const mappedNotes: ParsedAnkiNote[] = deck.notes.map((note) => ({
         id: note.id,
         fields: note.fields,
         tags: note.tags,
@@ -39,7 +84,7 @@ export class AnkiParserGenesis {
       
       // Debug: Log first few notes
       console.log('Sample notes:');
-      mappedNotes.slice(0, 5).forEach((note: any, idx: number) => {
+      mappedNotes.slice(0, 5).forEach((note, idx) => {
         console.log(`Note ${idx}:`, {
           id: note.id,
           fieldCount: note.fields?.length || 0,
@@ -51,7 +96,7 @@ export class AnkiParserGenesis {
       });
       
       // Process cards
-      const processedCards = mappedNotes.map((note: any) => {
+      const processedCards: ProcessedCard[] = mappedNotes.map((note) => {
         const fields = note.fields || [];
         let front = '';
         let back = '';
@@ -85,7 +130,7 @@ export class AnkiParserGenesis {
       // Process media
       const media = new Map<string, Blob>();
       if (deck.mediaFiles && Array.isArray(deck.mediaFiles)) {
-        deck.mediaFiles.forEach((mediaFile: any) => {
+        deck.mediaFiles.forEach((mediaFile) => {
           if (mediaFile.data) {
             media.set(mediaFile.filename, new Blob([mediaFile.data]));
           }
@@ -112,7 +157,7 @@ export class AnkiParserGenesis {
   }
   
   // Parse in memory without filesystem
-  private static async parseInMemory(buffer: Buffer): Promise<any> {
+  private static async parseInMemory(buffer: Buffer): Promise<ParsedDeck> {
     // Since anki-apkg-parser requires filesystem, we'll use a different approach
     // We'll parse the APKG structure directly
     const JSZip = (await import('jszip')).default;
@@ -201,9 +246,9 @@ export class AnkiParserGenesis {
       // If pagination works, use that data instead
       if (allNotes.length > notesData.length) {
         console.log('Using paginated results instead!');
-        notesData = allNotes.map((row: any[]) => {
-          const obj: any = {};
-          notesResult[0].columns.forEach((col: string, idx: number) => {
+        notesData = allNotes.map((row) => {
+          const obj: Record<string, any> = {};
+          notesResult[0].columns.forEach((col, idx) => {
             obj[col] = row[idx];
           });
           return obj;
@@ -212,7 +257,7 @@ export class AnkiParserGenesis {
     }
     
     // Map notes to the format expected by your code
-    const notes = notesData.map((noteRow: any) => {
+    const notes = notesData.map((noteRow) => {
       const fields = noteRow.flds ? noteRow.flds.split('\x1f') : [];
       const tags = noteRow.tags ? noteRow.tags.split(' ').filter(Boolean) : [];
       
@@ -230,7 +275,7 @@ export class AnkiParserGenesis {
     const mainDeck = deckEntries.length > 0 ? deckEntries[0][1] : { name: 'Imported Deck' };
     
     // Process media
-    const mediaFiles = [];
+    const mediaFiles: MediaFile[] = [];
     const mediaFile = zipContent.files['media'];
     if (mediaFile) {
       try {
@@ -253,7 +298,7 @@ export class AnkiParserGenesis {
     
     return {
       meta: {
-        name: (mainDeck as any).name || 'Imported Deck'
+        name: (mainDeck as Record<string, any>).name || 'Imported Deck'
       },
       notes,
       mediaFiles
@@ -272,13 +317,13 @@ export class AnkiParserGenesis {
     });
   }
   
-  private static parseQueryResult(result: any): any[] {
+  private static parseQueryResult(result: { columns: string[]; values: any[][] } | undefined): Record<string, any>[] {
     if (!result) return [];
     
     const { columns, values } = result;
-    return values.map((row: any[]) => {
-      const obj: any = {};
-      columns.forEach((col: string, idx: number) => {
+    return values.map((row) => {
+      const obj: Record<string, any> = {};
+      columns.forEach((col, idx) => {
         obj[col] = row[idx];
       });
       return obj;

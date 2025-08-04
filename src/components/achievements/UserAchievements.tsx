@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link'
-import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import Link from 'next/link';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAchievements } from '@/hooks/useAchievements';
 import { Achievement } from '@/lib/achievements/types';
@@ -123,9 +122,8 @@ export default function UserAchievements() {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-bold text-foreground">Your Journey</h2>
-        <SmartNavigationLink href="/achievements" 
-          className="text-sm font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1 group"
-         title="View All Achievements">
+        <Link href="/achievements" 
+          className="text-sm font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1 group">
           View All
           <svg 
             className="w-4 h-4 transition-transform group-hover:translate-x-0.5" 
@@ -135,7 +133,7 @@ export default function UserAchievements() {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </SmartNavigationLink>
+        </Link>
       </div>
 
       {/* Achievement Circles Dashboard */}

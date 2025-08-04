@@ -214,7 +214,7 @@ export default function AdminFeaturesPage() {
             <ul className="text-xs sm:text-sm space-y-1 text-muted-foreground">
               <li>• This matrix shows all features available in Doshi Sensei and their access levels</li>
               <li>• Limits are enforced automatically by the new access control system</li>
-              <li>• Shared limit groups (like games) use the same counter for all features in the group</li>
+              <li>• Each feature has independent limits and usage tracking</li>
               <li>• Planned features are shown for future development reference</li>
               <li>• Click "Edit Limits" to dynamically adjust user limits</li>
             </ul>

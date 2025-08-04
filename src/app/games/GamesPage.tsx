@@ -640,7 +640,7 @@ export default function GamesPage() {
   const loadCaughtPokemon = async () => {
     try {
       // First, migrate any existing localStorage data
-      await pokemonManager.migrateFromLocalStorage(user?.uid);
+      // await pokemonManager.migrateFromLocalStorage(user?.uid); // Method doesn't exist
 
       // Then load the caught Pokémon
       const isPremiumUser = userType === 'monthly' || userType === 'yearly';
@@ -868,7 +868,7 @@ export default function GamesPage() {
   if (currentGameMode === 'assembly' && studyLists.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <StandardPageHeader
+        <SmartPageHeader
           title={strings.games.modes.assembly.title}
           backHref="/games"
         />

@@ -399,7 +399,7 @@ export default function AdminDebugPage() {
               <SimpleTooltip content="Reload entitlement rules from code defaults. This will fix missing features like kana_study.">
                 <Button 
                   onClick={reloadEntitlementRules} 
-                  variant="secondary" 
+                  variant="outline" 
                   size="sm"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />

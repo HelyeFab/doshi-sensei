@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Feature } from '@/lib/features/types';
 import { UserType } from '@/lib/entitlements/types';
 import { EditableLimitCell } from './EditableLimitCell';
+import { FeatureEditModal } from './FeatureEditModal';
 import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useStrings } from '@/contexts/LanguageContext';
@@ -37,6 +38,7 @@ export function EditableFeatureMatrix({
     featureId: string;
     userType: UserType;
   } | null>(null);
+  const [editingFeature, setEditingFeature] = useState<Feature | null>(null);
   const [filter, setFilter] = useState<'all' | 'active' | 'planned'>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -131,10 +133,21 @@ export function EditableFeatureMatrix({
         <td className="p-4">
           <div className="flex items-center gap-2">
             <span className="text-xl">{row.feature.icon}</span>
-            <div>
+            <div className="flex-1">
               <div className="font-medium">{row.feature.name}</div>
               <div className="text-sm text-muted-foreground">{row.feature.description}</div>
             </div>
+            {isEditMode && (
+              <button
+                onClick={() => setEditingFeature(row.feature)}
+                className="p-1 rounded hover:bg-muted transition-colors"
+                title="Edit feature details"
+              >
+                <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+            )}
           </div>
         </td>
         <td className="p-4">
@@ -147,7 +160,8 @@ export function EditableFeatureMatrix({
           const display = getAccessDisplay(access);
           const isEditing = editingCell?.featureId === row.feature.id &&
                            editingCell?.userType === userType;
-          const canEdit = isEditMode && access.allowed && row.feature.limitType !== 'none';
+          // Allow editing any cell in edit mode (except 'none' limit types)
+          const canEdit = isEditMode && row.feature.limitType !== 'none';
 
           return (
             <td
@@ -300,15 +314,27 @@ export function EditableFeatureMatrix({
           <div className="w-full mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
             <p className="font-semibold text-amber-800 dark:text-amber-200 mb-2">✏️ How to edit access:</p>
             <ul className="text-xs space-y-1 text-amber-700 dark:text-amber-300">
-              <li>• Click any cell to edit (including ❌ cells)</li>
+              <li>• Click any cell to edit - <strong>including ❌ cells to grant access!</strong></li>
               <li>• Enter <strong>0</strong> to grant simple access (shows as ✅)</li>
               <li>• Enter any <strong>positive number</strong> for daily/total limits</li>
               <li>• Enter <strong>-1</strong> for unlimited access (shows as ∞)</li>
               <li>• Enter <strong>-999</strong> to remove access (shows as ❌)</li>
+              <li>• <strong>NEW:</strong> Click ❌ to grant access, click any number to revoke with -999</li>
             </ul>
           </div>
         )}
       </div>
+
+      {/* Feature Edit Modal */}
+      <FeatureEditModal
+        feature={editingFeature}
+        isOpen={!!editingFeature}
+        onClose={() => setEditingFeature(null)}
+        onSave={() => {
+          setEditingFeature(null);
+          onUpdate();
+        }}
+      />
     </div>
   );
 }

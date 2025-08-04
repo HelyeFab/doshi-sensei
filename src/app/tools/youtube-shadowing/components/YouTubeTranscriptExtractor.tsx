@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { TranscriptLine } from '../page';
+import { TranscriptLine } from '../YouTubeShadowing';
 
 interface YouTubeTranscriptExtractorProps {
   videoId: string;

@@ -1,23 +1,11 @@
 import { en } from './en';
-import { fr } from './translations/fr';
-import { it } from './translations/it';
-import { de } from './translations/de';
-import { es } from './translations/es';
-import { ar } from './translations/ar';
-import { ko } from './translations/ko';
 
-// All available languages
+// English only - removed multi-language support
 export const strings = {
-  en,
-  fr,
-  it,
-  de,
-  es,
-  ar,
-  ko
+  en
 };
 
-export type Language = keyof typeof strings;
+export type Language = 'en';
 export type StringKeys = keyof typeof en;
 
 // Helper functions

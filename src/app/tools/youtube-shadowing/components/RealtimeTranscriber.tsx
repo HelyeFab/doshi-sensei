@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { TranscriptLine } from '../page';
+import { TranscriptLine } from '../YouTubeShadowing';
 import { processVideoAudio, createAudioChunks, AudioProcessingProgress } from '@/utils/audioProcessor';
 import { Loader2, AlertCircle, Mic, MicOff } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export default function RealtimeTranscriber({
   onError
 }: RealtimeTranscriberProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState<AudioProcessingProgress>({ stage: 'loading', progress: 0 });
+  const [progress, setProgress] = useState<AudioProcessingProgress>({ stage: 'loading', progress: 0, percent: 0 });
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -118,11 +118,11 @@ export default function RealtimeTranscriber({
       
       // Transcribe each chunk
       for (let i = 0; i < chunks.length; i++) {
-        setProgress({ stage: 'transcribing', progress: i / chunks.length });
+        setProgress({ stage: 'transcribing', progress: i / chunks.length, percent: (i / chunks.length) * 100 });
         await transcribeAudio(chunks[i], i * 30);
       }
       
-      setProgress({ stage: 'transcribing', progress: 1 });
+      setProgress({ stage: 'transcribing', progress: 1, percent: 100 });
     } catch (error) {
       console.error('Audio processing failed:', error);
       onError('Failed to process audio. Please try again.');

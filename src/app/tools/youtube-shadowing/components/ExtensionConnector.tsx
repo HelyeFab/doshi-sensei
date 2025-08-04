@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { TranscriptLine } from '../page';
+import { TranscriptLine } from '../YouTubeShadowing';
 
 interface ExtensionConnectorProps {
   videoUrl: string;
@@ -27,15 +27,23 @@ export default function ExtensionConnector({
       // You'll need to get this ID after installing the extension
       const extensionId = 'YOUR_EXTENSION_ID_HERE'; // Replace with actual ID
       
-      chrome.runtime.sendMessage(extensionId, { action: 'ping' }, (response) => {
-        if (chrome.runtime.lastError) {
-          setExtensionDetected(false);
-        } else if (response && response.installed) {
-          setExtensionDetected(true);
-          checkForStoredCaptions();
-        }
+      // @ts-ignore - chrome API is only available in extension context
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+        // @ts-ignore
+        chrome.runtime.sendMessage(extensionId, { action: 'ping' }, (response: any) => {
+          // @ts-ignore
+          if (chrome.runtime.lastError) {
+            setExtensionDetected(false);
+          } else if (response && response.installed) {
+            setExtensionDetected(true);
+            checkForStoredCaptions();
+          }
+          setChecking(false);
+        });
+      } else {
+        setExtensionDetected(false);
         setChecking(false);
-      });
+      }
     } catch (error) {
       // If chrome.runtime is not available, we're not in an extension context
       setExtensionDetected(false);
@@ -47,7 +55,10 @@ export default function ExtensionConnector({
     // Check if the extension has stored captions for this video
     const videoId = extractVideoId(videoUrl);
     
-    chrome.storage.local.get(['latestCaptions'], (result) => {
+    // @ts-ignore - chrome API is only available in extension context
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      // @ts-ignore
+      chrome.storage.local.get(['latestCaptions'], (result: any) => {
       if (result.latestCaptions && 
           result.latestCaptions.videoInfo.videoId === videoId &&
           Date.now() - result.latestCaptions.timestamp < 300000) { // 5 minutes
@@ -63,6 +74,7 @@ export default function ExtensionConnector({
         }
       }
     });
+    }
   };
 
   const extractVideoId = (url: string): string | null => {

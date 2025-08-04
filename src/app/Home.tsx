@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link'
-import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import Link from 'next/link';
 import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -308,7 +307,7 @@ export default function Home() {
                 { title: strings.home.featureCards.hiragana.title, icon: strings.home.featureCards.hiragana.icon, href: '/practice/hiragana', description: strings.home.featureCards.hiragana.description },
                 { title: strings.home.featureCards.katakana.title, icon: strings.home.featureCards.katakana.icon, href: '/practice/katakana', description: strings.home.featureCards.katakana.description }
               ].map((card) => (
-                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -333,7 +332,7 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </SmartNavigationLink>
+                </Link>
               ))}
             </div>
           </section>
@@ -353,7 +352,7 @@ export default function Home() {
                 { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
                 { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description }
               ].map((card) => (
-                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -378,7 +377,7 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </SmartNavigationLink>
+                </Link>
               ))}
             </div>
           </section>
@@ -395,7 +394,7 @@ export default function Home() {
                 { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
                 { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description }
               ].map((card) => (
-                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -420,7 +419,7 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </SmartNavigationLink>
+                </Link>
               ))}
             </div>
           </section>
@@ -438,7 +437,7 @@ export default function Home() {
                 { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
                 { title: 'My Videos', icon: '🎬', href: '/tools/my-videos', description: 'View your saved videos and practice history' }
               ].map((card) => (
-                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -463,7 +462,7 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </SmartNavigationLink>
+                </Link>
               ))}
             </div>
           </section>
@@ -479,7 +478,7 @@ export default function Home() {
                 { title: 'Leaderboard', icon: '🏆', href: '/leaderboard', description: 'View rankings and compete' },
                 { title: 'Friends', icon: '👥', href: '/friends', description: 'Connect with other learners' }
               ].map((card) => (
-                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -494,7 +493,7 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </SmartNavigationLink>
+                </Link>
               ))}
             </div>
           </section>
@@ -510,7 +509,7 @@ export default function Home() {
                 { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
                 { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description }
               ].map((card) => (
-                <SmartNavigationLink key={card.href} href={card.href} className="block" title={card.title}>
+                <Link key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -535,7 +534,7 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </SmartNavigationLink>
+                </Link>
               ))}
             </div>
           </section>
@@ -698,7 +697,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
   };
 
   return (
-    <SmartNavigationLink href={href} className="block" onClick={handleClick} title="Navigation">
+    <Link href={href} className="block" onClick={handleClick}>
       <div
         className={`group relative rounded-2xl p-3 md:p-4 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer aspect-square ${colors.bg} ${colors.text} ${colors.shadow}`}
         style={{
@@ -739,6 +738,6 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
           </svg>
         </div>
       </div>
-    </SmartNavigationLink>
+    </Link>
   );
 }

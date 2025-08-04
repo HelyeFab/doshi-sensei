@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TranscriptLine } from '../page';
+import { TranscriptLine } from '../YouTubeShadowing';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { generateFuriganaWithCache } from '@/utils/furigana';
 import { searchWords } from '@/utils/api';

@@ -1,6 +1,19 @@
 import { MoodBoard, MoodBoardsProgress, BoardProgress } from '@/types/moodBoard';
 // import moodBoardsData from '@/data/moodBoards.json'; // Removed - using KanjiManager now
-const moodBoardsData = {}; // Temporary empty object
+
+// Define the structure of raw mood board data
+interface RawMoodBoard {
+  name: string;
+  description: string;
+  theme: string;
+  kanji: string[];
+  jlpt?: string;
+  createdAt?: string | number;
+  updatedAt?: string | number;
+  isActive?: boolean;
+}
+
+const moodBoardsData: Record<string, RawMoodBoard> = {}; // Temporary empty object
 
 /**
  * Get all available mood boards
@@ -12,15 +25,23 @@ export function getAllMoodBoards(): MoodBoard[] {
     createdAt: new Date(board.createdAt || Date.now()),
     updatedAt: board.updatedAt ? new Date(board.updatedAt) : undefined,
     isActive: board.isActive ?? true,
-  })) as MoodBoard[];
+  }));
 }
 
 /**
  * Get a specific mood board by ID
  */
 export function getMoodBoardById(id: string): MoodBoard | null {
-  const board = moodBoardsData[id as keyof typeof moodBoardsData];
-  return board ? (board as MoodBoard) : null;
+  const board = moodBoardsData[id];
+  if (!board) return null;
+  
+  return {
+    ...board,
+    id,
+    createdAt: new Date(board.createdAt || Date.now()),
+    updatedAt: board.updatedAt ? new Date(board.updatedAt) : undefined,
+    isActive: board.isActive ?? true,
+  };
 }
 
 /**

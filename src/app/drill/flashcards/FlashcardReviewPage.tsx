@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { JapaneseWord, WordList } from '@/types';
-import { Upload, Settings, ChevronDown, Volume2, Keyboard, BarChart3, BookOpen, Zap, Clock, Hash } from 'lucide-react';
+import { FlashcardItem, isAnkiCard, isJapaneseWord, getFlashcardDisplayText } from '@/types/flashcard';
+import { Upload, Settings, ChevronDown, Volume2, Keyboard, BarChart3, BookOpen, Zap, Clock, Hash, AlertCircle } from 'lucide-react';
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -103,7 +104,7 @@ export default function FlashcardReviewPage() {
   const { speak: speakTTS, state: ttsState } = useTTS();
 
   // Review state
-  const [cards, setCards] = useState<JapaneseWord[]>([]);
+  const [cards, setCards] = useState<FlashcardItem[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -278,7 +279,7 @@ export default function FlashcardReviewPage() {
     }
   };
   
-  const loadSRSData = async (cards: JapaneseWord[]) => {
+  const loadSRSData = async (cards: FlashcardItem[]) => {
     try {
       const cardIds = cards.map(card => card.id);
       const loadedData = await flashcardSRSManager.loadSRSData(cardIds);
@@ -307,24 +308,32 @@ export default function FlashcardReviewPage() {
     try {
       setLoading(true);
       setError(null);
-      let reviewCards: JapaneseWord[] = [];
+      let reviewCards: FlashcardItem[] = [];
 
       if (reviewMode === 'srs') {
         // Load all cards and filter by SRS due date
         const allLists = await StudyListManager.getAllStudyLists();
-        let allCards: JapaneseWord[] = [];
+        let allCards: FlashcardItem[] = [];
         
         for (const list of allLists) {
           const { words, ankiCards } = await StudyListManager.getItemsInList(list.id);
-          const ankiAsWords = ankiCards.map(card => ({
+          const ankiAsWords: FlashcardItem[] = ankiCards.map(card => ({
             id: card.id,
             itemType: 'anki_card' as const,
-            ankiData: card.ankiData,
+            ankiData: card.ankiData ? {
+              ...card.ankiData,
+              srsData: {
+                ...card.ankiData.srsData,
+                state: card.ankiData.srsData.state || 'new' as const,
+                lastReviewed: card.ankiData.srsData.lastReview?.toString(),
+                due: card.ankiData.srsData.due?.toString()
+              }
+            } : undefined,
             kanji: card.ankiData?.front || '',
             kana: '',
             meaning: card.ankiData?.back || '',
             type: 'anki' as any
-          }));
+          } as FlashcardItem));
           allCards = [...allCards, ...words, ...ankiAsWords];
         }
         
@@ -378,26 +387,34 @@ export default function FlashcardReviewPage() {
             meaning: card.ankiData?.back || '',
             type: 'anki' as any
           }));
-          reviewCards = [...reviewCards, ...words, ...ankiFlashcards];
+          reviewCards = [...reviewCards, ...words, ...ankiFlashcards] as FlashcardItem[];
         }
         await loadSRSData(reviewCards);
       } else if (reviewMode === 'random') {
         // Load random cards from user's saved words
         const allLists = await StudyListManager.getAllStudyLists();
-        let allWords: JapaneseWord[] = [];
+        let allWords: FlashcardItem[] = [];
         
         for (const list of allLists) {
           const { words, ankiCards } = await StudyListManager.getItemsInList(list.id);
-          const ankiAsWords = ankiCards.map(card => ({
+          const ankiAsWords: FlashcardItem[] = ankiCards.map(card => ({
             id: card.id,
             itemType: 'anki_card' as const,
-            ankiData: card.ankiData,
+            ankiData: card.ankiData ? {
+              ...card.ankiData,
+              srsData: {
+                ...card.ankiData.srsData,
+                state: card.ankiData.srsData.state || 'new' as const,
+                lastReviewed: card.ankiData.srsData.lastReview?.toString(),
+                due: card.ankiData.srsData.due?.toString()
+              }
+            } : undefined,
             kanji: card.ankiData?.front || '',
             kana: '',
             meaning: card.ankiData?.back || '',
             type: 'anki' as any
-          }));
-          allWords = [...allWords, ...words, ...ankiAsWords];
+          } as FlashcardItem));
+          allWords = [...allWords, ...words, ...ankiAsWords] as FlashcardItem[];
         }
         
         await loadSRSData(allWords);
@@ -508,13 +525,13 @@ export default function FlashcardReviewPage() {
     }
   };
   
-  const playCardAudio = async (card: any, side: 'front' | 'back') => {
+  const playCardAudio = async (card: FlashcardItem, side: 'front' | 'back') => {
     try {
       let textToSpeak = '';
       let context = 'flashcard';
       let provider: 'google' | 'elevenlabs' | undefined;
       
-      if (card.itemType === 'anki_card' && card.ankiData) {
+      if (isAnkiCard(card) && card.ankiData) {
         textToSpeak = side === 'front' ? card.ankiData.front : card.ankiData.back;
         // Strip HTML for TTS
         textToSpeak = textToSpeak.replace(/<[^>]*>/g, '').trim();
@@ -696,15 +713,22 @@ export default function FlashcardReviewPage() {
     }
   };
 
-  const handleSaveWord = (word: JapaneseWord) => {
-    setWordToSave(word);
-    setShowSaveModal(true);
+  const handleSaveWord = (item: FlashcardItem) => {
+    // For Anki cards, we can't save them as regular words
+    // So we'll only allow saving regular JapaneseWord items
+    if (isJapaneseWord(item)) {
+      setWordToSave(item);
+      setShowSaveModal(true);
+    } else {
+      // For Anki cards, could show a different message or modal
+      console.log('Anki cards are already saved in their original format');
+    }
   };
 
   // Determine card display based on flip direction
-  const getCardDisplay = (card: any, side: 'front' | 'back') => {
+  const getCardDisplay = (card: FlashcardItem, side: 'front' | 'back') => {
     // Handle Anki cards
-    if (card.itemType === 'anki_card' && card.ankiData) {
+    if (isAnkiCard(card) && card.ankiData) {
       return side === 'front' ? card.ankiData.front : card.ankiData.back;
     }
     

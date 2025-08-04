@@ -164,7 +164,7 @@ export default function ConjugationDrillPage() {
         if (value && value !== 'N/A') {
           const allForms = ConjugationEngine.getAllPossibleForms(conjugations);
           const otherOptions = allForms
-            .filter(f => f !== value)
+            .filter((f: string) => f !== value)
             .sort(() => Math.random() - 0.5)
             .slice(0, 3);
 

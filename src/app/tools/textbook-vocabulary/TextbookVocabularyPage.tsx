@@ -6,6 +6,8 @@ import { useAccess } from '@/hooks/useAccess';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { VocabularyLearningView } from './components/VocabularyLearningView';
+import { StructuredData } from '@/components/StructuredData';
+import { structuredData } from '@/utils/seo';
 
 const pageStructuredData = {
   "@context": "https://schema.org",

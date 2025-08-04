@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ShadowingSession, TranscriptLine } from '../page';
+import { ShadowingSession, TranscriptLine } from '../YouTubeShadowing';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Settings, ChevronLeft, ChevronRight, Video, AudioLines } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -340,7 +340,7 @@ export default function EnhancedShadowingPlayer({
     // Find the current line based on the playback time
     // Add a small buffer (0.1s) to handle timing inconsistencies
     const activeIndex = session.transcript.findIndex(
-      line => currentTime >= (line.startTime - 0.1) && currentTime < (line.endTime + 0.1)
+      (line: TranscriptLine) => currentTime >= (line.startTime - 0.1) && currentTime < (line.endTime + 0.1)
     );
     
     // Only update if we found a valid line and it's different from current
@@ -350,7 +350,7 @@ export default function EnhancedShadowingPlayer({
     } else if (activeIndex === -1 && currentTime > 0) {
       // If no line matches, find the closest previous line
       const closestIndex = session.transcript.findLastIndex(
-        line => currentTime >= line.endTime
+        (line: TranscriptLine) => currentTime >= line.endTime
       );
       if (closestIndex !== -1 && closestIndex !== session.currentLineIndex) {
         // We're between lines, stay on the last completed line
@@ -513,7 +513,7 @@ export default function EnhancedShadowingPlayer({
         .then(() => setIsPlaying(true))
         .catch(err => {
           console.error('Video playback error:', err);
-          showNotification('Failed to play video', 'error');
+          showNotification({ title: 'Failed to play video', type: 'error' });
         });
     } else if (audioRef.current) {
       audioRef.current.currentTime = currentLine.startTime;
@@ -521,7 +521,7 @@ export default function EnhancedShadowingPlayer({
         .then(() => setIsPlaying(true))
         .catch(err => {
           console.error('Playback error:', err);
-          showNotification('Failed to play audio', 'error');
+          showNotification({ title: 'Failed to play audio', type: 'error' });
         });
     }
   };
@@ -670,7 +670,7 @@ export default function EnhancedShadowingPlayer({
                   networkState: video.networkState
                 });
                 setVideoError(true);
-                showNotification('Video format not supported. Showing fallback player with controls.', 'warning');
+                showNotification({ title: 'Video format not supported', message: 'Showing fallback player with controls.', type: 'warning' });
               }}
               onLoadedMetadata={() => {
                 console.log('Video metadata loaded successfully');
@@ -947,7 +947,7 @@ export default function EnhancedShadowingPlayer({
       <div className="bg-card rounded-lg shadow-sm border border-border p-4">
         <h3 className="font-medium text-foreground mb-4">Full Transcript</h3>
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          {session.transcript.map((line, index) => (
+          {session.transcript.map((line: TranscriptLine, index: number) => (
             <div
               key={line.id}
               onClick={() => handleLineClick(index)}

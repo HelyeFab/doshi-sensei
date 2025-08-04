@@ -7,7 +7,6 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { ModalProvider } from "@/contexts/ModalContext";
-import { NavigationProvider } from "@/contexts/NavigationContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { KanjiSelectionProvider } from "@/contexts/KanjiSelectionContext";
 
@@ -19,15 +18,13 @@ export function CriticalProviders({ children }: { children: React.ReactNode }) {
         <LanguageProvider>
           <AuthProvider>
             <UserProfileProvider>
-              <NavigationProvider>
-                <ModalProvider>
-                  <NotificationProvider>
-                    <KanjiSelectionProvider>
-                      {children}
-                    </KanjiSelectionProvider>
-                  </NotificationProvider>
-                </ModalProvider>
-              </NavigationProvider>
+              <ModalProvider>
+                <NotificationProvider>
+                  <KanjiSelectionProvider>
+                    {children}
+                  </KanjiSelectionProvider>
+                </NotificationProvider>
+              </ModalProvider>
             </UserProfileProvider>
           </AuthProvider>
         </LanguageProvider>

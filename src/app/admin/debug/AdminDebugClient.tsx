@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { AdminStatsDebugPanel } from '@/components/admin/StatsDebugPanel';
 import { StatsDebugSummary } from '@/components/debug/StatsDebugSummary';
-import { ConsoleMonitor } from '@/components/admin/ConsoleMonitor';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -399,7 +398,7 @@ export default function AdminDebugClient() {
               <SimpleTooltip content="Reload entitlement rules from code defaults. This will fix missing features like kana_study.">
                 <Button 
                   onClick={reloadEntitlementRules} 
-                  variant="secondary" 
+                  variant="outline" 
                   size="sm"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
@@ -412,9 +411,8 @@ export default function AdminDebugClient() {
 
         {/* Debug Tools Tabs */}
         <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="stats">Stats Debug Panel</TabsTrigger>
-            <TabsTrigger value="console">Console Monitor</TabsTrigger>
             <TabsTrigger value="migration">Stats Migration</TabsTrigger>
             <TabsTrigger value="collections">Collections Migration</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
@@ -439,24 +437,6 @@ export default function AdminDebugClient() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="console" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {t.admin.debug.consoleMonitor.title}
-                  <SimpleTooltip content={t.admin.debug.consoleMonitor.description}>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                  </SimpleTooltip>
-                </CardTitle>
-                <CardDescription>
-                  {t.admin.debug.consoleMonitor.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ConsoleMonitor />
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           <TabsContent value="migration" className="space-y-4">
             <StatsMigration />

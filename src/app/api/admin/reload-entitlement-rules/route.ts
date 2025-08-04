@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Show which rules have kana_study
     DEFAULT_RULES.forEach(rule => {
       const hasKanaStudy = rule.limits?.daily?.kana_study !== undefined;
-      console.log(`  - ${rule.id}: kana_study = ${hasKanaStudy ? rule.limits.daily.kana_study : 'NOT DEFINED'}`);
+      console.log(`  - ${rule.id}: kana_study = ${hasKanaStudy ? rule.limits.daily?.kana_study : 'NOT DEFINED'}`);
     });
     
     // Update the document with completely new rules

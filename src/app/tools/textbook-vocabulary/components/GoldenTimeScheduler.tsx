@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { spacedRepetition, vocabStorage } from '@/services/textbook-vocabulary';
+import { spacedRepetition, vocabStorage } from '@/services/textbook-vocabulary/client';
 import type { VocabularyItem, VocabularyProgress } from '../types';
 import { useErrorNotification, ERROR_MESSAGES } from '@/hooks/useErrorNotification';
 

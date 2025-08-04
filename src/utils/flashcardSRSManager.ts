@@ -137,8 +137,8 @@ export class FlashcardSRSManager {
     cutoffDate.setDate(cutoffDate.getDate() - this.CLEANUP_DAYS);
 
     // Get all flashcard progress for this user
-    const allProgress = await this.dbManager.getAll('flashcardProgress');
-    const userProgress = allProgress.filter((record: SRSDataRecord) => 
+    const allProgress = await this.dbManager.getAll('flashcardProgress') as SRSDataRecord[];
+    const userProgress = allProgress.filter((record) => 
       record.userId === this.userId
     );
 
@@ -238,7 +238,17 @@ export class FlashcardSRSManager {
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
-          const data = docSnap.data();
+          const data = docSnap.data() as {
+            due: string;
+            lastReview?: string;
+            reps?: number;
+            type?: number;
+            ease: number;
+            interval: number;
+            reviews: number;
+            lapses: number;
+            status: 'new' | 'learning' | 'review' | 'relearning';
+          };
           const srsData: AnkiSRSData = {
             ...data,
             due: new Date(data.due),
@@ -280,8 +290,8 @@ export class FlashcardSRSManager {
   }> {
     if (!this.userId) throw new Error('User not set');
 
-    const allProgress = await this.dbManager.getAll('flashcardProgress');
-    const userProgress = allProgress.filter((record: SRSDataRecord) => 
+    const allProgress = await this.dbManager.getAll('flashcardProgress') as SRSDataRecord[];
+    const userProgress = allProgress.filter((record) => 
       record.userId === this.userId
     );
 

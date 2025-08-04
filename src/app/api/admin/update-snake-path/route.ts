@@ -10,7 +10,8 @@ import path from 'path';
 export async function POST(request: NextRequest) {
   try {
     // Verify admin access
-    const authHeader = headers().get('authorization');
+    const headersList = await headers();
+    const authHeader = headersList.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

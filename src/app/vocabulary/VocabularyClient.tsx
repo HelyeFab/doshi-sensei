@@ -6,7 +6,6 @@ import type { ExampleSentence } from '@/types/sentences';
 import { searchWords } from '@/utils/api';
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
-import { useNavigation } from '@/contexts/NavigationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -35,7 +34,6 @@ export default function VocabularyClient() {
   const { subscription, userType } = useSubscription2();
   const strings = useStrings();
   const { track } = useAnalytics();
-  const navigation = useNavigation();
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -64,26 +62,6 @@ export default function VocabularyClient() {
     }
   }, [searchSource]);
 
-  // Restore navigation state
-  useEffect(() => {
-    const restoredState = navigation.restoreState();
-    if (restoredState) {
-      if (restoredState.searchTerm) setSearchTerm(restoredState.searchTerm);
-      if (restoredState.searchSource) setSearchSource(restoredState.searchSource);
-      if (restoredState.currentSearchTerm) setCurrentSearchTerm(restoredState.currentSearchTerm);
-      if (restoredState.currentSearchResults) setCurrentSearchResults(restoredState.currentSearchResults);
-    }
-  }, [navigation]);
-
-  // Save navigation state on changes
-  useEffect(() => {
-    navigation.preserveState({
-      searchTerm,
-      searchSource,
-      currentSearchTerm,
-      currentSearchResults: currentSearchResults.slice(0, 10) // Limit to prevent large state
-    });
-  }, [searchTerm, searchSource, currentSearchTerm, currentSearchResults, navigation]);
 
   // Persist search source
   useEffect(() => {

@@ -69,8 +69,8 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
         response_format: 'url'
       });
 
-      const imageUrl = response.data[0]?.url;
-      const revisedPrompt = response.data[0]?.revised_prompt;
+      const imageUrl = response.data?.[0]?.url;
+      const revisedPrompt = response.data?.[0]?.revised_prompt;
 
       if (!imageUrl) {
         throw new Error('No image URL returned from OpenAI');

@@ -492,35 +492,6 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
 
-  // Share & Referral Features
-  'share_app': {
-    id: 'share_app',
-    name: 'Share App',
-    description: 'Share Doshi Sensei with friends',
-    category: 'system',
-    icon: '🔗',
-    limitType: 'none',
-    requiresAuth: false,
-    requiresSubscription: false,
-    status: 'active'
-  },
-  
-  'referral_rewards': {
-    id: 'referral_rewards',
-    name: 'Referral Rewards',
-    description: 'Earn premium days for successful referrals',
-    category: 'system',
-    icon: '🎁',
-    limitType: 'none',
-    requiresAuth: true,
-    requiresSubscription: false,
-    status: 'active',
-    metadata: {
-      referrerReward: 7, // days of premium
-      referredReward: 3, // days of premium for new user
-      maxActiveReferrals: -1 // unlimited
-    }
-  }
 };
 
 // Helper functions

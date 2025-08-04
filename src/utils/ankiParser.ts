@@ -21,11 +21,46 @@ interface AnkiCard {
   lapses: number;
 }
 
+interface AnkiDeck {
+  id: string;
+  name: string;
+  desc?: string;
+  lrnToday?: number[];
+  revToday?: number[];
+  newToday?: number[];
+  timeToday?: number[];
+}
+
+interface ParsedCard extends AnkiCard {
+  note: ParsedNote | null;
+  front: string;
+  back: string;
+}
+
+interface ParsedNote {
+  id: string;
+  guid?: string;
+  mid?: string;
+  mod?: number;
+  usn?: number;
+  tags?: string;
+  flds?: string;
+  sfld?: string;
+  csum?: number;
+  flags?: number;
+  data?: string;
+}
+
+interface SQLQueryResult {
+  columns: string[];
+  values: any[][];
+}
+
 // Version 2 - Core 2000 field detection update
 export class SimpleAnkiParser {
   static async parseApkg(file: File): Promise<{
-    cards: any[];
-    decks: any[];
+    cards: ParsedCard[];
+    decks: AnkiDeck[];
     media: Map<string, Blob>;
   }> {
     try {
@@ -91,8 +126,8 @@ export class SimpleAnkiParser {
       }
       
       // Parse results
-      const cards = this.parseQueryResult(cardsResult[0]);
-      const notes = this.parseQueryResult(notesResult[0]);
+      const cards = this.parseQueryResult(cardsResult[0]) as AnkiCard[];
+      const notes = this.parseQueryResult(notesResult[0]) as ParsedNote[];
       const decksJson = decksResult[0]?.values[0]?.[0];
       const decks = decksJson ? JSON.parse(decksJson as string) : {};
       
@@ -104,7 +139,7 @@ export class SimpleAnkiParser {
       });
       
       // Combine cards with notes
-      const fullCards = cards.map((card, index) => {
+      const fullCards: ParsedCard[] = cards.map((card, index) => {
         const note = notes.find(n => n.id === card.nid);
         
         // For debugging: log the first few cards to see field structure
@@ -156,10 +191,10 @@ export class SimpleAnkiParser {
       
       return {
         cards: fullCards,
-        decks: Object.entries(decks).map(([id, deck]: [string, any]) => ({
+        decks: Object.entries(decks).map(([id, deck]) => ({
           id,
-          name: deck.name,
-          ...deck
+          name: (deck as AnkiDeck).name,
+          ...(deck as AnkiDeck)
         })),
         media
       };
@@ -181,13 +216,13 @@ export class SimpleAnkiParser {
     });
   }
   
-  private static parseQueryResult(result: any): any[] {
+  private static parseQueryResult(result: SQLQueryResult | undefined): Record<string, any>[] {
     if (!result) return [];
     
     const { columns, values } = result;
-    return values.map((row: any[]) => {
-      const obj: any = {};
-      columns.forEach((col: string, idx: number) => {
+    return values.map((row) => {
+      const obj: Record<string, any> = {};
+      columns.forEach((col, idx) => {
         obj[col] = row[idx];
       });
       return obj;

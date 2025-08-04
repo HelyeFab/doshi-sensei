@@ -77,7 +77,7 @@ export default function GenerateStoryPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await user.getIdToken()}`
+          'Authorization': `Bearer ${await user?.getIdToken()}`
         },
         body: JSON.stringify({
           theme,
@@ -112,7 +112,7 @@ export default function GenerateStoryPage() {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${await user.getIdToken()}`
+              'Authorization': `Bearer ${await user?.getIdToken()}`
             },
             body: JSON.stringify({
               character: characterSheet.mainCharacter,
@@ -133,7 +133,7 @@ export default function GenerateStoryPage() {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${await user.getIdToken()}`
+                    'Authorization': `Bearer ${await user?.getIdToken()}`
                   },
                   body: JSON.stringify({
                     imageUrl: modelSheetUrl,
@@ -178,7 +178,7 @@ export default function GenerateStoryPage() {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${await user.getIdToken()}`
+              'Authorization': `Bearer ${await user?.getIdToken()}`
             },
             body: JSON.stringify({
               characterSheet: updatedCharacterSheet
@@ -205,7 +205,7 @@ export default function GenerateStoryPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await user.getIdToken()}`
+          'Authorization': `Bearer ${await user?.getIdToken()}`
         },
         body: JSON.stringify({
           theme,
@@ -263,7 +263,7 @@ export default function GenerateStoryPage() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${await user.getIdToken()}`
+            'Authorization': `Bearer ${await user?.getIdToken()}`
           },
           body: JSON.stringify({
             pageNumber: i + 1,
@@ -311,7 +311,7 @@ export default function GenerateStoryPage() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${await user.getIdToken()}`
+                'Authorization': `Bearer ${await user?.getIdToken()}`
               },
               body: JSON.stringify({
                 pageText: pageTexts[i].text,
@@ -343,7 +343,7 @@ export default function GenerateStoryPage() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${await user.getIdToken()}`
+                'Authorization': `Bearer ${await user?.getIdToken()}`
               },
               body: JSON.stringify({
                 pageNumber: i + 1,
@@ -375,7 +375,7 @@ export default function GenerateStoryPage() {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${await user.getIdToken()}`
+                      'Authorization': `Bearer ${await user?.getIdToken()}`
                     },
                     body: JSON.stringify({
                       imageUrl: pageImage.imageUrl,
@@ -464,7 +464,7 @@ export default function GenerateStoryPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await user.getIdToken()}`
+          'Authorization': `Bearer ${await user?.getIdToken()}`
         },
         body: JSON.stringify({
           storyTitle: draft.title || theme,
@@ -702,7 +702,7 @@ export default function GenerateStoryPage() {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${await user.getIdToken()}`
+                            'Authorization': `Bearer ${await user?.getIdToken()}`
                           }
                         });
                         const data = await response.json();
@@ -908,7 +908,7 @@ export default function GenerateStoryPage() {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${await user.getIdToken()}`
+                                    'Authorization': `Bearer ${await user?.getIdToken()}`
                                   },
                                   body: JSON.stringify({
                                     pageNumber: index + 1,
@@ -920,7 +920,6 @@ export default function GenerateStoryPage() {
                                     // Add story context for better image generation
                                     storyContext: {
                                       characterName: storyDraft.characterSheet.mainCharacter.name,
-                                      characterAge: storyDraft.characterSheet.mainCharacter.age,
                                       characterRole: storyDraft.characterSheet.mainCharacter.description,
                                       pageText: page.text,
                                       pageTranslation: page.translation
@@ -1053,9 +1052,9 @@ export default function GenerateStoryPage() {
           characterName={storyDraft.characterSheet.mainCharacter.name}
           characterDescription={storyDraft.characterSheet.mainCharacter.visualDescription}
           visualStyle={storyDraft.characterSheet.visualStyle || 'anime illustration style'}
-          modelSheetUrl={storyDraft.characterSheet.mainCharacter.modelSheetUrl}
+          modelSheetUrl={storyDraft.characterSheet.mainCharacter.referenceImage}
           characterId={characterProfile?.characterId}
-          sessionId={sessionId}
+          sessionId={sessionId || undefined}
           user={user}
           onRegenerate={async (newImageUrl, newPrompt) => {
             // Store the regenerated image permanently
@@ -1066,7 +1065,7 @@ export default function GenerateStoryPage() {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${await user.getIdToken()}`
+                  'Authorization': `Bearer ${await user?.getIdToken()}`
                 },
                 body: JSON.stringify({
                   imageUrl: newImageUrl,

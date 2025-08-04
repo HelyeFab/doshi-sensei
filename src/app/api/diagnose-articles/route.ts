@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     const q = query(articlesRef, limit(10));
     const snapshot = await getDocs(q);
     
-    const articles = [];
+    const articles: any[] = [];
     const stats = {
       total: 0,
       withContent: 0,

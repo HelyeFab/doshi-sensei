@@ -2,8 +2,6 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
-import { useNavigation } from '@/contexts/NavigationContext';
-import { navigationRules } from '@/lib/navigation/rules';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -14,26 +12,14 @@ export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const strings = useStrings();
-  const navigation = useNavigation();
 
   // Determine if we should show the back button (not on main admin dashboard)
   const normalizedPath = pathname?.replace(/\/+$/, '');
   const shouldShowBackButton = normalizedPath && normalizedPath !== '/admin';
 
-  // Use smart navigation for back button
+  // Use browser back button
   const handleBack = () => {
-    // Check if we have navigation history
-    if (navigation.canGoBack) {
-      navigation.pop();
-      router.back();
-    } else {
-      // Fallback to hardcoded destinations if no history
-      if (pathname.startsWith('/admin/stories/')) router.push('/admin/stories');
-      else if (pathname === '/admin/stories') router.push('/admin');
-      else if (pathname.startsWith('/admin/mood-boards/')) router.push('/admin/mood-boards');
-      else if (pathname === '/admin/mood-boards') router.push('/admin');
-      else router.push('/admin');
-    }
+    router.back();
   };
 
   return (

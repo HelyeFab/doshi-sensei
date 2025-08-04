@@ -30,12 +30,12 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
   } | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  const gameLoopRef = useRef<number>();
+  const gameLoopRef = useRef<number | undefined>(undefined);
   const lastSpawnRef = useRef<number>(Date.now());
   const audioManager = getGameAudioManager();
   const kanaSpawnCountRef = useRef<{ [key: string]: number }>({});
   const gameStateRef = useRef(gameState);
-  const spawnObjectRef = useRef<() => void>();
+  const spawnObjectRef = useRef<(() => void) | undefined>(undefined);
 
   // Keep ref updated with current game state
   useEffect(() => {
@@ -122,7 +122,12 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
           id: `wrong-kana-${Date.now()}-${Math.random()}`,
           type: 'wrong-kana',
           content: randomWrongKana.hiragana,
-          kanaData: randomWrongKana,
+          kanaData: {
+            id: randomWrongKana.id + '-hiragana',
+            kana: randomWrongKana.hiragana,
+            romaji: randomWrongKana.romaji,
+            type: 'hiragana' as const
+          },
           x: Math.random() * 40 + 30,
           y: 0,
           speed: currentGameState.gameSpeed
@@ -189,7 +194,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
         };
       });
     } else if (object.type === 'kana' && object.kanaData) {
-      const isTargetKana = gameState.selectedKana.some(k => k.romaji === object.kanaData.romaji);
+      const isTargetKana = gameState.selectedKana.some(k => k.romaji === object.kanaData!.romaji);
       if (isTargetKana) {
         setShowFeedback({ type: 'correct', ...clickPosition });
         audioManager.playSound('start').catch(() => { }); // Use start sound for correct clicks

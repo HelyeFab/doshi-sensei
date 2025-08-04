@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
         // Increment usage if it's a countable feature
         if (feature === 'drills') {
           const today = new Date().toISOString().split('T')[0];
-          const isToday = subscription.currentUsage.lastDrillDate === today;
-          const currentCount = isToday ? subscription.currentUsage.drillsToday : 0;
+          const isToday = subscription.currentUsage?.lastDrillDate === today;
+          const currentCount = isToday ? (subscription.currentUsage?.drillsToday || 0) : 0;
 
           const updatedSubscription = {
             ...subscription,
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
             ...subscription,
             currentUsage: {
               ...subscription.currentUsage,
-              listsCount: subscription.currentUsage.listsCount + 1,
+              listsCount: (subscription.currentUsage?.listsCount || 0) + 1,
             },
           };
 
@@ -132,33 +132,37 @@ export async function POST(request: NextRequest) {
 
 function checkFeatureAvailability(subscription: UserSubscription, feature: string): { allowed: boolean; reason?: string } {
   const { limits, currentUsage } = subscription;
+  
+  if (!limits || !currentUsage) {
+    return { allowed: false, reason: 'Missing subscription data' };
+  }
 
   switch (feature) {
     case 'save':
-      return { allowed: limits.canSave };
+      return { allowed: limits?.canSave || false };
       
     case 'sync':
       return { 
-        allowed: limits.canSync,
-        reason: limits.canSync ? undefined : 'Premium subscription required for cloud sync'
+        allowed: limits?.canSync || false,
+        reason: (limits?.canSync) ? undefined : 'Premium subscription required for cloud sync'
       };
       
     case 'lists':
-      const canCreateList = limits.maxLists === -1 || currentUsage.listsCount < limits.maxLists;
+      const canCreateList = (limits?.maxLists === -1) || ((currentUsage?.listsCount || 0) < (limits?.maxLists || 0));
       return { 
         allowed: canCreateList,
-        reason: canCreateList ? undefined : `Maximum of ${limits.maxLists} study lists allowed on free plan`
+        reason: canCreateList ? undefined : `Maximum of ${limits?.maxLists || 0} study lists allowed on free plan`
       };
       
     case 'drills':
       const today = new Date().toISOString().split('T')[0];
-      const isToday = currentUsage.lastDrillDate === today;
-      const todayCount = isToday ? currentUsage.drillsToday : 0;
-      const canDoDrill = limits.maxDrillsPerDay === -1 || todayCount < limits.maxDrillsPerDay;
+      const isToday = currentUsage?.lastDrillDate === today;
+      const todayCount = isToday ? (currentUsage?.drillsToday || 0) : 0;
+      const canDoDrill = (limits?.maxDrillsPerDay === -1) || (todayCount < (limits?.maxDrillsPerDay || 0));
       
       return { 
         allowed: canDoDrill,
-        reason: canDoDrill ? undefined : `Daily limit of ${limits.maxDrillsPerDay} drills reached`
+        reason: canDoDrill ? undefined : `Daily limit of ${limits?.maxDrillsPerDay || 0} drills reached`
       };
       
     default:

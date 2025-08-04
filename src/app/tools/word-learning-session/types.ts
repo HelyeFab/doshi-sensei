@@ -30,7 +30,7 @@ export interface SessionData {
   weakWords: string[];
 }
 
-export type SessionPhase = 'selection' | 'exposure' | 'recognition' | 'recall' | 'complete';
+export type SessionPhase = 'selection' | 'exposure' | 'recognition' | 'recall' | 'audio-matching' | 'complete';
 
 export interface RecognitionQuestion {
   type: 'audio' | 'meaning' | 'sentence';

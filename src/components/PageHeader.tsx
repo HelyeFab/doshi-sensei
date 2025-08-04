@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link'
-import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
+import Link from 'next/link';
 import { PageHelpIcon } from '@/components/PageHelpIcon';
 import { pageHelpContent } from '@/config/pageHelp';
 
@@ -32,15 +31,14 @@ export function PageHeader({ title, emoji, icon, subtitle, showBackButton = true
     <header className="mb-8">
       <div className="relative flex items-center mb-4">
         {showBackButton && (
-          <SmartNavigationLink href={backHref}
+          <Link href={backHref}
             onClick={onBackClick ? handleBackClick : undefined}
             className="absolute left-0 p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors inline-flex items-center justify-center z-10"
-            aria-label="Go back"
-           title={backLabel || "Back"}>
+            aria-label="Go back">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-          </SmartNavigationLink>
+          </Link>
         )}
 
         <div className="absolute inset-0 flex items-center justify-center">

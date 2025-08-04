@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { TranscriptLine } from '../page';
+import { TranscriptLine } from '../YouTubeShadowing';
 import { useStrings } from '@/contexts/LanguageContext';
 import SubtitleUploader from './SubtitleUploader';
 import { TranscriptCacheManager } from '@/utils/transcriptCache';

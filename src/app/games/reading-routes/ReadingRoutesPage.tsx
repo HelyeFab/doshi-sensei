@@ -170,7 +170,7 @@ export default function ReadingRoutesPage() {
                       <span className="text-sm font-medium text-foreground">
                         {isPremium ? (
                           <span className="text-green-600 font-bold">Unlimited plays</span>
-                        ) : remaining > 0 ? (
+                        ) : remaining && remaining > 0 ? (
                           <>
                             <span className="text-primary font-bold">{remaining}</span> plays remaining today
                           </>

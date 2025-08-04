@@ -33,7 +33,7 @@ export default function KanjiSimonGameWrapper({ board, onComplete, remainingPlay
     const correctAnswers = Object.values(kanjiScores).filter(s => s > 0).length;
     
     await saveKanjiSimonProgress(
-      user?.id || null,
+      user?.uid || null,
       board.id,
       {
         boardId: board.id,

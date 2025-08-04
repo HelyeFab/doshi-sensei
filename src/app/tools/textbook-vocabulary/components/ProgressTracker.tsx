@@ -79,7 +79,7 @@ export function ProgressTracker({ vocabulary, textbook, refreshKey }: ProgressTr
   if (loading) {
     return (
       <div className="flex items-center justify-center h-10">
-        <div className="animate-pulse bg-gray-200 rounded h-8 w-full" />
+        <div className="animate-pulse bg-white/20 rounded h-8 w-full" />
       </div>
     );
   }
@@ -88,11 +88,11 @@ export function ProgressTracker({ vocabulary, textbook, refreshKey }: ProgressTr
     <div className="flex items-center justify-between gap-4">
       {/* Progress Bar */}
       <div className="flex-1">
-        <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+        <div className="flex items-center justify-between text-xs text-white mb-1">
           <span>Progress</span>
           <span>{progressPercentage.toFixed(0)}%</span>
         </div>
-        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-300"
             style={{ width: `${progressPercentage}%` }}
@@ -103,16 +103,16 @@ export function ProgressTracker({ vocabulary, textbook, refreshKey }: ProgressTr
       {/* Stats */}
       <div className="flex gap-4 text-xs">
         <div className="text-center">
-          <div className="font-bold text-green-600">{stats.masteredWords}</div>
-          <div className="text-gray-500">Mastered</div>
+          <div className="font-bold text-green-400">{stats.masteredWords}</div>
+          <div className="text-white/80">Mastered</div>
         </div>
         <div className="text-center">
-          <div className="font-bold text-yellow-600">{stats.learningWords}</div>
-          <div className="text-gray-500">Learning</div>
+          <div className="font-bold text-yellow-400">{stats.learningWords}</div>
+          <div className="text-white/80">Learning</div>
         </div>
         <div className="text-center">
-          <div className="font-bold text-gray-600">{stats.newWords}</div>
-          <div className="text-gray-500">New</div>
+          <div className="font-bold text-white">{stats.newWords}</div>
+          <div className="text-white/80">New</div>
         </div>
       </div>
     </div>

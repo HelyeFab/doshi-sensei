@@ -296,6 +296,9 @@ export default function RootLayout({
         
         {/* Service Worker Precache Fix - Handle bad-precaching-response errors */}
         <script src="/sw-precache-fix.js" defer />
+        
+        {/* PWA Manager - Intelligent Service Worker Management */}
+        <script src="/pwa-manager.js" />
 
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>

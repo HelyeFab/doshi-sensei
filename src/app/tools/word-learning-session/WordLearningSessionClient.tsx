@@ -223,7 +223,7 @@ export default function WordLearningSessionClient() {
 
   if (phase === 'selection') {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <div className="mobile-nav-padding">
           <SmartPageHeader 
             title="Word Learning Session"
@@ -249,7 +249,7 @@ export default function WordLearningSessionClient() {
   if (!currentWord && phase !== 'selection') return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="mobile-nav-padding">
         <SmartPageHeader 
           title={
@@ -263,10 +263,10 @@ export default function WordLearningSessionClient() {
           actions={
             <button 
               onClick={resetSession}
-              className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Close session"
             >
-              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>

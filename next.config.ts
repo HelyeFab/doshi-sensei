@@ -54,6 +54,33 @@ const pwaConfig = withPWA({
     ({ asset }: { asset: { name: string; size: number } }) => asset.size > 500 * 1024,
   ],
   runtimeCaching: [
+    // CRITICAL: Handle RSC (React Server Component) requests
+    {
+      urlPattern: /\?_rsc=.*/i,
+      handler: 'NetworkOnly', // Never cache RSC payloads
+      options: {
+        backgroundSync: {
+          name: 'rsc-queue',
+          options: {
+            maxRetentionTime: 5 * 60 // 5 minutes
+          }
+        }
+      }
+    },
+    // Handle Next.js data requests
+    {
+      urlPattern: /_next\/data\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'nextjs-data',
+        networkTimeoutSeconds: 5,
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 5 * 60 // 5 minutes
+        }
+      }
+    },
+    // Homepage - network first with short cache
     {
       urlPattern: /^\/$/,
       handler: 'NetworkFirst',
@@ -66,6 +93,7 @@ const pwaConfig = withPWA({
         }
       }
     },
+    // Admin pages - always fresh
     {
       urlPattern: /^\/admin\/.*/i,
       handler: 'NetworkFirst',
@@ -78,13 +106,15 @@ const pwaConfig = withPWA({
         }
       }
     },
+    // API routes - network only
     {
-      urlPattern: /^\/api\/admin\/.*/i,
-      handler: 'NetworkOnly' // Never cache admin API calls
+      urlPattern: /^\/api\/.*/i,
+      handler: 'NetworkOnly'
     },
+    // Stripe resources - never cache
     {
       urlPattern: /^https:\/\/(js|api)\.stripe\.com\/.*/i,
-      handler: 'NetworkOnly' // Never cache Stripe resources
+      handler: 'NetworkOnly'
     },
     {
       urlPattern: /^\/audio\/kana\/.*\.mp3$/i,
@@ -107,6 +137,34 @@ const pwaConfig = withPWA({
         cacheName: 'audio-cache',
         expiration: {
           maxEntries: 500,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    },
+    // CRITICAL: Specific problematic pages - use NetworkFirst
+    {
+      urlPattern: /^\/(vocabulary|drill|practice|news|stories|kanji-browser|admin)\/?$/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'dynamic-pages',
+        networkTimeoutSeconds: 10,
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 5 * 60 // 5 minutes only
+        }
+      }
+    },
+    // Handle kanji data files
+    {
+      urlPattern: /\/data\/.*\.(json|dat)$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'static-data',
+        expiration: {
+          maxEntries: 100,
           maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
         },
         cacheableResponse: {
@@ -176,7 +234,8 @@ const pwaConfig = withPWA({
     /\.dat$/,
     /\.gz$/
   ],
-  customWorkerDir: 'worker'
+  customWorkerDir: 'worker',
+  swSrc: 'worker/custom-sw.js'
 });
 
 const securityHeaders = [

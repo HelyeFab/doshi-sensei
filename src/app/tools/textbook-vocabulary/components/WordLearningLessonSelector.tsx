@@ -319,9 +319,9 @@ export function WordLearningLessonSelector({
       </div>
 
       {/* Info Box */}
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-        <h4 className="font-semibold text-blue-900 mb-1">Word Learning Sessions</h4>
-        <p className="text-sm text-blue-800">
+      <div className="mt-6 mb-20 p-4 bg-primary/10 rounded-lg">
+        <h4 className="font-semibold text-foreground mb-1">Word Learning Sessions</h4>
+        <p className="text-sm text-foreground/80">
           Learn vocabulary through three phases: Exposure, Recognition, and Active Recall. 
           Track your progress and review words at the perfect time!
         </p>

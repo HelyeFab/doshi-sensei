@@ -86,13 +86,13 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
       {/* Progress Bar */}
       {totalWords > 0 && (
         <div className="mb-6">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>Learning Progress</span>
-            <span>{currentIndex + 1} / {totalWords}</span>
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-muted-foreground">Learning Progress</span>
+            <span className="text-muted-foreground">{currentIndex + 1} / {totalWords}</span>
           </div>
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-300 ease-out"
+              className="h-full bg-primary transition-all duration-300 ease-out"
               style={{ width: `${((currentIndex + 1) / totalWords) * 100}%` }}
             />
           </div>
@@ -103,7 +103,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
       <div className="flex justify-center mb-6">
         <button
           onClick={playWordAudio}
-          className="w-20 h-20 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors shadow-lg"
+          className="w-20 h-20 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center transition-colors shadow-lg"
           aria-label="Play audio"
         >
           <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,24 +113,24 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
       </div>
 
       {/* Word Card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-4">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
         <div className="text-center mb-4">
           {word.kanji && (
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">{word.kanji}</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-2">{word.kanji}</h2>
           )}
-          <p className="text-xl text-gray-700 mb-1">
+          <p className="text-xl text-foreground/80 mb-1">
             {showReading ? word.kana : (
               <button
                 onClick={() => setShowReading(true)}
-                className="text-blue-500 hover:text-blue-600 underline"
+                className="text-primary hover:text-primary/80 underline"
               >
                 Show reading
               </button>
             )}
           </p>
-          <p className="text-lg text-gray-600">{word.meaning}</p>
+          <p className="text-lg text-muted-foreground">{word.meaning}</p>
           {word.partOfSpeech && (
-            <p className="text-sm text-gray-500 mt-1">({word.partOfSpeech})</p>
+            <p className="text-sm text-muted-foreground mt-1">({word.partOfSpeech})</p>
           )}
         </div>
 
@@ -138,7 +138,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         {word.example && (
           <div className="border-t pt-4 mt-4">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm text-gray-600">Example:</p>
+              <p className="text-sm text-muted-foreground">Example:</p>
               <button
                 onClick={async () => {
                   try {
@@ -155,19 +155,19 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
                     console.error('Failed to play example audio:', error);
                   }
                 }}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
                 aria-label="Play example audio"
               >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 </svg>
               </button>
             </div>
-            <p className="text-lg text-gray-900 mb-1">{word.example.japanese}</p>
+            <p className="text-lg text-foreground mb-1">{word.example.japanese}</p>
             {word.example.reading && (
-              <p className="text-sm text-gray-600 mb-1">{word.example.reading}</p>
+              <p className="text-sm text-muted-foreground mb-1">{word.example.reading}</p>
             )}
-            <p className="text-sm text-gray-700">{word.example.english}</p>
+            <p className="text-sm text-foreground/80">{word.example.english}</p>
           </div>
         )}
 
@@ -184,9 +184,9 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
       </div>
 
       {/* Action Prompts */}
-      <div className="bg-blue-50 rounded-lg p-4 mb-4">
-        <p className="text-sm text-blue-900 mb-2">Try these:</p>
-        <ul className="text-sm text-blue-800 space-y-1">
+      <div className="bg-primary/10 rounded-lg p-4 mb-4">
+        <p className="text-sm text-foreground font-medium mb-2">Try these:</p>
+        <ul className="text-sm text-foreground/80 space-y-1">
           <li>• Say the word aloud</li>
           <li>• Shadow the example sentence</li>
           <li>• Visualize using this word in context</li>
@@ -200,7 +200,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           className={`py-3 px-4 rounded-lg transition-colors ${
             isMarkedDifficult
               ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+              : 'bg-card text-foreground border border-border hover:bg-muted'
           }`}
           disabled={isMarkedDifficult}
         >
@@ -212,7 +212,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           className={`py-3 px-4 rounded-lg transition-colors ${
             isMarkedLearned
               ? 'bg-green-100 text-green-800 border border-green-300'
-              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+              : 'bg-card text-foreground border border-border hover:bg-muted'
           }`}
         >
           {isMarkedLearned ? '✅ Learned' : '○ Mark as learned'}
@@ -221,7 +221,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
       
       <button
         onClick={handleNext}
-        className="w-full py-3 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+        className="w-full py-3 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         Next →
       </button>

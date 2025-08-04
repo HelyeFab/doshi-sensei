@@ -268,9 +268,9 @@ export function WordLearningLessonSelector({
                   : status === 'empty'
                   ? 'bg-muted/30 border-muted cursor-not-allowed opacity-50'
                   : status === 'complete'
-                  ? 'bg-primary/10 border-primary/30 hover:border-primary/50'
+                  ? 'bg-primary/20 border-primary/50 hover:border-primary/70'
                   : status === 'partial'
-                  ? 'bg-primary/5 border-primary/20 hover:border-primary/40'
+                  ? 'bg-primary/15 border-primary/40 hover:border-primary/60'
                   : 'bg-card border-border hover:border-primary'
               }`}
             >

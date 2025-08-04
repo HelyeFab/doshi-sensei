@@ -293,6 +293,9 @@ export default function RootLayout({
 
         {/* RSC Error Handler - Fix 502 errors for React Server Components */}
         <script src="/rsc-error-handler.js" />
+        
+        {/* Service Worker Precache Fix - Handle bad-precaching-response errors */}
+        <script src="/sw-precache-fix.js" defer />
 
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>

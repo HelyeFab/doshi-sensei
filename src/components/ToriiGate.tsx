@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { SmartLink } from '@/components/SmartLink';
 import { useState, useEffect } from 'react';
 
 interface CherryBlossom {

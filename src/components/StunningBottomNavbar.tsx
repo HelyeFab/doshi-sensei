@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_EMAIL } from '@/types/admin';
+import { SmartLink } from '@/components/SmartLink';
 
 interface NavItem {
   id: string;

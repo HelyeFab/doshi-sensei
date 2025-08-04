@@ -9,9 +9,13 @@ export async function getConsoleLogManager() {
   }
   
   try {
-    // Dynamic import to avoid build-time resolution
-    const module = await import('../../scripts/console-log-manager.js');
-    return module.default || module;
+    // Use eval to prevent webpack from analyzing the import
+    // This is safe because we control the path and it's dev-only
+    const path = require('path');
+    const scriptPath = path.join(process.cwd(), 'scripts', 'console-log-manager.js');
+    delete require.cache[scriptPath]; // Clear cache to get fresh instance
+    const ConsoleLogManager = require(scriptPath);
+    return ConsoleLogManager;
   } catch (error) {
     console.error('Failed to load console-log-manager:', error);
     throw new Error('Console log manager not available');

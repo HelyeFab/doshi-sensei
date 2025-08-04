@@ -3,8 +3,8 @@ import withPWA from 'next-pwa';
 
 const pwaConfig = withPWA({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
-  register: true,
+  disable: true, // EMERGENCY: Completely disable PWA to fix RSC errors
+  register: false, // Don't register service worker
   skipWaiting: true,
   reloadOnOnline: false,
   publicExcludes: [
@@ -204,7 +204,7 @@ const securityHeaders = [
       }
     : {
         key: 'Content-Security-Policy',
-        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://js.stripe.com https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http: https://raw.githubusercontent.com https://watanoc.com https://lh3.googleusercontent.com https://*.googleusercontent.com; media-src 'self' blob: https: https://watanoc.com; connect-src 'self' https://apis.google.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://firestore.googleapis.com wss://*.firebaseio.com https://*.firebaseio.com https://www.youtube.com https://youtube.com https://raw.githubusercontent.com https://watanoc.com https://lh3.googleusercontent.com https://*.googleusercontent.com https://raw.githubusercontent.com; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.firebaseapp.com https://doshi-sensei.firebaseapp.com https://www.youtube.com https://youtube.com; frame-ancestors 'none';"
+        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http: https://raw.githubusercontent.com https://watanoc.com https://lh3.googleusercontent.com https://*.googleusercontent.com; media-src 'self' blob: https: https://watanoc.com; connect-src 'self' https://api.stripe.com https://apis.google.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com https://*.firebaseio.com https://www.youtube.com https://youtube.com https://raw.githubusercontent.com https://watanoc.com https://lh3.googleusercontent.com https://*.googleusercontent.com; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://*.firebaseapp.com https://doshi-sensei.firebaseapp.com https://www.youtube.com https://youtube.com; frame-ancestors 'none';"
       }
 ];
 

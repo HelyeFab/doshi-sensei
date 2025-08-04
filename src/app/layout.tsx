@@ -300,8 +300,8 @@ export default function RootLayout({
         {/* PWA Manager - Intelligent Service Worker Management */}
         <script src="/pwa-manager.js" />
         
-        {/* Force Service Worker Update - Fix RSC errors */}
-        <script src="/sw-update-force.js" />
+        {/* EMERGENCY: Unregister all service workers to fix RSC errors */}
+        <script src="/unregister-sw.js" />
 
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>

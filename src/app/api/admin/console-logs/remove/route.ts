@@ -1,23 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/firebase';
-import { ADMIN_EMAIL } from '@/types/admin';
+import { getServerSession } from 'next-auth/next';
+import { adminGuard } from '@/lib/adminGuard';
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify admin authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Check admin access
+    const session = await getServerSession();
+    const adminCheck = await adminGuard(request);
+    
+    if (!adminCheck.isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
-
-    // For server-side admin check, we'll mark this as admin request
-    (global as any).__adminRequest = true;
 
     const body = await request.json();
     const { categories, files, methods, dryRun } = body;
 
     // Dynamic import for CommonJS module
-    const ConsoleLogManager = require('../../../../../../scripts/console-log-manager');
+    const ConsoleLogManager = require('../../../../../scripts/console-log-manager');
     
     // Create manager instance
     const manager = new ConsoleLogManager();

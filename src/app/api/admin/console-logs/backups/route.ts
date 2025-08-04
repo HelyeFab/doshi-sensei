@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/firebase';
-import { ADMIN_EMAIL } from '@/types/admin';
+import { getServerSession } from 'next-auth/next';
+import { adminGuard } from '@/lib/adminGuard';
 import fs from 'fs/promises';
 import path from 'path';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify admin authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Check admin access
+    const session = await getServerSession();
+    const adminCheck = await adminGuard(request);
+    
+    if (!adminCheck.isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
-
-    // For server-side admin check, we'll mark this as admin request
-    (global as any).__adminRequest = true;
 
     const backupDir = path.join(process.cwd(), 'console-logs-backup');
     

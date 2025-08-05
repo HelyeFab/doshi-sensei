@@ -13,12 +13,9 @@
   
   // Check if we need to clear caches due to version change
   if (storedVersion && storedVersion !== SW_VERSION) {
-    console.log('[PWA Manager] Version change detected, clearing caches...');
-    
-    // Clear all caches
+    // Clear all caches silently
     caches.keys().then(names => {
       Promise.all(names.map(name => caches.delete(name))).then(() => {
-        console.log('[PWA Manager] All caches cleared');
         localStorage.setItem(CACHE_VERSION_KEY, SW_VERSION);
       });
     });
@@ -45,8 +42,7 @@
         
         // If we see too many network errors, the SW might be problematic
         if (networkErrorCount > 5) {
-          console.warn('[PWA Manager] Multiple network errors detected, refreshing service worker...');
-          
+          // Silently refresh service worker
           navigator.serviceWorker.getRegistration().then(reg => {
             if (reg) {
               reg.update();
@@ -67,8 +63,8 @@
       navigator.serviceWorker.getRegistration().then(reg => {
         if (reg) {
           // Check for updates when app becomes visible
-          reg.update().catch(err => {
-            console.log('[PWA Manager] Update check failed:', err);
+          reg.update().catch(() => {
+            // Silently handle update check failure
           });
         }
       });
@@ -78,8 +74,7 @@
   // Listen for service worker messages
   navigator.serviceWorker.addEventListener('message', event => {
     if (event.data && event.data.type === 'CACHE_UPDATED') {
-      console.log('[PWA Manager] Cache updated, refreshing content...');
-      // Optionally reload or notify user
+      // Silently handle cache updates
     }
   });
   
@@ -90,5 +85,5 @@
     }
   }, 24 * 60 * 60 * 1000);
   
-  console.log('[PWA Manager] Initialized - Version', SW_VERSION);
+  // PWA Manager initialized silently
 })();

@@ -74,11 +74,8 @@ const rubik = localFont({
 
 // Decorative font - only load regular weight initially
 const savoyeFont = localFont({
-  src: {
-    path: "../../public/fonts/Dancing_Script/static/DancingScript-Regular.ttf",
-    weight: "400",
-    style: "normal",
-  },
+  src: "../../public/fonts/Dancing_Script/static/DancingScript-Regular.ttf",
+  weight: "400",
   variable: "--font-savoye",
   display: 'swap',
   preload: false, // Don't preload decorative fonts

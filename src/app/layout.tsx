@@ -268,17 +268,11 @@ export default function RootLayout({
         <link rel="alternate" type="application/rss+xml" title="Dōshi Sensei - Japanese News" href="/api/rss/news" />
         <link rel="alternate" type="application/rss+xml" title="Dōshi Sensei - Japanese Stories" href="/api/rss/stories" />
 
-        {/* RSC Error Handler - Fix 502 errors for React Server Components */}
-        <script src="/rsc-error-handler.js" />
-        
-        {/* Service Worker Precache Fix - Handle bad-precaching-response errors */}
-        <script src="/sw-precache-fix.js" defer />
         
         {/* PWA Manager - Intelligent Service Worker Management */}
         <script src="/pwa-manager.js" />
         
         {/* PWA Service Worker Update Manager */}
-        <script src="/sw-update-force.js" />
 
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
       </head>

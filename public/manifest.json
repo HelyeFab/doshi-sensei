@@ -40,22 +40,7 @@
       "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Doshi Sensei home screen"
-    },
-    {
-      "src": "/screenshots/mobile-drills.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Practice drills on mobile"
-    }
-  ],
+  "screenshots": [],
   "related_applications": [],
   "icons": [
     {

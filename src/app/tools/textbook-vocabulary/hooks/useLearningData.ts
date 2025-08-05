@@ -22,30 +22,38 @@ export function useLearningData(sourceId: string, lesson?: number) {
 
         // 1. Load metadata for the source
         // Assuming metadata is always at sourceId/metadata.json
-        // This path needs to be robust and potentially configurable if data sources vary significantly.
         const metadataModule = await import(`@/data/${sourceId}/metadata.json`);
         setMetadata(metadataModule.default);
 
         // 2. Load learning items
         let items: LearningItem[] = [];
-
-        // Determine how to load items based on sourceId and lesson parameter.
-        // This logic will need to be generalized significantly.
-        // For now, we'll try a common pattern:
-        // - If lesson is provided and valid for the source, try to load a specific lesson file.
-        // - Otherwise, try to load an 'all.json' file.
-        // - Fallback to loading the first available lesson if 'all.json' is not found.
-
         const sourceMetadata = metadataModule.default as DataSourceMetadata;
 
-        // Check if lesson is provided and if the metadata indicates lessons are applicable and the lesson number is valid.
-        if (lesson !== undefined && sourceMetadata.lessons?.includes(lesson)) {
-          // Try to load a specific lesson file. The path structure might vary.
-          // Example: `@/data/${sourceId}/lessons/lesson-${lesson}.json`
-          // Or it could be specific to item types, e.g., `@/data/${sourceId}/kanji/lesson-${lesson}.json`
+        // Determine how to load items based on sourceId and lesson parameter.
+        // This logic needs to be generalized to handle different data source structures.
+
+        // Special handling for kana charts which might not have lessons in the same way textbooks do.
+        // They might have a single file for all characters.
+        if (sourceId.includes('hiragana-chart') || sourceId.includes('katakana-chart')) {
           try {
-            // This import path is a placeholder and might need adjustment based on actual data organization.
-            // We need to ensure this path is dynamic and correct for different data sources.
+            // For kana charts, we expect a single file like 'kana.json' or 'all.json'
+            const kanaModule = await import(`@/data/${sourceId}/kana.json`); // Assuming kana.json exists
+            items = kanaModule.default;
+          } catch (err) {
+            console.warn(`'kana.json' not found for source ${sourceId}, attempting to load 'all.json'.`);
+            try {
+              const allModule = await import(`@/data/${sourceId}/all.json`);
+              items = allModule.default;
+            } catch (allErr) {
+              console.error(`Failed to load data for kana source ${sourceId}:`, allErr);
+              setError(allErr as Error);
+              items = [];
+            }
+          }
+        } else if (lesson !== undefined && sourceMetadata.lessons?.includes(lesson)) {
+          // Try to load a specific lesson file for sources that have lessons (like textbooks).
+          // The path structure might vary. Example: `@/data/${sourceId}/lessons/lesson-${lesson}.json`
+          try {
             const lessonModule = await import(`@/data/${sourceId}/lessons/lesson-${lesson}.json`);
             items = lessonModule.default;
           } catch (err) {

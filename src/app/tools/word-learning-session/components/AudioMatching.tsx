@@ -101,13 +101,13 @@ export default function AudioMatching({
     <div className="max-w-4xl mx-auto">
       {/* Progress Bar */}
       <div className="mb-8">
-        <div className="flex justify-between text-sm text-gray-600 mb-2">
+        <div className="flex justify-between text-sm text-muted-foreground mb-2">
           <span>Audio Matching Progress</span>
           <span>{currentIndex + 1} / {totalWords}</span>
         </div>
-        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div 
-            className="h-full bg-gradient-to-r from-purple-400 to-purple-600 transition-all duration-300 ease-out"
+            className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-300 ease-out"
             style={{ width: `${((currentIndex + 1) / totalWords) * 100}%` }}
           />
         </div>
@@ -115,14 +115,14 @@ export default function AudioMatching({
 
       {/* Instructions */}
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2">Match the Sound to the Meaning</h2>
-        <p className="text-gray-600">Click a sound button, then select its English meaning</p>
+        <h2 className="text-2xl font-bold mb-2 text-foreground">Match the Sound to the Meaning</h2>
+        <p className="text-muted-foreground">Click a sound button, then select its English meaning</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Audio Buttons */}
         <div>
-          <h3 className="text-lg font-semibold mb-4">Japanese Audio</h3>
+          <h3 className="text-lg font-semibold mb-4 text-foreground">Japanese Audio</h3>
           <div className="space-y-3">
             {currentOptions.map((option, index) => (
               <motion.button
@@ -132,10 +132,10 @@ export default function AudioMatching({
                 className={`
                   w-full p-4 rounded-lg border-2 transition-all
                   ${matchedPairs.has(option.id) 
-                    ? 'bg-green-50 border-green-300 opacity-50 cursor-not-allowed' 
+                    ? 'bg-green-500/10 border-green-500/30 opacity-50 cursor-not-allowed' 
                     : selectedAudio === option.id
-                    ? 'bg-blue-50 border-blue-400 shadow-md'
-                    : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                    ? 'bg-primary/10 border-primary shadow-md'
+                    : 'bg-card border-border hover:border-border/80 hover:shadow-sm'
                   }
                 `}
                 whileHover={!matchedPairs.has(option.id) ? { scale: 1.02 } : {}}
@@ -156,7 +156,7 @@ export default function AudioMatching({
 
         {/* Meaning Options */}
         <div>
-          <h3 className="text-lg font-semibold mb-4">English Meanings</h3>
+          <h3 className="text-lg font-semibold mb-4 text-foreground">English Meanings</h3>
           <div className="space-y-3">
             {currentOptions.map((option) => {
               const isWrong = selectedAudio && wrongAttempts.has(`${selectedAudio}-${option.id}`);
@@ -169,18 +169,18 @@ export default function AudioMatching({
                   className={`
                     w-full p-4 rounded-lg border-2 transition-all text-left
                     ${matchedPairs.has(option.id) 
-                      ? 'bg-green-50 border-green-300 opacity-50 cursor-not-allowed' 
+                      ? 'bg-green-500/10 border-green-500/30 opacity-50 cursor-not-allowed' 
                       : selectedMeaning === option.id
                       ? isCorrect === true
-                        ? 'bg-green-50 border-green-400 shadow-md'
+                        ? 'bg-green-500/10 border-green-500 shadow-md'
                         : isCorrect === false
-                        ? 'bg-red-50 border-red-400 shadow-md'
-                        : 'bg-purple-50 border-purple-400 shadow-md'
+                        ? 'bg-destructive/10 border-destructive shadow-md'
+                        : 'bg-primary/10 border-primary shadow-md'
                       : isWrong
-                      ? 'bg-red-50 border-red-300'
+                      ? 'bg-destructive/10 border-destructive/30'
                       : !selectedAudio
-                      ? 'bg-gray-50 border-gray-200 cursor-not-allowed'
-                      : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                      ? 'bg-muted border-border cursor-not-allowed'
+                      : 'bg-card border-border hover:border-border/80 hover:shadow-sm'
                     }
                   `}
                   whileHover={!matchedPairs.has(option.id) && selectedAudio ? { scale: 1.02 } : {}}
@@ -203,7 +203,7 @@ export default function AudioMatching({
             exit={{ opacity: 0, y: -20 }}
             className={`
               mt-6 p-4 rounded-lg text-center font-medium
-              ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+              ${isCorrect ? 'bg-green-500/10 text-green-700' : 'bg-destructive/10 text-destructive'}
             `}
           >
             {isCorrect ? '✓ Correct! Well done!' : '✗ Not quite. Try again!'}

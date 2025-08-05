@@ -241,7 +241,7 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
               onClick={() => setViewMode('grid')}
               className={`px-4 py-1.5 rounded text-sm font-medium transition-colors whitespace-nowrap ${
                 viewMode === 'grid'
-                  ? 'bg-background text-foreground shadow-sm font-bold'
+                  ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -251,7 +251,7 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
               onClick={() => setViewMode('learn')}
               className={`px-4 py-1.5 rounded text-sm font-medium transition-colors whitespace-nowrap ${
                 viewMode === 'learn'
-                  ? 'bg-background text-foreground shadow-sm font-bold'
+                  ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -261,7 +261,7 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
               onClick={() => setViewMode('golden-time')}
               className={`px-4 py-1.5 rounded text-sm font-medium transition-colors whitespace-nowrap ${
                 viewMode === 'golden-time'
-                  ? 'bg-background text-foreground shadow-sm font-bold'
+                  ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >

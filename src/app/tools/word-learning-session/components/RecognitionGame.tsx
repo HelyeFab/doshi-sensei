@@ -155,13 +155,13 @@ export default function RecognitionGame({
   return (
     <div className="max-w-2xl mx-auto">
       {/* Question */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-6">
         {question.type === 'audio' && (
           <div className="text-center">
-            <p className="text-lg text-gray-700 mb-4">Which word did you hear?</p>
+            <p className="text-lg text-muted-foreground mb-4">Which word did you hear?</p>
             <button
               onClick={playQuestionAudio}
-              className="w-16 h-16 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors mx-auto"
+              className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center transition-colors mx-auto"
               aria-label="Play audio"
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,8 +173,8 @@ export default function RecognitionGame({
         
         {question.type === 'meaning' && (
           <div className="text-center">
-            <p className="text-lg text-gray-700 mb-2">What does this mean?</p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-lg text-muted-foreground mb-2">What does this mean?</p>
+            <p className="text-2xl font-bold text-foreground">
               {currentWord.kanji || currentWord.kana}
             </p>
           </div>
@@ -182,8 +182,8 @@ export default function RecognitionGame({
         
         {question.type === 'sentence' && (
           <div className="text-center">
-            <p className="text-lg text-gray-700 mb-2">Fill in the blank</p>
-            <p className="text-xl text-gray-900">{question.sentence}</p>
+            <p className="text-lg text-muted-foreground mb-2">Fill in the blank</p>
+            <p className="text-xl text-foreground">{question.sentence}</p>
           </div>
         )}
       </div>
@@ -201,12 +201,12 @@ export default function RecognitionGame({
               disabled={showResult}
               className={`p-4 rounded-lg border-2 transition-all ${
                 isCorrect
-                  ? 'bg-green-50 border-green-500 text-green-700'
+                  ? 'bg-green-500/10 border-green-500 text-green-700'
                   : isWrong
-                  ? 'bg-red-50 border-red-500 text-red-700'
+                  ? 'bg-destructive/10 border-destructive text-destructive'
                   : showResult
-                  ? 'bg-gray-50 border-gray-300 text-gray-500'
-                  : 'bg-white border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                  ? 'bg-muted border-border text-muted-foreground'
+                  : 'bg-card border-border hover:border-primary hover:bg-primary/10'
               }`}
             >
               {option}
@@ -219,8 +219,8 @@ export default function RecognitionGame({
       {showResult && (
         <div className={`rounded-lg p-4 mb-4 ${
           selectedAnswer === question.correctAnswer
-            ? 'bg-green-50 text-green-800'
-            : 'bg-red-50 text-red-800'
+            ? 'bg-green-500/10 text-green-700'
+            : 'bg-destructive/10 text-destructive'
         }`}>
           <p className="font-medium">
             {selectedAnswer === question.correctAnswer
@@ -234,7 +234,7 @@ export default function RecognitionGame({
       {showResult && (
         <button
           onClick={handleNext}
-          className="w-full py-3 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+          className="w-full py-3 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           {currentIndex < words.length - 1 ? 'Next Word →' : 'Continue to Active Recall →'}
         </button>

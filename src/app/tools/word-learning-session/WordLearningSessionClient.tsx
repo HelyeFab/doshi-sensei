@@ -231,7 +231,7 @@ export default function WordLearningSessionClient() {
           />
 
           <main className="px-4 pb-4">
-            <p className="text-sm text-gray-600 mb-6">Choose a lesson and number of words to study</p>
+            <p className="text-sm text-muted-foreground mb-6">Choose a lesson and number of words to study</p>
 
             <LessonSelector
               lessons={availableLessons}
@@ -274,7 +274,7 @@ export default function WordLearningSessionClient() {
         />
         {phase !== 'complete' && phase !== 'selection' && (
           <div className="px-4 pb-2">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {currentWordIndex + 1} / {sessionData?.words.length || 0} words
             </p>
           </div>

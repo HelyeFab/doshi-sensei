@@ -90,20 +90,20 @@ export default function ActiveRecallDrill({
   return (
     <div className="max-w-2xl mx-auto">
       {/* Question */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-6">
         <div className="text-center">
           {question.type === 'show-english' ? (
             <>
-              <p className="text-lg text-gray-700 mb-2">How do you say this in Japanese?</p>
-              <p className="text-2xl font-bold text-gray-900">{question.prompt}</p>
+              <p className="text-lg text-muted-foreground mb-2">How do you say this in Japanese?</p>
+              <p className="text-2xl font-bold text-foreground">{question.prompt}</p>
               {currentWord.partOfSpeech && (
-                <p className="text-sm text-gray-500 mt-1">({currentWord.partOfSpeech})</p>
+                <p className="text-sm text-muted-foreground mt-1">({currentWord.partOfSpeech})</p>
               )}
             </>
           ) : (
             <div className="text-left">
-              <p className="text-lg text-gray-700 mb-3">Fill in the blank:</p>
-              <p className="text-xl text-gray-900 whitespace-pre-line">{question.prompt}</p>
+              <p className="text-lg text-muted-foreground mb-3">Fill in the blank:</p>
+              <p className="text-xl text-foreground whitespace-pre-line">{question.prompt}</p>
             </div>
           )}
         </div>
@@ -116,12 +116,12 @@ export default function ActiveRecallDrill({
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             placeholder="Type your answer here (optional)..."
-            className="w-full p-4 border border-gray-300 rounded-lg resize-none h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-4 border border-border rounded-lg resize-none h-24 focus:outline-none focus:ring-2 focus:ring-primary"
           />
           
           <button
             onClick={handleReveal}
-            className="w-full py-3 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            className="w-full py-3 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             Reveal Answer
           </button>
@@ -131,22 +131,22 @@ export default function ActiveRecallDrill({
       {/* Answer Reveal */}
       {showAnswer && !confidence && (
         <div className="space-y-4">
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm text-gray-600 mb-1">Correct answer:</p>
-            <p className="text-2xl font-bold text-gray-900">
+          <div className="bg-primary/10 rounded-lg p-4">
+            <p className="text-sm text-muted-foreground mb-1">Correct answer:</p>
+            <p className="text-2xl font-bold text-foreground">
               {currentWord.kanji || currentWord.kana}
             </p>
-            <p className="text-lg text-gray-700">{currentWord.kana}</p>
+            <p className="text-lg text-muted-foreground">{currentWord.kana}</p>
             {userInput && (
-              <div className="mt-3 pt-3 border-t border-blue-200">
-                <p className="text-sm text-gray-600 mb-1">Your answer:</p>
-                <p className="text-lg text-gray-800">{userInput}</p>
+              <div className="mt-3 pt-3 border-t border-primary/20">
+                <p className="text-sm text-muted-foreground mb-1">Your answer:</p>
+                <p className="text-lg text-foreground">{userInput}</p>
               </div>
             )}
           </div>
 
           <div>
-            <p className="text-sm text-gray-700 mb-3 text-center">
+            <p className="text-sm text-muted-foreground mb-3 text-center">
               How confident were you with this word?
             </p>
             <div className="grid grid-cols-5 gap-2">
@@ -156,10 +156,10 @@ export default function ActiveRecallDrill({
                   onClick={() => handleConfidenceSubmit(level)}
                   className={`py-3 rounded-lg border-2 transition-all ${
                     level <= 2
-                      ? 'border-red-300 hover:bg-red-50 hover:border-red-400'
+                      ? 'border-destructive/30 hover:bg-destructive/10 hover:border-destructive/40'
                       : level === 3
-                      ? 'border-yellow-300 hover:bg-yellow-50 hover:border-yellow-400'
-                      : 'border-green-300 hover:bg-green-50 hover:border-green-400'
+                      ? 'border-yellow-500/30 hover:bg-yellow-500/10 hover:border-yellow-500/40'
+                      : 'border-green-500/30 hover:bg-green-500/10 hover:border-green-500/40'
                   }`}
                 >
                   <div className="text-2xl mb-1">
@@ -188,7 +188,7 @@ export default function ActiveRecallDrill({
         <div className="mt-6">
           <button
             onClick={handleNext}
-            className="w-full py-3 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            className="w-full py-3 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             {currentIndex < words.length - 1 ? 'Next Word →' : 'Complete Session →'}
           </button>

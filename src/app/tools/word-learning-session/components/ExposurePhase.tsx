@@ -199,7 +199,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           onClick={handleMarkDifficult}
           className={`py-3 px-4 rounded-lg transition-colors ${
             isMarkedDifficult
-              ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+              ? 'bg-yellow-500/10 text-yellow-700 border border-yellow-500/30'
               : 'bg-card text-foreground border border-border hover:bg-muted'
           }`}
           disabled={isMarkedDifficult}
@@ -211,7 +211,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           onClick={handleMarkLearned}
           className={`py-3 px-4 rounded-lg transition-colors ${
             isMarkedLearned
-              ? 'bg-green-100 text-green-800 border border-green-300'
+              ? 'bg-green-500/10 text-green-700 border border-green-500/30'
               : 'bg-card text-foreground border border-border hover:bg-muted'
           }`}
         >

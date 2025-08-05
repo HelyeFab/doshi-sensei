@@ -66,8 +66,8 @@ const pwaConfig = withPWA({
     /\.dat$/,
     /\.gz$/
   ],
-  customWorkerDir: 'worker',
-  swSrc: 'worker/custom-sw.js'
+  swSrc: 'worker/custom-sw.js',
+  swDest: 'public/sw.js'
 });
 
 const securityHeaders = [

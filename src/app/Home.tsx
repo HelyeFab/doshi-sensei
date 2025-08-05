@@ -308,7 +308,7 @@ export default function Home() {
                 { title: strings.home.featureCards.hiragana.title, icon: strings.home.featureCards.hiragana.icon, href: '/practice/hiragana', description: strings.home.featureCards.hiragana.description },
                 { title: strings.home.featureCards.katakana.title, icon: strings.home.featureCards.katakana.icon, href: '/practice/katakana', description: strings.home.featureCards.katakana.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -357,7 +357,7 @@ export default function Home() {
                 { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
                 { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -403,7 +403,7 @@ export default function Home() {
                 { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
                 { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -450,7 +450,7 @@ export default function Home() {
                 { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
                 { title: 'My Videos', icon: '🎬', href: '/tools/my-videos', description: 'View your saved videos and practice history' }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -495,7 +495,7 @@ export default function Home() {
                 { title: 'Leaderboard', icon: '🏆', href: '/leaderboard', description: 'View rankings and compete' },
                 { title: 'Friends', icon: '👥', href: '/friends', description: 'Connect with other learners' }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -530,7 +530,7 @@ export default function Home() {
                 { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
                 { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -722,7 +722,7 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
   };
 
   // Check if this is a heavy page
-  const HEAVY_PAGES = ['/vocabulary', '/drill', '/practice', '/admin', '/news', '/stories', '/kanji-browser'];
+  const HEAVY_PAGES = ['/vocabulary', '/drill', '/practice', '/admin', '/news', '/stories', '/kanji-browser', '/kanji-moods', '/achievements'];
   const isHeavyPage = HEAVY_PAGES.some(page => href.startsWith(page));
   const LinkComponent = isHeavyPage ? SmartLink : Link;
 

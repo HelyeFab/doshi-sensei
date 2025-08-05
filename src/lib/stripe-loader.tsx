@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { stripePromise } from './stripe';
+import { stripeSingleton } from './stripe-singleton';
 
 export function useStripeLoader() {
   const [isLoading, setIsLoading] = useState(true);
@@ -11,14 +11,33 @@ export function useStripeLoader() {
   useEffect(() => {
     const checkStripe = async () => {
       try {
-        const stripe = await stripePromise;
+        // Check if already available without triggering a load
+        if (stripeSingleton.isAvailable()) {
+          setIsStripeAvailable(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Check if already failed
+        if (stripeSingleton.hasFailed()) {
+          setError('Payment processing is temporarily unavailable. Please try again later.');
+          setIsStripeAvailable(false);
+          setIsLoading(false);
+          return;
+        }
+
+        // Try to load Stripe
+        const stripe = await stripeSingleton.getStripe();
         setIsStripeAvailable(!!stripe);
         
         if (!stripe) {
           setError('Payment processing is temporarily unavailable. Please try again later.');
         }
       } catch (err) {
-        console.error('Failed to load payment processor:', err);
+        // Only log in development
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to load payment processor:', err);
+        }
         setError('Unable to load payment system. Please check your connection and try again.');
         setIsStripeAvailable(false);
       } finally {

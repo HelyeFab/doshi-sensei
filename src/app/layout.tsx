@@ -292,7 +292,7 @@ export default function RootLayout({
                         <div className="min-h-screen bg-background text-foreground">
                           <FastRefreshLogger />
                           <ConsoleLogInitializer />
-                          <PersistentLogger />
+                          {process.env.NODE_ENV === 'development' && <PersistentLogger />}
                           <OfflineNotification />
                           <LazyInitializers />
                           <NavigationErrorBoundary>

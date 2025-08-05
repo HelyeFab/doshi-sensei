@@ -9,7 +9,9 @@ const HEAVY_PAGES = [
   '/admin',
   '/news',
   '/stories',
-  '/kanji-browser'
+  '/kanji-browser',
+  '/kanji-moods',
+  '/achievements'
 ];
 
 /**

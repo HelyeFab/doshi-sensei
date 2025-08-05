@@ -122,6 +122,43 @@ We're now addressing the N2/N3 kanji preload errors, which appear to be related 
 - The kanji preloader trying to load all levels sequentially
 - Need to verify the intended behavior (only preload N5, background load others)
 
+## Stripe.js Loading Issues (January 2025)
+
+### Problem
+Multiple Stripe.js loading attempts causing CSP violations and console errors:
+- Aggressive retry logic causing multiple load attempts
+- Console errors appearing in production
+- CSP violations for stripe.com domains
+
+### Solution Implemented
+1. **Created Stripe Singleton** (`/src/lib/stripe-singleton.ts`)
+   - Ensures Stripe.js is only loaded once
+   - Tracks loading state globally
+   - Prevents multiple concurrent load attempts
+   - Provides methods to check availability without triggering loads
+
+2. **Updated stripe.ts**
+   - Removed aggressive retry logic
+   - Implemented smart loading with environment checks
+   - Only logs in development mode
+   - Returns null gracefully on failure
+
+3. **Updated stripe-loader.tsx**
+   - Uses singleton pattern instead of direct stripePromise
+   - Checks availability before attempting to load
+   - Handles failures gracefully
+
+4. **CSP Headers Updated** (in `next.config.ts`)
+   - Added all necessary Stripe domains
+   - Includes WebSocket support for Stripe checkout
+   - Proper image and script sources configured
+
+### Key Files Modified
+- `/src/lib/stripe-singleton.ts` - New singleton manager
+- `/src/lib/stripe.ts` - Simplified loading logic
+- `/src/lib/stripe-loader.tsx` - Updated to use singleton
+- `/next.config.ts` - Enhanced CSP headers
+
 ---
 
 *This document serves as a memory of the debugging journey and a reference for similar issues in the future.*

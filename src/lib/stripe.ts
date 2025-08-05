@@ -3,41 +3,66 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 // Replace with your Stripe publishable key
 const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
 
-// Retry configuration
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+// Singleton pattern to ensure Stripe is only loaded once
+let stripePromiseInstance: Promise<Stripe | null> | null = null;
+let loadAttempted = false;
 
-// Helper function to load Stripe with retry logic
-async function loadStripeWithRetry(attemptNumber = 1): Promise<Stripe | null> {
+// Smart loading function that checks environment and CSP
+async function loadStripeSmartly(): Promise<Stripe | null> {
+  // Don't attempt to load if already tried
+  if (loadAttempted) {
+    return stripePromiseInstance ? await stripePromiseInstance : null;
+  }
+  
+  loadAttempted = true;
+  
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined') {
+    console.log('Stripe.js: Skipping load in non-browser environment');
+    return null;
+  }
+  
+  // Check if we have a valid key
+  if (!stripePublishableKey) {
+    console.log('Stripe.js: No publishable key provided');
+    return null;
+  }
+  
   try {
-    console.log(`Loading Stripe.js (attempt ${attemptNumber}/${MAX_RETRIES})...`);
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Loading Stripe.js...');
+    }
+    
     const stripe = await loadStripe(stripePublishableKey);
     
     if (!stripe) {
-      throw new Error('Stripe.js failed to load');
+      throw new Error('Stripe.js returned null');
     }
     
-    console.log('Stripe.js loaded successfully');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Stripe.js loaded successfully');
+    }
+    
     return stripe;
   } catch (error) {
-    console.error(`Failed to load Stripe.js (attempt ${attemptNumber}/${MAX_RETRIES}):`, error);
-    
-    if (attemptNumber < MAX_RETRIES) {
-      console.log(`Retrying in ${RETRY_DELAY}ms...`);
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      return loadStripeWithRetry(attemptNumber + 1);
+    // Only log errors in development or if it's a critical error
+    if (process.env.NODE_ENV === 'development' || (error as Error).message?.includes('CSP')) {
+      console.error('Failed to load Stripe.js:', error);
     }
     
-    console.error('Failed to load Stripe.js after all retries');
-    // Return null instead of throwing to prevent app crashes
+    // Return null to prevent app crashes
     return null;
   }
 }
 
-// Initialize Stripe with error handling
-export const stripePromise = stripePublishableKey 
-  ? loadStripeWithRetry()
-  : Promise.resolve(null);
+// Initialize Stripe promise only once
+if (!stripePromiseInstance && typeof window !== 'undefined' && stripePublishableKey) {
+  stripePromiseInstance = loadStripeSmartly();
+}
+
+// Export the singleton promise
+export const stripePromise = stripePromiseInstance || Promise.resolve(null);
 
 // Stripe configuration
 export const STRIPE_CONFIG = {

@@ -49,7 +49,14 @@ export function PrewarmingScript() {
           </style>
         \`;
         
-        document.body.appendChild(loader);
+        // Wait for DOM to be ready
+        if (document.body) {
+          document.body.appendChild(loader);
+        } else {
+          document.addEventListener('DOMContentLoaded', function() {
+            document.body.appendChild(loader);
+          });
+        }
         
         // Remove after 3 seconds
         setTimeout(() => {
@@ -64,15 +71,23 @@ export function PrewarmingScript() {
         // Mark as prewarmed
         sessionStorage.setItem('doshi_prewarmed', 'true');
         
-        // Create hidden iframe for prewarming
-        const iframe = document.createElement('iframe');
-        iframe.src = '/settings';
-        iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;pointer-events:none;';
-        iframe.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(iframe);
+        // Create hidden iframe for prewarming after DOM is ready
+        const createIframe = () => {
+          const iframe = document.createElement('iframe');
+          iframe.src = '/settings';
+          iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;pointer-events:none;';
+          iframe.setAttribute('aria-hidden', 'true');
+          document.body.appendChild(iframe);
+          
+          // Remove iframe after loading
+          setTimeout(() => iframe.remove(), 4000);
+        };
         
-        // Remove iframe after loading
-        setTimeout(() => iframe.remove(), 4000);
+        if (document.body) {
+          createIframe();
+        } else {
+          document.addEventListener('DOMContentLoaded', createIframe);
+        }
       }
     })();
   `;

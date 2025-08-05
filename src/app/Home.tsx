@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { SmartLink } from '@/components/SmartLink';
 import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -306,8 +307,11 @@ export default function Home() {
               {[
                 { title: strings.home.featureCards.hiragana.title, icon: strings.home.featureCards.hiragana.icon, href: '/practice/hiragana', description: strings.home.featureCards.hiragana.description },
                 { title: strings.home.featureCards.katakana.title, icon: strings.home.featureCards.katakana.icon, href: '/practice/katakana', description: strings.home.featureCards.katakana.description }
-              ].map((card) => (
-                <Link key={card.href} href={card.href} className="block">
+              ].map((card) => {
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const LinkComp = isHeavy ? SmartLink : Link;
+                return (
+                <LinkComp key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -332,8 +336,9 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </Link>
-              ))}
+                </LinkComp>
+              );
+              })}
             </div>
           </section>
 
@@ -351,8 +356,11 @@ export default function Home() {
                 { title: strings.home.featureCards.textbookVocabulary.title, icon: strings.home.featureCards.textbookVocabulary.icon, href: '/tools/textbook-vocabulary', description: strings.home.featureCards.textbookVocabulary.description },
                 { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
                 { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description }
-              ].map((card) => (
-                <Link key={card.href} href={card.href} className="block">
+              ].map((card) => {
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const LinkComp = isHeavy ? SmartLink : Link;
+                return (
+                <LinkComp key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -377,8 +385,9 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </Link>
-              ))}
+                </LinkComp>
+              );
+              })}
             </div>
           </section>
 
@@ -393,8 +402,11 @@ export default function Home() {
                 { title: strings.home.featureCards.practice.title, icon: strings.home.featureCards.practice.icon, href: '/practice', description: strings.home.featureCards.practice.description },
                 { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
                 { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description }
-              ].map((card) => (
-                <Link key={card.href} href={card.href} className="block">
+              ].map((card) => {
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const LinkComp = isHeavy ? SmartLink : Link;
+                return (
+                <LinkComp key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -419,8 +431,9 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </Link>
-              ))}
+                </LinkComp>
+              );
+              })}
             </div>
           </section>
 
@@ -436,8 +449,11 @@ export default function Home() {
                 { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
                 { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
                 { title: 'My Videos', icon: '🎬', href: '/tools/my-videos', description: 'View your saved videos and practice history' }
-              ].map((card) => (
-                <Link key={card.href} href={card.href} className="block">
+              ].map((card) => {
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const LinkComp = isHeavy ? SmartLink : Link;
+                return (
+                <LinkComp key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -462,8 +478,9 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </Link>
-              ))}
+                </LinkComp>
+              );
+              })}
             </div>
           </section>
 
@@ -477,8 +494,11 @@ export default function Home() {
               {[
                 { title: 'Leaderboard', icon: '🏆', href: '/leaderboard', description: 'View rankings and compete' },
                 { title: 'Friends', icon: '👥', href: '/friends', description: 'Connect with other learners' }
-              ].map((card) => (
-                <Link key={card.href} href={card.href} className="block">
+              ].map((card) => {
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const LinkComp = isHeavy ? SmartLink : Link;
+                return (
+                <LinkComp key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -493,8 +513,9 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </Link>
-              ))}
+                </LinkComp>
+              );
+              })}
             </div>
           </section>
 
@@ -508,8 +529,11 @@ export default function Home() {
               {[
                 { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
                 { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description }
-              ].map((card) => (
-                <Link key={card.href} href={card.href} className="block">
+              ].map((card) => {
+                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories'].some(page => card.href.startsWith(page));
+                const LinkComp = isHeavy ? SmartLink : Link;
+                return (
+                <LinkComp key={card.href} href={card.href} className="block">
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
@@ -534,8 +558,9 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                </Link>
-              ))}
+                </LinkComp>
+              );
+              })}
             </div>
           </section>
 
@@ -696,8 +721,13 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
     }
   };
 
+  // Check if this is a heavy page
+  const HEAVY_PAGES = ['/vocabulary', '/drill', '/practice', '/admin', '/news', '/stories', '/kanji-browser'];
+  const isHeavyPage = HEAVY_PAGES.some(page => href.startsWith(page));
+  const LinkComponent = isHeavyPage ? SmartLink : Link;
+
   return (
-    <Link href={href} className="block" onClick={handleClick}>
+    <LinkComponent href={href} className="block" onClick={handleClick}>
       <div
         className={`group relative rounded-2xl p-3 md:p-4 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer aspect-square ${colors.bg} ${colors.text} ${colors.shadow}`}
         style={{
@@ -738,6 +768,6 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
           </svg>
         </div>
       </div>
-    </Link>
+    </LinkComponent>
   );
 }

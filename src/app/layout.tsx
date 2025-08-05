@@ -254,10 +254,11 @@ export default function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
 
         {/* Apple Touch Icons */}
-        <link rel="apple-touch-icon" href="/doshi.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="/doshi.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/doshi.png" />
-        <link rel="apple-touch-icon" sizes="167x167" href="/doshi.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
 
         {/* Favicons */}
         <link rel="icon" type="image/png" sizes="32x32" href="/doshi.png" />

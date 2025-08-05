@@ -13,11 +13,11 @@ class KanjiPreloader {
 
   // JLPT level mapping for file paths
   private JLPT_FILES = {
-    'N5': '/api/kanji/jlpt_5',
-    'N4': '/api/kanji/jlpt_4',
-    'N3': '/api/kanji/jlpt_3',
-    'N2': '/api/kanji/jlpt_2',
-    'N1': '/api/kanji/jlpt_1'
+    'N5': '/api/kanji/jlpt_5/',
+    'N4': '/api/kanji/jlpt_4/',
+    'N3': '/api/kanji/jlpt_3/',
+    'N2': '/api/kanji/jlpt_2/',
+    'N1': '/api/kanji/jlpt_1/'
   };
 
   private constructor() {}
@@ -49,21 +49,37 @@ class KanjiPreloader {
    * Preload kanji data in priority order
    */
   private async preloadInBackground() {
-    // Load in priority order: N5, N4, N3, N2, N1
-    const levels: JLPTLevel[] = ['N5', 'N4', 'N3', 'N2', 'N1'];
+    // Only preload N5 initially to avoid overwhelming the system
+    // Other levels will be loaded on demand
+    const priorityLevel: JLPTLevel = 'N5';
     
-    for (const level of levels) {
+    try {
       // Check if already loaded
-      if (this.cache[level]) continue;
-
-      try {
-        await this.loadLevel(level);
-        // Small delay between levels to avoid blocking
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } catch (error) {
-        console.error(`Failed to preload ${level}:`, error);
+      if (!this.cache[priorityLevel]) {
+        console.log(`Preloading ${priorityLevel} kanji data...`);
+        await this.loadLevel(priorityLevel);
+        console.log(`Successfully preloaded ${priorityLevel} kanji data`);
       }
+    } catch (error) {
+      console.error(`Failed to preload ${priorityLevel}:`, error);
     }
+    
+    // Optionally preload other levels in the background after a delay
+    // This is commented out for now to prevent the errors
+    /*
+    setTimeout(async () => {
+      const otherLevels: JLPTLevel[] = ['N4', 'N3', 'N2', 'N1'];
+      for (const level of otherLevels) {
+        if (this.cache[level]) continue;
+        try {
+          await this.loadLevel(level);
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (error) {
+          // Silently fail for non-priority levels
+        }
+      }
+    }, 10000); // Wait 10 seconds before loading other levels
+    */
   }
 
   /**
@@ -100,19 +116,26 @@ class KanjiPreloader {
    */
   private async fetchLevel(level: JLPTLevel): Promise<any[]> {
     const filePath = this.JLPT_FILES[level];
-    const response = await fetch(filePath);
+    
+    try {
+      const response = await fetch(filePath);
 
-    if (!response.ok) {
-      throw new Error(`Failed to load ${level} kanji data`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const rawKanji = await response.json();
+
+      // Transform raw data to include JLPT level
+      return rawKanji.map((item: any) => ({
+        ...item,
+        jlpt: level
+      }));
+    } catch (error) {
+      // Log more detailed error information
+      console.error(`Failed to fetch ${level} kanji data from ${filePath}:`, error);
+      throw new Error(`Failed to load ${level} kanji data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-
-    const rawKanji = await response.json();
-
-    // Transform raw data to include JLPT level
-    return rawKanji.map((item: any) => ({
-      ...item,
-      jlpt: level
-    }));
   }
 
   /**

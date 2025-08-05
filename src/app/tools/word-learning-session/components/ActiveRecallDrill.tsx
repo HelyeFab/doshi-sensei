@@ -10,6 +10,7 @@ interface ActiveRecallDrillProps {
   onComplete: () => void;
   onCorrect: () => void;
   onStruggle: (wordId: string) => void;
+  allWords?: WordItem[]; // All words in session for generating distractors
 }
 
 export default function ActiveRecallDrill({ 
@@ -17,20 +18,25 @@ export default function ActiveRecallDrill({
   currentIndex, 
   onComplete,
   onCorrect,
-  onStruggle 
+  onStruggle,
+  allWords = [] 
 }: ActiveRecallDrillProps) {
   const [userInput, setUserInput] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [confidence, setConfidence] = useState<number | null>(null);
   const [question, setQuestion] = useState<RecallQuestion | null>(null);
+  const [multipleChoiceOptions, setMultipleChoiceOptions] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   
   const currentWord = words[currentIndex];
 
   useEffect(() => {
     generateQuestion();
+    generateMultipleChoiceOptions();
     setUserInput('');
     setShowAnswer(false);
     setConfidence(null);
+    setSelectedOption(null);
   }, [currentIndex]);
 
   const generateQuestion = () => {
@@ -62,8 +68,73 @@ export default function ActiveRecallDrill({
     }
   };
 
+  const generateMultipleChoiceOptions = () => {
+    if (!currentWord) return;
+    
+    const correctAnswer = currentWord.kanji || currentWord.kana || '';
+    const distractors: string[] = [];
+    
+    // Get pool of words for distractors (use allWords if available, otherwise use current words)
+    const wordPool = allWords.length > 0 ? allWords : words;
+    
+    // Filter out the current word and get potential distractors
+    const potentialDistractors = wordPool
+      .filter(w => w.id !== currentWord.id)
+      .map(w => w.kanji || w.kana || '')
+      .filter(w => w && w !== correctAnswer);
+    
+    // Shuffle and pick 3 distractors
+    const shuffled = [...potentialDistractors].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < Math.min(3, shuffled.length); i++) {
+      distractors.push(shuffled[i]);
+    }
+    
+    // If we don't have enough distractors, add some common wrong answers
+    const fallbackDistractors = ['わかりません', 'しりません', 'できません', 'ありません'];
+    while (distractors.length < 3) {
+      const fallback = fallbackDistractors[distractors.length];
+      if (fallback && !distractors.includes(fallback)) {
+        distractors.push(fallback);
+      } else {
+        break;
+      }
+    }
+    
+    // Combine correct answer with distractors and shuffle
+    const allOptions = [correctAnswer, ...distractors.slice(0, 3)];
+    const shuffledOptions = allOptions.sort(() => Math.random() - 0.5);
+    
+    setMultipleChoiceOptions(shuffledOptions);
+  };
+
   const handleReveal = () => {
     setShowAnswer(true);
+  };
+
+  const handleOptionClick = (option: string) => {
+    setSelectedOption(option);
+    setUserInput(option); // Also set as user input for consistency
+    // Auto-reveal after selection
+    setTimeout(() => {
+      setShowAnswer(true);
+    }, 500);
+  };
+
+  // Check if input accepts romaji/hiragana/kanji
+  const isValidInput = (input: string, answer: string): boolean => {
+    const normalizedInput = input.trim().toLowerCase();
+    const normalizedAnswer = answer.trim().toLowerCase();
+    
+    // Direct match
+    if (normalizedInput === normalizedAnswer) return true;
+    
+    // Check if it's the kana version of kanji
+    if (currentWord.kana && normalizedInput === currentWord.kana.toLowerCase()) return true;
+    
+    // Could add romaji conversion here if needed
+    // For now, we'll just check exact matches
+    
+    return false;
   };
 
   const handleConfidenceSubmit = (level: number) => {
@@ -127,12 +198,42 @@ export default function ActiveRecallDrill({
       {/* User Input Area */}
       {!showAnswer && (
         <div className="space-y-4">
-          <textarea
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            placeholder="Type your answer here (optional)..."
-            className="w-full p-4 border border-border rounded-lg resize-none h-24 focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+          {/* Input field with hints */}
+          <div>
+            <textarea
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder="Type your answer here (optional)..."
+              className="w-full p-4 border border-border rounded-lg resize-none h-24 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              💡 You can type in: hiragana (がくせい), kanji (学生), or the exact form shown
+            </p>
+          </div>
+
+          {/* Multiple choice options */}
+          {multipleChoiceOptions.length === 4 && (
+            <div>
+              <p className="text-sm text-muted-foreground mb-2 text-center">
+                Or tap the correct answer:
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {multipleChoiceOptions.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleOptionClick(option)}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      selectedOption === option
+                        ? 'border-primary bg-primary/10 text-primary font-medium'
+                        : 'border-border hover:border-primary/50 hover:bg-primary/5'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           
           <button
             onClick={handleReveal}

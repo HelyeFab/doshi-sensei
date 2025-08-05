@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { learnedWordsStorage } from '@/app/tools/word-learning-session/services/learnedWordsStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { TEXTBOOK_CONFIG } from '@/config/textbooks';
+import { searchTatoebaExamples } from '@/utils/tatoebaSearch';
 
 interface WordLearningLessonSelectorProps {
   textbook: string;
@@ -94,12 +95,16 @@ export function WordLearningLessonSelector({
   const handleStartSession = async (lessonNumber: number) => {
     console.log('handleStartSession called for lesson:', lessonNumber);
     
-    // Check access
-    const hasAccess = await checkAndTrack('word_learning_session');
-    if (!hasAccess) {
-      console.log('Access denied');
-      return;
-    }
+    setIsLoading(true);
+    
+    try {
+      // Check access
+      const hasAccess = await checkAndTrack('word_learning_session');
+      if (!hasAccess) {
+        console.log('Access denied');
+        setIsLoading(false);
+        return;
+      }
 
     // For Genki 2, adjust lesson number (UI shows 1-11, but data has 13-23)
     const dataLessonNumber = textbook === 'genki-2' ? lessonNumber + 12 : lessonNumber;
@@ -131,41 +136,139 @@ export function WordLearningLessonSelector({
     const selectedWords = shuffled.slice(0, Math.min(selectedWordCount, shuffled.length));
 
     // Transform vocabulary to word learning session format
-    const transformedWords = selectedWords.map(word => ({
-      id: word.id,
-      kanji: word.kanji || word.japanese || word.word,
-      kana: word.reading,
-      meaning: word.meaning,
-      partOfSpeech: Array.isArray(word.partOfSpeech) ? word.partOfSpeech[0] : (word.partOfSpeech || word.pos),
-      example: (() => {
-        // Helper to validate Japanese text (should contain actual Japanese characters)
-        const isValidJapanese = (text: string) => {
-          if (!text || typeof text !== 'string') return false;
-          // Check if it's not just a number
-          if (/^\d+$/.test(text)) return false;
-          // Check if it contains Japanese characters (Hiragana, Katakana, or Kanji)
-          return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
-        };
+    // We'll search Tatoeba for examples after initial transformation
+    const transformedWords = await Promise.all(selectedWords.map(async (word) => {
+      // Helper to clean Japanese text (remove square brackets with readings)
+      const cleanJapaneseText = (text: string) => {
+        if (!text || typeof text !== 'string') return text;
+        // Remove square brackets with readings like [べつべつ]
+        return text.replace(/\[[\u3040-\u309F\u30A0-\u30FF]+\]/g, '');
+      };
 
-        if (word.examples && word.examples[0]) {
-          // Validate the example data
-          if (isValidJapanese(word.examples[0].japanese)) {
-            return {
-              japanese: word.examples[0].japanese,
-              reading: word.examples[0].reading,
-              english: word.examples[0].english
-            };
-          }
-        } else if (word.example && isValidJapanese(word.example)) {
-          return {
-            japanese: word.example,
+      // Helper to check if text contains Japanese characters
+      const hasJapanese = (text: string) => {
+        if (!text || typeof text !== 'string') return false;
+        return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+      };
+
+      // Helper to validate that this is a proper example sentence
+      const isValidExample = (japanese: string, english: string) => {
+        if (!japanese || !english) return false;
+        
+        // Skip if the "english" is just a number (data corruption)
+        if (/^\d+$/.test(english.trim())) return false;
+        
+        // Skip if the "japanese" is just a number (data corruption)  
+        if (/^\d+$/.test(japanese.trim())) return false;
+        
+        return true;
+      };
+
+      // First check for existing examples in the textbook data
+      let example = undefined;
+      
+      if (word.examples && word.examples[0]) {
+        let japanese = word.examples[0].japanese;
+        let english = word.examples[0].english;
+        
+        // Check if fields are swapped (japanese has English text, english has Japanese)
+        if (hasJapanese(english) && !hasJapanese(japanese)) {
+          // Swap them back
+          [japanese, english] = [english, japanese];
+        }
+        
+        // Clean the Japanese text
+        japanese = cleanJapaneseText(japanese);
+        
+        // Validate it's a proper example
+        if (isValidExample(japanese, english) && hasJapanese(japanese)) {
+          example = {
+            japanese: japanese,
+            reading: word.examples[0].reading,
+            english: english
+          };
+        }
+      } else if (word.example) {
+        const cleanedExample = cleanJapaneseText(word.example);
+        if (hasJapanese(cleanedExample) && word.exampleMeaning) {
+          example = {
+            japanese: cleanedExample,
             reading: word.exampleReading,
             english: word.exampleMeaning
           };
         }
-        
-        return undefined; // No valid example found
-      })()
+      }
+
+      // If no valid example from textbook data, search Tatoeba
+      if (!example) {
+        try {
+          // Helper to get dictionary form from polite form
+          const getDictionaryForm = (text: string) => {
+            // Common polite endings to dictionary form
+            if (text.endsWith('します')) return text.replace(/します$/, 'する');
+            if (text.endsWith('ます')) return text.replace(/ます$/, '');
+            if (text.endsWith('です')) return text.replace(/です$/, 'だ');
+            return text;
+          };
+          
+          // Build search terms - try different forms
+          const searchTerms = [];
+          
+          // Add original forms
+          if (word.kanji) searchTerms.push(word.kanji);
+          if (word.japanese) searchTerms.push(word.japanese);
+          if (word.word) searchTerms.push(word.word);
+          if (word.reading) searchTerms.push(word.reading);
+          if (word.kana) searchTerms.push(word.kana);
+          
+          // Try dictionary forms for verbs
+          if (word.kanji && word.kanji.endsWith('ます')) {
+            searchTerms.push(getDictionaryForm(word.kanji));
+          }
+          if (word.japanese && word.japanese.endsWith('ます')) {
+            searchTerms.push(getDictionaryForm(word.japanese));
+          }
+          
+          // For compound verbs like 話します, try the stem
+          if (word.kanji && word.kanji.includes('し')) {
+            const stem = word.kanji.replace(/[しします]+$/, '');
+            if (stem) searchTerms.push(stem);
+          }
+          
+          // Remove duplicates and filter valid terms
+          const uniqueSearchTerms = [...new Set(searchTerms)]
+            .filter(term => term && typeof term === 'string' && term.length > 0);
+
+          for (const searchTerm of uniqueSearchTerms) {
+            const tatoebaExamples = await searchTatoebaExamples(searchTerm, 1);
+            if (tatoebaExamples && tatoebaExamples.length > 0) {
+              const tatoebaExample = tatoebaExamples[0];
+              example = {
+                japanese: tatoebaExample.japanese,
+                reading: undefined, // Tatoeba doesn't provide reading
+                english: tatoebaExample.english || ''
+              };
+              console.log(`Found Tatoeba example for ${word.id} using search term: ${searchTerm}`);
+              break; // Stop searching once we find an example
+            }
+          }
+          
+          if (!example) {
+            console.log(`No Tatoeba examples found for ${word.id}. Tried terms:`, uniqueSearchTerms);
+          }
+        } catch (error) {
+          console.error('Failed to search Tatoeba for word:', word.id, error);
+        }
+      }
+
+      return {
+        id: word.id,
+        kanji: word.kanji || word.japanese || word.word,
+        kana: word.reading,
+        meaning: word.meaning,
+        partOfSpeech: Array.isArray(word.partOfSpeech) ? word.partOfSpeech[0] : (word.partOfSpeech || word.pos),
+        example: example
+      };
     }));
 
     // Store the words in session storage for the word learning session to pick up
@@ -186,6 +289,11 @@ export function WordLearningLessonSelector({
     
     console.log('Navigating to word learning session...');
     router.push(`/tools/word-learning-session?session=custom`);
+    } catch (error) {
+      console.error('Failed to start session:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getLessonStatus = (lessonNumber: number) => {
@@ -204,7 +312,22 @@ export function WordLearningLessonSelector({
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto relative">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-card rounded-lg p-6 max-w-sm mx-4">
+            <div className="flex flex-col items-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+              <p className="text-lg font-medium mb-2">Preparing your lesson...</p>
+              <p className="text-sm text-muted-foreground text-center">
+                Searching for high-quality example sentences from Tatoeba
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Mode Selection */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-3">Study Mode</h3>

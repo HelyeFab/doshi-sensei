@@ -14,29 +14,28 @@ const firebaseConfig = {
   measurementId: "G-X6LK9BFMEV"
 };
 
-// Initialize Firebase only on client side
+// Initialize Firebase for both client and server
 let app: any = null;
 let auth: any = null;
 let db: any = null;
 let storage: any = null;
 
+// Initialize Firebase (works on both client and server)
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApps()[0];
+}
+
+// Initialize services
+// Auth is only needed on client side
 if (typeof window !== 'undefined') {
-  // Only initialize on client side
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApps()[0];
-  }
-
-  // Initialize Firebase Authentication and get a reference to the service
   auth = getAuth(app);
-
-  // Initialize Cloud Firestore and get a reference to the service
-  db = getFirestore(app);
-
-  // Initialize Firebase Storage and get a reference to the service
   storage = getStorage(app);
 }
+
+// Firestore is needed on both client and server (for caching)
+db = getFirestore(app);
 
 export { auth, db, storage };
 export default app;

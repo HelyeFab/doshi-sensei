@@ -113,6 +113,62 @@ export const colorPalettes: Record<ColorScheme, ColorPalette> = {
       muted: 'hsl(48, 100%, 96%)',
       mutedForeground: 'hsl(45, 7%, 45%)',
     }
+  },
+  vercel: {
+    name: 'Vercel',
+    description: 'Pitch black minimalism',
+    colors: {
+      primary: 'hsl(0, 0%, 9%)', // Very dark gray (not harsh white)
+      primaryForeground: 'hsl(0, 0%, 100%)', // White text on dark
+      secondary: 'hsl(0, 0%, 9%)', // Near black
+      secondaryForeground: 'hsl(0, 0%, 100%)', // White on near black
+      accent: 'hsl(0, 0%, 15%)', // Dark gray accent
+      accentForeground: 'hsl(0, 0%, 100%)', // White on dark gray
+      muted: 'hsl(0, 0%, 15%)', // Slightly lighter black
+      mutedForeground: 'hsl(0, 0%, 60%)', // Gray text
+    }
+  },
+  acnh: {
+    name: 'Animal Crossing',
+    description: 'Cozy island vibes',
+    colors: {
+      primary: 'hsl(132, 52%, 67%)', // Mint green (#81f1a7 adjusted)
+      primaryForeground: 'hsl(140, 30%, 15%)', // Dark green text
+      secondary: 'hsl(47, 96%, 68%)', // Warm yellow (#fff563 adjusted)
+      secondaryForeground: 'hsl(30, 40%, 25%)', // Brown text
+      accent: 'hsl(184, 86%, 72%)', // Sky blue (#81f1f7 adjusted)
+      accentForeground: 'hsl(180, 40%, 20%)', // Dark teal text
+      muted: 'hsl(35, 52%, 85%)', // Beige (#dbbf9e adjusted)
+      mutedForeground: 'hsl(30, 25%, 35%)', // Soft brown text
+    }
+  },
+  zelda: {
+    name: 'Zelda OoT',
+    description: 'Hyrule adventure',
+    colors: {
+      primary: 'hsl(123, 68%, 48%)', // Kokiri green (#46f04e adjusted for better contrast)
+      primaryForeground: 'hsl(0, 0%, 100%)', // White on green
+      secondary: 'hsl(45, 100%, 50%)', // Triforce gold
+      secondaryForeground: 'hsl(45, 50%, 15%)', // Dark gold text
+      accent: 'hsl(200, 60%, 45%)', // Master Sword blue
+      accentForeground: 'hsl(0, 0%, 100%)', // White on blue
+      muted: 'hsl(80, 30%, 65%)', // Forest sage green
+      mutedForeground: 'hsl(80, 30%, 25%)', // Dark forest text
+    }
+  },
+  mario: {
+    name: 'Super Mario',
+    description: 'Mushroom Kingdom fun',
+    colors: {
+      primary: 'hsl(355, 99%, 53%)', // Mario red (#FE0002 adjusted)
+      primaryForeground: 'hsl(0, 0%, 100%)', // White on red
+      secondary: 'hsl(197, 100%, 43%)', // Mario blue (#049CD8)
+      secondaryForeground: 'hsl(0, 0%, 100%)', // White on blue
+      accent: 'hsl(48, 100%, 50%)', // Coin/star yellow
+      accentForeground: 'hsl(30, 50%, 20%)', // Dark brown on yellow
+      muted: 'hsl(30, 70%, 85%)', // Toad mushroom beige
+      mutedForeground: 'hsl(30, 30%, 30%)', // Brown text
+    }
   }
 };
 
@@ -127,7 +183,105 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
   }
 
   if (mode === 'dark') {
-    // Dark theme - use darker variants
+    // Special handling for Vercel theme - pure black
+    if (scheme === 'vercel') {
+      return {
+        '--background': 'hsl(0, 0%, 0%)', // Pure black
+        '--foreground': 'hsl(0, 0%, 100%)', // Pure white
+        '--card': 'hsl(0, 0%, 4%)', // Slightly lighter than pure black
+        '--card-foreground': 'hsl(0, 0%, 100%)',
+        '--popover': 'hsl(0, 0%, 4%)',
+        '--popover-foreground': 'hsl(0, 0%, 100%)',
+        '--primary': 'hsl(0, 0%, 9%)', // Very dark gray for primary (not harsh white)
+        '--primary-foreground': 'hsl(0, 0%, 100%)', // White text on dark primary
+        '--secondary': 'hsl(0, 0%, 9%)', // Near black
+        '--secondary-foreground': 'hsl(0, 0%, 100%)',
+        '--muted': 'hsl(0, 0%, 15%)', // Dark gray
+        '--muted-foreground': 'hsl(0, 0%, 60%)', // Medium gray
+        '--accent': 'hsl(0, 0%, 15%)', // Dark gray accent
+        '--accent-foreground': 'hsl(0, 0%, 100%)',
+        '--destructive': 'hsl(0, 84%, 60%)', // Red for errors
+        '--destructive-foreground': 'hsl(0, 0%, 100%)',
+        '--border': 'hsl(0, 0%, 15%)', // Dark gray borders
+        '--input': 'hsl(0, 0%, 9%)', // Near black inputs
+        '--ring': 'hsl(0, 0%, 40%)', // Subtle gray focus ring
+      };
+    }
+    
+    // Special handling for gaming themes in dark mode
+    if (scheme === 'acnh') {
+      return {
+        '--background': 'hsl(180, 20%, 12%)', // Dark teal night
+        '--foreground': 'hsl(60, 40%, 95%)', // Soft cream text
+        '--card': 'hsl(180, 18%, 16%)', // Slightly lighter teal
+        '--card-foreground': 'hsl(60, 40%, 95%)',
+        '--popover': 'hsl(180, 18%, 16%)',
+        '--popover-foreground': 'hsl(60, 40%, 95%)',
+        '--primary': palette.colors.primary, // Keep mint green
+        '--primary-foreground': palette.colors.primaryForeground,
+        '--secondary': 'hsl(47, 76%, 48%)', // Darker yellow for night
+        '--secondary-foreground': 'hsl(0, 0%, 100%)',
+        '--muted': 'hsl(35, 25%, 25%)', // Dark beige
+        '--muted-foreground': 'hsl(35, 20%, 70%)',
+        '--accent': 'hsl(184, 60%, 35%)', // Darker sky blue
+        '--accent-foreground': 'hsl(0, 0%, 100%)',
+        '--destructive': 'hsl(0, 62.8%, 45%)',
+        '--destructive-foreground': 'hsl(0, 0%, 100%)',
+        '--border': 'hsl(180, 15%, 25%)',
+        '--input': 'hsl(180, 18%, 20%)',
+        '--ring': palette.colors.primary,
+      };
+    }
+    
+    if (scheme === 'zelda') {
+      return {
+        '--background': 'hsl(80, 25%, 10%)', // Dark forest night
+        '--foreground': 'hsl(45, 40%, 90%)', // Soft gold text
+        '--card': 'hsl(80, 20%, 14%)', // Slightly lighter forest
+        '--card-foreground': 'hsl(45, 40%, 90%)',
+        '--popover': 'hsl(80, 20%, 14%)',
+        '--popover-foreground': 'hsl(45, 40%, 90%)',
+        '--primary': 'hsl(123, 48%, 35%)', // Darker Kokiri green
+        '--primary-foreground': 'hsl(0, 0%, 100%)',
+        '--secondary': 'hsl(45, 80%, 40%)', // Darker Triforce gold
+        '--secondary-foreground': 'hsl(0, 0%, 100%)',
+        '--muted': 'hsl(80, 20%, 20%)', // Dark forest
+        '--muted-foreground': 'hsl(80, 15%, 65%)',
+        '--accent': 'hsl(200, 50%, 30%)', // Darker Master Sword blue
+        '--accent-foreground': 'hsl(0, 0%, 100%)',
+        '--destructive': 'hsl(0, 62.8%, 45%)',
+        '--destructive-foreground': 'hsl(0, 0%, 100%)',
+        '--border': 'hsl(80, 15%, 22%)',
+        '--input': 'hsl(80, 20%, 18%)',
+        '--ring': 'hsl(45, 80%, 50%)', // Gold ring
+      };
+    }
+    
+    if (scheme === 'mario') {
+      return {
+        '--background': 'hsl(220, 30%, 12%)', // Dark underground blue
+        '--foreground': 'hsl(0, 0%, 95%)', // White text
+        '--card': 'hsl(220, 25%, 16%)', // Slightly lighter underground
+        '--card-foreground': 'hsl(0, 0%, 95%)',
+        '--popover': 'hsl(220, 25%, 16%)',
+        '--popover-foreground': 'hsl(0, 0%, 95%)',
+        '--primary': 'hsl(355, 85%, 40%)', // Darker Mario red
+        '--primary-foreground': 'hsl(0, 0%, 100%)',
+        '--secondary': 'hsl(197, 80%, 35%)', // Darker Mario blue
+        '--secondary-foreground': 'hsl(0, 0%, 100%)',
+        '--muted': 'hsl(30, 30%, 20%)', // Dark brown
+        '--muted-foreground': 'hsl(30, 20%, 70%)',
+        '--accent': 'hsl(48, 90%, 40%)', // Darker coin yellow
+        '--accent-foreground': 'hsl(0, 0%, 100%)',
+        '--destructive': 'hsl(0, 84%, 50%)',
+        '--destructive-foreground': 'hsl(0, 0%, 100%)',
+        '--border': 'hsl(220, 20%, 22%)',
+        '--input': 'hsl(220, 25%, 18%)',
+        '--ring': 'hsl(48, 90%, 50%)', // Yellow ring
+      };
+    }
+    
+    // Dark theme - use darker variants for other themes
     return {
       '--background': 'hsl(214, 25%, 22%)', // #2E3440
       '--foreground': 'hsl(210, 40%, 98%)',
@@ -152,6 +306,31 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
   }
 
   // Light theme variants
+  // Special handling for Vercel theme - pure white
+  if (scheme === 'vercel') {
+    return {
+      '--background': 'hsl(0, 0%, 100%)', // Pure white
+      '--foreground': 'hsl(0, 0%, 0%)', // Pure black
+      '--card': 'hsl(0, 0%, 98%)', // Slightly off-white for cards
+      '--card-foreground': 'hsl(0, 0%, 0%)',
+      '--popover': 'hsl(0, 0%, 98%)',
+      '--popover-foreground': 'hsl(0, 0%, 0%)',
+      '--primary': 'hsl(0, 0%, 0%)', // Black as primary
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(0, 0%, 96%)', // Light gray
+      '--secondary-foreground': 'hsl(0, 0%, 0%)',
+      '--muted': 'hsl(0, 0%, 96%)', // Light gray
+      '--muted-foreground': 'hsl(0, 0%, 40%)', // Dark gray
+      '--accent': 'hsl(0, 0%, 96%)', // Light gray accent
+      '--accent-foreground': 'hsl(0, 0%, 0%)',
+      '--destructive': 'hsl(0, 84%, 60%)', // Red for errors
+      '--destructive-foreground': 'hsl(0, 0%, 100%)',
+      '--border': 'hsl(0, 0%, 90%)', // Light gray borders
+      '--input': 'hsl(0, 0%, 95%)', // Near white inputs
+      '--ring': 'hsl(0, 0%, 60%)', // Gray focus ring (not harsh black)
+    };
+  }
+  
   return {
     '--background': 'hsl(210, 20%, 98%)',
     '--foreground': 'hsl(222.2, 84%, 4.9%)',

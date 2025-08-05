@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import ytdl from 'ytdl-core';
 import axios from 'axios';
-import { TranscriptCacheManager } from '@/utils/transcriptCache';
+
+// Dynamic import for ytdl-core to avoid server-side issues
+let ytdl: any;
+try {
+  ytdl = require('ytdl-core');
+} catch (error) {
+  console.error('Failed to import ytdl-core:', error);
+}
+
+// Import cache manager with error handling
+let TranscriptCacheManager: any;
+try {
+  TranscriptCacheManager = require('@/utils/transcriptCache').TranscriptCacheManager;
+} catch (error) {
+  console.error('Failed to import TranscriptCacheManager:', error);
+}
 
 // YouTube Data API v3 endpoint
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
@@ -57,14 +71,32 @@ export async function POST(request: NextRequest) {
     console.log('URL:', url);
     console.log('Request headers:', request.headers);
     
-    // Check cache FIRST before making any API calls
-    const contentId = TranscriptCacheManager.generateContentId({
-      type: 'youtube',
-      videoUrl: url
-    });
+    // Check cache FIRST - caching is MANDATORY
+    if (!TranscriptCacheManager) {
+      throw new Error('TranscriptCacheManager is required but not available');
+    }
     
-    console.log('Checking transcript cache for:', contentId);
-    const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
+    let contentId = '';
+    let cachedTranscript = null;
+    
+    try {
+      // Generate content ID for cache lookup
+      contentId = TranscriptCacheManager.generateContentId({
+        type: 'youtube',
+        videoUrl: url
+      });
+      
+      console.log('Checking transcript cache for:', contentId);
+      cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
+    } catch (cacheError) {
+      console.error('Error checking cache:', cacheError);
+      // For read errors, we can continue (might be first time)
+      // But for critical errors like missing Firestore, we should fail
+      if (cacheError?.message?.includes('Firestore is required')) {
+        throw cacheError;
+      }
+      cachedTranscript = null;
+    }
     
     if (cachedTranscript && cachedTranscript.transcript.length > 0) {
       console.log('Using cached transcript! Access count:', cachedTranscript.accessCount);
@@ -204,6 +236,11 @@ export async function POST(request: NextRequest) {
             console.log('Video URL:', url);
             console.log('Video title:', videoMetadata?.title || supaResponse.data.title || 'Unknown');
             
+            // Cache saving is MANDATORY
+            if (!TranscriptCacheManager) {
+              throw new Error('TranscriptCacheManager is required but not available');
+            }
+            
             try {
               await TranscriptCacheManager.saveTranscriptToCache({
                 contentId,
@@ -220,9 +257,13 @@ export async function POST(request: NextRequest) {
                   duration: videoMetadata?.duration
                 }
               });
-              console.log('=== Cache save completed ===');
-            } catch (cacheError) {
-              console.error('=== Cache save failed ===', cacheError);
+              console.log('=== Cache save completed successfully ===');
+            } catch (cacheError: any) {
+              console.error('=== CRITICAL: Cache save failed after retries ===', cacheError);
+              // Cache is mandatory but we have the transcript - log error but continue
+              console.error('IMPORTANT: Transcript was extracted but failed to cache');
+              console.error('This means the next request will have to extract again');
+              // Still return the transcript to the user rather than failing completely
             }
             
             return NextResponse.json({
@@ -258,8 +299,9 @@ export async function POST(request: NextRequest) {
       console.warn('SUPA_YOUTUBE_API_KEY not configured');
     }
     
-    // Method 1: Try ytdl-core to get video info
-    try {
+    // Method 1: Try ytdl-core to get video info (if available)
+    if (ytdl) {
+      try {
       const info = await ytdl.getInfo(url);
       const videoDetails = info.videoDetails;
       
@@ -307,8 +349,11 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    } catch (ytdlError) {
-      console.error('ytdl-core error:', ytdlError);
+      } catch (ytdlError) {
+        console.error('ytdl-core error:', ytdlError);
+      }
+    } else {
+      console.log('ytdl-core not available - skipping this method');
     }
     
     // Method 2: Try get_video_info approach (more reliable)
@@ -425,18 +470,35 @@ export async function POST(request: NextRequest) {
       videoMetadata: videoMetadata
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('=== API route critical error ===');
-    console.error('Error:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('Error type:', error?.constructor?.name);
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
+    console.error('Full error object:', error);
+    
+    // Check for specific error types
+    let errorMessage = 'Failed to process request';
+    let statusCode = 500;
+    
+    if (error?.message?.includes('Firebase') || error?.message?.includes('Firestore')) {
+      errorMessage = 'Database connection error - transcripts may still work';
+      console.error('Firebase/Firestore error detected - continuing without cache');
+    } else if (error?.message?.includes('ytdl')) {
+      errorMessage = 'YouTube extraction library error';
+    } else if (error?.code === 'MODULE_NOT_FOUND') {
+      errorMessage = 'Server configuration error - missing dependencies';
+    }
     
     return NextResponse.json(
       { 
-        error: 'Failed to process request', 
+        error: errorMessage,
+        message: error?.message || 'Unknown error',
         details: error instanceof Error ? error.message : 'Unknown error',
-        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
+        type: error?.constructor?.name || 'UnknownError',
+        stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
       },
-      { status: 500 }
+      { status: statusCode }
     );
   }
 }

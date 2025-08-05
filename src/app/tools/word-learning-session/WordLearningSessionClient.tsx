@@ -310,6 +310,7 @@ export default function WordLearningSessionClient() {
               onComplete={handlePhaseComplete}
               onCorrect={handleCorrectAnswer}
               onStruggle={handleWordStruggle}
+              allWords={sessionData.words} // Pass all words for better distractor generation
             />
           )}
           

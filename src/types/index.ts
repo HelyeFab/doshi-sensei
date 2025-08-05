@@ -178,7 +178,7 @@ export interface JishoWord {
 
 // Theme and Color Scheme Types
 export type ThemeMode = 'dark' | 'light' | 'system';
-export type ColorScheme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'emerald' | 'amber';
+export type ColorScheme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'emerald' | 'amber' | 'vercel' | 'acnh' | 'zelda' | 'mario';
 
 export interface ColorPalette {
   name: string;

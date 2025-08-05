@@ -39,6 +39,12 @@ export default function TranscriptDisplay({
 
   useEffect(() => {
     loadTranscript();
+    
+    // In development, expose debug function globally
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      (window as any).debugListCachedTranscripts = TranscriptCacheManager.debugListAllCachedTranscripts;
+      console.log('🔧 Debug: Run debugListCachedTranscripts() in console to see all cached transcripts');
+    }
   }, [videoUrl]);
 
   const loadTranscript = async () => {
@@ -62,10 +68,13 @@ export default function TranscriptDisplay({
       // Generate content ID for cache lookup FIRST
       if (videoUrl && !fileInfo) {
         // YouTube video
+        console.log('🔍 [CACHE DEBUG] Generating content ID for YouTube video');
+        console.log('🔍 [CACHE DEBUG] Input videoUrl:', videoUrl);
         contentId = TranscriptCacheManager.generateContentId({
           type: 'youtube',
           videoUrl: videoUrl
         });
+        console.log('🔍 [CACHE DEBUG] Generated contentId:', contentId);
       } else if (fileInfo) {
         // Generate content ID for uploaded files
         contentId = TranscriptCacheManager.generateContentId({
@@ -78,19 +87,22 @@ export default function TranscriptDisplay({
         contentId = 'unknown_' + Date.now();
       }
       
-      console.log('Generated contentId:', contentId);
+      console.log('🔍 [CACHE DEBUG] Final contentId:', contentId);
       
       // Always check cache first, regardless of mode
       if (contentId && !contentId.startsWith('unknown_')) {
-        console.log('Checking cache for contentId:', contentId);
+        console.log('🔍 [CACHE DEBUG] Checking cache for contentId:', contentId);
         const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
         
         if (cachedTranscript && cachedTranscript.transcript.length > 0) {
-          console.log('Found cached transcript! Using it instead of extraction.');
-          console.log('Cache details:', {
+          console.log('✅ [CACHE DEBUG] Found cached transcript! Using it instead of extraction.');
+          console.log('✅ [CACHE DEBUG] Cache details:', {
             contentId,
+            cachedContentId: cachedTranscript.contentId,
+            cachedId: cachedTranscript.id,
             transcriptLength: cachedTranscript.transcript.length,
             videoTitle: cachedTranscript.videoTitle,
+            videoUrl: cachedTranscript.videoUrl,
             accessCount: cachedTranscript.accessCount
           });
           setLoadingMessage('Found cached transcript!');
@@ -116,10 +128,11 @@ export default function TranscriptDisplay({
           window.removeEventListener('error', handleError);
           return;
         } else {
-          console.log('No cached transcript found or empty transcript', {
+          console.log('❌ [CACHE DEBUG] No cached transcript found or empty transcript', {
             contentId,
             cacheExists: !!cachedTranscript,
-            transcriptLength: cachedTranscript?.transcript?.length || 0
+            transcriptLength: cachedTranscript?.transcript?.length || 0,
+            cachedTranscript
           });
         }
       }

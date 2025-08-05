@@ -5,7 +5,7 @@ import { WordItem } from '../types';
 import { learnedWordsStorage } from '../services/learnedWordsStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { TTSManager } from '@/utils/tts';
-import { GrammarHighlightedText } from '@/components/reading/GrammarHighlightedText';
+import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 
 interface ExposurePhaseProps {
   word: WordItem;
@@ -18,13 +18,34 @@ interface ExposurePhaseProps {
   totalWords?: number;
 }
 
+// Validate if an example object contains proper sentence data
+function isValidExample(example: any): boolean {
+  if (!example || typeof example !== 'object') return false;
+  
+  // Check if it has the required structure
+  if (!example.japanese || !example.english) return false;
+  
+  // Check if values are strings
+  if (typeof example.japanese !== 'string' || typeof example.english !== 'string') return false;
+  
+  // Check if Japanese text contains actual Japanese characters (not just numbers or single digits)
+  const japanesePattern = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/; // Hiragana, Katakana, or Kanji
+  if (!japanesePattern.test(example.japanese)) return false;
+  
+  // Check if it's not just a single number or very short non-Japanese text
+  if (/^\d+$/.test(example.japanese)) return false;
+  
+  return true;
+}
+
 export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, onBack, isLearned = false, currentIndex = 0, totalWords = 0 }: ExposurePhaseProps) {
   const { user } = useAuth();
   const [showReading, setShowReading] = useState(false);
   const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
   const [isMarkedDifficult, setIsMarkedDifficult] = useState(false);
   const [isMarkedLearned, setIsMarkedLearned] = useState(isLearned);
-  const [highlightMode, setHighlightMode] = useState<'none' | 'grammar'>('none');
+  const [highlightMode, setHighlightMode] = useState<'none' | 'grammar'>('grammar');
+  const [showGrammarLegend, setShowGrammarLegend] = useState(false);
 
   // Initialize TTS on mount
   useEffect(() => {
@@ -102,6 +123,31 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         </div>
       )}
 
+      {/* Grammar Legend Toggle */}
+      <div className="mb-4">
+        <button
+          onClick={() => setShowGrammarLegend(!showGrammarLegend)}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+        >
+          <svg 
+            className={`w-4 h-4 transition-transform ${showGrammarLegend ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+          Grammar Color Guide
+        </button>
+        
+        {/* Grammar Legend */}
+        {showGrammarLegend && (
+          <div className="mt-3 p-3 bg-muted/50 rounded-lg">
+            <GrammarLegend />
+          </div>
+        )}
+      </div>
+
       {/* Audio Button */}
       <div className="flex justify-center mb-6">
         <button
@@ -120,12 +166,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         <div className="text-center mb-4">
           {word.kanji && (
             <div className="mb-2">
-              <GrammarHighlightedText
-                text={word.kanji}
-                highlightMode="none"
-                showFurigana={showReading}
-                className="text-3xl font-bold"
-              />
+              <p className="text-3xl font-bold">{word.kanji}</p>
             </div>
           )}
           {!word.kanji && (
@@ -161,7 +202,14 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         {word.example && isValidExample(word.example) && (
           <div className="border-t pt-4 mt-4">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm text-muted-foreground">Example:</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-muted-foreground">Example:</p>
+                {!word.example.reading && (
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                    From Tatoeba
+                  </span>
+                )}
+              </div>
               <button
                 onClick={async () => {
                   try {

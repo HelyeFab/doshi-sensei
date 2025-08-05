@@ -11,7 +11,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import { pokemonManager } from '@/utils/pokemonManager';
 import { colorPalettes } from '@/utils/themes';
-import { ToriiGate } from '@/components/ToriiGate';
+// import { ToriiGate } from '@/components/ToriiGate'; // Disabled - component not in use
 import { StatsBar } from '@/components/stats/StatsBar';
 import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';

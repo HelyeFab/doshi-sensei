@@ -157,15 +157,15 @@ export function ToriiGate({
                   }}
                 />
                 {/* Torii Gate using torii.svg */}
-                <img
-                  src="/flat-icons/tori/torii.svg"
-                  alt="Torii Gate"
+                <div 
                   className="w-32 h-32 sm:w-40 sm:h-40 md:w-56 md:h-56 lg:w-64 lg:h-64 relative z-10 drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
                                                       style={{
                     filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1)) drop-shadow(8px 8px 16px rgba(0, 0, 0, 0.4))',
                     transform: 'translate(4px, 4px)'
                   }}
-                />
+                >
+                  {/* Torii image disabled - missing asset */}
+                </div>
               </div>
           </motion.div>
           </Link>

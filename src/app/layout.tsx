@@ -25,6 +25,8 @@ import { FastRefreshLogger } from '@/components/FastRefreshLogger';
 import { NavigationErrorBoundary } from './NavigationErrorBoundary';
 import { PersistentLogger } from '@/components/PersistentLogger';
 import { ConsoleLogInitializer } from '@/components/ConsoleLogInitializer';
+import { PrewarmingLoader } from '@/components/PrewarmingLoader';
+import { PrewarmingScript } from '@/components/PrewarmingScript';
 
 // Optimized font loading - only load essential weights initially
 const geistSans = localFont({
@@ -276,6 +278,9 @@ export default function RootLayout({
         {/* PWA Service Worker Update Manager */}
 
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
+        
+        {/* Prewarming Script - Runs immediately before React hydration */}
+        <PrewarmingScript />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${savoyeFont.variable} ${manrope.variable} antialiased min-h-screen`}
@@ -290,6 +295,7 @@ export default function RootLayout({
                     <OnboardingWrapper>
                       <AchievementToastManager>
                         <div className="min-h-screen bg-background text-foreground">
+                          <PrewarmingLoader />
                           <FastRefreshLogger />
                           <ConsoleLogInitializer />
                           {process.env.NODE_ENV === 'development' && <PersistentLogger />}

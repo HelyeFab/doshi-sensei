@@ -95,7 +95,7 @@ const securityHeaders = [
     key: 'Strict-Transport-Security',
     value: 'max-age=31536000; includeSubDomains'
   },
-  process.env.NODE_ENV === 'development' 
+  process.env.NODE_ENV === 'development'
     ? {
         key: 'Content-Security-Policy',
         value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"

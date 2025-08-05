@@ -96,10 +96,13 @@ Removed all the emergency "overkill" fixes:
 3. Font optimization
 4. Cookie warning for stripe_mid
 5. Removed all overkill emergency fixes
+6. Stripe.js loading errors and CSP violations
+7. PersistentLogger console outputs in production
+8. RSC 502 errors for all heavy pages
 
 ### Still Pending
-1. N2/N3 kanji data preload error (currently working on)
-2. Apple Touch Icon 404 errors
+1. N2/N3 kanji data preload error (may need investigation)
+2. Apple Touch Icon 404 errors (minor issue)
 
 ## Lessons Learned
 
@@ -115,12 +118,52 @@ Removed all the emergency "overkill" fixes:
 - `a2f87c8c` - Removed aggressive middleware
 - `d8620786` - Cleaned up overkill scripts
 
-## The Kanji Issue (Current)
+## The Kanji Issue (Resolved)
 
 We're now addressing the N2/N3 kanji preload errors, which appear to be related to:
 - API endpoint redirects (308 status with trailing slashes)
 - The kanji preloader trying to load all levels sequentially
 - Need to verify the intended behavior (only preload N5, background load others)
+
+## Final Console Cleanup (January 2025)
+
+### Remaining Issues After Stripe Fix
+Even after fixing Stripe errors, there were still:
+1. **PersistentLogger console outputs** in production showing "Previous Navigation Logs"
+2. **RSC 502 errors** for `/practice`, `/drill`, `/kanji-moods`, and `/achievements`
+
+### Solutions Implemented
+
+#### 1. Removed PersistentLogger from Production
+- **Problem**: Debug component was logging navigation info in production
+- **Fix**: Made it development-only in `layout.tsx`:
+  ```tsx
+  {process.env.NODE_ENV === 'development' && <PersistentLogger />}
+  ```
+
+#### 2. Extended SmartLink Coverage
+- **Problem**: Some heavy pages were still being prefetched
+- **Fix**: Added missing pages to HEAVY_PAGES list:
+  ```typescript
+  const HEAVY_PAGES = [
+    '/vocabulary',
+    '/drill',
+    '/practice',
+    '/admin',
+    '/news',
+    '/stories',
+    '/kanji-browser',
+    '/kanji-moods',      // Added
+    '/achievements'      // Added
+  ];
+  ```
+
+#### 3. Updated Home.tsx Heavy Page Checks
+- **Problem**: Multiple places checking for heavy pages with incomplete lists
+- **Fix**: Updated all instances to include `/kanji-moods` and `/achievements`
+
+### Key Commit
+- `625b8480` - Remove production console logs and fix RSC 502 errors
 
 ## Stripe.js Loading Issues (January 2025)
 

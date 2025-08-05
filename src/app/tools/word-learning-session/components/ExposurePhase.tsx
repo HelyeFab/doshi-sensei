@@ -5,23 +5,26 @@ import { WordItem } from '../types';
 import { learnedWordsStorage } from '../services/learnedWordsStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { TTSManager } from '@/utils/tts';
+import { GrammarHighlightedText } from '@/components/reading/GrammarHighlightedText';
 
 interface ExposurePhaseProps {
   word: WordItem;
   lessonId: string;
   onComplete: () => void;
   onStruggle: () => void;
+  onBack?: () => void;
   isLearned?: boolean;
   currentIndex?: number;
   totalWords?: number;
 }
 
-export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, isLearned = false, currentIndex = 0, totalWords = 0 }: ExposurePhaseProps) {
+export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, onBack, isLearned = false, currentIndex = 0, totalWords = 0 }: ExposurePhaseProps) {
   const { user } = useAuth();
   const [showReading, setShowReading] = useState(false);
   const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
   const [isMarkedDifficult, setIsMarkedDifficult] = useState(false);
   const [isMarkedLearned, setIsMarkedLearned] = useState(isLearned);
+  const [highlightMode, setHighlightMode] = useState<'none' | 'grammar'>('none');
 
   // Initialize TTS on mount
   useEffect(() => {
@@ -116,18 +119,38 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
       <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-4">
         <div className="text-center mb-4">
           {word.kanji && (
-            <h2 className="text-3xl font-bold text-foreground mb-2">{word.kanji}</h2>
+            <div className="mb-2">
+              <GrammarHighlightedText
+                text={word.kanji}
+                highlightMode="none"
+                showFurigana={showReading}
+                className="text-3xl font-bold"
+              />
+            </div>
           )}
-          <p className="text-xl text-foreground/80 mb-1">
-            {showReading ? word.kana : (
-              <button
-                onClick={() => setShowReading(true)}
-                className="text-primary hover:text-primary/80 underline"
-              >
-                Show reading
-              </button>
-            )}
-          </p>
+          {!word.kanji && (
+            <p className="text-xl text-foreground/80 mb-1">
+              {showReading ? word.kana : (
+                <button
+                  onClick={() => setShowReading(true)}
+                  className="text-primary hover:text-primary/80 underline"
+                >
+                  Show reading
+                </button>
+              )}
+            </p>
+          )}
+          {word.kanji && showReading && (
+            <p className="text-xl text-foreground/80 mb-1">{word.kana}</p>
+          )}
+          {!showReading && word.kanji && (
+            <button
+              onClick={() => setShowReading(true)}
+              className="text-primary hover:text-primary/80 underline mb-1"
+            >
+              Show reading
+            </button>
+          )}
           <p className="text-lg text-muted-foreground">{word.meaning}</p>
           {word.partOfSpeech && (
             <p className="text-sm text-muted-foreground mt-1">({word.partOfSpeech})</p>
@@ -135,7 +158,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         </div>
 
         {/* Example Sentence */}
-        {word.example && (
+        {word.example && isValidExample(word.example) && (
           <div className="border-t pt-4 mt-4">
             <div className="flex items-center justify-between mb-1">
               <p className="text-sm text-muted-foreground">Example:</p>
@@ -163,10 +186,18 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
                 </svg>
               </button>
             </div>
-            <p className="text-lg text-foreground mb-1">{word.example.japanese}</p>
-            {word.example.reading && (
-              <p className="text-sm text-muted-foreground mb-1">{word.example.reading}</p>
-            )}
+            <div className="mb-1">
+              <GrammarHighlightedText
+                text={word.example.japanese}
+                highlightMode="grammar"
+                showFurigana={true}
+                className="text-lg"
+                onWordClick={(clickedWord) => {
+                  // Optional: Add word lookup functionality here
+                  console.log('Word clicked:', clickedWord);
+                }}
+              />
+            </div>
             <p className="text-sm text-foreground/80">{word.example.english}</p>
           </div>
         )}
@@ -204,7 +235,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           }`}
           disabled={isMarkedDifficult}
         >
-          {isMarkedDifficult ? '⭐ Marked difficult' : '⭐ Mark difficult'}
+          {isMarkedDifficult ? '🔥 Marked difficult' : '🔥 Mark difficult'}
         </button>
         
         <button
@@ -219,12 +250,23 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         </button>
       </div>
       
-      <button
-        onClick={handleNext}
-        className="w-full py-3 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-      >
-        Next →
-      </button>
+      {/* Navigation Buttons */}
+      <div className="flex gap-3">
+        {currentIndex > 0 && onBack && (
+          <button
+            onClick={onBack}
+            className="flex-1 py-3 px-4 rounded-lg bg-card text-foreground border border-border hover:bg-muted transition-colors flex items-center justify-center gap-2"
+          >
+            ← Back
+          </button>
+        )}
+        <button
+          onClick={handleNext}
+          className="flex-1 py-3 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 }

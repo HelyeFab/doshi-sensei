@@ -46,7 +46,7 @@ export default function PWAInstaller() {
         pwaAnalytics.trackEvent('install_prompt_shown');
       } else {
         // Prompt was shown within the last 24 hours, don't show it
-        console.log('PWA prompt throttled - shown within last 24 hours');
+        // console.log('PWA prompt throttled - shown within last 24 hours');
         pwaAnalytics.trackEvent('install_prompt_throttled');
       }
     };
@@ -69,7 +69,7 @@ export default function PWAInstaller() {
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
-      console.warn('Install prompt is not available');
+      // console.warn('Install prompt is not available');
       return;
     }
 

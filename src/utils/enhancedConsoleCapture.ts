@@ -66,7 +66,7 @@ class EnhancedConsoleCapture {
 
     console.error = (...args: any[]) => {
       this.captureLog('error', args);
-      this.originalConsole.error.apply(console, args);
+      this.originalConsole.error.call(console, ...args);
     };
 
     console.warn = (...args: any[]) => {
@@ -248,5 +248,5 @@ export const enhancedConsoleCapture = new EnhancedConsoleCapture();
 // Auto-start capture in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   enhancedConsoleCapture.startCapture();
-  console.log('🎯 Enhanced console capture started - logs are categorized by section');
+  // console.log('🎯 Enhanced console capture started - logs are categorized by section');
 }

@@ -137,15 +137,35 @@ export function WordLearningLessonSelector({
       kana: word.reading,
       meaning: word.meaning,
       partOfSpeech: Array.isArray(word.partOfSpeech) ? word.partOfSpeech[0] : (word.partOfSpeech || word.pos),
-      example: word.examples && word.examples[0] ? {
-        japanese: word.examples[0].japanese,
-        reading: word.examples[0].reading,
-        english: word.examples[0].english
-      } : word.example ? {
-        japanese: word.example,
-        reading: word.exampleReading,
-        english: word.exampleMeaning
-      } : undefined
+      example: (() => {
+        // Helper to validate Japanese text (should contain actual Japanese characters)
+        const isValidJapanese = (text: string) => {
+          if (!text || typeof text !== 'string') return false;
+          // Check if it's not just a number
+          if (/^\d+$/.test(text)) return false;
+          // Check if it contains Japanese characters (Hiragana, Katakana, or Kanji)
+          return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+        };
+
+        if (word.examples && word.examples[0]) {
+          // Validate the example data
+          if (isValidJapanese(word.examples[0].japanese)) {
+            return {
+              japanese: word.examples[0].japanese,
+              reading: word.examples[0].reading,
+              english: word.examples[0].english
+            };
+          }
+        } else if (word.example && isValidJapanese(word.example)) {
+          return {
+            japanese: word.example,
+            reading: word.exampleReading,
+            english: word.exampleMeaning
+          };
+        }
+        
+        return undefined; // No valid example found
+      })()
     }));
 
     // Store the words in session storage for the word learning session to pick up

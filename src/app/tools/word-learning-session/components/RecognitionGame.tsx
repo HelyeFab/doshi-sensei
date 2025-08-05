@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { WordItem, RecognitionQuestion } from '../types';
 import { TTSManager } from '@/utils/tts';
+import { GrammarHighlightedText } from '@/components/reading/GrammarHighlightedText';
 
 interface RecognitionGameProps {
   words: WordItem[];
@@ -64,14 +65,16 @@ export default function RecognitionGame({
   const generateQuestion = () => {
     if (!currentWord) return;
     
-    // Randomly select question type
+    // Randomly select question type (only on client)
     const types: RecognitionQuestion['type'][] = ['audio', 'meaning', 'sentence'];
-    const type = types[Math.floor(Math.random() * types.length)];
+    const type = typeof window !== 'undefined' 
+      ? types[Math.floor(Math.random() * types.length)]
+      : types[0]; // Default to 'audio' during SSR
     
-    // Generate distractors
+    // Generate distractors (only shuffle on client)
     const distractors = words
       .filter(w => w.id !== currentWord.id)
-      .sort(() => Math.random() - 0.5)
+      .sort(() => typeof window !== 'undefined' ? Math.random() - 0.5 : 0)
       .slice(0, 3);
     
     let newQuestion: RecognitionQuestion;
@@ -85,7 +88,7 @@ export default function RecognitionGame({
           options: [
             currentWord.kanji || currentWord.kana,
             ...distractors.map(d => d.kanji || d.kana)
-          ].sort(() => Math.random() - 0.5),
+          ].sort(() => typeof window !== 'undefined' ? Math.random() - 0.5 : 0),
           audioUrl: currentWord.audio || `/api/tts?text=${encodeURIComponent(currentWord.kana)}&lang=ja`
         };
         break;
@@ -98,7 +101,7 @@ export default function RecognitionGame({
           options: [
             currentWord.meaning,
             ...distractors.map(d => d.meaning)
-          ].sort(() => Math.random() - 0.5)
+          ].sort(() => typeof window !== 'undefined' ? Math.random() - 0.5 : 0)
         };
         break;
         
@@ -115,7 +118,7 @@ export default function RecognitionGame({
             options: [
               currentWord.kanji || currentWord.kana,
               ...distractors.map(d => d.kanji || d.kana)
-            ].sort(() => Math.random() - 0.5),
+            ].sort(() => typeof window !== 'undefined' ? Math.random() - 0.5 : 0),
             sentence
           };
         } else {
@@ -174,9 +177,14 @@ export default function RecognitionGame({
         {question.type === 'meaning' && (
           <div className="text-center">
             <p className="text-lg text-muted-foreground mb-2">What does this mean?</p>
-            <p className="text-2xl font-bold text-foreground">
-              {currentWord.kanji || currentWord.kana}
-            </p>
+            <div className="text-2xl font-bold">
+              <GrammarHighlightedText
+                text={currentWord.kanji || currentWord.kana}
+                highlightMode="none"
+                showFurigana={true}
+                className="text-2xl font-bold"
+              />
+            </div>
           </div>
         )}
         
@@ -209,7 +217,12 @@ export default function RecognitionGame({
                   : 'bg-card border-border hover:border-primary hover:bg-primary/10'
               }`}
             >
-              {option}
+              <GrammarHighlightedText
+                text={option}
+                highlightMode="none"
+                showFurigana={showResult}
+                className="w-full"
+              />
             </button>
           );
         })}

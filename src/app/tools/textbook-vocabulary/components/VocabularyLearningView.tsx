@@ -10,8 +10,8 @@ import { ProgressTracker } from './ProgressTracker';
 import { StudyProgress } from './StudyProgress';
 import { VocabularyCardModal } from './VocabularyCardModal';
 import { WordLearningLessonSelector } from './WordLearningLessonSelector';
-import { useVocabularyData } from '../hooks/useVocabularyData';
-import { useFilteredVocab } from '../hooks/useFilteredVocab';
+import { useLearningData } from '../hooks/useLearningData';
+import { useFilteredLearningItems } from '../hooks/useFilteredVocab';
 import { useStudySession } from '../hooks/useStudySession';
 import { vocabStorage } from '@/services/textbook-vocabulary/client';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
@@ -52,9 +52,12 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
     endSession
   } = useStudySession();
   
-  const { data: vocabulary, loading, error } =
-    useVocabularyData(textbook, selectedLesson || undefined);
-  const { filteredVocab, filters, updateFilter } = useFilteredVocab(vocabulary);
+  const { data, metadata, loading, error } =
+    useLearningData(textbook, selectedLesson || undefined);
+  
+  // Cast the generic LearningItem[] to VocabularyItem[] for this specific component
+  const vocabulary = data as VocabularyItem[];
+  const { filteredData: filteredVocab, filters, updateFilter } = useFilteredLearningItems(vocabulary, metadata);
 
   // Handle lesson selection with premium gating
   const handleLessonSelect = (lesson: number | null) => {

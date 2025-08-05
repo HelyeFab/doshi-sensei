@@ -136,6 +136,12 @@ export default function WordLearningSessionClient() {
     }
   };
 
+  const handleBack = () => {
+    if (currentWordIndex > 0) {
+      setCurrentWordIndex(prev => prev - 1);
+    }
+  };
+
   const handlePhaseComplete = () => {
     switch (phase) {
       case 'exposure':
@@ -272,13 +278,6 @@ export default function WordLearningSessionClient() {
             </button>
           }
         />
-        {phase !== 'complete' && phase !== 'selection' && (
-          <div className="px-4 pb-2">
-            <p className="text-sm text-muted-foreground">
-              {currentWordIndex + 1} / {sessionData?.words.length || 0} words
-            </p>
-          </div>
-        )}
 
         <main className="px-4 pb-4">
           {phase === 'exposure' && sessionData && (
@@ -287,6 +286,7 @@ export default function WordLearningSessionClient() {
               lessonId={sessionData.setId}
               onComplete={handlePhaseComplete}
               onStruggle={() => handleWordStruggle(currentWord.id)}
+              onBack={handleBack}
               isLearned={false} // Will be tracked in ExposurePhase
               currentIndex={currentWordIndex}
               totalWords={sessionData.words.length}

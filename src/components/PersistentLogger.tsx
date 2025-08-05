@@ -49,11 +49,11 @@ export function PersistentLogger() {
     // Log all persisted messages on mount
     const logs = JSON.parse(sessionStorage.getItem('navigation-debug-logs') || '[]');
     if (logs.length > 0) {
-      console.group('📋 Previous Navigation Logs (before page refresh):');
-      logs.forEach((log: any) => {
-        console.log(`${log.timestamp}: ${log.message}`);
-      });
-      console.groupEnd();
+      // console.group('📋 Previous Navigation Logs (before page refresh):');
+      // logs.forEach((log: any) => {
+      //   console.log(`${log.timestamp}: ${log.message}`);
+      // });
+      // console.groupEnd();
     }
     
     // Add global function to clear logs
@@ -61,7 +61,7 @@ export function PersistentLogger() {
       sessionStorage.removeItem('navigation-debug-logs');
       console.log('✅ Navigation logs cleared');
     };
-    console.log('💡 Tip: Run clearNavigationLogs() to clear persistent logs');
+    // console.log('💡 Tip: Run clearNavigationLogs() to clear persistent logs');
 
     // Also capture navigation attempts
     const handleClick = (e: MouseEvent) => {

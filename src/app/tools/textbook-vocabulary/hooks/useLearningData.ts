@@ -21,8 +21,8 @@ export function useLearningData(sourceId: string, lesson?: number) {
         setError(null);
 
         // 1. Load metadata for the source
-        // Assuming metadata is always at sourceId/metadata.json
-        const metadataModule = await import(`@/data/${sourceId}/metadata.json`);
+        // For textbook vocabulary, metadata is at textbook-vocabulary/sourceId/metadata.json
+        const metadataModule = await import(`@/data/textbook-vocabulary/${sourceId}/metadata.json`);
         setMetadata(metadataModule.default);
 
         // 2. Load learning items
@@ -37,12 +37,12 @@ export function useLearningData(sourceId: string, lesson?: number) {
         if (sourceId.includes('hiragana-chart') || sourceId.includes('katakana-chart')) {
           try {
             // For kana charts, we expect a single file like 'kana.json' or 'all.json'
-            const kanaModule = await import(`@/data/${sourceId}/kana.json`); // Assuming kana.json exists
+            const kanaModule = await import(`@/data/textbook-vocabulary/${sourceId}/kana.json`); // Assuming kana.json exists
             items = kanaModule.default;
           } catch (err) {
             console.warn(`'kana.json' not found for source ${sourceId}, attempting to load 'all.json'.`);
             try {
-              const allModule = await import(`@/data/${sourceId}/all.json`);
+              const allModule = await import(`@/data/textbook-vocabulary/${sourceId}/all.json`);
               items = allModule.default;
             } catch (allErr) {
               console.error(`Failed to load data for kana source ${sourceId}:`, allErr);
@@ -54,13 +54,13 @@ export function useLearningData(sourceId: string, lesson?: number) {
           // Try to load a specific lesson file for sources that have lessons (like textbooks).
           // The path structure might vary. Example: `@/data/${sourceId}/lessons/lesson-${lesson}.json`
           try {
-            const lessonModule = await import(`@/data/${sourceId}/lessons/lesson-${lesson}.json`);
+            const lessonModule = await import(`@/data/textbook-vocabulary/${sourceId}/lesson-${lesson}.json`);
             items = lessonModule.default;
           } catch (err) {
             console.warn(`Lesson ${lesson} not found for source ${sourceId}, attempting to load all.`);
             // Fallback to loading all if specific lesson fails
             try {
-              const allModule = await import(`@/data/${sourceId}/all.json`);
+              const allModule = await import(`@/data/textbook-vocabulary/${sourceId}/all.json`);
               items = allModule.default;
             } catch (allErr) {
               console.error(`Failed to load all data for source ${sourceId} after lesson ${lesson} failed:`, allErr);
@@ -71,7 +71,7 @@ export function useLearningData(sourceId: string, lesson?: number) {
         } else {
           // Load all items if no lesson specified or lesson is invalid for the source.
           try {
-            const allModule = await import(`@/data/${sourceId}/all.json`);
+            const allModule = await import(`@/data/textbook-vocabulary/${sourceId}/all.json`);
             items = allModule.default;
           } catch (err) {
             console.error(`Failed to load all data for source ${sourceId}:`, err);

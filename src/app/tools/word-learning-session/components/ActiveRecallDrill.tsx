@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { WordItem, RecallQuestion } from '../types';
+import { GrammarHighlightedText } from '@/components/reading/GrammarHighlightedText';
 
 interface ActiveRecallDrillProps {
   words: WordItem[];
@@ -35,8 +36,8 @@ export default function ActiveRecallDrill({
   const generateQuestion = () => {
     if (!currentWord) return;
     
-    // Randomly select question type
-    const useGapFill = currentWord.example && Math.random() > 0.5;
+    // Randomly select question type (only on client side)
+    const useGapFill = currentWord.example && (typeof window !== 'undefined' ? Math.random() > 0.5 : false);
     
     if (useGapFill && currentWord.example) {
       // Fill the gap question
@@ -95,7 +96,14 @@ export default function ActiveRecallDrill({
           {question.type === 'show-english' ? (
             <>
               <p className="text-lg text-muted-foreground mb-2">How do you say this in Japanese?</p>
-              <p className="text-2xl font-bold text-foreground">{question.prompt}</p>
+              <div className="text-2xl font-bold">
+                <GrammarHighlightedText
+                  text={question.prompt}
+                  highlightMode="none"
+                  showFurigana={false}
+                  className="text-2xl font-bold"
+                />
+              </div>
               {currentWord.partOfSpeech && (
                 <p className="text-sm text-muted-foreground mt-1">({currentWord.partOfSpeech})</p>
               )}
@@ -103,7 +111,14 @@ export default function ActiveRecallDrill({
           ) : (
             <div className="text-left">
               <p className="text-lg text-muted-foreground mb-3">Fill in the blank:</p>
-              <p className="text-xl text-foreground whitespace-pre-line">{question.prompt}</p>
+              <div className="text-xl whitespace-pre-line">
+                <GrammarHighlightedText
+                  text={question.prompt}
+                  highlightMode="grammar"
+                  showFurigana={showAnswer}
+                  className="text-xl"
+                />
+              </div>
             </div>
           )}
         </div>

@@ -73,7 +73,7 @@ class ConsoleLogControl {
 
   // Apply filters to console methods
   private applyFilters() {
-    const methods: Array<keyof typeof console> = ['log', 'error', 'warn', 'info', 'debug'];
+    const methods: ('log' | 'error' | 'warn' | 'info' | 'debug')[] = ['log', 'error', 'warn', 'info', 'debug'];
 
     methods.forEach(method => {
       (console as any)[method] = (...args: any[]) => {

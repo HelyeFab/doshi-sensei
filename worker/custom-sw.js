@@ -1,21 +1,44 @@
 // Custom Service Worker Extensions for Doshi Sensei
-// Import Workbox libraries
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+// Import Workbox libraries with error handling
+try {
+  importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+} catch (error) {
+  console.warn('Failed to load Workbox from CDN, service worker functionality limited');
+  // Define a minimal fallback to prevent errors
+  self.workbox = {
+    core: { setCacheNameDetails: () => {}, skipWaiting: () => {}, clientsClaim: () => {} },
+    precaching: { precacheAndRoute: () => {} },
+    routing: { registerRoute: () => {} },
+    strategies: { NetworkFirst: class {}, NetworkOnly: class {}, CacheFirst: class {}, StaleWhileRevalidate: class {} },
+    expiration: { ExpirationPlugin: class {} },
+    cacheableResponse: { CacheableResponsePlugin: class {} },
+    backgroundSync: { BackgroundSyncPlugin: class {} }
+  };
+}
 
-// Configure Workbox
-workbox.core.setCacheNameDetails({ prefix: 'doshi-sensei' });
-workbox.core.skipWaiting();
-workbox.core.clientsClaim();
+// Only configure Workbox if it loaded successfully
+if (self.workbox && self.workbox.core && self.workbox.core.setCacheNameDetails) {
+  // Configure Workbox
+  workbox.core.setCacheNameDetails({ prefix: 'doshi-sensei' });
+  workbox.core.skipWaiting();
+  workbox.core.clientsClaim();
 
-// Precaching (will be injected by next-pwa)
-workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
+  // Precaching (will be injected by next-pwa)
+  workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
+} else {
+  // Fallback: basic service worker without Workbox
+  self.addEventListener('install', () => self.skipWaiting());
+  self.addEventListener('activate', () => self.clients.claim());
+}
 
-// Define caching strategies
-const { registerRoute } = workbox.routing;
-const { NetworkFirst, NetworkOnly, CacheFirst, StaleWhileRevalidate } = workbox.strategies;
-const { ExpirationPlugin } = workbox.expiration;
-const { CacheableResponsePlugin } = workbox.cacheableResponse;
-const { BackgroundSyncPlugin } = workbox.backgroundSync;
+// Only set up caching strategies if Workbox loaded successfully
+if (self.workbox && self.workbox.routing) {
+  // Define caching strategies
+  const { registerRoute } = workbox.routing;
+  const { NetworkFirst, NetworkOnly, CacheFirst, StaleWhileRevalidate } = workbox.strategies;
+  const { ExpirationPlugin } = workbox.expiration;
+  const { CacheableResponsePlugin } = workbox.cacheableResponse;
+  const { BackgroundSyncPlugin } = workbox.backgroundSync;
 
 // CRITICAL: Handle RSC (React Server Component) requests
 registerRoute(
@@ -248,6 +271,8 @@ registerRoute(
   })
 );
 
+} // End of Workbox routing setup
+
 // Custom fetch handling for edge cases
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -258,7 +283,6 @@ self.addEventListener('fetch', (event) => {
       request.headers.get('RSC') === '1' ||
       request.headers.get('X-Service-Worker-Bypass') === '1' ||
       request.headers.get('accept')?.includes('text/x-component')) {
-    console.log('[Custom SW] Bypassing cache for RSC request:', url.pathname);
     return; // Let the browser handle it directly
   }
   
@@ -336,7 +360,6 @@ self.addEventListener('message', (event) => {
           cacheNames.map(cacheName => {
             // Keep only recent caches
             if (!cacheName.includes('-v1') && !cacheName.includes('precache')) {
-              console.log('[Custom SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })

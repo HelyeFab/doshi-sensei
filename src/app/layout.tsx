@@ -26,25 +26,26 @@ import { NavigationErrorBoundary } from './NavigationErrorBoundary';
 import { PersistentLogger } from '@/components/PersistentLogger';
 import { ConsoleLogInitializer } from '@/components/ConsoleLogInitializer';
 
+// Optimized font loading - only load essential weights initially
 const geistSans = localFont({
   src: "../../public/fonts/Geist/Geist-VariableFont_wght.ttf",
   variable: "--font-geist-sans",
   weight: "100 900",
+  display: 'swap',
+  preload: true,
 });
 
 const geistMono = localFont({
   src: "../../public/fonts/Geist_Mono/GeistMono-VariableFont_wght.ttf",
   variable: "--font-geist-mono",
   weight: "100 900",
+  display: 'swap',
+  preload: false, // Only preload if used on homepage
 });
 
+// Only load the weights actually used on homepage
 const rubik = localFont({
   src: [
-    {
-      path: "../../public/fonts/Rubik/static/Rubik-Light.ttf",
-      weight: "300",
-      style: "normal",
-    },
     {
       path: "../../public/fonts/Rubik/static/Rubik-Regular.ttf",
       weight: "400",
@@ -67,44 +68,25 @@ const rubik = localFont({
     },
   ],
   variable: "--font-rubik",
+  display: 'swap',
+  preload: true,
 });
 
+// Decorative font - only load regular weight initially
 const savoyeFont = localFont({
-  src: [
-    {
-      path: "../../public/fonts/Dancing_Script/static/DancingScript-Regular.ttf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Dancing_Script/static/DancingScript-Medium.ttf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Dancing_Script/static/DancingScript-SemiBold.ttf",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Dancing_Script/static/DancingScript-Bold.ttf",
-      weight: "700",
-      style: "normal",
-    },
-  ],
+  src: {
+    path: "../../public/fonts/Dancing_Script/static/DancingScript-Regular.ttf",
+    weight: "400",
+    style: "normal",
+  },
   variable: "--font-savoye",
+  display: 'swap',
+  preload: false, // Don't preload decorative fonts
 });
 
+// Only load commonly used weights for Manrope
 const manrope = localFont({
   src: [
-    {
-      path: "../../public/fonts/Manrope/static/Manrope-ExtraLight.ttf",
-      weight: "200",
-    },
-    {
-      path: "../../public/fonts/Manrope/static/Manrope-Light.ttf",
-      weight: "300",
-    },
     {
       path: "../../public/fonts/Manrope/static/Manrope-Regular.ttf",
       weight: "400",
@@ -121,12 +103,10 @@ const manrope = localFont({
       path: "../../public/fonts/Manrope/static/Manrope-Bold.ttf",
       weight: "700",
     },
-    {
-      path: "../../public/fonts/Manrope/static/Manrope-ExtraBold.ttf",
-      weight: "800",
-    },
   ],
   variable: "--font-manrope",
+  display: 'swap',
+  preload: false, // Only preload if heavily used
 });
 
 export const metadata: Metadata = {

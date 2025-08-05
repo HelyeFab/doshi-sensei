@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 // Import generalized types
 import type { LearningItem, DataSourceMetadata } from '@/types/learning';
-// Assuming a generic data source config might be needed later, but for now, we'll use direct imports.
-// import { DATA_SOURCES } from '@/config/dataSources';
 
 /**
  * Hook to load learning data (vocabulary, kanji, characters, etc.) from a specified source.
@@ -40,12 +38,14 @@ export function useLearningData(sourceId: string, lesson?: number) {
 
         const sourceMetadata = metadataModule.default as DataSourceMetadata;
 
+        // Check if lesson is provided and if the metadata indicates lessons are applicable and the lesson number is valid.
         if (lesson !== undefined && sourceMetadata.lessons?.includes(lesson)) {
           // Try to load a specific lesson file. The path structure might vary.
           // Example: `@/data/${sourceId}/lessons/lesson-${lesson}.json`
           // Or it could be specific to item types, e.g., `@/data/${sourceId}/kanji/lesson-${lesson}.json`
           try {
             // This import path is a placeholder and might need adjustment based on actual data organization.
+            // We need to ensure this path is dynamic and correct for different data sources.
             const lessonModule = await import(`@/data/${sourceId}/lessons/lesson-${lesson}.json`);
             items = lessonModule.default;
           } catch (err) {

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "hiragana-a",
+    "itemType": "hiragana",
+    "text": "あ",
+    "reading": "a",
+    "meaning": "A",
+    "audioFile": "/audio/kana/hiragana/a.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "hiragana-chart"
+  },
+  {
+    "id": "hiragana-i",
+    "itemType": "hiragana",
+    "text": "い",
+    "reading": "i",
+    "meaning": "I",
+    "audioFile": "/audio/kana/hiragana/i.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "hiragana-chart"
+  },
+  {
+    "id": "hiragana-u",
+    "itemType": "hiragana",
+    "text": "う",
+    "reading": "u",
+    "meaning": "U",
+    "audioFile": "/audio/kana/hiragana/u.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "hiragana-chart"
+  },
+  {
+    "id": "hiragana-e",
+    "itemType": "hiragana",
+    "text": "え",
+    "reading": "e",
+    "meaning": "E",
+    "audioFile": "/audio/kana/hiragana/e.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "hiragana-chart"
+  },
+  {
+    "id": "hiragana-o",
+    "itemType": "hiragana",
+    "text": "お",
+    "reading": "o",
+    "meaning": "O",
+    "audioFile": "/audio/kana/hiragana/o.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "hiragana-chart"
+  }
+]

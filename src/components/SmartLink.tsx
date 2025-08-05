@@ -11,7 +11,8 @@ const HEAVY_PAGES = [
   '/stories',
   '/kanji-browser',
   '/kanji-moods',
-  '/achievements'
+  '/achievements',
+  '/tools/kanji-mastery'  // Added - was causing 502 errors
 ];
 
 /**

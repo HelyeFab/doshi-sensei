@@ -35,8 +35,26 @@
   const originalFetch = window.fetch;
   
   window.fetch = function(...args) {
-    return originalFetch.apply(this, args).catch(error => {
-      // Track network errors
+    const url = args[0]?.toString() || '';
+    
+    return originalFetch.apply(this, args).then(response => {
+      // Check if this is an RSC request with 502 error
+      const isRSCRequest = url.includes('?_rsc=') || url.includes('&_rsc=');
+      if (isRSCRequest && response.status === 502) {
+        // Return a silent failed response instead of throwing
+        return new Response(null, { status: 502, statusText: 'Bad Gateway (Expected)' });
+      }
+      return response;
+    }).catch(error => {
+      // Check if this is an RSC request (has _rsc parameter)
+      const isRSCRequest = url.includes('?_rsc=') || url.includes('&_rsc=');
+      
+      // For RSC requests with network errors, return a failed response instead of throwing
+      if (isRSCRequest) {
+        return new Response(null, { status: 502, statusText: 'Network Error (Expected)' });
+      }
+      
+      // Track other network errors
       if (error.name === 'NetworkError' || error.message.includes('NetworkError')) {
         networkErrorCount++;
         
@@ -53,7 +71,7 @@
         }
       }
       
-      throw error; // Re-throw the error
+      throw error; // Re-throw the error for non-RSC requests
     });
   };
   

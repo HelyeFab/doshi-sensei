@@ -1,0 +1,15 @@
+{
+  "id": "hiragana-chart",
+  "name": "Hiragana Chart",
+  "description": "Learn all Hiragana characters",
+  "itemTypes": ["hiragana"],
+  "totalLessons": 1,
+  "lessons": [1],
+  "jlptLevels": [],
+  "commonTags": ["basic", "kana"],
+  "color": {
+    "primary": "#e91e63",
+    "secondary": "#f48fb1",
+    "gradient": "from-pink-400 to-pink-500"
+  }
+}

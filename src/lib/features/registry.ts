@@ -3,7 +3,9 @@
  * Central source of truth for all features in Doshi Sensei
  */
 
-import { FeatureRegistry } from './types';
+import { FeatureRegistry, Feature } from './types';
+// Import generalized types for potential future use in metadata
+import type { LearningItem, DataSourceMetadata } from '@/types/learning';
 
 export const FEATURE_REGISTRY: FeatureRegistry = {
   // Learning Features
@@ -18,7 +20,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'article_reading': {
     id: 'article_reading',
     name: 'News Articles',
@@ -30,7 +32,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'story_reading': {
     id: 'story_reading',
     name: 'Story Reading',
@@ -42,7 +44,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'kanji_moods': {
     id: 'kanji_moods',
     name: 'Kanji Mood Boards',
@@ -54,7 +56,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   // Games
   'kanji_quest': {
     id: 'kanji_quest',
@@ -67,7 +69,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active',
   },
-  
+
   'kana_study': {
     id: 'kana_study',
     name: 'Kana Study',
@@ -80,7 +82,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
     // Removed sharedLimitGroup - was causing tracking issues
   },
-  
+
   'kana_drop': {
     id: 'kana_drop',
     name: 'Kana Drop',
@@ -92,7 +94,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active',
   },
-  
+
   'sentence_scramble': {
     id: 'sentence_scramble',
     name: 'Sentence Scramble',
@@ -104,7 +106,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active',
   },
-  
+
   'matching_game': {
     id: 'matching_game',
     name: 'Memory Match',
@@ -116,7 +118,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active',
   },
-  
+
   'reading_routes': {
     id: 'reading_routes',
     name: 'Reading Routes',
@@ -128,7 +130,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active',
   },
-  
+
   'kanji_simon': {
     id: 'kanji_simon',
     name: 'Kanji Simon',
@@ -164,7 +166,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active',
   },
-  
+
   // Learning Features
   'textbook_vocabulary': {
     id: 'textbook_vocabulary',
@@ -177,7 +179,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'word_learning_session': {
     id: 'word_learning_session',
     name: 'Word Learning Session',
@@ -189,7 +191,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'kanji_stroke_order': {
     id: 'kanji_stroke_order',
     name: 'Kanji Stroke Order',
@@ -201,7 +203,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'stroke_order_practice': {
     id: 'stroke_order_practice',
     name: 'Stroke Order Practice',
@@ -213,7 +215,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'flashcard_review': {
     id: 'flashcard_review',
     name: 'Flashcard Review',
@@ -225,7 +227,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active',
   },
-  
+
   'youtube_shadowing': {
     id: 'youtube_shadowing',
     name: 'YouTube Shadowing',
@@ -248,7 +250,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       }
     }
   },
-  
+
   // Storage Features
   'word_lists': {
     id: 'word_lists',
@@ -273,7 +275,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'bookmarks': {
     id: 'bookmarks',
     name: 'Bookmarks',
@@ -314,7 +316,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       maxItems: { guest: 3, free: 3, premium: 50 }
     }
   },
-  
+
   'offline_stories': {
     id: 'offline_stories',
     name: 'Offline Stories',
@@ -330,7 +332,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       maxItems: { guest: 3, free: 3, premium: 50 }
     }
   },
-  
+
   'resource_caching': {
     id: 'resource_caching',
     name: 'Resource Caching',
@@ -342,7 +344,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   'background_sync': {
     id: 'background_sync',
     name: 'Background Sync',
@@ -355,7 +357,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
 
-  
+
   // System Features
   'push_notifications': {
     id: 'push_notifications',
@@ -380,7 +382,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: true,
     status: 'active'
   },
-  
+
   'progress_saving': {
     id: 'progress_saving',
     name: 'Progress Saving',
@@ -392,7 +394,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'active'
   },
-  
+
   // Planned Features (for your admin dashboard view)
   'speaking_practice': {
     id: 'speaking_practice',
@@ -405,7 +407,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: false,
     status: 'planned'
   },
-  
+
   'ai_tutor': {
     id: 'ai_tutor',
     name: 'AI Tutor',
@@ -417,7 +419,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresSubscription: true,
     status: 'planned'
   },
-  
+
   'ai_context_explanation': {
     id: 'ai_context_explanation',
     name: 'AI Context Explanation',
@@ -437,7 +439,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       }
     }
   },
-  
+
   'anki_import': {
     id: 'anki_import',
     name: 'Import Anki Decks',
@@ -453,7 +455,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
       allowedFormats: ['.apkg', '.anki2']
     }
   },
-  
+
   'anki_set_creation': {
     id: 'anki_set_creation',
     name: 'Create Anki Sets',
@@ -492,21 +494,39 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
 
+  // Generic Learning Module - placeholder for future generalization
+  'general_learning_module': {
+    id: 'general_learning_module',
+    name: 'General Learning Module',
+    description: 'A flexible module to learn various Japanese items (vocab, kanji, characters)',
+    category: 'learning',
+    icon: '💡',
+    limitType: 'daily', // Default limit type
+    requiresAuth: false, // Default auth requirement
+    requiresSubscription: false, // Default subscription requirement
+    status: 'active', // Changed from 'planned' to 'active' to start using it
+    metadata: {
+      supportedItemTypes: ['vocabulary', 'kanji', 'hiragana', 'katakana'] as LearningItem['itemType'][],
+      // Add other relevant metadata, e.g., default data source IDs
+      defaultDataSourceIds: ['genki-1', 'hiragana-chart', 'kanji-n5']
+    }
+  }
+
 };
 
 // Helper functions
-export function getFeature(featureId: string) {
+export function getFeature(featureId: string): Feature | undefined {
   return FEATURE_REGISTRY[featureId];
 }
 
-export function getFeaturesByCategory(category: string) {
+export function getFeaturesByCategory(category: string): Feature[] {
   return Object.values(FEATURE_REGISTRY).filter(f => f.category === category);
 }
 
-export function getActiveFeatures() {
+export function getActiveFeatures(): Feature[] {
   return Object.values(FEATURE_REGISTRY).filter(f => f.status === 'active');
 }
 
-export function getPlannedFeatures() {
+export function getPlannedFeatures(): Feature[] {
   return Object.values(FEATURE_REGISTRY).filter(f => f.status === 'planned');
 }

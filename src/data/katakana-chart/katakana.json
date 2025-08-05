@@ -1,0 +1,57 @@
+[
+  {
+    "id": "katakana-a",
+    "itemType": "katakana",
+    "text": "ア",
+    "reading": "a",
+    "meaning": "A",
+    "audioFile": "/audio/kana/katakana/a.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "katakana-chart"
+  },
+  {
+    "id": "katakana-i",
+    "itemType": "katakana",
+    "text": "イ",
+    "reading": "i",
+    "meaning": "I",
+    "audioFile": "/audio/kana/katakana/i.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "katakana-chart"
+  },
+  {
+    "id": "katakana-u",
+    "itemType": "katakana",
+    "text": "ウ",
+    "reading": "u",
+    "meaning": "U",
+    "audioFile": "/audio/kana/katakana/u.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "katakana-chart"
+  },
+  {
+    "id": "katakana-e",
+    "itemType": "katakana",
+    "text": "エ",
+    "reading": "e",
+    "meaning": "E",
+    "audioFile": "/audio/kana/katakana/e.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "katakana-chart"
+  },
+  {
+    "id": "katakana-o",
+    "itemType": "katakana",
+    "text": "オ",
+    "reading": "o",
+    "meaning": "O",
+    "audioFile": "/audio/kana/katakana/o.mp3",
+    "tags": ["vowel"],
+    "lesson": 1,
+    "textbook": "katakana-chart"
+  }
+]

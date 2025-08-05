@@ -5,7 +5,7 @@
 
 export type UserType = 'guest' | 'free' | 'monthly' | 'yearly';
 export type LimitType = 'daily' | 'total';
-export type Permission = 
+export type Permission =
   | 'play_games'
   | 'do_drills'
   | 'read_articles'
@@ -18,7 +18,12 @@ export type Permission =
   | 'youtube_shadowing'
   | 'ai_explanations'
   | 'textbook_vocabulary'
-  | 'premium_features'
+  | 'do_learning_sessions' // Permission for word_learning_session
+  | 'learn_kanji' // Permission for kanji_mastery
+  | 'view_leaderboard'
+  | 'share_content'
+  | 'earn_rewards'
+  | 'use_general_learning_module' // New permission for the generic module
   | '*'; // Wildcard for all permissions
 
 export interface LimitConfig {

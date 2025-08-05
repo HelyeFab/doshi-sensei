@@ -1,0 +1,15 @@
+{
+  "id": "katakana-chart",
+  "name": "Katakana Chart",
+  "description": "Learn all Katakana characters",
+  "itemTypes": ["katakana"],
+  "totalLessons": 1,
+  "lessons": [1],
+  "jlptLevels": [],
+  "commonTags": ["basic", "kana"],
+  "color": {
+    "primary": "#00bcd4",
+    "secondary": "#80deea",
+    "gradient": "from-cyan-400 to-cyan-500"
+  }
+}

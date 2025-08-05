@@ -73,14 +73,31 @@ export function PrewarmingScript() {
         
         // Create hidden iframe for prewarming after DOM is ready
         const createIframe = () => {
-          const iframe = document.createElement('iframe');
-          iframe.src = '/settings';
-          iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;pointer-events:none;';
-          iframe.setAttribute('aria-hidden', 'true');
-          document.body.appendChild(iframe);
+          // Use fetch to prewarm instead of iframe to avoid COOP errors
+          // This will trigger the server-side rendering without iframe issues
+          fetch('/settings', {
+            method: 'GET',
+            credentials: 'same-origin',
+            // Signal that this is a prewarming request
+            headers: {
+              'X-Prewarming': 'true'
+            }
+          }).then(() => {
+            // Success - settings page is now cached
+          }).catch(() => {
+            // Ignore errors - this is just prewarming
+          });
           
-          // Remove iframe after loading
-          setTimeout(() => iframe.remove(), 4000);
+          // Also prewarm the _rsc data
+          fetch('/settings?_rsc=1', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+              'X-Prewarming': 'true'
+            }
+          }).catch(() => {
+            // Ignore errors
+          });
         };
         
         if (document.body) {

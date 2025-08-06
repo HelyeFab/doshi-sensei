@@ -317,8 +317,6 @@ export default function WordLearningSessionClient() {
           {phase === 'audio-matching' && sessionData && (
             <AudioMatching
               words={sessionData.words}
-              currentIndex={currentWordIndex}
-              totalWords={sessionData.words.length}
               onComplete={handlePhaseComplete}
               onCorrect={handleCorrectAnswer}
               onStruggle={handleWordStruggle}

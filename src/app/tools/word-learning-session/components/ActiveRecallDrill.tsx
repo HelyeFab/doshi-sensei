@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WordItem, RecallQuestion } from '../types';
 import { GrammarHighlightedText } from '@/components/reading/GrammarHighlightedText';
 
@@ -46,17 +46,14 @@ export default function ActiveRecallDrill({
     const useGapFill = currentWord.example && (typeof window !== 'undefined' ? Math.random() > 0.5 : false);
     
     if (useGapFill && currentWord.example) {
-      // Fill the gap question
-      const sentence = currentWord.example.japanese.replace(
-        currentWord.kanji || currentWord.kana,
-        '＿＿＿＿'
-      );
+      // Fill the gap question - don't include the blank in the prompt
+      const sentence = currentWord.example.japanese;
       
       setQuestion({
         type: 'fill-gap',
-        prompt: `Fill in the blank:\n${sentence}\n(${currentWord.example.english})`,
+        prompt: currentWord.example.english || '', // Just show the English translation
         correctAnswer: currentWord.kanji || currentWord.kana,
-        sentence
+        sentence // Keep original sentence for rendering
       });
     } else {
       // Show English, recall Japanese
@@ -182,13 +179,30 @@ export default function ActiveRecallDrill({
           ) : (
             <div className="text-left">
               <p className="text-lg text-muted-foreground mb-3">Fill in the blank:</p>
-              <div className="text-xl whitespace-pre-line">
-                <GrammarHighlightedText
-                  text={question.prompt}
-                  highlightMode="grammar"
-                  showFurigana={showAnswer}
-                  className="text-xl"
-                />
+              <div className="space-y-4">
+                {/* Japanese sentence with blank */}
+                <div className="flex flex-wrap items-center gap-2 text-xl">
+                  {question.sentence && question.sentence.split(currentWord.kanji || currentWord.kana || '').map((part, idx, arr) => (
+                    <React.Fragment key={idx}>
+                      {part && <span>{part}</span>}
+                      {idx < arr.length - 1 && (
+                        <span className={`inline-block min-w-[100px] px-3 py-1 border-b-2 ${
+                          showAnswer 
+                            ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                            : selectedOption 
+                              ? 'border-primary bg-primary/10'
+                              : 'border-primary border-dashed'
+                        } text-center font-bold`}>
+                          {showAnswer ? (currentWord.kanji || currentWord.kana) : selectedOption || '　　　'}
+                        </span>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+                {/* English translation */}
+                <p className="text-base text-muted-foreground italic">
+                  ({question.prompt})
+                </p>
               </div>
             </div>
           )}

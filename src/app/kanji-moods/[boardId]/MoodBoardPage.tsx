@@ -113,7 +113,6 @@ export default function MoodBoardPage() {
   // Render the mood board
   return (
     <div className="min-h-screen bg-gray-50">
-      <SmartPageHeader title={board.title} backHref="/kanji-moods" />
       <MoodBoard board={board} onBack={handleBack} />
     </div>
   );

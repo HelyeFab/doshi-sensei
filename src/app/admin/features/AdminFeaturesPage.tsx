@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAdmin } from '@/contexts/AdminContext';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { FeatureMatrixTable } from '@/components/admin/feature-matrix/FeatureMatrixTable';
+import { EnhancedCategorizedFeatureMatrixTable } from '@/components/admin/feature-matrix/EnhancedCategorizedFeatureMatrixTable';
 import { EditableFeatureMatrix } from '@/components/admin/feature-matrix/EditableFeatureMatrix';
 import { FeatureMatrixStats } from '@/components/admin/feature-matrix/FeatureMatrixStats';
 import { useFeatureMatrix } from '@/hooks/useFeatureMatrix';
@@ -191,7 +192,7 @@ export default function AdminFeaturesPage() {
             isEditMode={isEditMode}
           />
         ) : (
-          <FeatureMatrixTable
+          <EnhancedCategorizedFeatureMatrixTable
             matrix={data.matrix}
             userTypes={data.userTypes}
           />

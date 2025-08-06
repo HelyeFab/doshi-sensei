@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { TTSManager } from '@/utils/tts';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { scheduleWordReview } from '@/services/notifications/spacedRepetitionNotifications';
+import { translationService } from '@/services/translationService';
 
 interface ExposurePhaseProps {
   word: WordItem;
@@ -47,6 +48,8 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
   const [isMarkedLearned, setIsMarkedLearned] = useState(isLearned);
   const [highlightMode, setHighlightMode] = useState<'none' | 'grammar'>('grammar');
   const [showGrammarLegend, setShowGrammarLegend] = useState(false);
+  const [translatedExample, setTranslatedExample] = useState(word.example);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   // Initialize TTS on mount
   useEffect(() => {
@@ -64,7 +67,33 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
     if (word.audio) {
       playWordAudio();
     }
+    
+    // Translate example if it's missing English translation
+    if (word.example?.japanese && !word.example.english) {
+      translateExample();
+    } else {
+      setTranslatedExample(word.example);
+    }
   }, [word.id, isLearned]);
+
+  const translateExample = async () => {
+    if (!word.example?.japanese) return;
+    
+    setIsTranslating(true);
+    try {
+      const translation = await translationService.translateText(word.example.japanese, 'en');
+      setTranslatedExample({
+        ...word.example,
+        english: translation
+      });
+    } catch (error) {
+      console.error('Failed to translate example:', error);
+      // Fallback to showing without translation
+      setTranslatedExample(word.example);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const playWordAudio = async () => {
     try {
@@ -211,15 +240,18 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         </div>
 
         {/* Example Sentence */}
-        {word.example && isValidExample(word.example) && (
+        {translatedExample && isValidExample(translatedExample) && (
           <div className="border-t pt-4 mt-4">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <p className="text-sm text-muted-foreground">Example:</p>
-                {!word.example.reading && (
+                {!translatedExample.reading && (
                   <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
                     From Tatoeba
                   </span>
+                )}
+                {isTranslating && (
+                  <span className="text-xs text-muted-foreground animate-pulse">Translating...</span>
                 )}
               </div>
               <button
@@ -227,7 +259,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
                   try {
                     // Use ElevenLabs for sentences
                     await TTSManager.speak(
-                      word.example.japanese,
+                      translatedExample.japanese,
                       {
                         voice: 'female',
                         provider: 'elevenlabs',
@@ -248,7 +280,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
             </div>
             <div className="mb-1">
               <GrammarHighlightedText
-                text={word.example.japanese}
+                text={translatedExample.japanese}
                 highlightMode="grammar"
                 showFurigana={true}
                 className="text-lg"
@@ -258,7 +290,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
                 }}
               />
             </div>
-            <p className="text-sm text-foreground/80">{word.example.english}</p>
+            <p className="text-sm text-foreground/80">{translatedExample.english}</p>
           </div>
         )}
 

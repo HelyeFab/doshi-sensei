@@ -33,6 +33,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
   });
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [itemsToSave, setItemsToSave] = useState<JapaneseWord[]>([]);
+  const [isCheckingAccess, setIsCheckingAccess] = useState(false);
 
   // Update progress when component mounts or board changes
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
       meaning: kanji.meaning,
       english: kanji.meaning,
       type: 'noun',
-      jlpt: 5,
+      jlpt: 5 as const,
       tags: [],
       word: kanji.char,
       reading: kanji.readings.kun[0] || kanji.readings.on[0] || '',
@@ -75,6 +76,38 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
     }));
     setItemsToSave(kanjiWords);
     setShowSaveModal(true);
+  };
+
+  const handleLearnClick = async () => {
+    setIsCheckingAccess(true);
+    
+    // Convert mood board kanji to WordItem format for word learning session
+    const wordItems = board.kanji.map(kanji => ({
+      id: `${board.id}_${kanji.char}`,
+      kanji: kanji.char,
+      kana: kanji.readings.kun[0] || kanji.readings.on[0] || '',
+      meaning: kanji.meaning,
+      partOfSpeech: 'noun',
+      // Include example if available - it will be translated in the word learning session
+      example: kanji.examples && kanji.examples.length > 0 && kanji.examples[0].length > 0 ? {
+        japanese: kanji.examples[0],
+        reading: '', // We don't have reading data from mood boards
+        english: '' // Will be translated automatically in word learning session
+      } : undefined
+    }));
+
+    // Store the words in session storage
+    const sessionData = {
+      lessonId: `moodboard_${board.id}`,
+      textbook: board.title,
+      words: wordItems
+    };
+    
+    window.sessionStorage.setItem('wordLearningSessionWords', JSON.stringify(sessionData));
+    
+    // Navigate to word learning session with custom session
+    router.push('/tools/word-learning-session?session=custom');
+    setIsCheckingAccess(false);
   };
 
   return (
@@ -90,20 +123,22 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
 
           {/* Desktop Layout */}
           <div className="relative text-white h-full hidden lg:flex lg:flex-col lg:justify-center px-8">
-            <div className="flex items-center justify-between">
-              {/* Back button */}
-              <button
-                onClick={onBack}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-5 py-2.5 text-white hover:bg-white/20 transition-all duration-200 shadow-lg"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span className="text-sm font-medium">Back</span>
-              </button>
+            <div className="flex flex-col items-center gap-6">
+              {/* Back button - top left without pill effect, with padding for navigation */}
+              <div className="absolute top-24 left-6">
+                <button
+                  onClick={onBack}
+                  className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  <span className="text-sm font-medium">Back</span>
+                </button>
+              </div>
 
               {/* Center section - Title and description */}
-              <div className="text-center flex-1 max-w-2xl mx-auto px-8">
+              <div className="text-center max-w-2xl mx-auto">
                 <div className="text-5xl mb-3">{board.emoji}</div>
                 <h1 className="text-3xl font-bold mb-2">{board.title}</h1>
                 <p className="text-base opacity-90">{board.description}</p>
@@ -113,7 +148,7 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                 </div>
               </div>
 
-              {/* Button group */}
+              {/* Button group - now in separate row below */}
               <div className="flex items-center gap-3">
                 {/* Study button */}
                 <button
@@ -138,6 +173,18 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                   </span>
                 </button>
 
+                {/* Learn button */}
+                <button
+                  onClick={handleLearnClick}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-md rounded-full px-5 py-2.5 text-white hover:from-green-500/30 hover:to-emerald-500/30 transition-all duration-200 shadow-lg"
+                  title="Start a word learning session with all kanji from this board"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  <span className="text-sm font-medium">Learn</span>
+                </button>
+
                 {/* Reading Routes button */}
                 <button
                   onClick={() => router.push(`/games/reading-routes/${board.id}`)}
@@ -152,19 +199,33 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
           </div>
 
           {/* Mobile/Tablet Layout */}
-          <div className="relative text-white h-full lg:hidden flex flex-col">
-            {/* Top row with back button and action buttons - pushed down with more padding */}
-            <div className="flex items-center justify-between p-4 pt-8 pb-2 mt-14">
+          <div className="relative text-white h-full lg:hidden flex flex-col justify-center">
+            {/* Back button - top left without pill effect, with padding for mobile nav */}
+            <div className="absolute top-20 left-4">
               <button
                 onClick={onBack}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 text-white hover:bg-white/20 transition-all duration-200 shadow-lg"
+                className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="hidden sm:inline text-sm font-medium">Back</span>
+                <span className="text-sm font-medium">Back</span>
               </button>
+            </div>
 
+            {/* Content centered */}
+            <div className="flex flex-col items-center gap-4 px-4">
+              <div className="text-center">
+                <div className="text-4xl mb-2">{board.emoji}</div>
+                <h1 className="text-xl sm:text-2xl font-bold mb-1">{board.title}</h1>
+                <p className="text-sm opacity-90">{board.description}</p>
+                <div className="mt-2 text-xs sm:text-sm opacity-80">
+                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned •
+                  <span>{progress?.progressPercentage || 0}% complete</span>
+                </div>
+              </div>
+
+              {/* Action buttons - now below the title/description */}
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
@@ -183,30 +244,28 @@ export default function MoodBoard({ board, onBack }: MoodBoardProps) {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
-                  <span className="hidden text-sm font-medium">Study</span>
+                  <span className="text-sm font-medium">Study</span>
+                </button>
+
+                <button
+                  onClick={handleLearnClick}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-md rounded-full px-4 py-2 text-white hover:from-green-500/30 hover:to-emerald-500/30 transition-all duration-200 shadow-lg"
+                  title="Start word learning session"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  <span className="text-sm font-medium">Learn</span>
                 </button>
 
                 <button
                   onClick={() => router.push(`/games/reading-routes/${board.id}`)}
-                  className="flex items-center gap-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-md rounded-full px-3 py-2 text-white hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 shadow-lg"
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-md rounded-full px-4 py-2 text-white hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 shadow-lg"
                   title="Reading Routes"
                 >
                   <span className="text-base">🛤️</span>
-                  <span className="hidden text-sm font-medium">Routes</span>
+                  <span className="text-sm font-medium">Routes</span>
                 </button>
-              </div>
-            </div>
-
-            {/* Content centered in remaining space with more padding */}
-            <div className="flex-1 flex items-center justify-center px-4 pb-6">
-              <div className="text-center">
-                <div className="text-4xl mb-2">{board.emoji}</div>
-                <h1 className="text-xl sm:text-2xl font-bold mb-1">{board.title}</h1>
-                <p className="text-sm opacity-90">{board.description}</p>
-                <div className="mt-2 text-xs sm:text-sm opacity-80">
-                  <span className="font-semibold">{learnedCount}/{totalCount}</span> learned •
-                  <span>{progress?.progressPercentage || 0}% complete</span>
-                </div>
               </div>
             </div>
           </div>

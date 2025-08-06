@@ -87,9 +87,10 @@ export async function GET() {
           allowed = false;
         }
         
-        // Get limits
+        // Get limits - ALWAYS get the limit regardless of allowed status
+        // This ensures we can show the actual limits in the UI
         let limit = 0;
-        if (allowed && feature.limitType !== 'none') {
+        if (feature.limitType !== 'none') {
           const limitKey = feature.sharedLimitGroup || feature.id;
           const limits = rule.limits[feature.limitType];
           limit = limits?.[limitKey] ?? 0;

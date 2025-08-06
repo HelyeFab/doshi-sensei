@@ -1,50 +1,56 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { SessionWord } from '../services/learnedWordsStorage';
+import { WordItem } from '../types';
+import { TTSManager } from '@/utils/tts';
 
 interface AudioMatchingProps {
-  words: SessionWord[];
-  currentIndex: number;
-  totalWords: number;
+  words: WordItem[];
   onComplete: () => void;
+  onCorrect: () => void;
+  onStruggle: (wordId: string) => void;
 }
 
 interface MatchOption {
   id: string;
-  english: string;
-  audioUrl: string;
+  word: WordItem;
   isMatched: boolean;
 }
 
 export default function AudioMatching({ 
   words, 
-  currentIndex, 
-  totalWords, 
-  onComplete 
+  onComplete,
+  onCorrect,
+  onStruggle
 }: AudioMatchingProps) {
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [selectedAudio, setSelectedAudio] = useState<string | null>(null);
   const [selectedMeaning, setSelectedMeaning] = useState<string | null>(null);
   const [matchedPairs, setMatchedPairs] = useState<Set<string>>(new Set());
   const [wrongAttempts, setWrongAttempts] = useState<Set<string>>(new Set());
   const [currentOptions, setCurrentOptions] = useState<MatchOption[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   // Get 4-5 options for current round
   useEffect(() => {
-    const currentWord = words[currentIndex];
-    const otherWords = words.filter((_, idx) => idx !== currentIndex);
+    if (currentWordIndex >= words.length) {
+      onComplete();
+      return;
+    }
+
+    const currentWord = words[currentWordIndex];
+    const otherWords = words.filter((_, idx) => idx !== currentWordIndex);
     
-    // Shuffle and pick 3-4 other words
+    // Shuffle and pick 3-4 other words as distractors
     const shuffled = [...otherWords].sort(() => Math.random() - 0.5);
-    const distractors = shuffled.slice(0, Math.min(3 + Math.floor(Math.random() * 2), otherWords.length));
+    const distractors = shuffled.slice(0, Math.min(3, otherWords.length));
     
     // Combine with current word and shuffle
     const options = [currentWord, ...distractors].map(w => ({
       id: w.id,
-      english: w.english,
-      audioUrl: w.audioUrl,
+      word: w,
       isMatched: false
     }));
     
@@ -53,49 +59,70 @@ export default function AudioMatching({
     setSelectedMeaning(null);
     setIsCorrect(null);
     setWrongAttempts(new Set());
-  }, [currentIndex, words]);
+  }, [currentWordIndex, words]);
 
-  const playAudio = (audioUrl: string, optionId: string) => {
-    if (matchedPairs.has(optionId)) return;
+  const playAudio = async (option: MatchOption) => {
+    if (matchedPairs.has(option.id) || isPlayingAudio) return;
     
-    setSelectedAudio(optionId);
-    const audio = new Audio(audioUrl);
-    audio.play().catch(console.error);
+    setSelectedAudio(option.id);
+    setIsPlayingAudio(true);
+    
+    try {
+      // Use TTS to play the Japanese word
+      await TTSManager.speak(
+        option.word.kana || option.word.kanji || '',
+        {
+          voice: 'female',
+          provider: 'google',
+          context: 'vocabulary'
+        }
+      );
+    } catch (error) {
+      console.error('Failed to play audio:', error);
+    } finally {
+      setIsPlayingAudio(false);
+    }
   };
 
   const selectMeaning = (optionId: string) => {
-    if (matchedPairs.has(optionId)) return;
+    if (matchedPairs.has(optionId) || !selectedAudio) return;
     
     setSelectedMeaning(optionId);
     
-    if (selectedAudio) {
-      // Check if match is correct
-      if (selectedAudio === optionId) {
-        setIsCorrect(true);
-        setMatchedPairs(new Set([...matchedPairs, optionId]));
-        
-        // Auto-advance after success animation
-        setTimeout(() => {
-          if (currentIndex < totalWords - 1) {
-            onComplete();
-          } else {
-            // All words completed
-            onComplete();
-          }
-        }, 1500);
-      } else {
-        setIsCorrect(false);
-        setWrongAttempts(new Set([...wrongAttempts, `${selectedAudio}-${optionId}`]));
-        
-        // Reset selections after showing error
-        setTimeout(() => {
-          setSelectedAudio(null);
-          setSelectedMeaning(null);
-          setIsCorrect(null);
-        }, 1000);
+    // Check if match is correct
+    if (selectedAudio === optionId) {
+      setIsCorrect(true);
+      setMatchedPairs(new Set([...matchedPairs, optionId]));
+      onCorrect();
+      
+      // Move to next word after success animation
+      setTimeout(() => {
+        if (currentWordIndex < words.length - 1) {
+          setCurrentWordIndex(prev => prev + 1);
+        } else {
+          // All words completed
+          onComplete();
+        }
+      }, 1500);
+    } else {
+      setIsCorrect(false);
+      const wrongWord = currentOptions.find(o => o.id === selectedAudio);
+      if (wrongWord) {
+        onStruggle(wrongWord.word.id);
       }
+      setWrongAttempts(new Set([...wrongAttempts, `${selectedAudio}-${optionId}`]));
+      
+      // Reset selections after showing error
+      setTimeout(() => {
+        setSelectedAudio(null);
+        setSelectedMeaning(null);
+        setIsCorrect(null);
+      }, 1000);
     }
   };
+
+  const currentWord = words[currentWordIndex];
+  const progress = ((currentWordIndex + 1) / words.length) * 100;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -103,12 +130,12 @@ export default function AudioMatching({
       <div className="mb-8">
         <div className="flex justify-between text-sm text-muted-foreground mb-2">
           <span>Audio Matching Progress</span>
-          <span>{currentIndex + 1} / {totalWords}</span>
+          <span>{currentWordIndex + 1} / {words.length}</span>
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-300 ease-out"
-            style={{ width: `${((currentIndex + 1) / totalWords) * 100}%` }}
+            style={{ width: `${progress}%` }}
           />
         </div>
       </div>
@@ -127,28 +154,31 @@ export default function AudioMatching({
             {currentOptions.map((option, index) => (
               <motion.button
                 key={`audio-${option.id}`}
-                onClick={() => playAudio(option.audioUrl, option.id)}
-                disabled={matchedPairs.has(option.id)}
+                onClick={() => playAudio(option)}
+                disabled={matchedPairs.has(option.id) || isPlayingAudio}
                 className={`
-                  w-full p-4 rounded-lg border-2 transition-all
+                  w-full p-4 rounded-lg border-2 transition-all flex items-center
                   ${matchedPairs.has(option.id) 
                     ? 'bg-green-500/10 border-green-500/30 opacity-50 cursor-not-allowed' 
                     : selectedAudio === option.id
                     ? 'bg-primary/10 border-primary shadow-md'
-                    : 'bg-card border-border hover:border-border/80 hover:shadow-sm'
+                    : isPlayingAudio
+                    ? 'bg-muted border-border cursor-wait'
+                    : 'bg-card border-border hover:border-primary/50 hover:shadow-sm'
                   }
                 `}
-                whileHover={!matchedPairs.has(option.id) ? { scale: 1.02 } : {}}
-                whileTap={!matchedPairs.has(option.id) ? { scale: 0.98 } : {}}
+                whileHover={!matchedPairs.has(option.id) && !isPlayingAudio ? { scale: 1.02 } : {}}
+                whileTap={!matchedPairs.has(option.id) && !isPlayingAudio ? { scale: 0.98 } : {}}
               >
-                <div className="flex items-center justify-center gap-3">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" 
-                    />
-                  </svg>
-                  <span className="font-medium">Sound {index + 1}</span>
-                </div>
+                <svg className="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" 
+                  />
+                </svg>
+                <span className="font-medium">Sound {index + 1}</span>
+                {isPlayingAudio && selectedAudio === option.id && (
+                  <span className="ml-auto text-xs text-muted-foreground animate-pulse">Playing...</span>
+                )}
               </motion.button>
             ))}
           </div>
@@ -167,7 +197,7 @@ export default function AudioMatching({
                   onClick={() => selectMeaning(option.id)}
                   disabled={matchedPairs.has(option.id) || !selectedAudio}
                   className={`
-                    w-full p-4 rounded-lg border-2 transition-all text-left
+                    w-full p-4 rounded-lg border-2 transition-all text-left min-h-[60px] flex items-center
                     ${matchedPairs.has(option.id) 
                       ? 'bg-green-500/10 border-green-500/30 opacity-50 cursor-not-allowed' 
                       : selectedMeaning === option.id
@@ -179,14 +209,14 @@ export default function AudioMatching({
                       : isWrong
                       ? 'bg-destructive/10 border-destructive/30'
                       : !selectedAudio
-                      ? 'bg-muted border-border cursor-not-allowed'
-                      : 'bg-card border-border hover:border-border/80 hover:shadow-sm'
+                      ? 'bg-muted/50 border-border/50 cursor-not-allowed opacity-60'
+                      : 'bg-card border-border hover:border-primary/50 hover:shadow-sm'
                     }
                   `}
                   whileHover={!matchedPairs.has(option.id) && selectedAudio ? { scale: 1.02 } : {}}
                   whileTap={!matchedPairs.has(option.id) && selectedAudio ? { scale: 0.98 } : {}}
                 >
-                  <span className="font-medium">{option.english}</span>
+                  <span className="font-medium text-foreground">{option.word.meaning}</span>
                 </motion.button>
               );
             })}
@@ -203,13 +233,22 @@ export default function AudioMatching({
             exit={{ opacity: 0, y: -20 }}
             className={`
               mt-6 p-4 rounded-lg text-center font-medium
-              ${isCorrect ? 'bg-green-500/10 text-green-700' : 'bg-destructive/10 text-destructive'}
+              ${isCorrect ? 'bg-green-500/10 text-green-700 dark:text-green-400' : 'bg-destructive/10 text-destructive'}
             `}
           >
             {isCorrect ? '✓ Correct! Well done!' : '✗ Not quite. Try again!'}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Current word being tested (for debugging/clarity) */}
+      {currentWord && (
+        <div className="mt-8 p-4 bg-muted/50 rounded-lg text-center">
+          <p className="text-xs text-muted-foreground">
+            Testing word {currentWordIndex + 1} of {words.length}: {currentWord.kanji || currentWord.kana}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

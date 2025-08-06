@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { VocabularySet } from '../types';
 import { learnedWordsStorage } from '../services/learnedWordsStorage';
+import { exposedWordsStorage } from '../services/exposedWordsStorage';
+import ExposureStats from './ExposureStats';
 
 interface LessonSelectorProps {
   lessons: {
@@ -171,6 +173,19 @@ export default function LessonSelector({ lessons, userId, onSelectLesson, isLoad
           );
         })}
       </div>
+
+      {/* Exposure Stats */}
+      {selectedLesson && (
+        <ExposureStats
+          lessonId={selectedLesson}
+          totalWords={lessonsWithProgress.find(l => l.id === selectedLesson)?.totalWords || 0}
+          userId={userId}
+          onReset={() => {
+            // Refresh the lesson progress after reset
+            loadLessonProgress();
+          }}
+        />
+      )}
 
       {/* Word Count Selector */}
       {selectedLesson && maxWords > 0 && (

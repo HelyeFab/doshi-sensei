@@ -188,6 +188,7 @@ export function StatsBar({ className = '' }: { className?: string }) {
         onClose={() => setShowPokedexModal(false)}
         height="90%"
         showHandle={false}
+        showCloseButton={false}
       >
         <PokedexContent userId={user?.uid} onClose={() => setShowPokedexModal(false)} />
       </SlideUpModal>

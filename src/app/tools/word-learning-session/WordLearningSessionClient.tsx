@@ -15,8 +15,10 @@ import LessonSelector from './components/LessonSelector';
 import { WordItem, SessionData, SessionPhase } from './types';
 import { sessionStorage } from './services/sessionStorage';
 import { learnedWordsStorage } from './services/learnedWordsStorage';
+import { exposedWordsStorage } from './services/exposedWordsStorage';
 import { getVocabularySet } from './data/vocabularySets';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { shuffleArray } from '@/utils/shuffle';
 
 export default function WordLearningSessionClient() {
   const strings = useStrings();
@@ -99,23 +101,30 @@ export default function WordLearningSessionClient() {
     try {
       const vocabSet = await getVocabularySet(lessonId);
       if (vocabSet) {
-        // Get learned words for filtering
-        const learnedWords = await learnedWordsStorage.getLearnedWords(
+        // Use smart word selection that prioritizes unexposed words
+        const selectedWords = await exposedWordsStorage.getSmartWordSelection(
           user?.uid || 'guest',
-          lessonId
+          lessonId,
+          vocabSet.words,
+          wordCount,
+          mode
         );
         
-        // Filter words based on mode
-        let availableWords = vocabSet.words;
-        if (mode === 'new') {
-          availableWords = vocabSet.words.filter(w => !learnedWords.includes(w.id));
-        } else if (mode === 'review') {
-          availableWords = vocabSet.words.filter(w => learnedWords.includes(w.id));
+        // If no words selected (shouldn't happen), fall back to random selection
+        if (selectedWords.length === 0) {
+          console.warn('No words selected by smart selection, falling back to random');
+          const shuffled = shuffleArray(vocabSet.words);
+          const fallbackWords = shuffled.slice(0, Math.min(wordCount, vocabSet.words.length));
+          selectedWords.push(...fallbackWords);
         }
         
-        // Randomly select the requested number of words
-        const shuffled = [...availableWords].sort(() => Math.random() - 0.5);
-        const selectedWords = shuffled.slice(0, Math.min(wordCount, shuffled.length));
+        // Mark these words as exposed for this session
+        await exposedWordsStorage.markWordsAsExposed(
+          user?.uid || 'guest',
+          lessonId,
+          selectedWords.map(w => w.id),
+          vocabSet.words.length
+        );
         
         const newSession: SessionData = {
           id: `session_${Date.now()}`,

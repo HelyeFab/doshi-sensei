@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { WordItem, RecallQuestion } from '../types';
 import { GrammarHighlightedText } from '@/components/reading/GrammarHighlightedText';
+import { shuffleArray } from '@/utils/shuffle';
 
 interface ActiveRecallDrillProps {
   words: WordItem[];
@@ -81,7 +82,7 @@ export default function ActiveRecallDrill({
       .filter(w => w && w !== correctAnswer);
     
     // Shuffle and pick 3 distractors
-    const shuffled = [...potentialDistractors].sort(() => Math.random() - 0.5);
+    const shuffled = shuffleArray(potentialDistractors);
     for (let i = 0; i < Math.min(3, shuffled.length); i++) {
       distractors.push(shuffled[i]);
     }
@@ -99,7 +100,7 @@ export default function ActiveRecallDrill({
     
     // Combine correct answer with distractors and shuffle
     const allOptions = [correctAnswer, ...distractors.slice(0, 3)];
-    const shuffledOptions = allOptions.sort(() => Math.random() - 0.5);
+    const shuffledOptions = shuffleArray(allOptions);
     
     setMultipleChoiceOptions(shuffledOptions);
   };

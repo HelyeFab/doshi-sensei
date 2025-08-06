@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WordItem } from '../types';
 import { TTSManager } from '@/utils/tts';
+import { shuffleArray } from '@/utils/shuffle';
 
 interface AudioMatchingProps {
   words: WordItem[];
@@ -44,7 +45,7 @@ export default function AudioMatching({
     const otherWords = words.filter((_, idx) => idx !== currentWordIndex);
     
     // Shuffle and pick 3-4 other words as distractors
-    const shuffled = [...otherWords].sort(() => Math.random() - 0.5);
+    const shuffled = shuffleArray(otherWords);
     const distractors = shuffled.slice(0, Math.min(3, otherWords.length));
     
     // Combine with current word and shuffle
@@ -54,7 +55,7 @@ export default function AudioMatching({
       isMatched: false
     }));
     
-    setCurrentOptions(options.sort(() => Math.random() - 0.5));
+    setCurrentOptions(shuffleArray(options));
     setSelectedAudio(null);
     setSelectedMeaning(null);
     setIsCorrect(null);

@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/PageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import validator from 'validator';
 import { useStrings } from '@/contexts/LanguageContext';
+import { bugTracker } from '@/services/bugTracking';
 
 export default function ContactPage() {
   const router = useRouter();
@@ -92,6 +93,25 @@ export default function ContactPage() {
 
       // Netlify returns a 200 or 303 redirect on successful form submission
       if (response.ok || response.status === 303) {
+        // Save bug reports and feedback to Firestore for tracking
+        if (['bug', 'feedback', 'feature', 'support'].includes(formData.category)) {
+          try {
+            await bugTracker.createBugReport({
+              category: formData.category,
+              name: formData.name,
+              email: formData.email,
+              subject: formData.subject,
+              message: formData.message,
+              url: window.location.href,
+              userAgent: navigator.userAgent
+            });
+            console.log('Bug report saved to Firestore');
+          } catch (firestoreError) {
+            // Don't block the success flow if Firestore fails
+            console.error('Failed to save to Firestore:', firestoreError);
+          }
+        }
+        
         setShowSuccess(true);
         setFormData({
           name: '',

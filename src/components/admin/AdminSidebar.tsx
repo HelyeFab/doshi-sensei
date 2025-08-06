@@ -118,6 +118,12 @@ const sidebarCategories: SidebarCategory[] = [
         iconKey: 'notifications',
         href: '/admin/notifications',
       },
+      {
+        id: 'bugs' as AdminSection,
+        labelKey: 'bugs',
+        iconKey: 'bugs',
+        href: '/admin/bugs',
+      },
     ]
   },
   {
@@ -175,6 +181,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             labelKey === 'logs' ? 'Activity Logs' :
             labelKey === 'activities' ? 'Activities' : 
             labelKey === 'notifications' ? 'Notifications' : 
+            labelKey === 'bugs' ? 'Bug Reports' : 
             labelKey === 'consoleMonitor' ? 'Console Monitor' : labelKey);
   };
 
@@ -192,6 +199,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
            iconKey === 'logs' ? '📝' :
            iconKey === 'activities' ? '📊' : 
            iconKey === 'notifications' ? '🔔' : 
+           iconKey === 'bugs' ? '🐛' : 
            iconKey === 'consoleMonitor' ? '💻' : '📋');
   };
 

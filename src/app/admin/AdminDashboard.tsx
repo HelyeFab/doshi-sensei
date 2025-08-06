@@ -100,6 +100,9 @@ export default function AdminDashboard() {
       case 'pricing':
         router.push('/admin/pricing');
         break;
+      case 'bugs':
+        router.push('/admin/bugs');
+        break;
       default:
     }
   };
@@ -148,6 +151,12 @@ export default function AdminDashboard() {
               description={strings.admin.manageArticlesDescription}
               icon="📋"
               onClick={() => handleQuickAction('articles')}
+            />
+            <QuickAction
+              title="Bug Reports"
+              description="View and manage bug reports"
+              icon="🐛"
+              onClick={() => handleQuickAction('bugs')}
             />
             <QuickAction
               title={strings.admin.createBlogPost}

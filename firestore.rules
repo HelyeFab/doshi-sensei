@@ -986,6 +986,30 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Bug Reports collection - for bug tracking and user feedback
+    match /bugReports/{bugId} {
+      // Admin can read all bug reports
+      allow read: if isAdmin();
+      
+      // Anyone can create bug reports (including anonymous users)
+      allow create: if 
+        request.resource.data.keys().hasAll(['category', 'title', 'description', 
+          'userEmail', 'userName', 'timestamp', 'status', 'priority', 
+          'obsidianSynced', 'createdAt', 'updatedAt']) &&
+        request.resource.data.category in ['bug', 'feedback', 'feature', 'support'] &&
+        request.resource.data.status in ['new', 'investigating', 'in-progress', 'fixed', 'wont-fix', 'duplicate'] &&
+        request.resource.data.priority in ['low', 'medium', 'high', 'critical'] &&
+        request.resource.data.timestamp is timestamp &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Only admin can update bug reports
+      allow update: if isAdmin();
+      
+      // Only admin can delete bug reports
+      allow delete: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

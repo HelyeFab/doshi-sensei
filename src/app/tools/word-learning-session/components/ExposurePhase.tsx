@@ -48,6 +48,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
   const [isMarkedLearned, setIsMarkedLearned] = useState(isLearned);
   const [highlightMode, setHighlightMode] = useState<'none' | 'grammar'>('grammar');
   const [showGrammarLegend, setShowGrammarLegend] = useState(false);
+  const [grammarHighlightEnabled, setGrammarHighlightEnabled] = useState(true);
   const [translatedExample, setTranslatedExample] = useState(word.example);
   const [isTranslating, setIsTranslating] = useState(false);
 
@@ -166,25 +167,45 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
 
       {/* Grammar Legend Toggle */}
       <div className="mb-4">
-        <button
-          onClick={() => setShowGrammarLegend(!showGrammarLegend)}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-        >
-          <svg 
-            className={`w-4 h-4 transition-transform ${showGrammarLegend ? 'rotate-180' : ''}`}
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setShowGrammarLegend(!showGrammarLegend)}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-          Grammar Color Guide
-        </button>
+            <svg 
+              className={`w-4 h-4 transition-transform ${showGrammarLegend ? 'rotate-180' : ''}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            Grammar Color Guide
+          </button>
+          
+          {/* On/Off Toggle */}
+          <button
+            onClick={() => setGrammarHighlightEnabled(!grammarHighlightEnabled)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              grammarHighlightEnabled ? 'bg-primary' : 'bg-muted'
+            }`}
+            aria-label="Toggle grammar highlighting"
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                grammarHighlightEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
         
         {/* Grammar Legend */}
         {showGrammarLegend && (
           <div className="mt-3 p-3 bg-muted/50 rounded-lg">
             <GrammarLegend />
+            <p className="text-xs text-muted-foreground mt-2">
+              {grammarHighlightEnabled ? 'Grammar highlighting is ON' : 'Grammar highlighting is OFF'}
+            </p>
           </div>
         )}
       </div>
@@ -281,7 +302,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
             <div className="mb-1">
               <GrammarHighlightedText
                 text={translatedExample.japanese}
-                highlightMode="grammar"
+                highlightMode={grammarHighlightEnabled ? "grammar" : "none"}
                 showFurigana={true}
                 className="text-lg"
                 onWordClick={(clickedWord) => {

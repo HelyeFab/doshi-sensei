@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { bugTracker, BugReport } from '@/services/bugTracking';
-import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import UserAvatar from '@/components/UserAvatar';
+import InAppNotificationBell from '@/components/notifications/InAppNotificationBell';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useStrings } from '@/contexts/LanguageContext';
+import Link from 'next/link';
 import { 
   Bug, 
   MessageSquare, 
@@ -27,6 +31,8 @@ import {
 export default function BugsClient() {
   const router = useRouter();
   const { user } = useAuth();
+  const { profile } = useUserProfile();
+  const strings = useStrings();
   const [bugs, setBugs] = useState<BugReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBug, setSelectedBug] = useState<BugReport | null>(null);
@@ -37,6 +43,14 @@ export default function BugsClient() {
   });
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportProgress, setExportProgress] = useState('');
+
+  // Get display name
+  const displayName = profile?.displayName || user?.displayName || 'Admin';
+
+  const handleAvatarClick = () => {
+    // Redirect to account settings
+    router.push('/account');
+  };
 
   useEffect(() => {
     // Check if user is admin
@@ -174,12 +188,47 @@ export default function BugsClient() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <SmartPageHeader 
-          title="Bug Reports & Feedback"
-          backHref="/admin"
-        />
+      {/* Back Navigation */}
+      <div className="px-4 pt-6">
+        <Link 
+          href="/admin" 
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Admin Dashboard
+        </Link>
+      </div>
 
+      {/* Smart Header like homepage */}
+      <header className="px-4 pt-4 pb-6" role="banner">
+        <div className="flex items-center gap-3">
+          {/* User Avatar */}
+          <button
+            onClick={handleAvatarClick}
+            className="block cursor-pointer"
+            aria-label="Open user menu"
+          >
+            <UserAvatar size="md" />
+          </button>
+          
+          {/* Title and Subtitle */}
+          <div className="flex-1">
+            <h1 className="text-xl font-semibold text-foreground">
+              Bug Reports & Feedback
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {displayName}-san, manage user reports and feedback
+            </p>
+          </div>
+          
+          {/* Notification Bell */}
+          {user && <InAppNotificationBell />}
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-card border border-border rounded-lg p-4">

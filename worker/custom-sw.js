@@ -1,23 +1,11 @@
 // Custom Service Worker Extensions for Doshi Sensei
-// Import Workbox libraries with error handling
-try {
-  importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
-} catch (error) {
-  console.warn('Failed to load Workbox from CDN, service worker functionality limited');
-  // Define a minimal fallback to prevent errors
-  self.workbox = {
-    core: { setCacheNameDetails: () => {}, skipWaiting: () => {}, clientsClaim: () => {} },
-    precaching: { precacheAndRoute: () => {} },
-    routing: { registerRoute: () => {} },
-    strategies: { NetworkFirst: class {}, NetworkOnly: class {}, CacheFirst: class {}, StaleWhileRevalidate: class {} },
-    expiration: { ExpirationPlugin: class {} },
-    cacheableResponse: { CacheableResponsePlugin: class {} },
-    backgroundSync: { BackgroundSyncPlugin: class {} }
-  };
-}
+// Bundled Workbox - No CDN dependencies
 
-// Only configure Workbox if it loaded successfully
-if (self.workbox && self.workbox.core && self.workbox.core.setCacheNameDetails) {
+// next-pwa will inject Workbox here when building
+// The workbox global will be available after injection
+
+// Only configure Workbox if it's available
+if (typeof workbox !== 'undefined') {
   // Configure Workbox
   workbox.core.setCacheNameDetails({ prefix: 'doshi-sensei' });
   workbox.core.skipWaiting();
@@ -25,14 +13,7 @@ if (self.workbox && self.workbox.core && self.workbox.core.setCacheNameDetails) 
 
   // Precaching (will be injected by next-pwa)
   workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
-} else {
-  // Fallback: basic service worker without Workbox
-  self.addEventListener('install', () => self.skipWaiting());
-  self.addEventListener('activate', () => self.clients.claim());
-}
 
-// Only set up caching strategies if Workbox loaded successfully
-if (self.workbox && self.workbox.routing) {
   // Define caching strategies
   const { registerRoute } = workbox.routing;
   const { NetworkFirst, NetworkOnly, CacheFirst, StaleWhileRevalidate } = workbox.strategies;
@@ -40,238 +21,237 @@ if (self.workbox && self.workbox.routing) {
   const { CacheableResponsePlugin } = workbox.cacheableResponse;
   const { BackgroundSyncPlugin } = workbox.backgroundSync;
 
-// CRITICAL: Handle RSC (React Server Component) requests
-registerRoute(
-  ({ url }) => url.searchParams.has('_rsc'),
-  new NetworkOnly({
-    plugins: [
-      new BackgroundSyncPlugin('rsc-queue', {
-        maxRetentionTime: 5 * 60 // 5 minutes
-      })
-    ]
-  })
-);
+  // CRITICAL: Handle RSC (React Server Component) requests
+  registerRoute(
+    ({ url }) => url.searchParams.has('_rsc'),
+    new NetworkOnly({
+      plugins: [
+        new BackgroundSyncPlugin('rsc-queue', {
+          maxRetentionTime: 5 * 60 // 5 minutes
+        })
+      ]
+    })
+  );
 
-// Handle Next.js data requests
-registerRoute(
-  ({ url }) => url.pathname.includes('/_next/data/'),
-  new NetworkFirst({
-    cacheName: 'nextjs-data',
-    networkTimeoutSeconds: 5,
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 5 * 60 // 5 minutes
-      })
-    ]
-  })
-);
+  // Handle Next.js data requests
+  registerRoute(
+    ({ url }) => url.pathname.includes('/_next/data/'),
+    new NetworkFirst({
+      cacheName: 'nextjs-data',
+      networkTimeoutSeconds: 5,
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 50,
+          maxAgeSeconds: 5 * 60 // 5 minutes
+        })
+      ]
+    })
+  );
 
-// Handle problematic pages
-registerRoute(
-  ({ url }) => /^\/(vocabulary|drill|practice|news|stories|kanji-browser|admin)\/?$/i.test(url.pathname),
-  new NetworkFirst({
-    cacheName: 'dynamic-pages',
-    networkTimeoutSeconds: 10,
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 20,
-        maxAgeSeconds: 5 * 60 // 5 minutes
-      })
-    ]
-  })
-);
+  // Handle problematic pages
+  registerRoute(
+    ({ url }) => /^\/(vocabulary|drill|practice|news|stories|kanji-browser|admin)\/?$/i.test(url.pathname),
+    new NetworkFirst({
+      cacheName: 'dynamic-pages',
+      networkTimeoutSeconds: 10,
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 20,
+          maxAgeSeconds: 5 * 60 // 5 minutes
+        })
+      ]
+    })
+  );
 
-// Handle API routes
-registerRoute(
-  ({ url }) => url.pathname.startsWith('/api/'),
-  new NetworkOnly()
-);
+  // Handle API routes
+  registerRoute(
+    ({ url }) => url.pathname.startsWith('/api/'),
+    new NetworkOnly()
+  );
 
-// Handle Stripe
-registerRoute(
-  ({ url }) => url.host.includes('stripe.com'),
-  new NetworkOnly()
-);
+  // Handle Stripe
+  registerRoute(
+    ({ url }) => url.host.includes('stripe.com'),
+    new NetworkOnly()
+  );
 
-// Handle audio files
-registerRoute(
-  ({ url }) => url.pathname.match(/^\/audio\/.*\.mp3$/i),
-  new CacheFirst({
-    cacheName: 'audio-cache',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 500,
-        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-      }),
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-);
+  // Handle audio files
+  registerRoute(
+    ({ url }) => url.pathname.match(/^\/audio\/.*\.mp3$/i),
+    new CacheFirst({
+      cacheName: 'audio-cache',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 500,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        }),
+        new CacheableResponsePlugin({
+          statuses: [0, 200]
+        })
+      ]
+    })
+  );
 
-// Handle static data files
-registerRoute(
-  ({ url }) => url.pathname.match(/\/data\/.*\.(json|dat)$/i),
-  new CacheFirst({
-    cacheName: 'static-data',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 100,
-        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-      }),
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-);
+  // Handle static data files
+  registerRoute(
+    ({ url }) => url.pathname.match(/\/data\/.*\.(json|dat)$/i),
+    new CacheFirst({
+      cacheName: 'static-data',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 100,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        }),
+        new CacheableResponsePlugin({
+          statuses: [0, 200]
+        })
+      ]
+    })
+  );
 
-// Homepage - network first with short cache
-registerRoute(
-  ({ url }) => url.pathname === '/',
-  new NetworkFirst({
-    cacheName: 'homepage',
-    networkTimeoutSeconds: 3,
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 1,
-        maxAgeSeconds: 60 * 60 // 1 hour
-      })
-    ]
-  })
-);
+  // Homepage - network first with short cache
+  registerRoute(
+    ({ url }) => url.pathname === '/',
+    new NetworkFirst({
+      cacheName: 'homepage',
+      networkTimeoutSeconds: 3,
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 1,
+          maxAgeSeconds: 60 * 60 // 1 hour
+        })
+      ]
+    })
+  );
 
-// Admin pages - always fresh
-registerRoute(
-  ({ url }) => /^\/admin\/.*/i.test(url.pathname),
-  new NetworkFirst({
-    cacheName: 'admin-pages',
-    networkTimeoutSeconds: 3,
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 10,
-        maxAgeSeconds: 60 // 1 minute cache for admin pages
-      })
-    ]
-  })
-);
+  // Admin pages - always fresh
+  registerRoute(
+    ({ url }) => /^\/admin\/.*/i.test(url.pathname),
+    new NetworkFirst({
+      cacheName: 'admin-pages',
+      networkTimeoutSeconds: 3,
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 10,
+          maxAgeSeconds: 60 // 1 minute cache for admin pages
+        })
+      ]
+    })
+  );
 
-// Kana audio files - cache permanently
-registerRoute(
-  ({ url }) => /^\/audio\/kana\/.*\.mp3$/i.test(url.pathname),
-  new CacheFirst({
-    cacheName: 'kana-audio-cache',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 200,
-        maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
-      }),
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-);
+  // Kana audio files - cache permanently
+  registerRoute(
+    ({ url }) => /^\/audio\/kana\/.*\.mp3$/i.test(url.pathname),
+    new CacheFirst({
+      cacheName: 'kana-audio-cache',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 200,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        }),
+        new CacheableResponsePlugin({
+          statuses: [0, 200]
+        })
+      ]
+    })
+  );
 
-// Handle external media
-registerRoute(
-  ({ url }) => url.protocol === 'https:' && /\.(png|jpg|jpeg|svg|gif|webp|mp3|mp4)$/i.test(url.pathname),
-  new StaleWhileRevalidate({
-    cacheName: 'external-media',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 100,
-        maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
-      }),
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-);
+  // Handle external media
+  registerRoute(
+    ({ url }) => url.protocol === 'https:' && /\.(png|jpg|jpeg|svg|gif|webp|mp3|mp4)$/i.test(url.pathname),
+    new StaleWhileRevalidate({
+      cacheName: 'external-media',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 100,
+          maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+        }),
+        new CacheableResponsePlugin({
+          statuses: [0, 200]
+        })
+      ]
+    })
+  );
 
-// Static CSS files - cache long term
-registerRoute(
-  ({ url }) => url.pathname.match(/\.css$/i),
-  new StaleWhileRevalidate({
-    cacheName: 'static-css',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 20,
-        maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
-      })
-    ]
-  })
-);
+  // Static CSS files - cache long term
+  registerRoute(
+    ({ url }) => url.pathname.match(/\.css$/i),
+    new StaleWhileRevalidate({
+      cacheName: 'static-css',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 20,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        })
+      ]
+    })
+  );
 
-// JavaScript files - cache with validation
-registerRoute(
-  ({ url }) => url.pathname.match(/\.js$/i) && !url.pathname.includes('sw.js'),
-  new StaleWhileRevalidate({
-    cacheName: 'static-js',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-      })
-    ]
-  })
-);
+  // JavaScript files - cache with validation
+  registerRoute(
+    ({ url }) => url.pathname.match(/\.js$/i) && !url.pathname.includes('sw.js'),
+    new StaleWhileRevalidate({
+      cacheName: 'static-js',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 50,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        })
+      ]
+    })
+  );
 
-// Images - cache long term
-registerRoute(
-  ({ url }) => /\.(png|jpg|jpeg|gif|webp|svg|ico)$/i.test(url.pathname),
-  new CacheFirst({
-    cacheName: 'images',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 200,
-        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-      }),
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-);
+  // Images - cache long term
+  registerRoute(
+    ({ url }) => /\.(png|jpg|jpeg|gif|webp|svg|ico)$/i.test(url.pathname),
+    new CacheFirst({
+      cacheName: 'images',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 200,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        }),
+        new CacheableResponsePlugin({
+          statuses: [0, 200]
+        })
+      ]
+    })
+  );
 
-// Fonts - cache forever
-registerRoute(
-  ({ url }) => /\.(woff|woff2|ttf|otf)$/i.test(url.pathname),
-  new CacheFirst({
-    cacheName: 'fonts',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 20,
-        maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
-      }),
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-);
+  // Fonts - cache forever
+  registerRoute(
+    ({ url }) => /\.(woff|woff2|ttf|otf)$/i.test(url.pathname),
+    new CacheFirst({
+      cacheName: 'fonts',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 20,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        }),
+        new CacheableResponsePlugin({
+          statuses: [0, 200]
+        })
+      ]
+    })
+  );
 
-// External APIs (excluding Stripe) - cache with validation
-registerRoute(
-  ({ url }) => url.origin !== self.location.origin && 
-             !url.host.includes('stripe.com') &&
-             !url.host.includes('firebaseio.com') &&
-             !url.host.includes('googleapis.com'),
-  new StaleWhileRevalidate({
-    cacheName: 'external-api',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 5 * 60 // 5 minutes
-      })
-    ]
-  })
-);
-
-} // End of Workbox routing setup
+  // External APIs (excluding Stripe) - cache with validation
+  registerRoute(
+    ({ url }) => url.origin !== self.location.origin && 
+               !url.host.includes('stripe.com') &&
+               !url.host.includes('firebaseio.com') &&
+               !url.host.includes('googleapis.com'),
+    new StaleWhileRevalidate({
+      cacheName: 'external-api',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 50,
+          maxAgeSeconds: 5 * 60 // 5 minutes
+        })
+      ]
+    })
+  );
+}
 
 // Custom fetch handling for edge cases
 self.addEventListener('fetch', (event) => {

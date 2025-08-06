@@ -12,11 +12,13 @@ import KanjiListManager from '@/utils/kanjiListManager';
 import KanjiModal from '@/components/kanji/KanjiModal';
 import KanjiStudyModal from '@/components/kanji-moods/KanjiStudyModal';
 import KanjiQuestTutorialModal from '@/components/games/KanjiQuestTutorialModal';
+import KanjiLearningSessionModal from './KanjiLearningSessionModal';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useKanjiSelection } from '@/contexts/KanjiSelectionContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { BookOpen } from 'lucide-react';
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -84,6 +86,8 @@ export default function KanjiBrowserPage() {
   const [studySelection, setStudySelection] = useState<Set<string>>(new Set());
   const [showStudyModal, setShowStudyModal] = useState(false);
   const [showKanjiQuestTutorial, setShowKanjiQuestTutorial] = useState(false);
+  const [showLearningSessionModal, setShowLearningSessionModal] = useState(false);
+  const [selectedLevelForLearning, setSelectedLevelForLearning] = useState<JLPTLevel | null>(null);
   const { showNotification } = useNotification();
 
   // JLPT level info
@@ -570,14 +574,29 @@ export default function KanjiBrowserPage() {
                         </p>
                       </div>
                     </div>
-                    <svg
-                      className={`w-5 h-5 text-muted-foreground transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <div className="flex items-center gap-2">
+                      {!loadingLevels.has(level) && kanji.length > 0 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedLevelForLearning(level);
+                            setShowLearningSessionModal(true);
+                          }}
+                          className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1.5"
+                        >
+                          <BookOpen className="w-4 h-4" />
+                          <span>Learn</span>
+                        </button>
+                      )}
+                      <svg
+                        className={`w-5 h-5 text-muted-foreground transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </div>
                 </button>
 
@@ -683,6 +702,20 @@ export default function KanjiBrowserPage() {
                 difficulty: 1
               };
             })}
+          />
+        )}
+
+        {/* Kanji Learning Session Modal */}
+        {showLearningSessionModal && selectedLevelForLearning && (
+          <KanjiLearningSessionModal
+            isOpen={showLearningSessionModal}
+            onClose={() => {
+              setShowLearningSessionModal(false);
+              setSelectedLevelForLearning(null);
+            }}
+            level={selectedLevelForLearning}
+            kanjiData={kanjiData[selectedLevelForLearning] || []}
+            userId={user?.uid || 'guest'}
           />
         )}
 

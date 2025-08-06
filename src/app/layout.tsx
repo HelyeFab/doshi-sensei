@@ -17,6 +17,7 @@ import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
 import OfflineNotification from "@/components/OfflineNotification";
+import NetworkStatus from "@/components/NetworkStatus";
 import { DevHelper } from '@/components/DevHelper';
 import { AchievementToastManager } from '@/components/achievements/AchievementToast';
 import PWARecovery from '@/components/PWARecovery';
@@ -299,6 +300,7 @@ export default function RootLayout({
                           <FastRefreshLogger />
                           <ConsoleLogInitializer />
                           {process.env.NODE_ENV === 'development' && <PersistentLogger />}
+                          <NetworkStatus />
                           <OfflineNotification />
                           <LazyInitializers />
                           <NavigationErrorBoundary>

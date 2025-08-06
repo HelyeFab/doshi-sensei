@@ -8,6 +8,7 @@ import { TTSManager } from '@/utils/tts';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { scheduleWordReview } from '@/services/notifications/spacedRepetitionNotifications';
 import { translationService } from '@/services/translationService';
+import { useNetworkStatus } from '@/components/NetworkStatus';
 
 interface ExposurePhaseProps {
   word: WordItem;
@@ -42,6 +43,7 @@ function isValidExample(example: any): boolean {
 
 export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, onBack, isLearned = false, currentIndex = 0, totalWords = 0 }: ExposurePhaseProps) {
   const { user } = useAuth();
+  const { isOnline, isSlowConnection } = useNetworkStatus();
   const [showReading, setShowReading] = useState(false);
   const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
   const [isMarkedDifficult, setIsMarkedDifficult] = useState(false);
@@ -51,6 +53,8 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
   const [grammarHighlightEnabled, setGrammarHighlightEnabled] = useState(true);
   const [translatedExample, setTranslatedExample] = useState(word.example);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [translationCancelled, setTranslationCancelled] = useState(false);
+  const [translationTimeout, setTranslationTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Initialize TTS on mount
   useEffect(() => {
@@ -63,6 +67,13 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
     setHasPlayedAudio(false);
     setIsMarkedDifficult(false);
     setIsMarkedLearned(isLearned);
+    setTranslationCancelled(false);
+    
+    // Clear any existing timeout
+    if (translationTimeout) {
+      clearTimeout(translationTimeout);
+      setTranslationTimeout(null);
+    }
     
     // Auto-play audio on load
     if (word.audio) {
@@ -70,30 +81,65 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
     }
     
     // Translate example if it's missing English translation
-    if (word.example?.japanese && !word.example.english) {
+    if (word.example?.japanese && !word.example.english && !translationCancelled) {
       translateExample();
     } else {
       setTranslatedExample(word.example);
     }
   }, [word.id, isLearned]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (translationTimeout) {
+        clearTimeout(translationTimeout);
+      }
+    };
+  }, [translationTimeout]);
+
   const translateExample = async () => {
-    if (!word.example?.japanese) return;
+    if (!word.example?.japanese || translationCancelled) return;
     
     setIsTranslating(true);
+    
+    // Set timeout for slow connections (10 seconds, or 5 seconds if already slow)
+    const timeout = setTimeout(() => {
+      setIsTranslating(false);
+      setTranslationCancelled(true);
+      setTranslatedExample(word.example);
+    }, isSlowConnection ? 5000 : 10000);
+    
+    setTranslationTimeout(timeout);
+    
     try {
       const translation = await translationService.translateText(word.example.japanese, 'en');
-      setTranslatedExample({
-        ...word.example,
-        english: translation
-      });
+      
+      // Only update if not cancelled
+      if (!translationCancelled) {
+        setTranslatedExample({
+          ...word.example,
+          english: translation
+        });
+      }
     } catch (error) {
       console.error('Failed to translate example:', error);
       // Fallback to showing without translation
       setTranslatedExample(word.example);
     } finally {
+      clearTimeout(timeout);
+      setTranslationTimeout(null);
       setIsTranslating(false);
     }
+  };
+
+  const cancelTranslation = () => {
+    if (translationTimeout) {
+      clearTimeout(translationTimeout);
+      setTranslationTimeout(null);
+    }
+    setIsTranslating(false);
+    setTranslationCancelled(true);
+    setTranslatedExample(word.example);
   };
 
   const playWordAudio = async () => {
@@ -261,7 +307,29 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         </div>
 
         {/* Example Sentence */}
-        {translatedExample && isValidExample(translatedExample) && (
+        {isTranslating && !translationCancelled && (
+          <div className="border-t pt-4 mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-muted-foreground">Loading example from Tatoeba...</p>
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              <button
+                onClick={cancelTranslation}
+                className="text-xs px-3 py-1 bg-muted hover:bg-muted/80 rounded-md transition-colors"
+              >
+                Skip
+              </button>
+            </div>
+            {isSlowConnection && (
+              <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                Slow connection detected - this may take a moment
+              </p>
+            )}
+          </div>
+        )}
+        
+        {translatedExample && isValidExample(translatedExample) && !isTranslating && (
           <div className="border-t pt-4 mt-4">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
@@ -270,9 +338,6 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
                   <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
                     From Tatoeba
                   </span>
-                )}
-                {isTranslating && (
-                  <span className="text-xs text-muted-foreground animate-pulse">Translating...</span>
                 )}
               </div>
               <button
@@ -312,6 +377,15 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
               />
             </div>
             <p className="text-sm text-foreground/80">{translatedExample.english}</p>
+          </div>
+        )}
+
+        {/* Skipped loading message */}
+        {translationCancelled && !translatedExample?.english && (
+          <div className="border-t pt-4 mt-4">
+            <p className="text-sm text-muted-foreground italic">
+              Example loading skipped. You can continue without it.
+            </p>
           </div>
         )}
 

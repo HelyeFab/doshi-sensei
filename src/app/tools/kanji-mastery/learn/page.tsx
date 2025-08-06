@@ -213,7 +213,7 @@ function LearnContent() {
   };
   
   const handleSessionComplete = () => {
-    router.push('/tools/kanji-mastery');
+    router.replace('/tools/kanji-mastery');
   };
 
   if (loading) {
@@ -249,7 +249,7 @@ function LearnContent() {
     // Complete session before exiting
     await completeSession();
     // Navigate back without showing completion modal
-    router.push('/tools/kanji-mastery');
+    router.replace('/tools/kanji-mastery');
   };
 
   return (

@@ -57,7 +57,7 @@ export default function KanjiMasteryDashboard() {
       level: settings.studyMode === 'jlpt' ? settings.jlptLevel : settings.gradeLevel
     });
     
-    router.push(`/tools/kanji-mastery/learn?${params}`);
+    router.replace(`/tools/kanji-mastery/learn?${params}`);
   };
 
   const handleReviewSession = async () => {
@@ -65,7 +65,7 @@ export default function KanjiMasteryDashboard() {
     const canUse = await checkAndTrack('kanji_mastery');
     if (!canUse) return;
     
-    router.push('/tools/kanji-mastery/review');
+    router.replace('/tools/kanji-mastery/review');
   };
 
   const getMaxSessionSize = () => {
@@ -271,7 +271,7 @@ export default function KanjiMasteryDashboard() {
 
               {/* Free Study */}
               <button
-                onClick={() => router.push('/tools/kanji-mastery/browse')}
+                onClick={() => router.replace('/tools/kanji-mastery/browse')}
                 className="w-full text-left p-4 border border-border rounded-lg hover:border-primary hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center justify-between">

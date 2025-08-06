@@ -46,8 +46,8 @@ export function SmartPageHeader({
           <button
             onClick={() => {
               if (fallbackUrl) {
-                // If a custom back URL is provided, just navigate to it
-                router.push(backUrl);
+                // If a custom back URL is provided, use replace to avoid history loops
+                router.replace(backUrl);
               } else {
                 // Use browser's native back functionality
                 router.back();

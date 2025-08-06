@@ -10,10 +10,12 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import KanaChart from '@/components/kana/KanaChart';
 import KanaStudyModal from '@/components/kana/KanaStudyModal';
 import KanaDropModal from '@/components/games/KanaDropGame/KanaDropModal';
+import KanaLearningSessionModal from './KanaLearningSessionModal';
 import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { KanaChar } from '@/components/games/KanaDropGame/types';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { BookOpen } from 'lucide-react';
 
 // Structured Data for Kana Page
 const kanaStructuredData = {
@@ -68,6 +70,8 @@ export default function KanaPage() {
   const [kanaStudyType, setKanaStudyType] = useState<'hiragana' | 'katakana' | 'both'>('both');
   const [showRomaji, setShowRomaji] = useState(true);
   const [showKanaDropModal, setShowKanaDropModal] = useState(false);
+  const [showLearningSessionModal, setShowLearningSessionModal] = useState(false);
+  const [learningSessionType, setLearningSessionType] = useState<'hiragana' | 'katakana' | 'both'>('both');
 
   // Load saved kana selection and set initial romaji state based on screen size
   useEffect(() => {
@@ -129,6 +133,29 @@ export default function KanaPage() {
       return;
     }
     setShowKanaStudyModal(true);
+  };
+
+  const handleStartLearningSession = () => {
+    const totalSelected = selectedHiragana.size + selectedKatakana.size;
+    if (totalSelected === 0) {
+      showNotification({
+        title: 'No Characters Selected',
+        message: 'Please select some kana characters to learn first!',
+        type: 'info'
+      });
+      return;
+    }
+    
+    // Determine learning session type based on selected kana
+    if (selectedHiragana.size > 0 && selectedKatakana.size > 0) {
+      setLearningSessionType('both');
+    } else if (selectedHiragana.size > 0) {
+      setLearningSessionType('hiragana');
+    } else {
+      setLearningSessionType('katakana');
+    }
+    
+    setShowLearningSessionModal(true);
   };
 
   const handleClearKanaSelection = () => {
@@ -286,34 +313,48 @@ export default function KanaPage() {
                   </div>
 
                   {/* Study type selector and Start Study button side by side */}
-                  <div className="flex justify-center gap-2">
-                    <select
-                      value={kanaStudyType}
-                      onChange={(e) => setKanaStudyType(e.target.value as 'hiragana' | 'katakana' | 'both')}
-                      className="px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm"
-                    >
-                      <option value="hiragana">Study Hiragana</option>
-                      <option value="katakana">Study Katakana</option>
-                      <option value="both">Study Both</option>
-                    </select>
-
-                    <button
-                      onClick={handleStartKanaStudy}
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm md:text-base"
-                    >
-                      Start Study ({selectedHiragana.size + selectedKatakana.size} selected)
-                    </button>
-
-                    {/* Kana Drop button for 5-8 selected characters */}
-                    {(selectedHiragana.size + selectedKatakana.size) >= 5 &&
-                     (selectedHiragana.size + selectedKatakana.size) <= 8 && (
-                      <button
-                        onClick={handleStartKanaDrop}
-                        className="px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors text-sm md:text-base"
+                  <div className="flex flex-col gap-3">
+                    {/* Study buttons row */}
+                    <div className="flex justify-center gap-2">
+                      <select
+                        value={kanaStudyType}
+                        onChange={(e) => setKanaStudyType(e.target.value as 'hiragana' | 'katakana' | 'both')}
+                        className="px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm"
                       >
-                        Kana Drop Game
+                        <option value="hiragana">Study Hiragana</option>
+                        <option value="katakana">Study Katakana</option>
+                        <option value="both">Study Both</option>
+                      </select>
+
+                      <button
+                        onClick={handleStartKanaStudy}
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm md:text-base"
+                      >
+                        Start Study ({selectedHiragana.size + selectedKatakana.size} selected)
                       </button>
-                    )}
+
+                      {/* Kana Drop button for 5-8 selected characters */}
+                      {(selectedHiragana.size + selectedKatakana.size) >= 5 &&
+                       (selectedHiragana.size + selectedKatakana.size) <= 8 && (
+                        <button
+                          onClick={handleStartKanaDrop}
+                          className="px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors text-sm md:text-base"
+                        >
+                          Kana Drop Game
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Learn button row */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleStartLearningSession}
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm md:text-base flex items-center gap-2"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        <span>Learn with Word Learning Session ({selectedHiragana.size + selectedKatakana.size} selected)</span>
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
@@ -355,6 +396,18 @@ export default function KanaPage() {
               isOpen={showKanaDropModal}
               onClose={() => setShowKanaDropModal(false)}
               selectedKana={getSelectedKanaData}
+            />
+          )}
+
+          {/* Kana Learning Session Modal */}
+          {showLearningSessionModal && (
+            <KanaLearningSessionModal
+              isOpen={showLearningSessionModal}
+              onClose={() => setShowLearningSessionModal(false)}
+              selectedHiragana={selectedHiragana}
+              selectedKatakana={selectedKatakana}
+              userId={user?.uid || 'guest'}
+              kanaType={learningSessionType}
             />
           )}
 

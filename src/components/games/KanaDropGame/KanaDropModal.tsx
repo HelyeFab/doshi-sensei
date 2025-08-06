@@ -16,7 +16,6 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import { useAnalytics } from '@/hooks/useAnalytics';
-import { PageHeader } from '@/components/PageHeader';
 import SlideUpModal from '@/components/SlideUpModal';
 
 interface KanaDropModalProps {
@@ -530,22 +529,28 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-md"
+              className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-lg bg-muted hover:bg-muted/80 transition-colors border border-border"
               aria-label="Close modal"
             >
-              <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 pt-16">
-              {/* Page Header */}
-              <PageHeader
-                icon="/flat-icons/root-icons/kana-drop.svg"
-                showBackButton={true}
-                onBackClick={onClose}
-              />
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 pt-2">
+              {/* Header with drop icon */}
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <img 
+                  src="/flat-icons/root-icons/kana-drop.svg" 
+                  alt="Kana Drop" 
+                  className="w-20 h-20 md:w-24 md:h-24"
+                />
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground">Select Kana to Practice</h2>
+                <p className="text-muted-foreground text-center max-w-md">
+                  Choose 5-8 kana characters to play Kana Drop. Click on the purple corners to select.
+                </p>
+              </div>
 
               {/* Chart Type Toggle */}
               <div className="flex justify-center gap-2">

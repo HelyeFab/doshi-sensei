@@ -1,28 +1,29 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Kanji, JLPTLevel } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { X, BookOpen, TrendingUp, RefreshCw, Play } from 'lucide-react';
 import { exposedWordsStorage } from '@/app/tools/word-learning-session/services/exposedWordsStorage';
-import { shuffleArray } from '@/utils/shuffle';
+import { kanaData } from '@/data/kanaData';
 
-interface KanjiLearningSessionModalProps {
+interface KanaLearningSessionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  level: JLPTLevel;
-  kanjiData: Kanji[];
+  selectedHiragana: Set<string>;
+  selectedKatakana: Set<string>;
   userId: string;
+  kanaType: 'hiragana' | 'katakana' | 'both';
 }
 
-export default function KanjiLearningSessionModal({
+export default function KanaLearningSessionModal({
   isOpen,
   onClose,
-  level,
-  kanjiData,
-  userId
-}: KanjiLearningSessionModalProps) {
+  selectedHiragana,
+  selectedKatakana,
+  userId,
+  kanaType
+}: KanaLearningSessionModalProps) {
   const router = useRouter();
   const [sessionSize, setSessionSize] = useState(10);
   const [mode, setMode] = useState<'new' | 'review' | 'all'>('new');
@@ -34,27 +35,42 @@ export default function KanjiLearningSessionModal({
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const lessonId = `kanji-jlpt-${level.toLowerCase()}`;
-  const totalKanji = kanjiData.length;
+  // Determine lesson ID based on kana type
+  const getLessonId = () => {
+    if (kanaType === 'hiragana') return 'kana-hiragana';
+    if (kanaType === 'katakana') return 'kana-katakana';
+    return 'kana-mixed';
+  };
+
+  const lessonId = getLessonId();
+
+  // Calculate total selected kana based on type
+  const getTotalSelected = () => {
+    if (kanaType === 'hiragana') return selectedHiragana.size;
+    if (kanaType === 'katakana') return selectedKatakana.size;
+    return selectedHiragana.size + selectedKatakana.size;
+  };
+
+  const totalSelected = getTotalSelected();
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && totalSelected > 0) {
       loadExposureStats();
     }
-  }, [isOpen, level]);
+  }, [isOpen, totalSelected, kanaType]);
 
   const loadExposureStats = async () => {
     try {
       const stats = await exposedWordsStorage.getExposureStats(
         userId,
         lessonId,
-        totalKanji
+        totalSelected
       );
       setExposureStats(stats);
       
       // Adjust default mode based on exposure
       if (stats.unexposedCount === 0 && stats.exposedCount > 0) {
-        setMode('review'); // All kanji exposed, default to review
+        setMode('review'); // All kana exposed, default to review
       }
     } catch (error) {
       console.error('Failed to load exposure stats:', error);
@@ -65,29 +81,61 @@ export default function KanjiLearningSessionModal({
     setIsLoading(true);
     
     try {
-      // Convert kanji to word items format
-      const wordItems = kanjiData.map(kanji => ({
-        id: `kanji-${kanji.kanji}`,
-        kanji: kanji.kanji,
-        kana: kanji.kunyomi[0] || kanji.onyomi[0] || '',
-        meaning: kanji.meaning,
-        partOfSpeech: 'kanji' as const,
-        jlptLevel: kanji.jlpt,
-        textbook: `JLPT ${level}`,
-        lesson: level,
-        // Add example if available
-        example: kanji.kunyomi[0] ? {
-          japanese: `${kanji.kanji}（${kanji.kunyomi[0]}）`,
-          english: kanji.meaning
-        } : undefined
-      }));
+      // Convert selected kana to word items format
+      const wordItems = [];
+
+      // Process hiragana selections
+      if (kanaType === 'hiragana' || kanaType === 'both') {
+        selectedHiragana.forEach(id => {
+          const kana = kanaData.find(k => k.id === id);
+          if (kana) {
+            wordItems.push({
+              id: `hiragana-${kana.id}`,
+              kanji: kana.hiragana,
+              kana: kana.romaji,
+              meaning: `Hiragana: ${kana.romaji}`,
+              partOfSpeech: 'character' as const,
+              jlptLevel: 'N5' as const,
+              textbook: 'Kana Practice',
+              lesson: 'Hiragana',
+              example: kana.pronunciation ? {
+                japanese: kana.hiragana,
+                english: kana.pronunciation
+              } : undefined
+            });
+          }
+        });
+      }
+
+      // Process katakana selections
+      if (kanaType === 'katakana' || kanaType === 'both') {
+        selectedKatakana.forEach(id => {
+          const kana = kanaData.find(k => k.id === id);
+          if (kana) {
+            wordItems.push({
+              id: `katakana-${kana.id}`,
+              kanji: kana.katakana,
+              kana: kana.romaji,
+              meaning: `Katakana: ${kana.romaji}`,
+              partOfSpeech: 'character' as const,
+              jlptLevel: 'N5' as const,
+              textbook: 'Kana Practice',
+              lesson: 'Katakana',
+              example: kana.pronunciation ? {
+                japanese: kana.katakana,
+                english: kana.pronunciation
+              } : undefined
+            });
+          }
+        });
+      }
 
       // Use smart selection to get words
       const selectedWords = await exposedWordsStorage.getSmartWordSelection(
         userId,
         lessonId,
         wordItems,
-        sessionSize,
+        Math.min(sessionSize, wordItems.length),
         mode
       );
 
@@ -96,20 +144,21 @@ export default function KanjiLearningSessionModal({
         userId,
         lessonId,
         selectedWords.map(w => w.id),
-        totalKanji
+        totalSelected
       );
 
       // Store session data in sessionStorage for the word learning page
       const sessionData = {
         lessonId,
-        textbook: `JLPT ${level} Kanji`,
+        textbook: kanaType === 'both' ? 'Hiragana & Katakana' : 
+                  kanaType === 'hiragana' ? 'Hiragana Practice' : 'Katakana Practice',
         words: selectedWords
       };
       
       window.sessionStorage.setItem('wordLearningSessionWords', JSON.stringify(sessionData));
       
       // Navigate to word learning session
-      router.replace('/tools/word-learning-session?session=custom');
+      router.push('/tools/word-learning-session?session=custom');
     } catch (error) {
       console.error('Failed to start learning session:', error);
     } finally {
@@ -118,7 +167,8 @@ export default function KanjiLearningSessionModal({
   };
 
   const handleResetProgress = async () => {
-    if (!confirm(`Are you sure you want to reset your progress for ${level} kanji? This will mark all kanji as "new" again.`)) {
+    const typeText = kanaType === 'both' ? 'hiragana and katakana' : kanaType;
+    if (!confirm(`Are you sure you want to reset your progress for ${typeText}? This will mark all characters as "new" again.`)) {
       return;
     }
 
@@ -130,7 +180,7 @@ export default function KanjiLearningSessionModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || totalSelected === 0) return null;
 
   return (
     <AnimatePresence>
@@ -162,10 +212,12 @@ export default function KanjiLearningSessionModal({
           {/* Header */}
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-card-foreground mb-2">
-              Start {level} Kanji Learning Session
+              Start Kana Learning Session
             </h2>
             <p className="text-muted-foreground text-sm">
-              Learn kanji through interactive multimodal sessions
+              {kanaType === 'both' ? 'Learn hiragana and katakana' : 
+               kanaType === 'hiragana' ? 'Learn hiragana characters' : 
+               'Learn katakana characters'} through interactive multimodal sessions
             </p>
           </div>
 
@@ -185,7 +237,7 @@ export default function KanjiLearningSessionModal({
               
               <div className="mb-2">
                 <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                  <span>{exposureStats.exposedCount} / {totalKanji} seen</span>
+                  <span>{exposureStats.exposedCount} / {totalSelected} seen</span>
                   <span>{Math.round(exposureStats.percentageComplete)}%</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
@@ -198,7 +250,7 @@ export default function KanjiLearningSessionModal({
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="text-muted-foreground">
-                  <span className="font-medium">{exposureStats.unexposedCount}</span> new kanji left
+                  <span className="font-medium">{exposureStats.unexposedCount}</span> new characters
                 </div>
                 <div className="text-muted-foreground">
                   <span className="font-medium">{exposureStats.exposedCount}</span> already seen
@@ -260,20 +312,20 @@ export default function KanjiLearningSessionModal({
           {/* Session Size Selector */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-foreground mb-2">
-              Kanji per Session: <span className="font-bold">{sessionSize}</span>
+              Characters per Session: <span className="font-bold">{sessionSize}</span>
             </label>
             <input
               type="range"
               min="5"
-              max={Math.min(30, totalKanji)}
+              max={Math.min(20, totalSelected)}
               value={sessionSize}
               onChange={(e) => setSessionSize(parseInt(e.target.value))}
               className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
               <span>5</span>
-              <span>Recommended: 10-15</span>
-              <span>{Math.min(30, totalKanji)}</span>
+              <span>Recommended: 8-12</span>
+              <span>{Math.min(20, totalSelected)}</span>
             </div>
           </div>
 
@@ -284,13 +336,20 @@ export default function KanjiLearningSessionModal({
               <div className="text-xs text-foreground">
                 <p className="font-medium mb-1">What you'll practice:</p>
                 <ul className="space-y-0.5 ml-2 text-muted-foreground">
-                  <li>• Visual recognition of kanji characters</li>
-                  <li>• Meanings and translations</li>
-                  <li>• On'yomi and kun'yomi readings</li>
-                  <li>• Active recall and matching exercises</li>
+                  <li>• Visual recognition of {kanaType === 'both' ? 'kana' : kanaType} characters</li>
+                  <li>• Romaji to {kanaType === 'both' ? 'kana' : kanaType} matching</li>
+                  <li>• Pronunciation practice</li>
+                  <li>• Active recall exercises</li>
                 </ul>
               </div>
             </div>
+          </div>
+
+          {/* Selection Summary */}
+          <div className="mb-4 text-xs text-muted-foreground text-center">
+            {kanaType === 'hiragana' && `${selectedHiragana.size} hiragana selected`}
+            {kanaType === 'katakana' && `${selectedKatakana.size} katakana selected`}
+            {kanaType === 'both' && `${selectedHiragana.size} hiragana, ${selectedKatakana.size} katakana selected`}
           </div>
 
           {/* Action Buttons */}

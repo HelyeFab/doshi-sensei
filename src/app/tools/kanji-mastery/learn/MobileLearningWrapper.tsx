@@ -29,7 +29,7 @@ export default function MobileLearningWrapper({ children, onClose }: MobileLearn
     if (onClose) {
       onClose();
     } else {
-      router.push('/tools/kanji-mastery');
+      router.replace('/tools/kanji-mastery');
     }
   };
 

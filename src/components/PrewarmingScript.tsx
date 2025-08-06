@@ -27,7 +27,8 @@ export function PrewarmingScript() {
           "404: Humor not found. Just kidding!",
         ];
         
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        // Start with a random message
+        let currentMessageIndex = Math.floor(Math.random() * messages.length);
         
         // Create and inject the prewarming loader immediately
         const loader = document.createElement('div');
@@ -50,7 +51,7 @@ export function PrewarmingScript() {
           <div style="text-align:center;color:white;width:100%;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
             <img src="/doshi.png" alt="Dōshi Sensei" style="width:120px;height:120px;margin-bottom:2rem;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.3));display:block;" />
             <h1 style="font-size:1.5rem;font-weight:bold;margin-bottom:1rem;">Dōshi Sensei</h1>
-            <p style="font-size:1.125rem;opacity:0.9;">\${randomMessage}</p>
+            <p id="loading-message" style="font-size:1.125rem;opacity:0.9;transition:opacity 0.3s ease-in-out;">\${messages[currentMessageIndex]}</p>
           </div>
           <style>
             @keyframes gradientShift {
@@ -102,6 +103,24 @@ export function PrewarmingScript() {
           });
         }
         
+        // Set up message rotation
+        let messageRotationInterval = setInterval(() => {
+          const messageElement = document.getElementById('loading-message');
+          if (messageElement) {
+            // Fade out current message
+            messageElement.style.opacity = '0';
+            
+            setTimeout(() => {
+              // Move to next message (cycle through array)
+              currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+              messageElement.textContent = messages[currentMessageIndex];
+              
+              // Fade in new message
+              messageElement.style.opacity = '0.9';
+            }, 300); // Wait for fade out to complete
+          }
+        }, 2500); // Change message every 2.5 seconds
+        
         // Track when to remove the loader
         let settingsPrewarmed = false;
         let minimumTimeElapsed = false;
@@ -114,6 +133,12 @@ export function PrewarmingScript() {
             const el = document.getElementById('prewarming-loader');
             if (el && !el.dataset.removing) {
               el.dataset.removing = 'true';
+              
+              // Clear the message rotation interval
+              if (messageRotationInterval) {
+                clearInterval(messageRotationInterval);
+                messageRotationInterval = null;
+              }
               
               // Wait for two animation frames to ensure paint is complete
               requestAnimationFrame(() => {
@@ -260,6 +285,10 @@ export function PrewarmingScript() {
           minimumTimeElapsed = true;
           reactHydrated = true;
           fontsLoaded = true;
+          if (messageRotationInterval) {
+            clearInterval(messageRotationInterval);
+            messageRotationInterval = null;
+          }
           checkAndRemoveLoader();
         }, 10000);
         

@@ -57,7 +57,7 @@ export default function ReviewPage() {
       // Check access
       const { allowed, user } = await checkAndTrack('kanji_mastery');
       if (!allowed) {
-        router.push('/tools/kanji-mastery');
+        router.replace('/tools/kanji-mastery');
         return;
       }
       
@@ -190,12 +190,12 @@ export default function ReviewPage() {
   };
   
   const handleSessionComplete = () => {
-    router.push('/tools/kanji-mastery');
+    router.replace('/tools/kanji-mastery');
   };
   
   const handleExit = async () => {
     await completeSession();
-    router.push('/tools/kanji-mastery');
+    router.replace('/tools/kanji-mastery');
   };
 
   if (loading) {

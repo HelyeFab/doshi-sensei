@@ -25,12 +25,21 @@ class SpacedRepetitionNotificationService {
   private isSupported = false;
   private permission: NotificationPermission = 'default';
   private registration: ServiceWorkerRegistration | null = null;
+  private initialized = false;
 
   constructor() {
-    this.checkSupport();
+    // Don't check support in constructor - wait for browser environment
+    if (typeof window !== 'undefined') {
+      this.checkSupport();
+    }
   }
 
   private async checkSupport(): Promise<void> {
+    // Only run in browser environment
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     this.isSupported = 
       'Notification' in window && 
       'serviceWorker' in navigator &&
@@ -46,10 +55,21 @@ class SpacedRepetitionNotificationService {
         console.error('Failed to get service worker registration:', error);
       }
     }
+    
+    this.initialized = true;
+  }
+
+  // Ensure initialization before using any methods
+  private async ensureInitialized(): Promise<void> {
+    if (!this.initialized && typeof window !== 'undefined') {
+      await this.checkSupport();
+    }
   }
 
   // Request notification permission
   async requestPermission(): Promise<NotificationPermission> {
+    await this.ensureInitialized();
+    
     if (!this.isSupported) {
       throw new Error('Push notifications not supported');
     }
@@ -115,7 +135,7 @@ class SpacedRepetitionNotificationService {
       .replace(/\-/g, '+')
       .replace(/_/g, '/');
     
-    const rawData = window.atob(base64);
+    const rawData = typeof window !== 'undefined' ? window.atob(base64) : Buffer.from(base64, 'base64').toString('binary');
     const outputArray = new Uint8Array(rawData.length);
     
     for (let i = 0; i < rawData.length; ++i) {
@@ -151,6 +171,7 @@ class SpacedRepetitionNotificationService {
     fsrsData: { interval: number; ease: number },
     userId?: string
   ): Promise<void> {
+    await this.ensureInitialized();
     const uid = userId || this.getCurrentUserId();
     if (!uid) return;
     
@@ -233,6 +254,7 @@ class SpacedRepetitionNotificationService {
 
   // Check and send due notifications
   async checkDueNotifications(): Promise<void> {
+    await this.ensureInitialized();
     const userId = this.getCurrentUserId();
     if (!userId) return;
     
@@ -290,6 +312,15 @@ class SpacedRepetitionNotificationService {
 
   // Get user preferences
   async getPreferences(): Promise<NotificationPreferences> {
+    if (typeof window === 'undefined') {
+      return {
+        enabled: false,
+        times: ['09:00', '18:00'],
+        minInterval: 4,
+        maxPerDay: 5
+      };
+    }
+    
     const stored = localStorage.getItem(this.STORAGE_KEY);
     
     if (stored) {
@@ -307,7 +338,9 @@ class SpacedRepetitionNotificationService {
 
   // Save user preferences
   async savePreferences(prefs: NotificationPreferences): Promise<void> {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(prefs));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(prefs));
+    }
     
     // Save to Firebase as well
     const userId = this.getCurrentUserId();
@@ -330,7 +363,9 @@ class SpacedRepetitionNotificationService {
     permission: NotificationPermission;
     enabled: boolean;
   } {
-    const prefs = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+    const prefs = typeof window !== 'undefined' 
+      ? JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}')
+      : {};
     
     return {
       supported: this.isSupported,
@@ -348,6 +383,8 @@ class SpacedRepetitionNotificationService {
 
   // Test notification (for settings page)
   async sendTestNotification(): Promise<void> {
+    await this.ensureInitialized();
+    
     if (!this.isSupported || this.permission !== 'granted') {
       throw new Error('Notifications not enabled');
     }

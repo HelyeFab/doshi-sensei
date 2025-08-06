@@ -322,7 +322,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
               </button>
             </div>
             {isSlowConnection && (
-              <p className="text-xs text-yellow-600 dark:text-yellow-400">
+              <p className="text-xs text-warning">
                 Slow connection detected - this may take a moment
               </p>
             )}
@@ -417,7 +417,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           onClick={handleMarkDifficult}
           className={`py-3 px-4 rounded-lg transition-colors ${
             isMarkedDifficult
-              ? 'bg-yellow-500/10 text-yellow-700 border border-yellow-500/30'
+              ? 'bg-warning/10 text-warning border border-warning/30'
               : 'bg-card text-foreground border border-border hover:bg-muted'
           }`}
           disabled={isMarkedDifficult}
@@ -429,7 +429,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           onClick={handleMarkLearned}
           className={`py-3 px-4 rounded-lg transition-colors ${
             isMarkedLearned
-              ? 'bg-green-500/10 text-green-700 border border-green-500/30'
+              ? 'bg-success/10 text-success border border-success/30'
               : 'bg-card text-foreground border border-border hover:bg-muted'
           }`}
         >

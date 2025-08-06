@@ -183,8 +183,8 @@ export default function NetworkStatus() {
           ),
           title: 'No Internet Connection',
           message: 'Some features may be unavailable',
-          bgColor: 'bg-red-500',
-          textColor: 'text-white'
+          bgClass: 'bg-destructive',
+          textClass: 'text-destructive-foreground'
         };
       case 'slow':
         return {
@@ -196,8 +196,8 @@ export default function NetworkStatus() {
           ),
           title: 'Slow Connection',
           message: networkInfo.rtt ? `Loading may be slower (${networkInfo.rtt}ms latency)` : 'Loading may take longer',
-          bgColor: 'bg-yellow-500',
-          textColor: 'text-white'
+          bgClass: 'bg-warning',
+          textClass: 'text-warning-foreground'
         };
       case 'good':
         return {
@@ -209,8 +209,8 @@ export default function NetworkStatus() {
           ),
           title: 'Connection Restored',
           message: 'You\'re back online',
-          bgColor: 'bg-green-500',
-          textColor: 'text-white'
+          bgClass: 'bg-success',
+          textClass: 'text-success-foreground'
         };
     }
   };
@@ -227,7 +227,7 @@ export default function NetworkStatus() {
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] pointer-events-none"
         >
-          <div className={`${content.bgColor} ${content.textColor} rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 min-w-[280px] max-w-[90vw]`}>
+          <div className={`${content.bgClass} ${content.textClass} rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 min-w-[280px] max-w-[90vw] border border-border`}>
             {content.icon}
             <div className="flex-1">
               <p className="font-semibold text-sm">{content.title}</p>
@@ -235,7 +235,7 @@ export default function NetworkStatus() {
             </div>
             {networkInfo.quality === 'offline' && (
               <div className="animate-pulse">
-                <div className="w-2 h-2 bg-white rounded-full opacity-60"></div>
+                <div className="w-2 h-2 bg-current rounded-full opacity-60"></div>
               </div>
             )}
           </div>

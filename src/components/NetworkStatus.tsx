@@ -83,10 +83,13 @@ export default function NetworkStatus() {
 
         let quality: ConnectionQuality = 'good';
         
-        // Determine quality based on connection metrics
-        if (effectiveType === 'slow-2g' || effectiveType === '2g' || downlink < 0.5) {
+        // More lenient thresholds for better user experience
+        // Only mark as slow for really poor connections
+        if (effectiveType === 'slow-2g' || effectiveType === '2g') {
           quality = 'slow';
-        } else if (effectiveType === '3g' || downlink < 2 || rtt > 400) {
+        } else if (downlink < 0.3) { // Only very slow connections (was 2 Mbps)
+          quality = 'slow';
+        } else if (rtt > 2000) { // Only extremely high latency (was 400ms)
           quality = 'slow';
         } else {
           quality = 'good';
@@ -126,9 +129,10 @@ export default function NetworkStatus() {
 
       let quality: ConnectionQuality = 'good';
       
+      // Much more lenient - only flag as slow if really bad
       if (!response.ok) {
         quality = 'slow';
-      } else if (latency > 2000) {
+      } else if (latency > 5000) { // 5 seconds is really slow (was 2s)
         quality = 'slow';
       }
 
@@ -195,7 +199,7 @@ export default function NetworkStatus() {
             </svg>
           ),
           title: 'Slow Connection',
-          message: networkInfo.rtt ? `Loading may be slower (${networkInfo.rtt}ms latency)` : 'Loading may take longer',
+          message: 'Loading may take longer than usual',
           bgClass: 'bg-warning',
           textClass: 'text-warning-foreground'
         };
@@ -254,16 +258,17 @@ export function useNetworkStatus() {
     const checkStatus = () => {
       setIsOnline(navigator.onLine);
       
-      // Check connection quality
+      // Check connection quality with lenient thresholds
       if ('connection' in navigator) {
         const connection = (navigator as any).connection;
         if (connection) {
           const effectiveType = connection.effectiveType;
           const downlink = connection.downlink;
+          // Only mark as slow for really poor connections
           setIsSlowConnection(
             effectiveType === 'slow-2g' || 
             effectiveType === '2g' || 
-            downlink < 1
+            downlink < 0.3 // Only very slow connections
           );
         }
       }

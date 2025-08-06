@@ -6,6 +6,7 @@ import { learnedWordsStorage } from '../services/learnedWordsStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { TTSManager } from '@/utils/tts';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
+import { scheduleWordReview } from '@/services/notifications/spacedRepetitionNotifications';
 
 interface ExposurePhaseProps {
   word: WordItem;
@@ -98,6 +99,17 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
       // Mark as learned
       await learnedWordsStorage.markWordAsLearned(userId, word.id, lessonId);
       setIsMarkedLearned(true);
+      
+      // Schedule spaced repetition notification (1 day from now)
+      try {
+        await scheduleWordReview(word.id, lessonId, {
+          interval: 1, // Start with 1 day interval
+          ease: 2.5    // Default ease factor
+        }, user?.uid);
+      } catch (error) {
+        // Silently fail if notifications aren't enabled
+        console.log('Could not schedule notification:', error);
+      }
     }
   };
 

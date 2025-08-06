@@ -148,10 +148,11 @@ class SpacedRepetitionNotificationService {
   async scheduleNotification(
     wordId: string,
     lessonId: string,
-    fsrsData: { interval: number; ease: number }
+    fsrsData: { interval: number; ease: number },
+    userId?: string
   ): Promise<void> {
-    const userId = this.getCurrentUserId();
-    if (!userId) return;
+    const uid = userId || this.getCurrentUserId();
+    if (!uid) return;
     
     // Calculate next review time (1 day after learning)
     const nextReview = new Date();
@@ -167,7 +168,7 @@ class SpacedRepetitionNotificationService {
     
     // Save schedule to Firebase
     await setDoc(
-      doc(db, 'users', userId, 'notificationSchedules', wordId),
+      doc(db, 'users', uid, 'notificationSchedules', wordId),
       {
         ...schedule,
         nextReview: schedule.nextReview.toISOString()
@@ -401,9 +402,16 @@ export async function enableSpacedRepetitionNotifications(): Promise<void> {
 export async function scheduleWordReview(
   wordId: string,
   lessonId: string,
-  fsrsData: { interval: number; ease: number }
+  fsrsData: { interval: number; ease: number },
+  userId?: string
 ): Promise<void> {
-  return spacedRepetitionNotifications.scheduleNotification(wordId, lessonId, fsrsData);
+  // Check if notifications are enabled first
+  const status = spacedRepetitionNotifications.getStatus();
+  if (!status.enabled || status.permission !== 'granted') {
+    return; // Silently skip if not enabled
+  }
+  
+  return spacedRepetitionNotifications.scheduleNotification(wordId, lessonId, fsrsData, userId);
 }
 
 export function getNotificationStatus() {

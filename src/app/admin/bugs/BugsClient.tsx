@@ -4,10 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { bugTracker, BugReport } from '@/services/bugTracking';
-import UserAvatar from '@/components/UserAvatar';
-import InAppNotificationBell from '@/components/notifications/InAppNotificationBell';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { useStrings } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { 
   Bug, 
@@ -31,8 +27,6 @@ import {
 export default function BugsClient() {
   const router = useRouter();
   const { user } = useAuth();
-  const { profile } = useUserProfile();
-  const strings = useStrings();
   const [bugs, setBugs] = useState<BugReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBug, setSelectedBug] = useState<BugReport | null>(null);
@@ -43,14 +37,6 @@ export default function BugsClient() {
   });
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportProgress, setExportProgress] = useState('');
-
-  // Get display name
-  const displayName = profile?.displayName || user?.displayName || 'Admin';
-
-  const handleAvatarClick = () => {
-    // Redirect to account settings
-    router.push('/account');
-  };
 
   useEffect(() => {
     // Check if user is admin
@@ -201,30 +187,15 @@ export default function BugsClient() {
         </Link>
       </div>
 
-      {/* Smart Header like homepage */}
+      {/* Smart Header with proper spacing */}
       <header className="px-4 pt-4 pb-6" role="banner">
-        <div className="flex items-center gap-3">
-          {/* User Avatar */}
-          <button
-            onClick={handleAvatarClick}
-            className="block cursor-pointer"
-            aria-label="Open user menu"
-          >
-            <UserAvatar size="md" />
-          </button>
-          
-          {/* Title and Subtitle */}
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold text-foreground">
-              Bug Reports & Feedback
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {displayName}-san, manage user reports and feedback
-            </p>
-          </div>
-          
-          {/* Notification Bell */}
-          {user && <InAppNotificationBell />}
+        <div>
+          <h1 className="text-xl font-semibold text-foreground">
+            Bug Reports & Feedback
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage user reports, feedback, and feature requests
+          </p>
         </div>
       </header>
 

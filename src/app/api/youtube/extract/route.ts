@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import axios from 'axios';
 import ytdl from 'ytdl-core';
+import axios from 'axios';
 import { TranscriptCacheManager } from '@/utils/transcriptCache';
 
 // YouTube Data API v3 endpoint
@@ -8,36 +8,29 @@ const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 
 // Helper function to validate YouTube and YouTube Music URLs
 function isValidYouTubeUrl(url: string): boolean {
-  try {
-    // Use ytdl's built-in validation
-    return ytdl.validateURL(url);
-  } catch {
-    // Fallback to pattern matching if ytdl fails
-    const patterns = [
-      /^https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /^https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/,
-      /^https?:\/\/(www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-      /^https?:\/\/(www\.)?m\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /^https?:\/\/music\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /^https?:\/\/(www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
-    ];
-    
-    return patterns.some(pattern => pattern.test(url));
+  // Check standard YouTube URLs
+  if (ytdl.validateURL(url)) {
+    return true;
   }
+  
+  // Check YouTube Music URLs
+  const youtubeMusicPattern = /^https?:\/\/(music\.)?youtube\.com\/(watch|embed)\?v=([a-zA-Z0-9_-]{11})/;
+  const youtubeMusicShortPattern = /^https?:\/\/music\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
+  
+  return youtubeMusicPattern.test(url) || youtubeMusicShortPattern.test(url);
 }
 
-// Helper to extract video ID from YouTube URLs
+// Helper to extract video ID from YouTube Music URLs
 function extractVideoIdFromUrl(url: string): string | null {
+  // Try standard extraction first
   try {
-    // Use ytdl's built-in getVideoID
     return ytdl.getVideoID(url);
   } catch {
-    // Fallback to pattern matching if ytdl fails
+    // Fallback for YouTube Music URLs
     const patterns = [
       /[?&]v=([a-zA-Z0-9_-]{11})/,
       /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-      /embed\/([a-zA-Z0-9_-]{11})/,
-      /shorts\/([a-zA-Z0-9_-]{11})/
+      /embed\/([a-zA-Z0-9_-]{11})/
     ];
     
     for (const pattern of patterns) {
@@ -51,7 +44,6 @@ function extractVideoIdFromUrl(url: string): string | null {
 
 export async function POST(request: NextRequest) {
   try {
-    
     const { url } = await request.json();
     
     if (!url || !isValidYouTubeUrl(url)) {
@@ -66,33 +58,13 @@ export async function POST(request: NextRequest) {
     console.log('Request headers:', request.headers);
     
     // Check cache FIRST before making any API calls
-    let contentId = '';
-    let cachedTranscript = null;
+    const contentId = TranscriptCacheManager.generateContentId({
+      type: 'youtube',
+      videoUrl: url
+    });
     
-    if (TranscriptCacheManager) {
-      try {
-        // Generate content ID for cache lookup
-        contentId = TranscriptCacheManager.generateContentId({
-          type: 'youtube',
-          videoUrl: url
-        });
-        
-        console.log('📦 Checking transcript cache for:', contentId);
-        cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
-        
-        if (cachedTranscript) {
-          console.log('✅ Cache hit! Transcript found in cache');
-        } else {
-          console.log('📭 Cache miss - will fetch from API');
-        }
-      } catch (cacheError: any) {
-        console.error('⚠️ Cache check error (non-blocking):', cacheError.message);
-        // Cache errors shouldn't block SupaData API calls
-        cachedTranscript = null;
-      }
-    } else {
-      console.warn('⚠️ Cache system not available - proceeding without cache');
-    }
+    console.log('Checking transcript cache for:', contentId);
+    const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
     
     if (cachedTranscript && cachedTranscript.transcript.length > 0) {
       console.log('Using cached transcript! Access count:', cachedTranscript.accessCount);
@@ -108,10 +80,9 @@ export async function POST(request: NextRequest) {
     }
     
     console.log('No cache hit, fetching from YouTube...');
-    console.log('Environment check - YOUTUBE_API_KEY exists:', !!process.env.YOUTUBE_API_KEY);
     console.log('Environment check - GOOGLE_API_KEY exists:', !!process.env.GOOGLE_API_KEY);
+    console.log('Environment check - YOUTUBE_API_KEY exists:', !!process.env.YOUTUBE_API_KEY);
     console.log('Environment check - SUPA_YOUTUBE_API_KEY exists:', !!process.env.SUPA_YOUTUBE_API_KEY);
-    console.log('Environment check - SEARCH_API exists:', !!process.env.SEARCH_API);
     
     // Extract video ID for YouTube API calls
     const videoId = extractVideoIdFromUrl(url);
@@ -144,7 +115,7 @@ export async function POST(request: NextRequest) {
           };
           console.log('Successfully fetched video metadata:', videoMetadata.title);
         }
-      } catch (youtubeApiError: any) {
+      } catch (youtubeApiError) {
         console.error('YouTube Data API error:', youtubeApiError.message);
         if (youtubeApiError.response) {
           console.error('API Response:', youtubeApiError.response.status, youtubeApiError.response.data);
@@ -152,7 +123,7 @@ export async function POST(request: NextRequest) {
         // Continue with other methods - don't let this block SupaData
       }
     } else {
-      console.warn('YOUTUBE_API_KEY/GOOGLE_API_KEY not configured in environment variables');
+      console.warn('GOOGLE_API_KEY not configured in environment variables');
     }
     
     // Then try SupaData AI for transcripts
@@ -233,11 +204,8 @@ export async function POST(request: NextRequest) {
             console.log('Video URL:', url);
             console.log('Video title:', videoMetadata?.title || supaResponse.data.title || 'Unknown');
             
-            // Try to save to cache (but don't let cache errors block the response)
-            if (TranscriptCacheManager && TranscriptCacheManager.saveTranscriptToCache) {
-              try {
-                console.log('💾 Attempting to save transcript to cache...');
-                await TranscriptCacheManager.saveTranscriptToCache({
+            try {
+              await TranscriptCacheManager.saveTranscriptToCache({
                 contentId,
                 contentType: 'youtube',
                 videoUrl: url,
@@ -251,15 +219,10 @@ export async function POST(request: NextRequest) {
                   thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
                   duration: videoMetadata?.duration
                 }
-                });
-                console.log('✅ Cache save completed successfully');
-              } catch (cacheError: any) {
-                console.error('⚠️ Cache save failed (non-blocking):', cacheError.message);
-                // Cache failed but we have the transcript - continue
-                console.warn('📝 Transcript extracted successfully but not cached - next request will fetch again');
-              }
-            } else {
-              console.warn('⚠️ Cache system not available - transcript not saved');
+              });
+              console.log('=== Cache save completed ===');
+            } catch (cacheError) {
+              console.error('=== Cache save failed ===', cacheError);
             }
             
             return NextResponse.json({
@@ -298,13 +261,11 @@ export async function POST(request: NextRequest) {
     // Method 2: Try SearchAPI as fallback
     const SEARCH_API_KEY = process.env.SEARCH_API;
     
-    if (SEARCH_API_KEY && !cachedTranscript) {
+    if (SEARCH_API_KEY) {
       try {
         console.log('=== Trying SearchAPI as fallback ===');
-        console.log('SearchAPI Key exists:', !!SEARCH_API_KEY);
         console.log('Video ID:', videoId);
         
-        // SearchAPI endpoint for YouTube transcripts
         const searchApiUrl = 'https://www.searchapi.io/api/v1/search';
         
         const searchApiResponse = await axios.get(searchApiUrl, {
@@ -312,29 +273,20 @@ export async function POST(request: NextRequest) {
             engine: 'youtube_transcripts',
             video_id: videoId,
             api_key: SEARCH_API_KEY,
-            lang: 'ja' // Request Japanese transcripts (single language code)
+            lang: 'ja'
           },
-          timeout: 15000 // 15 second timeout
+          timeout: 15000
         });
         
         console.log('SearchAPI response status:', searchApiResponse.status);
-        console.log('SearchAPI response data structure:', {
-          hasData: !!searchApiResponse.data,
-          hasTranscripts: !!searchApiResponse.data?.transcripts,
-          transcriptsType: Array.isArray(searchApiResponse.data?.transcripts) ? 'array' : typeof searchApiResponse.data?.transcripts,
-          transcriptsLength: searchApiResponse.data?.transcripts?.length || 0
-        });
         
         if (searchApiResponse.data && searchApiResponse.data.transcripts) {
-          console.log('SearchAPI transcripts found, segments:', searchApiResponse.data.transcripts.length);
+          console.log('SearchAPI transcripts found');
           
-          // SearchAPI returns transcripts as an array directly when language matches
           const transcript = searchApiResponse.data.transcripts;
           
           if (transcript && transcript.length > 0) {
-            console.log('✅ Found Japanese transcript via SearchAPI');
-            console.log('Transcript segments:', transcript.length);
-            console.log('First segment:', transcript[0]);
+            console.log('Found Japanese transcript via SearchAPI');
             
             // Parse SearchAPI format to our format
             const parsedTranscript = transcript.map((segment: any, index: number) => ({
@@ -346,80 +298,48 @@ export async function POST(request: NextRequest) {
             }));
             
             // Save to cache
-            if (TranscriptCacheManager && TranscriptCacheManager.saveTranscriptToCache) {
-              try {
-                console.log('💾 Saving SearchAPI transcript to cache...');
-                await TranscriptCacheManager.saveTranscriptToCache({
-                  contentId,
-                  contentType: 'youtube',
-                  videoUrl: url,
-                  videoTitle: videoMetadata?.title || searchApiResponse.data.video_title || 'Unknown',
-                  transcript: parsedTranscript,
-                  language: 'ja',
-                  metadata: {
-                    youtubeVideoId: videoId,
-                    channelName: videoMetadata?.channelTitle || searchApiResponse.data.channel_title,
-                    uploadDate: videoMetadata?.publishedAt,
-                    thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
-                    duration: videoMetadata?.duration || searchApiResponse.data.video_duration
-                  }
-                });
-                console.log('✅ SearchAPI transcript cached successfully');
-              } catch (cacheError: any) {
-                console.error('⚠️ Failed to cache SearchAPI transcript:', cacheError.message);
-              }
+            try {
+              await TranscriptCacheManager.saveTranscriptToCache({
+                contentId,
+                contentType: 'youtube',
+                videoUrl: url,
+                videoTitle: videoMetadata?.title || 'Unknown',
+                transcript: parsedTranscript,
+                language: 'ja',
+                metadata: {
+                  youtubeVideoId: videoId,
+                  channelName: videoMetadata?.channelTitle,
+                  uploadDate: videoMetadata?.publishedAt,
+                  thumbnailUrl: videoMetadata?.thumbnails?.medium?.url,
+                  duration: videoMetadata?.duration
+                }
+              });
+              console.log('SearchAPI transcript cached');
+            } catch (cacheError) {
+              console.error('Failed to cache SearchAPI transcript:', cacheError.message);
             }
             
             return NextResponse.json({
               success: true,
               transcript: parsedTranscript,
-              language: 'ja', // We requested Japanese
+              language: 'ja',
               isAutoGenerated: searchApiResponse.data.is_generated || false,
               videoTitle: videoMetadata?.title || 'Unknown',
               videoMetadata: videoMetadata,
               method: 'searchapi'
             });
-          } else {
-            console.log('❌ No transcripts found via SearchAPI');
-            // Check if there are available languages in the response
-            if (searchApiResponse.data.available_languages) {
-              console.log('Available languages:', searchApiResponse.data.available_languages);
-              const hasJapanese = searchApiResponse.data.available_languages.some(
-                (lang: any) => lang.lang === 'ja' || lang.lang === 'ja-JP'
-              );
-              if (!hasJapanese) {
-                console.log('Japanese not available in transcript languages');
-              }
-            }
           }
-        } else {
-          console.log('❌ SearchAPI response missing expected data structure');
-          console.log('Response keys:', Object.keys(searchApiResponse.data || {}));
         }
       } catch (searchApiError: any) {
-        console.error('=== SearchAPI error ===');
-        console.error('Error message:', searchApiError.message);
+        console.error('SearchAPI error:', searchApiError.message);
         if (searchApiError.response) {
           console.error('Response status:', searchApiError.response.status);
-          console.error('Response data:', searchApiError.response.data);
-          
-          if (searchApiError.response.status === 401) {
-            console.error('SearchAPI authentication failed - check API key');
-          } else if (searchApiError.response.status === 429) {
-            console.error('SearchAPI rate limit reached');
-          } else if (searchApiError.response.status === 404) {
-            console.error('No transcripts available via SearchAPI');
-          }
         }
-        // Continue to next fallback method
       }
-    } else if (!SEARCH_API_KEY) {
-      console.warn('SEARCH_API key not configured');
     }
     
     // Method 3: Try ytdl-core to get video info
     try {
-      console.log('=== Trying ytdl-core as fallback ===');
       const info = await ytdl.getInfo(url);
       const videoDetails = info.videoDetails;
       
@@ -467,15 +387,13 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    } catch (ytdlError: any) {
-      console.error('ytdl-core error:', ytdlError.message);
-      // Continue to next method
+    } catch (ytdlError) {
+      console.error('ytdl-core error:', ytdlError);
     }
     
-    // Method 4: Try get_video_info approach (more reliable)
+    // Method 2: Try get_video_info approach (more reliable)
     try {
-      console.log('=== Trying get_video_info method ===');
-      console.log('Video ID:', videoId);
+      console.log('Trying get_video_info method for video:', videoId);
       
       // First, get video info to extract caption URLs
       const videoInfoUrl = `https://www.youtube.com/get_video_info?video_id=${videoId}&hl=ja`;
@@ -496,10 +414,10 @@ export async function POST(request: NextRequest) {
         const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
         
         if (captionTracks) {
-          console.log('Found caption tracks via get_video_info:', captionTracks.map((t: any) => t.languageCode));
+          console.log('Found caption tracks via get_video_info:', captionTracks.map(t => t.languageCode));
           
           // Look for Japanese captions
-          const jaTrack = captionTracks.find((track: any) => 
+          const jaTrack = captionTracks.find(track => 
             track.languageCode === 'ja' || 
             track.languageCode === 'ja-JP'
           );
@@ -529,12 +447,11 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    } catch (getVideoInfoError: any) {
-      console.error('get_video_info error:', getVideoInfoError.message);
-      // Continue to next method
+    } catch (getVideoInfoError) {
+      console.error('get_video_info error:', getVideoInfoError);
     }
     
-    // Method 5: Try alternative endpoints
+    // Method 3: Try alternative endpoints
     const alternativeUrls = [
       `https://video.google.com/timedtext?lang=ja&v=${videoId}`,
       `https://video.google.com/timedtext?lang=ja&v=${videoId}&kind=asr`,
@@ -577,81 +494,29 @@ export async function POST(request: NextRequest) {
     }
     
     // No captions found
-    console.log('=== All extraction methods exhausted ===');
-    console.log('SupaData attempted:', !!SUPA_API_KEY);
-    console.log('SearchAPI attempted:', !!SEARCH_API_KEY);
-    console.log('ytdl-core available:', !!ytdl);
-    console.log('Video metadata found:', !!videoMetadata);
-    console.log('Returning fallback response');
+    console.log('=== All methods failed ===');
+    console.log('Returning error response with metadata:', !!videoMetadata);
     
     return NextResponse.json({
       success: false,
-      error: 'No Japanese transcript available',
-      message: 'This video doesn\'t have Japanese subtitles. Here\'s what you can do:',
-      suggestions: [
-        '📥 Download the audio using a browser extension or online tool',
-        '📤 Upload the audio file to get an AI-generated transcript',
-        '🎬 Try a different video that has Japanese subtitles',
-        '📝 Upload your own subtitle file if you have one'
-      ],
+      error: 'No Japanese captions found',
+      message: 'This video does not have Japanese captions available. Try uploading the audio for AI transcription.',
       videoTitle: videoMetadata?.title,
-      videoMetadata: videoMetadata,
-      tips: 'Many YouTube videos don\'t have Japanese captions. Our AI transcription works great with uploaded audio!'
+      videoMetadata: videoMetadata
     });
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('=== API route critical error ===');
-    console.error('Error type:', error?.constructor?.name);
-    console.error('Error message:', error?.message);
-    console.error('Error stack:', error?.stack);
-    console.error('Full error object:', error);
-    
-    // Provide human-readable error messages for users
-    let userMessage = 'We couldn\'t extract the transcript from this video. Please try one of these options:';
-    let suggestions = [
-      'Upload the audio file directly for AI transcription',
-      'Try a different YouTube video',
-      'Check if the video has Japanese subtitles enabled'
-    ];
-    let statusCode = 500;
-    
-    // Specific error handling with user-friendly messages
-    if (error?.message?.includes('Invalid YouTube')) {
-      userMessage = 'This doesn\'t appear to be a valid YouTube URL.';
-      suggestions = ['Make sure you\'re using a YouTube or YouTube Music link'];
-      statusCode = 400;
-    } else if (error?.message?.includes('Firebase') || error?.message?.includes('Firestore')) {
-      userMessage = 'Our transcript cache is temporarily unavailable, but you can still get transcripts.';
-      suggestions = ['The extraction will work but won\'t be cached for faster access next time'];
-      statusCode = 503;
-    } else if (error?.message?.includes('rate limit')) {
-      userMessage = 'We\'ve hit our API limit temporarily.';
-      suggestions = [
-        'Please wait a few minutes and try again',
-        'Or upload the audio file directly'
-      ];
-      statusCode = 429;
-    } else if (error?.message?.includes('SupaData')) {
-      userMessage = 'The transcript service is having issues right now.';
-      suggestions = [
-        'Try again in a few moments',
-        'Download the audio and upload it directly',
-        'Check if the video has built-in Japanese subtitles'
-      ];
-      statusCode = 503;
-    }
+    console.error('Error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     
     return NextResponse.json(
       { 
-        error: userMessage,
-        suggestions: suggestions,
-        technicalDetails: process.env.NODE_ENV === 'development' ? {
-          message: error?.message || 'Unknown error',
-          type: error?.constructor?.name || 'UnknownError',
-          stack: error?.stack
-        } : undefined
+        error: 'Failed to process request', 
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
       },
-      { status: statusCode }
+      { status: 500 }
     );
   }
 }
@@ -695,9 +560,9 @@ function parseYouTubeCaptions(data: string): any[] {
         const events = json.events || json;
         
         if (Array.isArray(events)) {
-          events.forEach((event: any, index: number) => {
+          events.forEach((event, index) => {
             if (event.segs || event.text) {
-              const text = event.text || event.segs.map((s: any) => s.utf8).join('');
+              const text = event.text || event.segs.map(s => s.utf8).join('');
               const start = (event.tStartMs || event.start || 0) / 1000;
               const duration = (event.dDurationMs || event.dur || 5000) / 1000;
               
@@ -706,7 +571,7 @@ function parseYouTubeCaptions(data: string): any[] {
                 text: text.trim(),
                 startTime: start,
                 endTime: start + duration,
-                words: text.trim().split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
+                words: text.trim().split(/[\s、。！？]/g).filter(w => w.length > 0)
               });
             }
           });
@@ -726,7 +591,7 @@ function parseSupaDataTranscript(data: any): any[] {
   try {
     // SupaData returns data in format: { lang: 'ja', content: [...], availableLangs: [...] }
     if (data.content && Array.isArray(data.content)) {
-      data.content.forEach((segment: any, index: number) => {
+      data.content.forEach((segment, index) => {
         // Convert milliseconds to seconds
         const startTime = (segment.offset || 0) / 1000;
         const duration = (segment.duration || 5000) / 1000;
@@ -737,7 +602,7 @@ function parseSupaDataTranscript(data: any): any[] {
           text: segment.text || '',
           startTime: startTime,
           endTime: endTime,
-          words: (segment.text || '').split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
+          words: (segment.text || '').split(/[\s、。！？]/g).filter(w => w.length > 0)
         });
       });
     }
@@ -745,29 +610,29 @@ function parseSupaDataTranscript(data: any): any[] {
     else if (data.transcript) {
       // If it's already formatted as an array of segments
       if (Array.isArray(data.transcript)) {
-        data.transcript.forEach((segment: any, index: number) => {
+        data.transcript.forEach((segment, index) => {
           transcript.push({
             id: String(index + 1),
             text: segment.text || segment.content || '',
             startTime: segment.start || segment.startTime || index * 5,
             endTime: segment.end || segment.endTime || (index + 1) * 5,
-            words: (segment.text || segment.content || '').split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
+            words: (segment.text || segment.content || '').split(/[\s、。！？]/g).filter(w => w.length > 0)
           });
         });
       } 
       // If it's a plain text transcript
       else if (typeof data.transcript === 'string') {
         // Split by sentences or paragraphs and create segments
-        const sentences = data.transcript.split(/[。！？\n]+/).filter((s: string) => s.trim());
+        const sentences = data.transcript.split(/[。！？\n]+/).filter(s => s.trim());
         const avgDuration = 5; // 5 seconds per segment as default
         
-        sentences.forEach((sentence: string, index: number) => {
+        sentences.forEach((sentence, index) => {
           transcript.push({
             id: String(index + 1),
             text: sentence.trim(),
             startTime: index * avgDuration,
             endTime: (index + 1) * avgDuration,
-            words: sentence.trim().split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
+            words: sentence.trim().split(/[\s、。！？]/g).filter(w => w.length > 0)
           });
         });
       }

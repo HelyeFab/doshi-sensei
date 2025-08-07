@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import SettingsPage from './SettingsPage';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
+import SettingsWrapper from './SettingsWrapper';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Settings',
@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <StructuredData data={breadcrumbData} />
-      <SettingsPage />
+      <SettingsWrapper />
     </>
   );
 }

@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
     const db = admin.firestore();
     
     // Get all users with active subscriptions from Firestore
+    // Note: Using FLAT structure as per Firebase Functions (SINGLE SOURCE OF TRUTH)
     const usersRef = db.collection('users');
     const snapshot = await usersRef
       .where('subscription.status', '==', 'active')
@@ -62,6 +63,19 @@ export async function GET(request: NextRequest) {
       
       if (stripeSubId) {
         try {
+          // Skip known invalid test subscription IDs - removed to prevent errors
+          const invalidTestIds: string[] = [];
+          
+          if (invalidTestIds.includes(stripeSubId)) {
+            errors.push({
+              userId: doc.id,
+              email: userData.email,
+              error: 'Test/Invalid subscription ID - needs cleanup',
+              stripeSubId: stripeSubId
+            });
+            continue;
+          }
+          
           // Fetch the actual subscription from Stripe
           const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubId, {
             expand: ['items.data.price.product']

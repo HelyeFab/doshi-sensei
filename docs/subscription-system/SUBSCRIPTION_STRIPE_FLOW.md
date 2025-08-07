@@ -1,5 +1,9 @@
 # Subscription and Stripe Integration Flow Documentation
 
+> **🎯 SINGLE SOURCE OF TRUTH**: Firebase Functions Webhook Handler (`/functions/src/index.ts`)  
+> **Current Structure**: FLAT - `user.subscription.plan` (NOT nested)  
+> **Migration Status**: COMPLETED (Netlify → Firebase Functions)
+
 ## Table of Contents
 1. [Overview](#overview)
 2. [Architecture Overview](#architecture-overview)
@@ -17,6 +21,13 @@ Doshi Sensei uses a subscription-based monetization model integrated with Stripe
 - **Guest**: No authentication, limited features
 - **Free**: Authenticated users with basic features
 - **Premium**: Paid subscribers (monthly/yearly) with full access
+
+### 📜 Historical Note: Why We Migrated
+We migrated from Netlify Functions to Firebase Functions to solve:
+- **Nested Structure Issue**: Old system had `subscription.subscription.plan` (confusing!)
+- **Multiple Sources of Truth**: Different parts of the app wrote subscription data
+- **Sync Issues**: Netlify ↔ Firebase communication was unreliable
+- **Solution**: Firebase Functions now provides a SINGLE SOURCE OF TRUTH with FLAT structure
 
 ## Architecture Overview
 
@@ -112,18 +123,40 @@ The SubscriptionContext uses Firestore's real-time listeners to immediately refl
 | `src/app/api/cancel-subscription/route.ts` | Subscription cancellation |
 
 ### Firebase Structure
+
+#### ✅ CURRENT Structure (FLAT - What we use)
 ```javascript
 // users/{userId} document structure
 {
   subscription: {
-    subscription: {
-      status: 'active' | 'inactive' | 'past_due' | 'canceled',
-      plan: 'free' | 'monthly' | 'yearly',
-      renewalDate: '2025-01-01T00:00:00Z',
-      cancelAtPeriodEnd: false,
-      stripeSubscriptionId: 'sub_xxx',
-      stripePriceId: 'price_xxx',
-      updatedAt: '2025-01-01T00:00:00Z'
+    status: 'active' | 'inactive' | 'past_due' | 'canceled',
+    plan: 'free' | 'monthly' | 'yearly',
+    stripeSubscriptionId: 'sub_xxx',
+    stripeCustomerId: 'cus_xxx',
+    stripePriceId: 'price_xxx',
+    currentPeriodEnd: Timestamp,
+    cancelAtPeriodEnd: false,
+    metadata: {
+      source: 'stripe',
+      createdAt: Timestamp,
+      updatedAt: Timestamp
+    }
+  }
+}
+
+// Access in code:
+const plan = user.subscription?.plan;  // ✅ CORRECT
+```
+
+#### ❌ OLD Structure (DEPRECATED - Don't use!)
+```javascript
+// This was used before Firebase Functions migration
+{
+  subscription: {
+    subscription: {  // ❌ Double nesting - BAD!
+      status: 'active',
+      plan: 'monthly',
+      // ...
     },
     limits: {
       maxLists: 3 | -1,  // -1 = unlimited
@@ -198,10 +231,10 @@ const userType: UserType = (() => {
   // Loading state = temporary free
   if (loading || !userSubscription) return 'free';
   
-  // Check premium status
-  if (userSubscription.subscription.status === 'active' &&
-      (userSubscription.subscription.plan === 'monthly' ||
-       userSubscription.subscription.plan === 'yearly')) {
+  // Check premium status - FLAT structure!
+  if (userSubscription.status === 'active' &&
+      (userSubscription.plan === 'monthly' ||
+       userSubscription.plan === 'yearly')) {
     return 'premium';
   }
   
@@ -262,9 +295,10 @@ if (!isToday) {
 Multiple checks throughout the codebase ensure accurate premium detection:
 
 ```typescript
-const isPremium = userSubscription?.subscription?.status === 'active' &&
-  (userSubscription?.subscription?.plan === 'monthly' ||
-   userSubscription?.subscription?.plan === 'yearly');
+// ✅ CORRECT - FLAT structure
+const isPremium = userSubscription?.status === 'active' &&
+  (userSubscription?.plan === 'monthly' ||
+   userSubscription?.plan === 'yearly');
 ```
 
 ### Error Handling
@@ -273,6 +307,16 @@ const isPremium = userSubscription?.subscription?.status === 'active' &&
 - Retry mechanisms for failed updates
 
 ## Troubleshooting
+
+### 🔧 Cleanup Scripts
+If you encounter subscription issues, run:
+```bash
+# Removes invalid test IDs and flattens nested structures
+npm run tsx scripts/clean-invalid-subscriptions.ts
+
+# Deploy Firestore indexes if needed
+firebase deploy --only firestore:indexes
+```
 
 ### Common Issues
 
@@ -285,6 +329,7 @@ const isPremium = userSubscription?.subscription?.status === 'active' &&
    - Verify Firebase UID in Stripe metadata
    - Check webhook processing logs
    - Ensure Firestore listener is active
+   - Check for nested structure (run cleanup script)
 
 3. **Usage Limits Not Enforcing**
    - Check date/timezone handling
@@ -296,7 +341,8 @@ The SubscriptionContext includes extensive logging:
 
 ```typescript
 console.log('Doshi Sensei Debug: Raw user data from Firestore:', userData);
-console.log('Doshi Sensei Debug: Subscription plan:', userData.subscription?.subscription?.plan);
+console.log('Doshi Sensei Debug: Subscription plan:', userData.subscription?.plan);  // FLAT!
+console.log('Doshi Sensei Debug: Subscription status:', userData.subscription?.status);
 console.log('🔑 isFeatureAvailable check:', { feature, user, plan, limits });
 ```
 
@@ -313,6 +359,19 @@ This allows administrators to track payment flows and debug subscription issues.
 2. **Firestore Rules**: Ensure users can only read/write their own subscription data
 3. **Webhook Security**: Always verify Stripe signatures
 4. **Price IDs**: Never trust client-side price information
+
+## 🎯 Single Source of Truth Principle
+
+### Why This Matters
+1. **Consistency**: One place writes, everyone reads
+2. **Security**: Payment data only modified by verified webhooks
+3. **Simplicity**: FLAT structure is easier to understand
+4. **Reliability**: No sync issues between services
+
+### Key Files
+- `/functions/src/index.ts` - The SINGLE SOURCE OF TRUTH
+- `/scripts/clean-invalid-subscriptions.ts` - Cleanup tool
+- `/docs/subscription-system/SINGLE_SOURCE_OF_TRUTH.md` - Detailed docs
 
 ## Future Enhancements
 

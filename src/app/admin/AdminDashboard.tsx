@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/AdminLayout';
-import { StatsOverview } from '@/components/admin/StatsOverview';
+import { StatsOverviewEnhanced } from '@/components/admin/StatsOverviewEnhanced';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
 import SubscriptionAnalytics from '@/components/admin/SubscriptionAnalytics';
 import { useStrings } from '@/contexts/LanguageContext';
@@ -103,6 +103,9 @@ export default function AdminDashboard() {
       case 'bugs':
         router.push('/admin/bugs');
         break;
+      case 'system-health':
+        router.push('/admin/system-health');
+        break;
       default:
     }
   };
@@ -122,7 +125,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Real-time Stats overview */}
-        <StatsOverview />
+        <StatsOverviewEnhanced />
 
         {/* Article Monitoring Dashboard */}
         <ArticleMonitoringDashboard />
@@ -193,6 +196,12 @@ export default function AdminDashboard() {
               description="Manage subscription pricing"
               icon="💰"
               onClick={() => handleQuickAction('pricing')}
+            />
+            <QuickAction
+              title="System Health"
+              description="Monitor subscription & data health"
+              icon="🏥"
+              onClick={() => handleQuickAction('system-health')}
             />
           </div>
         </div>

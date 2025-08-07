@@ -84,8 +84,8 @@ export async function getUserStats(): Promise<UserStats> {
       return lastLoginAt >= today;
     }).length;
 
-    // Count registered vs guest users (users with subscription data are registered)
-    const registeredUsers = allUsers.filter(user => user.subscription).length;
+    // Count registered vs guest users (users with email are registered)
+    const registeredUsers = allUsers.filter(user => user.email).length;
     const guestUsers = totalUsers - registeredUsers;
 
     return {
@@ -130,20 +130,24 @@ export async function getSubscriptionStats(): Promise<SubscriptionStats> {
 
     // Debug: Log user data to understand the structure
 
-    // Filter by subscription type - check both potential structures
+    // Filter by subscription type - using FLAT structure as per SINGLE SOURCE OF TRUTH
     const freeUsers = allUsers.filter(user => {
-      const plan = user.subscription?.subscription?.plan;
-      return plan === 'free' || !plan; // Count users with no plan as free
+      const plan = user.subscription?.plan; // FLAT structure
+      const status = user.subscription?.status;
+      // Count as free if: no subscription, plan is 'free', or status is not 'active'
+      return !user.subscription || plan === 'free' || status !== 'active';
     }).length;
 
     const monthlySubscribers = allUsers.filter(user => {
-      const plan = user.subscription?.subscription?.plan;
-      return plan === 'monthly';
+      const plan = user.subscription?.plan; // FLAT structure
+      const status = user.subscription?.status;
+      return plan === 'monthly' && status === 'active';
     }).length;
 
     const yearlySubscribers = allUsers.filter(user => {
-      const plan = user.subscription?.subscription?.plan;
-      return plan === 'yearly';
+      const plan = user.subscription?.plan; // FLAT structure
+      const status = user.subscription?.status;
+      return plan === 'yearly' && status === 'active';
     }).length;
 
     const totalSubscribers = monthlySubscribers + yearlySubscribers;

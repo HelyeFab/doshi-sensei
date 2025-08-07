@@ -8,7 +8,7 @@
 ## 📋 Table of Contents
 
 1. [Critical Changes Made](#critical-changes-made)
-2. [Subscription Structure Migration](#subscription-structure-migration-critical-update)
+2. [Subscription Structure Migration](#subscription-structure-migration-critical-update) *(🎯 See [SINGLE SOURCE OF TRUTH](/docs/subscription-system/SINGLE_SOURCE_OF_TRUTH.md))*
 3. [The Shared Limit Group Problem](#the-shared-limit-group-problem)
 4. [Updated Three-Pillar Architecture](#updated-three-pillar-architecture)
 5. [Complete Feature Implementation Checklist](#complete-feature-implementation-checklist)
@@ -41,6 +41,8 @@ We discovered a critical violation of the Single Source of Truth principle cause
 ## 🔄 Subscription Structure Migration (Critical Update)
 
 ### The Great Flattening: From Nested to Flat Structure
+
+> **📚 DETAILED DOCUMENTATION**: See `/docs/subscription-system/SINGLE_SOURCE_OF_TRUTH.md` for complete subscription architecture
 
 **Historical Context**: When we migrated to Firebase Functions for Stripe webhook handling, we made a critical architectural change to simplify the subscription data structure.
 
@@ -110,6 +112,12 @@ await db.collection('users').doc(firebaseUID).update({
   updatedAt: admin.firestore.FieldValue.serverTimestamp()
 });
 ```
+
+**⚠️ CRITICAL WARNING**: NEVER run cleanup scripts that modify subscription data without:
+1. Testing with a single user first
+2. Verifying Stripe API mode (test vs live)
+3. Creating a backup of current data
+4. Ensuring the script can properly validate with Stripe
 
 ### TypeScript Type Mismatch Issue
 **Problem**: The TypeScript type definition in `/src/types/subscription.ts` still shows the old nested structure, causing confusion:

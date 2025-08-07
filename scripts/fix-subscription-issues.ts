@@ -39,12 +39,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 // Test mode subscription IDs that need to be cleaned up
-const TEST_SUBSCRIPTION_IDS = [
-  'sub_1RrG99HdrJomitOwlJ1RZILf',
-  'sub_1RnCCmHdrJomitOw5nbTkieG',
-  'sub_1RnFCmHdrJomitOwcmhinAcM',
-  'sub_1RrFnqHdrJomitOwcmhinAcM'
-];
+// WARNING: Removed hardcoded IDs - don't add them back
+const TEST_SUBSCRIPTION_IDS: string[] = [];
 
 interface SubscriptionData {
   status: string;

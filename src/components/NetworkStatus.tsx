@@ -187,8 +187,8 @@ export default function NetworkStatus() {
           ),
           title: 'No Internet Connection',
           message: 'Some features may be unavailable',
-          bgClass: 'bg-destructive',
-          textClass: 'text-destructive-foreground'
+          bgStyle: 'background-color: hsl(var(--destructive))',
+          textStyle: 'color: hsl(var(--destructive-foreground))'
         };
       case 'slow':
         return {
@@ -200,8 +200,8 @@ export default function NetworkStatus() {
           ),
           title: 'Slow Connection',
           message: 'Loading may take longer than usual',
-          bgClass: 'bg-warning',
-          textClass: 'text-warning-foreground'
+          bgStyle: 'background-color: hsl(var(--warning))',
+          textStyle: 'color: hsl(var(--warning-foreground))'
         };
       case 'good':
         return {
@@ -213,8 +213,8 @@ export default function NetworkStatus() {
           ),
           title: 'Connection Restored',
           message: 'You\'re back online',
-          bgClass: 'bg-success',
-          textClass: 'text-success-foreground'
+          bgStyle: 'background-color: hsl(var(--success))',
+          textStyle: 'color: hsl(var(--success-foreground))'
         };
     }
   };
@@ -231,7 +231,16 @@ export default function NetworkStatus() {
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] pointer-events-none"
         >
-          <div className={`${content.bgClass} ${content.textClass} rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 min-w-[280px] max-w-[90vw] border border-border`}>
+          <div 
+            className="rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 min-w-[280px] max-w-[90vw] border"
+            style={{
+              ...Object.fromEntries([
+                content.bgStyle.split(': '),
+                content.textStyle.split(': ')
+              ].map(([key, value]) => [key, value])),
+              borderColor: 'hsl(var(--border))'
+            }}
+          >
             {content.icon}
             <div className="flex-1">
               <p className="font-semibold text-sm">{content.title}</p>

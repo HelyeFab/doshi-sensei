@@ -1,20 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
-// Dynamic import for ytdl-core to avoid server-side issues
-let ytdl: any;
-try {
-  ytdl = require('ytdl-core');
-} catch (error) {
-  console.error('Failed to import ytdl-core:', error);
-}
+// We'll use lazy loading to avoid SSR issues
+let ytdl: any = null;
+let TranscriptCacheManager: any = null;
 
-// Import cache manager with error handling
-let TranscriptCacheManager: any;
-try {
-  TranscriptCacheManager = require('@/utils/transcriptCache').TranscriptCacheManager;
-} catch (error) {
-  console.error('Failed to import TranscriptCacheManager:', error);
+// Lazy load dependencies when needed
+async function loadDependencies() {
+  // Load ytdl-core if not already loaded
+  if (!ytdl) {
+    try {
+      ytdl = await import('ytdl-core');
+      console.log('✅ ytdl-core loaded successfully');
+    } catch (error) {
+      console.warn('⚠️ ytdl-core not available - continuing without it');
+    }
+  }
+
+  // Load TranscriptCacheManager if not already loaded
+  if (!TranscriptCacheManager) {
+    try {
+      const cacheModule = await import('@/utils/transcriptCache');
+      TranscriptCacheManager = cacheModule.TranscriptCacheManager;
+      console.log('✅ TranscriptCacheManager loaded successfully');
+    } catch (error) {
+      console.error('⚠️ TranscriptCacheManager not available - caching disabled', error);
+      // Create a mock TranscriptCacheManager that doesn't cache but doesn't break
+      TranscriptCacheManager = {
+        generateContentId: (params: any) => {
+          // Simple fallback ID generation
+          if (params.type === 'youtube' && params.videoUrl) {
+            const match = params.videoUrl.match(/[?&]v=([^&]+)/);
+            return `youtube_${match ? match[1] : 'unknown'}`;
+          }
+          return `file_${Date.now()}`;
+        },
+        getCachedTranscript: async () => null, // Always return null (no cache)
+        saveTranscriptToCache: async () => {
+          console.log('Cache disabled - transcript not saved');
+          return true;
+        }
+      };
+    }
+  }
 }
 
 // YouTube Data API v3 endpoint
@@ -22,42 +50,42 @@ const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 
 // Helper function to validate YouTube and YouTube Music URLs
 function isValidYouTubeUrl(url: string): boolean {
-  // Check standard YouTube URLs
-  if (ytdl.validateURL(url)) {
-    return true;
-  }
+  // Check standard YouTube URLs (without ytdl dependency)
+  const patterns = [
+    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+    /^https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /^https?:\/\/(www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+    /^https?:\/\/(www\.)?m\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+    /^https?:\/\/music\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+    /^https?:\/\/(www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+  ];
   
-  // Check YouTube Music URLs
-  const youtubeMusicPattern = /^https?:\/\/(music\.)?youtube\.com\/(watch|embed)\?v=([a-zA-Z0-9_-]{11})/;
-  const youtubeMusicShortPattern = /^https?:\/\/music\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
-  
-  return youtubeMusicPattern.test(url) || youtubeMusicShortPattern.test(url);
+  return patterns.some(pattern => pattern.test(url));
 }
 
-// Helper to extract video ID from YouTube Music URLs
+// Helper to extract video ID from YouTube URLs
 function extractVideoIdFromUrl(url: string): string | null {
-  // Try standard extraction first
-  try {
-    return ytdl.getVideoID(url);
-  } catch {
-    // Fallback for YouTube Music URLs
-    const patterns = [
-      /[?&]v=([a-zA-Z0-9_-]{11})/,
-      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-      /embed\/([a-zA-Z0-9_-]{11})/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match) return match[1];
-    }
-    
-    return null;
+  // Extract video ID without ytdl dependency
+  const patterns = [
+    /[?&]v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /embed\/([a-zA-Z0-9_-]{11})/,
+    /shorts\/([a-zA-Z0-9_-]{11})/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
   }
+  
+  return null;
 }
 
 export async function POST(request: NextRequest) {
   try {
+    // Load dependencies on first request
+    await loadDependencies();
+    
     const { url } = await request.json();
     
     if (!url || !isValidYouTubeUrl(url)) {
@@ -71,31 +99,33 @@ export async function POST(request: NextRequest) {
     console.log('URL:', url);
     console.log('Request headers:', request.headers);
     
-    // Check cache FIRST - caching is MANDATORY
-    if (!TranscriptCacheManager) {
-      throw new Error('TranscriptCacheManager is required but not available');
-    }
-    
+    // Check cache FIRST before making any API calls
     let contentId = '';
     let cachedTranscript = null;
     
-    try {
-      // Generate content ID for cache lookup
-      contentId = TranscriptCacheManager.generateContentId({
-        type: 'youtube',
-        videoUrl: url
-      });
-      
-      console.log('Checking transcript cache for:', contentId);
-      cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
-    } catch (cacheError) {
-      console.error('Error checking cache:', cacheError);
-      // For read errors, we can continue (might be first time)
-      // But for critical errors like missing Firestore, we should fail
-      if (cacheError?.message?.includes('Firestore is required')) {
-        throw cacheError;
+    if (TranscriptCacheManager) {
+      try {
+        // Generate content ID for cache lookup
+        contentId = TranscriptCacheManager.generateContentId({
+          type: 'youtube',
+          videoUrl: url
+        });
+        
+        console.log('📦 Checking transcript cache for:', contentId);
+        cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
+        
+        if (cachedTranscript) {
+          console.log('✅ Cache hit! Transcript found in cache');
+        } else {
+          console.log('📭 Cache miss - will fetch from API');
+        }
+      } catch (cacheError: any) {
+        console.error('⚠️ Cache check error (non-blocking):', cacheError.message);
+        // Cache errors shouldn't block SupaData API calls
+        cachedTranscript = null;
       }
-      cachedTranscript = null;
+    } else {
+      console.warn('⚠️ Cache system not available - proceeding without cache');
     }
     
     if (cachedTranscript && cachedTranscript.transcript.length > 0) {
@@ -115,6 +145,7 @@ export async function POST(request: NextRequest) {
     console.log('Environment check - GOOGLE_API_KEY exists:', !!process.env.GOOGLE_API_KEY);
     console.log('Environment check - YOUTUBE_API_KEY exists:', !!process.env.YOUTUBE_API_KEY);
     console.log('Environment check - SUPA_YOUTUBE_API_KEY exists:', !!process.env.SUPA_YOUTUBE_API_KEY);
+    console.log('Environment check - SEARCH_API exists:', !!process.env.SEARCH_API);
     
     // Extract video ID for YouTube API calls
     const videoId = extractVideoIdFromUrl(url);
@@ -236,13 +267,11 @@ export async function POST(request: NextRequest) {
             console.log('Video URL:', url);
             console.log('Video title:', videoMetadata?.title || supaResponse.data.title || 'Unknown');
             
-            // Cache saving is MANDATORY
-            if (!TranscriptCacheManager) {
-              throw new Error('TranscriptCacheManager is required but not available');
-            }
-            
-            try {
-              await TranscriptCacheManager.saveTranscriptToCache({
+            // Try to save to cache (but don't let cache errors block the response)
+            if (TranscriptCacheManager && TranscriptCacheManager.saveTranscriptToCache) {
+              try {
+                console.log('💾 Attempting to save transcript to cache...');
+                await TranscriptCacheManager.saveTranscriptToCache({
                 contentId,
                 contentType: 'youtube',
                 videoUrl: url,
@@ -256,14 +285,15 @@ export async function POST(request: NextRequest) {
                   thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
                   duration: videoMetadata?.duration
                 }
-              });
-              console.log('=== Cache save completed successfully ===');
-            } catch (cacheError: any) {
-              console.error('=== CRITICAL: Cache save failed after retries ===', cacheError);
-              // Cache is mandatory but we have the transcript - log error but continue
-              console.error('IMPORTANT: Transcript was extracted but failed to cache');
-              console.error('This means the next request will have to extract again');
-              // Still return the transcript to the user rather than failing completely
+                });
+                console.log('✅ Cache save completed successfully');
+              } catch (cacheError: any) {
+                console.error('⚠️ Cache save failed (non-blocking):', cacheError.message);
+                // Cache failed but we have the transcript - continue
+                console.warn('📝 Transcript extracted successfully but not cached - next request will fetch again');
+              }
+            } else {
+              console.warn('⚠️ Cache system not available - transcript not saved');
             }
             
             return NextResponse.json({
@@ -299,7 +329,124 @@ export async function POST(request: NextRequest) {
       console.warn('SUPA_YOUTUBE_API_KEY not configured');
     }
     
-    // Method 1: Try ytdl-core to get video info (if available)
+    // Method 2: Try SearchAPI as fallback
+    const SEARCH_API_KEY = process.env.SEARCH_API;
+    
+    if (SEARCH_API_KEY && !cachedTranscript) {
+      try {
+        console.log('=== Trying SearchAPI as fallback ===');
+        console.log('SearchAPI Key exists:', !!SEARCH_API_KEY);
+        console.log('Video ID:', videoId);
+        
+        // SearchAPI endpoint for YouTube transcripts
+        const searchApiUrl = 'https://www.searchapi.io/api/v1/search';
+        
+        const searchApiResponse = await axios.get(searchApiUrl, {
+          params: {
+            engine: 'youtube_transcripts',
+            video_id: videoId,
+            api_key: SEARCH_API_KEY,
+            lang: 'ja,ja-JP' // Request Japanese transcripts
+          },
+          timeout: 15000 // 15 second timeout
+        });
+        
+        console.log('SearchAPI response status:', searchApiResponse.status);
+        
+        if (searchApiResponse.data && searchApiResponse.data.transcripts) {
+          console.log('Available transcripts:', Object.keys(searchApiResponse.data.transcripts));
+          
+          // Look for Japanese transcripts
+          let transcript = null;
+          let transcriptLang = null;
+          
+          // Check for Japanese transcripts (both ja and ja-JP)
+          if (searchApiResponse.data.transcripts['ja']) {
+            transcript = searchApiResponse.data.transcripts['ja'];
+            transcriptLang = 'ja';
+          } else if (searchApiResponse.data.transcripts['ja-JP']) {
+            transcript = searchApiResponse.data.transcripts['ja-JP'];
+            transcriptLang = 'ja-JP';
+          }
+          
+          if (transcript && transcript.length > 0) {
+            console.log('✅ Found Japanese transcript via SearchAPI');
+            console.log('Transcript segments:', transcript.length);
+            
+            // Parse SearchAPI format to our format
+            const parsedTranscript = transcript.map((segment: any, index: number) => ({
+              id: `line_${index + 1}`,
+              text: segment.text || segment.snippet || '',
+              startTime: segment.start || segment.startTime || 0,
+              endTime: segment.start + (segment.duration || 5) || segment.endTime || (segment.start + 5),
+              words: []
+            }));
+            
+            // Save to cache
+            if (TranscriptCacheManager && TranscriptCacheManager.saveTranscriptToCache) {
+              try {
+                console.log('💾 Saving SearchAPI transcript to cache...');
+                await TranscriptCacheManager.saveTranscriptToCache({
+                  contentId,
+                  contentType: 'youtube',
+                  videoUrl: url,
+                  videoTitle: videoMetadata?.title || searchApiResponse.data.video_title || 'Unknown',
+                  transcript: parsedTranscript,
+                  language: transcriptLang,
+                  metadata: {
+                    youtubeVideoId: videoId,
+                    channelName: videoMetadata?.channelTitle || searchApiResponse.data.channel_title,
+                    uploadDate: videoMetadata?.publishedAt,
+                    thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
+                    duration: videoMetadata?.duration || searchApiResponse.data.video_duration
+                  }
+                });
+                console.log('✅ SearchAPI transcript cached successfully');
+              } catch (cacheError: any) {
+                console.error('⚠️ Failed to cache SearchAPI transcript:', cacheError.message);
+              }
+            }
+            
+            return NextResponse.json({
+              success: true,
+              transcript: parsedTranscript,
+              language: transcriptLang,
+              isAutoGenerated: searchApiResponse.data.is_generated || false,
+              videoTitle: videoMetadata?.title || searchApiResponse.data.video_title || 'Unknown',
+              videoMetadata: videoMetadata || {
+                title: searchApiResponse.data.video_title,
+                channelTitle: searchApiResponse.data.channel_title,
+                duration: searchApiResponse.data.video_duration
+              },
+              method: 'searchapi'
+            });
+          } else {
+            console.log('❌ No Japanese transcripts found via SearchAPI');
+            console.log('Available languages:', Object.keys(searchApiResponse.data.transcripts));
+          }
+        }
+      } catch (searchApiError: any) {
+        console.error('=== SearchAPI error ===');
+        console.error('Error message:', searchApiError.message);
+        if (searchApiError.response) {
+          console.error('Response status:', searchApiError.response.status);
+          console.error('Response data:', searchApiError.response.data);
+          
+          if (searchApiError.response.status === 401) {
+            console.error('SearchAPI authentication failed - check API key');
+          } else if (searchApiError.response.status === 429) {
+            console.error('SearchAPI rate limit reached');
+          } else if (searchApiError.response.status === 404) {
+            console.error('No transcripts available via SearchAPI');
+          }
+        }
+        // Continue to next fallback method
+      }
+    } else if (!SEARCH_API_KEY) {
+      console.warn('SEARCH_API key not configured');
+    }
+    
+    // Method 3: Try ytdl-core to get video info (if available)
     if (ytdl) {
       try {
       const info = await ytdl.getInfo(url);
@@ -464,10 +611,17 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: false,
-      error: 'No Japanese captions found',
-      message: 'This video does not have Japanese captions available. Try uploading the audio for AI transcription.',
+      error: 'No Japanese transcript available',
+      message: 'This video doesn\'t have Japanese subtitles. Here\'s what you can do:',
+      suggestions: [
+        '📥 Download the audio using a browser extension or online tool',
+        '📤 Upload the audio file to get an AI-generated transcript',
+        '🎬 Try a different video that has Japanese subtitles',
+        '📝 Upload your own subtitle file if you have one'
+      ],
       videoTitle: videoMetadata?.title,
-      videoMetadata: videoMetadata
+      videoMetadata: videoMetadata,
+      tips: 'Many YouTube videos don\'t have Japanese captions. Our AI transcription works great with uploaded audio!'
     });
     
   } catch (error: any) {
@@ -477,26 +631,50 @@ export async function POST(request: NextRequest) {
     console.error('Error stack:', error?.stack);
     console.error('Full error object:', error);
     
-    // Check for specific error types
-    let errorMessage = 'Failed to process request';
+    // Provide human-readable error messages for users
+    let userMessage = 'We couldn\'t extract the transcript from this video. Please try one of these options:';
+    let suggestions = [
+      'Upload the audio file directly for AI transcription',
+      'Try a different YouTube video',
+      'Check if the video has Japanese subtitles enabled'
+    ];
     let statusCode = 500;
     
-    if (error?.message?.includes('Firebase') || error?.message?.includes('Firestore')) {
-      errorMessage = 'Database connection error - transcripts may still work';
-      console.error('Firebase/Firestore error detected - continuing without cache');
-    } else if (error?.message?.includes('ytdl')) {
-      errorMessage = 'YouTube extraction library error';
-    } else if (error?.code === 'MODULE_NOT_FOUND') {
-      errorMessage = 'Server configuration error - missing dependencies';
+    // Specific error handling with user-friendly messages
+    if (error?.message?.includes('Invalid YouTube')) {
+      userMessage = 'This doesn\'t appear to be a valid YouTube URL.';
+      suggestions = ['Make sure you\'re using a YouTube or YouTube Music link'];
+      statusCode = 400;
+    } else if (error?.message?.includes('Firebase') || error?.message?.includes('Firestore')) {
+      userMessage = 'Our transcript cache is temporarily unavailable, but you can still get transcripts.';
+      suggestions = ['The extraction will work but won\'t be cached for faster access next time'];
+      statusCode = 503;
+    } else if (error?.message?.includes('rate limit')) {
+      userMessage = 'We\'ve hit our API limit temporarily.';
+      suggestions = [
+        'Please wait a few minutes and try again',
+        'Or upload the audio file directly'
+      ];
+      statusCode = 429;
+    } else if (error?.message?.includes('SupaData')) {
+      userMessage = 'The transcript service is having issues right now.';
+      suggestions = [
+        'Try again in a few moments',
+        'Download the audio and upload it directly',
+        'Check if the video has built-in Japanese subtitles'
+      ];
+      statusCode = 503;
     }
     
     return NextResponse.json(
       { 
-        error: errorMessage,
-        message: error?.message || 'Unknown error',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        type: error?.constructor?.name || 'UnknownError',
-        stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+        error: userMessage,
+        suggestions: suggestions,
+        technicalDetails: process.env.NODE_ENV === 'development' ? {
+          message: error?.message || 'Unknown error',
+          type: error?.constructor?.name || 'UnknownError',
+          stack: error?.stack
+        } : undefined
       },
       { status: statusCode }
     );

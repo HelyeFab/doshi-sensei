@@ -12,7 +12,7 @@ interface QuickContextProviderProps {
 export default function QuickContextProvider({ 
   children, 
   enabled = true,
-  selector = '.japanese-text, .font-ja, [data-quickcontext="true"]'
+  selector = '*' // Allow any element, we'll check for Japanese text content
 }: QuickContextProviderProps) {
   const [selectedText, setSelectedText] = useState('');
   const [bubblePosition, setBubblePosition] = useState({ x: 0, y: 0 });
@@ -243,6 +243,16 @@ export default function QuickContextProvider({
     // Clear selection
     window.getSelection()?.removeAllRanges();
   }, []);
+
+  // Debug render state
+  useEffect(() => {
+    console.log('[QuickContext] Render state:', {
+      showBubble,
+      selectedText,
+      bubblePosition,
+      shouldRenderBubble: showBubble && selectedText
+    });
+  }, [showBubble, selectedText, bubblePosition]);
 
   return (
     <>

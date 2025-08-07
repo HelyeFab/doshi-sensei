@@ -57,6 +57,14 @@ export async function POST(request: NextRequest) {
     console.log('URL:', url);
     console.log('Request headers:', request.headers);
     
+    // Check if user is authenticated by looking for auth headers or cookies
+    const authHeader = request.headers.get('authorization');
+    const cookies = request.headers.get('cookie');
+    const hasAuthCookie = cookies?.includes('authToken') || cookies?.includes('__session');
+    const isAuthenticated = !!(authHeader || hasAuthCookie);
+    
+    console.log('User authentication status:', isAuthenticated ? 'authenticated' : 'guest');
+    
     // Check cache FIRST before making any API calls
     const contentId = TranscriptCacheManager.generateContentId({
       type: 'youtube',
@@ -210,31 +218,35 @@ export async function POST(request: NextRequest) {
           console.log('First transcript item:', transcript[0]);
           
           if (transcript && transcript.length > 0) {
-            // Save to cache before returning
-            console.log('=== Saving to transcript cache ===');
-            console.log('Content ID:', contentId);
-            console.log('Video URL:', url);
-            console.log('Video title:', videoMetadata?.title || supaResponse.data.title || 'Unknown');
-            
-            try {
-              await TranscriptCacheManager.saveTranscriptToCache({
-                contentId,
-                contentType: 'youtube',
-                videoUrl: url,
-                videoTitle: videoMetadata?.title || supaResponse.data.title || 'Unknown',
-                transcript,
-                language: 'ja',
-                metadata: {
-                  youtubeVideoId: videoId,
-                  channelName: videoMetadata?.channelTitle,
-                  uploadDate: videoMetadata?.publishedAt,
-                  thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
-                  duration: videoMetadata?.duration
-                }
-              });
-              console.log('=== Cache save completed ===');
-            } catch (cacheError) {
-              console.error('=== Cache save failed ===', cacheError);
+            // Save to cache only for authenticated users
+            if (isAuthenticated) {
+              console.log('=== Saving to transcript cache (authenticated user) ===');
+              console.log('Content ID:', contentId);
+              console.log('Video URL:', url);
+              console.log('Video title:', videoMetadata?.title || supaResponse.data.title || 'Unknown');
+              
+              try {
+                await TranscriptCacheManager.saveTranscriptToCache({
+                  contentId,
+                  contentType: 'youtube',
+                  videoUrl: url,
+                  videoTitle: videoMetadata?.title || supaResponse.data.title || 'Unknown',
+                  transcript,
+                  language: 'ja',
+                  metadata: {
+                    youtubeVideoId: videoId,
+                    channelName: videoMetadata?.channelTitle,
+                    uploadDate: videoMetadata?.publishedAt,
+                    thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoMetadata?.thumbnails?.default?.url,
+                    duration: videoMetadata?.duration
+                  }
+                });
+                console.log('=== Cache save completed ===');
+              } catch (cacheError) {
+                console.error('=== Cache save failed ===', cacheError);
+              }
+            } else {
+              console.log('⚠️ [CACHE] Skipping cache save for guest user');
             }
             
             return NextResponse.json({
@@ -309,26 +321,30 @@ export async function POST(request: NextRequest) {
               words: []
             }));
             
-            // Save to cache
-            try {
-              await TranscriptCacheManager.saveTranscriptToCache({
-                contentId,
-                contentType: 'youtube',
-                videoUrl: url,
-                videoTitle: videoMetadata?.title || 'Unknown',
-                transcript: parsedTranscript,
-                language: 'ja',
-                metadata: {
-                  youtubeVideoId: videoId,
-                  channelName: videoMetadata?.channelTitle,
-                  uploadDate: videoMetadata?.publishedAt,
-                  thumbnailUrl: videoMetadata?.thumbnails?.medium?.url,
-                  duration: videoMetadata?.duration
-                }
-              });
-              console.log('SearchAPI transcript cached');
-            } catch (cacheError) {
-              console.error('Failed to cache SearchAPI transcript:', cacheError.message);
+            // Save to cache only for authenticated users
+            if (isAuthenticated) {
+              try {
+                await TranscriptCacheManager.saveTranscriptToCache({
+                  contentId,
+                  contentType: 'youtube',
+                  videoUrl: url,
+                  videoTitle: videoMetadata?.title || 'Unknown',
+                  transcript: parsedTranscript,
+                  language: 'ja',
+                  metadata: {
+                    youtubeVideoId: videoId,
+                    channelName: videoMetadata?.channelTitle,
+                    uploadDate: videoMetadata?.publishedAt,
+                    thumbnailUrl: videoMetadata?.thumbnails?.medium?.url,
+                    duration: videoMetadata?.duration
+                  }
+                });
+                console.log('SearchAPI transcript cached');
+              } catch (cacheError) {
+                console.error('Failed to cache SearchAPI transcript:', cacheError.message);
+              }
+            } else {
+              console.log('⚠️ [CACHE] Skipping SearchAPI cache save for guest user');
             }
             
             return NextResponse.json({
@@ -392,26 +408,30 @@ export async function POST(request: NextRequest) {
             const transcript = parseYouTubeCaptions(captionData);
             
             if (transcript.length > 0) {
-              // Save to cache before returning
-              try {
-                await TranscriptCacheManager.saveTranscriptToCache({
-                  contentId,
-                  contentType: 'youtube',
-                  videoUrl: url,
-                  videoTitle: videoMetadata?.title || videoDetails.title,
-                  transcript,
-                  language: jaTrack.languageCode,
-                  metadata: {
-                    youtubeVideoId: videoId,
-                    channelName: videoMetadata?.channelTitle || videoDetails.author?.name,
-                    uploadDate: videoMetadata?.publishedAt || videoDetails.publishDate,
-                    thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoDetails.thumbnails?.[0]?.url,
-                    duration: videoMetadata?.duration || videoDetails.lengthSeconds
-                  }
-                });
-                console.log('ytdl-core transcript cached successfully');
-              } catch (cacheError) {
-                console.error('Failed to cache ytdl-core transcript:', cacheError);
+              // Save to cache only for authenticated users
+              if (isAuthenticated) {
+                try {
+                  await TranscriptCacheManager.saveTranscriptToCache({
+                    contentId,
+                    contentType: 'youtube',
+                    videoUrl: url,
+                    videoTitle: videoMetadata?.title || videoDetails.title,
+                    transcript,
+                    language: jaTrack.languageCode,
+                    metadata: {
+                      youtubeVideoId: videoId,
+                      channelName: videoMetadata?.channelTitle || videoDetails.author?.name,
+                      uploadDate: videoMetadata?.publishedAt || videoDetails.publishDate,
+                      thumbnailUrl: videoMetadata?.thumbnails?.medium?.url || videoDetails.thumbnails?.[0]?.url,
+                      duration: videoMetadata?.duration || videoDetails.lengthSeconds
+                    }
+                  });
+                  console.log('ytdl-core transcript cached successfully');
+                } catch (cacheError) {
+                  console.error('Failed to cache ytdl-core transcript:', cacheError);
+                }
+              } else {
+                console.log('⚠️ [CACHE] Skipping ytdl-core cache save for guest user');
               }
               
               return NextResponse.json({

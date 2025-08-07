@@ -212,6 +212,7 @@ export class TranscriptCacheManager {
 
   /**
    * Save transcript to Firestore cache
+   * Note: Caller should check authentication before attempting to save
    */
   static async saveTranscriptToCache(params: {
     contentId: string;

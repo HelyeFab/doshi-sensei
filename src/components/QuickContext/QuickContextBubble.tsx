@@ -43,6 +43,11 @@ export default function QuickContextBubble({
   const { speak: speakTTS, stop: stopTTS, state: ttsState } = useTTS();
 
   useEffect(() => {
+    console.log('[QuickContextBubble] Mounted with:', {
+      selectedText,
+      position,
+      isKanji
+    });
     setMounted(true);
     return () => setMounted(false);
   }, []);

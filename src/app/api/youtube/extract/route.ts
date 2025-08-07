@@ -352,6 +352,12 @@ export async function POST(request: NextRequest) {
         });
         
         console.log('SearchAPI response status:', searchApiResponse.status);
+        console.log('SearchAPI response data structure:', {
+          hasData: !!searchApiResponse.data,
+          hasTranscripts: !!searchApiResponse.data?.transcripts,
+          transcriptsType: Array.isArray(searchApiResponse.data?.transcripts) ? 'array' : typeof searchApiResponse.data?.transcripts,
+          transcriptsLength: searchApiResponse.data?.transcripts?.length || 0
+        });
         
         if (searchApiResponse.data && searchApiResponse.data.transcripts) {
           console.log('SearchAPI transcripts found, segments:', searchApiResponse.data.transcripts.length);
@@ -420,6 +426,9 @@ export async function POST(request: NextRequest) {
               }
             }
           }
+        } else {
+          console.log('❌ SearchAPI response missing expected data structure');
+          console.log('Response keys:', Object.keys(searchApiResponse.data || {}));
         }
       } catch (searchApiError: any) {
         console.error('=== SearchAPI error ===');
@@ -443,8 +452,9 @@ export async function POST(request: NextRequest) {
     }
     
     // Method 3: Try ytdl-core to get video info (if available)
-    if (ytdl) {
+    if (ytdl && ytdl.getInfo) {
       try {
+      console.log('=== Trying ytdl-core as fallback ===');
       const info = await ytdl.getInfo(url);
       const videoDetails = info.videoDetails;
       
@@ -492,16 +502,18 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-      } catch (ytdlError) {
-        console.error('ytdl-core error:', ytdlError);
+      } catch (ytdlError: any) {
+        console.error('ytdl-core error:', ytdlError.message);
+        // Continue to next method
       }
     } else {
       console.log('ytdl-core not available - skipping this method');
     }
     
-    // Method 2: Try get_video_info approach (more reliable)
+    // Method 4: Try get_video_info approach (more reliable)
     try {
-      console.log('Trying get_video_info method for video:', videoId);
+      console.log('=== Trying get_video_info method ===');
+      console.log('Video ID:', videoId);
       
       // First, get video info to extract caption URLs
       const videoInfoUrl = `https://www.youtube.com/get_video_info?video_id=${videoId}&hl=ja`;
@@ -555,11 +567,12 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    } catch (getVideoInfoError) {
-      console.error('get_video_info error:', getVideoInfoError);
+    } catch (getVideoInfoError: any) {
+      console.error('get_video_info error:', getVideoInfoError.message);
+      // Continue to next method
     }
     
-    // Method 3: Try alternative endpoints
+    // Method 5: Try alternative endpoints
     const alternativeUrls = [
       `https://video.google.com/timedtext?lang=ja&v=${videoId}`,
       `https://video.google.com/timedtext?lang=ja&v=${videoId}&kind=asr`,
@@ -602,8 +615,12 @@ export async function POST(request: NextRequest) {
     }
     
     // No captions found
-    console.log('=== All methods failed ===');
-    console.log('Returning error response with metadata:', !!videoMetadata);
+    console.log('=== All extraction methods exhausted ===');
+    console.log('SupaData attempted:', !!SUPA_API_KEY);
+    console.log('SearchAPI attempted:', !!SEARCH_API_KEY);
+    console.log('ytdl-core available:', !!ytdl);
+    console.log('Video metadata found:', !!videoMetadata);
+    console.log('Returning fallback response');
     
     return NextResponse.json({
       success: false,

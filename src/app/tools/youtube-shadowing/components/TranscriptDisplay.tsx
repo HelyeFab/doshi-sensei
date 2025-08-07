@@ -204,7 +204,34 @@ export default function TranscriptDisplay({
             return;
           }
         } else {
-          if (contentType && contentType.includes('text/html')) {
+          // Handle error responses
+          if (contentType && contentType.includes('application/json')) {
+            try {
+              const errorData = await response.json();
+              console.error('API returned error:', errorData);
+              
+              // Use the friendly error message from the API
+              if (errorData.error) {
+                setError(errorData.error);
+              } else if (errorData.message) {
+                setError(errorData.message);
+              } else {
+                setError('Unable to extract transcript. Please try uploading the audio file directly.');
+              }
+              
+              // Show suggestions if available
+              if (errorData.suggestions && Array.isArray(errorData.suggestions)) {
+                const suggestionsText = '\n\n' + errorData.suggestions.join('\n');
+                setError(prev => prev + suggestionsText);
+              }
+              
+              setStatus('error');
+            } catch (parseError) {
+              console.error('Failed to parse error response:', parseError);
+              setStatus('error');
+              setError('Service error. Please try uploading audio or subtitles manually.');
+            }
+          } else if (contentType && contentType.includes('text/html')) {
             console.error('Server returned HTML error page');
             setStatus('error');
             setError('Service temporarily unavailable. The server may be restarting.');
@@ -212,7 +239,7 @@ export default function TranscriptDisplay({
             const errorText = await response.text();
             console.error('Failed to extract subtitles:', errorText);
             setStatus('error');
-            setError('Failed to connect to subtitle extraction service');
+            setError('Failed to connect to subtitle extraction service. Please try again or upload audio manually.');
           }
           return;
         }
@@ -436,10 +463,26 @@ export default function TranscriptDisplay({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="flex-1">
-                  <p className="text-sm text-destructive">{error}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {strings.youtubeShadowing?.transcriptErrorNote || 'The video might not have captions available'}
-                  </p>
+                  {/* Split error message and suggestions if they exist */}
+                  {error.includes('\n\n') ? (
+                    <>
+                      <p className="text-sm text-destructive font-medium">{error.split('\n\n')[0]}</p>
+                      <div className="mt-3 space-y-1">
+                        {error.split('\n\n')[1]?.split('\n').map((suggestion, index) => (
+                          <p key={index} className="text-sm text-muted-foreground">
+                            {suggestion}
+                          </p>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-destructive font-medium">{error}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {strings.youtubeShadowing?.transcriptErrorNote || 'The video might not have captions available'}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
               

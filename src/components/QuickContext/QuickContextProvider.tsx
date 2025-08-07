@@ -21,6 +21,25 @@ export default function QuickContextProvider({
   const selectionTimeoutRef = useRef<NodeJS.Timeout>();
   const isSelectingRef = useRef(false);
 
+  // Debug: Log when component mounts
+  useEffect(() => {
+    console.log('[QuickContext] Provider mounted', {
+      enabled,
+      selector
+    });
+    
+    // Check if any matching elements exist on the page
+    const matchingElements = document.querySelectorAll(selector);
+    console.log('[QuickContext] Found matching elements:', matchingElements.length);
+    matchingElements.forEach((el, index) => {
+      console.log(`[QuickContext] Element ${index}:`, {
+        tagName: el.tagName,
+        className: el.className,
+        textContent: el.textContent?.substring(0, 50)
+      });
+    });
+  }, [enabled, selector]);
+
   const handleSelection = useCallback(() => {
     if (!enabled) return;
 
@@ -75,14 +94,36 @@ export default function QuickContextProvider({
 
   // Handle click/tap on Japanese text elements
   const handleElementClick = useCallback((event: MouseEvent | TouchEvent) => {
-    if (!enabled) return;
+    console.log('[QuickContext] Click/tap detected', {
+      enabled,
+      target: event.target,
+      selector
+    });
+
+    if (!enabled) {
+      console.log('[QuickContext] Not enabled, returning');
+      return;
+    }
 
     const target = event.target as Element;
-    if (!target) return;
+    if (!target) {
+      console.log('[QuickContext] No target, returning');
+      return;
+    }
 
     // Check if clicked element matches selector
     const enabledElement = target.closest(selector);
-    if (!enabledElement) return;
+    console.log('[QuickContext] Checking selector match:', {
+      selector,
+      enabledElement,
+      targetClasses: target.className,
+      targetId: target.id
+    });
+
+    if (!enabledElement) {
+      console.log('[QuickContext] Element does not match selector, returning');
+      return;
+    }
 
     // Get text content
     let textContent = '';
@@ -98,18 +139,28 @@ export default function QuickContextProvider({
       }
     }
 
+    console.log('[QuickContext] Text content:', textContent);
+
     // Check if text contains Japanese characters
-    if (!textContent || !japaneseRegex.test(textContent)) return;
+    if (!textContent || !japaneseRegex.test(textContent)) {
+      console.log('[QuickContext] No Japanese text found, returning');
+      return;
+    }
 
     // If text is too long (probably a paragraph), don't activate on click
     // Users should select specific text in long passages
-    if (textContent.length > 50) return;
+    if (textContent.length > 50) {
+      console.log('[QuickContext] Text too long (>50 chars), returning');
+      return;
+    }
 
     // Clear any existing selection
     window.getSelection()?.removeAllRanges();
 
     // Get element position
     const rect = elementToUse.getBoundingClientRect();
+
+    console.log('[QuickContext] Setting bubble with text:', textContent.trim());
 
     setSelectedText(textContent.trim());
     setBubblePosition({

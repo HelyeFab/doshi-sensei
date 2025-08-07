@@ -240,7 +240,17 @@ export class TranscriptCacheManager {
           throw new Error('Firestore is required but not initialized');
         }
 
-        const cacheData = {
+        // Clean metadata to remove undefined values
+        const cleanMetadata: any = {};
+        if (params.metadata) {
+          Object.keys(params.metadata).forEach(key => {
+            if (params.metadata[key] !== undefined) {
+              cleanMetadata[key] = params.metadata[key];
+            }
+          });
+        }
+        
+        const cacheData: any = {
           id: params.contentId,
           contentId: params.contentId,
           contentType: params.contentType,
@@ -248,13 +258,21 @@ export class TranscriptCacheManager {
           videoTitle: params.videoTitle,
           transcript: params.transcript,
           language: params.language,
-          duration: params.duration,
           createdAt: serverTimestamp(),
           lastAccessed: serverTimestamp(),
-          accessCount: 1,
-          createdBy: params.userId,
-          metadata: params.metadata
+          accessCount: 1
         };
+        
+        // Only add optional fields if they're defined (Firestore doesn't accept undefined values)
+        if (params.duration !== undefined) {
+          cacheData.duration = params.duration;
+        }
+        if (params.userId !== undefined) {
+          cacheData.createdBy = params.userId;
+        }
+        if (Object.keys(cleanMetadata).length > 0) {
+          cacheData.metadata = cleanMetadata;
+        }
 
         const docRef = doc(db, this.COLLECTION_NAME, params.contentId);
         await setDoc(docRef, cacheData);

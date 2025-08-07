@@ -1,90 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
-
-// We'll use lazy loading to avoid SSR issues
-let ytdl: any = null;
-let TranscriptCacheManager: any = null;
-
-// Lazy load dependencies when needed
-async function loadDependencies() {
-  // Load ytdl-core if not already loaded
-  if (!ytdl) {
-    try {
-      ytdl = await import('ytdl-core');
-      console.log('✅ ytdl-core loaded successfully');
-    } catch (error) {
-      console.warn('⚠️ ytdl-core not available - continuing without it');
-    }
-  }
-
-  // Load TranscriptCacheManager if not already loaded
-  if (!TranscriptCacheManager) {
-    try {
-      const cacheModule = await import('@/utils/transcriptCache');
-      TranscriptCacheManager = cacheModule.TranscriptCacheManager;
-      console.log('✅ TranscriptCacheManager loaded successfully');
-    } catch (error) {
-      console.error('⚠️ TranscriptCacheManager not available - caching disabled', error);
-      // Create a mock TranscriptCacheManager that doesn't cache but doesn't break
-      TranscriptCacheManager = {
-        generateContentId: (params: any) => {
-          // Simple fallback ID generation
-          if (params.type === 'youtube' && params.videoUrl) {
-            const match = params.videoUrl.match(/[?&]v=([^&]+)/);
-            return `youtube_${match ? match[1] : 'unknown'}`;
-          }
-          return `file_${Date.now()}`;
-        },
-        getCachedTranscript: async () => null, // Always return null (no cache)
-        saveTranscriptToCache: async () => {
-          console.log('Cache disabled - transcript not saved');
-          return true;
-        }
-      };
-    }
-  }
-}
+import ytdl from 'ytdl-core';
+import { TranscriptCacheManager } from '@/utils/transcriptCache';
 
 // YouTube Data API v3 endpoint
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 
 // Helper function to validate YouTube and YouTube Music URLs
 function isValidYouTubeUrl(url: string): boolean {
-  // Check standard YouTube URLs (without ytdl dependency)
-  const patterns = [
-    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-    /^https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/,
-    /^https?:\/\/(www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-    /^https?:\/\/(www\.)?m\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-    /^https?:\/\/music\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-    /^https?:\/\/(www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
-  ];
-  
-  return patterns.some(pattern => pattern.test(url));
+  try {
+    // Use ytdl's built-in validation
+    return ytdl.validateURL(url);
+  } catch {
+    // Fallback to pattern matching if ytdl fails
+    const patterns = [
+      /^https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+      /^https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      /^https?:\/\/(www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+      /^https?:\/\/(www\.)?m\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+      /^https?:\/\/music\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+      /^https?:\/\/(www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+    ];
+    
+    return patterns.some(pattern => pattern.test(url));
+  }
 }
 
 // Helper to extract video ID from YouTube URLs
 function extractVideoIdFromUrl(url: string): string | null {
-  // Extract video ID without ytdl dependency
-  const patterns = [
-    /[?&]v=([a-zA-Z0-9_-]{11})/,
-    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-    /embed\/([a-zA-Z0-9_-]{11})/,
-    /shorts\/([a-zA-Z0-9_-]{11})/
-  ];
-  
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
+  try {
+    // Use ytdl's built-in getVideoID
+    return ytdl.getVideoID(url);
+  } catch {
+    // Fallback to pattern matching if ytdl fails
+    const patterns = [
+      /[?&]v=([a-zA-Z0-9_-]{11})/,
+      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      /embed\/([a-zA-Z0-9_-]{11})/,
+      /shorts\/([a-zA-Z0-9_-]{11})/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    
+    return null;
   }
-  
-  return null;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Load dependencies on first request
-    await loadDependencies();
     
     const { url } = await request.json();
     
@@ -451,9 +417,8 @@ export async function POST(request: NextRequest) {
       console.warn('SEARCH_API key not configured');
     }
     
-    // Method 3: Try ytdl-core to get video info (if available)
-    if (ytdl && ytdl.getInfo) {
-      try {
+    // Method 3: Try ytdl-core to get video info
+    try {
       console.log('=== Trying ytdl-core as fallback ===');
       const info = await ytdl.getInfo(url);
       const videoDetails = info.videoDetails;
@@ -502,12 +467,9 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-      } catch (ytdlError: any) {
-        console.error('ytdl-core error:', ytdlError.message);
-        // Continue to next method
-      }
-    } else {
-      console.log('ytdl-core not available - skipping this method');
+    } catch (ytdlError: any) {
+      console.error('ytdl-core error:', ytdlError.message);
+      // Continue to next method
     }
     
     // Method 4: Try get_video_info approach (more reliable)

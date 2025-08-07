@@ -28,6 +28,7 @@ import { PersistentLogger } from '@/components/PersistentLogger';
 import { ConsoleLogInitializer } from '@/components/ConsoleLogInitializer';
 import { PrewarmingLoader } from '@/components/PrewarmingLoader';
 import { PrewarmingScript } from '@/components/PrewarmingScript';
+import { QuickContextProvider } from '@/components/QuickContext';
 
 // Optimized font loading - only load essential weights initially
 const geistSans = localFont({
@@ -295,19 +296,20 @@ export default function RootLayout({
                   <PWAWrapper>
                     <OnboardingWrapper>
                       <AchievementToastManager>
-                        <div className="min-h-screen bg-background text-foreground">
-                          <PrewarmingLoader />
-                          <FastRefreshLogger />
-                          <ConsoleLogInitializer />
-                          {process.env.NODE_ENV === 'development' && <PersistentLogger />}
-                          <NetworkStatus />
-                          <OfflineNotification />
-                          <LazyInitializers />
-                          <NavigationErrorBoundary>
-                            <div className="mobile-nav-padding">
-                              {children}
-                            </div>
-                          </NavigationErrorBoundary>
+                        <QuickContextProvider>
+                          <div className="min-h-screen bg-background text-foreground">
+                            <PrewarmingLoader />
+                            <FastRefreshLogger />
+                            <ConsoleLogInitializer />
+                            {process.env.NODE_ENV === 'development' && <PersistentLogger />}
+                            <NetworkStatus />
+                            <OfflineNotification />
+                            <LazyInitializers />
+                            <NavigationErrorBoundary>
+                              <div className="mobile-nav-padding">
+                                {children}
+                              </div>
+                            </NavigationErrorBoundary>
                           <StunningBottomNavbar />
                           <MobileMenu />
                           <DesktopNavMenu />
@@ -319,6 +321,7 @@ export default function RootLayout({
                           <DevHelper />
                           <PWARecovery />
                         </div>
+                        </QuickContextProvider>
                       </AchievementToastManager>
                     </OnboardingWrapper>
                   </PWAWrapper>

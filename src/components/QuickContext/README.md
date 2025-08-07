@@ -7,7 +7,7 @@ QuickContext is a smart, context-aware learning assistant that appears when user
 - **Smart Text Selection**: Automatically detects Japanese text selection
 - **Floating Bubble UI**: Custom Doshi Sensei themed floating interface
 - **Save to Lists**: Intelligently saves words/kanji/sentences to appropriate lists
-- **Dictionary Lookup**: Opens Jisho.org for detailed definitions
+- **Dictionary Lookup**: Navigates to our vocabulary page with the selected text
 - **TTS Integration**: Uses app's cached TTS system for pronunciation
 - **AI Explanations**: Powered by existing AI explanation modal
 

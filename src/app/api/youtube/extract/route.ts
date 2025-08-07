@@ -142,8 +142,8 @@ export async function POST(request: NextRequest) {
     }
     
     console.log('No cache hit, fetching from YouTube...');
-    console.log('Environment check - GOOGLE_API_KEY exists:', !!process.env.GOOGLE_API_KEY);
     console.log('Environment check - YOUTUBE_API_KEY exists:', !!process.env.YOUTUBE_API_KEY);
+    console.log('Environment check - GOOGLE_API_KEY exists:', !!process.env.GOOGLE_API_KEY);
     console.log('Environment check - SUPA_YOUTUBE_API_KEY exists:', !!process.env.SUPA_YOUTUBE_API_KEY);
     console.log('Environment check - SEARCH_API exists:', !!process.env.SEARCH_API);
     
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
     let videoMetadata = null;
     
     // First, try YouTube Data API v3 for video metadata using server-side API key
-    const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.YOUTUBE_API_KEY;
+    const GOOGLE_API_KEY = process.env.YOUTUBE_API_KEY || process.env.GOOGLE_API_KEY;
     
     if (GOOGLE_API_KEY) {
       try {
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
         // Continue with other methods - don't let this block SupaData
       }
     } else {
-      console.warn('GOOGLE_API_KEY not configured in environment variables');
+      console.warn('YOUTUBE_API_KEY/GOOGLE_API_KEY not configured in environment variables');
     }
     
     // Then try SupaData AI for transcripts

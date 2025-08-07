@@ -108,9 +108,9 @@ export default function QuickContextBubble({
 
     track('quick_context_lookup', { text: selectedText });
     
-    // Open dictionary in new tab
-    const searchUrl = `https://jisho.org/search/${encodeURIComponent(selectedText)}`;
-    window.open(searchUrl, '_blank');
+    // Navigate to our vocabulary page with search term
+    const searchUrl = `/vocabulary?search=${encodeURIComponent(selectedText)}`;
+    window.location.href = searchUrl;
   }, [checkAndTrack, track, selectedText]);
 
   const handleListen = useCallback(async () => {

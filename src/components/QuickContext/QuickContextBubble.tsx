@@ -172,6 +172,7 @@ export default function QuickContextBubble({
       <AnimatePresence>
         <motion.div
           ref={bubbleRef}
+          data-quickcontext-bubble="true"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}

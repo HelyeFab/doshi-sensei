@@ -9,6 +9,9 @@ interface QuickContextProviderProps {
   selector?: string; // CSS selector for elements to enable QuickContext on
 }
 
+// Japanese text regex pattern
+const japaneseRegex = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/;
+
 export default function QuickContextProvider({ 
   children, 
   enabled = true,
@@ -108,6 +111,12 @@ export default function QuickContextProvider({
     const target = event.target as Element;
     if (!target) {
       console.log('[QuickContext] No target, returning');
+      return;
+    }
+
+    // Don't trigger if clicking on the bubble itself or its children
+    if (target.closest('[data-quickcontext-bubble="true"]')) {
+      console.log('[QuickContext] Clicked on bubble itself, ignoring');
       return;
     }
 

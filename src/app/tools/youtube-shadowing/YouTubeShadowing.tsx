@@ -735,43 +735,52 @@ export default function YouTubeShadowing() {
                 >
                   {/* Mode Toggle and Controls */}
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4">
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                      {/* Mode Toggle */}
-                      <div className="flex gap-2">
+                    <div className="flex flex-col gap-4">
+                      {/* Mode Toggle - Responsive Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         <button
                           onClick={() => setShowShadowingMode(true)}
-                          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          className={`px-3 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
                             showShadowingMode 
-                              ? 'bg-primary text-primary-foreground' 
+                              ? 'bg-green-600 text-white' 
                               : 'bg-secondary hover:bg-secondary/80'
                           }`}
                         >
-                          Shadowing Mode
+                          <span className="hidden sm:inline">Shadowing</span>
+                          <span className="sm:hidden">Shadow</span>
+                          <span className="hidden sm:inline"> Mode</span>
                         </button>
                         <button
                           onClick={() => setShowShadowingMode(false)}
-                          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          className={`px-3 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
                             !showShadowingMode 
-                              ? 'bg-primary text-primary-foreground' 
+                              ? 'bg-yellow-600 text-white' 
                               : 'bg-secondary hover:bg-secondary/80'
                           }`}
                         >
-                          Transcript Mode
+                          <span className="hidden sm:inline">Transcript</span>
+                          <span className="sm:hidden">Script</span>
+                          <span className="hidden sm:inline"> Mode</span>
                         </button>
                         {/* Quick Edit Button - Always visible for premium users */}
-                        {isPremium && showShadowingMode && (
+                        {isPremium && (
                           <button
                             onClick={() => setShowShadowingMode(false)}
-                            className="px-4 py-2 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700 transition-all"
-                            title="Switch to transcript mode to edit"
+                            className={`px-3 py-2 rounded-lg font-medium transition-all text-sm sm:text-base col-span-2 sm:col-span-1 ${
+                              showShadowingMode 
+                                ? 'bg-green-600 text-white hover:bg-green-700' 
+                                : 'bg-green-700 text-white cursor-not-allowed opacity-50'
+                            }`}
+                            title={showShadowingMode ? "Switch to transcript mode to edit" : "Already in transcript mode"}
+                            disabled={!showShadowingMode}
                           >
-                            ✏️ Edit Transcript
+                            ✏️ <span className="hidden sm:inline">Edit</span> Transcript
                           </button>
                         )}
                       </div>
                       
-                      {/* Display Options */}
-                      <div className="flex items-center gap-4">
+                      {/* Display Options - Horizontal on all screens */}
+                      <div className="flex items-center justify-center gap-6 border-t border-border pt-3">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="checkbox"

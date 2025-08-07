@@ -73,6 +73,57 @@ export default function QuickContextProvider({
     setShowBubble(true);
   }, [enabled, selector]);
 
+  // Handle click/tap on Japanese text elements
+  const handleElementClick = useCallback((event: MouseEvent | TouchEvent) => {
+    if (!enabled) return;
+
+    const target = event.target as Element;
+    if (!target) return;
+
+    // Check if clicked element matches selector
+    const enabledElement = target.closest(selector);
+    if (!enabledElement) return;
+
+    // Get text content
+    let textContent = '';
+    let elementToUse = target;
+
+    // If clicked on a text node's parent or an element with Japanese text
+    if (target.nodeType === Node.ELEMENT_NODE) {
+      textContent = target.textContent || '';
+      
+      // If the element has child nodes, try to get the most specific Japanese text
+      if (target.childNodes.length === 1 && target.childNodes[0].nodeType === Node.TEXT_NODE) {
+        textContent = target.childNodes[0].textContent || '';
+      }
+    }
+
+    // Check if text contains Japanese characters
+    if (!textContent || !japaneseRegex.test(textContent)) return;
+
+    // If text is too long (probably a paragraph), don't activate on click
+    // Users should select specific text in long passages
+    if (textContent.length > 50) return;
+
+    // Clear any existing selection
+    window.getSelection()?.removeAllRanges();
+
+    // Get element position
+    const rect = elementToUse.getBoundingClientRect();
+
+    setSelectedText(textContent.trim());
+    setBubblePosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top + window.scrollY
+    });
+    setSurroundingContext(textContent);
+    setShowBubble(true);
+
+    // Prevent event from bubbling
+    event.preventDefault();
+    event.stopPropagation();
+  }, [enabled, selector]);
+
   // Handle text selection with debounce
   useEffect(() => {
     if (!enabled) return;
@@ -89,9 +140,17 @@ export default function QuickContextProvider({
       }, 500); // Wait 500ms after selection stops
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (event: MouseEvent) => {
       isSelectingRef.current = false;
-      handleSelectionChange();
+      
+      // Check if there's a selection
+      const selection = window.getSelection();
+      if (selection && selection.toString().trim()) {
+        handleSelectionChange();
+      } else {
+        // No selection, treat as click
+        handleElementClick(event);
+      }
     };
 
     const handleMouseDown = () => {
@@ -99,27 +158,33 @@ export default function QuickContextProvider({
       setShowBubble(false);
     };
 
-    const handleTouchEnd = () => {
+    const handleTouchEnd = (event: TouchEvent) => {
       // For mobile devices
-      setTimeout(handleSelection, 100);
+      const selection = window.getSelection();
+      if (selection && selection.toString().trim()) {
+        setTimeout(handleSelection, 100);
+      } else {
+        // No selection, treat as tap
+        handleElementClick(event);
+      }
     };
 
     // Add event listeners
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleMouseUp as EventListener);
     document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchend', handleTouchEnd as EventListener);
     document.addEventListener('selectionchange', handleSelectionChange);
 
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleMouseUp as EventListener);
       document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchend', handleTouchEnd as EventListener);
       document.removeEventListener('selectionchange', handleSelectionChange);
       if (selectionTimeoutRef.current) {
         clearTimeout(selectionTimeoutRef.current);
       }
     };
-  }, [enabled, handleSelection]);
+  }, [enabled, handleSelection, handleElementClick]);
 
   const handleCloseBubble = useCallback(() => {
     setShowBubble(false);

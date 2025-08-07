@@ -19,6 +19,7 @@ export const FEATURE_PERMISSION_MAP: Record<string, string> = {
   'stroke_order_practice': 'view_stroke_order',
   'youtube_shadowing': 'youtube_shadowing',
   'kanji_mastery': 'learn_kanji',
+  'quick_context': 'quick_context',
   
   // Games
   'kanji_quest': 'play_games',

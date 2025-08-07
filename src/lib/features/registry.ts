@@ -481,6 +481,19 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
 
+  // QuickContext - Context-aware learning assistant
+  'quick_context': {
+    id: 'quick_context',
+    name: 'QuickContext Assistant',
+    description: 'Context-aware learning assistant for Japanese text selection',
+    category: 'learning',
+    icon: '🎯',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active'
+  },
+
   // Leaderboard
   'leaderboard': {
     id: 'leaderboard',

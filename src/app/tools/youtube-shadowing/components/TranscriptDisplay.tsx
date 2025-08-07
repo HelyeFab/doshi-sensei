@@ -139,6 +139,9 @@ export default function TranscriptDisplay({
       
       // For YouTube player mode, try to extract subtitles if no cache
       if (audioUrl === 'youtube-player') {
+        console.log('🎬 [CLIENT] Starting YouTube extraction for:', videoUrl);
+        setLoadingMessage('Connecting to extraction service...');
+        
         // Use local Next.js API route
         const response = await fetch('/api/youtube/extract', {
           method: 'POST',
@@ -147,6 +150,9 @@ export default function TranscriptDisplay({
             url: videoUrl
           })
         });
+        
+        console.log('🎬 [CLIENT] Response status:', response.status);
+        console.log('🎬 [CLIENT] Response ok:', response.ok);
 
         const contentType = response.headers.get('content-type');
         
@@ -205,10 +211,13 @@ export default function TranscriptDisplay({
           }
         } else {
           // Handle error responses
+          console.log('🎬 [CLIENT] Error response - Status:', response.status);
+          console.log('🎬 [CLIENT] Content-Type:', contentType);
+          
           if (contentType && contentType.includes('application/json')) {
             try {
               const errorData = await response.json();
-              console.error('API returned error:', errorData);
+              console.error('🎬 [CLIENT] API error data:', errorData);
               
               // Use the friendly error message from the API
               if (errorData.error) {

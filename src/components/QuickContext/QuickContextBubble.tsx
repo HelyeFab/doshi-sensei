@@ -9,7 +9,7 @@ import { JapaneseWord } from '@/types';
 import { searchWords } from '@/utils/api';
 import { useAccess } from '@/hooks/useAccess';
 import { useAnalytics } from '@/hooks/useAnalytics';
-import { speechSynthesis } from '@/utils/speechSynthesis';
+import { useTTS } from '@/hooks/useTTS';
 
 interface Position {
   x: number;
@@ -40,6 +40,7 @@ export default function QuickContextBubble({
   const bubbleRef = useRef<HTMLDivElement>(null);
   const { checkAndTrack } = useAccess();
   const { track } = useAnalytics();
+  const { speak: speakTTS, stop: stopTTS, state: ttsState } = useTTS();
 
   useEffect(() => {
     setMounted(true);
@@ -118,9 +119,13 @@ export default function QuickContextBubble({
 
     track('quick_context_tts', { text: selectedText });
     
-    // Use TTS
-    await speechSynthesis.speak(selectedText, 'ja-JP');
-  }, [checkAndTrack, track, selectedText]);
+    // Use our app's TTS system with caching
+    await speakTTS(selectedText, {
+      voice: 'female',
+      context: 'quick_context',
+      priority: 'high'
+    });
+  }, [checkAndTrack, track, selectedText, speakTTS]);
 
   const handleAIExplain = useCallback(async () => {
     const canUse = await checkAndTrack('quick_context');
@@ -259,11 +264,20 @@ export default function QuickContextBubble({
                   onClick={handleListen}
                   className="flex flex-col items-center gap-1 p-3 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors group"
                   aria-label="Listen to pronunciation"
+                  disabled={ttsState.isLoading || ttsState.isPlaying}
                 >
-                  <svg className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                  </svg>
-                  <span className="text-xs text-secondary font-medium">Listen</span>
+                  {ttsState.isPlaying ? (
+                    <div className="w-5 h-5 text-secondary">
+                      <div className="animate-pulse">🔊</div>
+                    </div>
+                  ) : (
+                    <svg className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg>
+                  )}
+                  <span className="text-xs text-secondary font-medium">
+                    {ttsState.isPlaying ? 'Playing' : 'Listen'}
+                  </span>
                 </button>
 
                 <button

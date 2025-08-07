@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import ytdl from 'ytdl-core';
+import * as ytdl from 'ytdl-core';
 import axios from 'axios';
 import { TranscriptCacheManager } from '@/utils/transcriptCache';
 

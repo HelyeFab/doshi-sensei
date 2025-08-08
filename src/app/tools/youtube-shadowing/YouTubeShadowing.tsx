@@ -732,34 +732,31 @@ export default function YouTubeShadowing() {
                   transition={{ delay: 0.2 }}
                   className="space-y-6"
                 >
-                  {/* Mode Toggle and Controls */}
+                  {/* Mode Toggle - Clean Two Button Layout */}
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4">
-                    <div className="flex flex-col gap-4">
-                      {/* Mode Toggle - Simple Two Button Layout */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => setShowShadowingMode(true)}
-                          className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                            showShadowingMode 
-                              ? 'bg-green-600 text-white shadow-md' 
-                              : 'bg-secondary hover:bg-secondary/80'
-                          }`}
-                        >
-                          <span className="hidden sm:inline">Shadowing Mode</span>
-                          <span className="sm:hidden">Shadowing</span>
-                        </button>
-                        <button
-                          onClick={() => setShowShadowingMode(false)}
-                          className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                            !showShadowingMode 
-                              ? 'bg-amber-600 text-white shadow-md' 
-                              : 'bg-secondary hover:bg-secondary/80'
-                          }`}
-                        >
-                          <span className="hidden sm:inline">Transcript Mode</span>
-                          <span className="sm:hidden">Transcript</span>
-                        </button>
-                      </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setShowShadowingMode(true)}
+                        className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                          showShadowingMode 
+                            ? 'bg-green-600 text-white shadow-md' 
+                            : 'bg-secondary hover:bg-secondary/80'
+                        }`}
+                      >
+                        <span className="hidden sm:inline">Shadowing Mode</span>
+                        <span className="sm:hidden">Shadowing</span>
+                      </button>
+                      <button
+                        onClick={() => setShowShadowingMode(false)}
+                        className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                          !showShadowingMode 
+                            ? 'bg-amber-600 text-white shadow-md' 
+                            : 'bg-secondary hover:bg-secondary/80'
+                        }`}
+                      >
+                        <span className="hidden sm:inline">Transcript Mode</span>
+                        <span className="sm:hidden">Transcript</span>
+                      </button>
                     </div>
                   </div>
 

@@ -2434,7 +2434,8 @@ export const en = {
         reading: "📰 Read real Japanese news with furigana support",
         kanji: "🈯 Study kanji with beautiful mood boards",
         tracking: "📊 Track your progress across all activities",
-        youtubeShadowing: "🎬 Practice with YouTube videos"
+        youtubeShadowing: "🎬 Practice with YouTube videos",
+        quickContext: "💡 Get instant help with any Japanese text"
       },
       startButton: "Start My Journey! 🚀",
       footer: "(No Japanese learners were overwhelmed in the making of this platform)"

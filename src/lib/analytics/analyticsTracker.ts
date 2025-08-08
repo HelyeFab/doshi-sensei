@@ -10,6 +10,9 @@ export type AnalyticsEventType =
   | 'game_start' | 'game_complete' | 'drill_start' | 'drill_complete'
   | 'flashcard_session' | 'flashcard_session_started' | 'flashcard_session_completed' | 'flashcard_undo_used'
   | 'list_created' | 'list_used'
+  // Quick Context events
+  | 'quick_context_save' | 'quick_context_lookup' | 'quick_context_tts' 
+  | 'quick_context_ai' | 'quick_context_copy'
   // Anki events
   | 'anki_set_creation_started' | 'anki_set_creation_completed' | 'anki_set_creation_error'
   | 'anki_import_started' | 'anki_import_completed' | 'anki_import_error'
@@ -355,6 +358,24 @@ class AnalyticsTracker {
             aggregates.features['drills.totalCorrect'] = increment(event.data.correct);
             aggregates.features['drills.totalQuestions'] = increment(event.data.total);
           }
+          break;
+
+        // Quick Context events
+        case 'quick_context_save':
+          aggregates.features['quickContext.saves'] = increment(1);
+          break;
+        case 'quick_context_lookup':
+          aggregates.features['quickContext.lookups'] = increment(1);
+          break;
+        case 'quick_context_tts':
+          aggregates.features['quickContext.tts'] = increment(1);
+          break;
+        case 'quick_context_ai':
+          aggregates.features['quickContext.ai'] = increment(1);
+          aggregates.features[`quickContext.ai.${event.data.type || 'unknown'}`] = increment(1);
+          break;
+        case 'quick_context_copy':
+          aggregates.features['quickContext.copies'] = increment(1);
           break;
 
         // Behavior events

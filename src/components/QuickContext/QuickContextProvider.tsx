@@ -33,6 +33,7 @@ export default function QuickContextProvider({
   const [showBubble, setShowBubble] = useState(false);
   const [surroundingContext, setSurroundingContext] = useState('');
   const [textType, setTextType] = useState<'kanji' | 'word' | 'phrase' | 'sentence'>('word');
+  const [hasOpenModals, setHasOpenModals] = useState(false);
   const selectionTimeoutRef = useRef<NodeJS.Timeout>();
   const isSelectingRef = useRef(false);
   const selectionHistory = useRef<QuickContextSelection[]>([]);
@@ -344,7 +345,7 @@ export default function QuickContextProvider({
   return (
     <>
       {children}
-      {showBubble && selectedText && (
+      {(showBubble || hasOpenModals) && selectedText && (
         <QuickContextBubble
           selectedText={selectedText}
           position={bubblePosition}
@@ -353,6 +354,7 @@ export default function QuickContextProvider({
           isKanji={textType === 'kanji'}
           textType={textType}
           history={selectionHistory.current}
+          onModalStateChange={setHasOpenModals}
         />
       )}
     </>

@@ -22,7 +22,11 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
   const [newListName, setNewListName] = useState('');
   const [newListType, setNewListType] = useState<StudyListType>(itemType === 'sentence' ? 'sentence' : 'flashcard');
   const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [savedListName, setSavedListName] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
+  
+  console.log('SaveWordModal rendered, showCreateNew:', showCreateNew, 'saving:', saving);
 
   // Load unified study lists
   useEffect(() => {
@@ -78,26 +82,37 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
   };
 
   const handleSave = async () => {
-    if (selectedLists.length === 0 && !newListName.trim()) return;
+    console.log('handleSave called');
+    console.log('selectedLists:', selectedLists, 'newListName:', newListName);
+    
+    if (selectedLists.length === 0 && !newListName.trim()) {
+      console.log('No lists selected and no new list name, returning');
+      return;
+    }
 
     try {
+      console.log('Starting save process...');
       setSaving(true);
       setErrors([]);
 
       // Create new list if needed
       const listsToSaveTo = [...selectedLists];
       if (newListName.trim() && showCreateNew) {
+        console.log('Creating new list:', newListName);
         try {
-          const newList = await StudyListManager.createStudyList({
-            name: newListName.trim(),
-            type: newListType,
-            description: '',
-            color: '#' + Math.floor(Math.random()*16777215).toString(16),
-          });
+          const newList = await StudyListManager.createStudyList(
+            newListName.trim(),
+            newListType,
+            '', // description
+            user, // user from useAuth
+            undefined // subscriptionStatus (optional)
+          );
+          console.log('New list created:', newList);
           listsToSaveTo.push(newList.id);
         } catch (error) {
           console.error('Error creating new list:', error);
           setErrors(prev => [...prev, 'Failed to create new list']);
+          return; // Exit early if list creation fails
         }
       }
 
@@ -132,12 +147,31 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
         itemToSave = word;
       }
       
-      const result = await StudyListManager.addItemToLists(itemToSave, itemType, listsToSaveTo);
+      const result = await StudyListManager.addItemToLists(
+        itemToSave, 
+        itemType, 
+        listsToSaveTo,
+        user, // user from useAuth
+        undefined // subscriptionStatus (optional)
+      );
       
+      console.log('Save result:', result);
       if (result.success) {
+        console.log('Save successful, calling onSaveComplete and onClose');
+        
+        // Show success state
+        setSaveSuccess(true);
+        setSavedListName(newListName.trim() || 'your lists');
+        
+        // Call completion callback
         onSaveComplete?.();
-        onClose();
+        
+        // Close modal after a short delay to show success message
+        setTimeout(() => {
+          onClose();
+        }, 1500);
       } else {
+        console.log('Save failed with errors:', result.errors);
         setErrors(result.errors);
       }
     } catch (err) {
@@ -151,6 +185,32 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+        {/* Success State */}
+        {saveSuccess ? (
+          <div className="text-center py-8">
+            <div className="mb-4">
+              <svg className="w-20 h-20 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-green-600 mb-2">Saved Successfully!</h3>
+            <p className="text-muted-foreground mb-1">
+              <span className="font-ja text-lg">{word.kanji || word.kana}</span>
+            </p>
+            <p className="text-sm text-muted-foreground">
+              has been added to <span className="font-semibold">{savedListName}</span>
+            </p>
+            <div className="mt-6">
+              <div className="inline-flex items-center gap-2 text-green-600">
+                <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span className="text-sm">Closing...</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
           {itemType === 'sentence' 
             ? `Save Sentence to Lists`
@@ -219,7 +279,10 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
         {/* Create new list section */}
         {!showCreateNew ? (
           <button
-            onClick={() => setShowCreateNew(true)}
+            onClick={() => {
+              console.log('Setting showCreateNew to true');
+              setShowCreateNew(true);
+            }}
             className="w-full text-center text-sm text-primary hover:text-primary/80 transition-colors mb-4"
           >
             + Create new list
@@ -297,7 +360,10 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
         {/* Action buttons */}
         <div className="flex gap-3">
           <button
-            onClick={handleSave}
+            onClick={() => {
+              console.log('Save button clicked directly');
+              handleSave();
+            }}
             disabled={saving || (selectedLists.length === 0 && !newListName.trim())}
             className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -311,6 +377,8 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
             Cancel
           </button>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

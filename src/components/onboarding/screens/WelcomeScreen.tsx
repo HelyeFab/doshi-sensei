@@ -44,6 +44,7 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
         <div className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-lg p-4 space-y-2 text-left max-w-md mx-auto shadow-lg">
           <div className="text-sm text-primary-foreground">{tutorial.welcome.features.conjugations}</div>
           <div className="text-sm text-primary-foreground">{tutorial.welcome.features.vocabulary}</div>
+          <div className="text-sm text-primary-foreground">{tutorial.welcome.features.quickContext}</div>
           <div className="text-sm text-primary-foreground">{tutorial.welcome.features.textbookVocab}</div>
           <div className="text-sm text-primary-foreground">{tutorial.welcome.features.games}</div>
           <div className="text-sm text-primary-foreground">{tutorial.welcome.features.reading}</div>

@@ -1,0 +1,921 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
+
+// Japanese regex patterns
+const kanjiRegex = /[\u4E00-\u9FAF]/g;
+import { SaveWordModal } from "@/components/drill/SaveWordModal";
+import AIExplanationModal from "@/components/AIExplanation/AIExplanationModal";
+import { JapaneseWord } from "@/types";
+import { searchJMdictWords } from "@/utils/jmdictLocalSearch";
+import { useAccess } from "@/hooks/useAccess";
+import { useAnalytics } from "@/hooks/useAnalytics";
+import { useTTS } from "@/hooks/useTTS";
+import { QuickContextSelection } from "./QuickContextProvider";
+
+interface Position {
+  x: number;
+  y: number;
+}
+
+interface QuickContextBubbleProps {
+  selectedText: string;
+  position: Position;
+  onClose: () => void;
+  surroundingContext?: string;
+  isKanji?: boolean;
+  textType?: "kanji" | "word" | "phrase" | "sentence";
+  history?: QuickContextSelection[];
+  onModalStateChange?: (hasOpenModals: boolean) => void;
+}
+
+export default function QuickContextBubble({
+  selectedText,
+  position,
+  onClose,
+  surroundingContext,
+  isKanji = false,
+  textType = "word",
+  history = [],
+  onModalStateChange,
+}: QuickContextBubbleProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [showLookupModal, setShowLookupModal] = useState(false);
+  const [lookupResults, setLookupResults] = useState<JapaneseWord[]>([]);
+  const [wordData, setWordData] = useState<JapaneseWord | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLookupLoading, setIsLookupLoading] = useState(false);
+  const [savingWordId, setSavingWordId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [copiedText, setCopiedText] = useState("");
+  const [keepBubbleVisible, setKeepBubbleVisible] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStarted, setDragStarted] = useState(false);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const constraintsRef = useRef(null);
+  const dragControls = useDragControls();
+  const { checkAndTrack, getRemainingUsage } = useAccess();
+  const { track } = useAnalytics();
+  const { speak: speakTTS, stop: stopTTS, state: ttsState } = useTTS();
+  const [remainingUses, setRemainingUses] = useState<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    // Get remaining uses on mount
+    getRemainingUsage("quick_context").then((uses) => {
+      setRemainingUses(uses);
+    });
+    return () => setMounted(false);
+  }, []);
+
+  // Notify parent when modals are open/closed
+  useEffect(() => {
+    const hasOpenModals = showSaveModal || showAIModal || showLookupModal;
+    console.log("Modal state changed - hasOpenModals:", hasOpenModals);
+    onModalStateChange?.(hasOpenModals);
+  }, [showSaveModal, showAIModal, showLookupModal, onModalStateChange]);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      // Don't close if currently dragging
+      if (isDragging || dragStarted) {
+        console.log("Currently dragging, not closing bubble");
+        return;
+      }
+
+      // Don't close if modals are open
+      if (showSaveModal || showAIModal || showLookupModal) {
+        console.log("Modal is open, not closing bubble");
+        return;
+      }
+
+      // Don't close if clicking on the bubble itself
+      if (bubbleRef.current && !bubbleRef.current.contains(e.target as Node)) {
+        // Check if this is a QuickContext bubble element
+        const target = e.target as HTMLElement;
+        if (target.closest('[data-quickcontext-bubble="true"]')) {
+          return;
+        }
+
+        // Check if clicking on a modal
+        if (target.closest(".fixed.inset-0")) {
+          console.log("Clicking on modal, not closing");
+          return;
+        }
+
+        onClose();
+      }
+    };
+
+    // Add longer delay to prevent immediate closure on mobile and initial render
+    const timeoutId = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }, 800); // Increased to 800ms for better stability
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [
+    onClose,
+    showSaveModal,
+    showAIModal,
+    showLookupModal,
+    isDragging,
+    dragStarted,
+  ]);
+
+  // Fetch word data when text is selected
+  useEffect(() => {
+    if (selectedText && !isKanji) {
+      fetchWordData();
+    }
+  }, [selectedText]);
+
+  const fetchWordData = async () => {
+    setIsLoading(true);
+    try {
+      const results = await searchJMdictWords(selectedText);
+      if (results && results.length > 0) {
+        setWordData(results[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching word data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = useCallback(async () => {
+    console.log("handleSave called");
+    try {
+      const canUse = await checkAndTrack("quick_context");
+      console.log("canUse:", canUse);
+      if (!canUse) {
+        console.log(
+          "User cannot use quick_context - limit reached or no permission"
+        );
+        return;
+      }
+
+      track("quick_context_save", { text: selectedText });
+
+      // Create a word object if we don't have one
+      const wordToSave = wordData || {
+        id: `quick_${Date.now()}`,
+        kanji: isKanji ? selectedText : "",
+        kana: !isKanji ? selectedText : "",
+        romaji: "",
+        meaning: "",
+        type: "other" as const,
+        jlpt: "N5" as const,
+        tags: [],
+      };
+
+      console.log("Setting word data and showing modal");
+      setWordData(wordToSave);
+      setShowSaveModal(true);
+      setKeepBubbleVisible(true); // Keep bubble visible when modal opens
+
+      // Update remaining uses
+      const newUses = await getRemainingUsage("quick_context");
+      setRemainingUses(newUses);
+    } catch (error) {
+      console.error("Error in handleSave:", error);
+    }
+  }, [
+    checkAndTrack,
+    track,
+    selectedText,
+    wordData,
+    getRemainingUsage,
+    isKanji,
+  ]);
+
+  const handleLookup = useCallback(async () => {
+    const canUse = await checkAndTrack("quick_context");
+    if (!canUse) return;
+
+    track("quick_context_lookup", { text: selectedText });
+
+    // Search in local JMDict and show results in modal
+    setIsLookupLoading(true);
+    try {
+      console.log(
+        "Searching for:",
+        selectedText,
+        "Type:",
+        textType,
+        "Is Kanji:",
+        isKanji
+      );
+      const results = await searchJMdictWords(selectedText, 30);
+      console.log("Search results:", results);
+      setLookupResults(results || []);
+      setShowLookupModal(true);
+      setKeepBubbleVisible(true); // Keep bubble visible when modal opens
+    } catch (error) {
+      console.error("Error searching words:", error);
+      setLookupResults([]);
+      setShowLookupModal(true); // Show modal even if no results
+    } finally {
+      setIsLookupLoading(false);
+    }
+
+    // Update remaining uses
+    const newUses = await getRemainingUsage("quick_context");
+    setRemainingUses(newUses);
+  }, [
+    checkAndTrack,
+    track,
+    selectedText,
+    textType,
+    isKanji,
+    getRemainingUsage,
+  ]);
+
+  const handleListen = useCallback(async () => {
+    const canUse = await checkAndTrack("quick_context");
+    if (!canUse) return;
+
+    track("quick_context_tts", { text: selectedText });
+
+    // Use our app's TTS system with caching
+    await speakTTS(selectedText, {
+      voice: "female",
+      context: "quick_context",
+      priority: "high",
+    });
+
+    // Update remaining uses
+    const newUses = await getRemainingUsage("quick_context");
+    setRemainingUses(newUses);
+  }, [checkAndTrack, track, selectedText, speakTTS, getRemainingUsage]);
+
+  const handleAIExplain = useCallback(async () => {
+    console.log("handleAIExplain called");
+    try {
+      const canUse = await checkAndTrack("quick_context");
+      console.log("AI - canUse:", canUse);
+      if (!canUse) {
+        console.log(
+          "User cannot use quick_context for AI - limit reached or no permission"
+        );
+        return;
+      }
+
+      track("quick_context_ai", { text: selectedText, type: textType });
+      console.log("Showing AI modal");
+      setShowAIModal(true);
+      setKeepBubbleVisible(true); // Keep bubble visible when modal opens
+    } catch (error) {
+      console.error("Error in handleAIExplain:", error);
+    }
+  }, [checkAndTrack, track, selectedText, textType]);
+
+  // Copy to clipboard
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(selectedText);
+    setCopiedText(selectedText);
+    setTimeout(() => setCopiedText(""), 2000);
+    track("quick_context_copy", { text: selectedText, type: textType });
+  }, [selectedText, track, textType]);
+
+  // Keyboard shortcuts (must be after handleSave is defined)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Esc to close
+      if (e.key === "Escape") {
+        console.log("Esc pressed - closing QuickContext");
+        onClose();
+      }
+
+      // Q for quick save (only when bubble is expanded)
+      if (e.key === "q" || e.key === "Q") {
+        if (isExpanded && !showSaveModal && !showAIModal && !showLookupModal) {
+          console.log("Q pressed - quick save");
+          handleSave();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+    return () => document.removeEventListener("keydown", handleKeyPress);
+  }, [
+    onClose,
+    isExpanded,
+    showSaveModal,
+    showAIModal,
+    showLookupModal,
+    handleSave,
+  ]);
+
+  // Calculate bubble position to avoid screen edges
+  const getBubblePosition = () => {
+    const padding = 10;
+    // Make bubble width responsive to screen width on mobile
+    const maxBubbleWidth = Math.min(280, window.innerWidth - padding * 2);
+    const bubbleWidth = isExpanded ? maxBubbleWidth : 48;
+    const bubbleHeight = isExpanded ? 200 : 48; // Further reduced height for ultra-compact layout
+
+    let x = position.x;
+    let y = position.y - bubbleHeight - 10; // Position above selection
+
+    // Adjust if too close to edges
+    if (x + bubbleWidth > window.innerWidth - padding) {
+      x = window.innerWidth - bubbleWidth - padding;
+    }
+    if (x < padding) {
+      x = padding;
+    }
+    if (y < padding) {
+      y = position.y + 30; // Position below if no room above
+    }
+
+    return { x, y, width: bubbleWidth };
+  };
+
+  const bubblePosition = getBubblePosition();
+
+  if (!mounted) return null;
+
+  console.log(
+    "QuickContextBubble render - showSaveModal:",
+    showSaveModal,
+    "showAIModal:",
+    showAIModal,
+    "isExpanded:",
+    isExpanded
+  );
+
+  // Hide bubble visually when minimized and modal is open
+  const shouldShowBubble =
+    isExpanded || (!showSaveModal && !showAIModal && !showLookupModal);
+
+  const content = (
+    <>
+      {/* Invisible constraints container for drag boundaries */}
+      <div
+        ref={constraintsRef}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: "none",
+          zIndex: 9998,
+        }}
+      />
+
+      <AnimatePresence>
+        {shouldShowBubble && (
+          <motion.div
+            ref={bubbleRef}
+            data-quickcontext-bubble="true"
+            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+            transition={{
+              duration: 0.2,
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+            }}
+            drag={isExpanded}
+            dragControls={dragControls}
+            dragListener={false}
+            dragConstraints={constraintsRef}
+            dragMomentum={false}
+            dragElastic={0}
+            dragTransition={{
+              power: 0,
+              timeConstant: 0,
+              min: 0,
+              max: 0,
+              bounceDamping: 10,
+              bounceStiffness: 100,
+            }}
+            onDragStart={() => {
+              console.log("Drag started");
+              setIsDragging(true);
+              setDragStarted(true);
+            }}
+            onDragEnd={() => {
+              console.log("Drag ended");
+              setIsDragging(false);
+              // Keep dragStarted true for a moment to prevent immediate close
+              setTimeout(() => setDragStarted(false), 100);
+            }}
+            style={{
+              position: "fixed",
+              left: bubblePosition.x,
+              top: bubblePosition.y,
+              width: isExpanded ? bubblePosition.width : 48,
+              zIndex: 9999,
+              touchAction: "none",
+            }}
+            className={`
+            bg-card border-2 border-primary rounded-2xl shadow-2xl
+            transition-all duration-300 ease-in-out
+            ${!isExpanded ? "hover:scale-110" : ""}
+          `}
+          >
+            {!isExpanded ? (
+              // Compact bubble - just the Doshi mascot
+              <button
+                onClick={(e) => {
+                  console.log("QuickContext bubble clicked");
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsExpanded(true);
+                }}
+                onTouchEnd={(e) => {
+                  console.log("QuickContext bubble touched");
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsExpanded(true);
+                }}
+                onPointerDown={(e) => {
+                  console.log("QuickContext bubble pointer down");
+                  // Prevent text selection on mobile
+                  e.preventDefault();
+                }}
+                className="w-12 h-12 flex items-center justify-center rounded-2xl bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer select-none touch-none"
+                aria-label="Expand QuickContext menu"
+                type="button"
+              >
+                <img
+                  src="/flat-icons/ui/quick-context/robot.svg"
+                  alt="QuickContext Helper"
+                  className="w-8 h-8 pointer-events-none"
+                />
+              </button>
+            ) : (
+              // Expanded bubble with actions
+              <div className="p-3 h-full flex flex-col">
+                {/* Header with drag handle and close button */}
+                <div
+                  className="flex items-center justify-between mb-3 cursor-move select-none"
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Header pointer down - starting drag");
+                    setDragStarted(true);
+                    // Start drag when clicking on header
+                    dragControls.start(e);
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation();
+                  }}
+                  style={{ touchAction: "none" }}
+                  title="Drag to move"
+                >
+                  <div className="flex items-center gap-2">
+                    {/* Drag handle indicator */}
+                    <svg
+                      className="w-4 h-4 text-muted-foreground"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 8h16M4 16h16"
+                      />
+                    </svg>
+                    <img
+                      src="/flat-icons/ui/quick-context/robot.svg"
+                      alt="QuickContext Helper"
+                      className="w-6 h-6"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-primary">
+                        QuickContext
+                      </span>
+                      {remainingUses !== null && remainingUses !== -1 && (
+                        <span className="text-xs text-muted-foreground">
+                          {remainingUses} uses left today
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div
+                    className="flex items-center gap-1"
+                    onPointerDownCapture={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => {
+                        console.log("Minimize clicked");
+                        console.log(
+                          "Current state - showSaveModal:",
+                          showSaveModal
+                        );
+                        console.log(
+                          "Current state - showAIModal:",
+                          showAIModal
+                        );
+                        console.log("Current state - isExpanded:", isExpanded);
+                        setIsExpanded(false);
+                        console.log("Set isExpanded to false");
+                      }}
+                      className="p-1.5 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                      aria-label="Minimize"
+                      title="Minimize"
+                    >
+                      <span className="text-lg font-bold leading-none">−</span>
+                    </button>
+                    <button
+                      onClick={onClose}
+                      className="p-1 rounded-full hover:bg-muted transition-colors"
+                      aria-label="Close"
+                      title="Close"
+                    >
+                      <svg
+                        className="w-4 h-4 text-muted-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Selected text display with type badge - minimal height version */}
+                <div
+                  className="mb-1 flex items-center justify-between gap-1 px-1.5 py-0.5 bg-muted/50 rounded"
+                  onPointerDownCapture={(e) => e.stopPropagation()}
+                >
+                  <p className="text-xs font-ja font-medium text-foreground truncate max-w-[180px] leading-tight">
+                    {selectedText}
+                  </p>
+                  <span
+                    className={`text-[8px] px-1 py-0.5 rounded-full flex-none inline-flex items-center leading-none whitespace-nowrap self-center ${
+                      textType === "kanji"
+                        ? "bg-primary/20 text-primary"
+                        : textType === "word"
+                        ? "bg-accent/20 text-accent"
+                        : textType === "phrase"
+                        ? "bg-secondary/20 text-secondary"
+                        : "bg-destructive/20 text-destructive"
+                    }`}
+                  >
+                    {textType}
+                  </span>
+                </div>
+
+                {/* Action buttons grid - compact 2x3 layout with fixed heights */}
+                <div
+                  className="grid grid-cols-3 gap-1.5"
+                  onPointerDownCapture={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={(e) => {
+                      console.log("Save button clicked");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSave();
+                    }}
+                    onTouchEnd={(e) => {
+                      console.log("Save button touched");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSave();
+                    }}
+                    className="flex flex-col items-center justify-center gap-0.5 h-[52px] p-1.5 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors group cursor-pointer select-none"
+                    aria-label="Save to lists"
+                    type="button"
+                  >
+                    <svg
+                      className="w-4 h-4 text-primary group-hover:scale-110 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                      />
+                    </svg>
+                    <span className="text-[10px] text-primary font-medium">
+                      Save
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      console.log("Lookup button clicked");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleLookup();
+                    }}
+                    onTouchEnd={(e) => {
+                      console.log("Lookup button touched");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleLookup();
+                    }}
+                    className="flex flex-col items-center justify-center gap-0.5 h-[52px] p-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 transition-colors group cursor-pointer select-none"
+                    aria-label="Look up in dictionary"
+                    type="button"
+                  >
+                    <svg
+                      className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+                      Lookup
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      console.log("Listen button clicked");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleListen();
+                    }}
+                    onTouchEnd={(e) => {
+                      console.log("Listen button touched");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleListen();
+                    }}
+                    className="flex flex-col items-center justify-center gap-0.5 h-[52px] p-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 transition-colors group cursor-pointer select-none"
+                    aria-label="Listen to pronunciation"
+                    disabled={ttsState.isLoading || ttsState.isPlaying}
+                    type="button"
+                  >
+                    {ttsState.isPlaying || ttsState.isLoading ? (
+                      <svg
+                        className="w-4 h-4 text-green-600 dark:text-green-400 animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-4 h-4 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                        />
+                      </svg>
+                    )}
+                    <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">
+                      {ttsState.isPlaying || ttsState.isLoading
+                        ? "Playing"
+                        : "Listen"}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      console.log("AI button clicked");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleAIExplain();
+                    }}
+                    onTouchEnd={(e) => {
+                      console.log("AI button touched");
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleAIExplain();
+                    }}
+                    className="flex flex-col items-center justify-center gap-0.5 h-[52px] p-1.5 rounded-lg bg-destructive/20 hover:bg-destructive/30 transition-colors group cursor-pointer select-none"
+                    aria-label="AI explanation"
+                    type="button"
+                  >
+                    <svg
+                      className="w-4 h-4 text-destructive group-hover:scale-110 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span className="text-[10px] text-destructive font-medium">
+                      AI
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={handleCopy}
+                    className="flex flex-col items-center justify-center gap-0.5 h-[52px] p-1.5 rounded-lg bg-muted hover:bg-muted/80 transition-colors group"
+                    aria-label="Copy to clipboard"
+                  >
+                    <svg
+                      className="w-4 h-4 text-foreground group-hover:scale-110 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span className="text-[10px] text-foreground font-medium">
+                      {copiedText === selectedText ? "Copied!" : "Copy"}
+                    </span>
+                  </button>
+
+                  {/* Empty cell for 2x3 grid alignment */}
+                  <div className="h-[52px]"></div>
+                </div>
+
+                {/* Keyboard shortcuts hint - only show on desktop */}
+                <div
+                  className="hidden sm:block mt-3 pt-2 border-t border-border"
+                  onPointerDownCapture={(e) => e.stopPropagation()}
+                >
+                  <p className="text-xs text-muted-foreground text-center">
+                    <kbd className="px-1 py-0.5 bg-muted rounded text-xs">
+                      Esc
+                    </kbd>{" "}
+                    to close •{" "}
+                    <kbd className="px-1 py-0.5 bg-muted rounded text-xs">
+                      Q
+                    </kbd>{" "}
+                    to save
+                  </p>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modals */}
+      {showSaveModal && wordData && (
+        <SaveWordModal
+          word={wordData}
+          isOpen={showSaveModal}
+          onClose={() => {
+            console.log("SaveWordModal onClose called");
+            setShowSaveModal(false);
+            setKeepBubbleVisible(false);
+          }}
+          onSave={(savedWord) => {
+            console.log("Word saved:", savedWord);
+            setSavingWordId(savedWord.id);
+            setTimeout(() => setSavingWordId(null), 2000);
+          }}
+        />
+      )}
+
+      {showAIModal && (
+        <AIExplanationModal
+          isOpen={showAIModal}
+          onClose={() => {
+            console.log("AIExplanationModal onClose called");
+            setShowAIModal(false);
+            setKeepBubbleVisible(false);
+          }}
+          selectedText={selectedText}
+          context={surroundingContext}
+          textType={textType}
+        />
+      )}
+
+      {showLookupModal && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-lg shadow-lg max-w-md w-full max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="text-lg font-semibold text-card-foreground">
+                Dictionary Results
+              </h3>
+              <button
+                onClick={() => {
+                  setShowLookupModal(false);
+                  setKeepBubbleVisible(false);
+                }}
+                className="p-1 rounded-full hover:bg-muted transition-colors"
+                aria-label="Close"
+              >
+                <svg
+                  className="w-5 h-5 text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[60vh]">
+              {isLookupLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : lookupResults.length > 0 ? (
+                <div className="space-y-3">
+                  {lookupResults.slice(0, 10).map((result, index) => (
+                    <div
+                      key={index}
+                      className="p-3 bg-muted/50 rounded-lg border border-border"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        {result.kanji && (
+                          <span className="font-ja font-medium text-card-foreground">
+                            {result.kanji}
+                          </span>
+                        )}
+                        {result.kana && (
+                          <span className="font-ja text-muted-foreground">
+                            {result.kana}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {result.meaning}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">
+                    No dictionary results found for "{selectedText}"
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  return mounted ? createPortal(content, document.body) : null;
+}

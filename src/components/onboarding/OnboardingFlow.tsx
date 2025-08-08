@@ -5,6 +5,7 @@ import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { NavigationBar } from './components/NavigationBar';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { ConjugationScreen } from './screens/ConjugationScreen';
+import { QuickContextScreen } from './screens/QuickContextScreen';
 import { YouTubeShadowingScreen } from './screens/YouTubeShadowingScreen';
 import { TextbookVocabularyScreen } from './screens/TextbookVocabularyScreen';
 import { SuccessScreen } from './screens/SuccessScreen';
@@ -16,14 +17,15 @@ export interface OnboardingFlowProps {
 export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const [currentScreen, setCurrentScreen] = useState(0);
   const [direction, setDirection] = useState(0);
-  const totalScreens = 5;
+  const totalScreens = 6;
 
   const screens = [
     <WelcomeScreen key="welcome" onNext={() => goToScreen(1)} />,
     <ConjugationScreen key="conjugation" onNext={() => goToScreen(2)} />,
-    <YouTubeShadowingScreen key="youtube" onNext={() => goToScreen(3)} />,
-    <TextbookVocabularyScreen key="textbook" onNext={() => goToScreen(4)} />,
-    <SuccessScreen key="success" onComplete={onComplete} onBack={() => goToScreen(3)} />,
+    <QuickContextScreen key="quickcontext" onNext={() => goToScreen(3)} />,
+    <YouTubeShadowingScreen key="youtube" onNext={() => goToScreen(4)} />,
+    <TextbookVocabularyScreen key="textbook" onNext={() => goToScreen(5)} />,
+    <SuccessScreen key="success" onComplete={onComplete} onBack={() => goToScreen(4)} />,
   ];
 
   const goToScreen = (screenIndex: number) => {

@@ -9,39 +9,110 @@ interface QuickContextProviderProps {
   selector?: string; // CSS selector for elements to enable QuickContext on
 }
 
-// Japanese text regex pattern
+export interface QuickContextSelection {
+  text: string;
+  type: 'kanji' | 'word' | 'phrase' | 'sentence';
+  context: string;
+  timestamp: number;
+}
+
+// Japanese text regex patterns
 const japaneseRegex = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/;
+const kanjiRegex = /[\u4E00-\u9FAF]/;
+const hiraganaRegex = /[\u3040-\u309F]/;
+const katakanaRegex = /[\u30A0-\u30FF]/;
+const particleRegex = /[\u306F\u304C\u3092\u306B\u3067\u3068\u3082\u3078\u304B\u3089]/;
 
 export default function QuickContextProvider({ 
   children, 
   enabled = true,
-  selector = '*' // Allow any element, we'll check for Japanese text content
+  selector = '.japanese-text, .font-ja, [data-quickcontext="true"], .prose p, .vocabulary-item, article p, .story-content, .news-content, .drill-content, .game-text, .practice-text, .reading-text'
 }: QuickContextProviderProps) {
   const [selectedText, setSelectedText] = useState('');
   const [bubblePosition, setBubblePosition] = useState({ x: 0, y: 0 });
   const [showBubble, setShowBubble] = useState(false);
   const [surroundingContext, setSurroundingContext] = useState('');
+  const [textType, setTextType] = useState<'kanji' | 'word' | 'phrase' | 'sentence'>('word');
   const selectionTimeoutRef = useRef<NodeJS.Timeout>();
   const isSelectingRef = useRef(false);
+  const selectionHistory = useRef<QuickContextSelection[]>([]);
 
-  // Debug: Log when component mounts
-  useEffect(() => {
-    console.log('[QuickContext] Provider mounted', {
-      enabled,
-      selector
-    });
+  // Intelligent text type detection
+  const detectTextType = (text: string): 'kanji' | 'word' | 'phrase' | 'sentence' => {
+    const trimmed = text.trim();
     
-    // Check if any matching elements exist on the page
-    const matchingElements = document.querySelectorAll(selector);
-    console.log('[QuickContext] Found matching elements:', matchingElements.length);
-    matchingElements.forEach((el, index) => {
-      console.log(`[QuickContext] Element ${index}:`, {
-        tagName: el.tagName,
-        className: el.className,
-        textContent: el.textContent?.substring(0, 50)
-      });
-    });
-  }, [enabled, selector]);
+    // Single kanji
+    if (trimmed.length === 1 && kanjiRegex.test(trimmed)) {
+      return 'kanji';
+    }
+    
+    // Sentence (has punctuation or is long)
+    if (trimmed.includes('。') || trimmed.includes('、') || trimmed.includes('！') || trimmed.includes('？') || trimmed.length > 30) {
+      return 'sentence';
+    }
+    
+    // Phrase (has particles or multiple words)
+    if (particleRegex.test(trimmed) && trimmed.length > 5) {
+      return 'phrase';
+    }
+    
+    // Default to word
+    return 'word';
+  };
+
+  // Smart selection expansion for better context
+  const expandToWordBoundary = (text: string, fullText: string, startIdx: number): string => {
+    // If single character, try to expand to full word
+    if (text.length === 1 && japaneseRegex.test(text)) {
+      let start = startIdx;
+      let end = startIdx + text.length;
+      
+      // Expand backwards to word boundary
+      while (start > 0 && japaneseRegex.test(fullText[start - 1])) {
+        start--;
+      }
+      
+      // Expand forwards to word boundary
+      while (end < fullText.length && japaneseRegex.test(fullText[end])) {
+        end++;
+      }
+      
+      return fullText.substring(start, end);
+    }
+    return text;
+  };
+
+  // Save to history
+  const addToHistory = (text: string, type: 'kanji' | 'word' | 'phrase' | 'sentence', context: string) => {
+    const selection: QuickContextSelection = {
+      text,
+      type,
+      context,
+      timestamp: Date.now()
+    };
+    
+    // Keep only last 50 selections
+    selectionHistory.current = [selection, ...selectionHistory.current.slice(0, 49)];
+    
+    // Save to localStorage for persistence
+    try {
+      localStorage.setItem('quickcontext_history', JSON.stringify(selectionHistory.current));
+    } catch (e) {
+      console.error('Failed to save history:', e);
+    }
+  };
+
+  // Load history on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('quickcontext_history');
+      if (saved) {
+        selectionHistory.current = JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Failed to load history:', e);
+    }
+  }, []);
 
   const handleSelection = useCallback(() => {
     if (!enabled) return;
@@ -52,8 +123,10 @@ export default function QuickContextProvider({
       return;
     }
 
-    const text = selection.toString().trim();
-    if (!text || text.length > 100) {
+    let text = selection.toString().trim();
+    
+    // Check for Japanese text
+    if (!text || !japaneseRegex.test(text) || text.length > 200) {
       setShowBubble(false);
       return;
     }
@@ -75,111 +148,99 @@ export default function QuickContextProvider({
       return;
     }
 
+    // Get full text for context
+    const fullText = parentElement.textContent || '';
+    const selectionStart = fullText.indexOf(text);
+    
+    // Try to expand single character selections
+    if (text.length === 1) {
+      text = expandToWordBoundary(text, fullText, selectionStart);
+    }
+    
+    // Get surrounding context (up to 100 chars before and after)
+    const contextStart = Math.max(0, selectionStart - 100);
+    const contextEnd = Math.min(fullText.length, selectionStart + text.length + 100);
+    const context = fullText.substring(contextStart, contextEnd);
+    
+    // Detect text type
+    const type = detectTextType(text);
+
     // Get selection position
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
-    
-    // Get surrounding context (up to 50 chars before and after)
-    const fullText = parentElement.textContent || '';
-    const selectionStart = fullText.indexOf(text);
-    const contextStart = Math.max(0, selectionStart - 50);
-    const contextEnd = Math.min(fullText.length, selectionStart + text.length + 50);
-    const context = fullText.substring(contextStart, contextEnd);
 
     setSelectedText(text);
+    setTextType(type);
     setBubblePosition({
       x: rect.left + rect.width / 2,
       y: rect.top + window.scrollY
     });
     setSurroundingContext(context);
     setShowBubble(true);
+    
+    // Add to history
+    addToHistory(text, type, context);
   }, [enabled, selector]);
 
-  // Handle click/tap on Japanese text elements
+  // Handle click/tap on Japanese text elements for quick activation
   const handleElementClick = useCallback((event: MouseEvent | TouchEvent) => {
-    console.log('[QuickContext] Click/tap detected', {
-      enabled,
-      target: event.target,
-      selector
-    });
-
-    if (!enabled) {
-      console.log('[QuickContext] Not enabled, returning');
-      return;
-    }
+    if (!enabled) return;
 
     const target = event.target as Element;
-    if (!target) {
-      console.log('[QuickContext] No target, returning');
-      return;
-    }
+    if (!target) return;
 
-    // Don't trigger if clicking on the bubble itself or its children
+    // Don't trigger if clicking on the bubble itself
     if (target.closest('[data-quickcontext-bubble="true"]')) {
-      console.log('[QuickContext] Clicked on bubble itself, ignoring');
       return;
     }
 
     // Check if clicked element matches selector
     const enabledElement = target.closest(selector);
-    console.log('[QuickContext] Checking selector match:', {
-      selector,
-      enabledElement,
-      targetClasses: target.className,
-      targetId: target.id
-    });
-
-    if (!enabledElement) {
-      console.log('[QuickContext] Element does not match selector, returning');
-      return;
-    }
+    if (!enabledElement) return;
 
     // Get text content
     let textContent = '';
-    let elementToUse = target;
-
-    // If clicked on a text node's parent or an element with Japanese text
+    
+    // Try to get the most specific text
     if (target.nodeType === Node.ELEMENT_NODE) {
+      // Check if it's a small element with Japanese text
       textContent = target.textContent || '';
       
-      // If the element has child nodes, try to get the most specific Japanese text
+      // If element has only one text node child, use that
       if (target.childNodes.length === 1 && target.childNodes[0].nodeType === Node.TEXT_NODE) {
         textContent = target.childNodes[0].textContent || '';
       }
     }
 
-    console.log('[QuickContext] Text content:', textContent);
-
-    // Check if text contains Japanese characters
+    // Validate text
     if (!textContent || !japaneseRegex.test(textContent)) {
-      console.log('[QuickContext] No Japanese text found, returning');
       return;
     }
 
-    // If text is too long (probably a paragraph), don't activate on click
-    // Users should select specific text in long passages
+    // For long text, require selection instead of click
     if (textContent.length > 50) {
-      console.log('[QuickContext] Text too long (>50 chars), returning');
       return;
     }
 
-    // Clear any existing selection
-    window.getSelection()?.removeAllRanges();
+    const trimmed = textContent.trim();
+    const type = detectTextType(trimmed);
 
     // Get element position
-    const rect = elementToUse.getBoundingClientRect();
+    const rect = target.getBoundingClientRect();
 
-    console.log('[QuickContext] Setting bubble with text:', textContent.trim());
-
-    setSelectedText(textContent.trim());
+    setSelectedText(trimmed);
+    setTextType(type);
     setBubblePosition({
       x: rect.left + rect.width / 2,
       y: rect.top + window.scrollY
     });
     setSurroundingContext(textContent);
     setShowBubble(true);
+    
+    // Add to history
+    addToHistory(trimmed, type, textContent);
 
-    // Prevent event from bubbling
+    // Prevent default only for valid selections
     event.preventDefault();
     event.stopPropagation();
   }, [enabled, selector]);
@@ -253,15 +314,32 @@ export default function QuickContextProvider({
     window.getSelection()?.removeAllRanges();
   }, []);
 
-  // Debug render state
+  // Add visual feedback for hoverable Japanese text
   useEffect(() => {
-    console.log('[QuickContext] Render state:', {
-      showBubble,
-      selectedText,
-      bubblePosition,
-      shouldRenderBubble: showBubble && selectedText
-    });
-  }, [showBubble, selectedText, bubblePosition]);
+    if (!enabled) return;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      ${selector} {
+        cursor: text;
+        user-select: text;
+        -webkit-user-select: text;
+      }
+      ${selector}:hover {
+        background-color: rgba(59, 130, 246, 0.05);
+        border-radius: 2px;
+        transition: background-color 0.2s ease;
+      }
+      .quickcontext-active {
+        background-color: rgba(59, 130, 246, 0.1) !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, [enabled, selector]);
 
   return (
     <>
@@ -272,7 +350,9 @@ export default function QuickContextProvider({
           position={bubblePosition}
           onClose={handleCloseBubble}
           surroundingContext={surroundingContext}
-          isKanji={/^[\u4e00-\u9faf]+$/.test(selectedText)}
+          isKanji={textType === 'kanji'}
+          textType={textType}
+          history={selectionHistory.current}
         />
       )}
     </>

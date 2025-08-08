@@ -9,6 +9,7 @@ import MoodBoardCard from '@/components/kanji-moods/MoodBoardCard';
 import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
 import { Search, Filter, X } from 'lucide-react';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { LoadingHourglassPage } from '@/components/ui/LoadingHourglass';
 
 export default function KanjiMoodsPage() {
   const router = useRouter();
@@ -114,12 +115,7 @@ export default function KanjiMoodsPage() {
       <div className="min-h-screen bg-background">
         <SmartPageHeader title="Kanji Moods" />
         <div className="container mx-auto px-4 pb-20">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin text-4xl mb-4">⏳</div>
-              <p className="text-muted-foreground">Loading mood boards...</p>
-            </div>
-          </div>
+          <LoadingHourglassPage text="Loading mood boards..." />
         </div>
       </div>
     );

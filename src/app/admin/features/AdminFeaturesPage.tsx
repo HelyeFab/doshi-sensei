@@ -11,6 +11,7 @@ import { FeatureMatrixStats } from '@/components/admin/feature-matrix/FeatureMat
 import { useFeatureMatrix } from '@/hooks/useFeatureMatrix';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useStrings } from '@/contexts/LanguageContext';
+import { LoadingHourglassPage } from '@/components/ui/LoadingHourglass';
 
 export default function AdminFeaturesPage() {
   const strings = useStrings();
@@ -29,8 +30,8 @@ export default function AdminFeaturesPage() {
   if (adminLoading || isLoading) {
     return (
       <AdminLayout title={strings.admin.featuresManagement}>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-4xl animate-spin">⏳</div>
+        <div className="h-64">
+          <LoadingHourglassPage text="Loading features..." />
         </div>
       </AdminLayout>
     );

@@ -12,6 +12,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { UserEditedTranscriptsManager } from '@/utils/userEditedTranscripts';
 import { motion, AnimatePresence } from 'framer-motion';
+import RegenerateTranscript from './RegenerateTranscript';
 
 interface EditableTranscriptReaderProps {
   transcript: TranscriptLine[];
@@ -48,6 +49,7 @@ export default function EditableTranscriptReader({
     withFurigana: string;
   }>>([]);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const [showRegenerateModal, setShowRegenerateModal] = useState(false);
   const [wordDefinitions, setWordDefinitions] = useState<JapaneseWord[]>([]);
   const [showWordModal, setShowWordModal] = useState(false);
   const [loadingWord, setLoadingWord] = useState(false);
@@ -286,6 +288,13 @@ export default function EditableTranscriptReader({
     }
   };
 
+  const handleTranscriptRegenerated = (newTranscript: TranscriptLine[], provider: string) => {
+    console.log(`Transcript regenerated using ${provider}`);
+    setEditedTranscript(newTranscript);
+    setShowRegenerateModal(false);
+    // Show a success message or update the UI to indicate the transcript was regenerated
+  };
+
   return (
     <div className="space-y-4">
       {/* Edit Controls */}
@@ -313,6 +322,17 @@ export default function EditableTranscriptReader({
             
             {editMode && (
               <div className="flex items-center gap-2">
+                {videoUrl && (
+                  <button
+                    onClick={() => setShowRegenerateModal(true)}
+                    className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600 font-medium flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Regenerate
+                  </button>
+                )}
                 <button
                   onClick={handleCancel}
                   className="px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 font-medium"
@@ -531,6 +551,16 @@ export default function EditableTranscriptReader({
             setSelectedWord(null);
             setWordDefinitions([]);
           }}
+        />
+      )}
+
+      {/* Regenerate Transcript Modal */}
+      {showRegenerateModal && videoUrl && (
+        <RegenerateTranscript
+          videoUrl={videoUrl}
+          currentTranscript={editedTranscript}
+          onTranscriptRegenerated={handleTranscriptRegenerated}
+          onClose={() => setShowRegenerateModal(false)}
         />
       )}
     </div>

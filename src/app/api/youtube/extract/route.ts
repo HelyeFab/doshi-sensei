@@ -26,6 +26,153 @@ async function logApiUsage(api: string, success: boolean, error?: string, metada
   }
 }
 
+// Helper function to extract with YouTube-Transcript.io
+async function extractWithYouTubeTranscriptIO(
+  videoId: string | null,
+  apiKey: string | undefined,
+  contentId: string,
+  isAuthenticated: boolean,
+  videoMetadata: any,
+  url: string
+): Promise<NextResponse> {
+  try {
+    console.log('=== Extracting with YouTube-Transcript.io ===');
+    
+    if (!videoId) {
+      return NextResponse.json({
+        success: false,
+        error: 'INVALID_VIDEO_ID',
+        message: 'Could not extract video ID from URL'
+      });
+    }
+    
+    // YouTube-Transcript.io API endpoint
+    const apiUrl = `https://youtube-transcript.io/api/transcript`;
+    
+    // Prepare request parameters
+    const params: any = {
+      video_id: videoId,
+      lang: 'ja' // Request Japanese transcripts
+    };
+    
+    // Add API key if provided (for paid plans)
+    const headers: any = {
+      'Accept': 'application/json',
+      'User-Agent': 'Doshi-Sensei/1.0'
+    };
+    
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+    
+    console.log('Requesting transcript from YouTube-Transcript.io...');
+    console.log('Video ID:', videoId);
+    console.log('Has API key:', !!apiKey);
+    
+    const response = await axios.get(apiUrl, {
+      params,
+      headers,
+      timeout: 15000
+    });
+    
+    console.log('YouTube-Transcript.io response status:', response.status);
+    
+    if (response.data && response.data.transcript) {
+      const transcript = response.data.transcript.map((segment: any, index: number) => ({
+        id: String(index + 1),
+        text: segment.text || '',
+        startTime: segment.start || index * 5,
+        endTime: segment.end || segment.start + segment.duration || (index + 1) * 5,
+        words: (segment.text || '').split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
+      }));
+      
+      console.log('Successfully extracted transcript via YouTube-Transcript.io');
+      console.log('Transcript length:', transcript.length);
+      
+      // Save to cache only for authenticated users
+      if (isAuthenticated) {
+        try {
+          await TranscriptCacheManager.saveTranscriptToCache({
+            contentId,
+            contentType: 'youtube',
+            videoUrl: url,
+            videoTitle: videoMetadata?.title || response.data.title || 'Unknown',
+            transcript,
+            language: response.data.language || 'ja',
+            metadata: {
+              youtubeVideoId: videoId,
+              channelName: videoMetadata?.channelTitle,
+              uploadDate: videoMetadata?.publishedAt,
+              thumbnailUrl: videoMetadata?.thumbnails?.medium?.url,
+              duration: videoMetadata?.duration,
+              method: 'youtube-transcript-io'
+            }
+          });
+          console.log('Transcript cached successfully');
+        } catch (cacheError) {
+          console.error('Failed to cache transcript:', cacheError);
+        }
+      }
+      
+      // Format transcript with AI if it's Japanese
+      let formattedTranscript = null;
+      if ((response.data.language || 'ja').startsWith('ja')) {
+        formattedTranscript = await formatTranscriptWithAI(
+          transcript,
+          videoMetadata?.title || response.data.title,
+          contentId
+        );
+      }
+      
+      await logApiUsage('youtube-transcript-io', true, undefined, { videoId });
+      
+      return NextResponse.json({
+        success: true,
+        transcript,
+        formattedTranscript,
+        language: response.data.language || 'ja',
+        videoTitle: videoMetadata?.title || response.data.title || 'Unknown',
+        videoMetadata: videoMetadata,
+        method: 'youtube-transcript-io',
+        hasFormattedVersion: !!formattedTranscript
+      });
+    } else {
+      throw new Error('No transcript data in response');
+    }
+  } catch (error: any) {
+    console.error('YouTube-Transcript.io error:', error.message);
+    
+    await logApiUsage('youtube-transcript-io', false, error.message, { videoId });
+    
+    // Handle specific error cases
+    if (error.response?.status === 429) {
+      return NextResponse.json({
+        success: false,
+        error: 'RATE_LIMIT',
+        message: 'YouTube-Transcript.io rate limit exceeded. Please try again later or use a different provider.'
+      });
+    } else if (error.response?.status === 401) {
+      return NextResponse.json({
+        success: false,
+        error: 'AUTH_FAILED',
+        message: 'Invalid API key for YouTube-Transcript.io. Please check your API key.'
+      });
+    } else if (error.response?.status === 404) {
+      return NextResponse.json({
+        success: false,
+        error: 'NO_TRANSCRIPT',
+        message: 'No transcript available for this video on YouTube-Transcript.io'
+      });
+    }
+    
+    return NextResponse.json({
+      success: false,
+      error: 'EXTRACTION_FAILED',
+      message: error.message || 'Failed to extract transcript via YouTube-Transcript.io'
+    });
+  }
+}
+
 // Helper function to format transcript with AI
 async function formatTranscriptWithAI(
   transcript: any[], 
@@ -122,7 +269,7 @@ function extractVideoIdFromUrl(url: string): string | null {
 
 export async function POST(request: NextRequest) {
   try {
-    const { url } = await request.json();
+    const { url, provider = 'auto', forceRegenerate = false, apiKey } = await request.json();
     
     if (!url || !isValidYouTubeUrl(url)) {
       return NextResponse.json(
@@ -158,12 +305,14 @@ export async function POST(request: NextRequest) {
       videoUrl: url
     });
     
-    console.log('Checking transcript cache for:', contentId);
-    const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
-    
-    if (cachedTranscript && cachedTranscript.transcript.length > 0) {
-      console.log('Using cached transcript! Access count:', cachedTranscript.accessCount);
-      return NextResponse.json({
+    // Skip cache if force regenerate is requested
+    if (!forceRegenerate) {
+      console.log('Checking transcript cache for:', contentId);
+      const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
+      
+      if (cachedTranscript && cachedTranscript.transcript.length > 0) {
+        console.log('Using cached transcript! Access count:', cachedTranscript.accessCount);
+        return NextResponse.json({
         success: true,
         transcript: cachedTranscript.transcript,
         formattedTranscript: cachedTranscript.formattedTranscript || null,
@@ -174,9 +323,11 @@ export async function POST(request: NextRequest) {
         fromCache: true,
         hasFormattedVersion: !!cachedTranscript.formattedTranscript
       });
+      }
     }
     
     console.log('No cache hit, fetching from YouTube...');
+    console.log('Selected provider:', provider);
     console.log('Environment check - GOOGLE_API_KEY exists:', !!process.env.GOOGLE_API_KEY);
     console.log('Environment check - YOUTUBE_API_KEY exists:', !!process.env.YOUTUBE_API_KEY);
     console.log('Environment check - SUPA_YOUTUBE_API_KEY exists:', !!process.env.SUPA_YOUTUBE_API_KEY);
@@ -186,6 +337,20 @@ export async function POST(request: NextRequest) {
     const videoId = extractVideoIdFromUrl(url);
     let videoMetadata = null;
     let hitRateLimit = false; // Track if we hit rate limits
+    
+    // Provider-specific extraction
+    if (provider === 'youtube-transcript-io') {
+      return await extractWithYouTubeTranscriptIO(videoId, apiKey, contentId, isAuthenticated, videoMetadata, url);
+    } else if (provider === 'youtube-native') {
+      // Continue with OAuth/native methods below
+    } else if (provider === 'whisper') {
+      // This would require audio extraction - not implemented yet
+      return NextResponse.json({
+        success: false,
+        error: 'PROVIDER_NOT_IMPLEMENTED',
+        message: 'Whisper provider requires audio extraction which is not yet implemented'
+      });
+    }
     
     // Method 1: Try OAuth/YouTube API if user has connected YouTube account
     try {

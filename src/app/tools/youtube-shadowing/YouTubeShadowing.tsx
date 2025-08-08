@@ -735,47 +735,30 @@ export default function YouTubeShadowing() {
                   {/* Mode Toggle and Controls */}
                   <div className="bg-card rounded-lg shadow-sm border border-border p-4">
                     <div className="flex flex-col gap-4">
-                      {/* Mode Toggle - Responsive Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {/* Mode Toggle - Simple Two Button Layout */}
+                      <div className="grid grid-cols-2 gap-2">
                         <button
                           onClick={() => setShowShadowingMode(true)}
-                          className={`px-3 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                          className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
                             showShadowingMode 
-                              ? 'bg-green-600 text-white' 
+                              ? 'bg-green-600 text-white shadow-md' 
                               : 'bg-secondary hover:bg-secondary/80'
                           }`}
                         >
-                          <span className="hidden sm:inline">Shadowing</span>
-                          <span className="sm:hidden">Shadow</span>
-                          <span className="hidden sm:inline"> Mode</span>
+                          <span className="hidden sm:inline">Shadowing Mode</span>
+                          <span className="sm:hidden">Shadowing</span>
                         </button>
                         <button
                           onClick={() => setShowShadowingMode(false)}
-                          className={`px-3 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                          className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
                             !showShadowingMode 
-                              ? 'bg-yellow-600 text-white' 
+                              ? 'bg-amber-600 text-white shadow-md' 
                               : 'bg-secondary hover:bg-secondary/80'
                           }`}
                         >
-                          <span className="hidden sm:inline">Transcript</span>
-                          <span className="sm:hidden">Script</span>
-                          <span className="hidden sm:inline"> Mode</span>
+                          <span className="hidden sm:inline">Transcript Mode</span>
+                          <span className="sm:hidden">Transcript</span>
                         </button>
-                        {/* Quick Edit Button - Always visible for premium users */}
-                        {isPremium && (
-                          <button
-                            onClick={() => setShowShadowingMode(false)}
-                            className={`px-3 py-2 rounded-lg font-medium transition-all text-sm sm:text-base col-span-2 sm:col-span-1 ${
-                              showShadowingMode 
-                                ? 'bg-green-600 text-white hover:bg-green-700' 
-                                : 'bg-green-700 text-white cursor-not-allowed opacity-50'
-                            }`}
-                            title={showShadowingMode ? "Switch to transcript mode to edit" : "Already in transcript mode"}
-                            disabled={!showShadowingMode}
-                          >
-                            ✏️ <span className="hidden sm:inline">Edit</span> Transcript
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>

@@ -766,13 +766,15 @@ export default function EnhancedShadowingPlayer({
       
       {/* Current Line Display */}
       <div className="bg-card rounded-lg shadow-sm border border-border p-6 relative">
-        {/* Settings Cog Icon - Top Right */}
+        {/* Settings Button - Top Right - More Prominent */}
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors"
+          className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all group"
           aria-label="Settings"
+          title="Click for playback settings and AI transcript toggle"
         >
-          <Settings className="w-5 h-5 text-muted-foreground" />
+          <Settings className="w-4 h-4 text-primary group-hover:rotate-45 transition-transform" />
+          <span className="text-sm font-medium text-primary">Settings</span>
         </button>
         
         {/* Settings Dropdown Modal */}

@@ -28,7 +28,7 @@ const providers: Provider[] = [
   {
     id: 'supadata',
     name: 'SupaData AI (Recommended)',
-    description: 'Our primary provider with excellent Japanese support',
+    description: 'Our primary provider with excellent Japanese support (we pay for each request)',
     icon: <Sparkles className="w-5 h-5" />,
     pros: [
       'Excellent Japanese caption support',
@@ -40,7 +40,7 @@ const providers: Provider[] = [
       'Costs us money per request',
       'May fail on very new videos'
     ],
-    cost: 'Free (we pay)'
+    cost: 'Free to you (we pay)'
   },
   {
     id: 'youtube-native',
@@ -80,7 +80,7 @@ const providers: Provider[] = [
   {
     id: 'whisper',
     name: 'OpenAI Whisper (Audio)',
-    description: 'AI transcription from video audio',
+    description: 'AI transcription from video audio (we pay OpenAI for processing)',
     icon: <RefreshCw className="w-5 h-5" />,
     pros: [
       'Works on any video',
@@ -91,9 +91,9 @@ const providers: Provider[] = [
       'Slower processing',
       'Requires audio extraction',
       'May miss on-screen text',
-      'Costs money'
+      'Costs us money per minute'
     ],
-    cost: '$0.006/minute'
+    cost: 'Free to you (we pay ~$0.006/min)'
   }
 ];
 

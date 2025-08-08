@@ -147,6 +147,16 @@ export class PracticeHistoryService {
         console.error('Failed to delete from Firebase:', error);
       }
     }
+
+    // Also delete the cached transcript from Firestore
+    try {
+      const { TranscriptCacheManager } = await import('@/utils/transcriptCache');
+      const contentId = `youtube_${videoId}`;
+      console.log('🗑️ [CACHE] Deleting cached transcript for:', contentId);
+      await TranscriptCacheManager.deleteCachedTranscript(contentId);
+    } catch (error) {
+      console.error('Failed to delete cached transcript:', error);
+    }
   }
 
   async clearAll(): Promise<void> {

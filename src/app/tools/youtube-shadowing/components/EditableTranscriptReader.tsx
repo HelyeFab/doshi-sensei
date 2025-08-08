@@ -82,18 +82,35 @@ export default function EditableTranscriptReader({
     loadEditedTranscript();
   }, [user, isPremium, contentId, transcript]);
 
+  // Helper function to clean romaji from text
+  const cleanRomaji = (text: string): string => {
+    // Remove common romaji patterns (lowercase Latin letters between Japanese text)
+    // This regex removes sequences of Latin letters that appear after Japanese characters
+    return text.replace(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+\s*[a-z\s]+/gi, (match) => {
+      // Extract just the Japanese part
+      const japaneseOnly = match.match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+/g);
+      return japaneseOnly ? japaneseOnly.join('') : match;
+    });
+  };
+
   // Process transcript with furigana
   useEffect(() => {
     const processTranscript = async () => {
       const transcriptToProcess = editedTranscript.length > 0 ? editedTranscript : transcript;
       
-      if (!showFurigana || transcriptToProcess.length === 0) {
-        setProcessedTranscript(transcriptToProcess.map(line => ({ original: line, withFurigana: line.text })));
+      // Clean romaji from all transcript lines
+      const cleanedTranscript = transcriptToProcess.map(line => ({
+        ...line,
+        text: cleanRomaji(line.text)
+      }));
+      
+      if (!showFurigana || cleanedTranscript.length === 0) {
+        setProcessedTranscript(cleanedTranscript.map(line => ({ original: line, withFurigana: line.text })));
         return;
       }
 
       const processed = await Promise.all(
-        transcriptToProcess.map(async (line) => {
+        cleanedTranscript.map(async (line) => {
           try {
             const withFurigana = await generateFuriganaWithCache(line.text);
             return { original: line, withFurigana };
@@ -340,9 +357,23 @@ export default function EditableTranscriptReader({
       )}
 
       {/* Transcript Lines */}
-      <div className="bg-card rounded-lg shadow-sm border border-border">
-        <div className="divide-y divide-border">
-          {processedTranscript.map((item, index) => (
+      <div className="bg-card rounded-lg shadow-sm border border-border relative">
+        {/* Transcript header with count */}
+        <div className="px-4 py-3 border-b border-border bg-muted/30">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-foreground">
+              Full Transcript
+            </h3>
+            <span className="text-sm text-muted-foreground">
+              {processedTranscript.length} lines
+            </span>
+          </div>
+        </div>
+        
+        {/* Scrollable transcript content with custom scrollbar */}
+        <div className="max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 transition-colors">
+          <div className="divide-y divide-border">
+            {processedTranscript.map((item, index) => (
             <div
               key={item.original.id}
               className={`relative ${editMode ? 'p-6' : 'p-4'} ${
@@ -429,7 +460,19 @@ export default function EditableTranscriptReader({
               </div>
             </div>
           ))}
+          </div>
         </div>
+        
+        {/* Scroll indicator */}
+        {processedTranscript.length > 10 && (
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none">
+            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
+              <div className="text-xs text-muted-foreground bg-card/90 px-3 py-1 rounded-full border border-border/50 backdrop-blur-sm">
+                ↓ Scroll for more
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Save Confirmation Modal */}

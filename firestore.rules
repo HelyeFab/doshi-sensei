@@ -573,23 +573,25 @@ service cloud.firestore {
       allow read: if true;
       
       // Anyone can create new transcript cache entries (community feature)
+      // Updated to allow all the fields we're actually using
       allow create: if
-        request.resource.data.keys().hasAll(['videoUrl', 'transcript', 'createdAt', 'lastAccessed', 'accessCount', 'contentType']) &&
-        request.resource.data.videoUrl is string &&
+        request.resource.data.keys().hasAll(['transcript', 'createdAt', 'lastAccessed', 'accessCount', 'contentType']) &&
         request.resource.data.transcript is list &&
         request.resource.data.createdAt is timestamp &&
         request.resource.data.lastAccessed is timestamp &&
         request.resource.data.accessCount is number &&
         request.resource.data.contentType in ['youtube', 'audio', 'video'];
       
-      // Allow anyone to update access count and last accessed time
+      // Allow anyone to update access count, last accessed time, and formatted transcript
       allow update: if
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accessCount', 'lastAccessed', 'videoTitle', 'metadata']) &&
         request.resource.data.accessCount == resource.data.accessCount + 1 &&
         request.resource.data.lastAccessed is timestamp;
       
-      // Only admin can delete transcript cache entries
-      allow delete: if isAdmin();
+      // Allow deletion by admin, creator, or any authenticated user 
+      // (since transcripts are community-shared resources)
+      allow delete: if isAdmin() || 
+        (request.auth != null && resource.data.createdBy == request.auth.uid) ||
+        (request.auth != null); // Any authenticated user can delete cached transcripts
     }
 
     // Config collection - for dynamic entitlement rules

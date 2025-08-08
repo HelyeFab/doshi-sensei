@@ -4,13 +4,10 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { AdminLayout } from '@/components/admin/AdminLayout';
-import { EnhancedConsoleMonitor } from '@/components/admin/EnhancedConsoleMonitor';
-import { ConsoleLogManager } from '@/components/admin/ConsoleLogManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Terminal, Info, AlertCircle, Settings } from 'lucide-react';
+import { Terminal, Info, AlertCircle } from 'lucide-react';
 import { SimpleTooltip } from '@/components/ui/tooltip';
 
 export default function ConsoleMonitorClient() {
@@ -166,27 +163,44 @@ export default function ConsoleMonitorClient() {
           </CardContent>
         </Card>
 
-        {/* Tabbed Interface */}
-        <Tabs defaultValue="monitor" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="monitor" className="flex items-center gap-2">
+        {/* Console Monitor - READ ONLY */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
               <Terminal className="h-4 w-4" />
-              Live Monitor
-            </TabsTrigger>
-            <TabsTrigger value="manager" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Log Manager
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="monitor" className="mt-6">
-            <EnhancedConsoleMonitor />
-          </TabsContent>
-
-          <TabsContent value="manager" className="mt-6">
-            <ConsoleLogManager />
-          </TabsContent>
-        </Tabs>
+              Live Console Monitor (Read-Only)
+            </CardTitle>
+            <CardDescription>
+              View and filter console logs in real-time. This is a read-only viewer for debugging purposes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-muted-foreground p-4 text-center">
+              Console monitoring has been removed. Console logs are now stripped at build time for better performance.
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Info about proper console removal */}
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              Removing Console Logs Safely
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-sm">
+              To remove console logs from production builds, use build-time optimization instead of modifying source code:
+            </p>
+            <ul className="text-sm list-disc pl-5 space-y-1">
+              <li>Next.js automatically removes console logs in production builds when using the default configuration</li>
+              <li>You can also use the <code className="bg-gray-100 px-1 rounded">removeConsole</code> option in next.config.js</li>
+              <li>For custom removal, use webpack's TerserPlugin during the build process</li>
+              <li className="font-semibold">Never modify source files directly - it can break your application!</li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );

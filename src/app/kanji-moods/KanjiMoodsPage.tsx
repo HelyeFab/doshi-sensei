@@ -127,7 +127,7 @@ export default function KanjiMoodsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SmartPageHeader title="Kanji Moods" backHref="/" />
+      <SmartPageHeader title="Kanji Moods" />
       
       <MobileAwareContainer className="container mx-auto px-4">
         {/* Hero Section */}

@@ -23,6 +23,7 @@ import { DetailedStats } from '@/components/stats/DetailedStats';
 import { validatePassword, passwordRequirements, getPasswordStrength } from '@/utils/passwordValidation';
 import { checkEmailAvailability, debounce } from '@/utils/emailValidation';
 import { useCallback } from 'react';
+import YouTubeConnection from '@/components/settings/YouTubeConnection';
 
 // List of available SVGs for user thumbnails
 const THUMBNAIL_OPTIONS = [
@@ -406,6 +407,11 @@ export default function AccountPage() {
 
               {/* Subscription History */}
               {isPremium && <SubscriptionHistory />}
+
+              {/* YouTube Integration */}
+              <div className="mt-6">
+                <YouTubeConnection />
+              </div>
 
               {/* Account Actions */}
               <div className="bg-card border border-border rounded-lg p-4 space-y-3">

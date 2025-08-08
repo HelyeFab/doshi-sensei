@@ -152,12 +152,7 @@ export default function SettingsClient() {
   };
 
   const handleHelpFAQ = () => {
-    setSyncModal({
-      show: true,
-      type: 'success',
-      title: 'Help & FAQ',
-      message: 'Help & FAQ section coming soon! In the meantime, feel free to contact our support team.'
-    });
+    router.push('/settings/help-faq');
   };
 
   const handleClearCache = async () => {

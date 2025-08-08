@@ -25,6 +25,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { ExternalImage } from '@/components/ui/OptimizedImage';
 import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 
 interface PopularVideo {
   id: string;
@@ -73,6 +74,15 @@ export default function PopularVideos() {
   const [contentFilter, setContentFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    video: PopularVideo | null;
+    isDeleting: boolean;
+  }>({
+    isOpen: false,
+    video: null,
+    isDeleting: false
+  });
   
   // Pagination states
   const [popularLastDoc, setPopularLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
@@ -393,17 +403,65 @@ export default function PopularVideos() {
   }, [activeTab, popularVideos, historyVideos, searchQuery]);
 
   const handleDeleteVideo = async (video: PopularVideo) => {
-    if (!confirm('Are you sure you want to remove this video from your history?')) return;
+    setDeleteConfirmation({
+      isOpen: true,
+      video,
+      isDeleting: false
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmation.video || !user) return;
+    
+    setDeleteConfirmation(prev => ({ ...prev, isDeleting: true }));
     
     try {
-      const videoId = video.metadata?.youtubeVideoId || video.id;
+      // Ensure practiceHistoryService is initialized for the current user
+      await practiceHistoryService.initialize(user.uid, isPremium);
+      
+      // Extract the videoId correctly
+      // For YouTube videos, the id might be in format "youtube_videoId" or just "videoId"
+      let videoId = deleteConfirmation.video.metadata?.youtubeVideoId;
+      
+      if (!videoId) {
+        // If no metadata, try to extract from the id field
+        if (deleteConfirmation.video.id.startsWith('youtube_')) {
+          videoId = deleteConfirmation.video.id.replace('youtube_', '');
+        } else {
+          videoId = deleteConfirmation.video.id;
+        }
+      }
+      
+      console.log('Deleting video with ID:', videoId);
+      console.log('Full video object:', deleteConfirmation.video);
+      
+      // Delete from practice history (this also deletes the cached transcript)
       await practiceHistoryService.deleteItem(videoId);
       
       // Remove from local state
-      setHistoryVideos(prev => prev.filter(v => v.id !== video.id));
+      setHistoryVideos(prev => prev.filter(v => v.id !== deleteConfirmation.video!.id));
+      
+      // Close dialog
+      setDeleteConfirmation({
+        isOpen: false,
+        video: null,
+        isDeleting: false
+      });
+      
+      console.log('Video deleted successfully');
     } catch (error) {
       console.error('Error deleting video:', error);
+      alert('Failed to delete video. Please try again.');
+      setDeleteConfirmation(prev => ({ ...prev, isDeleting: false }));
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmation({
+      isOpen: false,
+      video: null,
+      isDeleting: false
+    });
   };
 
   const VideoCard = ({ video, index }: { video: PopularVideo; index: number }) => {
@@ -548,7 +606,6 @@ export default function PopularVideos() {
 
       <SmartPageHeader 
         title="Popular Videos"
-        backHref="/" 
       />
 
       <div className="px-4 pb-20">
@@ -844,6 +901,19 @@ export default function PopularVideos() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deleteConfirmation.isOpen}
+        title="Remove from History"
+        message={`Are you sure you want to remove "${deleteConfirmation.video?.videoTitle || 'this video'}" from your history? This will also delete the cached transcript.`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        isDestructive={true}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        loading={deleteConfirmation.isDeleting}
+      />
     </div>
   );
 }

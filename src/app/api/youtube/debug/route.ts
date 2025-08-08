@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   let cacheAvailable = false;
   
   try {
-    const ytdl = await import('ytdl-core');
+    const ytdl = await import('@distube/ytdl-core');
     ytdlAvailable = !!ytdl;
   } catch (e) {
     // ytdl not available

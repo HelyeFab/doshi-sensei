@@ -20,6 +20,7 @@ interface CachedTranscript {
   videoUrl?: string;
   videoTitle?: string;
   transcript: TranscriptLine[];
+  formattedTranscript?: TranscriptLine[]; // AI-formatted version
   language: string;
   duration?: number;
   createdAt: Timestamp;
@@ -30,6 +31,9 @@ interface CachedTranscript {
     youtubeVideoId?: string;
     channelName?: string;
     uploadDate?: string;
+    formattedAt?: Timestamp; // When AI formatting was done
+    formattingModel?: string; // Which AI model was used
+    wasFormatted?: boolean; // Whether formatting was applied
   };
 }
 
@@ -299,6 +303,64 @@ export class TranscriptCacheManager {
     }
   }
 
+  /**
+   * Update cached transcript with AI-formatted version
+   */
+  static async updateWithFormattedTranscript(
+    contentId: string, 
+    formattedTranscript: TranscriptLine[]
+  ): Promise<void> {
+    try {
+      if (!db) {
+        throw new Error('Firestore is required but not initialized');
+      }
+      
+      console.log('💾 [CACHE] Updating with formatted transcript');
+      console.log('💾 [CACHE] Document ID:', contentId);
+      console.log('💾 [CACHE] Formatted lines:', formattedTranscript.length);
+      
+      const docRef = doc(db, this.COLLECTION_NAME, contentId);
+      
+      await updateDoc(docRef, {
+        formattedTranscript,
+        'metadata.formattedAt': serverTimestamp(),
+        'metadata.formattingModel': 'gpt-4',
+        'metadata.wasFormatted': true
+      });
+      
+      console.log('✅ [CACHE] Formatted transcript saved successfully');
+    } catch (error) {
+      console.error('❌ [CACHE] Failed to save formatted transcript:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete cached transcript from Firestore
+   */
+  static async deleteCachedTranscript(contentId: string): Promise<void> {
+    try {
+      if (!db) {
+        console.warn('⚠️ [CACHE] Firestore not initialized, cannot delete transcript');
+        return;
+      }
+      
+      console.log('🗑️ [CACHE] Attempting to delete cached transcript');
+      console.log('🗑️ [CACHE] Document ID:', contentId);
+      
+      const { deleteDoc } = await import('firebase/firestore');
+      const docRef = doc(db, this.COLLECTION_NAME, contentId);
+      
+      // Try to delete regardless of whether document exists
+      // (deleteDoc is idempotent - won't error if doc doesn't exist)
+      await deleteDoc(docRef);
+      console.log('✅ [CACHE] Cached transcript deleted successfully');
+    } catch (error) {
+      console.error('❌ [CACHE] Failed to delete cached transcript:', error);
+      // Don't throw - this is a non-critical operation
+    }
+  }
+  
   /**
    * Get cache statistics
    */

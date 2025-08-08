@@ -17,7 +17,7 @@ const CONFIG = {
   ignoreDirs: ['node_modules', '.next', 'dist', 'build', 'coverage', '.git'],
   
   // Files to ignore
-  ignoreFiles: ['console-log-manager.js', 'consoleCapture.ts', 'enhancedConsoleCapture.ts'],
+  ignoreFiles: ['console-log-manager.js', 'consoleCapture.ts'],
   
   // Backup directory
   backupDir: 'console-logs-backup',

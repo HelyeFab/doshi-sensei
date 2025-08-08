@@ -187,8 +187,8 @@ export default function NetworkStatus() {
           ),
           title: 'No Internet Connection',
           message: 'Some features may be unavailable',
-          bgStyle: 'background-color: hsl(var(--destructive))',
-          textStyle: 'color: hsl(var(--destructive-foreground))'
+          bgColor: 'hsl(var(--destructive))',
+          textColor: 'hsl(var(--destructive-foreground))'
         };
       case 'slow':
         return {
@@ -200,8 +200,8 @@ export default function NetworkStatus() {
           ),
           title: 'Slow Connection',
           message: 'Loading may take longer than usual',
-          bgStyle: 'background-color: hsl(var(--warning))',
-          textStyle: 'color: hsl(var(--warning-foreground))'
+          bgColor: 'hsl(var(--warning))',
+          textColor: 'hsl(var(--warning-foreground))'
         };
       case 'good':
         return {
@@ -213,8 +213,8 @@ export default function NetworkStatus() {
           ),
           title: 'Connection Restored',
           message: 'You\'re back online',
-          bgStyle: 'background-color: hsl(var(--success))',
-          textStyle: 'color: hsl(var(--success-foreground))'
+          bgColor: 'hsl(var(--success))',
+          textColor: 'hsl(var(--success-foreground))'
         };
     }
   };
@@ -234,10 +234,8 @@ export default function NetworkStatus() {
           <div 
             className="rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 min-w-[280px] max-w-[90vw] border"
             style={{
-              ...Object.fromEntries([
-                content.bgStyle.split(': '),
-                content.textStyle.split(': ')
-              ].map(([key, value]) => [key, value])),
+              backgroundColor: content.bgColor,
+              color: content.textColor,
               borderColor: 'hsl(var(--border))'
             }}
           >

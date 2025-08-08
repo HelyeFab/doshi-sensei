@@ -110,19 +110,17 @@ export default function PWAInstaller() {
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-      <div className="bg-card border border-border rounded-lg shadow-lg p-3 md:p-4">
-        <div className="flex items-center gap-3">
+      <div className="bg-card border border-border rounded-lg shadow-lg p-2 md:p-4">
+        <div className="flex items-center gap-2 md:gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-medium text-foreground truncate">
-                Install Doshi Sensei
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs md:text-sm font-medium text-foreground truncate">
+              Install Doshi Sensei
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5 hidden md:block">
               Add to home screen for easy access
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
             <button
               onClick={() => {
                 setShowInstallButton(false);
@@ -130,13 +128,13 @@ export default function PWAInstaller() {
                 localStorage.setItem('pwa-prompt-last-shown', Date.now().toString());
                 pwaAnalytics.trackEvent('install_prompt_dismissed_maybe_later');
               }}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
             >
-              Maybe later
+              Later
             </button>
             <button
               onClick={handleInstallClick}
-              className="px-4 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="px-3 py-1 md:px-4 md:py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary"
             >
               Install
             </button>

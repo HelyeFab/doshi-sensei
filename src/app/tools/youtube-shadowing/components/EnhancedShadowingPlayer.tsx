@@ -52,6 +52,7 @@ export default function EnhancedShadowingPlayer({
   const [isPausingForRepeat, setIsPausingForRepeat] = useState(false);
   const [isInRepeatMode, setIsInRepeatMode] = useState(false);
   const [isHandlingRepeatEnd, setIsHandlingRepeatEnd] = useState(false);
+  const [useFormattedTranscript, setUseFormattedTranscript] = useState(true); // Default to true - use AI when available
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
 
   // Refs
@@ -63,27 +64,81 @@ export default function EnhancedShadowingPlayer({
   const repeatMonitorRef = useRef<NodeJS.Timeout | null>(null);
   const currentRepeatRef = useRef<number>(0);
 
-  const currentLine = session.transcript[session.currentLineIndex];
+  // Determine which transcript to use
+  const hasFormattedTranscript = session.videoMetadata?.formattedTranscript && 
+                                  session.videoMetadata?.formattedTranscript.length > 0;
+  
+  // Debug logging for formatted transcript
+  useEffect(() => {
+    console.log('🎮 [PLAYER] Formatted transcript status:', {
+      hasMetadata: !!session.videoMetadata,
+      hasFormattedField: !!session.videoMetadata?.formattedTranscript,
+      formattedLength: session.videoMetadata?.formattedTranscript?.length || 0,
+      hasFormattedVersion: session.videoMetadata?.hasFormattedVersion,
+      hasFormattedTranscript,
+      currentlyUsing: hasFormattedTranscript && useFormattedTranscript ? 'AI-Formatted' : 'Original/Raw'
+    });
+  }, [session.videoMetadata, useFormattedTranscript, hasFormattedTranscript]);
+  
+  const activeTranscript = (useFormattedTranscript && hasFormattedTranscript) 
+    ? session.videoMetadata.formattedTranscript 
+    : session.transcript;
+  const currentLine = activeTranscript[session.currentLineIndex];
 
   // Sync currentRepeat state with ref to avoid closure issues
   useEffect(() => {
     currentRepeatRef.current = currentRepeat;
   }, [currentRepeat]);
 
+  // Helper function to clean romaji from text
+  const cleanRomaji = (text: string): string => {
+    // More comprehensive romaji removal patterns
+    let cleaned = text;
+    
+    // Pattern 1: Remove standalone romaji words (only Latin characters)
+    cleaned = cleaned.replace(/\b[a-zA-Z]+\b/g, (match) => {
+      // Keep uppercase abbreviations like "OK", "AI", etc.
+      if (match === match.toUpperCase() && match.length <= 3) {
+        return match;
+      }
+      // Remove lowercase romaji
+      return '';
+    });
+    
+    // Pattern 2: Remove romaji that appears after Japanese characters
+    cleaned = cleaned.replace(/([\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF])\s*[a-z]+/gi, '$1');
+    
+    // Pattern 3: Remove romaji at the beginning of lines
+    cleaned = cleaned.replace(/^[a-z]+\s*/gmi, '');
+    
+    // Pattern 4: Clean up extra spaces
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    return cleaned;
+  };
+
   // Generate furigana for current line
   useEffect(() => {
     const generateFurigana = async () => {
-      if (!currentLine || !showFurigana) {
-        setCurrentLineFurigana(currentLine?.text || '');
+      if (!currentLine) {
+        setCurrentLineFurigana('');
+        return;
+      }
+      
+      // Clean romaji from the text first
+      const cleanedText = cleanRomaji(currentLine.text);
+      
+      if (!showFurigana) {
+        setCurrentLineFurigana(cleanedText);
         return;
       }
 
       try {
-        const withFurigana = await generateFuriganaWithCache(currentLine.text);
+        const withFurigana = await generateFuriganaWithCache(cleanedText);
         setCurrentLineFurigana(withFurigana);
       } catch (error) {
         console.error('Failed to generate furigana:', error);
-        setCurrentLineFurigana(currentLine.text);
+        setCurrentLineFurigana(cleanedText);
       }
     };
 
@@ -339,7 +394,7 @@ export default function EnhancedShadowingPlayer({
     // Normal mode - allow line changes
     // Find the current line based on the playback time
     // Add a small buffer (0.1s) to handle timing inconsistencies
-    const activeIndex = session.transcript.findIndex(
+    const activeIndex = activeTranscript.findIndex(
       (line: TranscriptLine) => currentTime >= (line.startTime - 0.1) && currentTime < (line.endTime + 0.1)
     );
     
@@ -349,7 +404,7 @@ export default function EnhancedShadowingPlayer({
       onLineChange(activeIndex);
     } else if (activeIndex === -1 && currentTime > 0) {
       // If no line matches, find the closest previous line
-      const closestIndex = session.transcript.findLastIndex(
+      const closestIndex = activeTranscript.findLastIndex(
         (line: TranscriptLine) => currentTime >= line.endTime
       );
       if (closestIndex !== -1 && closestIndex !== session.currentLineIndex) {
@@ -414,7 +469,7 @@ export default function EnhancedShadowingPlayer({
       setIsInRepeatMode(false); // Clear repeat mode flag
       
       // Check if we should auto-advance to next line
-      if (autoAdvance && session.currentLineIndex < session.transcript.length - 1) {
+      if (autoAdvance && session.currentLineIndex < activeTranscript.length - 1) {
         console.log(`[COMPLETE] Auto-advancing to next line...`);
         // Add a small delay before advancing
         setTimeout(() => {
@@ -573,7 +628,7 @@ export default function EnhancedShadowingPlayer({
   };
 
   const handleNext = () => {
-    if (session.currentLineIndex < session.transcript.length - 1) {
+    if (session.currentLineIndex < activeTranscript.length - 1) {
       // Clear any pending timeouts and intervals
       if (repeatTimeoutRef.current) {
         clearTimeout(repeatTimeoutRef.current);
@@ -621,14 +676,14 @@ export default function EnhancedShadowingPlayer({
     setIsPlaying(false);
     
     // Seek to the clicked line
-    if (isYouTubeMode && youtubePlayerRef.current && session.transcript[index]) {
+    if (isYouTubeMode && youtubePlayerRef.current && activeTranscript[index]) {
       if (typeof youtubePlayerRef.current.seekTo === 'function') {
-        youtubePlayerRef.current.seekTo(session.transcript[index].startTime, true);
+        youtubePlayerRef.current.seekTo(activeTranscript[index].startTime, true);
       } else {
         console.error('YouTube player seekTo method not available');
       }
-    } else if (isLocalVideo && localVideoRef.current && session.transcript[index]) {
-      localVideoRef.current.currentTime = session.transcript[index].startTime;
+    } else if (isLocalVideo && localVideoRef.current && activeTranscript[index]) {
+      localVideoRef.current.currentTime = activeTranscript[index].startTime;
     }
   };
 
@@ -710,18 +765,243 @@ export default function EnhancedShadowingPlayer({
 
       
       {/* Current Line Display */}
-      <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6 relative">
+        {/* Settings Cog Icon - Top Right */}
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors"
+          aria-label="Settings"
+        >
+          <Settings className="w-5 h-5 text-muted-foreground" />
+        </button>
+        
+        {/* Settings Dropdown Modal */}
+        {showSettings && (
+          <>
+            {/* Backdrop to close on outside click */}
+            <div 
+              className="fixed inset-0 z-40" 
+              onClick={() => setShowSettings(false)}
+            />
+            
+            {/* Settings Dropdown */}
+            <div className="absolute top-12 right-4 w-80 bg-card rounded-lg shadow-lg border border-border p-4 z-50 max-h-[80vh] overflow-y-auto">
+              <h3 className="font-medium text-foreground mb-4 flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Settings
+              </h3>
+              
+              <div className="space-y-4">
+                {/* Speed Control */}
+                <div>
+                  <label className="text-sm font-medium text-foreground block mb-2">
+                    Playback Speed: {playbackSpeed}x
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2"
+                    step="0.1"
+                    value={playbackSpeed}
+                    onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Repeat Count */}
+                <div>
+                  <label className="text-sm font-medium text-foreground block mb-2">
+                    Repeat Count: {repeatCount}
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value={repeatCount}
+                    onChange={(e) => setRepeatCount(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Pause Between Repeats */}
+                <div>
+                  <label className="text-sm font-medium text-foreground block mb-2">
+                    Pause Between Repeats: {pauseBetweenRepeats / 1000}s
+                  </label>
+                  <input
+                    type="range"
+                    min="500"
+                    max="5000"
+                    step="500"
+                    value={pauseBetweenRepeats}
+                    onChange={(e) => setPauseBetweenRepeats(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Volume Control */}
+                <div>
+                  <label className="text-sm font-medium text-foreground block mb-2">
+                    Volume: {Math.round(volume * 100)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume}
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Auto Advance Toggle */}
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 pr-3">
+                    <label className="text-sm font-medium text-foreground block">Auto-advance</label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Auto move to next line
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setAutoAdvance(!autoAdvance)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      autoAdvance ? 'bg-primary' : 'bg-muted'
+                    }`}
+                    role="switch"
+                    aria-checked={autoAdvance}
+                    aria-label="Toggle auto-advance"
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        autoAdvance ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-border pt-4">
+                  <h4 className="text-sm font-medium text-foreground mb-3">Display Options</h4>
+                  
+                  {/* Furigana Toggle */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex-1 pr-3">
+                      <label className="text-sm font-medium text-foreground block">Furigana</label>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Show reading hints above kanji
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => onToggleFurigana?.()}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        showFurigana ? 'bg-primary' : 'bg-muted'
+                      }`}
+                      role="switch"
+                      aria-checked={showFurigana}
+                      aria-label="Toggle furigana"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          showFurigana ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  
+                  {/* AI-Formatted Transcript Toggle - Only show when AI version exists */}
+                  {hasFormattedTranscript && (
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex-1 pr-3">
+                        <label className="text-sm font-medium text-foreground block">
+                          {useFormattedTranscript ? '✨ AI-Optimized' : '📝 Raw Transcript'}
+                        </label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {useFormattedTranscript 
+                            ? 'Using AI-improved line breaks' 
+                            : 'Using original YouTube captions'}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setUseFormattedTranscript(!useFormattedTranscript)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          useFormattedTranscript ? 'bg-primary' : 'bg-amber-500'
+                        }`}
+                        role="switch"
+                        aria-checked={useFormattedTranscript}
+                        aria-label="Toggle between AI-formatted and raw transcript"
+                        title={useFormattedTranscript ? 'Switch to raw transcript' : 'Switch to AI-optimized'}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            useFormattedTranscript ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+                  
+                  {/* Display Mode Toggle */}
+                  {(isYouTubeMode || isLocalVideo) && showVideo && (
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-foreground block mb-1">Display Mode</label>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            if (displayMode !== 'video') {
+                              setDisplayMode('video');
+                              setIsPlaying(false);
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                            displayMode === 'video'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                        >
+                          Video
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (displayMode !== 'transcript') {
+                              setDisplayMode('transcript');
+                              setIsPlaying(false);
+                              if (youtubePlayerRef.current) {
+                                youtubePlayerRef.current.pauseVideo();
+                              }
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                            displayMode === 'transcript'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                        >
+                          Transcript
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2">
             <p 
               className="text-2xl font-medium text-foreground mb-2 japanese-text"
               dangerouslySetInnerHTML={{ 
-                __html: showFurigana ? currentLineFurigana : (currentLine?.text || '')
+                __html: showFurigana 
+                  ? currentLineFurigana 
+                  : cleanRomaji(currentLine?.text || '')
               }}
             />
             {currentLine?.text && (
               <AIExplanationTrigger
-                text={currentLine.text}
+                text={cleanRomaji(currentLine.text)}
                 contextType="sentence"
                 className="mb-2"
                 size="md"
@@ -729,8 +1009,17 @@ export default function EnhancedShadowingPlayer({
             )}
           </div>
           <p className="text-sm text-muted-foreground">
-            Line {session.currentLineIndex + 1} of {session.transcript.length}
+            Line {session.currentLineIndex + 1} of {activeTranscript.length}
           </p>
+          {hasFormattedTranscript && (
+            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-opacity-20"
+                 style={{ 
+                   backgroundColor: useFormattedTranscript ? 'rgb(168 85 247 / 0.1)' : 'rgb(251 191 36 / 0.1)',
+                   color: useFormattedTranscript ? 'rgb(168 85 247)' : 'rgb(245 158 11)'
+                 }}>
+              {useFormattedTranscript ? '✨ AI-Optimized' : '📝 Raw Transcript'}
+            </div>
+          )}
           {repeatCount > 1 && (
             <p className="text-sm text-primary mt-2">
               Repeat {activeRepeatNumber} of {repeatCount}
@@ -759,7 +1048,7 @@ export default function EnhancedShadowingPlayer({
 
           <button
             onClick={handleNext}
-            disabled={session.currentLineIndex === session.transcript.length - 1}
+            disabled={session.currentLineIndex === activeTranscript.length - 1}
             className="p-2 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Next line"
           >
@@ -768,186 +1057,11 @@ export default function EnhancedShadowingPlayer({
         </div>
       </div>
 
-      {/* Settings Panel */}
-      <div className="bg-card rounded-lg shadow-sm border border-border p-4">
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          className="flex items-center justify-between w-full text-left"
-        >
-          <div className="flex items-center gap-2">
-            <Settings className="w-5 h-5 text-muted-foreground" />
-            <span className="font-medium text-foreground">Settings</span>
-          </div>
-          <ChevronRight className={`w-5 h-5 text-muted-foreground transition-transform ${showSettings ? 'rotate-90' : ''}`} />
-        </button>
-
-        {showSettings && (
-          <div className="mt-4 space-y-4">
-            {/* Speed Control */}
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-2">
-                Playback Speed: {playbackSpeed}x
-              </label>
-              <input
-                type="range"
-                min="0.5"
-                max="2"
-                step="0.1"
-                value={playbackSpeed}
-                onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
-                className="w-full"
-              />
-            </div>
-
-            {/* Repeat Count */}
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-2">
-                Repeat Count: {repeatCount}
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                step="1"
-                value={repeatCount}
-                onChange={(e) => setRepeatCount(parseInt(e.target.value))}
-                className="w-full"
-              />
-            </div>
-
-            {/* Pause Between Repeats */}
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-2">
-                Pause Between Repeats: {pauseBetweenRepeats / 1000}s
-              </label>
-              <input
-                type="range"
-                min="500"
-                max="5000"
-                step="500"
-                value={pauseBetweenRepeats}
-                onChange={(e) => setPauseBetweenRepeats(parseInt(e.target.value))}
-                className="w-full"
-              />
-            </div>
-
-            {/* Volume Control */}
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-2">
-                Volume: {Math.round(volume * 100)}%
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-full"
-              />
-            </div>
-
-            {/* Auto Advance Toggle */}
-            <div className="flex items-center justify-between">
-              <div className="flex-1 pr-3">
-                <label className="text-sm font-medium text-foreground block">Auto-advance</label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Automatically move to next line after completing all repeats
-                </p>
-              </div>
-              <button
-                onClick={() => setAutoAdvance(!autoAdvance)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  autoAdvance ? 'bg-primary' : 'bg-muted'
-                }`}
-                role="switch"
-                aria-checked={autoAdvance}
-                aria-label="Toggle auto-advance"
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    autoAdvance ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-border pt-4 mt-4">
-              <h4 className="text-sm font-medium text-foreground mb-3">Display Options</h4>
-              
-              {/* Furigana Toggle */}
-              {onToggleFurigana && (
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm text-foreground">Furigana (ふりがな)</label>
-                  <button
-                    onClick={onToggleFurigana}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      showFurigana ? 'bg-primary' : 'bg-muted'
-                    }`}
-                    role="switch"
-                    aria-checked={showFurigana}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showFurigana ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-              )}
-
-              {/* Display Mode Toggle */}
-              {(isYouTubeMode || isLocalVideo) && showVideo && (
-                <div className="flex items-center justify-between">
-                  <label className="text-sm text-foreground">Display Mode</label>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        if (displayMode !== 'video') {
-                          setDisplayMode('video');
-                          setIsPlaying(false);
-                        }
-                      }}
-                      className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        displayMode === 'video'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      Video
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (displayMode !== 'transcript') {
-                          setDisplayMode('transcript');
-                          setIsPlaying(false);
-                          if (youtubePlayerRef.current) {
-                            youtubePlayerRef.current.pauseVideo();
-                          }
-                        }
-                      }}
-                      className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        displayMode === 'transcript'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      Transcript Only
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* Transcript List */}
       <div className="bg-card rounded-lg shadow-sm border border-border p-4">
         <h3 className="font-medium text-foreground mb-4">Full Transcript</h3>
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          {session.transcript.map((line: TranscriptLine, index: number) => (
+          {activeTranscript.map((line: TranscriptLine, index: number) => (
             <div
               key={line.id}
               onClick={() => handleLineClick(index)}
@@ -961,7 +1075,7 @@ export default function EnhancedShadowingPlayer({
                 <span className="text-sm text-muted-foreground font-mono">
                   {Math.floor(line.startTime / 60)}:{String(Math.floor(line.startTime % 60)).padStart(2, '0')}
                 </span>
-                <p className="flex-1 text-foreground">{line.text}</p>
+                <p className="flex-1 text-foreground">{cleanRomaji(line.text)}</p>
               </div>
             </div>
           ))}

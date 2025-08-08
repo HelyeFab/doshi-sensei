@@ -101,6 +101,12 @@ const sidebarCategories: SidebarCategory[] = [
         href: '/admin/kpi-dashboard',
       },
       {
+        id: 'api-monitor' as AdminSection,
+        labelKey: 'apiMonitor',
+        iconKey: 'apiMonitor',
+        href: '/admin/api-monitor',
+      },
+      {
         id: 'activities' as AdminSection,
         labelKey: 'activities',
         iconKey: 'activities',
@@ -174,6 +180,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             labelKey === 'snakePath' ? 'Snake Path' : 
             labelKey === 'analytics' ? 'Analytics' : 
             labelKey === 'kpiDashboard' ? 'KPI Dashboard' : 
+            labelKey === 'apiMonitor' ? 'API Monitor' :
             labelKey === 'achievements' ? 'Achievements' : 
             labelKey === 'userEntitlements' ? 'User Entitlements' : 
             labelKey === 'articles' ? 'Articles' : 
@@ -192,6 +199,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
            iconKey === 'snakePath' ? '🐍' : 
            iconKey === 'analytics' ? '📊' : 
            iconKey === 'kpiDashboard' ? '📈' : 
+           iconKey === 'apiMonitor' ? '🔌' :
            iconKey === 'achievements' ? '🏆' : 
            iconKey === 'userEntitlements' ? '🔐' : 
            iconKey === 'articles' ? '📄' : 

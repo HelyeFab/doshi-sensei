@@ -159,6 +159,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Compiler options to remove console logs at build time
+  compiler: {
+    removeConsole: true, // Remove ALL console statements in production builds
+  },
   // Enable server-side functionality for API routes
   trailingSlash: true,
   images: {
@@ -181,6 +185,38 @@ const nextConfig: NextConfig = {
         buffer: require.resolve('buffer/'),
       };
     }
+    
+    // REMOVE ALL CONSOLE LOGS IN BOTH DEVELOPMENT AND PRODUCTION
+    // This removes console statements at build time, even in development mode
+    const TerserPlugin = require('terser-webpack-plugin');
+    
+    // Force terser to run even in development
+    config.optimization = config.optimization || {};
+    config.optimization.minimize = true;
+    config.optimization.minimizer = config.optimization.minimizer || [];
+    
+    // Remove any existing TerserPlugin instances
+    config.optimization.minimizer = config.optimization.minimizer.filter(
+      (plugin) => !(plugin instanceof TerserPlugin || plugin.constructor.name === 'TerserPlugin')
+    );
+    
+    // Add our TerserPlugin with console removal
+    config.optimization.minimizer.push(
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true, // Remove ALL console statements
+            drop_debugger: true, // Remove debugger statements
+          },
+          mangle: false, // Don't mangle in development for better debugging
+          format: {
+            comments: false, // Remove comments
+          },
+        },
+        extractComments: false,
+      })
+    );
+    
     
     // Reduce file watching load in development
     if (dev && !isServer) {

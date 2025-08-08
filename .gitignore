@@ -20,6 +20,10 @@
 # production
 /build
 
+# console log backups
+.console-log-backups/
+console-log-backups/
+
 # misc
 .DS_Store
 *.pem

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { TranscriptLine } from '../YouTubeShadowing';
 import { useStrings } from '@/contexts/LanguageContext';
 import SubtitleUploader from './SubtitleUploader';
@@ -8,6 +8,12 @@ import { TranscriptCacheManager } from '@/utils/transcriptCache';
 import { UserEditedTranscriptsManager } from '@/utils/userEditedTranscripts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import { 
+  YOUTUBE_EXTRACTION_MESSAGES, 
+  CACHE_HIT_MESSAGES,
+  getRandomLoadingMessage,
+  getLoadingMessageSequence 
+} from '@/utils/loadingMessages';
 
 interface TranscriptDisplayProps {
   videoUrl: string;
@@ -36,6 +42,10 @@ export default function TranscriptDisplay({
   const strings = useStrings();
   const { user } = useAuth();
   const { isPremium } = useSubscription2();
+  
+  // Refs for managing loading message rotation
+  const loadingMessageIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const messageIndexRef = useRef(0);
 
   useEffect(() => {
     loadTranscript();
@@ -46,6 +56,34 @@ export default function TranscriptDisplay({
       console.log('🔧 Debug: Run debugListCachedTranscripts() in console to see all cached transcripts');
     }
   }, [videoUrl]);
+
+  // Start rotating loading messages when status is loading
+  useEffect(() => {
+    if (status === 'loading' && audioUrl === 'youtube-player') {
+      // Start with a random message
+      const initialMessage = getRandomLoadingMessage(YOUTUBE_EXTRACTION_MESSAGES);
+      setLoadingMessage(initialMessage.message);
+      
+      // Rotate through messages every 2-3 seconds
+      loadingMessageIntervalRef.current = setInterval(() => {
+        const newMessage = getRandomLoadingMessage(YOUTUBE_EXTRACTION_MESSAGES);
+        setLoadingMessage(newMessage.message);
+      }, 2500);
+    } else {
+      // Clear interval when not loading
+      if (loadingMessageIntervalRef.current) {
+        clearInterval(loadingMessageIntervalRef.current);
+        loadingMessageIntervalRef.current = null;
+      }
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if (loadingMessageIntervalRef.current) {
+        clearInterval(loadingMessageIntervalRef.current);
+      }
+    };
+  }, [status, audioUrl]);
 
   const loadTranscript = async () => {
     setStatus('loading');
@@ -105,7 +143,8 @@ export default function TranscriptDisplay({
             videoUrl: cachedTranscript.videoUrl,
             accessCount: cachedTranscript.accessCount
           });
-          setLoadingMessage('Found cached transcript!');
+          const cacheMessage = getRandomLoadingMessage(CACHE_HIT_MESSAGES);
+          setLoadingMessage(cacheMessage.message);
           
           // Check if user has edited this transcript
           if (user && isPremium) {
@@ -123,8 +162,15 @@ export default function TranscriptDisplay({
             }
           }
           
+          // Include formatted transcript if available
+          const enrichedMetadata = {
+            ...cachedTranscript.metadata,
+            formattedTranscript: cachedTranscript.formattedTranscript,
+            hasFormattedVersion: !!cachedTranscript.formattedTranscript
+          };
+          
           setStatus('completed');
-          onTranscriptLoaded(cachedTranscript.transcript, cachedTranscript.videoTitle, cachedTranscript.metadata);
+          onTranscriptLoaded(cachedTranscript.transcript, cachedTranscript.videoTitle, enrichedMetadata);
           window.removeEventListener('error', handleError);
           return;
         } else {
@@ -140,7 +186,7 @@ export default function TranscriptDisplay({
       // For YouTube player mode, try to extract subtitles if no cache
       if (audioUrl === 'youtube-player') {
         console.log('🎬 [CLIENT] Starting YouTube extraction for:', videoUrl);
-        setLoadingMessage('Connecting to extraction service...');
+        // Don't set a specific message here since the useEffect will handle rotation
         
         // Use local Next.js API route
         const response = await fetch('/api/youtube/extract', {
@@ -185,8 +231,22 @@ export default function TranscriptDisplay({
                 metadata: data.videoMetadata
               });
               
+              // Store formatted transcript in metadata if available
+              console.log('🤖 [AI FORMAT] Checking for formatted transcript:', {
+                hasFormatted: !!data.formattedTranscript,
+                formattedLength: data.formattedTranscript?.length || 0,
+                originalLength: data.transcript.length,
+                hasFormattedVersion: data.hasFormattedVersion
+              });
+              
+              const enrichedMetadata = {
+                ...data.videoMetadata,
+                formattedTranscript: data.formattedTranscript,
+                hasFormattedVersion: data.hasFormattedVersion
+              };
+              
               setStatus('completed');
-              onTranscriptLoaded(data.transcript, data.videoTitle, data.videoMetadata);
+              onTranscriptLoaded(data.transcript, data.videoTitle, enrichedMetadata);
               return;
             } else {
               // No captions found
@@ -277,10 +337,9 @@ export default function TranscriptDisplay({
       }
       
       // If not YouTube mode or no cached transcript found, check for uploaded files
-      setLoadingMessage('Checking for cached transcript...');
-
-      // No cache hit, proceed with transcription
-      setLoadingMessage('Generating new transcript...');
+      if (audioUrl !== 'youtube-player') {
+        setLoadingMessage('Sending audio to OpenAI Whisper for transcription... 🎤');
+      }
       
       // Call our local Whisper transcription API
       const requestBody: any = {
@@ -348,7 +407,14 @@ export default function TranscriptDisplay({
       }
 
       // Save to cache for future use
-      setLoadingMessage('Saving transcript for future use...');
+      // Show a fun saving message
+      const savingMessages = [
+        'Saving transcript for the next person (pay it forward!)... 💾',
+        'Contributing to the community knowledge base... ☁️',
+        'Storing in the transcript vault for future learners... 🏦',
+        'Adding to the collective learning hive mind... 🐝'
+      ];
+      setLoadingMessage(savingMessages[Math.floor(Math.random() * savingMessages.length)]);
       
       // Extract YouTube video ID if it's a YouTube URL
       const youtubeVideoId = videoUrl ? TranscriptCacheManager.generateContentId({
@@ -420,13 +486,10 @@ export default function TranscriptDisplay({
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
             <span className="text-sm text-muted-foreground">
-              {audioUrl === 'youtube-player' 
-                ? (retryCount === 0 
-                    ? 'Checking for YouTube subtitles...' 
-                    : retryCount === 1 
-                      ? 'Giving it another shot... 🎲'
-                      : 'Third time\'s the charm! 🍀')
-                : (loadingMessage || strings.youtubeShadowing?.fetchingTranscript || 'Transcribing audio with OpenAI Whisper...')}
+              {loadingMessage || 
+                (audioUrl === 'youtube-player' 
+                  ? 'Starting YouTube transcript extraction...' 
+                  : 'Transcribing audio with OpenAI Whisper...')}
             </span>
           </div>
           
@@ -440,8 +503,12 @@ export default function TranscriptDisplay({
           
           <p className="text-xs text-muted-foreground">
             {audioUrl === 'youtube-player'
-              ? 'Looking for manual or auto-generated captions...'
-              : (strings.youtubeShadowing?.transcriptNote || 'Using OpenAI Whisper to transcribe Japanese audio. This may take 30-60 seconds...')}
+              ? loadingMessage?.includes('cache') 
+                ? 'Checking if someone already transcribed this video...' 
+                : loadingMessage?.includes('SupaData') 
+                  ? 'Using advanced AI extraction (costs us $0.001 per video)...'
+                  : 'Processing multiple APIs in parallel for best results...'
+              : 'Using OpenAI Whisper to transcribe Japanese audio. This may take 30-60 seconds...'}
           </p>
         </div>
       )}
@@ -468,27 +535,45 @@ export default function TranscriptDisplay({
           {audioUrl === 'youtube-player' ? (
             <>
               <div className="flex items-start gap-3 mb-4">
-                <svg className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <span className="text-2xl flex-shrink-0 mt-0.5">😔</span>
                 <div className="flex-1">
-                  {/* Split error message and suggestions if they exist */}
-                  {error.includes('\n\n') ? (
+                  {/* Friendly error messages with emojis */}
+                  {error.includes('permission') ? (
+                    <>
+                      <p className="text-sm text-destructive font-medium">
+                        🔒 Oops! We couldn't save the transcript
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        This is usually a temporary issue. Please try again! 
+                      </p>
+                    </>
+                  ) : error.includes('rate limit') ? (
+                    <>
+                      <p className="text-sm text-destructive font-medium">
+                        ⏳ We've hit our daily limit for automatic transcripts
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        But don't worry! You can still upload subtitles manually or try again tomorrow 🌟
+                      </p>
+                    </>
+                  ) : error.includes('\n\n') ? (
                     <>
                       <p className="text-sm text-destructive font-medium">{error.split('\n\n')[0]}</p>
                       <div className="mt-3 space-y-1">
                         {error.split('\n\n')[1]?.split('\n').map((suggestion, index) => (
                           <p key={index} className="text-sm text-muted-foreground">
-                            {suggestion}
+                            💡 {suggestion}
                           </p>
                         ))}
                       </div>
                     </>
                   ) : (
                     <>
-                      <p className="text-sm text-destructive font-medium">{error}</p>
+                      <p className="text-sm text-destructive font-medium">
+                        📝 No Japanese captions found for this video
+                      </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {strings.youtubeShadowing?.transcriptErrorNote || 'The video might not have captions available'}
+                        But you have options! Try a different video or upload subtitles manually 🎯
                       </p>
                     </>
                   )}
@@ -496,6 +581,15 @@ export default function TranscriptDisplay({
               </div>
               
               <div className="flex items-center gap-3 mb-4">
+                <button
+                  onClick={() => loadTranscript()}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Try Again
+                </button>
                 {onGoBack && (
                   <button
                     onClick={onGoBack}
@@ -505,7 +599,7 @@ export default function TranscriptDisplay({
                   </button>
                 )}
                 <span className="text-sm text-muted-foreground">
-                  {onGoBack ? 'or upload subtitles manually:' : 'Upload subtitles manually:'}
+                  or upload subtitles manually 👇
                 </span>
               </div>
               

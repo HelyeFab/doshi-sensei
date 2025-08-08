@@ -368,7 +368,6 @@ export default function YouTubeShadowing() {
 
       <SmartPageHeader 
         title={strings.youtubeShadowing?.title || "YouTube Shadowing"}
-        backHref="/" 
       />
       
       {/* Usage Display */}
@@ -777,28 +776,6 @@ export default function YouTubeShadowing() {
                             ✏️ <span className="hidden sm:inline">Edit</span> Transcript
                           </button>
                         )}
-                      </div>
-                      
-                      {/* Display Options - Horizontal on all screens */}
-                      <div className="flex items-center justify-center gap-6 border-t border-border pt-3">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={showFurigana}
-                            onChange={(e) => setShowFurigana(e.target.checked)}
-                            className="w-4 h-4 text-primary rounded focus:ring-primary"
-                          />
-                          <span className="text-sm font-medium">Furigana</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={showGrammar}
-                            onChange={(e) => setShowGrammar(e.target.checked)}
-                            className="w-4 h-4 text-primary rounded focus:ring-primary"
-                          />
-                          <span className="text-sm font-medium">Grammar</span>
-                        </label>
                       </div>
                     </div>
                   </div>

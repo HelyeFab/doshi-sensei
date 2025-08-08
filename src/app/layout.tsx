@@ -25,10 +25,10 @@ import { LazyInitializers } from '@/components/LazyInitializers';
 import { FastRefreshLogger } from '@/components/FastRefreshLogger';
 import { NavigationErrorBoundary } from './NavigationErrorBoundary';
 import { PersistentLogger } from '@/components/PersistentLogger';
-import { ConsoleLogInitializer } from '@/components/ConsoleLogInitializer';
 import { PrewarmingLoader } from '@/components/PrewarmingLoader';
 import { PrewarmingScript } from '@/components/PrewarmingScript';
 import { QuickContextProvider } from '@/components/QuickContext';
+import NextAuthProvider from '@/components/providers/NextAuthProvider';
 
 // Optimized font loading - only load essential weights initially
 const geistSans = localFont({
@@ -289,46 +289,47 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <EnvProvider>
-          <CombinedUIProvider>
-            <CombinedAuthProvider>
-              <CombinedFeatureProvider>
-                <NotificationServiceProvider>
-                  <PWAWrapper>
-                    <OnboardingWrapper>
-                      <AchievementToastManager>
-                        <QuickContextProvider>
-                          <div className="min-h-screen bg-background text-foreground">
-                            <PrewarmingLoader />
-                            <FastRefreshLogger />
-                            <ConsoleLogInitializer />
-                            {process.env.NODE_ENV === 'development' && <PersistentLogger />}
-                            <NetworkStatus />
-                            <OfflineNotification />
-                            <LazyInitializers />
-                            <NavigationErrorBoundary>
-                              <div className="mobile-nav-padding">
-                                {children}
-                              </div>
-                            </NavigationErrorBoundary>
-                          <StunningBottomNavbar />
-                          <MobileMenu />
-                          <DesktopNavMenu />
-                          <PWAInstaller />
-                          <PWAUpdateNotification />
-                          <FloatingDonateButton />
-                          <CompanionTrigger />
-                          <ToastContainer />
-                          <DevHelper />
-                          <PWARecovery />
-                        </div>
-                        </QuickContextProvider>
-                      </AchievementToastManager>
-                    </OnboardingWrapper>
-                  </PWAWrapper>
-                </NotificationServiceProvider>
-              </CombinedFeatureProvider>
-            </CombinedAuthProvider>
-          </CombinedUIProvider>
+          <NextAuthProvider>
+            <CombinedUIProvider>
+              <CombinedAuthProvider>
+                <CombinedFeatureProvider>
+                  <NotificationServiceProvider>
+                    <PWAWrapper>
+                      <OnboardingWrapper>
+                        <AchievementToastManager>
+                          <QuickContextProvider>
+                            <div className="min-h-screen bg-background text-foreground">
+                              <PrewarmingLoader />
+                              <FastRefreshLogger />
+                              {process.env.NODE_ENV === 'development' && <PersistentLogger />}
+                              <NetworkStatus />
+                              <OfflineNotification />
+                              <LazyInitializers />
+                              <NavigationErrorBoundary>
+                                <div className="mobile-nav-padding">
+                                  {children}
+                                </div>
+                              </NavigationErrorBoundary>
+                            <StunningBottomNavbar />
+                            <MobileMenu />
+                            <DesktopNavMenu />
+                            <PWAInstaller />
+                            <PWAUpdateNotification />
+                            <FloatingDonateButton />
+                            <CompanionTrigger />
+                            <ToastContainer />
+                            <DevHelper />
+                            <PWARecovery />
+                          </div>
+                          </QuickContextProvider>
+                        </AchievementToastManager>
+                      </OnboardingWrapper>
+                    </PWAWrapper>
+                  </NotificationServiceProvider>
+                </CombinedFeatureProvider>
+              </CombinedAuthProvider>
+            </CombinedUIProvider>
+          </NextAuthProvider>
         </EnvProvider>
       </body>
     </html>

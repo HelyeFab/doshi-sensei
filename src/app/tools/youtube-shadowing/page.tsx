@@ -3,6 +3,8 @@ import YouTubeShadowing from './YouTubeShadowing';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: 'YouTube Shadowing - Japanese Pronunciation Practice',
   description: 'Practice Japanese shadowing with any YouTube video. Extract audio, get AI-generated transcripts, practice pronunciation, and improve listening skills with native content.',

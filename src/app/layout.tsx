@@ -25,7 +25,6 @@ import { LazyInitializers } from '@/components/LazyInitializers';
 import { FastRefreshLogger } from '@/components/FastRefreshLogger';
 import { NavigationErrorBoundary } from './NavigationErrorBoundary';
 import { PersistentLogger } from '@/components/PersistentLogger';
-import { PrewarmingLoader } from '@/components/PrewarmingLoader';
 import { PrewarmingScript } from '@/components/PrewarmingScript';
 import { QuickContextProvider } from '@/components/QuickContext';
 import NextAuthProvider from '@/components/providers/NextAuthProvider';
@@ -299,7 +298,6 @@ export default function RootLayout({
                         <AchievementToastManager>
                           <QuickContextProvider>
                             <div className="min-h-screen bg-background text-foreground">
-                              <PrewarmingLoader />
                               <FastRefreshLogger />
                               {process.env.NODE_ENV === 'development' && <PersistentLogger />}
                               <NetworkStatus />

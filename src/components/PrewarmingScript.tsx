@@ -48,10 +48,42 @@ export function PrewarmingScript() {
             <span class="floating-kanji" style="position:absolute;top:15%;left:35%;font-size:2.1rem;opacity:0.1;color:white;animation:float4 14s infinite;">桜</span>
             <span class="floating-kanji" style="position:absolute;top:85%;left:60%;font-size:1.9rem;opacity:0.1;color:white;animation:float5 23s infinite;">風</span>
           </div>
+          
+          <!-- Yokoso Welcome Text -->
+          <div style="position:absolute;top:10%;left:50%;transform:translateX(-50%);z-index:2;width:100%;text-align:center;">
+            <div style="position:relative;display:inline-block;">
+              <svg viewBox="0 0 400 80" style="width:300px;height:60px;display:block;margin:0 auto;">
+                <defs>
+                  <path id="arch" d="M 50 60 Q 200 20 350 60" />
+                </defs>
+                <text fill="white" font-size="32" font-weight="bold" style="filter:drop-shadow(0 2px 10px rgba(0,0,0,0.5));">
+                  <textPath href="#arch" text-anchor="middle" startOffset="50%">
+                    ようこそ
+                  </textPath>
+                </text>
+              </svg>
+              <div style="font-size:0.9rem;color:rgba(255,255,255,0.8);margin-top:-10px;text-shadow:0 2px 10px rgba(0,0,0,0.5);">Welcome</div>
+            </div>
+          </div>
+          
           <div style="text-align:center;color:white;width:100%;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
             <img src="/doshi.png" alt="Dōshi Sensei" style="width:120px;height:120px;margin-bottom:2rem;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.3));display:block;" />
             <h1 style="font-size:1.5rem;font-weight:bold;margin-bottom:1rem;">Dōshi Sensei</h1>
-            <p id="loading-message" style="font-size:1.125rem;opacity:0.9;transition:opacity 0.3s ease-in-out;">\${messages[currentMessageIndex]}</p>
+            <p id="loading-message" style="font-size:1.125rem;opacity:0.9;transition:opacity 0.3s ease-in-out;margin-bottom:1.5rem;">\${messages[currentMessageIndex]}</p>
+            
+            <!-- Progress Indicator -->
+            <div style="width:250px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin-bottom:1rem;">
+              <div id="progress-bar" style="height:100%;background:linear-gradient(90deg, #fff 0%, #ffd700 100%);width:0%;transition:width 0.3s ease-out;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,0.5);"></div>
+            </div>
+            
+            <!-- Progress Steps -->
+            <div id="progress-steps" style="display:flex;gap:0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.7);">
+              <span id="step-settings" style="transition:color 0.3s;">⚙️ Settings</span>
+              <span style="opacity:0.5;">•</span>
+              <span id="step-resources" style="transition:color 0.3s;">📦 Resources</span>
+              <span style="opacity:0.5;">•</span>
+              <span id="step-app" style="transition:color 0.3s;">🚀 App Ready</span>
+            </div>
           </div>
           <style>
             @keyframes gradientShift {
@@ -127,12 +159,53 @@ export function PrewarmingScript() {
         let appResourcesLoaded = false;
         let reactHydrated = false;
         let fontsLoaded = false;
+        let progressValue = 0;
+        
+        const updateProgress = () => {
+          const progressBar = document.getElementById('progress-bar');
+          const stepSettings = document.getElementById('step-settings');
+          const stepResources = document.getElementById('step-resources');
+          const stepApp = document.getElementById('step-app');
+          
+          if (!progressBar) return;
+          
+          // Calculate progress based on completed steps
+          let newProgress = 0;
+          let stepsCompleted = 0;
+          
+          if (settingsPrewarmed) {
+            stepsCompleted++;
+            if (stepSettings) stepSettings.style.color = '#4ade80';
+          }
+          
+          if (appResourcesLoaded || fontsLoaded) {
+            stepsCompleted++;
+            if (stepResources) stepResources.style.color = '#4ade80';
+          }
+          
+          if (reactHydrated && minimumTimeElapsed) {
+            stepsCompleted++;
+            if (stepApp) stepApp.style.color = '#4ade80';
+          }
+          
+          newProgress = (stepsCompleted / 3) * 100;
+          progressValue = Math.max(progressValue, newProgress); // Never go backwards
+          progressBar.style.width = progressValue + '%';
+        };
         
         const checkAndRemoveLoader = () => {
+          updateProgress();
+          
           if (settingsPrewarmed && minimumTimeElapsed && appResourcesLoaded && reactHydrated && fontsLoaded) {
             const el = document.getElementById('prewarming-loader');
             if (el && !el.dataset.removing) {
               el.dataset.removing = 'true';
+              
+              // Set progress to 100% before removing
+              const progressBar = document.getElementById('progress-bar');
+              if (progressBar) {
+                progressBar.style.width = '100%';
+              }
               
               // Clear the message rotation interval
               if (messageRotationInterval) {
@@ -140,19 +213,22 @@ export function PrewarmingScript() {
                 messageRotationInterval = null;
               }
               
-              // Wait for two animation frames to ensure paint is complete
-              requestAnimationFrame(() => {
+              // Wait for progress animation to complete
+              setTimeout(() => {
+                // Wait for two animation frames to ensure paint is complete
                 requestAnimationFrame(() => {
-                  // Additional small delay for final rendering
-                  setTimeout(() => {
-                    el.style.opacity = '0';
-                    el.style.transition = 'opacity 0.5s ease-out';
+                  requestAnimationFrame(() => {
+                    // Additional small delay for final rendering
                     setTimeout(() => {
-                      el.remove();
-                    }, 500);
-                  }, 150);
+                      el.style.opacity = '0';
+                      el.style.transition = 'opacity 0.5s ease-out';
+                      setTimeout(() => {
+                        el.remove();
+                      }, 500);
+                    }, 150);
+                  });
                 });
-              });
+              }, 300);
             }
           }
         };
@@ -220,36 +296,64 @@ export function PrewarmingScript() {
         // Start checking for app resources after 1 second
         setTimeout(waitForAppResources, 1000);
         
-        // Check for React hydration
+        // Check for React hydration with improved detection
         const checkReactHydration = () => {
-          // Check if React has hydrated by looking for React fiber nodes
+          // Multiple checks for React hydration to fix hydration issues
           const reactRoot = document.getElementById('__next');
-          if (reactRoot && reactRoot._reactRootContainer) {
+          
+          // Check 1: React Fiber internal properties
+          if (reactRoot && (reactRoot._reactRootContainer || reactRoot._reactRootContainerInfo)) {
             reactHydrated = true;
             checkAndRemoveLoader();
             return;
           }
           
-          // Also check for Next.js router ready
-          if (window.next && window.next.router && window.next.router.isReady) {
+          // Check 2: Next.js specific checks
+          if (window.next && window.next.router) {
+            if (window.next.router.isReady || window.next.router.components) {
+              reactHydrated = true;
+              checkAndRemoveLoader();
+              return;
+            }
+          }
+          
+          // Check 3: Look for React 18 root markers
+          if (reactRoot && reactRoot.dataset && reactRoot.dataset.reactroot !== undefined) {
             reactHydrated = true;
             checkAndRemoveLoader();
             return;
           }
           
-          // Check if any React event handlers are attached
-          const hasReactHandlers = document.querySelector('[data-reactroot]') || 
-                                  document.querySelector('._react') ||
-                                  (reactRoot && reactRoot.hasAttribute('data-reactroot'));
+          // Check 4: Look for hydrated interactive elements
+          const interactiveElements = document.querySelectorAll('button, a[href], input, select, textarea');
+          let hasEventListeners = false;
           
-          if (hasReactHandlers) {
+          for (let el of interactiveElements) {
+            // Check if element has React event handlers (they start with __react)
+            const props = Object.keys(el);
+            if (props.some(prop => prop.startsWith('__react') || prop.startsWith('_react'))) {
+              hasEventListeners = true;
+              break;
+            }
+          }
+          
+          if (hasEventListeners) {
             reactHydrated = true;
             checkAndRemoveLoader();
             return;
           }
           
-          // Retry
-          setTimeout(checkReactHydration, 50);
+          // Check 5: Detect if React DevTools are connected (indicates React is running)
+          if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && window.__REACT_DEVTOOLS_GLOBAL_HOOK__.renderers && window.__REACT_DEVTOOLS_GLOBAL_HOOK__.renderers.size > 0) {
+            reactHydrated = true;
+            checkAndRemoveLoader();
+            return;
+          }
+          
+          // Retry with exponential backoff to reduce CPU usage
+          const nextDelay = Math.min(checkReactHydration.delay || 50, 500);
+          checkReactHydration.delay = nextDelay * 1.5;
+          setTimeout(checkReactHydration, nextDelay);
         };
         
         // Start checking for React hydration after 500ms

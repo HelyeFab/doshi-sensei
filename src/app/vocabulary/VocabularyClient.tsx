@@ -623,8 +623,8 @@ function WordCard({ word, onWordClick }: WordCardProps) {
       }`}
     >
       <div className="flex items-baseline gap-3 mb-2">
-        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">{word.kanji}</h3>
-        <span className="text-sm text-muted-foreground">{word.kana}</span>
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors japanese-text font-ja" data-quickcontext="true">{word.kanji}</h3>
+        <span className="text-sm text-muted-foreground japanese-text font-ja" data-quickcontext="true">{word.kana}</span>
         {word.isCommon && (
           <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full font-medium">
             Common
@@ -677,7 +677,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-4">
-          <h2 className="text-2xl font-bold text-foreground">{word.kanji}</h2>
+          <h2 className="text-2xl font-bold text-foreground japanese-text font-ja" data-quickcontext="true">{word.kanji}</h2>
           <button
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -691,7 +691,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
         <div className="space-y-4">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Reading</p>
-            <p className="text-lg flex items-center gap-2">
+            <p className="text-lg flex items-center gap-2 japanese-text font-ja" data-quickcontext="true">
               {word.kana}
               <VocabularyTTSButton word={word} />
             </p>

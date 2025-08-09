@@ -102,7 +102,7 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
         <div className="text-center space-y-6">
           {/* Primary Display: Japanese Word/Kanji/Character */}
           <div className="space-y-2">
-            <div className="text-4xl md:text-5xl font-bold text-foreground">
+            <div className="text-4xl md:text-5xl font-bold text-foreground japanese-text font-ja" data-quickcontext="true">
               {showFurigana ? (
                 <ruby>
                   {item.text}
@@ -115,7 +115,7 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
 
             {/* Show reading separately if not showing furigana */}
             {!showFurigana && item.reading && (
-              <div className="text-xl text-muted-foreground">{item.reading}</div>
+              <div className="text-xl text-muted-foreground japanese-text font-ja" data-quickcontext="true">{item.reading}</div>
             )}
           </div>
 

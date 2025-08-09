@@ -331,12 +331,13 @@ export default function KanjiBrowserPage() {
           <button
             onClick={() => handleKanjiClick(kanjiItem)}
             className={`
-              relative w-full aspect-square flex items-center justify-center text-2xl font-medium rounded-lg border-2 transition-all hover:scale-105 overflow-hidden
+              relative w-full aspect-square flex items-center justify-center text-2xl font-medium rounded-lg border-2 transition-all hover:scale-105 overflow-hidden japanese-text font-ja
               ${savedKanjiSet.has(kanjiItem.kanji)
                 ? 'bg-primary/10 border-primary text-primary'
                 : 'bg-card border-border text-card-foreground hover:bg-muted'
               }
             `}
+            data-quickcontext="true"
           >
             {kanjiItem.kanji}
 
@@ -558,9 +559,9 @@ export default function KanjiBrowserPage() {
 
             return (
               <div key={level} data-level={level} className="bg-card border border-border rounded-lg overflow-hidden">
-                <button
+                <div
                   onClick={() => toggleLevel(level)}
-                  className="w-full px-6 py-4 text-left hover:bg-muted transition-colors"
+                  className="w-full px-6 py-4 text-left hover:bg-muted transition-colors cursor-pointer"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -598,7 +599,7 @@ export default function KanjiBrowserPage() {
                       </svg>
                     </div>
                   </div>
-                </button>
+                </div>
 
                 {isExpanded && (
                   <div className="px-6 pb-6">

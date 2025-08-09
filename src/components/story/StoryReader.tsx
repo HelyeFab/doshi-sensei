@@ -486,7 +486,8 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
     return (
       <div
         ref={textContainerRef}
-        className={`japanese-text ${getFontSizeClass()} leading-relaxed relative`}
+        className={`japanese-text font-ja ${getFontSizeClass()} leading-relaxed relative`}
+        data-quickcontext="true"
         dangerouslySetInnerHTML={{ __html: doc.body.innerHTML }}
         onClick={(e) => {
           const target = e.target as HTMLElement;

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { bugTracker, BugReport } from '@/services/bugTracking';
-import Link from 'next/link';
 import { 
   Bug, 
   MessageSquare, 
@@ -174,32 +173,32 @@ export default function BugsClient() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Back Navigation */}
-      <div className="px-4 pt-6">
-        <Link 
-          href="/admin" 
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Admin Dashboard
-        </Link>
-      </div>
-
-      {/* Smart Header with proper spacing */}
-      <header className="px-4 pt-4 pb-6" role="banner">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">
+      {/* Custom header with proper spacing and visible back button */}
+      <header className="px-4 pt-32 pb-4 md:pt-32">
+        <div className="flex items-center gap-3">
+          {/* Back Button */}
+          <button
+            onClick={() => router.push('/admin')}
+            className="p-2 rounded-lg hover:bg-muted transition-colors bg-card border border-border"
+            aria-label="Go back to Admin Dashboard"
+          >
+            <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          {/* Page Title */}
+          <h1 className="text-xl font-bold text-foreground flex-1">
             Bug Reports & Feedback
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage user reports, feedback, and feature requests
-          </p>
         </div>
       </header>
 
       <div className="container mx-auto px-4">
+        {/* Page Description */}
+        <p className="text-sm text-muted-foreground mb-6">
+          Manage user reports, feedback, and feature requests
+        </p>
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-card border border-border rounded-lg p-4">

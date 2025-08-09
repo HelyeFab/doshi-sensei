@@ -223,7 +223,7 @@ export default function ResourcePostPage() {
           )}
 
           {/* Article Content */}
-          <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:text-primary hover:prose-a:text-primary/80">
+          <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:text-primary hover:prose-a:text-primary/80 japanese-text font-ja" data-quickcontext="true">
             <div dangerouslySetInnerHTML={{ __html: marked(resource.content) as string }} />
           </article>
 

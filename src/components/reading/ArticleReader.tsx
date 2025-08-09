@@ -58,11 +58,12 @@ function RubyTextRenderer({ text, settings, onWordClick }: {
 
   return (
     <div
-      className={`${settings.fontSize === 'small' ? 'text-sm' :
+      className={`japanese-text font-ja ${settings.fontSize === 'small' ? 'text-sm' :
         settings.fontSize === 'medium' ? 'text-base' :
           settings.fontSize === 'large' ? 'text-lg' :
             'text-xl'
         } leading-relaxed`}
+      data-quickcontext="true"
       dangerouslySetInnerHTML={{ __html: processedText }}
       onClick={onWordClick}
       style={{

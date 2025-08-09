@@ -9,9 +9,12 @@ import { UserShareStats } from '@/types/sharing';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Await params before using them (Next.js 15 requirement)
+    const { userId } = await params;
+    
     // Verify authorization
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -37,7 +40,7 @@ export async function GET(
     }
     
     // Users can only access their own stats (unless admin)
-    if (requestingUserId !== params.userId) {
+    if (requestingUserId !== userId) {
       // TODO: Add admin check here
       return NextResponse.json(
         { error: 'Unauthorized to view these stats' },
@@ -52,13 +55,13 @@ export async function GET(
     // Get share events
     const shareEventsRef = firestore.collection('shareEvents');
     const shareEventsQuery = await shareEventsRef
-      .where('userId', '==', params.userId)
+      .where('userId', '==', userId)
       .get();
     
     // Get conversions
     const conversionsRef = firestore.collection('referralConversions');
     const conversionsQuery = await conversionsRef
-      .where('referrerId', '==', params.userId)
+      .where('referrerId', '==', userId)
       .get();
     
     // Calculate stats

@@ -84,7 +84,7 @@ export default function KanjiCard({
         <div className="kanji-card">
           <div className="kanji-card-face">
             <div className="flex flex-col items-center justify-center h-full p-4">
-              <div className="text-6xl font-bold text-foreground mb-3">
+              <div className="text-6xl font-bold text-foreground mb-3 japanese-text font-ja" data-quickcontext="true">
                 {kanji.char}
               </div>
               <div className="text-lg text-muted-foreground text-center">
@@ -95,12 +95,12 @@ export default function KanjiCard({
               {(kanji.readings?.on?.length > 0 || kanji.readings?.kun?.length > 0) && (
                 <div className="mt-3 space-y-1">
                   {kanji.readings.on?.length > 0 && (
-                    <div className="text-xs text-blue-600 dark:text-blue-400">
+                    <div className="text-xs text-blue-600 dark:text-blue-400 japanese-text font-ja" data-quickcontext="true">
                       {kanji.readings.on[0]}
                     </div>
                   )}
                   {kanji.readings.kun?.length > 0 && (
-                    <div className="text-xs text-green-600 dark:text-green-400">
+                    <div className="text-xs text-green-600 dark:text-green-400 japanese-text font-ja" data-quickcontext="true">
                       {kanji.readings.kun[0]}
                     </div>
                   )}

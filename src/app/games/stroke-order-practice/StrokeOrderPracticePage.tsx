@@ -284,7 +284,8 @@ export default function StrokeOrderPracticePage() {
                         {set.kanji.slice(0, 8).map((kanji, idx) => (
                           <span
                             key={idx}
-                            className="text-2xl font-bold text-foreground/80 group-hover:text-foreground transition-colors"
+                            className="text-2xl font-bold text-foreground/80 group-hover:text-foreground transition-colors japanese-text font-ja"
+                            data-quickcontext="true"
                           >
                             {kanji}
                           </span>

@@ -52,11 +52,11 @@ export function PrewarmingScript() {
           <!-- Yokoso Welcome Text -->
           <div style="position:absolute;top:10%;left:50%;transform:translateX(-50%);z-index:2;width:100%;text-align:center;">
             <div style="position:relative;display:inline-block;">
-              <svg viewBox="0 0 400 80" style="width:300px;height:60px;display:block;margin:0 auto;">
+              <svg viewBox="0 0 400 100" style="width:400px;height:80px;display:block;margin:0 auto;">
                 <defs>
-                  <path id="arch" d="M 50 60 Q 200 20 350 60" />
+                  <path id="arch" d="M 50 70 Q 200 25 350 70" />
                 </defs>
-                <text fill="white" font-size="32" font-weight="bold" style="filter:drop-shadow(0 2px 10px rgba(0,0,0,0.5));">
+                <text fill="white" font-size="48" font-weight="900" style="filter:drop-shadow(0 3px 15px rgba(0,0,0,0.6));">
                   <textPath href="#arch" text-anchor="middle" startOffset="50%">
                     ようこそ
                   </textPath>

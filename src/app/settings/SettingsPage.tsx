@@ -38,8 +38,6 @@ export default function SettingsPage() {
     cancelSync,
     clearSyncError
   } = usePremiumSync();
-  const [showResetModal, setShowResetModal] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [showCacheModal, setShowCacheModal] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState(false);
@@ -63,87 +61,8 @@ export default function SettingsPage() {
     return <div className="container mx-auto px-4 py-8 text-center">Loading...</div>;
   }
 
-  // Handler functions for new settings
-  const handleExportData = async () => {
-    try {
-      // Export all user data
-      const studyLists = await StudyListManager.getAllStudyLists();
-      const savedItems = await StudyListManager.getSavedStudyItems();
-      const statsData = await import('@/utils/stats').then(m => m.StatsManager.exportStats());
+  // Handler functions for settings
 
-      const exportData = {
-        studyLists,
-        savedStudyItems: savedItems,
-        stats: JSON.parse(statsData),
-        settings,
-        exportedAt: new Date().toISOString(),
-        version: '2.0.0'
-      };
-
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `doshi-sensei-backup-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Export failed:', error);
-      setSyncModal({
-        show: true,
-        type: 'error',
-        title: 'Export Failed',
-        message: 'Failed to export data. Please try again.'
-      });
-    }
-  };
-
-  const handleImportData = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      try {
-        const text = await file.text();
-        const data = JSON.parse(text);
-
-        // Import study lists if available (new format)
-        if (data.studyLists && data.savedStudyItems) {
-          // Clear existing data first
-          await StudyListManager.clearAllStudyLists();
-
-          // Import new data
-          localStorage.setItem('doshi_sensei_study_lists', JSON.stringify(data.studyLists));
-          localStorage.setItem('doshi_sensei_saved_study_items', JSON.stringify(data.savedStudyItems));
-        }
-        // Handle legacy format
-        else if (data.wordLists) {
-          console.warn('Legacy import format detected - manual migration required');
-        }
-
-        setSyncModal({
-          show: true,
-          type: 'success',
-          title: 'Import Successful',
-          message: 'Data imported successfully! Please refresh the page to see your imported data.'
-        });
-      } catch (error) {
-        console.error('Import failed:', error);
-        setSyncModal({
-          show: true,
-          type: 'error',
-          title: 'Import Failed',
-          message: 'Failed to import data. Please check the file format and try again.'
-        });
-      }
-    };
-    input.click();
-  };
 
   const handleContactUs = () => {
     router.push('/contact');
@@ -317,55 +236,6 @@ export default function SettingsPage() {
     }
   };
 
-  // Handle reset all data
-  const handleResetAllData = async () => {
-    setIsResetting(true);
-    try {
-
-      // Clear all data from EnhancedStorageManager (settings, progress, recently viewed, etc.)
-      await EnhancedStorageManager.clearAllData();
-
-      // Clear study lists and saved items
-      await StudyListManager.clearAllStudyLists();
-
-      // Clear any remaining localStorage items
-      const keysToCheck = [
-        'doshi_sensei_settings',
-        'doshi_sensei_progress',
-        'doshi_sensei_recent_words',
-        'doshi_sensei_study_lists',
-        'doshi_sensei_saved_study_items'
-      ];
-
-      keysToCheck.forEach(key => {
-        if (localStorage.getItem(key)) {
-          localStorage.removeItem(key);
-        }
-      });
-
-      // Clear any sessionStorage items
-      sessionStorage.clear();
-
-
-      // Reset settings to defaults (this will trigger a reload)
-      resetSettings();
-
-      // Force page reload to ensure clean state
-      router.refresh();
-
-    } catch (error) {
-      console.error('Error during data reset:', error);
-      setSyncModal({
-        show: true,
-        type: 'error',
-        title: 'Reset Failed',
-        message: 'An error occurred while resetting data. Please try again.'
-      });
-    } finally {
-      setIsResetting(false);
-      setShowResetModal(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -480,37 +350,6 @@ export default function SettingsPage() {
               </div>
             </SettingsSection>
 
-            {/* Data Management */}
-            <SettingsSection title={strings.settings.dataManagement}>
-              <div className="space-y-4">
-                <LinkButton
-                  label={strings.settings.exportData}
-                  description={strings.settings.exportDataDesc}
-                  onClick={handleExportData}
-                />
-                <LinkButton
-                  label={strings.settings.importData}
-                  description={strings.settings.importDataDesc}
-                  onClick={handleImportData}
-                />
-                <div className="pt-4 border-t border-border">
-                  <button
-                    onClick={() => setShowResetModal(true)}
-                    className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
-                  >
-                    {strings.settings.resetAllData}
-                  </button>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {strings.settings.resetAllDataDesc}
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-border">
-                  <p className="text-xs text-muted-foreground">
-                    {strings.settings.dataManagementInfo}
-                  </p>
-                </div>
-              </div>
-            </SettingsSection>
 
             {/* Cloud Sync */}
             <SettingsSection title={strings.settings.cloudSync}>
@@ -731,54 +570,6 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {/* Reset Confirmation Modal */}
-        {showResetModal && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
-              <div className="text-center mb-6">
-                <div className="text-6xl mb-4">⚠️</div>
-                <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                  {strings.settings.resetAllDataTitle}
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {strings.settings.resetAllDataDesc}
-                </p>
-                <ul className="text-muted-foreground text-sm mt-2 space-y-1">
-                  {strings.settings?.resetAllDataItems?.map((item, index) => (
-                    <li key={index}>• {item}</li>
-                  )) || []}
-                </ul>
-                <p className="text-red-400 font-medium text-sm mt-4">
-                  {strings.settings.resetAllDataWarning}
-                </p>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowResetModal(false)}
-                  disabled={isResetting}
-                  className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
-                >
-                  {strings.settings.cancel}
-                </button>
-                <button
-                  onClick={handleResetAllData}
-                  disabled={isResetting}
-                  className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isResetting ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="animate-spin w-4 h-4 border-2 border-destructive-foreground border-t-transparent rounded-full"></div>
-                      {strings.settings.resetting}
-                    </div>
-                  ) : (
-                    strings.settings.resetAllData
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Cache Clear Modal */}
         {showCacheModal && (

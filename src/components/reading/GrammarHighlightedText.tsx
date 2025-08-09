@@ -97,15 +97,15 @@ export function GrammarHighlightedText({
   };
 
   if (loading || !isKuromojiReady) {
-    return <span className={className}>{text}</span>;
+    return <span className={`${className} japanese-text font-ja`} data-quickcontext="true">{text}</span>;
   }
 
   if (error || tokens.length === 0) {
-    return <span className={className}>{text}</span>;
+    return <span className={`${className} japanese-text font-ja`} data-quickcontext="true">{text}</span>;
   }
 
   return (
-    <span className={`${className} block md:inline`} style={{ lineHeight: '2.5', marginTop: '0.5rem' }}>
+    <span className={`${className} block md:inline japanese-text font-ja`} data-quickcontext="true" style={{ lineHeight: '2.5', marginTop: '0.5rem' }}>
       {tokens.map((token, index) => {
         const isHighlighted = shouldHighlight(token);
         const posType = KuromojiService.getInstance().getPartOfSpeech(token);

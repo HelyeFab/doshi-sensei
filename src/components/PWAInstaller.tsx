@@ -109,38 +109,61 @@ export default function PWAInstaller() {
   }
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-      <div className="bg-card border border-border rounded-lg shadow-lg p-2 md:p-4">
-        <div className="flex items-center gap-2 md:gap-3">
-          <div className="flex-1 min-w-0">
-            <p className="text-xs md:text-sm font-medium text-foreground truncate">
+    <>
+      {/* Backdrop for dismissible interaction */}
+      <div 
+        className="fixed inset-0 z-[9998]"
+        onClick={() => {
+          setShowInstallButton(false);
+          localStorage.setItem('pwa-prompt-last-shown', Date.now().toString());
+          pwaAnalytics.trackEvent('install_prompt_dismissed_backdrop');
+        }}
+      />
+      
+      {/* Centered modal popup */}
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[90vw] max-w-sm">
+        <div className="bg-card border border-border rounded-xl shadow-xl p-6">
+          {/* App icon */}
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+              <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+          
+          {/* Content */}
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               Install Doshi Sensei
-            </p>
-            <p className="text-xs text-muted-foreground mt-0.5 hidden md:block">
-              Add to home screen for easy access
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Add to your home screen for the best experience with offline access and faster loading
             </p>
           </div>
-          <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+          
+          {/* Actions */}
+          <div className="flex gap-3">
             <button
               onClick={() => {
                 setShowInstallButton(false);
-                // Update the last shown time when user clicks "Maybe later"
                 localStorage.setItem('pwa-prompt-last-shown', Date.now().toString());
                 pwaAnalytics.trackEvent('install_prompt_dismissed_maybe_later');
               }}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
+              className="flex-1 px-4 py-2.5 text-sm text-muted-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors font-medium"
             >
-              Later
+              Maybe Later
             </button>
             <button
               onClick={handleInstallClick}
-              className="px-3 py-1 md:px-4 md:py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 px-4 py-2.5 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
             >
-              Install
+              Install App
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

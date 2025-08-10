@@ -100,22 +100,24 @@ export default function YouTubeConnection() {
   }
 
   return (
-    <div className="bg-card rounded-lg p-6 shadow-sm border border-border">
-      <div className="flex items-start gap-4">
-        <div className="p-3 bg-primary/10 rounded-lg">
-          <Youtube className="w-6 h-6 text-primary" />
-        </div>
-        
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-foreground mb-2">
+    <div className="bg-card rounded-lg p-4 sm:p-6 shadow-sm border border-border">
+      <div className="mb-4">
+        {/* Mobile: Icon above title, Desktop: Icon beside title */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+          <div className="p-3 bg-primary/10 rounded-lg flex-shrink-0 w-fit">
+            <Youtube className="w-6 h-6 text-primary" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">
             YouTube Account Connection
           </h3>
-          
-          <p className="text-sm text-muted-foreground mb-4">
-            Connect your YouTube account to access captions from private videos and videos you own. This provides the most reliable caption extraction.
-          </p>
+        </div>
+        
+        <p className="text-sm text-muted-foreground">
+          Connect your YouTube account to access captions from private videos and videos you own. This provides the most reliable caption extraction.
+        </p>
+      </div>
 
-          {isConnected ? (
+      {isConnected ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle className="w-5 h-5" />
@@ -175,13 +177,11 @@ export default function YouTubeConnection() {
             </div>
           )}
 
-          <div className="mt-6 p-3 bg-secondary/30 border border-border rounded-lg">
-            <p className="text-xs text-muted-foreground">
-              <strong className="text-foreground">Privacy Note:</strong> We only request read-only access to YouTube captions. 
-              We cannot modify your account, upload videos, or access your personal data beyond what's needed for caption extraction.
-            </p>
-          </div>
-        </div>
+      <div className="mt-6 p-3 bg-secondary/30 border border-border rounded-lg">
+        <p className="text-xs text-muted-foreground">
+          <strong className="text-foreground">Privacy Note:</strong> We only request read-only access to YouTube captions. 
+          We cannot modify your account, upload videos, or access your personal data beyond what's needed for caption extraction.
+        </p>
       </div>
     </div>
   );

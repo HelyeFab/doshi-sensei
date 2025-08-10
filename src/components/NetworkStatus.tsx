@@ -170,6 +170,11 @@ export default function NetworkStatus() {
     }, quality === 'good' ? 5000 : 10000);
   };
 
+  const handleDismiss = () => {
+    setShowNotification(false);
+    setLastNotificationTime(Date.now()); // Prevent immediate re-show
+  };
+
   // Don't show anything if connection is good and no recent changes
   if (networkInfo.quality === 'good' && !showNotification) {
     return null;
@@ -224,33 +229,48 @@ export default function NetworkStatus() {
   return (
     <AnimatePresence>
       {(showNotification || networkInfo.quality !== 'good') && (
-        <motion.div
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -100, opacity: 0 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] pointer-events-none"
-        >
-          <div 
-            className="rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 min-w-[280px] max-w-[90vw] border"
-            style={{
-              backgroundColor: content.bgColor,
-              color: content.textColor,
-              borderColor: 'hsl(var(--border))'
-            }}
+        <>
+          {/* Backdrop for dismissible interaction */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9998]"
+            onClick={handleDismiss}
+          />
+          
+          {/* Notification popup */}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]"
+            onClick={handleDismiss}
           >
-            {content.icon}
-            <div className="flex-1">
-              <p className="font-semibold text-sm">{content.title}</p>
-              <p className="text-xs opacity-90">{content.message}</p>
-            </div>
-            {networkInfo.quality === 'offline' && (
-              <div className="animate-pulse">
-                <div className="w-2 h-2 bg-current rounded-full opacity-60"></div>
+            <div 
+              className="rounded-xl shadow-xl px-6 py-4 flex flex-col items-center gap-3 min-w-[280px] max-w-[90vw] border cursor-pointer"
+              style={{
+                backgroundColor: content.bgColor,
+                color: content.textColor,
+                borderColor: 'hsl(var(--border))'
+              }}
+            >
+              <div className="p-3 bg-white/20 rounded-full">
+                {content.icon}
               </div>
-            )}
-          </div>
-        </motion.div>
+              <div className="text-center">
+                <p className="font-semibold text-base mb-1">{content.title}</p>
+                <p className="text-sm opacity-90">{content.message}</p>
+              </div>
+              {networkInfo.quality === 'offline' && (
+                <div className="animate-pulse">
+                  <div className="w-2 h-2 bg-current rounded-full opacity-60"></div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );

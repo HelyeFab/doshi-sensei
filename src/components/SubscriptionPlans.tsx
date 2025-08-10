@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useStripePrices } from '@/hooks/useStripePrices';
 
 export default function SubscriptionPlans() {
   const strings = useStrings();
@@ -16,6 +17,7 @@ export default function SubscriptionPlans() {
   const { feature: drillFeature } = useFeature('drill_practice');
   const { feature: listFeature } = useFeature('word_lists');
   const { showNotification } = useNotification();
+  const { prices, loading: pricesLoading, formatPrice } = useStripePrices();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
@@ -139,7 +141,10 @@ export default function SubscriptionPlans() {
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">{strings.subscriptions.plan}</span>
             <span className="text-sm font-medium text-foreground">
-              {currentPlanData?.name || 'Free'} {currentPlan !== 'free' && currentPlanData && `($${currentPlanData.price}/${currentPlan === 'monthly' ? 'month' : 'year'})`}
+              {currentPlanData?.name || 'Free'} 
+              {currentPlan !== 'free' && prices && prices[currentPlan] && (
+                <span> ({formatPrice(prices[currentPlan])}/{prices[currentPlan].interval})</span>
+              )}
             </span>
           </div>
         </div>

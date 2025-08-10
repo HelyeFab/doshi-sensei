@@ -255,6 +255,7 @@ export const GUEST_LIMITS = {
 };
 
 // Default subscription plans as array
+// These are DEFAULT/FALLBACK values only - actual prices come from Stripe
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'free',
@@ -275,8 +276,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'monthly',
     name: 'Monthly Premium',
     description: 'Unlock unlimited access to all features',
-    price: 3.99,
-    currency: 'USD',
+    price: 0, // Price will be loaded from Stripe
+    currency: 'GBP', // Default currency
     interval: 'month',
     features: [
       'Unlimited Anki card imports & SRS',
@@ -295,9 +296,9 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'yearly',
     name: 'Yearly Premium',
-    description: 'Best value - save 30% with annual billing',
-    price: 39.99,
-    currency: 'USD',
+    description: 'Best value - save with annual billing',
+    price: 0, // Price will be loaded from Stripe
+    currency: 'GBP', // Default currency
     interval: 'year',
     features: [
       'Unlimited Anki card imports & SRS',

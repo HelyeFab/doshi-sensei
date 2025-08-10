@@ -1,24 +1,29 @@
-import React from 'react';
+import * as React from "react";
 
-interface BadgeProps {
-  children: React.ReactNode;
-  variant?: 'default' | 'secondary' | 'outline' | 'destructive';
-  className?: string;
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "secondary" | "destructive" | "outline";
 }
 
-export function Badge({ children, variant = 'default', className = '' }: BadgeProps) {
-  const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
-  
-  const variantClasses = {
-    default: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-    outline: 'border border-border bg-transparent text-foreground',
-    destructive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+function Badge({ className, variant = "default", ...props }: BadgeProps) {
+  const baseClasses =
+    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
+
+  const variants = {
+    default:
+      "border-transparent bg-primary text-primary-foreground hover:bg-primary/80 bg-blue-600 text-white",
+    secondary:
+      "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 bg-gray-100 text-gray-900",
+    destructive:
+      "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80 bg-red-600 text-white",
+    outline: "text-foreground border-gray-300 text-gray-700",
   };
-  
+
   return (
-    <span className={`${baseClasses} ${variantClasses[variant]} ${className}`}>
-      {children}
-    </span>
+    <div
+      className={`${baseClasses} ${variants[variant]} ${className || ""}`}
+      {...props}
+    />
   );
 }
+
+export { Badge };

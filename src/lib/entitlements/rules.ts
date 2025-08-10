@@ -12,7 +12,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
   {
     id: 'guest_basic',
     userTypes: ['guest'],
-    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary', 'kanji_mastery', 'view_leaderboard', 'share_content', 'use_general_learning_module'],
+    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary', 'learn_kanji', 'view_leaderboard', 'share_content', 'use_general_learning_module'],
     limits: {
       daily: {
         drill_practice: 3,

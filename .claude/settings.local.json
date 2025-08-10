@@ -2,7 +2,20 @@
   "permissions": {
     "allow": [
       "Bash(grep:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node:*)",
+      "Bash(npx tsx:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(rm:*)",
+      "Bash(git push:*)",
+      "Bash(stripe products:*)",
+      "Bash(stripe prices:*)",
+      "Bash(npm run build:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(chmod:*)",
+      "Bash(stripe:*)",
+      "Bash(firebase functions:log:*)"
     ],
     "deny": []
   }

@@ -31,9 +31,9 @@ This guide covers setting up, testing, and managing the Stripe subscription syst
 ## ⚙️ Stripe Setup
 
 ### 1. Products & Prices
-Already created via script:
-- **Monthly**: `price_1RakzXHdrJomitOwZc0HJC4J` ($3.99)
-- **Yearly**: `price_1RakzXHdrJomitOwE7B56erf` ($39.99)
+Updated August 2025 (LIVE):
+- **Monthly**: `price_1RubMXHdrJomitOwNNI4LmWB` (£8.99/month - LIVE)
+- **Yearly**: `price_1RubMxHdrJomitOwElEo6nys` (£89.99/year - LIVE)
 
 ### 2. Environment Variables
 ```env
@@ -41,9 +41,9 @@ Already created via script:
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
 STRIPE_SECRET_KEY=sk_live_...
 
-# Product IDs
-NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID=price_1RakzXHdrJomitOwZc0HJC4J
-NEXT_PUBLIC_STRIPE_YEARLY_PRICE_ID=price_1RakzXHdrJomitOwE7B56erf
+# Product IDs (LIVE - Updated Aug 2025)
+NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID=price_1RubMXHdrJomitOwNNI4LmWB
+NEXT_PUBLIC_STRIPE_YEARLY_PRICE_ID=price_1RubMxHdrJomitOwElEo6nys
 
 # Webhook Secret
 STRIPE_WEBHOOK_SECRET=whsec_...

@@ -144,14 +144,18 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
 
   const playWordAudio = async () => {
     try {
-      // Use the proper TTS system
-      // For vocabulary words, use Google TTS (short audio)
+      // Use the proper TTS system based on content type
+      // For single kanji/words, use Google TTS (short audio)
+      // Check if this is a kanji (partOfSpeech === 'kanji')
+      const isKanji = word.partOfSpeech === 'kanji';
+      const textToSpeak = word.kana || word.kanji || '';
+      
       await TTSManager.speak(
-        word.kana || word.kanji || '', 
+        textToSpeak, 
         {
           voice: 'female',
-          provider: 'google',
-          context: 'vocabulary'
+          provider: isKanji || textToSpeak.length <= 10 ? 'google' : 'elevenlabs',
+          context: isKanji ? 'kanji' : 'vocabulary'
         }
       );
       setHasPlayedAudio(true);
@@ -226,7 +230,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
-            Grammar Color Guide
+            Grammar Color Guide (for sentences)
           </button>
           
           {/* On/Off Toggle */}
@@ -302,7 +306,19 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
           )}
           <p className="text-lg text-muted-foreground">{word.meaning}</p>
           {word.partOfSpeech && (
-            <p className="text-sm text-muted-foreground mt-1">({word.partOfSpeech})</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              ({word.partOfSpeech})
+              {word.partOfSpeech === 'kanji' && (
+                <a 
+                  href={`/kanji-details?kanji=${encodeURIComponent(word.kanji || '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 text-primary hover:text-primary/80 underline text-xs"
+                >
+                  View stroke order →
+                </a>
+              )}
+            </p>
           )}
         </div>
 
@@ -343,13 +359,13 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
               <button
                 onClick={async () => {
                   try {
-                    // Use ElevenLabs for sentences
+                    // Use ElevenLabs for sentences (longer text)
                     await TTSManager.speak(
                       translatedExample.japanese,
                       {
                         voice: 'female',
                         provider: 'elevenlabs',
-                        context: 'vocabulary'
+                        context: 'example'
                       }
                     );
                   } catch (error) {

@@ -1,24 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSettings } from '@/contexts/SettingsContext';
-import VirtualCompanion from './VirtualCompanion';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useVirtualCompanion } from '@/contexts/VirtualCompanionContext';
 
 export default function CompanionTrigger() {
   const { settings, isLoading } = useSettings();
-  const [isCompanionOpen, setIsCompanionOpen] = useState(false);
   const strings = useStrings();
   const pathname = usePathname();
-
-  const handleOpenCompanion = () => {
-    setIsCompanionOpen(true);
-  };
-
-  const handleCloseCompanion = () => {
-    setIsCompanionOpen(false);
-  };
+  const { openCompanion } = useVirtualCompanion();
 
   // Hide the companion trigger on homepage
   if (pathname === '/') {
@@ -29,7 +20,7 @@ export default function CompanionTrigger() {
     <>
       {/* Trigger Button */}
       <button
-        onClick={handleOpenCompanion}
+        onClick={openCompanion}
         className="absolute top-4 left-4 z-40 w-16 h-16 rounded-full bg-card hover:bg-card/80 flex items-center justify-center transition-all duration-300 hover:scale-110 group shadow-lg animate-bounce-gentle"
         style={{
           border: '2px solid white',
@@ -70,12 +61,6 @@ export default function CompanionTrigger() {
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-75 animate-pulse"
              style={{ animation: 'sparkle 1.5s ease-in-out infinite' }} />
       </button>
-
-      {/* Virtual Companion Modal */}
-      <VirtualCompanion
-        isOpen={isCompanionOpen}
-        onClose={handleCloseCompanion}
-      />
     </>
   );
 }

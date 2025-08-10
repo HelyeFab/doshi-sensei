@@ -21,15 +21,41 @@ export interface UserSubscription {
   // Flattened structure as per Firebase Functions migration
   plan: 'free' | 'monthly' | 'yearly';
   status: 'active' | 'inactive' | 'canceled' | 'past_due';
+  
+  // Payment provider information
+  paymentProvider?: 'stripe' | 'paypal' | 'googlepay';
+  providerSubscriptionId?: string; // Generic provider subscription ID
+  providerCustomerId?: string; // Generic provider customer ID
+  
+  // Legacy Stripe fields (kept for backwards compatibility)
   stripeSubscriptionId?: string;
   stripeCustomerId?: string;
   stripePriceId?: string;
+  
+  // PayPal specific fields
+  paypalSubscriptionId?: string;
+  paypalPayerId?: string;
+  paypalPlanId?: string;
+  
+  // Google Pay transaction info (Google Pay uses Stripe for subscriptions)
+  googlePayTransactionId?: string;
+  
+  // Common subscription fields
   currentPeriodStart?: Date;
   currentPeriodEnd?: Date;
   cancelAtPeriodEnd?: boolean;
   canceledAt?: Date;
+  
+  // Payment method details
+  lastPaymentMethod?: {
+    type: 'card' | 'paypal' | 'googlepay';
+    last4?: string; // For cards
+    brand?: string; // Card brand (visa, mastercard, etc.)
+    email?: string; // For PayPal
+  };
+  
   metadata?: {
-    source: 'stripe' | 'admin';
+    source: 'stripe' | 'paypal' | 'googlepay' | 'admin';
     createdAt?: Date;
     updatedAt?: Date;
     upgradedBy?: string;

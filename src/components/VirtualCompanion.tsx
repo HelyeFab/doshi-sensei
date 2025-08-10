@@ -15,6 +15,7 @@ import SlideUpModal from '@/components/SlideUpModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
 
 interface VirtualCompanionProps {
   isOpen: boolean;
@@ -26,10 +27,14 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
   const strings = useStrings();
   const router = useRouter();
   const { user } = useAuth();
+  const { canInstall, install, isInstalling, isInstalled } = usePWAInstall();
   const [character, setCharacter] = useState<CompanionCharacter | null>(null);
   const [quote, setQuote] = useState<string>('');
   const [isAnimated, setIsAnimated] = useState(false);
   const [showDoshiModal, setShowDoshiModal] = useState(false);
+  
+  // Show banner if not installed (regardless of install prompt availability for now)
+  const showInstallBanner = !isInstalled;
   
   const handleSignOut = async () => {
     try {
@@ -81,15 +86,17 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         onClick={onClose}
       />
 
-      {/* Modal */}
+      {/* Modal - Relative positioning with flex container */}
       <div
-        className={`relative bg-card rounded-2xl shadow-2xl px-6 pt-6 pb-4 w-full max-w-md mx-auto transform transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        className={`relative bg-card rounded-2xl shadow-2xl w-full max-w-md flex flex-col transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
           }`}
         style={{
           border: '2px solid white',
           boxShadow: 'inset 0 0 0 1px var(--primary), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
         }}
       >
+        {/* Content wrapper */}
+        <div className={`px-6 pt-6 ${showInstallBanner ? 'pb-0' : 'pb-4'} flex-shrink-0`}>
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -108,7 +115,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
         {/* Character Icon */}
         {character && (
-          <div className="flex flex-col items-center space-y-3">
+          <div className="flex flex-col items-center gap-2">
             <div
               className={`w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-3 flex items-center justify-center transform transition-all duration-700 ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
                 }`}
@@ -165,7 +172,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             {/* Action Button */}
             <button
               onClick={onClose}
-              className={`mt-2 px-5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-sm transition-all duration-200 transform hover:scale-105 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              className={`px-5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-sm transition-all duration-200 transform hover:scale-105 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 }`}
               style={{ transitionDelay: '700ms' }}
             >
@@ -175,17 +182,17 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         )}
 
         {/* Footer Section */}
-        <div className="mt-4 pt-3 border-t border-border/50">
-          <div className="grid grid-cols-2 gap-2">
+        <div className="mt-2 pt-2 border-t border-border/50">
+          <div className="grid grid-cols-2 gap-1.5">
             <button
               onClick={() => {
                 onClose();
                 router.push('/account');
               }}
-              className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <span className="text-lg">👤</span>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <span className="text-base">👤</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Account</span>
             </button>
@@ -195,20 +202,20 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                 onClose();
                 router.push('/settings');
               }}
-              className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <span className="text-lg">⚙️</span>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <span className="text-base">⚙️</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Settings</span>
             </button>
             
             <button
               onClick={() => setShowDoshiModal(true)}
-              className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
+              className="group flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
             >
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500/20 to-pink-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <span className="text-lg">🌸</span>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500/20 to-pink-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <span className="text-base">🌸</span>
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Dōshi Sensei</span>
             </button>
@@ -216,10 +223,10 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
             {user ? (
               <button
                 onClick={handleSignOut}
-                className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
+                className="group flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
               >
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                  <span className="text-lg">👋</span>
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                  <span className="text-base">👋</span>
                 </div>
                 <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Sign Out</span>
               </button>
@@ -229,16 +236,61 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                   onClose();
                   router.push('/login');
                 }}
-                className="group flex flex-col items-center gap-1 py-2 px-3 rounded-xl hover:bg-muted/50 transition-all duration-200"
+                className="group flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl hover:bg-muted/50 transition-all duration-200"
               >
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                  <span className="text-lg">🔑</span>
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                  <span className="text-base">🔑</span>
                 </div>
                 <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Sign In</span>
               </button>
             )}
           </div>
         </div>
+        </div>{/* End of content wrapper */}
+
+        {/* PWA Install Banner - Only show if app is not installed */}
+        {showInstallBanner && (
+          <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-accent/10 border-t border-border/50 rounded-b-2xl flex-shrink-0">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-9 h-9 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">Install App</p>
+                  <p className="text-xs text-muted-foreground">Quick access from home</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  if (canInstall) {
+                    install();
+                  } else {
+                    // Show instructions for manual installation
+                    alert('To install this app:\n\n• On Chrome: Click the install icon in the address bar\n• On Safari: Tap Share → Add to Home Screen\n• On Edge: Click ⋯ menu → Apps → Install this site');
+                  }
+                }}
+                disabled={isInstalling}
+                className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 whitespace-nowrap"
+              >
+                {isInstalling ? (
+                  <>
+                    <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Installing</span>
+                  </>
+                ) : (
+                  canInstall ? 'Install' : 'How to Install'
+                )}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Doshi Sensei Info Modal */}

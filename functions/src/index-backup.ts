@@ -148,8 +148,8 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   let plan: 'free' | 'monthly' | 'yearly' = 'free';
   if (isActive && priceId) {
     const planMap: { [key: string]: 'monthly' | 'yearly' } = {
-      'price_1RakzXHdrJomitOwZc0HJC4J': 'monthly',
-      'price_1RakzXHdrJomitOwE7B56erf': 'yearly'
+      'price_1RubMXHdrJomitOwNNI4LmWB': 'monthly',  // £8.99/month (test mode)
+      'price_1RubMxHdrJomitOwElEo6nys': 'yearly'    // £89.99/year (test mode)
     };
     
     plan = planMap[priceId] || 'free';

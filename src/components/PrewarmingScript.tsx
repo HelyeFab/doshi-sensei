@@ -49,25 +49,26 @@ export function PrewarmingScript() {
             <span class="floating-kanji" style="position:absolute;top:85%;left:60%;font-size:1.9rem;opacity:0.1;color:white;animation:float5 23s infinite;">風</span>
           </div>
           
-          <!-- Yokoso Welcome Text -->
-          <div style="position:absolute;top:10%;left:50%;transform:translateX(-50%);z-index:2;width:100%;text-align:center;">
-            <div style="position:relative;display:inline-block;">
-              <svg viewBox="0 0 400 100" style="width:400px;height:80px;display:block;margin:0 auto;">
-                <defs>
-                  <path id="arch" d="M 50 70 Q 200 25 350 70" />
-                </defs>
-                <text fill="white" font-size="48" font-weight="900" style="filter:drop-shadow(0 3px 15px rgba(0,0,0,0.6));">
-                  <textPath href="#arch" text-anchor="middle" startOffset="50%">
-                    ようこそ
-                  </textPath>
-                </text>
-              </svg>
-              <div style="font-size:0.9rem;color:rgba(255,255,255,0.8);margin-top:-10px;text-shadow:0 2px 10px rgba(0,0,0,0.5);">Welcome</div>
+          <div style="text-align:center;color:white;width:100%;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;padding:2rem 1rem 0;">
+            <!-- Yokoso Welcome Text -->
+            <div style="position:relative;margin-bottom:clamp(1.5rem, 5vw, 3rem);width:100%;max-width:600px;">
+              <!-- Responsive Yokoso Text -->
+              <div class="yokoso-container" style="display:flex;align-items:baseline;justify-content:center;gap:clamp(4px, 2vw, 12px);margin:20px 0;position:relative;">
+                <!-- Contained sparkles that won't overflow -->
+                <span class="sparkle mobile-sparkle" style="position:absolute;top:-15px;left:10%;font-size:clamp(0.8rem, 3vw, 1.2rem);animation:sparkle1 2s infinite;">✨</span>
+                <span class="sparkle mobile-sparkle" style="position:absolute;top:-10px;right:10%;font-size:clamp(0.7rem, 2.5vw, 1rem);animation:sparkle2 2.5s infinite;">⭐</span>
+                <span class="sparkle mobile-sparkle" style="position:absolute;bottom:-10px;left:15%;font-size:clamp(0.8rem, 3vw, 1.1rem);animation:sparkle3 3s infinite;">💫</span>
+                <span class="sparkle mobile-sparkle" style="position:absolute;bottom:-15px;right:15%;font-size:clamp(0.9rem, 3.5vw, 1.3rem);animation:sparkle1 2.2s infinite;">🌟</span>
+                
+                <span class="yokoso-char" style="font-size:clamp(2.5rem, 8vw, 5rem);font-weight:900;color:white;text-shadow:0 0 30px rgba(255,255,255,0.9), 0 8px 30px rgba(0,0,0,0.8);animation:bounce1 2s infinite ease-in-out, shimmer 3s infinite linear;transform-origin:center bottom;">よ</span>
+                <span class="yokoso-char" style="font-size:clamp(3rem, 10vw, 6.5rem);font-weight:900;color:white;text-shadow:0 0 30px rgba(255,255,255,0.9), 0 8px 30px rgba(0,0,0,0.8);animation:bounce2 2s infinite ease-in-out 0.2s, shimmer 3s infinite linear 0.5s;transform-origin:center bottom;">う</span>
+                <span class="yokoso-char" style="font-size:clamp(2rem, 7vw, 4.5rem);font-weight:900;color:white;text-shadow:0 0 30px rgba(255,255,255,0.9), 0 8px 30px rgba(0,0,0,0.8);animation:bounce3 2s infinite ease-in-out 0.4s, shimmer 3s infinite linear 1s;transform-origin:center bottom;">こ</span>
+                <span class="yokoso-char" style="font-size:clamp(3.5rem, 11vw, 7rem);font-weight:900;color:white;text-shadow:0 0 30px rgba(255,255,255,0.9), 0 8px 30px rgba(0,0,0,0.8);animation:bounce1 2s infinite ease-in-out 0.6s, shimmer 3s infinite linear 1.5s;transform-origin:center bottom;">そ</span>
+              </div>
+              <div style="font-size:clamp(0.9rem, 3vw, 1.2rem);color:rgba(255,255,255,0.9);margin-top:-10px;text-shadow:0 3px 15px rgba(0,0,0,0.7);font-weight:600;letter-spacing:1px;">✨ Welcome ✨</div>
             </div>
-          </div>
-          
-          <div style="text-align:center;color:white;width:100%;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
-            <img src="/doshi.png" alt="Dōshi Sensei" style="width:120px;height:120px;margin-bottom:2rem;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.3));display:block;" />
+            
+            <img src="/doshi.png" alt="Dōshi Sensei" style="width:clamp(80px, 20vw, 120px);height:clamp(80px, 20vw, 120px);margin-bottom:2rem;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.3));display:block;" />
             <h1 style="font-size:1.5rem;font-weight:bold;margin-bottom:1rem;">Dōshi Sensei</h1>
             <p id="loading-message" style="font-size:1.125rem;opacity:0.9;transition:opacity 0.3s ease-in-out;margin-bottom:1.5rem;">\${messages[currentMessageIndex]}</p>
             
@@ -122,6 +123,46 @@ export function PrewarmingScript() {
               55% { transform: translateY(-20px) translateX(-15px) rotate(15deg); }
               75% { transform: translateY(20px) translateX(10px) rotate(-10deg); }
               95% { transform: translateY(-5px) translateX(-5px) rotate(5deg); }
+            }
+            @keyframes sparkle1 {
+              0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+              25% { transform: scale(1.3) rotate(90deg); opacity: 1; }
+              50% { transform: scale(0.8) rotate(180deg); opacity: 0.6; }
+              75% { transform: scale(1.2) rotate(270deg); opacity: 1; }
+            }
+            @keyframes sparkle2 {
+              0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+              20% { transform: scale(1.4) rotate(72deg); opacity: 1; }
+              40% { transform: scale(0.6) rotate(144deg); opacity: 0.5; }
+              60% { transform: scale(1.3) rotate(216deg); opacity: 1; }
+              80% { transform: scale(0.9) rotate(288deg); opacity: 0.8; }
+            }
+            @keyframes sparkle3 {
+              0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
+              33% { transform: scale(0.7) rotate(120deg); opacity: 0.4; }
+              66% { transform: scale(1.5) rotate(240deg); opacity: 1; }
+            }
+            @keyframes bounce1 {
+              0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+              40% { transform: translateY(-15px) scale(1.05); }
+              60% { transform: translateY(-8px) scale(1.02); }
+            }
+            @keyframes bounce2 {
+              0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+              40% { transform: translateY(-20px) scale(1.08); }
+              60% { transform: translateY(-10px) scale(1.04); }
+            }
+            @keyframes bounce3 {
+              0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+              40% { transform: translateY(-12px) scale(1.03); }
+              60% { transform: translateY(-6px) scale(1.01); }
+            }
+            @keyframes shimmer {
+              0% { filter: brightness(1) saturate(1); }
+              25% { filter: brightness(1.3) saturate(1.2); }
+              50% { filter: brightness(1.6) saturate(1.4); }
+              75% { filter: brightness(1.3) saturate(1.2); }
+              100% { filter: brightness(1) saturate(1); }
             }
           </style>
         \`;

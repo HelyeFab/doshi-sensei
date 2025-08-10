@@ -18,6 +18,8 @@ import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
 import OfflineNotification from "@/components/OfflineNotification";
 import NetworkStatus from "@/components/NetworkStatus";
+import { VirtualCompanionProvider } from "@/contexts/VirtualCompanionContext";
+import GlobalVirtualCompanion from "@/components/GlobalVirtualCompanion";
 import { DevHelper } from '@/components/DevHelper';
 import { AchievementToastManager } from '@/components/achievements/AchievementToast';
 import PWARecovery from '@/components/PWARecovery';
@@ -293,6 +295,7 @@ export default function RootLayout({
               <CombinedAuthProvider>
                 <CombinedFeatureProvider>
                   <NotificationServiceProvider>
+                    <VirtualCompanionProvider>
                     <PWAWrapper>
                       <OnboardingWrapper>
                         <AchievementToastManager>
@@ -315,6 +318,7 @@ export default function RootLayout({
                             <PWAUpdateNotification />
                             <FloatingDonateButton />
                             <CompanionTrigger />
+                            <GlobalVirtualCompanion />
                             <ToastContainer />
                             <DevHelper />
                             <PWARecovery />
@@ -323,6 +327,7 @@ export default function RootLayout({
                         </AchievementToastManager>
                       </OnboardingWrapper>
                     </PWAWrapper>
+                    </VirtualCompanionProvider>
                   </NotificationServiceProvider>
                 </CombinedFeatureProvider>
               </CombinedAuthProvider>

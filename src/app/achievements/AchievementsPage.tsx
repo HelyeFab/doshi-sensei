@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useAchievements } from '@/hooks/useAchievements';
-import { Achievement } from '@/lib/achievements/types';
-import { ProfileTitle, TitleSelector } from '@/components/achievements/ProfileTitle';
-import { AchievementGrid } from '@/components/achievements/AchievementCard';
-import { MultiLevelAchievementGrid } from '@/components/achievements/MultiLevelAchievementCard';
-import { HiddenAchievementsSection } from '@/components/achievements/HiddenAchievements';
-import { CosmeticRewards } from '@/components/achievements/CosmeticRewards';
-import { AchievementManager } from '@/lib/achievements/manager';
-import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import { useEffect, useState, useRef } from "react";
+import { useAchievements } from "@/hooks/useAchievements";
+import { Achievement } from "@/lib/achievements/types";
+import {
+  ProfileTitle,
+  TitleSelector,
+} from "@/components/achievements/ProfileTitle";
+import { AchievementGrid } from "@/components/achievements/AchievementCard";
+import { MultiLevelAchievementGrid } from "@/components/achievements/MultiLevelAchievementCard";
+import { HiddenAchievementsSection } from "@/components/achievements/HiddenAchievements";
+import { CosmeticRewards } from "@/components/achievements/CosmeticRewards";
+import { AchievementManager } from "@/lib/achievements/manager";
+import { SmartPageHeader } from "@/components/navigation/SmartPageHeader";
 
 interface DisplayAchievement extends Achievement {
   progress: string | number;
@@ -27,14 +30,22 @@ export default function AchievementsPage() {
     isAchievementUnlocked,
     getUnlockedCount,
     getTotalCount,
-    getCompletionPercentage
+    getCompletionPercentage,
   } = useAchievements();
 
-  const [displayAchievements, setDisplayAchievements] = useState<DisplayAchievement[]>([]);
-  const [multiLevelAchievements, setMultiLevelAchievements] = useState<any[]>([]);
-  const [hiddenAchievements, setHiddenAchievements] = useState<Achievement[]>([]);
-  const [selectedTab, setSelectedTab] = useState<'regular' | 'multilevel' | 'hidden' | 'cosmetics'>('regular');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [displayAchievements, setDisplayAchievements] = useState<
+    DisplayAchievement[]
+  >([]);
+  const [multiLevelAchievements, setMultiLevelAchievements] = useState<any[]>(
+    []
+  );
+  const [hiddenAchievements, setHiddenAchievements] = useState<Achievement[]>(
+    []
+  );
+  const [selectedTab, setSelectedTab] = useState<
+    "regular" | "multilevel" | "hidden" | "cosmetics"
+  >("regular");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showTitleSelector, setShowTitleSelector] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -42,14 +53,17 @@ export default function AchievementsPage() {
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowCategoryDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -58,23 +72,27 @@ export default function AchievementsPage() {
     if (!achievements.length || !userStats) return;
 
     // Separate regular and multi-level achievements
-    const regularAchievements = achievements.filter(a => !a.isMultiLevel && !a.isHidden);
-    const multiLevel = achievements.filter(a => a.isMultiLevel);
-    const hidden = achievements.filter(a => a.isHidden || a.category === 'hidden');
+    const regularAchievements = achievements.filter(
+      (a) => !a.isMultiLevel && !a.isHidden
+    );
+    const multiLevel = achievements.filter((a) => a.isMultiLevel);
+    const hidden = achievements.filter(
+      (a) => a.isHidden || a.category === "hidden"
+    );
 
     // Process regular achievements
     const processedRegular = regularAchievements
-      .filter(achievement => achievement.isActive)
-      .map(achievement => {
+      .filter((achievement) => achievement.isActive)
+      .map((achievement) => {
         const progress = getAchievementProgress(achievement.id);
         const unlocked = isAchievementUnlocked(achievement.id);
-        
+
         return {
           ...achievement,
           progress: progress.current,
           maxProgress: progress.target,
           isUnlocked: unlocked,
-          progressPercentage: progress.percentage
+          progressPercentage: progress.percentage,
         };
       })
       .sort((a, b) => {
@@ -90,7 +108,10 @@ export default function AchievementsPage() {
       const multiLevelData = [];
       for (const achievement of multiLevel) {
         if (userStats) {
-          const progress = await AchievementManager.getMultiLevelProgress(achievement.id, userStats);
+          const progress = await AchievementManager.getMultiLevelProgress(
+            achievement.id,
+            userStats
+          );
           multiLevelData.push({ achievement, progress });
         }
       }
@@ -102,33 +123,37 @@ export default function AchievementsPage() {
   }, [achievements, userStats, getAchievementProgress, isAchievementUnlocked]);
 
   // Filter achievements by category
-  const filteredAchievements = selectedCategory === 'all' 
-    ? displayAchievements 
-    : displayAchievements.filter(a => a.category === selectedCategory);
+  const filteredAchievements =
+    selectedCategory === "all"
+      ? displayAchievements
+      : displayAchievements.filter((a) => a.category === selectedCategory);
 
   // Get unique categories
-  const categories = ['all', ...Array.from(new Set(achievements.map(a => a.category)))];
+  const categories = [
+    "all",
+    ...Array.from(new Set(achievements.map((a) => a.category))),
+  ];
 
   const categoryLabels: Record<string, string> = {
-    all: 'All',
-    streaks: 'Streaks',
-    drills: 'Drills',
-    words: 'Words',
-    reading: 'Reading',
-    stories: 'Stories',
-    games: 'Games',
-    hidden: 'Hidden'
+    all: "All",
+    streaks: "Streaks",
+    drills: "Drills",
+    words: "Words",
+    reading: "Reading",
+    stories: "Stories",
+    games: "Games",
+    hidden: "Hidden",
   };
 
   const categoryIcons: Record<string, string> = {
-    all: '🏆',
-    streaks: '🔥',
-    drills: '📝',
-    words: '📚',
-    reading: '📖',
-    stories: '📜',
-    games: '🎮',
-    hidden: '🎭'
+    all: "🏆",
+    streaks: "🔥",
+    drills: "📝",
+    words: "📚",
+    reading: "📖",
+    stories: "📜",
+    games: "🎮",
+    hidden: "🎭",
   };
 
   if (isLoading) {
@@ -156,21 +181,23 @@ export default function AchievementsPage() {
   return (
     <div className="min-h-screen bg-background">
       <SmartPageHeader title="Achievements" />
-      
+
       <div className="container mx-auto px-4 pb-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
             <div>
               <p className="text-muted-foreground">
-                Track your learning progress and unlock rewards
+                Track your learning progress and unlock new cool badges
               </p>
             </div>
-            
+
             {/* Current Title & Selector */}
             <div className="flex flex-col items-end gap-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Current Title:</span>
+                <span className="text-sm text-muted-foreground">
+                  Current Title:
+                </span>
                 <ProfileTitle size="sm" />
               </div>
               <button
@@ -181,7 +208,7 @@ export default function AchievementsPage() {
               </button>
             </div>
           </div>
-          
+
           {/* Progress Summary */}
           <div className="bg-card rounded-lg p-4 border border-border">
             <div className="flex items-center justify-between mb-2">
@@ -191,7 +218,7 @@ export default function AchievementsPage() {
               </span>
             </div>
             <div className="w-full bg-muted rounded-full h-2">
-              <div 
+              <div
                 className="bg-primary h-2 rounded-full transition-all duration-500"
                 style={{ width: `${getCompletionPercentage()}%` }}
               />
@@ -206,18 +233,18 @@ export default function AchievementsPage() {
         <div className="mb-6">
           <div className="flex flex-wrap gap-2 mb-4">
             {[
-              { id: 'regular', label: 'Regular', icon: '🏆' },
-              { id: 'multilevel', label: 'Multi-Level', icon: '📈' },
-              { id: 'hidden', label: 'Hidden', icon: '🎭' },
-              { id: 'cosmetics', label: 'Cosmetics', icon: '🎨' }
-            ].map(tab => (
+              { id: "regular", label: "Regular", icon: "🏆" },
+              { id: "multilevel", label: "Multi-Level", icon: "📈" },
+              { id: "hidden", label: "Hidden", icon: "🎭" },
+              { id: "cosmetics", label: "Cosmetics", icon: "🎨" },
+            ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id as any)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedTab === tab.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
                 <span className="mr-1">{tab.icon}</span>
@@ -227,7 +254,7 @@ export default function AchievementsPage() {
           </div>
 
           {/* Category Filter (only for regular achievements) */}
-          {selectedTab === 'regular' && (
+          {selectedTab === "regular" && (
             <div className="relative" ref={dropdownRef}>
               {/* Dropdown Toggle Button */}
               <button
@@ -236,37 +263,48 @@ export default function AchievementsPage() {
               >
                 <span className="mr-1">{categoryIcons[selectedCategory]}</span>
                 {categoryLabels[selectedCategory]}
-                <svg 
-                  className={`w-4 h-4 transition-transform ${showCategoryDropdown ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    showCategoryDropdown ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
-              
+
               {/* Collapsible Category List */}
               {showCategoryDropdown && (
                 <div className="absolute z-10 mt-2 bg-card border border-border rounded-lg shadow-lg overflow-hidden min-w-[200px]">
                   <div className="py-1">
-                    {categories.filter(c => c !== 'hidden').map(category => (
-                      <button
-                        key={category}
-                        onClick={() => {
-                          setSelectedCategory(category);
-                          setShowCategoryDropdown(false);
-                        }}
-                        className={`w-full px-4 py-2 text-sm font-medium transition-colors text-left flex items-center ${
-                          selectedCategory === category
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:bg-muted/80'
-                        }`}
-                      >
-                        <span className="mr-2">{categoryIcons[category]}</span>
-                        {categoryLabels[category]}
-                      </button>
-                    ))}
+                    {categories
+                      .filter((c) => c !== "hidden")
+                      .map((category) => (
+                        <button
+                          key={category}
+                          onClick={() => {
+                            setSelectedCategory(category);
+                            setShowCategoryDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-sm font-medium transition-colors text-left flex items-center ${
+                            selectedCategory === category
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-muted/80"
+                          }`}
+                        >
+                          <span className="mr-2">
+                            {categoryIcons[category]}
+                          </span>
+                          {categoryLabels[category]}
+                        </button>
+                      ))}
                   </div>
                 </div>
               )}
@@ -275,20 +313,20 @@ export default function AchievementsPage() {
         </div>
 
         {/* Tab Content */}
-        {selectedTab === 'regular' && (
+        {selectedTab === "regular" && (
           <>
             <AchievementGrid
-              achievements={filteredAchievements.map(achievement => ({
+              achievements={filteredAchievements.map((achievement) => ({
                 achievement,
                 progress: {
                   current: achievement.progress,
                   target: achievement.maxProgress,
-                  percentage: achievement.progressPercentage
+                  percentage: achievement.progressPercentage,
                 },
-                isUnlocked: achievement.isUnlocked
+                isUnlocked: achievement.isUnlocked,
               }))}
               onAchievementClick={(achievement) => {
-                console.log('Achievement clicked:', achievement);
+                console.log("Achievement clicked:", achievement);
               }}
               size="md"
               animated={true}
@@ -301,19 +339,20 @@ export default function AchievementsPage() {
                   No achievements in this category
                 </h3>
                 <p className="text-muted-foreground">
-                  Try selecting a different category or start learning to unlock achievements!
+                  Try selecting a different category or start learning to unlock
+                  achievements!
                 </p>
               </div>
             )}
           </>
         )}
 
-        {selectedTab === 'multilevel' && (
+        {selectedTab === "multilevel" && (
           <>
             <MultiLevelAchievementGrid
               achievements={multiLevelAchievements}
               onAchievementClick={(achievement) => {
-                console.log('Multi-level achievement clicked:', achievement);
+                console.log("Multi-level achievement clicked:", achievement);
               }}
               animated={true}
             />
@@ -325,29 +364,30 @@ export default function AchievementsPage() {
                   No Multi-Level Achievements Yet
                 </h3>
                 <p className="text-muted-foreground">
-                  Multi-level achievements provide progressive rewards as you advance through different tiers!
+                  Multi-level achievements provide progressive rewards as you
+                  advance through different tiers!
                 </p>
               </div>
             )}
           </>
         )}
 
-        {selectedTab === 'hidden' && (
+        {selectedTab === "hidden" && (
           <HiddenAchievementsSection
-            unlockedHidden={hiddenAchievements.filter(a => isAchievementUnlocked(a.id))}
+            unlockedHidden={hiddenAchievements.filter((a) =>
+              isAchievementUnlocked(a.id)
+            )}
             totalHiddenCount={hiddenAchievements.length}
           />
         )}
 
-        {selectedTab === 'cosmetics' && (
-          <CosmeticRewards />
-        )}
+        {selectedTab === "cosmetics" && <CosmeticRewards />}
       </div>
 
       {/* Title Selector Modal */}
-      <TitleSelector 
-        isOpen={showTitleSelector} 
-        onClose={() => setShowTitleSelector(false)} 
+      <TitleSelector
+        isOpen={showTitleSelector}
+        onClose={() => setShowTitleSelector(false)}
       />
     </div>
   );

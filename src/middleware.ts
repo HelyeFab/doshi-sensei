@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for maintenance mode
+  // Check for maintenance mode (only uses env variables, safe for edge runtime)
   const maintenanceMode = await checkMaintenanceMode(request);
   
   if (maintenanceMode.isActive && 
@@ -73,7 +73,7 @@ async function checkMaintenanceMode(request: NextRequest): Promise<{
   message?: string;
   estimatedTime?: string;
 }> {
-  // Priority 1: Environment variable kill switch
+  // Priority 1: Environment variable kill switch (works on edge runtime)
   if (process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true') {
     return {
       isActive: true,
@@ -83,32 +83,9 @@ async function checkMaintenanceMode(request: NextRequest): Promise<{
     };
   }
 
-  // Priority 2: Check Firestore for dynamic control (admin dashboard)
-  try {
-    const response = await fetch(`${request.nextUrl.origin}/api/admin/maintenance-status`, {
-      method: 'GET',
-      headers: {
-        'x-internal-request': 'true'
-      },
-      cache: 'no-store'
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.maintenanceMode) {
-        return {
-          isActive: true,
-          reason: 'admin_dashboard',
-          message: data.message,
-          estimatedTime: data.estimatedTime
-        };
-      }
-    }
-  } catch (error) {
-    // If we can't check the database, continue normally
-    console.error('[MAINTENANCE] Failed to check database status:', error);
-  }
-
+  // Note: Database checks disabled in middleware due to Netlify Edge runtime limitations
+  // Use environment variables for maintenance mode control
+  
   return { isActive: false, reason: 'none' };
 }
 

@@ -15,7 +15,8 @@
       "Bash(firebase deploy:*)",
       "Bash(chmod:*)",
       "Bash(stripe:*)",
-      "Bash(firebase functions:log:*)"
+      "Bash(firebase functions:log:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }

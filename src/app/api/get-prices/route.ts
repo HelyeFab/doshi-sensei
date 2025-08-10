@@ -51,16 +51,22 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching prices:', error);
     
-    // Return default prices as fallback
+    // Return fallback prices from environment
+    const fallbackMonthly = process.env.FALLBACK_MONTHLY_PRICE ? 
+      parseFloat(process.env.FALLBACK_MONTHLY_PRICE) : 8.99;
+    const fallbackYearly = process.env.FALLBACK_YEARLY_PRICE ? 
+      parseFloat(process.env.FALLBACK_YEARLY_PRICE) : 89.99;
+    const fallbackCurrency = process.env.FALLBACK_CURRENCY || 'GBP';
+    
     return NextResponse.json({
       monthly: {
-        amount: 8.99,
-        currency: 'GBP',
+        amount: fallbackMonthly,
+        currency: fallbackCurrency,
         interval: 'month'
       },
       yearly: {
-        amount: 89.99,
-        currency: 'GBP',
+        amount: fallbackYearly,
+        currency: fallbackCurrency,
         interval: 'year'
       }
     });

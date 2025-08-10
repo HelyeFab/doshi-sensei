@@ -14,8 +14,8 @@ export default function SubscriptionPlans() {
   const strings = useStrings();
   const { user } = useAuth();
   const { subscription, isLoading, createCheckoutSession, cancelSubscription } = useSubscription2();
-  const { feature: drillFeature } = useFeature('drill_practice');
-  const { feature: listFeature } = useFeature('word_lists');
+  const { access: drillAccess } = useFeature('drill_practice');
+  const { access: listAccess } = useFeature('word_lists');
   const { showNotification } = useNotification();
   const { prices, loading: pricesLoading, formatPrice } = useStripePrices();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -183,8 +183,21 @@ export default function SubscriptionPlans() {
                 <div className="text-center mb-4">
                   <h4 className="text-lg font-semibold text-foreground">Monthly</h4>
                   <div className="text-3xl font-bold text-primary mt-2">
-                    ${monthlyPlan.price}
-                    <span className="text-sm font-normal text-muted-foreground">/month</span>
+                    {pricesLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="h-8 w-24 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                    ) : prices?.monthly ? (
+                      <>
+                        {formatPrice(prices.monthly)}
+                        <span className="text-sm font-normal text-muted-foreground">/{prices.monthly.interval}</span>
+                      </>
+                    ) : (
+                      <>
+                        ${monthlyPlan.price || '8.99'}
+                        <span className="text-sm font-normal text-muted-foreground">/month</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -219,8 +232,21 @@ export default function SubscriptionPlans() {
                 <div className="text-center mb-4">
                   <h4 className="text-lg font-semibold text-foreground">Yearly</h4>
                   <div className="text-3xl font-bold text-primary mt-2">
-                    ${yearlyPlan.price}
-                    <span className="text-sm font-normal text-muted-foreground">/year</span>
+                    {pricesLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="h-8 w-32 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                    ) : prices?.yearly ? (
+                      <>
+                        {formatPrice(prices.yearly)}
+                        <span className="text-sm font-normal text-muted-foreground">/{prices.yearly.interval}</span>
+                      </>
+                    ) : (
+                      <>
+                        ${yearlyPlan.price || '89.99'}
+                        <span className="text-sm font-normal text-muted-foreground">/year</span>
+                      </>
+                    )}
                   </div>
                   <p className="text-sm text-green-600 mt-1">{strings.subscriptions.twoMonthsFree}</p>
                 </div>
@@ -255,8 +281,8 @@ export default function SubscriptionPlans() {
             <div>
               <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Free Plan Limitations</h4>
               <ul className="text-sm text-yellow-900 dark:text-yellow-100 space-y-1 font-medium">
-                <li>• Limited to {listFeature?.limit || 3} word lists</li>
-                <li>• Maximum {drillFeature?.limit || 3} drills per day</li>
+                <li>• Limited to {listAccess?.limit || 3} word lists</li>
+                <li>• Maximum {drillAccess?.limit || 3} drills per day</li>
                 <li>• No cloud sync across devices</li>
                 <li>• Local storage only</li>
               </ul>

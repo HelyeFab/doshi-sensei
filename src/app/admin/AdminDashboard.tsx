@@ -106,6 +106,9 @@ export default function AdminDashboard() {
       case 'system-health':
         router.push('/admin/system-health');
         break;
+      case 'maintenance':
+        router.push('/admin/maintenance');
+        break;
       default:
     }
   };
@@ -137,6 +140,13 @@ export default function AdminDashboard() {
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-4">{strings.admin.quickActions}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {/* Emergency Maintenance - First position for visibility */}
+            <QuickAction
+              title="🚨 Maintenance Mode"
+              description="Emergency shutdown control"
+              icon="🔴"
+              onClick={() => handleQuickAction('maintenance')}
+            />
             <QuickAction
               title={strings.admin.manageUsers}
               description={strings.admin.manageUsersDescription}

@@ -16,7 +16,8 @@
       "Bash(chmod:*)",
       "Bash(stripe:*)",
       "Bash(firebase functions:log:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(npm install)"
     ],
     "deny": []
   }

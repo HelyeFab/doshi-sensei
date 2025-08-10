@@ -30,16 +30,22 @@ export function useStripePrices() {
         console.error('Error fetching prices:', err);
         setError(err instanceof Error ? err.message : 'Failed to load prices');
         
-        // Use fallback prices from environment or defaults
+        // Use fallback prices from environment
+        const fallbackMonthly = process.env.NEXT_PUBLIC_FALLBACK_MONTHLY_PRICE ? 
+          parseFloat(process.env.NEXT_PUBLIC_FALLBACK_MONTHLY_PRICE) : 8.99;
+        const fallbackYearly = process.env.NEXT_PUBLIC_FALLBACK_YEARLY_PRICE ? 
+          parseFloat(process.env.NEXT_PUBLIC_FALLBACK_YEARLY_PRICE) : 89.99;
+        const fallbackCurrency = process.env.NEXT_PUBLIC_FALLBACK_CURRENCY || 'GBP';
+        
         setPrices({
           monthly: {
-            amount: 8.99,
-            currency: 'GBP',
+            amount: fallbackMonthly,
+            currency: fallbackCurrency,
             interval: 'month'
           },
           yearly: {
-            amount: 89.99,
-            currency: 'GBP',
+            amount: fallbackYearly,
+            currency: fallbackCurrency,
             interval: 'year'
           }
         });

@@ -16,7 +16,11 @@ export function PricingDisplay({ planId, showInterval = true, className = '' }: 
   const staticPlan = SUBSCRIPTION_PLANS.find(p => p.id === planId);
   
   if (loading) {
-    return <span className={`animate-pulse ${className}`}>...</span>;
+    return (
+      <span className={`inline-block ${className}`}>
+        <span className="inline-block h-6 w-16 bg-gray-200 animate-pulse rounded"></span>
+      </span>
+    );
   }
   
   if (!prices || !prices[planId]) {

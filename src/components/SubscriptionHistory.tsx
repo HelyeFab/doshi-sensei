@@ -54,6 +54,14 @@ export default function SubscriptionHistory() {
             status: data.status,
             plan: data.plan,
             timestamp: data.timestamp?.toDate() || new Date(),
+            amount: data.amount,
+            currency: data.currency,
+            invoiceId: data.invoiceId,
+            invoicePdf: data.invoicePdf,
+            hostedInvoiceUrl: data.hostedInvoiceUrl,
+            paymentMethod: data.paymentMethod,
+            attemptCount: data.attemptCount,
+            nextPaymentAttempt: data.nextPaymentAttempt,
             details: data.details
           });
         });

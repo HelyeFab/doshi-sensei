@@ -98,6 +98,14 @@ export const stripeWebhook = https.onRequest({cors: true}, async (req, res) => {
         await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
         break;
       
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
+        break;
+      
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        break;
+      
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -191,6 +199,15 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
     
+    // Save to subscription history
+    await saveSubscriptionHistory(firebaseUID, 'subscription_updated', {
+      status: status,
+      plan: plan,
+      stripeSubscriptionId: subscription.id,
+      currentPeriodEnd: currentPeriodEnd ? currentPeriodEnd.toDate().toISOString() : null,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end || false
+    });
+    
     console.log(`Updated subscription for user ${firebaseUID}:`, {
       status,
       plan,
@@ -247,6 +264,13 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
     
+    // Save to subscription history
+    await saveSubscriptionHistory(firebaseUID, 'subscription_canceled', {
+      status: 'canceled',
+      plan: 'free',
+      stripeSubscriptionId: subscription.id
+    });
+    
     console.log(`Canceled subscription for user ${firebaseUID}`);
   } catch (error) {
     console.error('Error canceling user subscription:', error);
@@ -275,4 +299,150 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       console.error('Error retrieving subscription from checkout:', error);
     }
   }
+}
+
+/**
+ * Save subscription history event to Firestore
+ */
+async function saveSubscriptionHistory(
+  firebaseUID: string,
+  eventType: string,
+  details: any
+) {
+  try {
+    const historyRef = db.collection('users').doc(firebaseUID).collection('subscription_history');
+    await historyRef.add({
+      type: eventType,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      ...details
+    });
+    console.log(`Saved subscription history event for user ${firebaseUID}: ${eventType}`);
+  } catch (error) {
+    console.error('Error saving subscription history:', error);
+  }
+}
+
+/**
+ * Handle successful invoice payment
+ */
+async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+  console.log('Handling invoice payment succeeded:', invoice.id);
+  
+  // Get Firebase UID from customer metadata
+  let firebaseUID: string | undefined;
+  
+  if (invoice.customer) {
+    try {
+      const customer = await stripe.customers.retrieve(invoice.customer as string);
+      if (customer && !customer.deleted && 'metadata' in customer) {
+        firebaseUID = customer.metadata.firebaseUID;
+      }
+    } catch (error) {
+      console.error('Error retrieving customer:', error);
+    }
+  }
+  
+  if (!firebaseUID) {
+    console.error('No firebaseUID found for invoice customer');
+    return;
+  }
+  
+  // Get payment method details
+  let paymentMethodDetails = null;
+  if (invoice.payment_intent) {
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent as string);
+      if (paymentIntent.payment_method) {
+        const paymentMethod = await stripe.paymentMethods.retrieve(paymentIntent.payment_method as string);
+        if (paymentMethod.card) {
+          paymentMethodDetails = {
+            type: 'card',
+            brand: paymentMethod.card.brand,
+            last4: paymentMethod.card.last4,
+            expMonth: paymentMethod.card.exp_month,
+            expYear: paymentMethod.card.exp_year
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Error retrieving payment method:', error);
+    }
+  }
+  
+  // Determine plan from line items
+  let plan = 'unknown';
+  if (invoice.lines && invoice.lines.data.length > 0) {
+    const priceId = invoice.lines.data[0].price?.id;
+    if (priceId) {
+      const planMap: { [key: string]: string } = {
+        'price_1RubMXHdrJomitOwNNI4LmWB': 'monthly',
+        'price_1RubMxHdrJomitOwElEo6nys': 'yearly'
+      };
+      plan = planMap[priceId] || 'unknown';
+    }
+  }
+  
+  // Save to subscription history
+  await saveSubscriptionHistory(firebaseUID, 'payment_succeeded', {
+    status: 'paid',
+    plan: plan,
+    amount: invoice.amount_paid,
+    currency: invoice.currency,
+    invoiceId: invoice.id,
+    invoiceNumber: invoice.number,
+    invoicePdf: invoice.invoice_pdf,
+    hostedInvoiceUrl: invoice.hosted_invoice_url,
+    paymentMethod: paymentMethodDetails,
+    details: {
+      amountDue: invoice.amount_due,
+      amountPaid: invoice.amount_paid,
+      amountRemaining: invoice.amount_remaining,
+      tax: invoice.tax,
+      subtotal: invoice.subtotal,
+      total: invoice.total,
+      periodStart: invoice.period_start ? new Date(invoice.period_start * 1000).toISOString() : null,
+      periodEnd: invoice.period_end ? new Date(invoice.period_end * 1000).toISOString() : null
+    }
+  });
+}
+
+/**
+ * Handle failed invoice payment
+ */
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  console.log('Handling invoice payment failed:', invoice.id);
+  
+  // Get Firebase UID from customer metadata
+  let firebaseUID: string | undefined;
+  
+  if (invoice.customer) {
+    try {
+      const customer = await stripe.customers.retrieve(invoice.customer as string);
+      if (customer && !customer.deleted && 'metadata' in customer) {
+        firebaseUID = customer.metadata.firebaseUID;
+      }
+    } catch (error) {
+      console.error('Error retrieving customer:', error);
+    }
+  }
+  
+  if (!firebaseUID) {
+    console.error('No firebaseUID found for invoice customer');
+    return;
+  }
+  
+  // Save to subscription history
+  await saveSubscriptionHistory(firebaseUID, 'payment_failed', {
+    status: 'failed',
+    plan: 'unknown',
+    amount: invoice.amount_due,
+    currency: invoice.currency,
+    invoiceId: invoice.id,
+    attemptCount: invoice.attempt_count,
+    nextPaymentAttempt: invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000).toISOString() : null,
+    details: {
+      amountDue: invoice.amount_due,
+      lastPaymentError: invoice.last_finalization_error
+    }
+  });
 }

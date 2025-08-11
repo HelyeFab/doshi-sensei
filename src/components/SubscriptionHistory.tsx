@@ -8,10 +8,22 @@ import { format } from 'date-fns';
 
 interface SubscriptionEvent {
   id: string;
-  type: 'subscription_started' | 'subscription_updated' | 'subscription_canceled' | 'payment_failed';
+  type: 'subscription_started' | 'subscription_updated' | 'subscription_canceled' | 'payment_succeeded' | 'payment_failed';
   status: string;
   plan: string;
   timestamp: Date;
+  amount?: number;
+  currency?: string;
+  invoiceId?: string;
+  invoicePdf?: string;
+  hostedInvoiceUrl?: string;
+  paymentMethod?: {
+    type: string;
+    brand?: string;
+    last4?: string;
+  };
+  attemptCount?: number;
+  nextPaymentAttempt?: string;
   details?: any;
 }
 
@@ -65,6 +77,8 @@ export default function SubscriptionHistory() {
         return '🔄';
       case 'subscription_canceled':
         return '🚫';
+      case 'payment_succeeded':
+        return '✅';
       case 'payment_failed':
         return '⚠️';
       default:
@@ -80,11 +94,20 @@ export default function SubscriptionHistory() {
         return `Updated to ${event.plan} plan`;
       case 'subscription_canceled':
         return 'Subscription canceled';
+      case 'payment_succeeded':
+        return 'Payment successful';
       case 'payment_failed':
-        return `Payment failed (${event.details?.currency?.toUpperCase() || 'USD'} ${event.details?.amountDue || '0'})`;
+        return 'Payment failed';
       default:
         return 'Subscription event';
     }
+  };
+
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency.toUpperCase()
+    }).format(amount / 100); // Stripe amounts are in cents
   };
 
   const getEventColor = (type: SubscriptionEvent['type']) => {
@@ -95,6 +118,8 @@ export default function SubscriptionHistory() {
         return 'text-blue-600 dark:text-blue-400';
       case 'subscription_canceled':
         return 'text-gray-600 dark:text-gray-400';
+      case 'payment_succeeded':
+        return 'text-green-600 dark:text-green-400';
       case 'payment_failed':
         return 'text-red-600 dark:text-red-400';
       default:
@@ -130,22 +155,88 @@ export default function SubscriptionHistory() {
     <div className="bg-card border border-border rounded-lg p-6">
       <h3 className="text-lg font-semibold text-foreground mb-4">Subscription History</h3>
       
-      <div className="space-y-3">
+      <div className="space-y-4">
         {events.map((event) => (
-          <div key={event.id} className="flex items-start gap-3 pb-3 border-b border-border last:border-0 last:pb-0">
-            <span className="text-2xl">{getEventIcon(event.type)}</span>
-            <div className="flex-1">
-              <p className={`font-medium ${getEventColor(event.type)}`}>
-                {getEventMessage(event)}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {format(event.timestamp, 'MMM d, yyyy h:mm a')}
-              </p>
-              {event.type === 'subscription_started' && event.details?.currentPeriodEnd && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Renews: {format(new Date(event.details.currentPeriodEnd), 'MMM d, yyyy')}
+          <div key={event.id} className="pb-4 border-b border-border last:border-0 last:pb-0">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl mt-1">{getEventIcon(event.type)}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                  <p className={`font-medium ${getEventColor(event.type)}`}>
+                    {getEventMessage(event)}
+                  </p>
+                  {event.amount && event.currency && (
+                    <span className="text-sm font-semibold text-foreground">
+                      {formatCurrency(event.amount, event.currency)}
+                    </span>
+                  )}
+                </div>
+                
+                <p className="text-sm text-muted-foreground mt-1">
+                  {format(event.timestamp, 'MMM d, yyyy h:mm a')}
                 </p>
-              )}
+                
+                {/* Payment Method Info */}
+                {event.paymentMethod && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {event.paymentMethod.brand && (
+                      <span className="capitalize">{event.paymentMethod.brand}</span>
+                    )}
+                    {event.paymentMethod.last4 && (
+                      <span> ending in {event.paymentMethod.last4}</span>
+                    )}
+                  </p>
+                )}
+                
+                {/* Invoice Download Button */}
+                {event.invoicePdf && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <a
+                      href={event.invoicePdf}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Download Invoice
+                    </a>
+                    {event.hostedInvoiceUrl && (
+                      <a
+                        href={event.hostedInvoiceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 text-muted-foreground rounded-md transition-colors"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        View Online
+                      </a>
+                    )}
+                  </div>
+                )}
+                
+                {/* Failed Payment Info */}
+                {event.type === 'payment_failed' && (
+                  <div className="mt-2 p-2 bg-destructive/10 rounded-md">
+                    <p className="text-xs text-destructive">
+                      {event.attemptCount && `Attempt ${event.attemptCount} failed. `}
+                      {event.nextPaymentAttempt && (
+                        <>Next retry: {format(new Date(event.nextPaymentAttempt), 'MMM d, yyyy')}</>
+                      )}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Additional Details */}
+                {event.type === 'subscription_started' && event.details?.currentPeriodEnd && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Renews: {format(new Date(event.details.currentPeriodEnd), 'MMM d, yyyy')}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         ))}

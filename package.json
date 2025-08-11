@@ -35,6 +35,7 @@
     "@lixen/edge-tts": "^1.2.6",
     "@monaco-editor/react": "^4.7.0",
     "@netlify/functions": "^4.1.6",
+    "@react-pdf/renderer": "^4.3.0",
     "@react-spring/web": "^10.0.1",
     "@scriptin/jmdict-simplified-types": "^3.6.1",
     "@sglkc/kuromoji": "^1.1.0",

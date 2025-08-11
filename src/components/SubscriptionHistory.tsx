@@ -17,7 +17,7 @@ interface SubscriptionEvent {
   invoiceId?: string;
   invoicePdf?: string;
   hostedInvoiceUrl?: string;
-  paymentMethod?: {
+  paymentMethod?: string | {
     type: string;
     brand?: string;
     last4?: string;
@@ -187,40 +187,51 @@ export default function SubscriptionHistory() {
                 {/* Payment Method Info */}
                 {event.paymentMethod && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    {event.paymentMethod.brand && (
-                      <span className="capitalize">{event.paymentMethod.brand}</span>
-                    )}
-                    {event.paymentMethod.last4 && (
-                      <span> ending in {event.paymentMethod.last4}</span>
+                    {typeof event.paymentMethod === 'string' ? (
+                      <span>Payment method: {event.paymentMethod}</span>
+                    ) : (
+                      <>
+                        {event.paymentMethod.brand && (
+                          <span className="capitalize">{event.paymentMethod.brand}</span>
+                        )}
+                        {event.paymentMethod.last4 && (
+                          <span> ending in {event.paymentMethod.last4}</span>
+                        )}
+                      </>
                     )}
                   </p>
                 )}
                 
-                {/* Invoice Download Button */}
-                {event.invoicePdf && (
+                {/* Invoice Download Buttons */}
+                {(event.invoicePdf || event.hostedInvoiceUrl) && (
                   <div className="flex flex-wrap gap-2 mt-3">
-                    <a
-                      href={event.invoicePdf}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      Download Invoice
-                    </a>
+                    {event.invoicePdf && (
+                      <a
+                        href={event.invoicePdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>
+                          <span className="font-semibold">Custom Invoice</span>
+                          <span className="opacity-75"> (PDF)</span>
+                        </span>
+                      </a>
+                    )}
                     {event.hostedInvoiceUrl && (
                       <a
                         href={event.hostedInvoiceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 text-muted-foreground rounded-md transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 text-muted-foreground rounded-md transition-colors"
                       >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
-                        View Online
+                        <span>Stripe Invoice</span>
                       </a>
                     )}
                   </div>

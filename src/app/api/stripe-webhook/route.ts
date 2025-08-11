@@ -7,6 +7,7 @@ import { subscriptionManager } from '@/lib/subscriptions/manager';
 import { dynamicRules } from '@/lib/entitlements/dynamic-rules';
 import { UserType } from '@/lib/entitlements/types';
 import { Subscription } from '@/lib/subscriptions/types';
+import { InvoiceService } from '@/services/invoiceService';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -359,6 +360,57 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   if ((invoice as any).subscription) {
     // Subscription status will be updated via subscription.updated event
     console.log('Payment succeeded for subscription:', (invoice as any).subscription);
+    
+    // Generate and store custom invoice PDF
+    try {
+      // Get customer details
+      const customerId = invoice.customer as string;
+      let firebaseUID: string | undefined;
+      let customer: Stripe.Customer | Stripe.DeletedCustomer | string | undefined;
+      
+      if (customerId) {
+        customer = await stripe.customers.retrieve(customerId);
+        if (customer && !customer.deleted && 'metadata' in customer) {
+          firebaseUID = customer.metadata?.firebaseUID;
+        }
+      }
+      
+      if (firebaseUID) {
+        // Format the invoice data
+        const invoiceData = InvoiceService.formatStripeInvoice(invoice, customer);
+        
+        // Generate and upload the PDF
+        const pdfUrl = await InvoiceService.generateAndUploadInvoice(invoiceData, firebaseUID);
+        
+        // Store the PDF URL in the subscription history
+        await logUserSubscriptionEvent(firebaseUID, {
+          type: 'payment_succeeded',
+          status: 'paid',
+          plan: 'premium',
+          timestamp: new Date(),
+          amount: invoice.total / 100,
+          currency: invoice.currency,
+          invoiceId: invoice.id,
+          invoicePdf: pdfUrl,
+          hostedInvoiceUrl: invoice.hosted_invoice_url,
+          paymentMethod: invoiceData.paymentMethod,
+          details: {
+            invoiceNumber: invoice.number || invoice.id,
+            customInvoicePdf: pdfUrl,
+            stripeInvoiceUrl: invoice.hosted_invoice_url,
+            amountPaid: invoice.amount_paid / 100,
+            currency: invoice.currency
+          }
+        });
+        
+        console.log(`✅ Custom invoice PDF generated and stored for user ${firebaseUID}`);
+      } else {
+        console.warn('Could not generate invoice PDF - no Firebase UID found');
+      }
+    } catch (error) {
+      console.error('Error generating invoice PDF:', error);
+      // Don't fail the webhook - invoice generation is not critical
+    }
   }
 }
 
@@ -415,10 +467,16 @@ async function logWebhookEvent(event: Stripe.Event, status: 'success' | 'error',
 }
 
 async function logUserSubscriptionEvent(userId: string, event: {
-  type: 'subscription_started' | 'subscription_updated' | 'subscription_canceled' | 'payment_failed';
+  type: 'subscription_started' | 'subscription_updated' | 'subscription_canceled' | 'payment_failed' | 'payment_succeeded';
   status: string;
   plan: string;
   timestamp: Date;
+  amount?: number;
+  currency?: string;
+  invoiceId?: string;
+  invoicePdf?: string;
+  hostedInvoiceUrl?: string;
+  paymentMethod?: string;
   details?: any;
 }) {
   try {

@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { collection, doc, getDoc, setDoc, updateDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { getAuth } from 'firebase-admin/auth';
-import { initAdmin } from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 import axios from 'axios';
-
-// Initialize admin
-initAdmin();
 
 // YouTube Data API v3 endpoint
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
@@ -42,6 +38,9 @@ function parseDuration(duration: string): number {
 
 export async function POST(request: NextRequest) {
   try {
+    // Initialize Firebase Admin
+    const admin = await getFirebaseAdmin();
+    
     // Check authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -51,7 +50,7 @@ export async function POST(request: NextRequest) {
     const token = authHeader.split('Bearer ')[1];
     
     try {
-      const decodedToken = await getAuth().verifyIdToken(token);
+      const decodedToken = await admin.auth().verifyIdToken(token);
       
       // Check if user is admin
       const userDoc = await getDoc(doc(db, 'users', decodedToken.uid));

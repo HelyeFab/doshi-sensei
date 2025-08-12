@@ -8,7 +8,7 @@ import { TTSManager } from '@/utils/tts';
 import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { scheduleWordReview } from '@/services/notifications/spacedRepetitionNotifications';
 import { translationService } from '@/services/translationService';
-import { useNetworkStatus } from '@/components/NetworkStatus';
+import { useNetworkStatus } from '@/hooks/useUnifiedNotifications';
 
 interface ExposurePhaseProps {
   word: WordItem;

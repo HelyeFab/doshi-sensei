@@ -1,0 +1,426 @@
+import { useEffect, useRef, useState } from 'react';
+import { useEnhancedToast } from '@/components/ui/EnhancedToast';
+
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
+type ConnectionQuality = 'good' | 'slow' | 'offline';
+
+interface NetworkInfo {
+  isOnline: boolean;
+  quality: ConnectionQuality;
+  downlink?: number;
+  effectiveType?: '4g' | '3g' | '2g' | 'slow-2g';
+  rtt?: number;
+}
+
+export function useUnifiedNotifications() {
+  const { showToast, hideToast, hideAllToasts } = useEnhancedToast();
+  const [networkInfo, setNetworkInfo] = useState<NetworkInfo>({
+    isOnline: true,
+    quality: 'good'
+  });
+  
+  // Refs to track state
+  const wasOffline = useRef(false);
+  const hasShownInstallPrompt = useRef(false);
+  const lastNotificationTime = useRef(0);
+  const connectionToastId = useRef<string | null>(null);
+  const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
+  const updateAvailableToastId = useRef<string | null>(null);
+
+  // Check connection quality
+  const checkConnectionQuality = async () => {
+    if (!navigator.onLine) {
+      setNetworkInfo({ isOnline: false, quality: 'offline' });
+      return;
+    }
+
+    try {
+      const startTime = performance.now();
+      const response = await fetch('/api/ping', {
+        method: 'HEAD',
+        cache: 'no-cache'
+      });
+      const endTime = performance.now();
+      const latency = endTime - startTime;
+
+      let quality: ConnectionQuality = 'good';
+      
+      if (!response.ok || latency > 5000) {
+        quality = 'slow';
+      }
+
+      setNetworkInfo(prev => ({
+        ...prev,
+        isOnline: true,
+        quality,
+        rtt: Math.round(latency)
+      }));
+
+      return quality;
+    } catch (error) {
+      setNetworkInfo(prev => ({
+        ...prev,
+        quality: 'slow'
+      }));
+      return 'slow';
+    }
+  };
+
+  // Update network status
+  const updateNetworkStatus = () => {
+    const isOnline = navigator.onLine;
+    
+    if (!isOnline) {
+      setNetworkInfo({ isOnline: false, quality: 'offline' });
+      return;
+    }
+
+    if ('connection' in navigator) {
+      const connection = (navigator as any).connection;
+      if (connection) {
+        const downlink = connection.downlink;
+        const effectiveType = connection.effectiveType;
+        const rtt = connection.rtt;
+
+        let quality: ConnectionQuality = 'good';
+        
+        if (effectiveType === 'slow-2g' || effectiveType === '2g' || downlink < 0.3 || rtt > 2000) {
+          quality = 'slow';
+        }
+
+        setNetworkInfo({
+          isOnline: true,
+          quality,
+          downlink,
+          effectiveType,
+          rtt
+        });
+
+        return quality;
+      }
+    }
+
+    return 'good';
+  };
+
+  // Show connection notification
+  const showConnectionNotification = (quality: ConnectionQuality) => {
+    const now = Date.now();
+    if (now - lastNotificationTime.current < 30000) return; // Don't spam notifications
+    
+    lastNotificationTime.current = now;
+
+    // Hide previous connection toast if exists
+    if (connectionToastId.current) {
+      hideToast(connectionToastId.current);
+    }
+
+    let toastId: string;
+
+    switch (quality) {
+      case 'offline':
+        toastId = showToast({
+          type: 'offline',
+          title: 'No Internet Connection',
+          description: 'Some features may be unavailable',
+          style: 'modal',
+          persistent: true // Keep showing until connection restored
+        });
+        break;
+      
+      case 'slow':
+        toastId = showToast({
+          type: 'warning',
+          title: 'Slow Connection',
+          description: 'Loading may take longer than usual',
+          style: 'modal',
+          duration: 10000
+        });
+        break;
+      
+      case 'good':
+        toastId = showToast({
+          type: 'connection',
+          title: 'Connection Restored',
+          description: "You're back online",
+          style: 'modal',
+          duration: 5000
+        });
+        break;
+    }
+
+    connectionToastId.current = toastId;
+  };
+
+  useEffect(() => {
+    // Connection event handlers
+    const handleOnline = () => {
+      if (wasOffline.current) {
+        showConnectionNotification('good');
+      }
+      wasOffline.current = false;
+      checkConnectionQuality();
+    };
+
+    const handleOffline = () => {
+      wasOffline.current = true;
+      showConnectionNotification('offline');
+      setNetworkInfo({ isOnline: false, quality: 'offline' });
+    };
+
+    // PWA installation prompt
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt.current = e as BeforeInstallPromptEvent;
+      
+      if (!hasShownInstallPrompt.current) {
+        hasShownInstallPrompt.current = true;
+        showToast({
+          type: 'info',
+          title: 'Install Doshi Sensei',
+          description: 'Add to your home screen for a better experience',
+          style: 'toast',
+          duration: 0, // Don't auto-dismiss
+          persistent: true,
+          actions: [
+            {
+              label: 'Install',
+              onClick: async () => {
+                if (deferredPrompt.current) {
+                  await deferredPrompt.current.prompt();
+                  const { outcome } = await deferredPrompt.current.userChoice;
+                  if (outcome === 'accepted') {
+                    showToast({
+                      type: 'success',
+                      title: 'Installing...',
+                      description: 'Doshi Sensei is being added to your device',
+                      duration: 3000
+                    });
+                  }
+                  deferredPrompt.current = null;
+                }
+              },
+              variant: 'primary'
+            },
+            {
+              label: 'Not now',
+              onClick: () => {
+                // Just close the toast
+              },
+              variant: 'secondary'
+            }
+          ]
+        });
+      }
+    };
+
+    // PWA installation success
+    const handleAppInstalled = () => {
+      showToast({
+        type: 'success',
+        title: 'App Installed',
+        description: 'Doshi Sensei has been added to your device',
+        duration: 5000
+      });
+    };
+
+    // Service Worker updates
+    const handleServiceWorkerUpdate = () => {
+      if (updateAvailableToastId.current) {
+        hideToast(updateAvailableToastId.current);
+      }
+
+      const toastId = showToast({
+        type: 'update',
+        title: 'Update Available',
+        description: 'A new version of Doshi Sensei is available',
+        style: 'toast',
+        persistent: true,
+        duration: 0,
+        actions: [
+          {
+            label: 'Update',
+            onClick: () => {
+              window.location.reload();
+            },
+            variant: 'primary'
+          },
+          {
+            label: 'Later',
+            onClick: () => {
+              hideToast(toastId);
+            },
+            variant: 'secondary'
+          }
+        ]
+      });
+
+      updateAvailableToastId.current = toastId;
+    };
+
+    // Network connection changes
+    const handleConnectionChange = () => {
+      const quality = updateNetworkStatus();
+      if (quality === 'slow') {
+        showConnectionNotification('slow');
+      }
+    };
+
+    // Initial setup
+    wasOffline.current = !navigator.onLine;
+    updateNetworkStatus();
+
+    // Add event listeners
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    if ('connection' in navigator) {
+      (navigator as any).connection?.addEventListener('change', handleConnectionChange);
+    }
+
+    // Service Worker registration and updates
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SW_UPDATE_AVAILABLE') {
+          handleServiceWorkerUpdate();
+        }
+      });
+
+      navigator.serviceWorker.getRegistration().then((registration) => {
+        if (registration) {
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  handleServiceWorkerUpdate();
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+
+    // Check connection quality periodically
+    const interval = setInterval(() => {
+      checkConnectionQuality().then(quality => {
+        if (quality === 'slow' && networkInfo.quality !== 'slow') {
+          showConnectionNotification('slow');
+        }
+      });
+    }, 10000); // Every 10 seconds
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      clearInterval(interval);
+      
+      if ('connection' in navigator) {
+        (navigator as any).connection?.removeEventListener('change', handleConnectionChange);
+      }
+    };
+  }, [showToast, hideToast, networkInfo.quality]);
+
+  // Manual trigger functions for testing
+  const testConnectionOffline = () => {
+    showConnectionNotification('offline');
+  };
+
+  const testConnectionSlow = () => {
+    showConnectionNotification('slow');
+  };
+
+  const testConnectionRestored = () => {
+    showConnectionNotification('good');
+  };
+
+  const testUpdateAvailable = () => {
+    const toastId = showToast({
+      type: 'update',
+      title: 'Update Available',
+      description: 'A new version is available',
+      style: 'toast',
+      persistent: true,
+      duration: 0,
+      actions: [
+        {
+          label: 'Update',
+          onClick: () => {
+            window.location.reload();
+          },
+          variant: 'primary'
+        },
+        {
+          label: 'Later',
+          onClick: () => {
+            hideToast(toastId);
+          },
+          variant: 'secondary'
+        }
+      ]
+    });
+  };
+
+  const testInstallPrompt = () => {
+    showToast({
+      type: 'info',
+      title: 'Install Doshi Sensei',
+      description: 'Add to your home screen for a better experience',
+      style: 'toast',
+      persistent: true,
+      duration: 0,
+      actions: [
+        {
+          label: 'Install',
+          onClick: () => {
+            showToast({
+              type: 'success',
+              title: 'Installing...',
+              description: 'App is being installed',
+              duration: 3000
+            });
+          },
+          variant: 'primary'
+        },
+        {
+          label: 'Not now',
+          onClick: () => {},
+          variant: 'secondary'
+        }
+      ]
+    });
+  };
+
+  return {
+    networkInfo,
+    testConnectionOffline,
+    testConnectionSlow,
+    testConnectionRestored,
+    testUpdateAvailable,
+    testInstallPrompt
+  };
+}
+
+// Export a compatibility hook for components using the old useNetworkStatus
+export function useNetworkStatus() {
+  const { networkInfo } = useUnifiedNotifications();
+  
+  return {
+    isOnline: networkInfo.isOnline,
+    isSlowConnection: networkInfo.quality === 'slow'
+  };
+}

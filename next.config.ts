@@ -164,7 +164,6 @@ const nextConfig: NextConfig = {
     removeConsole: true, // Remove ALL console statements in production builds
   },
   // Enable server-side functionality for API routes
-  trailingSlash: true,
   images: {
     unoptimized: true,
   },
@@ -245,6 +244,20 @@ const nextConfig: NextConfig = {
           '**/scripts/**',          // Script files
           '**/.claude/**',          // Claude artifacts
           '**/.kiro/**',            // Kiro artifacts
+          // Windows system files
+          'C:/DumpStack.log.tmp',
+          'C:/hiberfil.sys',
+          'C:/pagefile.sys',
+          'C:/swapfile.sys',
+          'C:/*.sys',              // All system files
+          'C:/*.log',              // System log files
+          'C:/*.tmp',              // Temporary files at root
+          'C:/System Volume Information/**',
+          'C:/$Recycle.Bin/**',
+          'C:/Windows/**',         // Windows directory
+          'C:/Program Files/**',   // Program Files
+          'C:/Program Files (x86)/**',
+          'C:/ProgramData/**',
         ],
       };
     }

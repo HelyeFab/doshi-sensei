@@ -5,19 +5,19 @@ import { CombinedAuthProvider } from "@/contexts/CombinedAuthProvider";
 import { CombinedUIProvider } from "@/contexts/CombinedUIProvider";
 import { CombinedFeatureProvider } from "@/contexts/CombinedFeatureProvider";
 import { NotificationServiceProvider } from "@/contexts/NotificationServiceContext";
-import { ToastContainer } from "@/components/ui/Toast";
+import { ToastProvider } from "@/components/ui/Toast";
+import { EnhancedToastProvider } from "@/components/ui/EnhancedToast";
+import { UnifiedNotificationProvider } from "@/components/UnifiedNotificationProvider";
 import { EnvProvider } from "@/components/EnvProvider";
 import MobileMenu from "@/components/MobileMenu";
 import DesktopNavMenu from "@/components/DesktopNavMenu";
 import StunningBottomNavbar from "@/components/StunningBottomNavbar";
-import PWAInstaller from "@/components/PWAInstaller";
-import PWAUpdateNotification from "@/components/PWAUpdateNotification";
+// Removed: PWAInstaller and PWAUpdateNotification - now handled by UnifiedNotificationProvider
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
-import OfflineNotification from "@/components/OfflineNotification";
-import NetworkStatus from "@/components/NetworkStatus";
+// Removed: OfflineNotification and NetworkStatus - now handled by UnifiedNotificationProvider
 import { VirtualCompanionProvider } from "@/contexts/VirtualCompanionContext";
 import GlobalVirtualCompanion from "@/components/GlobalVirtualCompanion";
 import { DevHelper } from '@/components/DevHelper';
@@ -300,29 +300,29 @@ export default function RootLayout({
                       <OnboardingWrapper>
                         <AchievementToastManager>
                           <QuickContextProvider>
-                            <div className="min-h-screen bg-background text-foreground">
-                              <FastRefreshLogger />
-                              {process.env.NODE_ENV === 'development' && <PersistentLogger />}
-                              <NetworkStatus />
-                              <OfflineNotification />
-                              <LazyInitializers />
-                              <NavigationErrorBoundary>
-                                <div className="mobile-nav-padding">
-                                  {children}
+                            <ToastProvider>
+                              <EnhancedToastProvider>
+                                <div className="min-h-screen bg-background text-foreground">
+                                <FastRefreshLogger />
+                                {process.env.NODE_ENV === 'development' && <PersistentLogger />}
+                                <UnifiedNotificationProvider />
+                                <LazyInitializers />
+                                <NavigationErrorBoundary>
+                                  <div className="mobile-nav-padding">
+                                    {children}
+                                  </div>
+                                </NavigationErrorBoundary>
+                                <StunningBottomNavbar />
+                                <MobileMenu />
+                                <DesktopNavMenu />
+                                <FloatingDonateButton />
+                                <CompanionTrigger />
+                                <GlobalVirtualCompanion />
+                                <DevHelper />
+                                <PWARecovery />
                                 </div>
-                              </NavigationErrorBoundary>
-                            <StunningBottomNavbar />
-                            <MobileMenu />
-                            <DesktopNavMenu />
-                            <PWAInstaller />
-                            <PWAUpdateNotification />
-                            <FloatingDonateButton />
-                            <CompanionTrigger />
-                            <GlobalVirtualCompanion />
-                            <ToastContainer />
-                            <DevHelper />
-                            <PWARecovery />
-                          </div>
+                              </EnhancedToastProvider>
+                            </ToastProvider>
                           </QuickContextProvider>
                         </AchievementToastManager>
                       </OnboardingWrapper>

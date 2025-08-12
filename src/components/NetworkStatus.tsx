@@ -192,8 +192,7 @@ export default function NetworkStatus() {
           ),
           title: 'No Internet Connection',
           message: 'Some features may be unavailable',
-          bgColor: 'hsl(var(--destructive))',
-          textColor: 'hsl(var(--destructive-foreground))'
+          bgClass: 'bg-red-600 dark:bg-red-500 text-white border-red-700 dark:border-red-400'
         };
       case 'slow':
         return {
@@ -205,8 +204,7 @@ export default function NetworkStatus() {
           ),
           title: 'Slow Connection',
           message: 'Loading may take longer than usual',
-          bgColor: 'hsl(var(--warning))',
-          textColor: 'hsl(var(--warning-foreground))'
+          bgClass: 'bg-amber-600 dark:bg-amber-500 text-white border-amber-700 dark:border-amber-400'
         };
       case 'good':
         return {
@@ -218,8 +216,7 @@ export default function NetworkStatus() {
           ),
           title: 'Connection Restored',
           message: 'You\'re back online',
-          bgColor: 'hsl(var(--success))',
-          textColor: 'hsl(var(--success-foreground))'
+          bgClass: 'bg-green-600 dark:bg-green-500 text-white border-green-700 dark:border-green-400'
         };
     }
   };
@@ -249,14 +246,9 @@ export default function NetworkStatus() {
             onClick={handleDismiss}
           >
             <div 
-              className="rounded-xl shadow-xl px-6 py-4 flex flex-col items-center gap-3 min-w-[280px] max-w-[90vw] border cursor-pointer"
-              style={{
-                backgroundColor: content.bgColor,
-                color: content.textColor,
-                borderColor: 'hsl(var(--border))'
-              }}
+              className={`rounded-xl shadow-2xl px-6 py-4 flex flex-col items-center gap-3 min-w-[280px] max-w-[90vw] border backdrop-blur-md cursor-pointer ${content.bgClass}`}
             >
-              <div className="p-3 bg-white/20 rounded-full">
+              <div className="p-3 bg-white/10 dark:bg-white/20 rounded-full backdrop-blur-sm">
                 {content.icon}
               </div>
               <div className="text-center">

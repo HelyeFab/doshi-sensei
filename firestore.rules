@@ -207,10 +207,10 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
-    // YouTube Channels collection for monitoring (ADMIN ONLY)
+    // YouTube Channels collection for monitoring
     match /youtubeChannels/{channelId} {
-      // Allow all authenticated users to read channels (for viewing resources)
-      allow read: if request.auth != null;
+      // Allow anyone to read channels (public feature)
+      allow read: if true;
       
       // Only admin can create channels
       allow create: if isAdmin();

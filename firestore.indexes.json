@@ -741,6 +741,20 @@
       ]
     },
     {
+      "collectionGroup": "youtubeChannels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "monitoringEnabled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "channelTitle",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "youtubeVideoResources",
       "queryScope": "COLLECTION",
       "fields": [

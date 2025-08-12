@@ -293,11 +293,10 @@ export default function YouTubeSeriesPage() {
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                {/* Recent Videos */}
-                {channelVideos.length > 0 && (
-                  <div className="p-6 bg-gray-50 dark:bg-gray-900/50">
+                  
+                  {/* Recent Videos */}
+                  {channelVideos.length > 0 && (
+                    <div className="p-6 bg-gray-50 dark:bg-gray-900/50">
                     <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
                       <span>Recent Videos</span>
                       <span className="text-xs font-normal">({channelVideos.length} available)</span>

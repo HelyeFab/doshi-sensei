@@ -1,14 +1,8 @@
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import ConjugationPage from './ConjugationPage';
+import ConjugationDebugWrapper from './ConjugationDebugWrapper';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
-
-// Dynamically import debugger to avoid SSR issues
-const ConjugationDebugger = dynamic(
-  () => import('@/components/debug/ConjugationDebugger').then(mod => mod.ConjugationDebugger),
-  { ssr: false }
-);
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Conjugation',
@@ -32,7 +26,7 @@ export default function Page() {
     <>
       <StructuredData data={breadcrumbData} />
       <ConjugationPage />
-      <ConjugationDebugger />
+      <ConjugationDebugWrapper />
     </>
   );
 }

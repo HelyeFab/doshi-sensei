@@ -20,7 +20,14 @@ const wanikaniAxios = axios.create({
 
 // Set the API token when available
 export function setWanikaniApiToken(token: string) {
-  wanikaniAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  // Always ensure we have a valid token
+  const validToken = token || 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
+  wanikaniAxios.defaults.headers.common['Authorization'] = `Bearer ${validToken}`;
+  
+  // Log for debugging
+  if (typeof window !== 'undefined') {
+    console.log('[WaniKani] Token set:', validToken.substring(0, 8) + '...', 'Full header:', wanikaniAxios.defaults.headers.common['Authorization']?.substring(0, 20) + '...');
+  }
 }
 
 // Interface for WaniKani API responses

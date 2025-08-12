@@ -116,6 +116,7 @@ export default function Home() {
     { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
     { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
     { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
+    { title: strings.home.featureCards.youtubeSeries?.title || 'YouTube Series', icon: '/flat-icons/ui/Shadowing/facebook.svg', href: '/tools/youtube-series', description: strings.home.featureCards.youtubeSeries?.description || 'Track Japanese YouTube channels and auto-import as resources' },
     { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
     { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description }
   ];
@@ -448,6 +449,7 @@ export default function Home() {
                 { title: strings.home.featureCards.news.title, icon: strings.home.featureCards.news.icon, href: '/news', description: strings.home.featureCards.news.description },
                 { title: strings.home.featureCards.stories.title, icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: strings.home.featureCards.stories.description },
                 { title: strings.home.featureCards.youtubeShadowing.title, icon: strings.home.featureCards.youtubeShadowing.icon, href: '/tools/youtube-shadowing', description: strings.home.featureCards.youtubeShadowing.description },
+                { title: strings.home.featureCards.youtubeSeries?.title || 'YouTube Series', icon: '/flat-icons/ui/Shadowing/facebook.svg', href: '/tools/youtube-series', description: strings.home.featureCards.youtubeSeries?.description || 'Track Japanese YouTube channels and auto-import as resources' },
                 { title: 'My Videos', icon: '🎬', href: '/tools/my-videos', description: 'View your saved videos and practice history' }
               ].map((card) => {
                 const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));

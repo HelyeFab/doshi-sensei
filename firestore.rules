@@ -207,6 +207,57 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // YouTube Channels collection for monitoring (ADMIN ONLY)
+    match /youtubeChannels/{channelId} {
+      // Allow all authenticated users to read channels (for viewing resources)
+      allow read: if request.auth != null;
+      
+      // Only admin can create channels
+      allow create: if isAdmin();
+      
+      // Only admin can update channels
+      allow update: if isAdmin();
+      
+      // Only admin can delete channels
+      allow delete: if isAdmin();
+    }
+
+    // YouTube Series collection
+    match /youtubeSeries/{seriesId} {
+      // Allow authenticated users to read series
+      allow read: if request.auth != null;
+      
+      // Only admin can manage series
+      allow create, update, delete: if isAdmin();
+    }
+
+    // YouTube Video Resources collection
+    match /youtubeVideoResources/{videoId} {
+      // Allow anyone to read video resources (for shadowing integration)
+      allow read: if true;
+      
+      // Only admin or system can create/update (via Cloud Functions)
+      allow create, update: if isAdmin();
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // YouTube Import Logs collection
+    match /youtubeImportLogs/{logId} {
+      // Only admin can read and write logs
+      allow read, write: if isAdmin();
+    }
+
+    // YouTube Channel Stats collection
+    match /youtubeChannelStats/{statsId} {
+      // Allow authenticated users to read stats
+      allow read: if request.auth != null;
+      
+      // Only system (via Cloud Functions) or admin can write
+      allow write: if isAdmin();
+    }
+
     // Enhanced user bookmarks collection for articles and stories
     match /user_bookmarks/{bookmarkId} {
       // Users can read their own bookmarks

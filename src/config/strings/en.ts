@@ -99,6 +99,11 @@ export const en = {
         icon: "/flat-icons/ui/youtube.svg",
         description: "Practice with videos"
       },
+      youtubeSeries: {
+        title: "YouTube Series",
+        icon: "/flat-icons/ui/Shadowing/facebook.svg",
+        description: "Track channels & auto-import"
+      },
       hiragana: {
         title: "Hiragana",
         icon: "あ",

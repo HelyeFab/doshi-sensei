@@ -85,6 +85,9 @@ export default function AdminDashboard() {
       case 'manage-blogs':
         router.push('/admin/resources');
         break;
+      case 'youtube-series':
+        router.push('/admin/youtube-series');
+        break;
       case 'create-story':
         router.push('/admin/stories/new');
         break;
@@ -182,6 +185,12 @@ export default function AdminDashboard() {
               description={strings.admin.manageBlogsDescription}
               icon="📚"
               onClick={() => handleQuickAction('manage-blogs')}
+            />
+            <QuickAction
+              title="YouTube Series"
+              description="Manage YouTube channel monitoring"
+              icon="📺"
+              onClick={() => handleQuickAction('youtube-series')}
             />
             <QuickAction
               title={strings.admin.createStory}

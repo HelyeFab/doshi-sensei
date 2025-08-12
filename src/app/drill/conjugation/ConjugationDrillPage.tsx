@@ -327,7 +327,7 @@ export default function ConjugationDrillPage() {
 
   if (!gameStarted) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SmartPageHeader title="Conjugation Drill" backHref="/drill" />
         
         {/* Main Content */}
@@ -491,7 +491,7 @@ export default function ConjugationDrillPage() {
   const isGameComplete = currentQuestionIndex >= questions.length - 1 && showResult;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <SmartPageHeader title="Conjugation Drill" backHref="/drill" />
       
       {/* Main Content */}
@@ -620,9 +620,9 @@ export default function ConjugationDrillPage() {
                       className={`p-4 rounded-lg border-2 transition-all text-left ${
                         showResult
                           ? isCorrect
-                            ? 'border-green-500 bg-green-500/10'
+                            ? 'border-success bg-success/10'
                             : isSelected
-                            ? 'border-red-500 bg-red-500/10'
+                            ? 'border-destructive bg-destructive/10'
                             : 'border-border opacity-50'
                           : 'border-border hover:border-primary/50 hover:bg-muted/50'
                       }`}
@@ -631,10 +631,10 @@ export default function ConjugationDrillPage() {
                         {option}
                       </span>
                       {showResult && isCorrect && (
-                        <span className="ml-2 text-green-600">✓</span>
+                        <span className="ml-2 text-success">✓</span>
                       )}
                       {showResult && isSelected && !isCorrect && (
-                        <span className="ml-2 text-red-600">✗</span>
+                        <span className="ml-2 text-destructive">✗</span>
                       )}
                     </button>
                   );

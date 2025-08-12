@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 
 export function PerformanceMonitor() {
   useEffect(() => {
-    // Only run in development
+    // Only run in browser and in development
+    if (typeof window === 'undefined') return;
     if (process.env.NODE_ENV !== 'development') return;
     
     // Log initial load performance

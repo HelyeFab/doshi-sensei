@@ -30,7 +30,13 @@
       "Bash(clear)",
       "Bash(npx lighthouse:*)",
       "Bash(mkdir:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(git rm:*)",
+      "Bash(npx http-server:*)",
+      "Bash(dir:*)",
+      "Bash(echo:*)",
+      "Bash(identify:*)",
+      "Bash(del \"C:\\Users\\esfab\\Development\\Projects\\NextProjects\\doshi-sensei\\src\\app\\icon.svg\")"
     ],
     "deny": []
   }

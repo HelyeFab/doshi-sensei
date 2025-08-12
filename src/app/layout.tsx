@@ -11,6 +11,7 @@ import { UnifiedNotificationProvider } from "@/components/UnifiedNotificationPro
 import { PWAErrorBoundary } from "@/components/PWAErrorBoundary";
 import { IOSInstallGuide } from "@/components/IOSInstallGuide";
 import { EnvProvider } from "@/components/EnvProvider";
+import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import MobileMenu from "@/components/MobileMenu";
 import DesktopNavMenu from "@/components/DesktopNavMenu";
 import StunningBottomNavbar from "@/components/StunningBottomNavbar";
@@ -313,6 +314,7 @@ export default function RootLayout({
                                 </PWAErrorBoundary>
                                 <IOSInstallGuide />
                                 <LazyInitializers />
+                                <PerformanceMonitor />
                                 <NavigationErrorBoundary>
                                   <div className="mobile-nav-padding">
                                     {children}

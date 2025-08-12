@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA Assets Preview - Doshi Sensei</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 { color: #1f2937; margin-bottom: 10px; }
+    h2 { color: #4b5563; margin-top: 30px; border-bottom: 2px solid #8b5cf6; padding-bottom: 10px; }
+    .status { 
+      background: #10b981; 
+      color: white; 
+      padding: 10px 20px; 
+      border-radius: 8px; 
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+    .grid {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .screenshots-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .icons-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 10px 0;
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      display: block;
+    }
+    .icon-card img {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto;
+    }
+    .manifest-preview {
+      background: #1f2937;
+      color: #10b981;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      white-space: pre;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 PWA Phase 4 Assets Preview</h1>
+  <div class="status">✅ Phase 4 COMPLETE - Icons now use actual Doshi logo!</div>
+  
+  <div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+    <strong>✨ Updates:</strong>
+    <ul style="margin: 10px 0 0 20px;">
+      <li>All icons now use the actual Doshi logo from public/doshi.png</li>
+      <li>Screenshots contain actual UI mockups (12-14KB each, not empty)</li>
+      <li>Removed generic emoji placeholders</li>
+      <li>Created proper maskable icon with safe zone</li>
+    </ul>
+  </div>
+
+  <h2>📱 Mobile Screenshots (540x1170)</h2>
+  <div class="grid screenshots-grid">
+    <div class="card">
+      <h3>Home Screen</h3>
+      <img src="/screenshots/mobile-home-540x1170.png" alt="Mobile Home">
+    </div>
+    <div class="card">
+      <h3>Practice Drills</h3>
+      <img src="/screenshots/mobile-practice-540x1170.png" alt="Mobile Practice">
+    </div>
+    <div class="card">
+      <h3>Vocabulary</h3>
+      <img src="/screenshots/mobile-vocabulary-540x1170.png" alt="Mobile Vocabulary">
+    </div>
+    <div class="card">
+      <h3>Learning Games</h3>
+      <img src="/screenshots/mobile-games-540x1170.png" alt="Mobile Games">
+    </div>
+  </div>
+
+  <h2>💻 Desktop Screenshots (1280x720)</h2>
+  <div class="grid screenshots-grid">
+    <div class="card">
+      <h3>Desktop Dashboard</h3>
+      <img src="/screenshots/desktop-home-1280x720.png" alt="Desktop Home">
+    </div>
+    <div class="card">
+      <h3>Lessons Overview</h3>
+      <img src="/screenshots/desktop-lessons-1280x720.png" alt="Desktop Lessons">
+    </div>
+  </div>
+
+  <h2>🎨 PWA Icons</h2>
+  <div class="grid icons-grid">
+    <div class="card icon-card">
+      <h3>Maskable</h3>
+      <img src="/icons/maskable-512x512.png" alt="Maskable Icon">
+    </div>
+    <div class="card icon-card">
+      <h3>Monochrome</h3>
+      <img src="/icons/monochrome-96x96.png" alt="Monochrome Icon">
+    </div>
+    <div class="card icon-card">
+      <h3>Practice</h3>
+      <img src="/icons/shortcut-practice-96.png" alt="Practice Shortcut">
+    </div>
+    <div class="card icon-card">
+      <h3>Vocabulary</h3>
+      <img src="/icons/shortcut-vocabulary-96.png" alt="Vocabulary Shortcut">
+    </div>
+    <div class="card icon-card">
+      <h3>Games</h3>
+      <img src="/icons/shortcut-games-96.png" alt="Games Shortcut">
+    </div>
+    <div class="card icon-card">
+      <h3>News</h3>
+      <img src="/icons/shortcut-news-96.png" alt="News Shortcut">
+    </div>
+    <div class="card icon-card">
+      <h3>File Handler</h3>
+      <img src="/icons/shortcut-file-handler-96.png" alt="File Handler">
+    </div>
+  </div>
+  
+  <h2>📏 Additional Icon Sizes</h2>
+  <div class="grid icons-grid">
+    <div class="card icon-card">
+      <h3>48x48</h3>
+      <img src="/icons/icon-48x48.png" alt="48px Icon" style="width: 48px; height: 48px;">
+    </div>
+    <div class="card icon-card">
+      <h3>96x96</h3>
+      <img src="/icons/icon-96x96.png" alt="96px Icon" style="width: 96px; height: 96px;">
+    </div>
+    <div class="card icon-card">
+      <h3>192x192</h3>
+      <img src="/icons/icon-192x192.png" alt="192px Icon" style="width: 96px; height: 96px;">
+    </div>
+  </div>
+
+  <h2>📋 Manifest Configuration</h2>
+  <div class="manifest-preview">✅ Screenshots array configured with 6 screenshots
+✅ Shortcuts configured with custom icons
+✅ Maskable icon for Android adaptive icons
+✅ Monochrome icon for themed icons
+✅ File handlers configured
+✅ Share target configured
+✅ Protocol handlers configured</div>
+
+  <script>
+    // Check if all images load successfully
+    document.querySelectorAll('img').forEach(img => {
+      img.onerror = function() {
+        this.style.background = '#fee2e2';
+        this.alt = '❌ Failed to load: ' + this.src;
+      };
+      img.onload = function() {
+        this.style.background = '#dcfce7';
+      };
+    });
+  </script>
+</body>
+</html>

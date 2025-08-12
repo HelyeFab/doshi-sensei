@@ -22,7 +22,6 @@ import {
 import { useNotification } from "@/contexts/NotificationContext";
 import { MobileAwareContainer } from "@/components/layout/MobileAwareContainer";
 import { useSettings } from "@/contexts/SettingsContext";
-import { getThemePreview } from "@/utils/themes";
 
 // Structured Data for Conjugation Practice Page
 const conjugationStructuredData = {
@@ -320,7 +319,7 @@ function WordSelector({
       {/* Error */}
       {error && !loading && (
         <div className="text-center py-12">
-          <p className="text-red-400 mb-4">{error}</p>
+          <p className="text-destructive mb-4">{error}</p>
           <button
             onClick={onRetry}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
@@ -413,15 +412,15 @@ function WordCard({ word, onSelect }: WordCardProps) {
   const getTypeColor = (type: string) => {
     switch (type) {
       case "Ichidan":
-        return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+        return "bg-primary/10 text-primary border-primary/20";
       case "Godan":
-        return "bg-green-500/10 text-green-400 border-green-500/20";
+        return "bg-success/10 text-success border-success/20";
       case "Irregular":
-        return "bg-red-500/10 text-red-400 border-red-500/20";
+        return "bg-destructive/10 text-destructive border-destructive/20";
       case "i-adjective":
-        return "bg-purple-500/10 text-purple-400 border-purple-500/20";
+        return "bg-accent/10 text-accent-foreground border-accent/20";
       case "na-adjective":
-        return "bg-pink-500/10 text-pink-400 border-pink-500/20";
+        return "bg-secondary/10 text-secondary-foreground border-secondary/20";
       default:
         return "bg-muted/50 text-muted-foreground border-muted";
     }
@@ -545,7 +544,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
 
           {/* Conjugation Status */}
           {!isConjugable && (
-            <div className="flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/20 rounded text-xs text-orange-400">
+            <div className="flex items-center gap-2 p-2 bg-warning/10 border border-warning/20 rounded text-xs text-warning">
               <svg
                 className="w-3 h-3"
                 viewBox="0 0 24 24"
@@ -562,7 +561,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
           )}
 
           {isConjugable && (
-            <div className="flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/20 rounded text-xs text-green-400">
+            <div className="flex items-center gap-2 p-2 bg-success/10 border border-success/20 rounded text-xs text-success">
               <svg
                 className="w-3 h-3"
                 viewBox="0 0 24 24"
@@ -894,54 +893,7 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
   );
 }
 
-// Helper function to generate theme-aware pastel colors
-function getThemeAwarePastelColors(colorScheme: string, category: string) {
-  const themeColors = getThemePreview(colorScheme as any);
-
-  // Convert HSL to more pastel versions
-  const convertToPastel = (hslColor: string, opacity: number = 0.1) => {
-    // Extract HSL values and create pastel version
-    const hslMatch = hslColor.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
-    if (hslMatch) {
-      const [, h, s, l] = hslMatch;
-      return {
-        background: `hsl(${h}, ${Math.min(parseInt(s), 30)}%, ${Math.max(
-          parseInt(l),
-          85
-        )}%)`,
-        border: `hsl(${h}, ${Math.min(parseInt(s), 40)}%, ${Math.max(
-          parseInt(l) - 10,
-          75
-        )}%)`,
-        accent: `hsl(${h}, ${parseInt(s)}%, ${parseInt(l)}%)`,
-        text: `hsl(${h}, ${Math.min(parseInt(s), 60)}%, ${Math.max(
-          parseInt(l) - 40,
-          20
-        )}%)`,
-      };
-    }
-
-    // Fallback colors
-    return {
-      background: `rgba(99, 102, 241, ${opacity})`,
-      border: `rgba(99, 102, 241, ${opacity * 2})`,
-      accent: themeColors.primary,
-      text: `rgba(99, 102, 241, 0.8)`,
-    };
-  };
-
-  // Category-specific color mapping
-  const categoryColors = {
-    tense: convertToPastel(themeColors.primary, 0.08),
-    forms: convertToPastel(themeColors.secondary, 0.08),
-    additional: convertToPastel(themeColors.accent, 0.08),
-  };
-
-  return (
-    categoryColors[category as keyof typeof categoryColors] ||
-    categoryColors.tense
-  );
-}
+// Using theme CSS variables directly instead of generating colors
 
 // Enhanced Conjugation Section Component with theme-aware colors
 interface ConjugationSectionProps {
@@ -961,7 +913,19 @@ function ConjugationSection({
   forms,
   showRules,
 }: ConjugationSectionProps) {
-  const colors = getThemeAwarePastelColors(colorScheme, category);
+  // Use theme-aware classes based on category
+  const getCategoryClasses = () => {
+    switch (category) {
+      case 'tense':
+        return 'bg-primary/5 border-primary/20 hover:bg-primary/10';
+      case 'forms':
+        return 'bg-accent/5 border-accent/20 hover:bg-accent/10';
+      case 'additional':
+        return 'bg-secondary/5 border-secondary/20 hover:bg-secondary/10';
+      default:
+        return 'bg-muted/5 border-muted/20 hover:bg-muted/10';
+    }
+  };
 
   const getRulesForSection = (sectionTitle: string, wordType: string) => {
     const rules: { [key: string]: { [key: string]: string[] } } = {
@@ -1046,18 +1010,17 @@ function ConjugationSection({
 
   return (
     <div
-      className="rounded-lg p-6 border-2 transition-all duration-200 hover:shadow-md"
-      style={{
-        backgroundColor: colors.background,
-        borderColor: colors.border,
-      }}
+      className={`rounded-lg p-6 border-2 transition-all duration-200 hover:shadow-md ${getCategoryClasses()}`}
     >
       <div className="flex items-center gap-3 mb-4">
         <div
-          className="w-4 h-4 rounded-full"
-          style={{ backgroundColor: colors.accent }}
+          className={`w-4 h-4 rounded-full ${
+            category === 'tense' ? 'bg-primary' : 
+            category === 'forms' ? 'bg-accent' : 
+            category === 'additional' ? 'bg-secondary' : 'bg-muted'
+          }`}
         />
-        <h3 className="text-lg font-semibold" style={{ color: colors.text }}>
+        <h3 className="text-lg font-semibold text-foreground">
           {title}
         </h3>
       </div>
@@ -1071,8 +1034,7 @@ function ConjugationSection({
                 className="flex justify-between items-baseline p-3 rounded-lg bg-white/50 dark:bg-black/20"
               >
                 <span
-                  className="text-sm font-medium"
-                  style={{ color: colors.text }}
+                  className="text-sm font-medium text-muted-foreground"
                 >
                   {form.label}:
                 </span>
@@ -1086,11 +1048,10 @@ function ConjugationSection({
 
       {showRules && (
         <div
-          className="mt-4 pt-4 border-t"
-          style={{ borderColor: colors.border }}
+          className="mt-4 pt-4 border-t border-border"
         >
           <div className="text-sm">
-            <div className="font-medium mb-2" style={{ color: colors.text }}>
+            <div className="font-medium mb-2 text-foreground">
               {word.type} Conjugation Rules for {title}:
             </div>
             <div className="space-y-1">

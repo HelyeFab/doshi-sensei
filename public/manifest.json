@@ -19,29 +19,158 @@
   },
   "shortcuts": [
     {
-      "name": "Practice Drills",
-      "short_name": "Drills",
-      "description": "Start practicing verb conjugations",
-      "url": "/drill?source=pwa",
-      "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
+      "name": "Quick Practice",
+      "short_name": "Practice",
+      "description": "Jump into conjugation practice",
+      "url": "/drill?source=pwa_shortcut&mode=quick",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-practice-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
     },
     {
-      "name": "Vocabulary",
+      "name": "Today's Vocabulary",
       "short_name": "Vocabulary",
-      "description": "Browse Japanese vocabulary",
-      "url": "/vocabulary?source=pwa",
-      "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
+      "description": "Review today's vocabulary",
+      "url": "/vocabulary?source=pwa_shortcut&view=today",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-vocabulary-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
     },
     {
-      "name": "Games",
+      "name": "Play Kanji Game",
       "short_name": "Games",
-      "description": "Play learning games",
-      "url": "/games?source=pwa",
-      "icons": [{ "src": "/doshi.png", "sizes": "96x96" }]
+      "description": "Quick kanji recognition game",
+      "url": "/games?source=pwa_shortcut&game=kanji",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-games-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Daily News",
+      "short_name": "News",
+      "description": "Read NHK Easy News",
+      "url": "/news?source=pwa_shortcut",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-news-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
     }
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-home-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Home Screen - Welcome dashboard with daily progress"
+    },
+    {
+      "src": "/screenshots/mobile-practice-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Practice Drills - Master verb conjugations"
+    },
+    {
+      "src": "/screenshots/mobile-vocabulary-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Vocabulary - Learn 5000+ Japanese words"
+    },
+    {
+      "src": "/screenshots/mobile-games-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Learning Games - Fun way to study Japanese"
+    },
+    {
+      "src": "/screenshots/desktop-home-1280x720.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Desktop Dashboard - Complete learning overview"
+    },
+    {
+      "src": "/screenshots/desktop-lessons-1280x720.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Lesson Library - Structured Japanese curriculum"
+    }
+  ],
   "related_applications": [],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["text/*", "image/*"]
+        }
+      ]
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+doshisensei",
+      "url": "/protocol?url=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/open",
+      "accept": {
+        "text/plain": [".txt"],
+        "application/json": [".json"],
+        "text/csv": [".csv"]
+      },
+      "icons": [
+        {
+          "src": "/icons/file-handler-96.png",
+          "sizes": "96x96"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "scope_extensions": [
+    {
+      "origin": "*.doshisensei.com"
+    }
+  ],
   "icons": [
     {
       "src": "/favicon-48x48.png",
@@ -125,7 +254,19 @@
       "src": "/doshi.png",
       "sizes": "512x512",
       "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/icons/monochrome-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "monochrome"
     },
     {
       "src": "/icon.svg",

@@ -5,11 +5,9 @@ const pwaConfig = withPWA({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
-  skipWaiting: false, // Changed to false to prevent aggressive updates
+  skipWaiting: false,
   reloadOnOnline: false,
-  // Configure for local Workbox bundling
   mode: 'production',
-  cacheOnFrontEndNav: true,
   fallbacks: {
     document: '/offline'
   },
@@ -18,63 +16,16 @@ const pwaConfig = withPWA({
     '!sitemap.xml',
     '!data/**/*',
     '!audio/**/*',
-    '!flat-icons/**/*',
-    '!**/*.mp3',
-    '!**/*.svg',
-    '!**/*.json',
-    '!**/*.dat',
-    '!**/*.gz'
+    '!flat-icons/**/*'
   ],
   maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-  exclude: [
-    // Exclude all audio files
-    ({ asset }) => asset.name.endsWith('.mp3'),
-    ({ asset }) => asset.name.endsWith('.wav'),
-    ({ asset }) => asset.name.endsWith('.ogg'),
-    // Exclude all data files
-    ({ asset }) => asset.name.includes('/data/'),
-    ({ asset }) => asset.name.includes('/audio/'),
-    ({ asset }) => asset.name.includes('/flat-icons/'),
-    ({ asset }) => asset.name.endsWith('.json'),
-    ({ asset }) => asset.name.endsWith('.dat'),
-    ({ asset }) => asset.name.endsWith('.gz'),
-    ({ asset }) => asset.name.endsWith('.svg'),
-    // Exclude external resources
-    ({ asset }) => asset.name.includes('githubusercontent'),
-    ({ asset }) => asset.name.includes('watanoc'),
-    // Exclude large files
-    ({ asset }) => asset.name.includes('jmdict'),
-    ({ asset }) => asset.name.includes('kanjidb'),
-    ({ asset }) => asset.name.includes('tts-sentences'),
-    // Exclude build artifacts
-    ({ asset }) => asset.name.includes('_next/static/chunks/'),
-    ({ asset }) => asset.name.includes('_next/static/css/'),
-    ({ asset }) => asset.name.includes('_next/static/media/'),
-    // Exclude pages
-    ({ asset }) => asset.name === 'index.html',
-    ({ asset }) => asset.name === '/',
-    // Exclude any file larger than 500KB
-    ({ asset }) => asset.size > 500 * 1024,
-  ],
   buildExcludes: [
-    /middleware-manifest\.json$/,
-    /app-path-routes-manifest\.json$/,
-    /react-loadable-manifest\.json$/,
-    /build-manifest\.json$/,
-    /_buildManifest\.js$/,
-    /_ssgManifest\.js$/,
-    /pages-manifest\.json$/,
-    /\/data\//,
-    /\/audio\//,
-    /\/flat-icons\//,
-    /\.mp3$/,
-    /\.svg$/,
-    /\.dat$/,
-    /\.gz$/
+    /chunk\.js$/,
+    /workbox-.*\.js$/
   ],
-  // Custom worker configuration - Workbox bundled by next-pwa
-  customWorkerDir: 'worker',
-  swSrc: 'worker/custom-sw.js'
+  // Use custom worker with InjectManifest
+  swSrc: 'worker/custom-sw.js',
+  swDest: 'public/sw.js'
 });
 
 const securityHeaders = [
@@ -159,10 +110,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Compiler options to remove console logs at build time
-  compiler: {
-    removeConsole: true, // Remove ALL console statements in production builds
-  },
+  // Compiler options - console removal handled by TerserPlugin in webpack config
+  // compiler: {
+  //   removeConsole: true, // Handled by TerserPlugin instead
+  // },
   // Enable server-side functionality for API routes
   images: {
     unoptimized: true,
@@ -185,36 +136,37 @@ const nextConfig: NextConfig = {
       };
     }
     
-    // REMOVE ALL CONSOLE LOGS IN BOTH DEVELOPMENT AND PRODUCTION
-    // This removes console statements at build time, even in development mode
-    const TerserPlugin = require('terser-webpack-plugin');
-    
-    // Force terser to run even in development
-    config.optimization = config.optimization || {};
-    config.optimization.minimize = true;
-    config.optimization.minimizer = config.optimization.minimizer || [];
-    
-    // Remove any existing TerserPlugin instances
-    config.optimization.minimizer = config.optimization.minimizer.filter(
-      (plugin) => !(plugin instanceof TerserPlugin || plugin.constructor.name === 'TerserPlugin')
-    );
-    
-    // Add our TerserPlugin with console removal
-    config.optimization.minimizer.push(
-      new TerserPlugin({
-        terserOptions: {
-          compress: {
-            drop_console: true, // Remove ALL console statements
-            drop_debugger: true, // Remove debugger statements
+    // Only optimize in production, not during build
+    if (!dev && !isServer) {
+      const TerserPlugin = require('terser-webpack-plugin');
+      
+      config.optimization = config.optimization || {};
+      config.optimization.minimize = true;
+      config.optimization.minimizer = config.optimization.minimizer || [];
+      
+      // Remove any existing TerserPlugin instances
+      config.optimization.minimizer = config.optimization.minimizer.filter(
+        (plugin) => !(plugin instanceof TerserPlugin || plugin.constructor.name === 'TerserPlugin')
+      );
+      
+      // Add our TerserPlugin with console removal for production only
+      config.optimization.minimizer.push(
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: true, // Remove console statements
+              drop_debugger: true, // Remove debugger statements
+              pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+            },
+            mangle: true,
+            format: {
+              comments: false, // Remove comments
+            },
           },
-          mangle: false, // Don't mangle in development for better debugging
-          format: {
-            comments: false, // Remove comments
-          },
-        },
-        extractComments: false,
-      })
-    );
+          extractComments: false,
+        })
+      );
+    }
     
     
     // Reduce file watching load in development
@@ -297,10 +249,8 @@ const nextConfig: NextConfig = {
     
     return config;
   },
-  // Experimental features to help with build issues
+  // Experimental features - removed webpackBuildWorker to fix build
   experimental: {
-    // Disable webpack build worker to avoid runtime issues
-    webpackBuildWorker: false,
     // Improve module resolution
     optimizePackageImports: ['framer-motion', 'lucide-react'],
   },

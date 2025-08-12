@@ -163,6 +163,18 @@ export function useUnifiedNotifications() {
   };
 
   useEffect(() => {
+    // Track user engagement for smart install prompt timing
+    if (typeof window !== 'undefined') {
+      // Initialize session tracking
+      if (!sessionStorage.getItem('session_start')) {
+        sessionStorage.setItem('session_start', Date.now().toString());
+      }
+      
+      // Track page views
+      const currentPageViews = parseInt(sessionStorage.getItem('page_views') || '0');
+      sessionStorage.setItem('page_views', (currentPageViews + 1).toString());
+    }
+    
     // Connection event handlers
     const handleOnline = () => {
       if (wasOffline.current) {
@@ -178,10 +190,23 @@ export function useUnifiedNotifications() {
       setNetworkInfo({ isOnline: false, quality: 'offline' });
     };
 
-    // PWA installation prompt
+    // PWA installation prompt - Smart timing for better UX
+    // We wait until the user has:
+    // 1. Completed onboarding (understands the app)
+    // 2. Engaged with the app (3+ pages or 2+ minutes)
+    // 3. Not been prompted in the last 24 hours
+    // This ensures we only prompt engaged users who see value in the app
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       deferredPrompt.current = e as BeforeInstallPromptEvent;
+      
+      // Check if user has completed onboarding
+      const hasCompletedOnboarding = localStorage.getItem('doshi_onboarding_completed');
+      const isInTutorial = window.location.search.includes('tutorial=true');
+      
+      if (!hasCompletedOnboarding || isInTutorial) {
+        return; // Don't show install prompt during or before onboarding
+      }
       
       // Check if we've shown install prompt recently (24 hours)
       const lastInstallPrompt = localStorage.getItem('pwa_last_install_prompt');
@@ -199,6 +224,17 @@ export function useUnifiedNotifications() {
       
       if (isInstalled) {
         return; // Don't show if already installed
+      }
+      
+      // Additional check: User should have used the app at least a bit
+      // Check if they've visited at least 3 pages or spent 2+ minutes
+      const pageViews = parseInt(sessionStorage.getItem('page_views') || '0');
+      const sessionStart = parseInt(sessionStorage.getItem('session_start') || Date.now().toString());
+      const sessionDuration = Date.now() - sessionStart;
+      const TWO_MINUTES = 2 * 60 * 1000;
+      
+      if (pageViews < 3 && sessionDuration < TWO_MINUTES) {
+        return; // Let them explore the app first
       }
       
       if (!hasShownInstallPrompt.current) {

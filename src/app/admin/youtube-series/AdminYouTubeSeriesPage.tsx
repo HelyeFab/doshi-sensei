@@ -217,7 +217,15 @@ export default function AdminYouTubeSeriesPage() {
     try {
       setSyncing(channelId);
       
-      const token = await user?.getIdToken();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+      
+      const token = await user.getIdToken(true); // Force refresh token
+      if (!token) {
+        throw new Error('Failed to get authentication token');
+      }
+      
       const response = await fetch('/api/admin/sync-youtube-channel', {
         method: 'POST',
         headers: {

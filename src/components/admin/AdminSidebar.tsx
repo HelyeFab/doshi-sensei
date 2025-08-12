@@ -83,6 +83,12 @@ const sidebarCategories: SidebarCategory[] = [
         iconKey: 'articles',
         href: '/admin/articles',
       },
+      {
+        id: 'youtube-series' as AdminSection,
+        labelKey: 'youtubeSeries',
+        iconKey: 'youtubeSeries',
+        href: '/admin/youtube-series',
+      },
     ]
   },
   {
@@ -189,6 +195,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             labelKey === 'activities' ? 'Activities' : 
             labelKey === 'notifications' ? 'Notifications' : 
             labelKey === 'bugs' ? 'Bug Reports' : 
+            labelKey === 'youtubeSeries' ? 'YouTube Series' :
             labelKey === 'consoleMonitor' ? 'Console Monitor' : labelKey);
   };
 
@@ -208,6 +215,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
            iconKey === 'activities' ? '📊' : 
            iconKey === 'notifications' ? '🔔' : 
            iconKey === 'bugs' ? '🐛' : 
+           iconKey === 'youtubeSeries' ? '📺' :
            iconKey === 'consoleMonitor' ? '💻' : '📋');
   };
 

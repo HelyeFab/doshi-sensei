@@ -17,22 +17,22 @@ import { batchSearchTatoebaExamples } from './tatoebaSearch';
 const initWanikaniApi = () => {
   // The token MUST be prefixed with NEXT_PUBLIC_ to be available in the browser
   // This is embedded at build time by Next.js
-  const token = process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN;
+  const envToken = process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN;
+  const fallbackToken = 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
   
-  if (token) {
-    setWanikaniApiToken(token);
-    if (typeof window !== 'undefined') {
-      console.log('[WaniKani] API initialized with token:', token.substring(0, 8) + '...');
-    }
-  } else {
-    // Fallback: try hardcoded token if env var is not available
-    // This ensures it works in production even if env vars aren't properly set
-    const fallbackToken = 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
-    setWanikaniApiToken(fallbackToken);
-    
-    if (typeof window !== 'undefined') {
-      console.warn('[WaniKani] Using fallback token - env var not found');
-    }
+  // Always use fallback token to ensure consistency
+  // The env var seems to not be properly set in production
+  const token = envToken || fallbackToken;
+  
+  setWanikaniApiToken(token);
+  
+  if (typeof window !== 'undefined') {
+    console.log('[WaniKani] API initialized:', {
+      hasEnvToken: !!envToken,
+      tokenPrefix: token.substring(0, 8) + '...',
+      isProduction: process.env.NODE_ENV === 'production',
+      usingFallback: token === fallbackToken
+    });
   }
 };
 

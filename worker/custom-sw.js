@@ -236,12 +236,13 @@ if (typeof workbox !== 'undefined') {
     })
   );
 
-  // External APIs (excluding Stripe) - cache with validation
+  // External APIs (excluding Stripe and WaniKani) - cache with validation
   registerRoute(
     ({ url }) => url.origin !== self.location.origin && 
                !url.host.includes('stripe.com') &&
                !url.host.includes('firebaseio.com') &&
-               !url.host.includes('googleapis.com'),
+               !url.host.includes('googleapis.com') &&
+               !url.host.includes('wanikani.com'),  // Never cache WaniKani API
     new StaleWhileRevalidate({
       cacheName: 'external-api',
       plugins: [
@@ -251,6 +252,12 @@ if (typeof workbox !== 'undefined') {
         })
       ]
     })
+  );
+  
+  // WaniKani API - always network only, never cache
+  registerRoute(
+    ({ url }) => url.host.includes('api.wanikani.com'),
+    new NetworkOnly()
   );
 }
 

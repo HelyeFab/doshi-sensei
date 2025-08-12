@@ -11,6 +11,10 @@ const wanikaniAxios = axios.create({
     'Wanikani-Revision': '20170710',
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    // Add cache control headers to prevent service worker caching
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   }
 });
 
@@ -331,7 +335,9 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
           types: 'vocabulary',
           hidden: false,
           levels: levels,
-          limit: 1000
+          limit: 1000,
+          // Add timestamp to prevent caching
+          _t: Date.now()
         }
       }).catch(error => {
         console.error(`[WaniKani] Error fetching vocabulary for levels ${levels}:`, {

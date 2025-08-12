@@ -235,8 +235,8 @@ export default function YouTubeSeriesPage() {
         </div>
 
         {/* Search and Filter Section */}
-        <div className="max-w-6xl mx-auto mb-6 px-4 md:px-0">
-          <div className="bg-card rounded-xl p-3 md:p-4 shadow-sm border border-border">
+        <div className="max-w-6xl mx-auto mb-6">
+          <div className="bg-card rounded-xl p-3 md:p-4 shadow-sm border border-border mx-4 md:mx-0">
             <div className="space-y-3">
               {/* Search Bar */}
               <div className="relative">
@@ -339,7 +339,7 @@ export default function YouTubeSeriesPage() {
                 return (
                   <div key={channel.id} className="space-y-4">
                   {/* Channel Header - Outside the card */}
-                  <div className="flex items-center justify-between px-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 gap-3">
                     <div className="flex items-center gap-3">
                       {channel.thumbnailUrl ? (
                         <ExternalImage
@@ -347,38 +347,38 @@ export default function YouTubeSeriesPage() {
                           alt={channel.channelTitle}
                           width={48}
                           height={48}
-                          className="rounded-full border-2 border-border shadow-sm"
+                          className="rounded-full border-2 border-border shadow-sm flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center border-2 border-border">
+                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0">
                           <span className="text-lg">📺</span>
                         </div>
                       )}
-                      <div>
-                        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                      <div className="min-w-0 flex-1">
+                        <h2 className="text-base sm:text-xl font-bold text-foreground flex items-center gap-2 flex-wrap">
                           {channel.channelTitle}
                           {channel.monitoringEnabled && (
                             <span className="text-primary text-sm">●</span>
                           )}
                         </h2>
                         {channel.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-1 max-w-xl">
+                          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">
                             {channel.description}
                           </p>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 ml-14 sm:ml-0">
                       {/* Channel Badges */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         {channel.shadowingEnabled && (
                           <span className="px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                            🎯 Shadowing
+                            🎯 <span className="hidden sm:inline">Shadowing</span>
                           </span>
                         )}
                         {channel.isPremiumContent && (
                           <span className="px-2 py-1 rounded-md text-xs font-medium bg-accent/10 text-accent border border-accent/20">
-                            💎 Premium
+                            💎 <span className="hidden sm:inline">Premium</span>
                           </span>
                         )}
                       </div>
@@ -398,7 +398,7 @@ export default function YouTubeSeriesPage() {
 
                   {/* Video Grid - Distinctive card design */}
                   {displayVideos.length > 0 && (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-2 sm:px-0">
                       {displayVideos.map((video) => (
                         <div key={video.id} className="group relative bg-gradient-to-br from-card via-card to-muted/20 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border/50">
                           {/* Video Thumbnail with Overlay */}
@@ -555,67 +555,123 @@ export default function YouTubeSeriesPage() {
               if (videos.length === 0) return null;
               
               return (
-                <div key={channelId} className="px-4 md:px-0">
-                  {/* Simple list for orphan videos */}
-                  <div className="space-y-3">
+                <div key={channelId} className="space-y-4">
+                  {/* Uncategorized Videos Header */}
+                  <div className="px-4 sm:px-2">
+                    <h2 className="text-lg font-semibold text-foreground">
+                      Uncategorized Videos
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Videos without channel information
+                    </p>
+                  </div>
+                  
+                  {/* Videos Grid */}
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 sm:px-2">
                     {videos.map((video) => (
-                      <div key={video.id} className="bg-card rounded-lg p-3 shadow-sm border border-border">
-                        <div className="flex flex-col gap-2">
-                          {/* Top row: Thumbnail and URL */}
-                          <div className="flex items-start gap-2">
-                            {/* Thumbnail */}
-                            <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden bg-muted">
-                              {video.thumbnailUrl ? (
-                                <ExternalImage
-                                  src={video.thumbnailUrl}
-                                  alt={video.title}
-                                  width={48}
-                                  height={48}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <span className="text-sm">📺</span>
-                                </div>
-                              )}
+                      <div key={video.id} className="group bg-card rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
+                        {/* Thumbnail Area */}
+                        <div className="relative aspect-video bg-muted">
+                          {video.thumbnailUrl ? (
+                            <ExternalImage
+                              src={video.thumbnailUrl}
+                              alt={video.title || `Video ${video.videoId}`}
+                              width={480}
+                              height={270}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+                              <span className="text-4xl opacity-50">📺</span>
                             </div>
-                            
-                            {/* Video Info */}
-                            <div className="flex-1 min-w-0">
-                              {/* Video URL - break-all for mobile */}
-                              <h3 className="font-medium text-sm text-foreground break-all">
-                                https://youtu.be/{video.videoId}
-                              </h3>
-                            </div>
-                            
-                            {/* Shadowing Badge - moved to top right */}
-                            <div className="flex-shrink-0">
-                              <SmartNavigationLink
-                                href={`/tools/youtube-shadowing?v=${video.videoId}`}
-                                className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium hover:bg-primary hover:text-primary-foreground transition-all"
-                              >
-                                <span className="mr-1">🎯</span>
-                                <span className="hidden sm:inline">Shadowing</span>
-                              </SmartNavigationLink>
-                            </div>
-                          </div>
-                          
-                          {/* Video Title if available */}
-                          {video.title && (
-                            <p className="text-xs text-muted-foreground line-clamp-2 px-1">
-                              {video.title}
-                            </p>
                           )}
                           
+                          {/* Duration Badge */}
+                          {video.duration > 0 && (
+                            <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium">
+                              {formatDuration(video.duration)}
+                            </div>
+                          )}
+                          
+                          {/* Play Button Overlay */}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+                            <div className="bg-primary/90 backdrop-blur-sm rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                              <svg className="w-6 h-6 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Content Area */}
+                        <div className="p-4 space-y-3">
+                          {/* Title or Video ID */}
+                          <h3 className="font-semibold text-foreground line-clamp-2 min-h-[2.5rem]">
+                            {video.title || `Video: ${video.videoId.substring(0, 8)}...`}
+                          </h3>
+                          
                           {/* Metadata */}
-                          {(video.duration || video.publishedAt) && (
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground px-1">
-                              {video.duration && (
-                                <span>{formatDuration(video.duration)}</span>
-                              )}
-                              {video.publishedAt && (
-                                <span>• {formatDistanceToNow(video.publishedAt.toDate(), { addSuffix: true })}</span>
-                              )}
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            {video.publishedAt ? (
+                              <span className="flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {formatDistanceToNow(video.publishedAt.toDate(), { addSuffix: true })}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground/50">No date</span>
+                            )}
+                            {video.viewCount > 0 && (
+                              <span className="flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                {video.viewCount > 1000000 
+                                  ? `${(video.viewCount / 1000000).toFixed(1)}M`
+                                  : video.viewCount > 1000
+                                  ? `${(video.viewCount / 1000).toFixed(1)}K`
+                                  : video.viewCount.toLocaleString()
+                                }
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex gap-2">
+                            <SmartNavigationLink
+                              href={`/tools/youtube-shadowing?v=${video.videoId}`}
+                              className="flex-1 flex items-center justify-center px-3 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-all"
+                            >
+                              <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                              </svg>
+                              Practice
+                            </SmartNavigationLink>
+                            
+                            <a
+                              href={`https://youtu.be/${video.videoId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 flex items-center justify-center px-3 py-2 bg-card border border-border rounded-lg text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-all"
+                            >
+                              <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                              </svg>
+                              Watch
+                            </a>
+                          </div>
+                          
+                          {/* Cache indicator */}
+                          {video.transcriptCached && (
+                            <div className="pt-2 border-t border-border/50">
+                              <span className="inline-flex items-center text-xs text-primary">
+                                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                Transcript Available
+                              </span>
                             </div>
                           )}
                         </div>

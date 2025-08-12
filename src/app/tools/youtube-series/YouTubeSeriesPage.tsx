@@ -48,7 +48,6 @@ export default function YouTubeSeriesPage() {
         ...doc.data()
       } as YouTubeChannel));
       
-      console.log('Loaded channels:', channelsList);
       setChannels(channelsList);
       
       // Load all videos
@@ -62,8 +61,6 @@ export default function YouTubeSeriesPage() {
         id: doc.id,
         ...doc.data()
       } as YouTubeVideoResource));
-      
-      console.log('Loaded videos:', allVideosList);
       
       // Group videos by channel
       const videosMap: { [channelId: string]: YouTubeVideoResource[] } = {};
@@ -79,7 +76,6 @@ export default function YouTubeSeriesPage() {
       );
       
       if (orphanVideos.length > 0) {
-        console.log('Found orphan videos (videos without matching channel):', orphanVideos);
         // Group orphan videos by their channelId
         orphanVideos.forEach(video => {
           if (!videosMap[video.channelId]) {
@@ -239,9 +235,9 @@ export default function YouTubeSeriesPage() {
         </div>
 
         {/* Search and Filter Section */}
-        <div className="max-w-6xl mx-auto mb-6">
-          <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
-            <div className="space-y-4">
+        <div className="max-w-6xl mx-auto mb-6 px-4 md:px-0">
+          <div className="bg-card rounded-xl p-3 md:p-4 shadow-sm border border-border">
+            <div className="space-y-3">
               {/* Search Bar */}
               <div className="relative">
                 <input
@@ -249,19 +245,19 @@ export default function YouTubeSeriesPage() {
                   placeholder="Search channels or videos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 bg-background border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full px-3 py-2 pl-9 text-sm md:text-base bg-background border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
 
               {/* Filters */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2">
                 {/* Tag Filter */}
                 {allTags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    <span className="text-sm text-muted-foreground self-center mr-2">Tags:</span>
+                  <div className="flex flex-wrap gap-1.5 w-full">
+                    <span className="text-xs md:text-sm text-muted-foreground self-center mr-1">Tags:</span>
                     {allTags.map(tag => (
                       <button
                         key={tag}
@@ -272,7 +268,7 @@ export default function YouTubeSeriesPage() {
                               : [...prev, tag]
                           );
                         }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
                           selectedTags.includes(tag)
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -287,13 +283,13 @@ export default function YouTubeSeriesPage() {
                 {/* Shadowing Filter */}
                 <button
                   onClick={() => setShowOnlyShadowing(!showOnlyShadowing)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
+                  className={`px-3 py-1 rounded-full text-xs md:text-sm font-medium transition-colors flex items-center gap-1.5 ${
                     showOnlyShadowing
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
                 >
-                  <span>🎯</span>
+                  <span className="text-sm">🎯</span>
                   Shadowing Only
                 </button>
 
@@ -305,7 +301,7 @@ export default function YouTubeSeriesPage() {
                       setSelectedTags([]);
                       setShowOnlyShadowing(false);
                     }}
-                    className="px-3 py-1.5 rounded-full text-sm font-medium bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                    className="px-2.5 py-1 rounded-full text-xs md:text-sm font-medium bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
                   >
                     Clear All
                   </button>
@@ -314,7 +310,7 @@ export default function YouTubeSeriesPage() {
 
               {/* Results Count */}
               {(searchQuery || selectedTags.length > 0 || showOnlyShadowing) && (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs md:text-sm text-muted-foreground">
                   Showing {filteredChannels.length} of {channels.length} channels
                 </div>
               )}
@@ -558,142 +554,67 @@ export default function YouTubeSeriesPage() {
               if (channels.some(ch => ch.id === channelId)) return null;
               if (videos.length === 0) return null;
               
-              const displayVideos = videos.slice(0, 6);
-              
               return (
-                <div key={channelId} className="space-y-4">
-                  {/* Simple header for orphan videos */}
-                  <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center border-2 border-border">
-                        <span className="text-lg">📺</span>
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-bold text-foreground">
-                          YouTube Videos
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                          {videos.length} video{videos.length !== 1 ? 's' : ''} available
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Video Grid */}
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {displayVideos.map((video) => (
-                      <div key={video.id} className="group relative bg-gradient-to-br from-card via-card to-muted/20 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border/50">
-                        {/* Video Thumbnail with Overlay */}
-                        <div className="relative aspect-video bg-black">
-                          <ExternalImage
-                            src={video.thumbnailUrl}
-                            alt={video.title}
-                            width={480}
-                            height={270}
-                            className="w-full h-full object-cover"
-                          />
-                          
-                          {/* Gradient Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                          
-                          {/* Duration Badge */}
-                          <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium">
-                            {formatDuration(video.duration)}
+                <div key={channelId} className="px-4 md:px-0">
+                  {/* Simple list for orphan videos */}
+                  <div className="space-y-3">
+                    {videos.map((video) => (
+                      <div key={video.id} className="bg-card rounded-lg p-3 shadow-sm border border-border">
+                        <div className="flex flex-col gap-2">
+                          {/* Top row: Thumbnail and URL */}
+                          <div className="flex items-start gap-2">
+                            {/* Thumbnail */}
+                            <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden bg-muted">
+                              {video.thumbnailUrl ? (
+                                <ExternalImage
+                                  src={video.thumbnailUrl}
+                                  alt={video.title}
+                                  width={48}
+                                  height={48}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <span className="text-sm">📺</span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Video Info */}
+                            <div className="flex-1 min-w-0">
+                              {/* Video URL - break-all for mobile */}
+                              <h3 className="font-medium text-sm text-foreground break-all">
+                                https://youtu.be/{video.videoId}
+                              </h3>
+                            </div>
+                            
+                            {/* Shadowing Badge - moved to top right */}
+                            <div className="flex-shrink-0">
+                              <SmartNavigationLink
+                                href={`/tools/youtube-shadowing?v=${video.videoId}`}
+                                className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium hover:bg-primary hover:text-primary-foreground transition-all"
+                              >
+                                <span className="mr-1">🎯</span>
+                                <span className="hidden sm:inline">Shadowing</span>
+                              </SmartNavigationLink>
+                            </div>
                           </div>
                           
-                          {/* New Badge */}
-                          {isNewVideo(video) && (
-                            <div className="absolute top-2 left-2">
-                              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold bg-accent/90 backdrop-blur-sm text-accent-foreground shadow-lg">
-                                NEW
-                              </span>
-                            </div>
+                          {/* Video Title if available */}
+                          {video.title && (
+                            <p className="text-xs text-muted-foreground line-clamp-2 px-1">
+                              {video.title}
+                            </p>
                           )}
-
-                          {/* Play Button Overlay */}
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="bg-primary/90 backdrop-blur-sm rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
-                              <svg className="w-6 h-6 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z"/>
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Video Info Card */}
-                        <div className="p-4 space-y-3">
-                          {/* Title Only (no channel name since we don't have it) */}
-                          <h4 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">
-                            {video.title}
-                          </h4>
                           
                           {/* Metadata */}
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                              </svg>
-                              {video.publishedAt && formatDistanceToNow(video.publishedAt.toDate(), { addSuffix: true })}
-                            </span>
-                            {video.viewCount && (
-                              <span className="flex items-center gap-1">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                {video.viewCount > 1000000 
-                                  ? `${(video.viewCount / 1000000).toFixed(1)}M`
-                                  : video.viewCount > 1000
-                                  ? `${(video.viewCount / 1000).toFixed(1)}K`
-                                  : video.viewCount.toLocaleString()
-                                }
-                              </span>
-                            )}
-                          </div>
-                          
-                          {/* Action Buttons */}
-                          <div className="flex gap-2">
-                            <SmartNavigationLink
-                              href={`/tools/youtube-shadowing?v=${video.videoId}`}
-                              className="flex-1 flex items-center justify-center px-3 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-all"
-                            >
-                              <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                              </svg>
-                              Practice
-                            </SmartNavigationLink>
-                            
-                            <a
-                              href={`https://youtu.be/${video.videoId}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1 flex items-center justify-center px-3 py-2 bg-card border border-border rounded-lg text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-all"
-                            >
-                              <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                              </svg>
-                              Watch
-                            </a>
-                          </div>
-
-                          {/* Additional Info */}
-                          {(video.transcriptCached || video.shadowingSessionCount > 0) && (
-                            <div className="flex items-center gap-3 pt-3 border-t border-border/50">
-                              {video.transcriptCached && (
-                                <span className="inline-flex items-center text-xs text-primary">
-                                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                  </svg>
-                                  Transcript
-                                </span>
+                          {(video.duration || video.publishedAt) && (
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground px-1">
+                              {video.duration && (
+                                <span>{formatDuration(video.duration)}</span>
                               )}
-                              {video.shadowingSessionCount > 0 && (
-                                <span className="inline-flex items-center text-xs text-muted-foreground">
-                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                  </svg>
-                                  {video.shadowingSessionCount} practiced
-                                </span>
+                              {video.publishedAt && (
+                                <span>• {formatDistanceToNow(video.publishedAt.toDate(), { addSuffix: true })}</span>
                               )}
                             </div>
                           )}
@@ -701,21 +622,6 @@ export default function YouTubeSeriesPage() {
                       </div>
                     ))}
                   </div>
-
-                  {/* View More Button */}
-                  {videos.length > 6 && (
-                    <div className="flex justify-center mt-4">
-                      <button
-                        onClick={() => router.push(`/tools/youtube-series/${channelId}`)}
-                        className="inline-flex items-center px-4 py-2 bg-muted/50 hover:bg-muted rounded-lg text-sm font-medium text-foreground transition-colors"
-                      >
-                        View all {videos.length} videos
-                        <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
                 </div>
               );
             })}

@@ -64,8 +64,8 @@ function convertJishoWord(jishoWord: JishoWord, index: number): JapaneseWord {
   const japanese = jishoWord.japanese[0];
   const sense = jishoWord.senses[0];
 
-  // Determine word type from parts of speech
-  const wordType = determineWordType(sense.parts_of_speech);
+  // Determine word type from parts of speech (pass word for する verb detection)
+  const wordType = determineWordType(sense.parts_of_speech, japanese.word || japanese.reading);
   
   // Debug logging for conjugation issues
   if (process.env.NODE_ENV === 'development') {
@@ -93,16 +93,25 @@ function convertJishoWord(jishoWord: JishoWord, index: number): JapaneseWord {
   };
 }
 
-function determineWordType(partsOfSpeech: string[]): WordType {
+function determineWordType(partsOfSpeech: string[], word?: string): WordType {
   const pos = partsOfSpeech.join(' ').toLowerCase();
 
-  // Check for verbs first
-  if (pos.includes('ichidan') || pos.includes('ru verb')) {
+  // Check for irregular verbs FIRST (especially する verbs)
+  if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb') ||
+      pos.includes('vs-i') || pos.includes('vs-s') || pos.includes('vs') || pos.includes('vk')) {
+    return 'Irregular';
+  }
+  
+  // Also check if the word ends with する
+  if (word && word.endsWith('する')) {
+    return 'Irregular';
+  }
+  
+  // Then check for other verb types
+  else if (pos.includes('ichidan') || pos.includes('ru verb')) {
     return 'Ichidan';
   } else if (pos.includes('godan') || pos.includes('u verb')) {
     return 'Godan';
-  } else if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb')) {
-    return 'Irregular';
   }
 
   // Check for adjectives

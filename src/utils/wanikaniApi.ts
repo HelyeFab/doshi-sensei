@@ -75,21 +75,35 @@ function determineJLPTLevel(level: number): JLPTLevel {
 }
 
 // Function to determine word type based on parts of speech
-function determineWordType(partsOfSpeech: string[] | undefined): WordType {
+function determineWordType(partsOfSpeech: string[] | undefined, word?: { characters?: string }): WordType {
   if (!partsOfSpeech || partsOfSpeech.length === 0) {
+    // Check if it's a する verb by looking at the word itself
+    if (word?.characters && word.characters.endsWith('する')) {
+      return 'Irregular';
+    }
     return 'other'; // Default to other instead of verb
   }
 
   const posArray = partsOfSpeech.map(p => p.toLowerCase());
   const pos = posArray.join(' ');
 
-  // Check for verbs first (highest priority for conjugation)
-  if (pos.includes('ichidan') || pos.includes('ru verb') || pos.includes('る verb')) {
+  // Check for irregular verbs FIRST (highest priority - especially する verbs)
+  if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb') || 
+      pos.includes('する verb') || pos.includes('来る verb') || pos.includes('vs-i') || 
+      pos.includes('vs-s') || pos.includes('vs') || pos.includes('vk')) {
+    return 'Irregular';
+  }
+  
+  // Also check if the word ends with する (compound suru verbs)
+  if (word?.characters && word.characters.endsWith('する')) {
+    return 'Irregular';
+  }
+  
+  // Then check for other verb types
+  else if (pos.includes('ichidan') || pos.includes('ru verb') || pos.includes('る verb')) {
     return 'Ichidan';
   } else if (pos.includes('godan') || pos.includes('u verb') || pos.includes('う verb')) {
     return 'Godan';
-  } else if (pos.includes('irregular') || pos.includes('suru verb') || pos.includes('kuru verb') || pos.includes('する verb') || pos.includes('来る verb')) {
-    return 'Irregular';
   }
 
   // Check for TRUE i-adjectives only (standalone, conjugatable adjectives)
@@ -184,8 +198,16 @@ function convertWanikaniSubject(subject: WanikaniSubject): JapaneseWord | null {
   // Generate romaji
   const romaji = generateRomaji(primaryReading);
 
-  // Determine word type
-  const wordType = determineWordType(data.parts_of_speech);
+  // Determine word type (pass characters for する verb detection)
+  const wordType = determineWordType(data.parts_of_speech, { characters: data.characters });
+  
+  // Debug logging for する verb detection
+  if (typeof window !== 'undefined' && data.characters?.endsWith('する')) {
+    console.log(`[WaniKani] する verb detected: ${data.characters}`, {
+      partsOfSpeech: data.parts_of_speech,
+      determinedType: wordType
+    });
+  }
 
   // Determine JLPT level based on WaniKani level
   const jlptLevel = determineJLPTLevel(data.level);

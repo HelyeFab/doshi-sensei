@@ -58,6 +58,7 @@
     "firebase-admin": "^13.4.0",
     "framer-motion": "^12.19.2",
     "googleapis": "^155.0.0",
+    "html-to-image": "^1.11.13",
     "idb": "^8.0.3",
     "jszip": "^3.10.1",
     "kuromoji": "^0.1.2",

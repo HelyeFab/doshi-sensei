@@ -154,6 +154,12 @@ const sidebarCategories: SidebarCategory[] = [
         href: '/admin/snake-path',
       },
       {
+        id: 'mockup-generator' as AdminSection,
+        labelKey: 'mockupGenerator',
+        iconKey: 'mockupGenerator',
+        href: '/admin/mockup-generator',
+      },
+      {
         id: 'debug' as AdminSection,
         labelKey: 'debug',
         iconKey: 'debug',
@@ -196,6 +202,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             labelKey === 'notifications' ? 'Notifications' : 
             labelKey === 'bugs' ? 'Bug Reports' : 
             labelKey === 'youtubeSeries' ? 'YouTube Series' :
+            labelKey === 'mockupGenerator' ? 'Mockup Generator' :
             labelKey === 'consoleMonitor' ? 'Console Monitor' : labelKey);
   };
 
@@ -216,6 +223,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
            iconKey === 'notifications' ? '🔔' : 
            iconKey === 'bugs' ? '🐛' : 
            iconKey === 'youtubeSeries' ? '📺' :
+           iconKey === 'mockupGenerator' ? '🎨' :
            iconKey === 'consoleMonitor' ? '💻' : '📋');
   };
 

@@ -112,6 +112,9 @@ export default function AdminDashboard() {
       case 'maintenance':
         router.push('/admin/maintenance');
         break;
+      case 'mockup-generator':
+        router.push('/admin/mockup-generator');
+        break;
       default:
     }
   };
@@ -221,6 +224,12 @@ export default function AdminDashboard() {
               description="Monitor subscription & data health"
               icon="🏥"
               onClick={() => handleQuickAction('system-health')}
+            />
+            <QuickAction
+              title="Mockup Generator"
+              description="Create marketing mockups"
+              icon="🎨"
+              onClick={() => handleQuickAction('mockup-generator')}
             />
           </div>
         </div>

@@ -67,15 +67,25 @@ export default function YouTubeSeriesPage() {
       
       // First, get videos that belong to our channels
       for (const channel of channelsList) {
-        videosMap[channel.id] = allVideosList.filter(video => video.channelId === channel.id);
+        console.log(`Checking channel ${channel.channelTitle}, looking for videos with YouTube channelId=${channel.channelId}`);
+        const matchingVideos = allVideosList.filter(video => {
+          const matches = video.channelId === channel.channelId; // Compare YouTube IDs!
+          if (!matches && allVideosList.indexOf(video) === 0) {
+            console.log(`Video channelId: "${video.channelId}" vs Channel YouTube ID: "${channel.channelId}"`);
+          }
+          return matches;
+        });
+        console.log(`Found ${matchingVideos.length} videos for channel ${channel.channelTitle}`);
+        videosMap[channel.id] = matchingVideos; // Store by Firestore ID
       }
       
       // Also check for orphan videos (videos without matching channel)
       const orphanVideos = allVideosList.filter(video => 
-        !channelsList.some(channel => channel.id === video.channelId)
+        !channelsList.some(channel => channel.channelId === video.channelId) // Compare YouTube IDs!
       );
-      
+      console.log('Orphan videos found:', orphanVideos.length);
       if (orphanVideos.length > 0) {
+        console.log('First orphan video:', orphanVideos[0]);
         // Group orphan videos by their channelId
         orphanVideos.forEach(video => {
           if (!videosMap[video.channelId]) {
@@ -85,12 +95,14 @@ export default function YouTubeSeriesPage() {
         });
       }
       
+      console.log('Final videos map:', videosMap);
       setAllVideos(videosMap);
       
     } catch (err) {
       console.error('Error loading channels:', err);
       setError('Failed to load YouTube series');
     } finally {
+      console.log('Loading complete');
       setLoading(false);
     }
   };
@@ -184,7 +196,7 @@ export default function YouTubeSeriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-red-500">
+    <div className="min-h-screen bg-background">
       <SmartPageHeader title="YouTube Series" backHref="/" />
       
       <MobileAwareContainer className="container mx-auto px-4 py-6">
@@ -400,7 +412,7 @@ export default function YouTubeSeriesPage() {
                   {displayVideos.length > 0 && (
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-2 sm:px-0">
                       {displayVideos.map((video) => (
-                        <div key={video.id} className="group relative bg-gradient-to-br from-card via-card to-muted/20 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border/50">
+                        <div key={video.id} className="group relative bg-yellow-400 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border/50">
                           {/* Video Thumbnail with Overlay */}
                           <div className="relative aspect-video bg-black">
                             <ExternalImage
@@ -549,27 +561,32 @@ export default function YouTubeSeriesPage() {
             })}
             
             {/* Display orphan videos (videos without a matching channel) */}
+            {console.log('All videos:', allVideos)}
+            {console.log('Channels:', channels)}
             {Object.entries(allVideos).map(([channelId, videos]) => {
               // Skip if this channelId has a matching channel
-              if (channels.some(ch => ch.id === channelId)) return null;
+              const hasChannel = channels.some(ch => ch.id === channelId);
+              console.log(`Channel ${channelId}: hasChannel=${hasChannel}, videos=${videos.length}`);
+              if (hasChannel) return null;
               if (videos.length === 0) return null;
               
+              console.log('🎨 Rendering orphan videos for channel:', channelId, 'with', videos.length, 'videos');
               return (
-                <div key={channelId} className="space-y-4">
+                <div key={channelId} className="space-y-4 bg-green-500 p-4 rounded-lg">
                   {/* Uncategorized Videos Header */}
                   <div className="px-4 sm:px-2">
                     <h2 className="text-lg font-semibold text-foreground">
-                      Uncategorized Videos
+                      🚨 ORPHAN VIDEOS SECTION 🚨
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      Videos without channel information
+                      Videos without channel information (Channel: {channelId})
                     </p>
                   </div>
                   
                   {/* Videos Grid */}
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 sm:px-2">
                     {videos.map((video) => (
-                      <div key={video.id} className="group bg-card rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
+                      <div key={video.id} className="group bg-yellow-400 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
                         {/* Thumbnail Area */}
                         <div className="relative aspect-video bg-muted">
                           {video.thumbnailUrl ? (

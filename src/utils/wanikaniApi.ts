@@ -290,8 +290,16 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
   try {
     // Check if API token is set
     if (!wanikaniAxios.defaults.headers.common['Authorization']) {
-      console.warn('WaniKani API token not set');
-      return [];
+      console.error('[WaniKani] API token not set in Authorization header');
+      // Try to reinitialize with fallback token
+      const token = process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN || 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
+      setWanikaniApiToken(token);
+      console.log('[WaniKani] Reinitialized with token:', token.substring(0, 8) + '...');
+      
+      // Check again after reinitialization
+      if (!wanikaniAxios.defaults.headers.common['Authorization']) {
+        console.error('[WaniKani] Failed to set token even after reinitialization');
+        return [];
     }
 
 

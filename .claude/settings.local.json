@@ -41,7 +41,9 @@
       "Bash(find:*)",
       "Bash(cat:*)",
       "Bash(git restore:*)",
-      "Bash(firebase login:*)"
+      "Bash(firebase login:*)",
+      "Bash(cp:*)",
+      "Bash(npx firebase firestore:get:*)"
     ],
     "deny": []
   }

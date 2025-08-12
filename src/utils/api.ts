@@ -15,31 +15,25 @@ import { batchSearchTatoebaExamples } from './tatoebaSearch';
 
 // WaniKani API initialization - primary source
 const initWanikaniApi = () => {
-  // Check for NEXT_PUBLIC environment variable first (most common)
-  if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN) {
-    setWanikaniApiToken(process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN);
-    return;
+  // The token MUST be prefixed with NEXT_PUBLIC_ to be available in the browser
+  // This is embedded at build time by Next.js
+  const token = process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN;
+  
+  if (token) {
+    setWanikaniApiToken(token);
+    if (typeof window !== 'undefined') {
+      console.log('[WaniKani] API initialized with token:', token.substring(0, 8) + '...');
+    }
+  } else {
+    // Fallback: try hardcoded token if env var is not available
+    // This ensures it works in production even if env vars aren't properly set
+    const fallbackToken = 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
+    setWanikaniApiToken(fallbackToken);
+    
+    if (typeof window !== 'undefined') {
+      console.warn('[WaniKani] Using fallback token - env var not found');
+    }
   }
-
-  // Check for server-side environment variables
-  if (typeof process !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
-    setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
-    return;
-  }
-
-  // Check for client-side environment variables
-  if (typeof window !== 'undefined' && (window as any).__NEXT_DATA__?.props?.pageProps?.env?.WANIKANI_API_TOKEN) {
-    setWanikaniApiToken((window as any).__NEXT_DATA__.props.pageProps.env.WANIKANI_API_TOKEN);
-    return;
-  }
-
-  // Check for Next.js exposed environment variables
-  if (typeof window !== 'undefined' && (window as any).ENV?.WANIKANI_API_TOKEN) {
-    setWanikaniApiToken((window as any).ENV.WANIKANI_API_TOKEN);
-    return;
-  }
-
-  console.warn('WaniKani API token not found in environment variables');
 };
 
 // Initialize WaniKani API

@@ -66,6 +66,14 @@ function convertJishoWord(jishoWord: JishoWord, index: number): JapaneseWord {
 
   // Determine word type from parts of speech
   const wordType = determineWordType(sense.parts_of_speech);
+  
+  // Debug logging for conjugation issues
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Jisho] Converting word: ${japanese.word || japanese.reading}`, {
+      partsOfSpeech: sense.parts_of_speech,
+      determinedType: wordType
+    });
+  }
 
   // Get JLPT level
   const jlptLevel = determineJLPTLevel(jishoWord.jlpt);
@@ -169,11 +177,27 @@ function generateRomaji(kana: string): string {
 
 // Simple search with WaniKani as primary source (pure results as requested)
 export async function searchWords(query: string, limit: number = 20): Promise<JapaneseWord[]> {
+  // Debug logging for data source tracking
+  const debugLog = (source: string, results: any[], extra?: any) => {
+    if (typeof window !== 'undefined') {
+      console.log(`🔍 [Search API] Source: ${source}, Results: ${results.length}`, {
+        query,
+        sample: results.slice(0, 2).map(r => ({
+          word: r.kanji || r.kana || r.word,
+          type: r.type,
+          meaning: r.meaning || (r.meanings ? r.meanings.join(', ') : '')
+        })),
+        ...extra
+      });
+    }
+  };
+
   try {
     // Always try WaniKani first - they have the best curated results
     let wanikaniResults: JapaneseWord[] = [];
     try {
       wanikaniResults = await searchWanikaniVocabulary(query, Math.min(10, limit));
+      debugLog('WaniKani', wanikaniResults);
       
       if (wanikaniResults.length > 0) {
         // Add Tatoeba example sentences to WaniKani results
@@ -206,6 +230,7 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
         // Try specific conjugation-focused search first
         const { searchJMdictWords: searchPractice } = await import('./jmdictPractice');
         const practiceResults = await searchPractice(query, remainingLimit + 10); // Get extra to filter
+        debugLog('JMDict Practice', practiceResults);
         
         if (practiceResults.length > 0) {
           // Filter out any duplicates with WaniKani results

@@ -185,6 +185,19 @@ function convertToJapaneseWord(word: JMdictWord): JapaneseWord | null {
   
   // Determine word type from part of speech
   const wordType = mapPartOfSpeechToType(primarySense.partOfSpeech);
+  
+  // Debug logging for word type determination
+  if (typeof window !== 'undefined' && (word.kanji[0]?.text || word.kana[0]?.text)) {
+    const wordText = word.kanji[0]?.text || word.kana[0]?.text;
+    // Only log verbs and adjectives for debugging conjugation issues
+    if (wordType && ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'].includes(wordType)) {
+      console.log(`[JMDict] Word type mapping: ${wordText}`, {
+        partOfSpeech: primarySense.partOfSpeech,
+        determinedType: wordType
+      });
+    }
+  }
+  
   if (!wordType) return null;
   
   // Get the most common kanji form or first available

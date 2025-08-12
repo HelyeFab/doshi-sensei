@@ -34,6 +34,8 @@ export function useUnifiedNotifications() {
   const connectionToastId = useRef<string | null>(null);
   const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
   const updateAvailableToastId = useRef<string | null>(null);
+  const lastUpdatePromptTime = useRef(0);
+  const cleanupFunctions = useRef<(() => void)[]>([]);
 
   // Check connection quality
   const checkConnectionQuality = async () => {
@@ -181,8 +183,27 @@ export function useUnifiedNotifications() {
       e.preventDefault();
       deferredPrompt.current = e as BeforeInstallPromptEvent;
       
+      // Check if we've shown install prompt recently (24 hours)
+      const lastInstallPrompt = localStorage.getItem('pwa_last_install_prompt');
+      const now = Date.now();
+      const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+      
+      if (lastInstallPrompt && (now - parseInt(lastInstallPrompt)) < TWENTY_FOUR_HOURS) {
+        return; // Don't show if shown within 24 hours
+      }
+      
+      // Check if already installed
+      const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+                         (window.navigator as any).standalone ||
+                         document.referrer.includes('android-app://');
+      
+      if (isInstalled) {
+        return; // Don't show if already installed
+      }
+      
       if (!hasShownInstallPrompt.current) {
         hasShownInstallPrompt.current = true;
+        localStorage.setItem('pwa_last_install_prompt', now.toString());
         showToast({
           type: 'info',
           title: 'Install Doshi Sensei',
@@ -234,9 +255,25 @@ export function useUnifiedNotifications() {
 
     // Service Worker updates
     const handleServiceWorkerUpdate = () => {
+      // Prevent showing update immediately after an update
+      const now = Date.now();
+      const COOLDOWN_PERIOD = 60 * 1000; // 1 minute cooldown after update
+      
+      if (now - lastUpdatePromptTime.current < COOLDOWN_PERIOD) {
+        return; // Too soon after last update
+      }
+      
+      // Check if we just performed an update
+      const lastUpdateTime = localStorage.getItem('pwa_last_update');
+      if (lastUpdateTime && (now - parseInt(lastUpdateTime)) < COOLDOWN_PERIOD) {
+        return; // Just updated, don't show again
+      }
+      
       if (updateAvailableToastId.current) {
         hideToast(updateAvailableToastId.current);
       }
+      
+      lastUpdatePromptTime.current = now;
 
       const toastId = showToast({
         type: 'update',
@@ -248,8 +285,25 @@ export function useUnifiedNotifications() {
         actions: [
           {
             label: 'Update',
-            onClick: () => {
-              window.location.reload();
+            onClick: async () => {
+              localStorage.setItem('pwa_last_update', Date.now().toString());
+              
+              // Try to activate the waiting service worker
+              if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration?.waiting) {
+                  registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                  
+                  // Wait for the new service worker to take control
+                  navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    window.location.reload();
+                  }, { once: true });
+                } else {
+                  window.location.reload();
+                }
+              } else {
+                window.location.reload();
+              }
             },
             variant: 'primary'
           },
@@ -321,19 +375,25 @@ export function useUnifiedNotifications() {
       });
     }, 10000); // Every 10 seconds
 
+    // Store cleanup functions
+    cleanupFunctions.current = [
+      () => window.removeEventListener('online', handleOnline),
+      () => window.removeEventListener('offline', handleOffline),
+      () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt),
+      () => window.removeEventListener('appinstalled', handleAppInstalled),
+      () => clearInterval(interval),
+      () => {
+        if ('connection' in navigator) {
+          (navigator as any).connection?.removeEventListener('change', handleConnectionChange);
+        }
+      }
+    ];
+    
     // Cleanup
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
-      clearInterval(interval);
-      
-      if ('connection' in navigator) {
-        (navigator as any).connection?.removeEventListener('change', handleConnectionChange);
-      }
+      cleanupFunctions.current.forEach(cleanup => cleanup());
     };
-  }, [showToast, hideToast, networkInfo.quality]);
+  }, [showToast, hideToast]); // Removed networkInfo.quality to prevent re-renders
 
   // Manual trigger functions for testing
   const testConnectionOffline = () => {

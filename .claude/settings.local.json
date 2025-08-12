@@ -28,7 +28,9 @@
       "Bash(git fetch:*)",
       "Bash(git log:*)",
       "Bash(clear)",
-      "Bash(npx lighthouse:*)"
+      "Bash(npx lighthouse:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)"
     ],
     "deny": []
   }

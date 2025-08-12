@@ -38,15 +38,14 @@ async function generateSplashScreens() {
       <svg width="${size.width}" height="${size.height}" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@800&display=swap');
             .title { 
-              font-family: 'Manrope', sans-serif; 
+              font-family: 'Arial', sans-serif; 
               font-weight: 800;
               font-size: ${size.width / 10}px;
               letter-spacing: -0.02em;
             }
             .subtitle { 
-              font-family: 'Noto Sans JP', sans-serif; 
+              font-family: 'Arial', sans-serif; 
               font-weight: 500;
               font-size: ${size.width / 20}px;
             }
@@ -58,15 +57,18 @@ async function generateSplashScreens() {
         
         <!-- Content centered -->
         <g transform="translate(${size.width / 2}, ${size.height / 2})">
-          <!-- Doshi image -->
-          <image 
-            href="data:image/png;base64,${doshiBuffer.toString('base64')}" 
-            x="${-size.width / 6}" 
-            y="${-size.height / 4}" 
-            width="${size.width / 3}" 
-            height="${size.width / 3}"
-            preserveAspectRatio="xMidYMid meet"
-          />
+          <!-- Logo circle -->
+          <circle cx="0" cy="${-size.height / 8}" r="${size.width / 8}" fill="rgba(255,255,255,0.2)"/>
+          
+          <!-- Logo text as placeholder -->
+          <text 
+            x="0" 
+            y="${-size.height / 8}" 
+            text-anchor="middle" 
+            fill="white" 
+            font-size="${size.width / 12}"
+            font-weight="bold"
+          >道師</text>
           
           <!-- Title -->
           <text 

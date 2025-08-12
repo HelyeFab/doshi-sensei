@@ -8,7 +8,8 @@
 if (typeof workbox !== 'undefined') {
   // Configure Workbox
   workbox.core.setCacheNameDetails({ prefix: 'doshi-sensei' });
-  workbox.core.skipWaiting();
+  // Removed skipWaiting to prevent aggressive updates
+  // workbox.core.skipWaiting();
   workbox.core.clientsClaim();
 
   // Precaching (will be injected by next-pwa)

@@ -8,6 +8,8 @@ import { NotificationServiceProvider } from "@/contexts/NotificationServiceConte
 import { ToastProvider } from "@/components/ui/Toast";
 import { EnhancedToastProvider } from "@/components/ui/EnhancedToast";
 import { UnifiedNotificationProvider } from "@/components/UnifiedNotificationProvider";
+import { PWAErrorBoundary } from "@/components/PWAErrorBoundary";
+import { IOSInstallGuide } from "@/components/IOSInstallGuide";
 import { EnvProvider } from "@/components/EnvProvider";
 import MobileMenu from "@/components/MobileMenu";
 import DesktopNavMenu from "@/components/DesktopNavMenu";
@@ -197,8 +199,9 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5, // Changed from 1 to allow zoom for accessibility
+  minimumScale: 1,
+  userScalable: true, // Changed to true for accessibility
   viewportFit: 'cover',
   themeColor: '#8a5cf6', // Match splash screen background color hsl(271, 81%, 56%)
 };
@@ -305,7 +308,10 @@ export default function RootLayout({
                                 <div className="min-h-screen bg-background text-foreground">
                                 <FastRefreshLogger />
                                 {process.env.NODE_ENV === 'development' && <PersistentLogger />}
-                                <UnifiedNotificationProvider />
+                                <PWAErrorBoundary>
+                                  <UnifiedNotificationProvider />
+                                </PWAErrorBoundary>
+                                <IOSInstallGuide />
                                 <LazyInitializers />
                                 <NavigationErrorBoundary>
                                   <div className="mobile-nav-padding">

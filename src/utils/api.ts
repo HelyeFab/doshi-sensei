@@ -598,3 +598,4 @@ export async function searchJishoByPartOfSpeech(
     return [];
   }
 }
+// Force rebuild Tue Aug 12 03:55:09 PM CEST 2025

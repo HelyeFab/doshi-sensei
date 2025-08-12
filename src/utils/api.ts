@@ -15,6 +15,12 @@ import { batchSearchTatoebaExamples } from './tatoebaSearch';
 
 // WaniKani API initialization - primary source
 const initWanikaniApi = () => {
+  // Check for NEXT_PUBLIC environment variable first (most common)
+  if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN) {
+    setWanikaniApiToken(process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN);
+    return;
+  }
+
   // Check for server-side environment variables
   if (typeof process !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
     setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
@@ -30,12 +36,6 @@ const initWanikaniApi = () => {
   // Check for Next.js exposed environment variables
   if (typeof window !== 'undefined' && (window as any).ENV?.WANIKANI_API_TOKEN) {
     setWanikaniApiToken((window as any).ENV.WANIKANI_API_TOKEN);
-    return;
-  }
-
-  // Check for Next.js config environment variables
-  if (typeof window !== 'undefined' && process.env.WANIKANI_API_TOKEN) {
-    setWanikaniApiToken(process.env.WANIKANI_API_TOKEN);
     return;
   }
 
@@ -188,13 +188,47 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
       return resultsWithExamples;
     }
 
+    // Fallback to local JMDict search if WaniKani has no results
+    try {
+      const { searchJMdictWords } = await import('./jmdictLocalSearch');
+      const jmdictResults = await searchJMdictWords(query, limit);
+      
+      if (jmdictResults.length > 0) {
+        // Convert JMDict results to our format
+        const convertedResults: JapaneseWord[] = jmdictResults.map((result, index) => ({
+          id: `jmdict-${result.word}-${index}`,
+          kanji: result.word,
+          kana: result.reading,
+          romaji: result.romaji || '',
+          meaning: result.meanings.join(', '),
+          type: result.type as any || 'other',
+          jlpt: result.jlpt as any || 'N5',
+          tags: [],
+          frequency: result.frequency,
+          exampleSentences: []
+        }));
+        
+        // Add Tatoeba example sentences
+        const wordsToSearch = convertedResults.map(word => word.kanji || word.kana);
+        const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
+        
+        const resultsWithExamples = convertedResults.map(word => ({
+          ...word,
+          exampleSentences: examplesMap.get(word.kanji || word.kana) || []
+        }));
+        
+        return resultsWithExamples;
+      }
+    } catch (jmdictError) {
+      console.warn('JMDict local search failed:', jmdictError);
+    }
 
     // For development, provide mock data when APIs fail
     if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
       return getMockVocabularyData(query);
     }
 
-    // Fallback to Jisho only if WaniKani has no results (production only)
+    // Final fallback to Jisho API if other sources fail (production only)
     try {
       const jishoResults = await searchJisho(query, 1);
 

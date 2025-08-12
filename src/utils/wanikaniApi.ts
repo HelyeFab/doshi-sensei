@@ -300,6 +300,7 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       if (!wanikaniAxios.defaults.headers.common['Authorization']) {
         console.error('[WaniKani] Failed to set token even after reinitialization');
         return [];
+      }
     }
 
 
@@ -319,6 +320,10 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       '41,42,43,44,45', '46,47,48,49,50', '51,52,53,54,55', '56,57,58,59,60'
     ];
 
+    // Log the API request details
+    console.log('[WaniKani] Making API requests with token:', 
+      wanikaniAxios.defaults.headers.common['Authorization']?.toString().substring(0, 20) + '...');
+    
     // Make all API calls in parallel for speed
     const promises = levelRanges.map(levels =>
       wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
@@ -329,7 +334,12 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
           limit: 1000
         }
       }).catch(error => {
-        console.warn(`Error fetching vocabulary for levels ${levels}:`, error);
+        console.error(`[WaniKani] Error fetching vocabulary for levels ${levels}:`, {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+          headers: error.response?.headers
+        });
         return null;
       })
     );

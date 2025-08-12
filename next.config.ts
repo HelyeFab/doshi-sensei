@@ -5,7 +5,7 @@ const pwaConfig = withPWA({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
-  skipWaiting: true,
+  skipWaiting: false, // Changed to false to prevent aggressive updates
   reloadOnOnline: false,
   // Configure for local Workbox bundling
   mode: 'production',
@@ -218,7 +218,7 @@ const nextConfig: NextConfig = {
     
     
     // Reduce file watching load in development
-    if (dev && !isServer) {
+    if (dev) {
       config.watchOptions = {
         ignored: [
           '**/.git/**',
@@ -244,20 +244,22 @@ const nextConfig: NextConfig = {
           '**/scripts/**',          // Script files
           '**/.claude/**',          // Claude artifacts
           '**/.kiro/**',            // Kiro artifacts
-          // Windows system files
-          'C:/DumpStack.log.tmp',
-          'C:/hiberfil.sys',
-          'C:/pagefile.sys',
-          'C:/swapfile.sys',
-          'C:/*.sys',              // All system files
-          'C:/*.log',              // System log files
-          'C:/*.tmp',              // Temporary files at root
-          'C:/System Volume Information/**',
-          'C:/$Recycle.Bin/**',
-          'C:/Windows/**',         // Windows directory
-          'C:/Program Files/**',   // Program Files
-          'C:/Program Files (x86)/**',
-          'C:/ProgramData/**',
+          // Windows system files - using patterns that work cross-platform
+          '**/DumpStack.log.tmp',
+          '**/hiberfil.sys',
+          '**/pagefile.sys',
+          '**/swapfile.sys',
+          '**/$Recycle.Bin/**',
+          '**/System Volume Information/**',
+          '**/Windows/**',
+          '**/Program Files/**',
+          '**/Program Files (x86)/**',
+          '**/ProgramData/**',
+          // Root level system files
+          '/DumpStack.log.tmp',
+          '/hiberfil.sys',
+          '/pagefile.sys',
+          '/swapfile.sys',
         ],
       };
     }

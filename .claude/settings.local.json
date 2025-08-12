@@ -37,7 +37,8 @@
       "Bash(echo:*)",
       "Bash(identify:*)",
       "Bash(del \"C:\\Users\\esfab\\Development\\Projects\\NextProjects\\doshi-sensei\\src\\app\\icon.svg\")",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

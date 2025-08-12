@@ -8,6 +8,8 @@
     "prebuild": "npx puppeteer browsers install chrome",
     "build": "next build",
     "build:netlify": "node scripts/prepare-deploy.js && next build",
+    "clean": "node scripts/clean-build.js",
+    "clean:build": "node scripts/clean-build.js && npm run build",
     "start": "next start",
     "lint": "next lint",
     "chunk-jmdict": "node scripts/chunk-jmdict.js",

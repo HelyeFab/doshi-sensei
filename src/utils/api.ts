@@ -170,66 +170,120 @@ function generateRomaji(kana: string): string {
 // Simple search with WaniKani as primary source (pure results as requested)
 export async function searchWords(query: string, limit: number = 20): Promise<JapaneseWord[]> {
   try {
-
-    // Primary search with WaniKani - pure results
-    const wanikaniResults = await searchWanikaniVocabulary(query, limit);
-
-    if (wanikaniResults.length > 0) {
-      // Add Tatoeba example sentences to the results
-      const wordsToSearch = wanikaniResults.map(word => word.kanji || word.kana);
-      const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
-      
-      // Attach examples to each word
-      const resultsWithExamples = wanikaniResults.map(word => ({
-        ...word,
-        exampleSentences: examplesMap.get(word.kanji || word.kana) || []
-      }));
-      
-      return resultsWithExamples;
-    }
-
-    // Fallback to local JMDict search if WaniKani has no results
+    // Always try WaniKani first - they have the best curated results
+    let wanikaniResults: JapaneseWord[] = [];
     try {
-      // Try specific conjugation-focused search first
-      const { searchJMdictWords: searchPractice } = await import('./jmdictPractice');
-      const practiceResults = await searchPractice(query, limit);
+      wanikaniResults = await searchWanikaniVocabulary(query, Math.min(10, limit));
       
-      if (practiceResults.length > 0) {
-        // Add Tatoeba example sentences
-        const wordsToSearch = practiceResults.map(word => word.kanji || word.kana);
+      if (wanikaniResults.length > 0) {
+        // Add Tatoeba example sentences to WaniKani results
+        const wordsToSearch = wanikaniResults.map(word => word.kanji || word.kana);
         const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
         
-        const resultsWithExamples = practiceResults.map(word => ({
+        wanikaniResults = wanikaniResults.map(word => ({
           ...word,
           exampleSentences: examplesMap.get(word.kanji || word.kana) || []
         }));
-        
-        return resultsWithExamples;
       }
-    } catch (practiceError) {
-      console.warn('JMDict practice search failed:', practiceError);
-      
-      // Try the general JMDict search as secondary fallback
+    } catch (wanikaniError) {
+      console.warn('WaniKani search failed:', wanikaniError);
+      // Continue - we'll use other sources
+    }
+
+    // If we have enough results from WaniKani and it's a small limit, return them
+    if (wanikaniResults.length >= limit) {
+      return wanikaniResults.slice(0, limit);
+    }
+
+    // Calculate how many more results we need
+    const remainingLimit = limit - wanikaniResults.length;
+
+    // Now get additional results from JMDict to fill up the remaining slots
+    let additionalResults: JapaneseWord[] = [];
+    
+    if (remainingLimit > 0) {
       try {
-        const { searchJMdictWords } = await import('./jmdictLocalSearch');
-        const jmdictResults = await searchJMdictWords(query, limit);
+        // Try specific conjugation-focused search first
+        const { searchJMdictWords: searchPractice } = await import('./jmdictPractice');
+        const practiceResults = await searchPractice(query, remainingLimit + 10); // Get extra to filter
         
-        if (jmdictResults.length > 0) {
-          // Convert JMDict results to our format
-          const convertedResults: JapaneseWord[] = jmdictResults.map((result, index) => ({
-            id: `jmdict-${result.word}-${index}`,
-            kanji: result.word,
-            kana: result.reading,
-            romaji: result.romaji || '',
-            meaning: result.meanings.join(', '),
-            type: result.type as any || 'other',
-            jlpt: result.jlpt as any || 'N5',
-            tags: [],
-            frequency: result.frequency,
-            exampleSentences: []
-          }));
+        if (practiceResults.length > 0) {
+          // Filter out any duplicates with WaniKani results
+          const wanikaniKanji = new Set(wanikaniResults.map(w => w.kanji));
+          const uniquePracticeResults = practiceResults.filter(word => 
+            !wanikaniKanji.has(word.kanji)
+          );
           
           // Add Tatoeba example sentences
+          const wordsToSearch = uniquePracticeResults.slice(0, remainingLimit).map(word => word.kanji || word.kana);
+          const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
+          
+          additionalResults = uniquePracticeResults.slice(0, remainingLimit).map(word => ({
+            ...word,
+            exampleSentences: examplesMap.get(word.kanji || word.kana) || []
+          }));
+        }
+      } catch (practiceError) {
+        console.warn('JMDict practice search failed:', practiceError);
+        
+        // Try the general JMDict search as secondary fallback
+        try {
+          const { searchJMdictWords } = await import('./jmdictLocalSearch');
+          const jmdictResults = await searchJMdictWords(query, remainingLimit + 10);
+          
+          if (jmdictResults.length > 0) {
+            // Convert JMDict results to our format
+            const convertedResults: JapaneseWord[] = jmdictResults.map((result, index) => ({
+              id: `jmdict-${result.word}-${index}`,
+              kanji: result.word,
+              kana: result.reading,
+              romaji: result.romaji || '',
+              meaning: result.meanings.join(', '),
+              type: result.type as any || 'other',
+              jlpt: result.jlpt as any || 'N5',
+              tags: [],
+              frequency: result.frequency,
+              exampleSentences: []
+            }));
+            
+            // Filter out duplicates
+            const wanikaniKanji = new Set(wanikaniResults.map(w => w.kanji));
+            const uniqueJmdictResults = convertedResults.filter(word => 
+              !wanikaniKanji.has(word.kanji)
+            );
+            
+            // Add Tatoeba example sentences
+            const wordsToSearch = uniqueJmdictResults.slice(0, remainingLimit).map(word => word.kanji || word.kana);
+            const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
+            
+            additionalResults = uniqueJmdictResults.slice(0, remainingLimit).map(word => ({
+              ...word,
+              exampleSentences: examplesMap.get(word.kanji || word.kana) || []
+            }));
+          }
+        } catch (jmdictError) {
+          console.warn('JMDict local search also failed:', jmdictError);
+        }
+      }
+    }
+    
+    // Combine WaniKani results (first) with additional results
+    const combinedResults = [...wanikaniResults, ...additionalResults];
+
+    // If we have any combined results, return them
+    if (combinedResults.length > 0) {
+      return combinedResults.slice(0, limit);
+    }
+
+    // Final fallback to Jisho API only if we have NO results at all
+    if (combinedResults.length === 0) {
+      try {
+        const jishoResults = await searchJisho(query, 1);
+
+        if (jishoResults.data && jishoResults.data.length > 0) {
+          const convertedResults = processJishoResponse(jishoResults, limit);
+          
+          // Add Tatoeba example sentences to Jisho results too
           const wordsToSearch = convertedResults.map(word => word.kanji || word.kana);
           const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
           
@@ -240,36 +294,12 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
           
           return resultsWithExamples;
         }
-      } catch (jmdictError) {
-        console.warn('JMDict local search also failed:', jmdictError);
+      } catch (jishoError) {
+        console.warn('Jisho fallback failed:', jishoError);
       }
     }
 
-    // No mock data - we want real Japanese learning only
-
-    // Final fallback to Jisho API if other sources fail (production only)
-    try {
-      const jishoResults = await searchJisho(query, 1);
-
-      if (jishoResults.data && jishoResults.data.length > 0) {
-        const convertedResults = processJishoResponse(jishoResults, limit);
-        
-        // Add Tatoeba example sentences to Jisho results too
-        const wordsToSearch = convertedResults.map(word => word.kanji || word.kana);
-        const examplesMap = await batchSearchTatoebaExamples(wordsToSearch, 3);
-        
-        const resultsWithExamples = convertedResults.map(word => ({
-          ...word,
-          exampleSentences: examplesMap.get(word.kanji || word.kana) || []
-        }));
-        
-        return resultsWithExamples;
-      }
-    } catch (jishoError) {
-      console.warn('Jisho fallback failed:', jishoError);
-    }
-
-    return [];
+    return combinedResults;
 
   } catch (error) {
     console.error('Search failed:', error);

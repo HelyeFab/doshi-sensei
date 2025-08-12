@@ -25,11 +25,52 @@ export default function YouTubeSeriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showOnlyShadowing, setShowOnlyShadowing] = useState(false);
+  const [videoMetadata, setVideoMetadata] = useState<{ [videoId: string]: any }>({});
 
   // Load channels and their recent videos
   useEffect(() => {
     loadChannelsAndVideos();
   }, []);
+  
+  // Fetch metadata for video URLs in channels
+  useEffect(() => {
+    const fetchVideoMetadata = async () => {
+      const videoChannels = channels.filter(ch => 
+        ch.channelUrl?.includes('youtu.be') || ch.channelUrl?.includes('watch?v=')
+      );
+      
+      for (const videoChannel of videoChannels) {
+        const videoIdMatch = videoChannel.channelUrl?.match(/(?:youtu\.be\/|watch\?v=)([^&\s]+)/);
+        const videoId = videoIdMatch ? videoIdMatch[1] : '';
+        
+        if (videoId && !videoMetadata[videoId]) {
+          try {
+            const response = await fetch('/api/youtube/video-info', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: videoChannel.channelUrl })
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success) {
+                setVideoMetadata(prev => ({
+                  ...prev,
+                  [videoId]: data
+                }));
+              }
+            }
+          } catch (error) {
+            console.error('Failed to fetch video metadata:', error);
+          }
+        }
+      }
+    };
+    
+    if (channels.length > 0) {
+      fetchVideoMetadata();
+    }
+  }, [channels]);
 
   const loadChannelsAndVideos = async () => {
     try {
@@ -344,6 +385,7 @@ export default function YouTubeSeriesPage() {
                       // Extract video ID from URL
                       const videoIdMatch = videoChannel.channelUrl?.match(/(?:youtu\.be\/|watch\?v=)([^&\s]+)/);
                       const videoId = videoIdMatch ? videoIdMatch[1] : '';
+                      const metadata = videoMetadata[videoId];
                       
                       // Generate colorful gradient backgrounds (cycling through options)
                       const gradients = [
@@ -362,8 +404,8 @@ export default function YouTubeSeriesPage() {
                           {/* Thumbnail */}
                           <div className="relative aspect-video bg-black/5">
                             <ExternalImage
-                              src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
-                              alt="Video thumbnail"
+                              src={metadata?.thumbnailUrl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+                              alt={metadata?.title || "Video thumbnail"}
                               width={480}
                               height={270}
                               className="w-full h-full object-cover"
@@ -384,14 +426,25 @@ export default function YouTubeSeriesPage() {
                               </div>
                             </div>
                             
-                            {/* Tags */}
+                            {/* Tags or Channel name */}
                             <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                              {videoChannel.resourceTags?.map(tag => (
+                              {metadata?.channelTitle ? (
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-white/90 backdrop-blur-sm text-gray-800 shadow-lg">
+                                  {metadata.channelTitle}
+                                </span>
+                              ) : videoChannel.resourceTags?.map(tag => (
                                 <span key={tag} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-white/90 backdrop-blur-sm text-gray-800 shadow-lg">
                                   #{tag}
                                 </span>
                               ))}
                             </div>
+                            
+                            {/* Duration badge */}
+                            {metadata?.duration && metadata.duration > 0 && (
+                              <div className="absolute bottom-2 right-2 bg-black/90 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
+                                {formatDuration(metadata.duration)}
+                              </div>
+                            )}
                             
                             {/* Featured badge */}
                             {videoChannel.shadowingEnabled && (
@@ -407,22 +460,49 @@ export default function YouTubeSeriesPage() {
                           <div className="p-5 bg-white/80 backdrop-blur-sm space-y-4">
                             <div>
                               <h3 className="font-bold text-gray-900 text-lg line-clamp-2 mb-2">
-                                🎬 Video Content
+                                {metadata?.title || '🎬 Video Content'}
                               </h3>
-                              <p className="text-sm text-gray-600 line-clamp-2">
-                                Japanese learning video ready for practice
-                              </p>
+                              {metadata?.description ? (
+                                <p className="text-sm text-gray-600 line-clamp-2">
+                                  {metadata.description}
+                                </p>
+                              ) : (
+                                <p className="text-sm text-gray-600 line-clamp-2">
+                                  {metadata?.channelTitle ? `By ${metadata.channelTitle}` : 'Japanese learning video ready for practice'}
+                                </p>
+                              )}
                             </div>
                             
                             <div className="flex items-center gap-4 text-xs text-gray-500">
-                              <span className="flex items-center gap-1">
-                                <span>📅</span>
-                                <span>Added recently</span>
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <span>⏱️</span>
-                                <span>Ready to watch</span>
-                              </span>
+                              {metadata?.viewCount > 0 && (
+                                <span className="flex items-center gap-1">
+                                  <span>👁️</span>
+                                  <span>{metadata.viewCount > 1000000 
+                                    ? `${(metadata.viewCount / 1000000).toFixed(1)}M views`
+                                    : metadata.viewCount > 1000
+                                    ? `${(metadata.viewCount / 1000).toFixed(1)}K views`
+                                    : `${metadata.viewCount} views`
+                                  }</span>
+                                </span>
+                              )}
+                              {metadata?.publishedAt && (
+                                <span className="flex items-center gap-1">
+                                  <span>📅</span>
+                                  <span>{formatDistanceToNow(new Date(metadata.publishedAt), { addSuffix: true })}</span>
+                                </span>
+                              )}
+                              {!metadata?.publishedAt && !metadata?.viewCount && (
+                                <>
+                                  <span className="flex items-center gap-1">
+                                    <span>📅</span>
+                                    <span>Added recently</span>
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <span>⏱️</span>
+                                    <span>Ready to watch</span>
+                                  </span>
+                                </>
+                              )}
                             </div>
                             
                             {/* Action buttons */}

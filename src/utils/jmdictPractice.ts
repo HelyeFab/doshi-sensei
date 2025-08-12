@@ -268,6 +268,19 @@ export async function loadJMdictForPractice(): Promise<void> {
       
       if (converted.type === 'Ichidan' || converted.type === 'Godan' || converted.type === 'Irregular') {
         verbs.push(converted);
+        
+        // DUAL ENTRY: If this is a する verb (vs tag), also create the base noun entry
+        // This helps with searches that might look for the noun form
+        const primarySense = word.sense.find(s => s.gloss.some(g => g.lang === 'eng'));
+        if (primarySense && primarySense.partOfSpeech.includes('vs')) {
+          // Create a noun version without する
+          const nounVersion = { ...converted };
+          nounVersion.id = converted.id + '-noun';
+          nounVersion.kanji = nounVersion.kanji.replace(/する$/, '');
+          nounVersion.kana = nounVersion.kana.replace(/する$/, '');
+          // Keep it in verbs array since it's searchable as a verb
+          verbs.push(nounVersion);
+        }
       } else if (converted.type === 'i-adjective' || converted.type === 'na-adjective') {
         adjectives.push(converted);
       }
@@ -360,16 +373,40 @@ export async function searchJMdictWords(
     return inWord || inReading || inMeanings;
   });
   
-  // Sort by relevance (exact matches first)
+  // Sort by relevance with better scoring
   results.sort((a, b) => {
-    const aExact = a.kanji === searchTerm || a.kana === searchTerm;
-    const bExact = b.kanji === searchTerm || b.kana === searchTerm;
+    // Calculate relevance scores
+    let scoreA = 0;
+    let scoreB = 0;
     
-    if (aExact && !bExact) return -1;
-    if (!aExact && bExact) return 1;
+    // Exact word match gets highest priority
+    if (a.kanji === searchTerm || a.kana === searchTerm) scoreA += 1000;
+    if (b.kanji === searchTerm || b.kana === searchTerm) scoreB += 1000;
     
-    // Then by frequency
-    return (a.frequency || 0) - (b.frequency || 0);
+    // Check for primary meaning match (e.g., "to drive" as first meaning)
+    const aMeaningLower = a.meaning.toLowerCase();
+    const bMeaningLower = b.meaning.toLowerCase();
+    
+    // Exact phrase match at start of meaning
+    if (aMeaningLower.startsWith(`to ${searchLower}`)) scoreA += 500;
+    if (bMeaningLower.startsWith(`to ${searchLower}`)) scoreB += 500;
+    
+    // Exact phrase match anywhere
+    if (aMeaningLower.includes(`to ${searchLower}`)) scoreA += 300;
+    if (bMeaningLower.includes(`to ${searchLower}`)) scoreB += 300;
+    
+    // Word appears as primary meaning (before semicolon or comma)
+    const aPrimaryMeaning = aMeaningLower.split(/[;,]/)[0].trim();
+    const bPrimaryMeaning = bMeaningLower.split(/[;,]/)[0].trim();
+    if (aPrimaryMeaning.includes(searchLower)) scoreA += 200;
+    if (bPrimaryMeaning.includes(searchLower)) scoreB += 200;
+    
+    // Add frequency score (normalized to 0-100 range)
+    scoreA += Math.min(100, (a.frequency || 0) / 10);
+    scoreB += Math.min(100, (b.frequency || 0) / 10);
+    
+    // Sort by score (higher is better)
+    return scoreB - scoreA;
   });
   
   return results.slice(0, limit);

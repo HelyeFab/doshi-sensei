@@ -128,8 +128,10 @@ function mapPartOfSpeechToType(partOfSpeech: string[]): string | null {
       partOfSpeech.includes('v5k-s') || partOfSpeech.includes('v5iku')) {
     return 'Godan';
   }
+  // Include ALL する verb variations
   if (partOfSpeech.includes('vs-i') || partOfSpeech.includes('vs-s') ||
-      partOfSpeech.includes('vk') || partOfSpeech.includes('v-unspec')) {
+      partOfSpeech.includes('vs') || partOfSpeech.includes('vk') || 
+      partOfSpeech.includes('v-unspec')) {
     return 'Irregular';
   }
   
@@ -187,11 +189,18 @@ function convertToJapaneseWord(word: JMdictWord): JapaneseWord | null {
   
   // Get the most common kanji form or first available
   const kanjiForm = word.kanji.find(k => k.common) || word.kanji[0];
-  const kanjiText = kanjiForm?.text || '';
+  let kanjiText = kanjiForm?.text || '';
   
   // Get the most common kana form or first available
   const kanaForm = word.kana.find(k => k.common) || word.kana[0];
-  const kanaText = kanaForm?.text || '';
+  let kanaText = kanaForm?.text || '';
+  
+  // Special handling for する verbs (vs)
+  // If it's a verbal noun (vs), add する to make it a proper verb
+  if (primarySense.partOfSpeech.includes('vs') && !kanjiText.endsWith('する')) {
+    if (kanjiText) kanjiText += 'する';
+    if (kanaText) kanaText += 'する';
+  }
   
   // If no kanji form, use kana as the main form
   const mainForm = kanjiText || kanaText;

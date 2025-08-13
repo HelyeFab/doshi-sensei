@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import ConjugationPage from './ConjugationPage';
-import ConjugationDebugWrapper from './ConjugationDebugWrapper';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
 
@@ -26,7 +25,6 @@ export default function Page() {
     <>
       <StructuredData data={breadcrumbData} />
       <ConjugationPage />
-      <ConjugationDebugWrapper />
     </>
   );
 }

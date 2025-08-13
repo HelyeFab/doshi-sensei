@@ -22,6 +22,9 @@ import {
 import { useNotification } from "@/contexts/NotificationContext";
 import { MobileAwareContainer } from "@/components/layout/MobileAwareContainer";
 import { useSettings } from "@/contexts/SettingsContext";
+import { ConjugationLoadingAnimation } from "@/components/ui/ConjugationLoadingAnimation";
+import { WordCardSkeletonGrid } from "@/components/ui/WordCardSkeleton";
+import { VocabularyTTSButton } from "@/components/ui/TTSButton";
 
 // Structured Data for Conjugation Practice Page
 const conjugationStructuredData = {
@@ -75,6 +78,7 @@ export default function ConjugationPage() {
   const { track } = useAnalytics();
   const [words, setWords] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchingMore, setFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -114,25 +118,56 @@ export default function ConjugationPage() {
     try {
       setLoading(true);
       setError(null);
-      const searchResults = await searchWords(searchTerm, 50);
-      setWords(searchResults);
-
-      // Track word search
-      track("word_search", {
-        searchTerm,
-        resultsCount: searchResults.length,
-        source: "conjugation_practice",
-      });
-      console.log("📊 [Analytics] Word search tracked:", {
-        term: searchTerm,
-        results: searchResults.length,
-        source: "conjugation_practice",
-      });
+      
+      // Progressive loading strategy:
+      // 1. Load cached/local results first (instant)
+      // 2. Show them immediately for instant feedback
+      // 3. Fetch API results in background
+      // 4. Merge when ready
+      
+      // Start with cached results for instant feedback
+      const cachedWords = await getCachedFilteredWords(searchTerm);
+      if (cachedWords.length > 0) {
+        setWords(cachedWords);
+        setLoading(false); // Remove loading state once we have some results
+        setFetchingMore(true); // But show we're fetching more
+      }
+      
+      // Then fetch fresh results from API
+      try {
+        const searchResults = await searchWords(searchTerm, 50);
+        
+        // Merge results intelligently (API results first, then cached)
+        const mergedResults = [...searchResults];
+        cachedWords.forEach(cached => {
+          if (!mergedResults.find(r => r.id === cached.id)) {
+            mergedResults.push(cached);
+          }
+        });
+        
+        setWords(mergedResults);
+        
+        // Track word search
+        track("word_search", {
+          searchTerm,
+          resultsCount: mergedResults.length,
+          source: "conjugation_practice",
+        });
+      } catch (apiError) {
+        // If API fails but we have cached results, that's fine
+        console.log("API search failed, using cached results:", apiError);
+      }
+      
+      setFetchingMore(false);
     } catch (err) {
-      setError(strings.errors.networkError);
+      // If we already have cached results, don't show error
+      if (words.length === 0) {
+        setError(strings.errors.networkError);
+      }
       console.error("Error searching words:", err);
     } finally {
       setLoading(false);
+      setFetchingMore(false);
     }
   };
 
@@ -201,6 +236,7 @@ export default function ConjugationPage() {
             <WordSelector
               words={filteredWords}
               loading={loading}
+              fetchingMore={fetchingMore}
               error={error}
               searchTerm={searchTerm}
               wordTypeFilter={wordTypeFilter}
@@ -222,6 +258,7 @@ export default function ConjugationPage() {
 interface WordSelectorProps {
   words: JapaneseWord[];
   loading: boolean;
+  fetchingMore?: boolean;
   error: string | null;
   searchTerm: string;
   wordTypeFilter: "all" | "verbs" | "adjectives";
@@ -236,6 +273,7 @@ interface WordSelectorProps {
 function WordSelector({
   words,
   loading,
+  fetchingMore = false,
   error,
   searchTerm,
   wordTypeFilter,
@@ -251,11 +289,19 @@ function WordSelector({
     onSearch();
   };
 
+  const getFilterLabel = (filter: "all" | "verbs" | "adjectives") => {
+    switch(filter) {
+      case "all": return "All Types";
+      case "verbs": return "Verbs Only";
+      case "adjectives": return "Adjectives Only";
+    }
+  };
+
   return (
     <div>
       {/* Search */}
-      <form onSubmit={handleSubmit} className="mb-6">
-        <div className="flex gap-3">
+      <form onSubmit={handleSubmit} className="mb-4">
+        <div className="flex gap-2">
           <input
             type="text"
             value={searchTerm}
@@ -263,6 +309,7 @@ function WordSelector({
             placeholder={strings.vocab.searchPlaceholder}
             className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
+          
           <button
             type="submit"
             className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center justify-center"
@@ -282,8 +329,52 @@ function WordSelector({
         </div>
       </form>
 
-      {/* Word Type Filter */}
-      <div className="mb-6">
+      {/* Filter Dropdown - Mobile Only */}
+      <div className="md:hidden mb-6">
+        <details className="group" id="filter-dropdown">
+          <summary className="w-full px-4 py-3 bg-background border border-input rounded-lg hover:bg-muted transition-colors flex items-center justify-between cursor-pointer list-none">
+            <span className="text-foreground">
+              Filter: {getFilterLabel(wordTypeFilter)}
+            </span>
+            <svg
+              className="w-5 h-5 text-muted-foreground transition-transform group-open:rotate-180"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </summary>
+          <div className="mt-2 p-3 bg-muted/30 rounded-lg border border-border/50">
+            <div className="space-y-2">
+              {(["all", "verbs", "adjectives"] as const).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => {
+                    onWordTypeFilterChange(filter);
+                    // Close the details dropdown
+                    const dropdown = document.getElementById('filter-dropdown') as HTMLDetailsElement;
+                    if (dropdown) {
+                      dropdown.open = false;
+                    }
+                  }}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors text-left ${
+                    wordTypeFilter === filter
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-input hover:bg-muted"
+                  }`}
+                >
+                  {getFilterLabel(filter)}
+                </button>
+              ))}
+            </div>
+          </div>
+        </details>
+      </div>
+
+      {/* Word Type Filter - Desktop Only */}
+      <div className="hidden md:block mb-6">
         <div className="text-sm text-muted-foreground mb-3">
           Filter by Word Type:
         </div>
@@ -298,11 +389,7 @@ function WordSelector({
                   : "bg-background text-foreground border-input hover:bg-muted"
               }`}
             >
-              {filter === "all"
-                ? "All Types"
-                : filter === "verbs"
-                ? "Verbs Only"
-                : "Adjectives Only"}
+              {getFilterLabel(filter)}
             </button>
           ))}
         </div>
@@ -310,10 +397,7 @@ function WordSelector({
 
       {/* Loading */}
       {loading && (
-        <div className="text-center py-12">
-          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{strings.common.loading}</p>
-        </div>
+        <ConjugationLoadingAnimation isSearching={true} />
       )}
 
       {/* Error */}
@@ -332,17 +416,33 @@ function WordSelector({
       {/* Results */}
       {!loading && !error && (
         <div>
-          <div className="text-sm text-muted-foreground mb-4">
-            Found {words.length}{" "}
-            {wordTypeFilter === "all" ? "words" : wordTypeFilter}
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-sm text-muted-foreground">
+              Found {words.length}{" "}
+              {wordTypeFilter === "all" ? "words" : wordTypeFilter}
+            </div>
+            {fetchingMore && (
+              <div className="flex items-center gap-2 text-sm text-primary">
+                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                <span>Finding more results...</span>
+              </div>
+            )}
           </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {words.map((word) => (
               <WordCard key={word.id} word={word} onSelect={onSelectWord} />
             ))}
           </div>
 
-          {words.length === 0 && (
+          {/* Show skeleton loaders while fetching more */}
+          {fetchingMore && words.length > 0 && (
+            <div className="mt-4">
+              <WordCardSkeletonGrid count={3} />
+            </div>
+          )}
+
+          {words.length === 0 && !fetchingMore && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">{strings.vocab.noResults}</p>
             </div>
@@ -738,7 +838,7 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
   const conjugations = ConjugationEngine.conjugate(word);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
       {/* Header with proper spacing for virtual companion */}
       <header className="px-4 pt-24 pb-4 md:pt-24">
         <div className="flex items-center gap-3">
@@ -771,36 +871,46 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 pb-32 md:pb-8">
-        {/* Word Header */}
-        <div className="bg-card border border-border rounded-lg p-6 mb-6">
+        {/* Word Header - Enhanced with colors and TTS */}
+        <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 border border-primary/20 rounded-xl p-6 mb-6 shadow-lg">
           <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2 className="text-3xl japanese-text font-bold text-foreground mb-2">
-                {word.kanji}
-              </h2>
-              <div className="text-xl japanese-text text-muted-foreground mb-1">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-3xl japanese-text font-bold text-primary">
+                  {word.kanji}
+                </h2>
+                <VocabularyTTSButton 
+                  word={word.kanji}
+                  kana={word.kana}
+                  size="lg"
+                  variant="pill"
+                />
+              </div>
+              <div className="text-xl japanese-text text-primary/80 mb-1">
                 {word.kana}
               </div>
-              <div className="text-muted-foreground">{word.romaji}</div>
+              <div className="text-muted-foreground font-medium">{word.romaji}</div>
             </div>
             <div className="text-right">
-              <div className="text-sm text-muted-foreground mb-1">
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-accent/20 text-accent-foreground mb-2">
                 {word.type}
-              </div>
-              <div className="text-sm text-muted-foreground">{word.jlpt}</div>
+              </span>
+              <div className="text-sm font-medium text-secondary">{word.jlpt}</div>
             </div>
           </div>
-          <div className="text-lg">{word.meaning}</div>
+          <div className="text-lg font-medium text-foreground bg-background/50 rounded-lg px-4 py-2">
+            {word.meaning}
+          </div>
         </div>
 
-        {/* Rules Toggle */}
-        <div className="mb-6">
+        {/* Rules Toggle - Enhanced */}
+        <div className="mb-6 flex justify-center">
           <button
             onClick={() => setShowRules(!showRules)}
-            className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 hover:from-primary/30 hover:to-accent/30 transition-all duration-200 border border-primary/30"
           >
             <svg
-              className={`w-4 h-4 transition-transform ${
+              className={`w-4 h-4 transition-transform text-primary ${
                 showRules ? "rotate-90" : ""
               }`}
               fill="none"
@@ -814,7 +924,9 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
                 d="M9 5l7 7-7 7"
               />
             </svg>
-            <span>{showRules ? "Hide" : "Show"} conjugation rules</span>
+            <span className="font-medium text-primary">
+              {showRules ? "📖 Hide" : "📚 Show"} conjugation rules
+            </span>
           </button>
         </div>
 
@@ -1010,18 +1122,22 @@ function ConjugationSection({
 
   return (
     <div
-      className={`rounded-lg p-6 border-2 transition-all duration-200 hover:shadow-md ${getCategoryClasses()}`}
+      className={`rounded-xl p-6 border-2 transition-all duration-200 hover:shadow-xl hover:scale-[1.01] ${getCategoryClasses()}`}
     >
       <div className="flex items-center gap-3 mb-4">
         <div
-          className={`w-4 h-4 rounded-full ${
-            category === 'tense' ? 'bg-primary' : 
-            category === 'forms' ? 'bg-accent' : 
-            category === 'additional' ? 'bg-secondary' : 'bg-muted'
+          className={`w-2 h-8 rounded-full ${
+            category === 'tense' ? 'bg-gradient-to-b from-primary to-primary/60' : 
+            category === 'forms' ? 'bg-gradient-to-b from-accent to-accent/60' : 
+            category === 'additional' ? 'bg-gradient-to-b from-secondary to-secondary/60' : 'bg-muted'
           }`}
         />
-        <h3 className="text-lg font-semibold text-foreground">
-          {title}
+        <h3 className={`text-lg font-bold ${
+          category === 'tense' ? 'text-primary' : 
+          category === 'forms' ? 'text-accent' : 
+          category === 'additional' ? 'text-secondary' : 'text-foreground'
+        }`}>
+          ✨ {title}
         </h3>
       </div>
 
@@ -1031,16 +1147,24 @@ function ConjugationSection({
             form.value && (
               <div
                 key={form.label}
-                className="flex justify-between items-baseline p-3 rounded-lg bg-white/50 dark:bg-black/20"
+                className="group flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-white/60 to-white/40 dark:from-black/30 dark:to-black/20 hover:from-white/80 hover:to-white/60 dark:hover:from-black/40 dark:hover:to-black/30 transition-all duration-200 border border-transparent hover:border-primary/20"
               >
                 <span
-                  className="text-sm font-medium text-muted-foreground"
+                  className="text-sm font-medium text-muted-foreground min-w-[120px]"
                 >
                   {form.label}:
                 </span>
-                <span className="text-lg japanese-text font-medium text-foreground ml-4">
-                  {form.value}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg japanese-text font-medium text-foreground">
+                    {form.value}
+                  </span>
+                  <VocabularyTTSButton 
+                    word={form.value}
+                    size="sm"
+                    variant="minimal"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
               </div>
             )
         )}

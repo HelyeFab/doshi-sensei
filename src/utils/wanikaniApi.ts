@@ -250,8 +250,8 @@ function convertWanikaniSubject(subject: WanikaniSubject): JapaneseWord | null {
 // Fetch vocabulary from WaniKani API
 export async function fetchWanikaniVocabulary(limit: number = 20): Promise<JapaneseWord[]> {
   try {
-    // Check if API token is set
-    if (!wanikaniAxios.defaults.headers.common['Authorization']) {
+    // Check if API token is set (only needed when not using proxy)
+    if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
       console.warn('WaniKani API token not set');
       return [];
     }
@@ -313,8 +313,8 @@ const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 // Optimized search vocabulary in WaniKani API with caching
 export async function searchWanikaniVocabulary(query: string, limit: number = 50): Promise<JapaneseWord[]> {
   try {
-    // Check if API token is set
-    if (!wanikaniAxios.defaults.headers.common['Authorization']) {
+    // Check if API token is set (only needed when not using proxy)
+    if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
       console.error('[WaniKani] API token not set in Authorization header');
       // Try to reinitialize with fallback token
       const token = process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN || 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
@@ -346,8 +346,12 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
     ];
 
     // Log the API request details
-    console.log('[WaniKani] Making API requests with token:', 
-      wanikaniAxios.defaults.headers.common['Authorization']?.toString().substring(0, 20) + '...');
+    if (!PROXY_BASE) {
+      console.log('[WaniKani] Making API requests with token:', 
+        wanikaniAxios.defaults.headers.common['Authorization']?.toString().substring(0, 20) + '...');
+    } else {
+      console.log('[WaniKani] Making API requests via proxy');
+    }
     
     // Make all API calls in parallel for speed
     const endpoint = PROXY_BASE ? '' : '/subjects';

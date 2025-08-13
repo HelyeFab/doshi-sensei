@@ -287,6 +287,12 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
+  // CRITICAL: Skip ALL Next.js assets completely - let browser/CDN handle them
+  if (url.pathname.includes('/_next/') || 
+      url.pathname.includes('_next/')) {
+    return; // Bypass service worker entirely for Next.js assets
+  }
+  
   // Skip service worker for RSC requests - MULTIPLE CHECKS
   if (url.searchParams.has('_rsc') || 
       request.headers.get('RSC') === '1' ||
@@ -295,10 +301,10 @@ self.addEventListener('fetch', (event) => {
     return; // Let the browser handle it directly
   }
   
-  // Skip service worker for Next.js HMR in development
-  if (url.pathname.includes('_next/webpack-hmr') || 
-      url.pathname.includes('__nextjs') ||
-      url.pathname.includes('_next/static/development')) {
+  // Skip service worker for build manifests and webpack
+  if (url.pathname.includes('webpack') || 
+      url.pathname.includes('buildManifest') ||
+      url.pathname.includes('ssgManifest')) {
     return;
   }
   

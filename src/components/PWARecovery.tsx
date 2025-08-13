@@ -1,12 +1,30 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { setupChunkErrorHandler } from '@/utils/chunkErrorHandler';
 
 export default function PWARecovery() {
   const [showRecovery, setShowRecovery] = useState(false);
   const [recovering, setRecovering] = useState(false);
+  const [errorType, setErrorType] = useState<'stuck' | 'chunk'>('stuck');
 
   useEffect(() => {
+    // Setup chunk error handler for Netlify deployments
+    setupChunkErrorHandler();
+    
+    // Listen for chunk loading errors
+    const handleChunkError = (event: ErrorEvent) => {
+      const error = event.error;
+      if (error?.name === 'ChunkLoadError' || 
+          error?.message?.includes('Loading chunk') ||
+          error?.message?.includes('Failed to fetch dynamically imported module')) {
+        setErrorType('chunk');
+        setShowRecovery(true);
+      }
+    };
+    
+    window.addEventListener('error', handleChunkError);
+    
     // Check if app might be stuck
     const checkStuckState = () => {
       const stuckTime = localStorage.getItem('pwa_stuck_time');
@@ -14,6 +32,7 @@ export default function PWARecovery() {
         const timeSinceStuck = Date.now() - parseInt(stuckTime);
         // Show recovery after 10 seconds of being stuck
         if (timeSinceStuck > 10000) {
+          setErrorType('stuck');
           setShowRecovery(true);
         }
       }
@@ -23,7 +42,10 @@ export default function PWARecovery() {
     checkStuckState();
     const interval = setInterval(checkStuckState, 2000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('error', handleChunkError);
+    };
   }, []);
 
   const handleRecovery = async () => {
@@ -68,10 +90,12 @@ export default function PWARecovery() {
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[10001] p-4">
       <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center">
         <h2 className="text-xl font-bold mb-4 text-gray-900">
-          App Recovery Mode
+          {errorType === 'chunk' ? 'Application Update Available' : 'App Recovery Mode'}
         </h2>
         <p className="text-gray-600 mb-6">
-          It looks like the app is having trouble loading. Would you like to clear the cache and restart?
+          {errorType === 'chunk' 
+            ? 'A new version of the app is available. Clear the cache to load the latest updates.'
+            : 'It looks like the app is having trouble loading. Would you like to clear the cache and restart?'}
         </p>
         <div className="space-y-3">
           <button

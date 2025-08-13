@@ -201,13 +201,12 @@ const nextConfig: NextConfig = {
               warnings: false,
             },
             mangle: {
-              safari10: true, // Workaround Safari 10/11 bugs
+              safari10: false, // Disable Safari 10 workarounds for Chrome compatibility
             },
             format: {
               comments: false, // Remove all comments
               ascii_only: true, // Escape Unicode characters
             },
-            safari10: true,
           },
           extractComments: false,
           parallel: true,
@@ -278,30 +277,41 @@ const nextConfig: NextConfig = {
       type: 'webassembly/async',
     });
     
-    // Optimize chunking for production with stable chunk names
+    // Optimize chunking for production with Netlify-compatible settings
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
         minSize: 20000,
-        maxSize: 244000,
+        maxSize: 200000, // Reduced from 244000 for better Chrome compatibility
         cacheGroups: {
+          // Framework chunks - keep stable
           framework: {
             test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
             name: 'framework',
             priority: 40,
             enforce: true,
+            reuseExistingChunk: true,
           },
+          // Common libraries used across the app
           lib: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'lib',
+            name(module, chunks, cacheGroupKey) {
+              // Create stable names for vendor chunks
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)?.[1];
+              return `lib-${packageName?.replace('@', '').replace('/', '-') || 'vendor'}`;
+            },
             priority: 30,
             minChunks: 1,
+            reuseExistingChunk: true,
           },
+          // Shared code between pages
           commons: {
             name: 'commons',
             minChunks: 2,
             priority: 20,
+            reuseExistingChunk: true,
           },
+          // Default fallback
           default: {
             minChunks: 2,
             priority: -20,
@@ -313,6 +323,13 @@ const nextConfig: NextConfig = {
       // Use deterministic module ids for stable chunks
       config.optimization.moduleIds = 'deterministic';
       config.optimization.runtimeChunk = 'single';
+      
+      // Ensure proper chunk loading for Chrome
+      config.output = {
+        ...config.output,
+        crossOriginLoading: 'anonymous', // Help with CORS issues
+        chunkLoadTimeout: 60000, // Increase timeout for slow connections
+      };
     }
     
     return config;

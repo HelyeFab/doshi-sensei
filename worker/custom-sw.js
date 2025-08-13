@@ -198,15 +198,26 @@ if (typeof workbox !== 'undefined') {
     })
   );
 
-  // JavaScript files - cache with validation
+  // JavaScript files - EXCLUDE Next.js chunks to prevent conflicts with Netlify's immutable caching
+  // Only cache non-Next.js JavaScript files
   registerRoute(
-    ({ url }) => url.pathname.match(/\.js$/i) && !url.pathname.includes('sw.js'),
-    new StaleWhileRevalidate({
-      cacheName: 'static-js',
+    ({ url }) => {
+      // Skip Next.js static chunks entirely - let Netlify handle them
+      if (url.pathname.includes('/_next/static/chunks/') || 
+          url.pathname.includes('/_next/static/') ||
+          url.pathname.match(/\/_next\/static\/[\w-]+\//)) {
+        return false;
+      }
+      // Only cache other JS files (like third-party scripts)
+      return url.pathname.match(/\.js$/i) && !url.pathname.includes('sw.js');
+    },
+    new NetworkFirst({
+      cacheName: 'non-next-js',
+      networkTimeoutSeconds: 3,
       plugins: [
         new ExpirationPlugin({
-          maxEntries: 50,
-          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+          maxEntries: 20,
+          maxAgeSeconds: 60 * 60 // 1 hour only for non-Next.js scripts
         })
       ]
     })

@@ -27,6 +27,28 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
 
+# Critical: Next.js chunk headers to prevent Chrome caching issues
+[[headers]]
+  for = "/_next/static/chunks/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "/_next/static/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Build manifest should not be cached long
+[[headers]]
+  for = "/_next/static/*/pages/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 # PWA Headers
 [[headers]]
   for = "/sw.js"

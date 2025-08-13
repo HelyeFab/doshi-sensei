@@ -7,9 +7,6 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Image optimization plugin for better performance
-[[plugins]]
-  package = "@netlify/plugin-image-optim"
 
 # Form handling configuration
 # Note: Netlify doesn't support forms configuration in netlify.toml

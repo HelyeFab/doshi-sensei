@@ -66,6 +66,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   /* config options here */
+  reactStrictMode: false, // Disable strict mode to prevent double rendering
   env: {
     WANIKANI_API_TOKEN: process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN || process.env.WANIKANI_API_TOKEN,
     // Make Firebase env vars available to server-side code (remove NEXT_PUBLIC_ fallbacks)
@@ -101,6 +102,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Optimize production builds
+  productionBrowserSourceMaps: false,
+  poweredByHeader: false,
+  compress: true,
   // Add async rewrites to handle YouTube player requests
   async rewrites() {
     return [
@@ -110,10 +115,12 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Compiler options - console removal handled by TerserPlugin in webpack config
-  // compiler: {
-  //   removeConsole: true, // Handled by TerserPlugin instead
-  // },
+  // Compiler options - remove console in production
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error'], // Keep console.error for critical errors
+    } : false,
+  },
   // Enable server-side functionality for API routes
   images: {
     unoptimized: true,
@@ -136,8 +143,8 @@ const nextConfig: NextConfig = {
       };
     }
     
-    // Only optimize in production, not during build
-    if (!dev && !isServer) {
+    // Only optimize in production
+    if (!dev) {
       const TerserPlugin = require('terser-webpack-plugin');
       
       config.optimization = config.optimization || {};
@@ -149,21 +156,59 @@ const nextConfig: NextConfig = {
         (plugin) => !(plugin instanceof TerserPlugin || plugin.constructor.name === 'TerserPlugin')
       );
       
-      // Add our TerserPlugin with console removal for production only
+      // Add our TerserPlugin with aggressive console removal
       config.optimization.minimizer.push(
         new TerserPlugin({
           terserOptions: {
             compress: {
-              drop_console: true, // Remove console statements
+              drop_console: true, // Remove ALL console statements
               drop_debugger: true, // Remove debugger statements
-              pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+              pure_funcs: [
+                'console.log', 
+                'console.info', 
+                'console.debug', 
+                'console.warn',
+                'console.error',
+                'console.trace',
+                'console.group',
+                'console.groupEnd',
+                'console.groupCollapsed',
+                'console.table',
+                'console.time',
+                'console.timeEnd',
+                'console.assert',
+                'console.count',
+                'console.countReset',
+                'console.dir',
+                'console.dirxml',
+                'console.profile',
+                'console.profileEnd',
+                'console.timeLog',
+                'console.timeStamp',
+                'console.clear'
+              ],
+              passes: 2, // Multiple passes for better optimization
+              dead_code: true,
+              evaluate: true,
+              if_return: true,
+              inline: true,
+              join_vars: true,
+              reduce_vars: true,
+              loops: true,
+              toplevel: false,
+              warnings: false,
             },
-            mangle: true,
+            mangle: {
+              safari10: true, // Workaround Safari 10/11 bugs
+            },
             format: {
-              comments: false, // Remove comments
+              comments: false, // Remove all comments
+              ascii_only: true, // Escape Unicode characters
             },
+            safari10: true,
           },
           extractComments: false,
+          parallel: true,
         })
       );
     }
@@ -231,17 +276,19 @@ const nextConfig: NextConfig = {
       type: 'webassembly/async',
     });
     
-    // Ensure proper chunking
+    // Simplify chunking for production to avoid module issues
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
-          default: false,
-          vendors: false,
-          commons: {
-            name: 'commons',
-            chunks: 'all',
+          default: {
             minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
           },
         },
       };

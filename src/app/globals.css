@@ -28,6 +28,19 @@ html, body {
   }
 }
 
+@keyframes shimmer {
+  0% { 
+    transform: translateX(-100%); 
+  }
+  100% { 
+    transform: translateX(200%); 
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+}
+
 
 /* Hide all scrollbars globally while keeping scroll functionality */
 /* Webkit browsers (Chrome, Safari, Edge) */

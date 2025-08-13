@@ -1,14 +1,17 @@
 import axios from 'axios';
 import { JapaneseWord, WordType, JLPTLevel } from '@/types';
 
-// WaniKani API base URL
+// WaniKani API configuration
 const WANIKANI_API_BASE = 'https://api.wanikani.com/v2';
+
+// Determine if we should use proxy based on environment
+const isProduction = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+const PROXY_BASE = isProduction ? '/.netlify/functions/wanikani-proxy' : null;
 
 // Create a custom axios instance for WaniKani API
 const wanikaniAxios = axios.create({
-  baseURL: WANIKANI_API_BASE,
+  baseURL: PROXY_BASE || WANIKANI_API_BASE,
   headers: {
-    'Wanikani-Revision': '20170710',
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     // Add cache control headers to prevent service worker caching
@@ -20,9 +23,18 @@ const wanikaniAxios = axios.create({
 
 // Set the API token when available
 export function setWanikaniApiToken(token: string) {
-  // Always ensure we have a valid token
+  // If using proxy, we don't need to set Authorization header in browser
+  if (PROXY_BASE) {
+    if (typeof window !== 'undefined') {
+      console.log('[WaniKani] Using proxy, token handled server-side');
+    }
+    return;
+  }
+  
+  // For development or server-side, set the token
   const validToken = token || 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
   wanikaniAxios.defaults.headers.common['Authorization'] = `Bearer ${validToken}`;
+  wanikaniAxios.defaults.headers.common['Wanikani-Revision'] = '20170710';
   
   // Log for debugging
   if (typeof window !== 'undefined') {
@@ -244,8 +256,10 @@ export async function fetchWanikaniVocabulary(limit: number = 20): Promise<Japan
       return [];
     }
 
-    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
+    const endpoint = PROXY_BASE ? '' : '/subjects';
+    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>(endpoint, {
       params: {
+        ...(PROXY_BASE && { endpoint: '/subjects' }),
         types: 'vocabulary',
         hidden: false,
         levels: '1,2,3,4,5,6,7,8,9,10', // Adjust levels as needed
@@ -336,9 +350,11 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       wanikaniAxios.defaults.headers.common['Authorization']?.toString().substring(0, 20) + '...');
     
     // Make all API calls in parallel for speed
+    const endpoint = PROXY_BASE ? '' : '/subjects';
     const promises = levelRanges.map(levels =>
-      wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
+      wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>(endpoint, {
         params: {
+          ...(PROXY_BASE && { endpoint: '/subjects' }),
           types: 'vocabulary',
           hidden: false,
           levels: levels,
@@ -351,7 +367,8 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
           message: error.message,
           response: error.response?.data,
           status: error.response?.status,
-          headers: error.response?.headers
+          headers: error.response?.headers,
+          usingProxy: !!PROXY_BASE
         });
         return null;
       })
@@ -650,15 +667,17 @@ const fallbackConjugableWords: JapaneseWord[] = [
 // Get common verbs and adjectives from WaniKani
 export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
   try {
-    // Check if API token is set
-    if (!wanikaniAxios.defaults.headers.common['Authorization']) {
+    // Check if API token is set (only needed for non-proxy)
+    if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
       console.warn('WaniKani API token not set, using fallback conjugable words');
       return fallbackConjugableWords;
     }
 
     // Fetch all vocabulary
-    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
+    const endpoint = PROXY_BASE ? '' : '/subjects';
+    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>(endpoint, {
       params: {
+        ...(PROXY_BASE && { endpoint: '/subjects' }),
         types: 'vocabulary',
         hidden: false,
         levels: '1,2,3,4,5,6,7,8,9,10', // Expanded range for better variety
@@ -713,15 +732,17 @@ export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
 // Get common verbs from WaniKani (kept for backward compatibility)
 export async function getCommonVerbsFromWanikani(): Promise<JapaneseWord[]> {
   try {
-    // Check if API token is set
-    if (!wanikaniAxios.defaults.headers.common['Authorization']) {
+    // Check if API token is set (only needed for non-proxy)
+    if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
       console.warn('WaniKani API token not set');
       return [];
     }
 
     // Fetch all vocabulary
-    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
+    const endpoint = PROXY_BASE ? '' : '/subjects';
+    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>(endpoint, {
       params: {
+        ...(PROXY_BASE && { endpoint: '/subjects' }),
         types: 'vocabulary',
         hidden: false,
         levels: '1,2,3,4,5', // Lower levels for common verbs
@@ -751,8 +772,8 @@ export async function getCommonVerbsFromWanikani(): Promise<JapaneseWord[]> {
 // Get words by JLPT level from WaniKani
 export async function getWordsByJLPTLevelFromWanikani(level: JLPTLevel): Promise<JapaneseWord[]> {
   try {
-    // Check if API token is set
-    if (!wanikaniAxios.defaults.headers.common['Authorization']) {
+    // Check if API token is set (only needed for non-proxy)
+    if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
       console.warn('WaniKani API token not set');
       return [];
     }
@@ -780,8 +801,10 @@ export async function getWordsByJLPTLevelFromWanikani(level: JLPTLevel): Promise
     }
 
     // Fetch vocabulary for the specified levels
-    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>('/subjects', {
+    const endpoint = PROXY_BASE ? '' : '/subjects';
+    const response = await wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>(endpoint, {
       params: {
+        ...(PROXY_BASE && { endpoint: '/subjects' }),
         types: 'vocabulary',
         hidden: false,
         levels: wanikaniLevels,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { SmartLink } from '@/components/SmartLink';
 import Image from 'next/image';
@@ -124,12 +124,20 @@ export default function Home() {
   // Use predefined color patterns for better visual distribution
   const mobileColors = MOBILE_COLOR_PATTERN;
   const desktopColors = DESKTOP_COLOR_PATTERN;
+  
+  // Define heavy pages once to avoid recalculating
+  const HEAVY_PAGES = useMemo(() => 
+    ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'],
+    []
+  );
 
   // For mobile, override the Resources card icon to only show the flag
-  const mobileFeatureCards = FEATURE_CARDS.map(card =>
-    card.title === strings.home.featureCards.resources.title
-      ? { ...card, icon: '🎌' }
-      : card
+  const mobileFeatureCards = useMemo(() => 
+    FEATURE_CARDS.map(card =>
+      card.title === strings.home.featureCards.resources.title
+        ? { ...card, icon: '🎌' }
+        : card
+    ), [strings.home.featureCards.resources.title]
   );
 
   // Get theme colors for gradient (moderate pastel) - client-side only to prevent hydration issues
@@ -309,7 +317,7 @@ export default function Home() {
                 { title: strings.home.featureCards.hiragana.title, icon: strings.home.featureCards.hiragana.icon, href: '/practice/hiragana', description: strings.home.featureCards.hiragana.description },
                 { title: strings.home.featureCards.katakana.title, icon: strings.home.featureCards.katakana.icon, href: '/practice/katakana', description: strings.home.featureCards.katakana.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
+                const isHeavy = HEAVY_PAGES.some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -358,7 +366,7 @@ export default function Home() {
                 { title: strings.home.featureCards.vocabulary.title, icon: strings.home.featureCards.vocabulary.icon, href: '/vocabulary', description: strings.home.featureCards.vocabulary.description },
                 { title: strings.home.featureCards.conjugation.title, icon: strings.home.featureCards.conjugation.icon, href: '/practice/conjugation', description: strings.home.featureCards.conjugation.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
+                const isHeavy = HEAVY_PAGES.some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -404,7 +412,7 @@ export default function Home() {
                 { title: strings.home.featureCards.drill.title, icon: strings.home.featureCards.drill.icon, href: '/drill', description: strings.home.featureCards.drill.description },
                 { title: strings.home.featureCards.games.title, icon: strings.home.featureCards.games.icon, href: '/games', description: strings.home.featureCards.games.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
+                const isHeavy = HEAVY_PAGES.some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -452,7 +460,7 @@ export default function Home() {
                 { title: strings.home.featureCards.youtubeSeries?.title || 'YouTube Series', icon: '/flat-icons/ui/Shadowing/facebook.svg', href: '/tools/youtube-series', description: strings.home.featureCards.youtubeSeries?.description || 'Track Japanese YouTube channels and auto-import as resources' },
                 { title: 'My Videos', icon: '🎬', href: '/tools/my-videos', description: 'View your saved videos and practice history' }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
+                const isHeavy = HEAVY_PAGES.some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -497,7 +505,7 @@ export default function Home() {
                 { title: 'Leaderboard', icon: '🏆', href: '/leaderboard', description: 'View rankings and compete' },
                 { title: 'Friends', icon: '👥', href: '/friends', description: 'Connect with other learners' }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
+                const isHeavy = HEAVY_PAGES.some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">
@@ -532,7 +540,7 @@ export default function Home() {
                 { title: strings.home.featureCards.resources.title, icon: strings.home.featureCards.resources.icon, href: '/resources', description: strings.home.featureCards.resources.description },
                 { title: strings.home.featureCards.savedItems.title, icon: strings.home.featureCards.savedItems.icon, href: '/favourites', description: strings.home.featureCards.savedItems.description }
               ].map((card) => {
-                const isHeavy = ['/practice', '/vocabulary', '/drill', '/kanji-browser', '/news', '/stories', '/kanji-moods', '/achievements'].some(page => card.href.startsWith(page));
+                const isHeavy = HEAVY_PAGES.some(page => card.href.startsWith(page));
                 const LinkComp = isHeavy ? SmartLink : Link;
                 return (
                 <LinkComp key={card.href} href={card.href} className="block">

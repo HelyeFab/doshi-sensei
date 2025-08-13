@@ -14,11 +14,11 @@ export interface EnhancedToastProps {
   id: string;
   title?: string;
   description?: string;
-  type?: "success" | "error" | "warning" | "info" | "connection" | "offline" | "update";
+  type?: "success" | "error" | "warning" | "info" | "connection" | "offline" | "update" | "install";
   duration?: number;
-  style?: "toast" | "modal"; // toast = corner, modal = centered
+  style?: "toast" | "modal" | "banner-top" | "banner-bottom";
   actions?: ToastAction[];
-  persistent?: boolean; // Don't auto-dismiss if true
+  persistent?: boolean;
   onClose?: () => void;
 }
 
@@ -33,6 +33,19 @@ export function EnhancedToast({
   persistent = false,
   onClose,
 }: EnhancedToastProps) {
+  const [windowWidth, setWindowWidth] = React.useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1024
+  );
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   React.useEffect(() => {
     if (!persistent && duration > 0) {
       const timer = setTimeout(() => {
@@ -47,6 +60,7 @@ export function EnhancedToast({
       case "success":
         return <CheckCircle className="w-5 h-5" />;
       case "error":
+        return <AlertCircle className="w-5 h-5" />;
       case "offline":
         return <WifiOff className="w-5 h-5" />;
       case "warning":
@@ -55,146 +69,444 @@ export function EnhancedToast({
         return <Wifi className="w-5 h-5" />;
       case "update":
         return <RefreshCw className="w-5 h-5" />;
+      case "install":
+        return <Download className="w-5 h-5" />;
       default:
         return <Info className="w-5 h-5" />;
     }
   };
 
-  const getStyles = () => {
-    switch (type) {
-      case "success":
-      case "connection":
-        return "bg-green-600 dark:bg-green-500 text-white border-green-700 dark:border-green-400";
-      case "error":
-      case "offline":
-        return "bg-red-600 dark:bg-red-500 text-white border-red-700 dark:border-red-400";
-      case "warning":
-        return "bg-amber-600 dark:bg-amber-500 text-white border-amber-700 dark:border-amber-400";
-      case "update":
-        return "bg-blue-600 dark:bg-blue-500 text-white border-blue-700 dark:border-blue-400";
-      default:
-        return "bg-primary text-primary-foreground border-primary/20";
-    }
-  };
-
-  const getPositionStyles = () => {
-    if (style === "modal") {
-      return "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]";
-    }
-    return "fixed top-4 right-4 z-[9999]";
-  };
-
   const getAnimationProps = () => {
-    if (style === "modal") {
+    switch (style) {
+      case "modal":
+        return {
+          initial: { scale: 0.9, opacity: 0 },
+          animate: { scale: 1, opacity: 1 },
+          exit: { scale: 0.9, opacity: 0 },
+          transition: { type: 'spring' as const, damping: 25, stiffness: 300 }
+        };
+      case "banner-top":
+        return {
+          initial: { y: -100, opacity: 0 },
+          animate: { y: 0, opacity: 1 },
+          exit: { y: -100, opacity: 0 },
+          transition: { type: 'spring' as const, damping: 25, stiffness: 300 }
+        };
+      case "banner-bottom":
+        return {
+          initial: { y: 100, opacity: 0 },
+          animate: { y: 0, opacity: 1 },
+          exit: { y: 100, opacity: 0 },
+          transition: { type: 'spring' as const, damping: 25, stiffness: 300 }
+        };
+      case "toast":
+      default:
+        return {
+          initial: { x: 100, opacity: 0 },
+          animate: { x: 0, opacity: 1 },
+          exit: { x: 100, opacity: 0 },
+          transition: { type: 'spring' as const, damping: 25, stiffness: 300 }
+        };
+    }
+  };
+
+  // Completely custom inline styles to avoid any CSS conflicts
+  const getContainerStyle = (): React.CSSProperties => {
+    const baseStyle: React.CSSProperties = {
+      position: 'fixed',
+      zIndex: 9999,
+    };
+
+    switch (style) {
+      case "modal":
+        return {
+          ...baseStyle,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        };
+      case "banner-top":
+        return {
+          ...baseStyle,
+          top: 0,
+          left: 0,
+          right: 0,
+          width: '100%',
+        };
+      case "banner-bottom":
+        return {
+          ...baseStyle,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          width: '100%',
+        };
+      case "toast":
+      default:
+        return {
+          ...baseStyle,
+          top: '16px',
+          right: '16px',
+        };
+    }
+  };
+
+  const getContentStyle = (): React.CSSProperties => {
+    // Get background color based on type - using pastel theme-dependent colors
+    let backgroundColor = '#ffffff';
+    let textColor = '#000000';
+    let borderColor = 'transparent';
+    
+    switch (type) {
+      case "offline":
+      case "error":
+        // Pastel red with theme awareness
+        backgroundColor = 'hsl(var(--destructive-hue, 0) 70% 95%)'; // Light pastel red background
+        textColor = 'hsl(var(--destructive-hue, 0) 70% 30%)'; // Dark red text
+        borderColor = 'hsl(var(--destructive-hue, 0) 60% 85%)'; // Soft red border
+        break;
+      case "connection":
+      case "success":
+        // Pastel green with theme awareness
+        backgroundColor = 'hsl(142 70% 95%)'; // Light pastel green background
+        textColor = 'hsl(142 70% 25%)'; // Dark green text
+        borderColor = 'hsl(142 60% 85%)'; // Soft green border
+        break;
+      case "warning":
+        // Pastel amber with theme awareness
+        backgroundColor = 'hsl(43 90% 94%)'; // Light pastel amber background
+        textColor = 'hsl(43 90% 30%)'; // Dark amber text
+        borderColor = 'hsl(43 80% 85%)'; // Soft amber border
+        break;
+      case "update":
+        // Pastel blue with theme awareness
+        backgroundColor = 'hsl(var(--primary-hue, 221) 60% 95%)'; // Light pastel blue background
+        textColor = 'hsl(var(--primary-hue, 221) 60% 30%)'; // Dark blue text
+        borderColor = 'hsl(var(--primary-hue, 221) 50% 85%)'; // Soft blue border
+        break;
+      case "install":
+        // Pastel purple with theme awareness
+        backgroundColor = 'hsl(var(--primary-hue, 271) 60% 95%)'; // Light pastel purple background
+        textColor = 'hsl(var(--primary-hue, 271) 60% 30%)'; // Dark purple text
+        borderColor = 'hsl(var(--primary-hue, 271) 50% 85%)'; // Soft purple border
+        break;
+      default:
+        backgroundColor = 'var(--card)';
+        textColor = 'var(--card-foreground)';
+        borderColor = 'var(--border)';
+        break;
+    }
+
+    const baseStyle: React.CSSProperties = {
+      backgroundColor,
+      color: textColor,
+      border: `1px solid ${borderColor}`,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+      overflow: 'hidden',
+    };
+
+    if (style === 'modal') {
       return {
-        initial: { scale: 0.9, opacity: 0 },
-        animate: { scale: 1, opacity: 1 },
-        exit: { scale: 0.9, opacity: 0 },
-        transition: { type: 'spring', damping: 25, stiffness: 300 }
+        ...baseStyle,
+        minWidth: '320px',
+        maxWidth: '90vw',
+        borderRadius: '12px',
+        padding: '24px',
+      };
+    } else if (style === 'banner-top' || style === 'banner-bottom') {
+      // Responsive padding and height based on actual window width
+      const isMobile = windowWidth < 640;
+      const isTablet = windowWidth >= 640 && windowWidth < 1024;
+      
+      return {
+        ...baseStyle,
+        width: '100%',
+        borderRadius: 0,
+        padding: isMobile ? '14px 16px' : isTablet ? '16px 20px' : '18px 24px',
+        minHeight: isMobile ? '72px' : isTablet ? '80px' : '88px',
+        maxHeight: isMobile ? '88px' : isTablet ? '96px' : '104px',
+        display: 'flex',
+        alignItems: 'center',
+      };
+    } else {
+      return {
+        ...baseStyle,
+        minWidth: '320px',
+        maxWidth: '448px',
+        borderRadius: '12px',
+        padding: '16px',
       };
     }
+  };
+
+  const getBannerContentStyle = (): React.CSSProperties => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    maxWidth: '1024px',
+    margin: '0 auto',
+    width: '100%',
+    position: 'relative' as const,
+    paddingRight: '48px', // Space for X button
+  });
+
+  const getIconStyle = (): React.CSSProperties => {
+    const isMobile = windowWidth < 640;
+    
+    // Match icon background to notification type with subtle opacity
+    let iconBg = 'rgba(0, 0, 0, 0.05)';
+    switch (type) {
+      case "offline":
+      case "error":
+        iconBg = 'hsl(var(--destructive-hue, 0) 70% 90% / 0.5)'; // Slightly darker red
+        break;
+      case "connection":
+      case "success":
+        iconBg = 'hsl(142 70% 90% / 0.5)'; // Slightly darker green
+        break;
+      case "warning":
+        iconBg = 'hsl(43 90% 88% / 0.5)'; // Slightly darker amber
+        break;
+      case "update":
+        iconBg = 'hsl(var(--primary-hue, 221) 60% 90% / 0.5)'; // Slightly darker blue
+        break;
+      case "install":
+        iconBg = 'hsl(var(--primary-hue, 271) 60% 90% / 0.5)'; // Slightly darker purple
+        break;
+    }
+    
     return {
-      initial: { x: 100, opacity: 0 },
-      animate: { x: 0, opacity: 1 },
-      exit: { x: 100, opacity: 0 },
-      transition: { type: 'spring', damping: 25, stiffness: 300 }
+      width: isMobile ? '28px' : '32px',
+      height: isMobile ? '28px' : '32px',
+      borderRadius: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: iconBg,
+      flexShrink: 0,
     };
   };
 
-  const content = (
-    <motion.div
-      {...getAnimationProps()}
-      className={getPositionStyles()}
-    >
-      <div 
-        className={`
-          ${style === 'modal' ? 'min-w-[320px] max-w-[90vw]' : 'min-w-80 max-w-md'}
-          rounded-xl shadow-2xl border backdrop-blur-md
-          ${getStyles()}
-        `}
+  const getTextContainerStyle = (): React.CSSProperties => ({
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: 'center',
+    gap: '2px',
+    flex: 1,
+    minWidth: 0,
+  });
+
+  const getTitleStyle = (): React.CSSProperties => {
+    const isMobile = windowWidth < 640;
+    return {
+      fontSize: isMobile ? '14px' : '15px',
+      fontWeight: 600,
+      lineHeight: '1.2',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap' as const,
+    };
+  };
+
+  const getDescriptionStyle = (): React.CSSProperties => {
+    const isMobile = windowWidth < 640;
+    return {
+      fontSize: isMobile ? '12px' : '13px',
+      opacity: 0.85,
+      lineHeight: '1.2',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap' as const,
+    };
+  };
+
+  const getCloseButtonStyle = (): React.CSSProperties => {
+    // Use darker version of the text color for the X button
+    let closeColor = 'var(--muted-foreground)';
+    switch (type) {
+      case "offline":
+      case "error":
+        closeColor = 'hsl(var(--destructive-hue, 0) 70% 40% / 0.6)';
+        break;
+      case "connection":
+      case "success":
+        closeColor = 'hsl(142 70% 35% / 0.6)';
+        break;
+      case "warning":
+        closeColor = 'hsl(43 90% 40% / 0.6)';
+        break;
+      case "update":
+        closeColor = 'hsl(var(--primary-hue, 221) 60% 40% / 0.6)';
+        break;
+      case "install":
+        closeColor = 'hsl(var(--primary-hue, 271) 60% 40% / 0.6)';
+        break;
+    }
+    
+    return {
+      position: 'absolute' as const,
+      right: '12px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: '24px',
+      height: '24px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      background: 'transparent',
+      border: 'none',
+      color: closeColor,
+      transition: 'opacity 0.2s',
+    };
+  };
+
+  const getActionButtonStyle = (variant?: 'primary' | 'secondary'): React.CSSProperties => {
+    let buttonBg = 'rgba(0, 0, 0, 0.1)';
+    let buttonColor = 'currentColor';
+    let buttonBorder = 'transparent';
+    
+    if (variant === 'primary') {
+      // Primary button gets a darker shade of the notification color
+      switch (type) {
+        case "update":
+          buttonBg = 'hsl(var(--primary-hue, 221) 60% 85%)';
+          buttonColor = 'hsl(var(--primary-hue, 221) 60% 25%)';
+          buttonBorder = 'hsl(var(--primary-hue, 221) 60% 75%)';
+          break;
+        case "install":
+          buttonBg = 'hsl(var(--primary-hue, 271) 60% 85%)';
+          buttonColor = 'hsl(var(--primary-hue, 271) 60% 25%)';
+          buttonBorder = 'hsl(var(--primary-hue, 271) 60% 75%)';
+          break;
+        default:
+          buttonBg = 'rgba(0, 0, 0, 0.08)';
+          buttonColor = 'currentColor';
+      }
+    } else {
+      // Secondary button is more subtle
+      buttonBg = 'rgba(0, 0, 0, 0.03)';
+      buttonBorder = 'currentColor';
+    }
+    
+    return {
+      padding: '6px 14px',
+      fontSize: '13px',
+      borderRadius: '6px',
+      fontWeight: 500,
+      cursor: 'pointer',
+      border: variant === 'secondary' ? `1px solid ${buttonBorder}` : 'none',
+      whiteSpace: 'nowrap' as const,
+      backgroundColor: buttonBg,
+      color: buttonColor,
+      transition: 'all 0.2s',
+      opacity: variant === 'secondary' ? 0.7 : 1,
+    };
+  };
+
+  // Render banner layout
+  if (style === 'banner-top' || style === 'banner-bottom') {
+    return (
+      <motion.div
+        key={`${id}-${style}-${type}`}
+        {...getAnimationProps()}
+        style={getContainerStyle()}
       >
-        {style === 'modal' ? (
-          // Modal-style layout (centered, for connection status)
-          <div className="p-6 flex flex-col items-center gap-4">
-            <div className="p-3 bg-white/10 dark:bg-white/20 rounded-full backdrop-blur-sm">
+        <div style={getContentStyle()}>
+          <div style={getBannerContentStyle()}>
+            <div style={getIconStyle()}>
               {getIcon()}
             </div>
-            <div className="text-center">
-              {title && <p className="font-semibold text-lg mb-1">{title}</p>}
-              {description && <p className="text-sm opacity-90">{description}</p>}
+            <div style={getTextContainerStyle()}>
+              {title && <div style={getTitleStyle()}>{title}</div>}
+              {description && <div style={getDescriptionStyle()}>{description}</div>}
             </div>
             {actions && actions.length > 0 && (
-              <div className="flex gap-2 mt-2">
+              <div style={{ display: 'flex', gap: '6px' }}>
                 {actions.map((action, index) => (
                   <button
                     key={index}
                     onClick={action.onClick}
-                    className={`
-                      px-4 py-2 rounded-lg font-medium text-sm transition-all
-                      ${action.variant === 'secondary' 
-                        ? 'bg-white/10 hover:bg-white/20 text-white' 
-                        : 'bg-white text-gray-900 hover:bg-gray-100'
-                      }
-                    `}
+                    style={getActionButtonStyle(action.variant)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.02)';
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   >
                     {action.label}
                   </button>
                 ))}
               </div>
             )}
-            {type === 'offline' && (
-              <div className="animate-pulse">
-                <div className="w-2 h-2 bg-current rounded-full opacity-60"></div>
-              </div>
-            )}
+            <button
+              onClick={onClose}
+              style={getCloseButtonStyle()}
+              aria-label="Dismiss"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '1';
+              }}
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-        ) : (
-          // Toast-style layout (corner, for updates/installs)
-          <div className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 p-2 rounded-full bg-white/10 dark:bg-white/20">
-                {getIcon()}
-              </div>
-              <div className="flex-1">
-                {title && <div className="font-semibold text-sm">{title}</div>}
-                {description && (
-                  <div className="text-sm opacity-90 mt-1">{description}</div>
-                )}
-                {actions && actions.length > 0 && (
-                  <div className="flex gap-2 mt-3">
-                    {actions.map((action, index) => (
-                      <button
-                        key={index}
-                        onClick={action.onClick}
-                        className={`
-                          px-3 py-1.5 rounded-md font-medium text-xs transition-all
-                          ${action.variant === 'secondary' 
-                            ? 'bg-white/10 hover:bg-white/20 text-white' 
-                            : 'bg-white text-gray-900 hover:bg-gray-100'
-                          }
-                        `}
-                      >
-                        {action.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Render modal or toast layout (existing code for those)
+  return (
+    <motion.div
+      key={`${id}-${style}-${type}`}
+      {...getAnimationProps()}
+      style={getContainerStyle()}
+    >
+      <div style={getContentStyle()}>
+        {/* Modal and toast content here - keeping simple for now */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={getIconStyle()}>
+            {getIcon()}
+          </div>
+          <div style={{ flex: 1 }}>
+            {title && <div style={{ fontWeight: 600, marginBottom: '4px' }}>{title}</div>}
+            {description && <div style={{ fontSize: '14px', opacity: 0.9 }}>{description}</div>}
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              ...getCloseButtonStyle(),
+              position: 'static' as const,
+              transform: 'none',
+            }}
+            aria-label="Dismiss"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        {actions && actions.length > 0 && (
+          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+            {actions.map((action, index) => (
               <button
-                onClick={onClose}
-                className="text-white/70 hover:text-white transition-colors p-1 rounded hover:bg-white/10"
-                aria-label="Close notification"
+                key={index}
+                onClick={action.onClick}
+                style={getActionButtonStyle(action.variant)}
               >
-                <X className="w-4 h-4" />
+                {action.label}
               </button>
-            </div>
+            ))}
           </div>
         )}
       </div>
     </motion.div>
   );
-
-  return content;
 }
 
 export interface EnhancedToastContextType {
@@ -212,7 +524,7 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
 
   const showToast = React.useCallback(
     (toast: Omit<EnhancedToastProps, "id" | "onClose">) => {
-      const id = Math.random().toString(36).substr(2, 9);
+      const id = Math.random().toString(36).substring(2, 11);
       const newToast: EnhancedToastProps = {
         ...toast,
         id,
@@ -240,14 +552,20 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
           <EnhancedToast key={toast.id} {...toast} />
         ))}
       </AnimatePresence>
-      {/* Backdrop for modal-style toasts */}
+      {/* Backdrop for modal-style toasts only */}
       <AnimatePresence>
         {toasts.some(t => t.style === 'modal') && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9998] bg-black/20 backdrop-blur-sm"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9998,
+              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              backdropFilter: 'blur(4px)',
+            }}
             onClick={() => {
               // Close modal-style toasts when clicking backdrop
               const modalToasts = toasts.filter(t => t.style === 'modal');

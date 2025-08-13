@@ -163,14 +163,6 @@
     "preferred_width": 400
   },
   "handle_links": "preferred",
-  "launch_handler": {
-    "client_mode": ["navigate-existing", "auto"]
-  },
-  "scope_extensions": [
-    {
-      "origin": "*.doshisensei.com"
-    }
-  ],
   "icons": [
     {
       "src": "/favicon-48x48.png",

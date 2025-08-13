@@ -186,17 +186,17 @@ function convertToJapaneseWord(word: JMdictWord): JapaneseWord | null {
   // Determine word type from part of speech
   const wordType = mapPartOfSpeechToType(primarySense.partOfSpeech);
   
-  // Debug logging for word type determination
-  if (typeof window !== 'undefined' && (word.kanji[0]?.text || word.kana[0]?.text)) {
-    const wordText = word.kanji[0]?.text || word.kana[0]?.text;
-    // Only log verbs and adjectives for debugging conjugation issues
-    if (wordType && ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'].includes(wordType)) {
-      console.log(`[JMDict] Word type mapping: ${wordText}`, {
-        partOfSpeech: primarySense.partOfSpeech,
-        determinedType: wordType
-      });
-    }
-  }
+  // Debug logging disabled for performance
+  // Uncomment the following lines only when debugging word type issues
+  // if (typeof window !== 'undefined' && (word.kanji[0]?.text || word.kana[0]?.text)) {
+  //   const wordText = word.kanji[0]?.text || word.kana[0]?.text;
+  //   if (wordType && ['Ichidan', 'Godan', 'Irregular', 'i-adjective', 'na-adjective'].includes(wordType)) {
+  //     console.log(`[JMDict] Word type mapping: ${wordText}`, {
+  //       partOfSpeech: primarySense.partOfSpeech,
+  //       determinedType: wordType
+  //     });
+  //   }
+  // }
   
   if (!wordType) return null;
   
@@ -256,6 +256,51 @@ function convertToJapaneseWord(word: JMdictWord): JapaneseWord | null {
 }
 
 /**
+ * Process words in chunks to avoid blocking the main thread
+ */
+async function processWordsInChunks(
+  words: JMdictWord[],
+  chunkSize: number = 50  // Reduced chunk size for better responsiveness
+): Promise<{ verbs: JapaneseWord[], adjectives: JapaneseWord[] }> {
+  const verbs: JapaneseWord[] = [];
+  const adjectives: JapaneseWord[] = [];
+  
+  for (let i = 0; i < words.length; i += chunkSize) {
+    const chunk = words.slice(i, Math.min(i + chunkSize, words.length));
+    
+    // Process chunk
+    for (const word of chunk) {
+      const converted = convertToJapaneseWord(word);
+      if (!converted) continue;
+      
+      if (converted.type === 'Ichidan' || converted.type === 'Godan' || converted.type === 'Irregular') {
+        verbs.push(converted);
+        
+        // DUAL ENTRY: If this is a する verb (vs tag), also create the base noun entry
+        const primarySense = word.sense.find(s => s.gloss.some(g => g.lang === 'eng'));
+        if (primarySense && primarySense.partOfSpeech.includes('vs')) {
+          // Create a noun version without する
+          const nounVersion = { ...converted };
+          nounVersion.id = converted.id + '-noun';
+          nounVersion.kanji = nounVersion.kanji.replace(/する$/, '');
+          nounVersion.kana = nounVersion.kana.replace(/する$/, '');
+          verbs.push(nounVersion);
+        }
+      } else if (converted.type === 'i-adjective' || converted.type === 'na-adjective') {
+        adjectives.push(converted);
+      }
+    }
+    
+    // Yield to main thread after each chunk
+    if (i + chunkSize < words.length) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  }
+  
+  return { verbs, adjectives };
+}
+
+/**
  * Load and process JMdict data for practice
  */
 export async function loadJMdictForPractice(): Promise<void> {
@@ -271,33 +316,8 @@ export async function loadJMdictForPractice(): Promise<void> {
     const jmdict: JMdict = await response.json();
     console.log(`Loaded ${jmdict.words.length} JMdict entries`);
     
-    // Process words and separate into verbs and adjectives
-    const verbs: JapaneseWord[] = [];
-    const adjectives: JapaneseWord[] = [];
-    
-    for (const word of jmdict.words) {
-      const converted = convertToJapaneseWord(word);
-      if (!converted) continue;
-      
-      if (converted.type === 'Ichidan' || converted.type === 'Godan' || converted.type === 'Irregular') {
-        verbs.push(converted);
-        
-        // DUAL ENTRY: If this is a する verb (vs tag), also create the base noun entry
-        // This helps with searches that might look for the noun form
-        const primarySense = word.sense.find(s => s.gloss.some(g => g.lang === 'eng'));
-        if (primarySense && primarySense.partOfSpeech.includes('vs')) {
-          // Create a noun version without する
-          const nounVersion = { ...converted };
-          nounVersion.id = converted.id + '-noun';
-          nounVersion.kanji = nounVersion.kanji.replace(/する$/, '');
-          nounVersion.kana = nounVersion.kana.replace(/する$/, '');
-          // Keep it in verbs array since it's searchable as a verb
-          verbs.push(nounVersion);
-        }
-      } else if (converted.type === 'i-adjective' || converted.type === 'na-adjective') {
-        adjectives.push(converted);
-      }
-    }
+    // Process words in chunks to avoid blocking main thread
+    const { verbs, adjectives } = await processWordsInChunks(jmdict.words);
     
     // Sort by frequency (higher score = more common, so reverse order)
     verbs.sort((a, b) => (b.frequency || 0) - (a.frequency || 0));
@@ -309,20 +329,6 @@ export async function loadJMdictForPractice(): Promise<void> {
     jmdictLoaded = true;
     
     console.log(`Processed ${verbs.length} verbs and ${adjectives.length} adjectives for practice`);
-    
-    // Log top 5 most common verbs and adjectives
-    console.log('Top 5 most common verbs:', verbs.slice(0, 5).map(v => ({
-      word: v.kanji,
-      kana: v.kana,
-      meaning: v.meaning,
-      score: v.frequency
-    })));
-    console.log('Top 5 most common adjectives:', adjectives.slice(0, 5).map(a => ({
-      word: a.kanji,
-      kana: a.kana,
-      meaning: a.meaning,
-      score: a.frequency
-    })));
   } catch (error) {
     console.error('Failed to load JMdict for practice:', error);
     throw error;

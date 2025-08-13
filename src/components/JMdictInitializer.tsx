@@ -7,14 +7,18 @@ import { PracticeCache } from '@/utils/practiceCache';
 
 export default function JMdictInitializer() {
   useEffect(() => {
-    // Load JMdict data when the app starts
-    Promise.all([
-      loadJMdict(),
-      loadJMdictForPractice().then(() => {
-        // Preload practice cache after JMdict is loaded
-        PracticeCache.preloadCache();
-      })
-    ]).catch(console.error);
+    // Defer loading JMdict data to avoid blocking initial render
+    const timeoutId = setTimeout(() => {
+      Promise.all([
+        loadJMdict(),
+        loadJMdictForPractice().then(() => {
+          // Preload practice cache after JMdict is loaded
+          PracticeCache.preloadCache();
+        })
+      ]).catch(console.error);
+    }, 100); // Small delay to let initial render complete
+    
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return null;

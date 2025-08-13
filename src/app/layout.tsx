@@ -15,12 +15,10 @@ import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import MobileMenu from "@/components/MobileMenu";
 import DesktopNavMenu from "@/components/DesktopNavMenu";
 import StunningBottomNavbar from "@/components/StunningBottomNavbar";
-// Removed: PWAInstaller and PWAUpdateNotification - now handled by UnifiedNotificationProvider
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
-// Removed: OfflineNotification and NetworkStatus - now handled by UnifiedNotificationProvider
 import { VirtualCompanionProvider } from "@/contexts/VirtualCompanionContext";
 import GlobalVirtualCompanion from "@/components/GlobalVirtualCompanion";
 import { DevHelper } from '@/components/DevHelper';
@@ -33,6 +31,7 @@ import { PersistentLogger } from '@/components/PersistentLogger';
 import { PrewarmingScript } from '@/components/PrewarmingScript';
 import { QuickContextProvider } from '@/components/QuickContext';
 import NextAuthProvider from '@/components/providers/NextAuthProvider';
+import DisableReactDevTools from '@/components/DisableReactDevTools';
 
 // Optimized font loading - only load essential weights initially
 const geistSans = localFont({
@@ -282,6 +281,9 @@ export default function RootLayout({
         {/* PWA Manager - Intelligent Service Worker Management */}
         <script src="/pwa-manager.js" />
         
+        {/* PWA Recovery Script - Handles chunk loading errors */}
+        <script src="/pwa-recovery.js" />
+        
         {/* PWA Service Worker Update Manager */}
 
         {/* Theme handled by ClientThemeWrapper to prevent hydration issues */}
@@ -313,6 +315,7 @@ export default function RootLayout({
                                   <UnifiedNotificationProvider />
                                 </PWAErrorBoundary>
                                 <IOSInstallGuide />
+                                <DisableReactDevTools />
                                 <LazyInitializers />
                                 <PerformanceMonitor />
                                 <NavigationErrorBoundary>

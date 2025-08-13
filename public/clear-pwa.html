@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear PWA Cache - Doshi Sensei</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .status {
+            padding: 1rem;
+            background: #f3f4f6;
+            border-radius: 8px;
+            margin: 1rem 0;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .button:hover {
+            background: #4f46e5;
+        }
+        .button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .success {
+            color: #10b981;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 PWA Cache Cleaner</h1>
+        <p style="text-align: center; color: #666;">
+            This tool will clear all cached data and service workers for Doshi Sensei
+        </p>
+        <div class="status" id="status">
+            Ready to clear cache. Click the button below to start.
+        </div>
+        <button class="button" id="clearButton" onclick="clearAllPWAData()">
+            Clear Cache & Reload
+        </button>
+    </div>
+
+    <script>
+        const log = (message, type = 'info') => {
+            const statusEl = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? 'success' : 
+                         type === 'error' ? 'error' : 
+                         type === 'warning' ? 'warning' : '';
+            
+            statusEl.innerHTML += `<div class="${color}">[${timestamp}] ${message}</div>`;
+            statusEl.scrollTop = statusEl.scrollHeight;
+        };
+
+        async function clearAllPWAData() {
+            const button = document.getElementById('clearButton');
+            button.disabled = true;
+            button.textContent = 'Clearing...';
+            
+            document.getElementById('status').innerHTML = '';
+            log('Starting complete PWA cleanup...', 'info');
+            
+            try {
+                // 1. Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    log('Checking for service workers...', 'info');
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    log(`Found ${registrations.length} service worker(s)`, 'info');
+                    
+                    for (const registration of registrations) {
+                        log(`Unregistering SW: ${registration.scope}`, 'warning');
+                        await registration.unregister();
+                        log(`✓ Unregistered: ${registration.scope}`, 'success');
+                    }
+                } else {
+                    log('Service workers not supported', 'warning');
+                }
+                
+                // 2. Clear all caches
+                if ('caches' in window) {
+                    log('Checking for caches...', 'info');
+                    const cacheNames = await caches.keys();
+                    log(`Found ${cacheNames.length} cache(s)`, 'info');
+                    
+                    for (const name of cacheNames) {
+                        log(`Deleting cache: ${name}`, 'warning');
+                        await caches.delete(name);
+                        log(`✓ Deleted cache: ${name}`, 'success');
+                    }
+                } else {
+                    log('Cache API not supported', 'warning');
+                }
+                
+                // 3. Clear IndexedDB
+                if ('indexedDB' in window && indexedDB.databases) {
+                    log('Checking IndexedDB...', 'info');
+                    const databases = await indexedDB.databases();
+                    log(`Found ${databases.length} database(s)`, 'info');
+                    
+                    for (const db of databases) {
+                        if (db.name) {
+                            log(`Deleting IndexedDB: ${db.name}`, 'warning');
+                            await new Promise((resolve, reject) => {
+                                const deleteReq = indexedDB.deleteDatabase(db.name);
+                                deleteReq.onsuccess = () => {
+                                    log(`✓ Deleted IndexedDB: ${db.name}`, 'success');
+                                    resolve();
+                                };
+                                deleteReq.onerror = () => {
+                                    log(`✗ Failed to delete IndexedDB: ${db.name}`, 'error');
+                                    reject();
+                                };
+                            });
+                        }
+                    }
+                } else {
+                    log('IndexedDB.databases() not supported', 'warning');
+                }
+                
+                // 4. Clear localStorage
+                log('Clearing localStorage...', 'info');
+                let localStorageCount = 0;
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (
+                        key.includes('pwa') || 
+                        key.includes('sw') || 
+                        key.includes('cache') ||
+                        key.includes('workbox') ||
+                        key.includes('precache') ||
+                        key.includes('doshi')
+                    )) {
+                        keysToRemove.push(key);
+                    }
+                }
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                    localStorageCount++;
+                });
+                log(`✓ Cleared ${localStorageCount} localStorage items`, 'success');
+                
+                // 5. Clear sessionStorage
+                log('Clearing sessionStorage...', 'info');
+                let sessionStorageCount = 0;
+                const sessionKeysToRemove = [];
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key && (
+                        key.includes('pwa') || 
+                        key.includes('sw') || 
+                        key.includes('cache') ||
+                        key.includes('workbox') ||
+                        key.includes('precache') ||
+                        key.includes('doshi')
+                    )) {
+                        sessionKeysToRemove.push(key);
+                    }
+                }
+                
+                sessionKeysToRemove.forEach(key => {
+                    sessionStorage.removeItem(key);
+                    sessionStorageCount++;
+                });
+                log(`✓ Cleared ${sessionStorageCount} sessionStorage items`, 'success');
+                
+                // Success
+                log('=================================', 'success');
+                log('✓ All caches cleared successfully!', 'success');
+                log('=================================', 'success');
+                log('Redirecting to app in 3 seconds...', 'info');
+                
+                button.textContent = 'Success! Redirecting...';
+                button.style.background = '#10b981';
+                
+                // Redirect after 3 seconds
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 3000);
+                
+            } catch (error) {
+                log(`Error during cleanup: ${error.message}`, 'error');
+                button.disabled = false;
+                button.textContent = 'Retry Clear Cache';
+                button.style.background = '#ef4444';
+            }
+        }
+        
+        // Auto-run if query parameter is present
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('auto') === 'true') {
+            window.addEventListener('load', () => {
+                setTimeout(clearAllPWAData, 500);
+            });
+        }
+    </script>
+</body>
+</html>

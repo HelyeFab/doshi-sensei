@@ -1,6 +1,5 @@
 'use client';
 
-import { EnhancedToastProvider } from '@/components/ui/EnhancedToast';
 import { useUnifiedNotifications } from '@/hooks/useUnifiedNotifications';
 
 function PWATestContent() {
@@ -49,8 +48,8 @@ function PWATestContent() {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Connection Notifications (Modal Style)</h2>
-          <p className="text-sm text-gray-600 mb-4">These appear as centered modals, just like the old NetworkStatus component</p>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Connection Notifications (Top Banner Style)</h2>
+          <p className="text-sm text-gray-600 mb-4">These appear as banners at the top of the screen</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button
               onClick={testConnectionOffline}
@@ -74,8 +73,8 @@ function PWATestContent() {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">PWA Notifications (Toast Style with Actions)</h2>
-          <p className="text-sm text-gray-600 mb-4">These appear in the corner with action buttons</p>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">PWA Notifications (Bottom Banner Style with Actions)</h2>
+          <p className="text-sm text-gray-600 mb-4">These appear as banners at the bottom of the screen with action buttons</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               onClick={testUpdateAvailable}
@@ -117,10 +116,10 @@ function PWATestContent() {
           <h3 className="font-medium text-gray-900 mb-2">What\'s New:</h3>
           <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
             <li><strong>ONE unified component</strong> handles all notifications</li>
-            <li><strong>Connection status</strong> shows as centered modal (like old NetworkStatus)</li>
-            <li><strong>PWA notifications</strong> show in corner with action buttons</li>
+            <li><strong>Connection status</strong> shows as top banner (important, temporary)</li>
+            <li><strong>PWA notifications</strong> show as bottom banner (less intrusive)</li>
             <li><strong>Action buttons</strong> - Install, Update, Dismiss, etc.</li>
-            <li><strong>Theme-aware</strong> - Respects light/dark mode</li>
+            <li><strong>Theme-aware</strong> - Uses card colors, respects all color schemes</li>
             <li><strong>No duplicate notifications</strong> - Single source of truth</li>
           </ul>
         </div>
@@ -130,9 +129,5 @@ function PWATestContent() {
 }
 
 export default function PWATestPage() {
-  return (
-    <EnhancedToastProvider>
-      <PWATestContent />
-    </EnhancedToastProvider>
-  );
+  return <PWATestContent />;
 }

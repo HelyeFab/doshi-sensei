@@ -43,7 +43,8 @@
       "Bash(git restore:*)",
       "Bash(firebase login:*)",
       "Bash(cp:*)",
-      "Bash(npx firebase firestore:get:*)"
+      "Bash(npx firebase firestore:get:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

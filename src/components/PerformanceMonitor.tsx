@@ -6,7 +6,7 @@ export function PerformanceMonitor() {
   useEffect(() => {
     // Only run in browser and in development
     if (typeof window === 'undefined') return;
-    if (process.env.NODE_ENV !== 'development') return;
+    if (process.env.NODE_ENV === 'production') return; // Skip entirely in production
     
     // Log initial load performance
     if (typeof window !== 'undefined' && window.performance) {

@@ -133,8 +133,9 @@ export function useUnifiedNotifications() {
           type: 'offline',
           title: 'No Internet Connection',
           description: 'Some features may be unavailable',
-          style: 'modal',
-          persistent: true // Keep showing until connection restored
+          style: 'banner-top',
+          duration: 0, // Don't auto-dismiss
+          persistent: false // Allow manual dismissal
         });
         break;
       
@@ -143,7 +144,7 @@ export function useUnifiedNotifications() {
           type: 'warning',
           title: 'Slow Connection',
           description: 'Loading may take longer than usual',
-          style: 'modal',
+          style: 'banner-top',
           duration: 10000
         });
         break;
@@ -153,7 +154,7 @@ export function useUnifiedNotifications() {
           type: 'connection',
           title: 'Connection Restored',
           description: "You're back online",
-          style: 'modal',
+          style: 'banner-top',
           duration: 5000
         });
         break;
@@ -241,10 +242,10 @@ export function useUnifiedNotifications() {
         hasShownInstallPrompt.current = true;
         localStorage.setItem('pwa_last_install_prompt', now.toString());
         showToast({
-          type: 'info',
+          type: 'install',
           title: 'Install Doshi Sensei',
-          description: 'Add to your home screen for a better experience',
-          style: 'toast',
+          description: 'Get the app for offline access and faster loading',
+          style: 'banner-bottom',
           duration: 0, // Don't auto-dismiss
           persistent: true,
           actions: [
@@ -268,7 +269,7 @@ export function useUnifiedNotifications() {
               variant: 'primary'
             },
             {
-              label: 'Not now',
+              label: 'Later',
               onClick: () => {
                 // Just close the toast
               },
@@ -314,8 +315,8 @@ export function useUnifiedNotifications() {
       const toastId = showToast({
         type: 'update',
         title: 'Update Available',
-        description: 'A new version of Doshi Sensei is available',
-        style: 'toast',
+        description: 'New version ready with latest features',
+        style: 'banner-bottom',
         persistent: true,
         duration: 0,
         actions: [

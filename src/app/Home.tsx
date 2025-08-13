@@ -237,7 +237,7 @@ export default function Home() {
             className="block cursor-pointer"
             aria-label="Open user menu"
           >
-            <UserAvatar size="md" />
+            <UserAvatar size="md" priority />
           </button>
           
           {/* Greeting Text */}
@@ -331,6 +331,7 @@ export default function Home() {
                             width={24}
                             height={24}
                             className="opacity-70"
+                            loading="lazy"
                           />
                         ) : (
                           <span className="text-2xl">{card.icon}</span>
@@ -380,6 +381,7 @@ export default function Home() {
                             width={24}
                             height={24}
                             className="opacity-70"
+                            loading="lazy"
                           />
                         ) : (
                           <span className="text-2xl">{card.icon}</span>
@@ -426,6 +428,7 @@ export default function Home() {
                             width={24}
                             height={24}
                             className="opacity-70"
+                            loading="lazy"
                           />
                         ) : (
                           <span className="text-2xl">{card.icon}</span>
@@ -474,6 +477,7 @@ export default function Home() {
                             width={24}
                             height={24}
                             className="opacity-70"
+                            loading="lazy"
                           />
                         ) : (
                           <span className="text-2xl">{card.icon}</span>
@@ -554,6 +558,7 @@ export default function Home() {
                             width={24}
                             height={24}
                             className="opacity-70"
+                            loading="lazy"
                           />
                         ) : (
                           <span className="text-2xl">{card.icon}</span>

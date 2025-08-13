@@ -277,12 +277,19 @@ export default function RootLayout({
         <link rel="alternate" type="application/rss+xml" title="Dōshi Sensei - Japanese News" href="/api/rss/news" />
         <link rel="alternate" type="application/rss+xml" title="Dōshi Sensei - Japanese Stories" href="/api/rss/stories" />
 
+        {/* Resource Hints for Performance - Preconnect to critical third-party domains */}
+        <link rel="preconnect" href="https://firebaseio.com" />
+        <link rel="preconnect" href="https://firestore.googleapis.com" />
+        <link rel="dns-prefetch" href="https://js.stripe.com" />
+        <link rel="dns-prefetch" href="https://www.youtube.com" />
+        <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
+
         
         {/* PWA Manager - Intelligent Service Worker Management */}
-        <script src="/pwa-manager.js" />
+        <script src="/pwa-manager.js" defer />
         
         {/* PWA Recovery Script - Handles chunk loading errors */}
-        <script src="/pwa-recovery.js" />
+        <script src="/pwa-recovery.js" defer />
         
         {/* PWA Service Worker Update Manager */}
 

@@ -1,15 +1,25 @@
 // Custom Service Worker Extensions for Doshi Sensei
 // Bundled Workbox - No CDN dependencies
 
+// Version management - change this on deploy to bust caches
+const SW_VERSION = 'v2.1.0-stable';
+
+// Import version management
+importScripts('/service-worker-update.js');
+
 // next-pwa will inject Workbox here when building
 // The workbox global will be available after injection
 
 // Only configure Workbox if it's available
 if (typeof workbox !== 'undefined') {
-  // Configure Workbox
-  workbox.core.setCacheNameDetails({ prefix: 'doshi-sensei' });
-  // Removed skipWaiting to prevent aggressive updates
-  // workbox.core.skipWaiting();
+  // Configure Workbox with version
+  workbox.core.setCacheNameDetails({ 
+    prefix: 'doshi-sensei',
+    suffix: SW_VERSION
+  });
+  
+  // Enable immediate activation for critical fixes
+  workbox.core.skipWaiting();
   workbox.core.clientsClaim();
 
   // Precaching (will be injected by next-pwa)

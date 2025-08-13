@@ -44,15 +44,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/games/reading-routes`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.7 },
     { url: `${baseUrl}/games/stroke-order-practice`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.7 },
     
-    // User pages
-    { url: `${baseUrl}/account`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.4 },
-    { url: `${baseUrl}/favourites`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.6 },
-    { url: `${baseUrl}/achievements`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.5 },
+    // Public user-facing pages only
     { url: `${baseUrl}/leaderboard`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.6 },
-    { url: `${baseUrl}/friends`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.5 },
     
-    // Legal and info pages
-    { url: `${baseUrl}/settings`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.3 },
+    // Legal and info pages (public)
     { url: `${baseUrl}/settings/privacy-policy`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.3 },
     { url: `${baseUrl}/settings/terms-of-service`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.3 },
     { url: `${baseUrl}/settings/acknowledgments`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.2 },

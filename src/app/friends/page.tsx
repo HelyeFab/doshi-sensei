@@ -5,6 +5,12 @@ export const metadata: Metadata = {
   title: 'Friends - Doshi Sensei',
   description: 'Connect with other Japanese learners, send friend requests, and challenge each other.',
   keywords: ['friends', 'social', 'connect', 'Japanese learning', 'community', 'challenges'],
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+  },
   openGraph: {
     title: 'Friends - Doshi Sensei',
     description: 'Connect with other Japanese learners and challenge each other.',

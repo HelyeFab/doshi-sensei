@@ -44,7 +44,9 @@
       "Bash(firebase login:*)",
       "Bash(cp:*)",
       "Bash(npx firebase firestore:get:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(NODE_ENV=production npm run build)",
+      "Bash(git merge:*)"
     ],
     "deny": []
   }

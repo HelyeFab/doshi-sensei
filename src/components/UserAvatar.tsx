@@ -9,6 +9,7 @@ interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   showBorder?: boolean;
+  priority?: boolean; // Add priority prop for above-fold usage
 }
 
 const sizeClasses = {
@@ -18,7 +19,7 @@ const sizeClasses = {
   xl: 'w-20 h-20 text-xl',
 };
 
-export default function UserAvatar({ size = 'md', className = '', showBorder = true }: UserAvatarProps) {
+export default function UserAvatar({ size = 'md', className = '', showBorder = true, priority = false }: UserAvatarProps) {
   const { profile, profilePicture, loading } = useUserProfile();
   const { user } = useAuth();
   const strings = useStrings();
@@ -44,6 +45,7 @@ export default function UserAvatar({ size = 'md', className = '', showBorder = t
         className={`w-full h-full ${profilePicture.includes('.svg') || profilePicture.includes('flat-icons') ? 'object-contain p-1' : 'object-cover'}`}
         width={size === 'sm' ? 32 : size === 'md' ? 48 : size === 'lg' ? 64 : 80}
         height={size === 'sm' ? 32 : size === 'md' ? 48 : size === 'lg' ? 64 : 80}
+        priority={priority}
       />
     </div>
   ) : (

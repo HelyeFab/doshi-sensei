@@ -278,11 +278,41 @@ const nextConfig: NextConfig = {
       type: 'webassembly/async',
     });
     
-    // Keep chunking disabled for Netlify compatibility
-    // Netlify handles optimization differently
+    // Optimize chunking for production with stable chunk names
     if (!dev && !isServer) {
-      config.optimization.splitChunks = false;
-      config.optimization.runtimeChunk = false;
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        minSize: 20000,
+        maxSize: 244000,
+        cacheGroups: {
+          framework: {
+            test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
+            name: 'framework',
+            priority: 40,
+            enforce: true,
+          },
+          lib: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'lib',
+            priority: 30,
+            minChunks: 1,
+          },
+          commons: {
+            name: 'commons',
+            minChunks: 2,
+            priority: 20,
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      };
+      
+      // Use deterministic module ids for stable chunks
+      config.optimization.moduleIds = 'deterministic';
+      config.optimization.runtimeChunk = 'single';
     }
     
     return config;

@@ -104,7 +104,10 @@
   const urlParams = new URLSearchParams(window.location.search);
   const forceRecovery = urlParams.get('pwa-recovery') === 'true';
   
-  // Check for chunk loading errors
+  // Smart chunk error detection with auto-recovery
+  let chunkErrorCount = 0;
+  const MAX_CHUNK_ERRORS = 2;
+  
   window.addEventListener('error', (event) => {
     const isChunkError = 
       event.message?.includes('Loading chunk') ||
@@ -114,42 +117,23 @@
     
     if (isChunkError) {
       console.error('[PWA Recovery] Detected chunk loading error:', event.message);
+      chunkErrorCount++;
       
-      // Show user-friendly message
-      const recoveryMessage = document.createElement('div');
-      recoveryMessage.innerHTML = `
-        <div style="
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          z-index: 999999;
-          text-align: center;
-          max-width: 400px;
-        ">
-          <h2 style="margin: 0 0 10px 0; color: #dc2626;">App Update Required</h2>
-          <p style="margin: 0 0 20px 0; color: #4b5563;">
-            We've detected an issue with cached files. 
-            Click below to clear the cache and reload.
-          </p>
-          <button onclick="window.pwaRecovery()" style="
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-          ">
-            Clear Cache & Reload
-          </button>
-        </div>
-      `;
-      document.body.appendChild(recoveryMessage);
+      // Auto-recover after 2 chunk errors
+      if (chunkErrorCount >= MAX_CHUNK_ERRORS) {
+        console.log('[PWA Recovery] Auto-recovering after multiple chunk errors...');
+        // First try to update service worker
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+        // Then clear caches and reload
+        setTimeout(() => {
+          clearAllPWAData();
+        }, 500);
+      } else {
+        // Show non-intrusive notification for first error
+        console.warn('[PWA Recovery] Chunk error detected, will auto-recover if it persists');
+      }
     }
   });
   

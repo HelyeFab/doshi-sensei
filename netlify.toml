@@ -7,11 +7,28 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Image optimization plugin for better performance
+[[plugins]]
+  package = "@netlify/plugin-image-optim"
+
 # Form handling configuration
 # Note: Netlify doesn't support forms configuration in netlify.toml
 # Forms are detected automatically from HTML with data-netlify="true"
 # Email notifications must be configured in the Netlify UI under:
 # Site settings > Forms > Form notifications
+
+# Performance Headers for LCP optimization
+[[headers]]
+  for = "/"
+  [headers.values]
+    Link = '''
+    </fonts/Rubik/static/Rubik-Regular.ttf>; rel=preload; as=font; type=font/ttf; crossorigin,
+    </fonts/Geist/Geist-VariableFont_wght.ttf>; rel=preload; as=font; type=font/ttf; crossorigin,
+    <https://firebaseio.com>; rel=preconnect,
+    <https://firestore.googleapis.com>; rel=preconnect
+    '''
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
 
 # PWA Headers
 [[headers]]

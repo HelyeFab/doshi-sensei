@@ -108,14 +108,18 @@ export function ExternalImage({
   width,
   height,
   onLoad,
-  style
-}: Omit<OptimizedImageProps, 'fill' | 'sizes' | 'priority' | 'quality' | 'placeholder' | 'blurDataURL'>) {
+  style,
+  priority = false
+}: Omit<OptimizedImageProps, 'fill' | 'sizes' | 'quality' | 'placeholder' | 'blurDataURL'>) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
+  const [isInView, setIsInView] = useState(priority); // If priority, show immediately
   const imageRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (!imageRef.current) return;
+    if (priority || !imageRef.current) {
+      setIsInView(true);
+      return;
+    }
     
     const observer = new IntersectionObserver(
       (entries) => {
@@ -137,7 +141,7 @@ export function ExternalImage({
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [priority]);
   
   const handleLoad = () => {
     setIsLoaded(true);
@@ -160,7 +164,8 @@ export function ExternalImage({
             width={width}
             height={height}
             className={`${className} ${!isLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
             onLoad={handleLoad}
           />
         </>

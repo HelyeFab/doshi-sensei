@@ -5,7 +5,7 @@ const pwaConfig = withPWA({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
-  skipWaiting: false,
+  skipWaiting: true, // Changed to true for immediate updates
   reloadOnOnline: false,
   mode: 'production',
   fallbacks: {
@@ -20,9 +20,11 @@ const pwaConfig = withPWA({
   ],
   maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
   buildExcludes: [
-    /chunk\.js$/,
-    /workbox-.*\.js$/
+    /workbox-.*\.js$/,
+    /_buildManifest\.js$/,
+    /_ssgManifest\.js$/
   ],
+  dynamicStartUrl: false, // Disable dynamic start URL
   // Use custom worker with InjectManifest
   swSrc: 'worker/custom-sw.js',
   swDest: 'public/sw.js'
@@ -276,22 +278,11 @@ const nextConfig: NextConfig = {
       type: 'webassembly/async',
     });
     
-    // Simplify chunking for production to avoid module issues
+    // Keep chunking disabled for Netlify compatibility
+    // Netlify handles optimization differently
     if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendors: {
-            test: /[\\/]node_modules[\\/]/,
-            priority: -10,
-          },
-        },
-      };
+      config.optimization.splitChunks = false;
+      config.optimization.runtimeChunk = false;
     }
     
     return config;

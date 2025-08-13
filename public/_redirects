@@ -3,3 +3,8 @@
 
 # Catch-all for other API routes that might be missing
 /pages/api/*  /api/not-found  404
+
+# SEO: Fix 404 pages - redirect to correct locations
+/katakana  /practice/katakana  301
+/kana  /practice/kana  301
+/reading-routes  /games/reading-routes  301

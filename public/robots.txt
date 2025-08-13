@@ -8,13 +8,20 @@ Allow: /
 Allow: /practice
 Allow: /drill
 Allow: /vocabulary
-Allow: /settings
+Allow: /games
+Allow: /stories
+Allow: /news
+Allow: /tools/
 
 # Disallow admin/private areas
 Disallow: /api/
 Disallow: /admin/
 Disallow: /_next/
 Disallow: /account/
+Disallow: /settings
+Disallow: /favourites
+Disallow: /friends
+Disallow: /achievements
 
 # Allow important static files
 Allow: /manifest.json

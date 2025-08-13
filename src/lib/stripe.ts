@@ -10,8 +10,8 @@ let loadAttempted = false;
 // Smart loading function that checks environment and CSP
 async function loadStripeSmartly(): Promise<Stripe | null> {
   // Don't attempt to load if already tried
-  if (loadAttempted) {
-    return stripePromiseInstance ? await stripePromiseInstance : null;
+  if (loadAttempted && stripePromiseInstance) {
+    return await stripePromiseInstance;
   }
   
   loadAttempted = true;
@@ -56,13 +56,16 @@ async function loadStripeSmartly(): Promise<Stripe | null> {
   }
 }
 
-// Initialize Stripe promise only once
-if (!stripePromiseInstance && typeof window !== 'undefined' && stripePublishableKey) {
-  stripePromiseInstance = loadStripeSmartly();
+// Defer Stripe initialization until actually needed
+export function getStripePromise(): Promise<Stripe | null> {
+  if (!stripePromiseInstance && typeof window !== 'undefined' && stripePublishableKey) {
+    stripePromiseInstance = loadStripeSmartly();
+  }
+  return stripePromiseInstance || Promise.resolve(null);
 }
 
-// Export the singleton promise
-export const stripePromise = stripePromiseInstance || Promise.resolve(null);
+// Export for backward compatibility but recommend using getStripePromise()
+export const stripePromise = getStripePromise();
 
 // Stripe configuration
 export const STRIPE_CONFIG = {

@@ -27,6 +27,7 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { ConjugationLoadingAnimation } from "@/components/ui/ConjugationLoadingAnimation";
 import { WordCardSkeletonGrid } from "@/components/ui/WordCardSkeleton";
 import { VocabularyTTSButton } from "@/components/ui/TTSButton";
+import { popularSearches } from "@/services/popularSearches";
 
 // Structured Data for Conjugation Practice Page
 const conjugationStructuredData = {
@@ -1158,7 +1159,13 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
               ? section.forms
               : section.forms.filter(form => form.essential);
 
-            if (visibleForms.length === 0) return null;
+            // Check if ANY of the forms have actual values
+            const hasValidForms = visibleForms.some(form => {
+              const value = conjugations[form.key];
+              return value && value !== 'undefined';
+            });
+
+            if (visibleForms.length === 0 || !hasValidForms) return null;
 
             return (
               <div

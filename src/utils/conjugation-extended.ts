@@ -668,6 +668,261 @@ export class ExtendedConjugationEngine {
     return this.conjugateIchidan(word);
   }
 
+  // ============= I-ADJECTIVE CONJUGATION =============
+  private static conjugateIAdjective(word: JapaneseWord): ExtendedConjugationForms {
+    const kanji = word.kanji || word.kana || '';
+    if (!kanji.endsWith('い')) {
+      return this.getEmptyConjugations();
+    }
+    
+    const stem = kanji.slice(0, -1);
+    
+    return {
+      // Basic forms
+      present: kanji,
+      negative: stem + 'くない',
+      past: stem + 'かった',
+      pastNegative: stem + 'くなかった',
+      
+      // Te-forms
+      teForm: stem + 'くて',
+      negativeTeForm: stem + 'くなくて',
+      
+      // Polite forms (with です)
+      polite: kanji + 'です',
+      politeNegative: stem + 'くないです',
+      politePast: stem + 'かったです',
+      politePastNegative: stem + 'くなかったです',
+      
+      // Adverbial
+      adverbialNegative: stem + 'く',
+      
+      // Conditional
+      provisional: stem + 'ければ',
+      provisionalNegative: stem + 'くなければ',
+      conditional: stem + 'かったら',
+      conditionalNegative: stem + 'くなかったら',
+      
+      // Alternative
+      alternativeForm: stem + 'かったり',
+      alternativeNegative: stem + 'くなかったり',
+      
+      // Presumptive
+      presumptive: kanji + 'だろう',
+      presumptiveNegative: stem + 'くないだろう',
+      presumptivePolite: kanji + 'でしょう',
+      presumptivePoliteNegative: stem + 'くないでしょう',
+      
+      // Fill other forms with empty to avoid undefined
+      masuStem: '',
+      negativeStem: '',
+      naideForm: '',
+      volitional: '',
+      volitionalNegative: '',
+      imperativePlain: '',
+      imperativePolite: '',
+      imperativeNegative: '',
+      provisionalNegativeColloquial: '',
+      potential: '',
+      potentialNegative: '',
+      potentialPast: '',
+      potentialPastNegative: '',
+      potentialMasuStem: '',
+      potentialTeForm: '',
+      potentialNegativeTeForm: '',
+      potentialPolite: '',
+      potentialPoliteNegative: '',
+      potentialPolitePast: '',
+      potentialPolitePastNegative: '',
+      passive: '',
+      passiveNegative: '',
+      passivePast: '',
+      passivePastNegative: '',
+      passiveMasuStem: '',
+      passiveTeForm: '',
+      passiveNegativeTeForm: '',
+      passivePolite: '',
+      passivePoliteNegative: '',
+      passivePolitePast: '',
+      passivePolitePastNegative: '',
+      causative: '',
+      causativeNegative: '',
+      causativePast: '',
+      causativePastNegative: '',
+      causativeMasuStem: '',
+      causativeTeForm: '',
+      causativeNegativeTeForm: '',
+      causativePolite: '',
+      causativePoliteNegative: '',
+      causativePolitePast: '',
+      causativePolitePastNegative: '',
+      causativePassive: '',
+      causativePassiveNegative: '',
+      causativePassivePast: '',
+      causativePassivePastNegative: '',
+      causativePassiveMasuStem: '',
+      causativePassiveTeForm: '',
+      causativePassiveNegativeTeForm: '',
+      causativePassivePolite: '',
+      causativePassivePoliteNegative: '',
+      causativePassivePolitePast: '',
+      causativePassivePolitePastNegative: '',
+      taiForm: '',
+      taiFormNegative: '',
+      taiFormPast: '',
+      taiFormPastNegative: '',
+      taiAdjectiveStem: '',
+      taiTeForm: '',
+      taiNegativeTeForm: '',
+      taiAdverbial: '',
+      taiProvisional: '',
+      taiProvisionalNegative: '',
+      taiConditional: '',
+      taiConditionalNegative: '',
+      taiObjective: '',
+      progressive: '',
+      progressiveNegative: '',
+      progressivePast: '',
+      progressivePastNegative: '',
+      progressivePolite: '',
+      progressivePoliteNegative: '',
+      progressivePolitePast: '',
+      progressivePolitePastNegative: '',
+      request: '',
+      requestNegative: '',
+      colloquialNegative: '',
+      formalNegative: '',
+      classicalNegative: '',
+      classicalNegativeModifier: '',
+      politeVolitional: '',
+    };
+  }
+
+  // ============= NA-ADJECTIVE CONJUGATION =============
+  private static conjugateNaAdjective(word: JapaneseWord): ExtendedConjugationForms {
+    const kanji = word.kanji || word.kana || '';
+    
+    return {
+      // Basic forms
+      present: kanji + 'だ',
+      negative: kanji + 'じゃない',
+      past: kanji + 'だった',
+      pastNegative: kanji + 'じゃなかった',
+      
+      // Te-forms
+      teForm: kanji + 'で',
+      negativeTeForm: kanji + 'じゃなくて',
+      
+      // Polite forms
+      polite: kanji + 'です',
+      politeNegative: kanji + 'じゃありません',
+      politePast: kanji + 'でした',
+      politePastNegative: kanji + 'じゃありませんでした',
+      
+      // Adverbial
+      adverbialNegative: kanji + 'に',
+      
+      // Conditional
+      provisional: kanji + 'なら',
+      provisionalNegative: kanji + 'じゃなければ',
+      conditional: kanji + 'だったら',
+      conditionalNegative: kanji + 'じゃなかったら',
+      
+      // Alternative
+      alternativeForm: kanji + 'だったり',
+      alternativeNegative: kanji + 'じゃなかったり',
+      
+      // Presumptive
+      presumptive: kanji + 'だろう',
+      presumptiveNegative: kanji + 'じゃないだろう',
+      presumptivePolite: kanji + 'でしょう',
+      presumptivePoliteNegative: kanji + 'じゃないでしょう',
+      
+      // Fill other forms with empty to avoid undefined
+      masuStem: '',
+      negativeStem: '',
+      naideForm: '',
+      volitional: '',
+      volitionalNegative: '',
+      imperativePlain: '',
+      imperativePolite: '',
+      imperativeNegative: '',
+      provisionalNegativeColloquial: '',
+      potential: '',
+      potentialNegative: '',
+      potentialPast: '',
+      potentialPastNegative: '',
+      potentialMasuStem: '',
+      potentialTeForm: '',
+      potentialNegativeTeForm: '',
+      potentialPolite: '',
+      potentialPoliteNegative: '',
+      potentialPolitePast: '',
+      potentialPolitePastNegative: '',
+      passive: '',
+      passiveNegative: '',
+      passivePast: '',
+      passivePastNegative: '',
+      passiveMasuStem: '',
+      passiveTeForm: '',
+      passiveNegativeTeForm: '',
+      passivePolite: '',
+      passivePoliteNegative: '',
+      passivePolitePast: '',
+      passivePolitePastNegative: '',
+      causative: '',
+      causativeNegative: '',
+      causativePast: '',
+      causativePastNegative: '',
+      causativeMasuStem: '',
+      causativeTeForm: '',
+      causativeNegativeTeForm: '',
+      causativePolite: '',
+      causativePoliteNegative: '',
+      causativePolitePast: '',
+      causativePolitePastNegative: '',
+      causativePassive: '',
+      causativePassiveNegative: '',
+      causativePassivePast: '',
+      causativePassivePastNegative: '',
+      causativePassiveMasuStem: '',
+      causativePassiveTeForm: '',
+      causativePassiveNegativeTeForm: '',
+      causativePassivePolite: '',
+      causativePassivePoliteNegative: '',
+      causativePassivePolitePast: '',
+      causativePassivePolitePastNegative: '',
+      taiForm: '',
+      taiFormNegative: '',
+      taiFormPast: '',
+      taiFormPastNegative: '',
+      taiAdjectiveStem: '',
+      taiTeForm: '',
+      taiNegativeTeForm: '',
+      taiAdverbial: '',
+      taiProvisional: '',
+      taiProvisionalNegative: '',
+      taiConditional: '',
+      taiConditionalNegative: '',
+      taiObjective: '',
+      progressive: '',
+      progressiveNegative: '',
+      progressivePast: '',
+      progressivePastNegative: '',
+      progressivePolite: '',
+      progressivePoliteNegative: '',
+      progressivePolitePast: '',
+      progressivePolitePastNegative: '',
+      request: '',
+      requestNegative: '',
+      colloquialNegative: '',
+      formalNegative: '',
+      classicalNegative: '',
+      classicalNegativeModifier: '',
+      politeVolitional: '',
+    };
+  }
+
   // Get Godan conjugation mappings
   private static getGodanMappings(ending: string, word?: JapaneseWord) {
     // Special case for 行く

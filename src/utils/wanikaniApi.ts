@@ -224,13 +224,7 @@ function convertWanikaniSubject(subject: WanikaniSubject): JapaneseWord | null {
   // Determine word type (pass characters for する verb detection)
   const wordType = determineWordType(data.parts_of_speech, { characters: data.characters });
   
-  // Debug logging for する verb detection
-  if (typeof window !== 'undefined' && data.characters?.endsWith('する')) {
-    console.log(`[WaniKani] する verb detected: ${data.characters}`, {
-      partsOfSpeech: data.parts_of_speech,
-      determinedType: wordType
-    });
-  }
+  // Removed debug logging for performance
 
   // Determine JLPT level based on WaniKani level
   const jlptLevel = determineJLPTLevel(data.level);
@@ -319,7 +313,6 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       // Try to reinitialize with fallback token
       const token = process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN || 'db0708c2-d1d4-4865-948c-b31c9ebdc04e';
       setWanikaniApiToken(token);
-      console.log('[WaniKani] Reinitialized with token:', token.substring(0, 8) + '...');
       
       // Check again after reinitialization
       if (!wanikaniAxios.defaults.headers.common['Authorization']) {
@@ -328,12 +321,10 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       }
     }
 
-
-    // Check if we have valid cached data
-    const now = Date.now();
-    if (vocabularyCache && (now - cacheTimestamp) < CACHE_DURATION) {
-      return performSearch(vocabularyCache, query, limit);
-    }
+    // For conjugation page searches, don't fetch entire dictionary!
+    // Just return empty array and let JMDict handle it
+    // WaniKani doesn't have a proper search endpoint anyway
+    return [];
 
     // If no cache or expired, fetch from API
     const allWords: JapaneseWord[] = [];
@@ -345,13 +336,7 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       '41,42,43,44,45', '46,47,48,49,50', '51,52,53,54,55', '56,57,58,59,60'
     ];
 
-    // Log the API request details
-    if (!PROXY_BASE) {
-      console.log('[WaniKani] Making API requests with token:', 
-        wanikaniAxios.defaults.headers.common['Authorization']?.toString().substring(0, 20) + '...');
-    } else {
-      console.log('[WaniKani] Making API requests via proxy');
-    }
+    // Removed verbose logging for performance
     
     // Make all API calls in parallel for speed
     const endpoint = PROXY_BASE ? '' : '/subjects';

@@ -196,10 +196,16 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
   };
 
   try {
-    // Always try WaniKani first - they have the best curated results
+    // Try WaniKani with a timeout to prevent long waits
     let wanikaniResults: JapaneseWord[] = [];
     try {
-      wanikaniResults = await searchWanikaniVocabulary(query, Math.min(10, limit));
+      // Add 3 second timeout for WaniKani
+      const wanikaniPromise = searchWanikaniVocabulary(query, Math.min(10, limit));
+      const timeoutPromise = new Promise<JapaneseWord[]>((resolve) => 
+        setTimeout(() => resolve([]), 3000)
+      );
+      
+      wanikaniResults = await Promise.race([wanikaniPromise, timeoutPromise]);
       debugLog('WaniKani', wanikaniResults);
       
       if (wanikaniResults.length > 0) {
@@ -213,7 +219,7 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
         }));
       }
     } catch (wanikaniError) {
-      console.warn('WaniKani search failed:', wanikaniError);
+      console.warn('WaniKani search failed or timed out:', wanikaniError);
       // Continue - we'll use other sources
     }
 

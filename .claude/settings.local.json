@@ -46,7 +46,8 @@
       "Bash(npx firebase firestore:get:*)",
       "Bash(sed:*)",
       "Bash(NODE_ENV=production npm run build)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "WebSearch"
     ],
     "deny": []
   }

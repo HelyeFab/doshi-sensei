@@ -3,8 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { JapaneseWord, ConjugationForms, WordList } from "@/types";
+import { ExtendedConjugationForms } from "@/types/conjugation-extended";
 import { searchWords } from "@/utils/api";
 import { ConjugationEngine } from "@/utils/conjugation";
+import { ExtendedConjugationEngine } from "@/utils/conjugation-extended";
 import { useStrings } from "@/contexts/LanguageContext";
 import { SmartPageHeader } from "@/components/navigation/SmartPageHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -464,6 +466,24 @@ function isConjugableWord(word: JapaneseWord): boolean {
   );
 }
 
+// Helper function to get conjugation rules
+function getConjugationRules(wordType: string): string {
+  switch (wordType) {
+    case "Godan":
+      return "Godan verbs (also called u-verbs or Group I verbs) change their endings based on the final kana. The stem changes for different conjugations: -u→-a (negative), -u→-i (masu), -u→-e (potential/imperative), -u→-o (volitional).";
+    case "Ichidan":
+      return "Ichidan verbs (also called ru-verbs or Group II verbs) drop the final る and add conjugation endings directly to the stem. They are simpler and more regular than Godan verbs.";
+    case "Irregular":
+      return "Irregular verbs (する 'to do' and 来る 'to come') have unique conjugation patterns that must be memorized. する compounds follow the same pattern as する.";
+    case "i-adjective":
+      return "I-adjectives drop the final い and add conjugation endings. They conjugate similarly to verbs with forms for past, negative, and adverbial.";
+    case "na-adjective":
+      return "Na-adjectives use だ/です for conjugation. They behave like nouns in many ways, requiring な when modifying nouns directly.";
+    default:
+      return "This word follows standard Japanese conjugation patterns.";
+  }
+}
+
 // Word Card Component
 interface WordCardProps {
   word: JapaneseWord;
@@ -823,6 +843,199 @@ function VerbEssentials({ word, conjugations }: VerbEssentialsProps) {
   };
 }
 
+// Types for conjugation sections
+interface ConjugationSection {
+  id: string;
+  title: string;
+  emoji: string;
+  forms: Array<{
+    key: keyof ExtendedConjugationForms;
+    label: string;
+    essential?: boolean;
+  }>;
+}
+
+// Define conjugation sections with essential marking
+const conjugationSections: ConjugationSection[] = [
+  {
+    id: "basic",
+    title: "Basic Forms",
+    emoji: "📘",
+    forms: [
+      { key: "present", label: "Present", essential: true },
+      { key: "negative", label: "Negative", essential: true },
+      { key: "past", label: "Past", essential: true },
+      { key: "pastNegative", label: "Past Negative", essential: true },
+      { key: "masuStem", label: "Masu Stem", essential: true },
+      { key: "negativeStem", label: "Negative Stem" },
+    ],
+  },
+  {
+    id: "polite",
+    title: "Polite Forms",
+    emoji: "📗",
+    forms: [
+      { key: "polite", label: "Polite", essential: true },
+      { key: "politeNegative", label: "Polite Negative", essential: true },
+      { key: "politePast", label: "Polite Past", essential: true },
+      { key: "politePastNegative", label: "Polite Past Negative", essential: true },
+      { key: "politeVolitional", label: "Polite Volitional" },
+    ],
+  },
+  {
+    id: "te-forms",
+    title: "Te-Forms",
+    emoji: "📙",
+    forms: [
+      { key: "teForm", label: "Te-form", essential: true },
+      { key: "negativeTeForm", label: "Negative Te-form" },
+      { key: "naideForm", label: "Naide-form" },
+      { key: "adverbialNegative", label: "Adverbial Negative" },
+    ],
+  },
+  {
+    id: "conditional",
+    title: "Conditional Forms",
+    emoji: "📕",
+    forms: [
+      { key: "provisional", label: "Provisional (ba)", essential: true },
+      { key: "provisionalNegative", label: "Provisional Negative" },
+      { key: "provisionalNegativeColloquial", label: "Colloquial (nakya)" },
+      { key: "conditional", label: "Conditional (tara)", essential: true },
+      { key: "conditionalNegative", label: "Conditional Negative" },
+    ],
+  },
+  {
+    id: "potential",
+    title: "Potential Forms",
+    emoji: "📓",
+    forms: [
+      { key: "potential", label: "Potential", essential: true },
+      { key: "potentialNegative", label: "Potential Negative" },
+      { key: "potentialPast", label: "Potential Past" },
+      { key: "potentialPastNegative", label: "Potential Past Negative" },
+      { key: "potentialMasuStem", label: "Potential Masu Stem" },
+      { key: "potentialTeForm", label: "Potential Te-form" },
+      { key: "potentialPolite", label: "Potential Polite" },
+    ],
+  },
+  {
+    id: "passive",
+    title: "Passive Forms",
+    emoji: "📔",
+    forms: [
+      { key: "passive", label: "Passive", essential: true },
+      { key: "passiveNegative", label: "Passive Negative" },
+      { key: "passivePast", label: "Passive Past" },
+      { key: "passivePastNegative", label: "Passive Past Negative" },
+      { key: "passiveMasuStem", label: "Passive Masu Stem" },
+      { key: "passiveTeForm", label: "Passive Te-form" },
+      { key: "passivePolite", label: "Passive Polite" },
+    ],
+  },
+  {
+    id: "causative",
+    title: "Causative Forms",
+    emoji: "📒",
+    forms: [
+      { key: "causative", label: "Causative", essential: true },
+      { key: "causativeNegative", label: "Causative Negative" },
+      { key: "causativePast", label: "Causative Past" },
+      { key: "causativePastNegative", label: "Causative Past Negative" },
+      { key: "causativeMasuStem", label: "Causative Masu Stem" },
+      { key: "causativeTeForm", label: "Causative Te-form" },
+      { key: "causativePolite", label: "Causative Polite" },
+    ],
+  },
+  {
+    id: "causative-passive",
+    title: "Causative-Passive",
+    emoji: "📝",
+    forms: [
+      { key: "causativePassive", label: "Causative-Passive" },
+      { key: "causativePassiveNegative", label: "Causative-Passive Negative" },
+      { key: "causativePassivePast", label: "Causative-Passive Past" },
+      { key: "causativePassiveTeForm", label: "Causative-Passive Te-form" },
+    ],
+  },
+  {
+    id: "tai-forms",
+    title: "Tai Forms (Want to)",
+    emoji: "💛",
+    forms: [
+      { key: "taiForm", label: "Tai-form", essential: true },
+      { key: "taiNegative", label: "Tai Negative" },
+      { key: "taiPast", label: "Tai Past" },
+      { key: "taiPastNegative", label: "Tai Past Negative" },
+      { key: "taiAdjectiveStem", label: "Tai Adjective Stem" },
+      { key: "taiTeForm", label: "Tai Te-form" },
+      { key: "taiAdverbial", label: "Tai Adverbial" },
+      { key: "taiProvisional", label: "Tai Provisional" },
+      { key: "taiProvisionalNegative", label: "Tai Provisional Negative" },
+      { key: "taiConditional", label: "Tai Conditional" },
+      { key: "taiConditionalNegative", label: "Tai Conditional Negative" },
+      { key: "taiObjective", label: "Tai Objective" },
+    ],
+  },
+  {
+    id: "volitional-imperative",
+    title: "Volitional & Imperative",
+    emoji: "💭",
+    forms: [
+      { key: "volitional", label: "Volitional", essential: true },
+      { key: "volitionalNegative", label: "Volitional Negative" },
+      { key: "imperativePlain", label: "Imperative Plain" },
+      { key: "imperativePolite", label: "Imperative Polite" },
+      { key: "imperativeNegative", label: "Imperative Negative" },
+    ],
+  },
+  {
+    id: "progressive",
+    title: "Progressive Forms",
+    emoji: "🔄",
+    forms: [
+      { key: "progressive", label: "Progressive" },
+      { key: "progressiveNegative", label: "Progressive Negative" },
+      { key: "progressivePast", label: "Progressive Past" },
+      { key: "progressivePastNegative", label: "Progressive Past Negative" },
+      { key: "progressivePolite", label: "Progressive Polite" },
+    ],
+  },
+  {
+    id: "classical",
+    title: "Classical/Formal",
+    emoji: "📚",
+    forms: [
+      { key: "colloquialNegative", label: "Colloquial Negative" },
+      { key: "formalNegative", label: "Formal Negative (zu)" },
+      { key: "classicalNegative", label: "Classical Negative (nu)" },
+      { key: "classicalModifier", label: "Classical Modifier (zaru)" },
+    ],
+  },
+  {
+    id: "alternative",
+    title: "Alternative & Request",
+    emoji: "🎯",
+    forms: [
+      { key: "alternativeForm", label: "Alternative Form (tari)" },
+      { key: "alternativeNegative", label: "Alternative Negative" },
+      { key: "request", label: "Request" },
+      { key: "requestNegative", label: "Request Negative" },
+    ],
+  },
+  {
+    id: "presumptive",
+    title: "Presumptive Forms",
+    emoji: "💫",
+    forms: [
+      { key: "presumptive", label: "Presumptive" },
+      { key: "presumptiveNegative", label: "Presumptive Negative" },
+      { key: "presumptivePolite", label: "Presumptive Polite" },
+      { key: "presumptivePoliteNegative", label: "Presumptive Polite Negative" },
+    ],
+  },
+];
+
 // Word Practice Component
 interface WordPracticeProps {
   word: JapaneseWord;
@@ -832,10 +1045,40 @@ interface WordPracticeProps {
 function WordPractice({ word, onBack }: WordPracticeProps) {
   const strings = useStrings();
   const [showRules, setShowRules] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["basic", "polite", "te-forms"])
+  );
   const { settings } = useSettings();
 
-  // Generate conjugations
-  const conjugations = ConjugationEngine.conjugate(word);
+  // Generate conjugations using Extended Engine
+  const conjugations = ExtendedConjugationEngine.conjugate(word);
+  
+  // Filter sections based on view mode
+  const visibleSections = useMemo(() => {
+    if (showComplete) return conjugationSections;
+    
+    // For essential view, only show sections with essential forms
+    return conjugationSections.filter(section =>
+      section.forms.some(form => form.essential)
+    );
+  }, [showComplete]);
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
+      }
+      return newSet;
+    });
+  };
+
+  const playAudio = async (text: string) => {
+    await TTSManager.playTextWithSSML(text, 'ja-JP');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
@@ -903,102 +1146,146 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
           </div>
         </div>
 
-        {/* Rules Toggle - Enhanced */}
-        <div className="mb-6 flex justify-center">
+        {/* View Toggle and Rules Button */}
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-2 cursor-pointer bg-card rounded-full px-4 py-2 shadow-sm">
+              <input
+                type="checkbox"
+                checked={showComplete}
+                onChange={(e) => setShowComplete(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <span className="text-sm font-medium">
+                Complete View ({Object.keys(conjugations).length} forms)
+              </span>
+            </label>
+            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded-full">
+              {showComplete ? "All Forms" : "Essential Only"}
+            </span>
+          </div>
+          
           <button
             onClick={() => setShowRules(!showRules)}
             className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 hover:from-primary/30 hover:to-accent/30 transition-all duration-200 border border-primary/30"
           >
-            <svg
-              className={`w-4 h-4 transition-transform text-primary ${
-                showRules ? "rotate-90" : ""
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <span>📚</span>
             <span className="font-medium text-primary">
-              {showRules ? "📖 Hide" : "📚 Show"} conjugation rules
+              {showRules ? "Hide" : "Show"} conjugation rules
             </span>
           </button>
         </div>
+        
+        {/* Conjugation Rules */}
+        {showRules && (
+          <div className="bg-info/10 border border-info/20 rounded-lg p-4 mb-6">
+            <h3 className="font-semibold mb-2">Conjugation Rules for {word.type}</h3>
+            <p className="text-sm text-muted-foreground">
+              {getConjugationRules(word.type)}
+            </p>
+          </div>
+        )}
 
-        {/* Conjugation Forms */}
-        <div className="space-y-6">
-          {/* Tense & Polarity */}
-          <ConjugationSection
-            title="Tense & Polarity"
-            category="tense"
-            colorScheme={settings.colorScheme}
-            word={word}
-            forms={[
-              { label: "Present", value: conjugations.present },
-              {
-                label: "Present Negative",
-                value: conjugations.negative,
-              },
-              { label: "Past", value: conjugations.past },
-              { label: "Past Negative", value: conjugations.pastNegative },
-              { label: "Present Polite", value: conjugations.polite },
-              {
-                label: "Present Negative Polite",
-                value: conjugations.politeNegative,
-              },
-              { label: "Past Polite", value: conjugations.politePast },
-              {
-                label: "Past Negative Polite",
-                value: conjugations.politePastNegative,
-              },
-            ]}
-            showRules={showRules}
-          />
+        {/* Conjugation Sections */}
+        <div className="space-y-4">
+          {visibleSections.map((section) => {
+            const isExpanded = expandedSections.has(section.id);
+            const visibleForms = showComplete
+              ? section.forms
+              : section.forms.filter(form => form.essential);
 
-          {/* Forms */}
-          <ConjugationSection
-            title="Forms"
-            category="forms"
-            colorScheme={settings.colorScheme}
-            word={word}
-            forms={[
-              { label: "Te-form", value: conjugations.teForm },
-              { label: "Potential", value: conjugations.potential },
-              { label: "Passive", value: conjugations.passive },
-              { label: "Causative", value: conjugations.causative },
-              {
-                label: "Causative-Passive",
-                value: conjugations.causativePassive,
-              },
-              { label: "Imperative", value: conjugations.imperative },
-              { label: "Conditional", value: conjugations.conditional },
-              { label: "Volitional", value: conjugations.volitional },
-            ]}
-            showRules={showRules}
-          />
+            if (visibleForms.length === 0) return null;
 
-          {/* Additional Forms */}
-          <ConjugationSection
-            title="Additional Forms"
-            category="additional"
-            colorScheme={settings.colorScheme}
-            word={word}
-            forms={[
-              { label: "Tai-form (want to)", value: conjugations.taiForm },
-              { label: "Negative Te-form", value: conjugations.negativeTeForm },
-              { label: "Provisional", value: conjugations.provisional },
-              {
-                label: "Negative Provisional",
-                value: conjugations.provisionalNegative,
-              },
-            ]}
-            showRules={showRules}
-          />
+            return (
+              <div
+                key={section.id}
+                className="bg-card rounded-lg shadow-sm overflow-hidden border border-border/50"
+              >
+                {/* Section Header */}
+                <button
+                  onClick={() => toggleSection(section.id)}
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{section.emoji}</span>
+                    <h3 className="text-lg font-semibold">{section.title}</h3>
+                    <span className="text-xs text-muted-foreground">
+                      ({visibleForms.length} forms)
+                    </span>
+                  </div>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${
+                      isExpanded ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Section Content */}
+                {isExpanded && (
+                  <div className="px-6 pb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {visibleForms.map((form) => {
+                        const value = conjugations[form.key];
+                        if (!value) return null;
+
+                        return (
+                          <div
+                            key={form.key}
+                            className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                          >
+                            <div className="flex-1">
+                              <p className="text-xs text-muted-foreground mb-1">
+                                {form.label}
+                                {form.essential && !showComplete && (
+                                  <span className="ml-1 text-primary">★</span>
+                                )}
+                              </p>
+                              <p className="text-lg font-medium japanese-text">{value}</p>
+                            </div>
+                            <VocabularyTTSButton
+                              text={value}
+                              language="ja-JP"
+                              size="sm"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mt-8 flex gap-3 justify-center">
+          <button
+            onClick={() => {
+              setExpandedSections(new Set(conjugationSections.map(s => s.id)));
+            }}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Expand All
+          </button>
+          <button
+            onClick={() => {
+              setExpandedSections(new Set());
+            }}
+            className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
+          >
+            Collapse All
+          </button>
         </div>
       </div>
     </div>

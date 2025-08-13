@@ -80,7 +80,6 @@ export default function ConjugationPage() {
   const { track } = useAnalytics();
   const [words, setWords] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [fetchingMore, setFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<JapaneseWord | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -121,55 +120,36 @@ export default function ConjugationPage() {
       setLoading(true);
       setError(null);
       
-      // Progressive loading strategy:
-      // 1. Load cached/local results first (instant)
-      // 2. Show them immediately for instant feedback
-      // 3. Fetch API results in background
-      // 4. Merge when ready
+      // Search for words
+      const searchResults = await searchWords(searchTerm, 30);
       
-      // Start with cached results for instant feedback
-      const cachedWords = await getCachedFilteredWords(searchTerm);
-      if (cachedWords.length > 0) {
-        setWords(cachedWords);
-        setLoading(false); // Remove loading state once we have some results
-        setFetchingMore(true); // But show we're fetching more
-      }
+      // Filter for only conjugatable words FIRST
+      const conjugatableResults = searchResults.filter(isConjugableWord);
       
-      // Then fetch fresh results from API
-      try {
-        const searchResults = await searchWords(searchTerm, 50);
-        
-        // Merge results intelligently (API results first, then cached)
-        const mergedResults = [...searchResults];
-        cachedWords.forEach(cached => {
-          if (!mergedResults.find(r => r.id === cached.id)) {
-            mergedResults.push(cached);
-          }
-        });
-        
-        setWords(mergedResults);
-        
-        // Track word search
-        track("word_search", {
-          searchTerm,
-          resultsCount: mergedResults.length,
-          source: "conjugation_practice",
-        });
-      } catch (apiError) {
-        // If API fails but we have cached results, that's fine
-        console.log("API search failed, using cached results:", apiError);
-      }
+      // Remove duplicates based on kanji/kana combination
+      const seen = new Set<string>();
+      const uniqueResults = conjugatableResults.filter(word => {
+        const key = `${word.kanji || ''}_${word.kana}`;
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      });
       
-      setFetchingMore(false);
+      setWords(uniqueResults);
+      
+      // Track word search
+      track("word_search", {
+        searchTerm,
+        resultsCount: uniqueResults.length,
+        source: "conjugation_practice",
+      });
     } catch (err) {
-      // If we already have cached results, don't show error
-      if (words.length === 0) {
-        setError(strings.errors.networkError);
-      }
+      setError(strings.errors.networkError);
       console.error("Error searching words:", err);
     } finally {
       setLoading(false);
-      setFetchingMore(false);
     }
   };
 
@@ -238,7 +218,6 @@ export default function ConjugationPage() {
             <WordSelector
               words={filteredWords}
               loading={loading}
-              fetchingMore={fetchingMore}
               error={error}
               searchTerm={searchTerm}
               wordTypeFilter={wordTypeFilter}
@@ -260,7 +239,6 @@ export default function ConjugationPage() {
 interface WordSelectorProps {
   words: JapaneseWord[];
   loading: boolean;
-  fetchingMore?: boolean;
   error: string | null;
   searchTerm: string;
   wordTypeFilter: "all" | "verbs" | "adjectives";
@@ -275,7 +253,6 @@ interface WordSelectorProps {
 function WordSelector({
   words,
   loading,
-  fetchingMore = false,
   error,
   searchTerm,
   wordTypeFilter,
@@ -423,12 +400,6 @@ function WordSelector({
               Found {words.length}{" "}
               {wordTypeFilter === "all" ? "words" : wordTypeFilter}
             </div>
-            {fetchingMore && (
-              <div className="flex items-center gap-2 text-sm text-primary">
-                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full"></div>
-                <span>Finding more results...</span>
-              </div>
-            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -437,14 +408,7 @@ function WordSelector({
             ))}
           </div>
 
-          {/* Show skeleton loaders while fetching more */}
-          {fetchingMore && words.length > 0 && (
-            <div className="mt-4">
-              <WordCardSkeletonGrid count={3} />
-            </div>
-          )}
-
-          {words.length === 0 && !fetchingMore && (
+          {words.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">{strings.vocab.noResults}</p>
             </div>
